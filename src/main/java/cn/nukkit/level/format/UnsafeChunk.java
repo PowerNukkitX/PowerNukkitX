@@ -110,22 +110,27 @@ public class UnsafeChunk {
         getOrCreateSection(y >> 4).setBlockLight(x, y & 0x0f, z, (byte) level);
     }
 
-    public int getHighestBlockAt(int x, int z, boolean cache) {
-        if (cache) {
-            return this.getHeightMap(x, z);
-        } else {
-            for (int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); --y) {
-                if (getBlockState(x, y, z) != BlockAir.PROPERTIES.getBlockState()) {
-                    this.setHeightMap(x, z, y);
-                    return y;
-                }
+    /**
+     * Gets highest block in this (x,z)
+     *
+     * @param x the x 0~15
+     * @param z the z 0~15
+     */
+    public int getHighestBlockAt(int x, int z) {
+        for (int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); --y) {
+            if (getBlockState(x, y, z) != BlockAir.PROPERTIES.getBlockState()) {
+                this.setHeightMap(x, z, y);
+                return y;
             }
-            return getDimensionData().getMinHeight();
         }
+        return getDimensionData().getMinHeight();
     }
 
+    /**
+     * Recalculate height map for this chunk
+     */
     public int recalculateHeightMapColumn(int x, int z) {
-        int max = getHighestBlockAt(x, z, false);
+        int max = getHighestBlockAt(x, z);
         int y;
         for (y = max; y >= 0; --y) {
             BlockState blockState = getBlockState(x, y, z, 0);
@@ -134,8 +139,8 @@ public class UnsafeChunk {
                 break;
             }
         }
-        setHeightMap(x, z, y + 1);
-        return y + 1;
+        setHeightMap(x, z, y);
+        return y;
     }
 
     public int getHeightMap(int x, int z) {

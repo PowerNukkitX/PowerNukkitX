@@ -127,30 +127,51 @@ public interface IChunk {
      */
     int getBlockLight(int x, int y, int z);
 
+    /**
+     * Sets block light.
+     *
+     * @param x     the x 0~15
+     * @param y     the y
+     * @param z     the z 0~15
+     * @param level the level 0~15
+     */
     void setBlockLight(int x, int y, int z, int level);
 
-    default int getHighestBlockAt(int x, int z) {
-        return getHighestBlockAt(x, z, true);
-    }
-
-    int getHighestBlockAt(int x, int z, boolean cache);
-
+    /**
+     * Get a heightmap in this section coordinates, which is the highest block height
+     *
+     * @param x the x 0~15
+     * @param z the z 0~15
+     * @return the height map
+     */
     int getHeightMap(int x, int z);
 
+    /**
+     * Sets height map for this coordinate,which is the highest block height
+     *
+     * @param x     the x 0~15
+     * @param z     the z 0~15
+     * @param value the value
+     */
     void setHeightMap(int x, int z, int value);
 
+    /**
+     * Recalculate height map for this chunk.
+     */
     void recalculateHeightMap();
 
-    int recalculateHeightMapColumn(@Range(from = 0,to = 15) int x,@Range(from = 0,to = 15) int z);
+    /**
+     * Recalculate a column height map of chunk
+     */
+    int recalculateHeightMapColumn(@Range(from = 0, to = 15) int x, @Range(from = 0, to = 15) int z);
 
     void populateSkyLight();
 
     /**
      * 获取子区块中某个特定位置的生物群系id
      *
-     * @param x [0, 16)
-     * @param y [0, 16)
-     * @param z [0, 16)
+     * @param x 0~15
+     * @param z 0~15
      * @return 特定位置的生物群系id
      */
     int getBiomeId(int x, int y, int z);

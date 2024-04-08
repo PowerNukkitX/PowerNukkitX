@@ -74,6 +74,7 @@ public class BlockFarmland extends BlockTransparent {
             if (this.level.isRaining()) {
                 found = true;
             } else {
+                end:
                 for (int x = (int) this.x - 4; x <= this.x + 4; x++) {
                     for (int z = (int) this.z - 4; z <= this.z + 4; z++) {
                         for (int y = (int) this.y; y <= this.y + 1; y++) {
@@ -86,12 +87,12 @@ public class BlockFarmland extends BlockTransparent {
 
                             if (block.equals(FLOWING_WATER) || block.equals(WATER) || block.equals(FROSTED_ICE)) {
                                 found = true;
-                                break;
+                                break end;
                             } else {
                                 block = this.level.getBlockIdAt(v.getFloorX(), v.getFloorY(), v.getFloorZ(), 1);
                                 if (block.equals(FLOWING_WATER) || block.equals(WATER) || block.equals(FROSTED_ICE)) {
                                     found = true;
-                                    break;
+                                    break end;
                                 }
                             }
                         }

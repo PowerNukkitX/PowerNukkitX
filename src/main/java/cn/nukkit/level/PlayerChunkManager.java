@@ -9,8 +9,10 @@ import cn.nukkit.network.protocol.NetworkChunkPublisherUpdatePacket;
 import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
+import it.unimi.dsi.fastutil.longs.LongArrayPriorityQueue;
 import it.unimi.dsi.fastutil.longs.LongComparator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSortedSets;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +47,7 @@ public final class PlayerChunkManager {
     //保存着这tick将要发送的全部区块hash值
     private final @NotNull LongOpenHashSet inRadiusChunks;
     private final int trySendChunkCountPerTick;
-    private final LongArrayFIFOQueue chunkSendQueue;
+    private final LongArrayPriorityQueue chunkSendQueue;
     private final Long2ObjectOpenHashMap<CompletableFuture<IChunk>> chunkLoadingQueue;
     private final Long2ObjectOpenHashMap<IChunk> chunkReadyToSend;
     private long lastLoaderChunkPosHashed = Long.MAX_VALUE;
@@ -54,7 +56,7 @@ public final class PlayerChunkManager {
         this.player = player;
         this.sentChunks = new LongOpenHashSet();
         this.inRadiusChunks = new LongOpenHashSet();
-        this.chunkSendQueue = new LongArrayFIFOQueue(player.getViewDistance() * player.getViewDistance());
+        this.chunkSendQueue = new LongArrayPriorityQueue(player.getViewDistance() * player.getViewDistance(), chunkDistanceComparator);
         this.chunkLoadingQueue = new Long2ObjectOpenHashMap<>(player.getViewDistance() * player.getViewDistance());
         this.trySendChunkCountPerTick = player.getChunkSendCountPerTick();
         this.chunkReadyToSend = new Long2ObjectOpenHashMap<>();
@@ -145,7 +147,7 @@ public final class PlayerChunkManager {
         chunkSendQueue.clear();
         //已经发送的区块不再二次发送
         Sets.SetView<Long> difference = Sets.difference(inRadiusChunks, sentChunks);
-        difference.stream().sorted(chunkDistanceComparator).forEachOrdered(v -> chunkSendQueue.enqueue(v.longValue()));
+        difference.forEach(v -> chunkSendQueue.enqueue(v.longValue()));
     }
 
     private void loadQueuedChunks(int trySendChunkCountPerTick, boolean force) {
