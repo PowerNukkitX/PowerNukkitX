@@ -354,7 +354,7 @@ public class Chunk implements IChunk {
             // basic light calculation
             for (int z = 0; z < 16; ++z) {
                 for (int x = 0; x < 16; ++x) { // iterating over all columns in chunk
-                    int top = unsafe.getHeightMap(x, z) - 1; // top-most block
+                    int top = unsafe.getHeightMap(x, z); // top-most block
 
                     int y;
                     for (y = getDimensionData().getMaxHeight(); y > top; --y) {
