@@ -1329,7 +1329,7 @@ public class Level implements Metadatable {
                         int z = lcg >>> 16 & 0x0f;
                         BlockState state = section.getBlockState(x, y, z);
                         if (randomTickBlocks.contains(state.getIdentifier())) {
-                            Block block = Block.get(state, this, x, y, z);
+                            Block block = Block.get(state, this, (chunk.getX() << 4) + x, y, (chunk.getZ() << 4) + z);
                             block.setLevel(this);
                             block.onUpdate(BLOCK_UPDATE_RANDOM);
                         }
@@ -1922,27 +1922,25 @@ public class Level implements Metadatable {
         int oldHeightMap = chunk.getHeightMap(x & 0xf, z & 0xf);
         Block sourceBlock = getBlock(x, y, z);
 
-        int yPlusOne = y + 1;
-
         int newHeightMap;
-        if (yPlusOne == oldHeightMap) { // Block changed directly beneath the heightmap. Check if a block was removed or changed to a different light-filter
+        if (y == oldHeightMap) { // Block changed directly in the heightmap. Check if a block was removed or changed to a different light-filter
             newHeightMap = chunk.recalculateHeightMapColumn(x & 0x0f, z & 0x0f);
-        } else if (yPlusOne > oldHeightMap) { // Block changed above the heightmap
+        } else if (y > oldHeightMap) { // Block changed above the heightmap
             if (sourceBlock.getLightFilter() > 1 || sourceBlock.diffusesSkyLight()) {
-                chunk.setHeightMap(x & 0xf, z & 0xf, yPlusOne);
-                newHeightMap = yPlusOne;
-            } else { // Block changed which has no effect on direct sky light, for example placing or removing glass.
+                chunk.setHeightMap(x & 0xf, z & 0xf, y);
+                newHeightMap = y;
+            } else { // Block changed which has no effect on direct skylight, for example placing or removing glass.
                 return;
             }
         } else { // Block changed below heightmap
             newHeightMap = oldHeightMap;
         }
 
-        if (newHeightMap > oldHeightMap) { // Heightmap increase, block placed, remove sky light
+        if (newHeightMap > oldHeightMap) { // Heightmap increase, block placed, remove skylight
             for (int i = y; i >= oldHeightMap; --i) {
                 setBlockSkyLightAt(x, i, z, 0);
             }
-        } else if (newHeightMap < oldHeightMap) { // Heightmap decrease, block changed or removed, add sky light
+        } else if (newHeightMap < oldHeightMap) { // Heightmap decrease, block changed or removed, add skylight
             for (int i = y; i >= newHeightMap; --i) {
                 setBlockSkyLightAt(x, i, z, 15);
             }
@@ -3107,7 +3105,7 @@ public class Level implements Metadatable {
     }
 
     public int getHighestBlockAt(int x, int z) {
-        return this.getChunk(x >> 4, z >> 4, true).getHighestBlockAt(x & 0x0f, z & 0x0f);
+        return this.getChunk(x >> 4, z >> 4, true).getHeightMap(x & 0x0f, z & 0x0f);
     }
 
     protected static final BlockColor VOID_BLOCK_COLOR = BlockColor.VOID_BLOCK_COLOR;
@@ -3200,7 +3198,7 @@ public class Level implements Metadatable {
         if (chunk == null) return null;
         var chunkX = x & 0xF;
         var chunkZ = z & 0xF;
-        int y = chunk.getHighestBlockAt(chunkX, chunkZ, false);
+        int y = chunk.getHeightMap(chunkX, chunkZ);
         while (y > getMinHeight()) {
             Block block = getBlock(x, y, z);
             if (block.getColor() == null) return null;

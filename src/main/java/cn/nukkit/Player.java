@@ -72,8 +72,6 @@ import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.ChunkLoader;
-import cn.nukkit.level.ParticleEffect;
-import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
@@ -129,6 +127,7 @@ import cn.nukkit.utils.BossBarColor;
 import cn.nukkit.utils.DummyBossBar;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.LoginChainData;
+import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.utils.TextFormat;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -634,8 +633,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         setTimePacket.time = this.level.getTime();
         this.dataPacket(setTimePacket);
 
-        this.sendPlayStatus(PlayStatusPacket.PLAYER_SPAWN);
-
         this.noDamageTicks = 60;
 
         for (long index : playerChunkManager.getUsedChunks()) {
@@ -657,8 +654,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (level != 0) {
             this.sendExperienceLevel(this.getExperienceLevel());
         }
-
-        //todo Updater
 
         //Weather
         this.getLevel().sendWeather(this);
@@ -683,6 +678,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.dimension = this.level.getDimension();
         this.dataPacket(pk);
 
+        this.sendFogStack();
+        this.sendCameraPresets();
+
+        log.debug("Send Player Spawn Status Packet to {},wait init packet", getName());
+        this.sendPlayStatus(PlayStatusPacket.PLAYER_SPAWN, true);
+
         //客户端初始化完毕再传送玩家，避免下落 (x)
         //已经设置immobile了所以不用管下落了
         Location pos;
@@ -695,8 +696,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         this.teleport(pos, TeleportCause.PLAYER_SPAWN);
 
-        this.sendFogStack();
-        this.sendCameraPresets();
         if (this.getHealth() < 1) {
             this.setHealth(0);
         }
@@ -4576,6 +4575,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void removeWindow(Inventory inventory) {
         Preconditions.checkNotNull(inventory);
         if (!this.permanentWindows.contains(windows.get(inventory))) {
+            int windowId = this.getWindowId(inventory);
+            playerHandle.setClosingWindowId(windowId);
             inventory.close(this);
             this.windows.remove(inventory);
             updateTrackingPositions(true);

@@ -1,13 +1,13 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.TorchFacingDirection;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityMovingBlock;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.event.block.BlockPistonEvent;
-import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
@@ -18,6 +18,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import com.google.common.collect.Lists;
@@ -219,21 +220,9 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         }
 
         if (isPowered && !isExtended) {
-            if (!this.doMove(true)) {
-                return false;
-            }
-
-            this.getLevel().addSound(this, Sound.TILE_PISTON_OUT);
-            this.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.PISTON_EXTEND));
-
-            return true;
+            return this.doMove(true);
         } else if (!isPowered && isExtended) {
-            if (!this.doMove(false)) {
-                return false;
-            }
-            this.getLevel().addSound(this, Sound.TILE_PISTON_IN);
-            this.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.PISTON_CONTRACT));
-            return true;
+            return this.doMove(false);
         }
         return false;
     }
@@ -279,14 +268,14 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                         .putInt("pistonPosX", this.getFloorX())
                         .putInt("pistonPosY", this.getFloorY())
                         .putInt("pistonPosZ", this.getFloorZ())
-                        .putCompound("movingBlock", blockToMove.blockstate.getBlockStateTag());
+                        .putCompound("movingBlock", blockToMove.blockstate.getBlockStateTag())
+                        .putCompound("movingBlockExtra", level.getBlock(blockToMove, 1).getBlockState().getBlockStateTag())
+                        .putBoolean("isMovable", true);
                 var blockEntity = this.level.getBlockEntity(oldPos);
                 //移动方块实体
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {
                     blockEntity.saveNBT();
                     nbt.putCompound("movingEntity", new CompoundTag(blockEntity.namedTag.getTags()));
-                    if (blockEntity instanceof InventoryHolder inventoryHolder)
-                        inventoryHolder.getInventory().clearAll();
                     blockEntity.close();
                 }
                 oldPosList.add(oldPos);
@@ -299,32 +288,43 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         if (blockEntity == null) {
             return false;
         }
-        blockEntity.preMove(extending, toMoveBlockVec);
-        //生成moving_block
-        if (!oldPosList.isEmpty()) {
-            for (int i = 0; i < oldPosList.size(); i++) {
-                var oldPos = oldPosList.get(i);
-                var blockEntityHolder = blockEntityHolderList.get(i);
-                var nbt = nbtList.get(i);
-                BlockEntityHolder.setBlockAndCreateEntity(blockEntityHolder, true, true, nbt);
-                if (!this.level.getBlock(oldPos).getId().equals(BlockID.MOVING_BLOCK))
-                    this.level.setBlock(oldPos, Block.get(BlockID.AIR));
+        List<BlockVector3> finalToMoveBlockVec = toMoveBlockVec;
+        Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+            blockEntity.preMove(extending, finalToMoveBlockVec);
+            //生成moving_block
+            if (!oldPosList.isEmpty()) {
+                for (int i = 0; i < oldPosList.size(); i++) {
+                    var oldPos = oldPosList.get(i);
+                    var blockEntityHolder = blockEntityHolderList.get(i);
+                    var nbt = nbtList.get(i);
+                    BlockEntityHolder.setBlockAndCreateEntity(blockEntityHolder, true, true, nbt);
+                    if (!this.level.getBlock(oldPos).getId().equals(BlockID.MOVING_BLOCK)) {
+                        this.level.setBlock(oldPos, Block.get(BlockID.AIR));
+                    }
+                }
             }
-        }
-        //创建活塞臂方块
-        if (extending) {
-            var pistonArmPos = this.getSide(pistonFace);
-            //清除位置上所含的水等
-            level.setBlock(pistonArmPos, 1, Block.get(AIR), true, false);
-            BlockFace blockFace = getBlockFace();
-            if (blockFace.getAxis() == BlockFace.Axis.Y) {
-                level.setBlock(pistonArmPos, createHead(blockFace), true, false);
+            //创建活塞臂方块
+            if (extending) {
+                var pistonArmPos = this.getSide(pistonFace);
+                //清除位置上所含的水等
+                level.setBlock(pistonArmPos, 1, Block.get(AIR), true, false);
+                BlockFace blockFace = getBlockFace();
+                if (blockFace.getAxis() == BlockFace.Axis.Y) {
+                    level.setBlock(pistonArmPos, createHead(blockFace), true, false);
+                } else {
+                    level.setBlock(pistonArmPos, createHead(blockFace.getOpposite()), true, false);
+                }
+            }
+            //开始移动
+            blockEntity.move();
+            if (extending) {
+                this.getLevel().addSound(this, Sound.TILE_PISTON_OUT);
+                this.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.PISTON_EXTEND));
             } else {
-                level.setBlock(pistonArmPos, createHead(blockFace.getOpposite()), true, false);
+                this.getLevel().addSound(this, Sound.TILE_PISTON_IN);
+                this.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.PISTON_CONTRACT));
             }
-        }
-        //开始移动
-        blockEntity.move();
+        }, 5);
         return true;
     }
 

@@ -1,6 +1,5 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.ChestInventory;
@@ -9,8 +8,6 @@ import cn.nukkit.inventory.DoubleChestInventory;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-
-import java.util.HashSet;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -34,22 +31,24 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     public void close() {
         if (!closed) {
             unpair();
+            this.getInventory().getViewers().forEach(p -> p.removeWindow(this.getInventory()));
+            this.getRealInventory().getViewers().forEach(p -> p.removeWindow(this.getRealInventory()));
 
-            for (Player player : new HashSet<>(this.getInventory().getViewers())) {
-                player.removeWindow(this.getInventory());
+            this.closed = true;
+            if (this.chunk != null) {
+                this.chunk.removeBlockEntity(this);
             }
-
-            for (Player player : new HashSet<>(this.getInventory().getViewers())) {
-                player.removeWindow(this.getRealInventory());
+            if (this.level != null) {
+                this.level.removeBlockEntity(this);
             }
-            super.close();
+            this.level = null;
         }
     }
 
     @Override
     public boolean isBlockEntityValid() {
         String blockID = this.getBlock().getId();
-        return blockID == Block.CHEST || blockID == Block.TRAPPED_CHEST;
+        return blockID.equals(Block.CHEST) || blockID.equals(Block.TRAPPED_CHEST);
     }
 
     public int getSize() {

@@ -23,7 +23,6 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
         Player player = playerHandle.player;
         Item mapItem = null;
         int index = 0;
-        MapInfoRequestProcessor.log.info(null);
         var offhand = false;
 
         for (var entry : player.getOffhandInventory().getContents().entrySet()) {

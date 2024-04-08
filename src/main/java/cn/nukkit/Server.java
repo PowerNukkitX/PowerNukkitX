@@ -84,7 +84,6 @@ import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.*;
-import cn.nukkit.utils.bugreport.ExceptionHandler;
 import cn.nukkit.utils.collection.FreezableArrayManager;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -669,17 +668,6 @@ public class Server {
 
         if (this.getPropertyBoolean("hardcore", false) && this.getDifficulty() < 3) {
             this.setPropertyInt("difficulty", 3);
-        }
-
-        boolean bugReport;
-        if (this.getConfig().exists("settings.bug-report")) {
-            bugReport = this.getConfig().getBoolean("settings.bug-report");
-            this.getProperties().remove("bug-report");
-        } else {
-            bugReport = this.getPropertyBoolean("bug-report", true); //backwards compat
-        }
-        if (bugReport) {
-            ExceptionHandler.registerExceptionHandler();
         }
 
         log.info(this.getLanguage().tr("nukkit.server.networkStart", new String[]{this.getIp().equals("") ? "*" : this.getIp(), String.valueOf(this.getPort())}));

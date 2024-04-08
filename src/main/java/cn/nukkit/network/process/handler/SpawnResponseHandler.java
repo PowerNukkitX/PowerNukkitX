@@ -147,7 +147,6 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
 
     @Override
     public void handle(SetLocalPlayerAsInitializedPacket pk) {
-        log.debug(this.player.getName()+ "init client!");
         this.session.getMachine().fire(SessionState.IN_GAME);
     }
 }

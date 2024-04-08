@@ -11,7 +11,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.CORAL_COLOR;
+import static cn.nukkit.block.property.CommonBlockProperties.CORAL_FAN_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.DEAD_BIT;
 
 
 public class BlockCoralFan extends BlockFlowable implements Faceable {
@@ -47,7 +49,7 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
 
     @Override
     public int getWaterloggingLevel() {
-        return 2;
+        return 1;
     }
 
     public boolean isDead() {
@@ -128,7 +130,7 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
             if (rotation < 0) {
                 rotation += 360.0;
             }
-            int axisBit = rotation >= 0 && rotation < 12 || (342 <= rotation && rotation < 360) ? 0x0 : 0x8;
+            int axisBit = rotation >= 0 && rotation < 12 || (342 <= rotation && rotation < 360) ? 0 : 1;
             setPropertyValue(CORAL_FAN_DIRECTION, axisBit);
             this.getLevel().setBlock(this, 0, hasWater ?
                     new BlockCoralFan(blockstate)
@@ -159,11 +161,6 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
     @Override
     public boolean canSilkTouch() {
         return true;
-    }
-
-    @Override
-    public Item toItem() {
-        return Item.get(getItemId(), blockstate.specialValue() ^ 0x8);
     }
 
     @Override

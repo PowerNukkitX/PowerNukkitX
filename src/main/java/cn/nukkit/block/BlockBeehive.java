@@ -5,6 +5,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBeehive;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
@@ -25,7 +26,8 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     public static final BlockProperties PROPERTIES = new BlockProperties(BEEHIVE, CommonBlockProperties.DIRECTION, HONEY_LEVEL);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -43,12 +45,14 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.BEEHIVE;
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityBeehive> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityBeehive> getBlockEntityClass() {
         return BlockEntityBeehive.class;
     }
 
@@ -91,13 +95,13 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
         if (beehive == null) {
             return false;
         }
-        
+
         if (beehive.namedTag.getByte("ShouldSpawnBees") > 0) {
             List<BlockFace> validSpawnFaces = beehive.scanValidSpawnFaces(true);
             for (BlockEntityBeehive.Occupant occupant : beehive.getOccupants()) {
                 beehive.spawnOccupant(occupant, validSpawnFaces);
             }
-    
+
             beehive.namedTag.putByte("ShouldSpawnBees", 0);
         }
         return true;
@@ -117,7 +121,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
         }
         return false;
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;
@@ -140,10 +144,10 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
             beehive.angerBees(player);
         }
     }
-    
+
     @Override
     public Item toItem() {
-        Item item = Item.get(getItemId(), 0, 1);
+        Item item = new ItemBlock(this);
         if (level != null) {
             BlockEntityBeehive beehive = getBlockEntity();
             if (beehive != null) {
@@ -157,7 +161,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
         }
         return item;
     }
-    
+
     @Override
     public boolean canSilkTouch() {
         return true;
@@ -178,7 +182,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     public boolean canHarvestWithHand() {
         return true;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{Item.get(BlockID.BEEHIVE)};
@@ -191,7 +195,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(CommonBlockProperties.DIRECTION,face.getHorizontalIndex());
+        setPropertyValue(CommonBlockProperties.DIRECTION, face.getHorizontalIndex());
     }
 
     public void setHoneyLevel(int honeyLevel) {
@@ -209,12 +213,12 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     public boolean isFull() {
         return getPropertyValue(HONEY_LEVEL) == HONEY_LEVEL.getMax();
     }
-    
+
     @Override
     public boolean hasComparatorInputOverride() {
         return true;
     }
-    
+
     @Override
     public int getComparatorInputOverride() {
         return getHoneyLevel();

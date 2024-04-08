@@ -86,11 +86,11 @@ public class HorseInventory extends BaseInventory {
 
     @Override
     public void onClose(Player who) {
-        super.onClose(who);
         ContainerClosePacket pk = new ContainerClosePacket();
         pk.windowId = who.getWindowId(this);
         pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
         who.dataPacket(pk);
+        super.onClose(who);
     }
 
     @Override

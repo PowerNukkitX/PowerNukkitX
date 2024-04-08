@@ -170,11 +170,6 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     }
 
     @Override
-    public Item toItem() {
-        return Item.get(this.getItemId());
-    }
-
-    @Override
     public BlockFace getBlockFace() {
         return getFacing();
     }
