@@ -633,6 +633,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         setTimePacket.time = this.level.getTime();
         this.dataPacket(setTimePacket);
 
+        log.debug("Spawn player {}", getName());
         this.sendPlayStatus(PlayStatusPacket.PLAYER_SPAWN);
 
         this.noDamageTicks = 60;

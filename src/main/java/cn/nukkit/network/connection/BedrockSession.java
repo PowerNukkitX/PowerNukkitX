@@ -53,6 +53,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -428,7 +429,7 @@ public class BedrockSession {
 
     private void onClientSpawned() {
         log.debug("Received spawn response, entering in-game phase");
-        getPlayer().setImmobile(false); //TODO: HACK: we set this during the spawn sequence to prevent the client sending junk movements
+        Objects.requireNonNull(getPlayer()).setImmobile(false); //TODO: HACK: we set this during the spawn sequence to prevent the client sending junk movements
         handle.onPlayerLocallyInitialized();
     }
 
