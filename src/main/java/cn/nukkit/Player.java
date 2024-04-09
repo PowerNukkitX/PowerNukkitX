@@ -98,6 +98,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.connection.BedrockDisconnectReasons;
 import cn.nukkit.network.connection.BedrockSession;
+import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.CommandOriginData;
 import cn.nukkit.network.protocol.types.CommandOutputType;
@@ -682,7 +683,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendCameraPresets();
 
         log.debug("Send Player Spawn Status Packet to {},wait init packet", getName());
-        this.sendPlayStatus(PlayStatusPacket.PLAYER_SPAWN, true);
+        this.sendPlayStatus(PlayStatusPacket.PLAYER_SPAWN);
 
         //客户端初始化完毕再传送玩家，避免下落 (x)
         //已经设置immobile了所以不用管下落了
@@ -699,6 +700,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.getHealth() < 1) {
             this.setHealth(0);
         }
+        Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+            this.session.getMachine().fire(SessionState.IN_GAME);
+        }, 5);
     }
 
     @Override

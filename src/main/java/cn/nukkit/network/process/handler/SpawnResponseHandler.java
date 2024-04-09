@@ -3,7 +3,6 @@ package cn.nukkit.network.process.handler;
 import cn.nukkit.Player;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.network.connection.BedrockSession;
-import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.AvailableEntityIdentifiersPacket;
 import cn.nukkit.network.protocol.BiomeDefinitionListPacket;
 import cn.nukkit.network.protocol.ItemComponentPacket;
@@ -147,6 +146,6 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
 
     @Override
     public void handle(SetLocalPlayerAsInitializedPacket pk) {
-        this.session.getMachine().fire(SessionState.IN_GAME);
+        log.debug("receive SetLocalPlayerAsInitializedPacket for {}", this.player.getPlayerInfo().getUsername());
     }
 }
