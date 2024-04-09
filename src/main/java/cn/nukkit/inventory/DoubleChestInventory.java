@@ -85,7 +85,7 @@ public class DoubleChestInventory extends ContainerInventory {
     public Map<Integer, Item> getContents() {
         Map<Integer, Item> contents = new HashMap<>();
 
-        for (int i = 0; i < this.getSize(); ++i) {
+        for (int i = 0; i < this.getSize(); i++) {
             contents.put(i, this.getItem(i));
         }
 
@@ -94,33 +94,24 @@ public class DoubleChestInventory extends ContainerInventory {
 
     @Override
     public void setContents(Map<Integer, Item> items) {
-        if (items.size() > this.size) {
-            Map<Integer, Item> newItems = new HashMap<>();
-            for (int i = 0; i < this.size; i++) {
-                newItems.put(i, items.get(i));
-            }
-            items = newItems;
+        if(items.size() > this.size) {
+            items.keySet().removeIf(slot -> slot >= this.size);
         }
 
         for (int i = 0; i < this.size; i++) {
-            if (items.containsKey(i)) {
+            Item item = items.get(i);
+            boolean isSet = false;
+
+            if (item != null) {
                 if (i < this.left.size) {
-                    if (!left.setItem(i, items.get(i))) {
-                        this.clear(i);
-                    }
+                    isSet = this.left.setItem(i, item);
                 } else {
-                    if (!right.setItem(i, items.get(i))) {
-                        this.clear(i);
-                    }
+                    isSet = this.right.setItem(i - this.left.size, item);
                 }
-            } else {
-                if (i < this.left.size) {
-                    if (this.left.slots.containsKey(i)) {
-                        this.clear(i);
-                    }
-                } else if (this.right.slots.containsKey(i - this.left.size)) {
-                    this.clear(i);
-                }
+            }
+
+            if (!isSet) {
+                this.clear(i);
             }
         }
     }

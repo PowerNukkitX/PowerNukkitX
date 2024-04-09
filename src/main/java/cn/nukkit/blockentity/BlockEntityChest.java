@@ -9,6 +9,8 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
+import java.util.Objects;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
@@ -22,9 +24,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     @Override
     protected ContainerInventory requireContainerInventory() {
-        if (this.inventory == null) {
-            return new ChestInventory(this);
-        } else return inventory;
+        return Objects.requireNonNullElseGet(this.inventory, () -> new ChestInventory(this));
     }
 
     @Override
@@ -52,7 +52,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     public int getSize() {
-        return 27;
+        return this.doubleInventory != null ? this.doubleInventory.getSize() : this.inventory.getSize();
     }
 
     @Override
@@ -114,7 +114,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     public boolean pairWith(BlockEntityChest chest) {
-        if (this.isPaired() || chest.isPaired() || this.getBlock().getId() != chest.getBlock().getId()) {
+        if (this.isPaired() || chest.isPaired() || !this.getBlock().getId().equals(chest.getBlock().getId())) {
             return false;
         }
 
@@ -191,7 +191,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     @Override
     public void setName(String name) {
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             this.namedTag.remove("CustomName");
             return;
         }
