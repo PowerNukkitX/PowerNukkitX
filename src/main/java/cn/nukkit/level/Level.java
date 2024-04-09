@@ -1329,7 +1329,7 @@ public class Level implements Metadatable {
                         int z = lcg >>> 16 & 0x0f;
                         BlockState state = section.getBlockState(x, y, z);
                         if (randomTickBlocks.contains(state.getIdentifier())) {
-                            Block block = Block.get(state, this, (chunk.getX() << 4) + x, y, (chunk.getZ() << 4) + z);
+                            Block block = Block.get(state, this, (chunk.getX() << 4) + x, (section.y() << 4) + y, (chunk.getZ() << 4) + z);
                             block.setLevel(this);
                             block.onUpdate(BLOCK_UPDATE_RANDOM);
                         }
