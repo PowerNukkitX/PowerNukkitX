@@ -21,11 +21,9 @@
             <AppenderRef ref="File"/>
             <AppenderRef ref="Sentry"/>
         </AsyncRoot>
+        <!--    disable useless debug log foreign library    -->
         <Logger name="oshi.hardware" level="info"/>
+        <Logger name="org.jose4j" level="info"/>
         <Logger name="io.netty.channel.nio" level="info"/>
-        <Logger name="cn.nukkit.utils.Watchdog" level="WARN" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="File"/>
-        </Logger>
     </Loggers>
 </Configuration>
