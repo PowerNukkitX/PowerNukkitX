@@ -3,6 +3,7 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.utils.Utils;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.AllArgsConstructor;
@@ -126,7 +127,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
                 byteBuf.writeUnsignedVarInt(width * height);
                 for (int y = 0; y < width; y++) {
                     for (int x = 0; x < height; x++) {
-                        byteBuf.writeUnsignedVarInt(this.image.getRGB(x, y));
+                        byteBuf.writeUnsignedVarInt((int) Utils.toABGR(this.image.getRGB(x, y)));
                     }
                 }
 

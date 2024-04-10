@@ -3199,7 +3199,7 @@ public class Level implements Metadatable {
         var chunkX = x & 0xF;
         var chunkZ = z & 0xF;
         int y = chunk.getHeightMap(chunkX, chunkZ);
-        while (y > getMinHeight()) {
+        while (y >= getMinHeight()) {
             Block block = getBlock(x, y, z);
             if (block.getColor() == null) return null;
             if (block.getColor().getAlpha() == 0/* || block instanceof BlockFlowingWater*/) {
