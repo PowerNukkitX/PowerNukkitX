@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.netty.util.internal.EmptyArrays;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,11 +22,14 @@ import java.util.regex.Pattern;
 public class PluginI18n {
     /**
      * 插件多语言的默认备选语言
+     * <p>
+     * Default fallback language
      */
     private LangCode fallback;
     private final Pattern split = Pattern.compile("%[A-Za-z0-9_.-]+");
     private final PluginBase plugin;
     private final Map<LangCode, Map<String, String>> MULTI_LANGUAGE;
+    private final Gson GSON = new Gson();
 
     public PluginI18n(PluginBase plugin) {
         this.plugin = plugin;
@@ -59,7 +63,7 @@ public class PluginI18n {
     public String tr(LangCode lang, String key, String... args) {
         String baseText = parseLanguageText(lang, key);
         for (int i = 0; i < args.length; i++) {
-            baseText = baseText.replace("{%" + i + "}", parseLanguageText(lang, String.valueOf(args[i])));
+            baseText = baseText.replace("{%" + i + "}", args[i]);
         }
         return baseText;
     }
@@ -77,7 +81,7 @@ public class PluginI18n {
     public String tr(LangCode lang, String key, Object... args) {
         String baseText = parseLanguageText(lang, key);
         for (int i = 0; i < args.length; i++) {
-            baseText = baseText.replace("{%" + i + "}", parseLanguageText(lang, parseArg(args[i])));
+            baseText = baseText.replace("{%" + i + "}", parseArg(args[i]));
         }
         return baseText;
     }
@@ -95,7 +99,7 @@ public class PluginI18n {
         String baseText = this.parseLanguageText(lang, c.getText());
         if (c instanceof TranslationContainer cc) {
             for (int i = 0; i < cc.getParameters().length; i++) {
-                baseText = baseText.replace("{%" + i + "}", this.parseLanguageText(lang, cc.getParameters()[i]));
+                baseText = baseText.replace("{%" + i + "}", cc.getParameter(i));
             }
         }
         return baseText;
@@ -300,7 +304,7 @@ public class PluginI18n {
 
     private boolean reloadLang(LangCode lang, BufferedReader reader) {
         Map<String, String> d = this.MULTI_LANGUAGE.get(lang);
-        Map<String, String> map = new Gson().fromJson(reader, Map.class);
+        Map<String, String> map = GSON.fromJson(reader, new TypeToken<>(){});
         if (d == null) {
             this.MULTI_LANGUAGE.put(lang, map);
         } else {
@@ -311,7 +315,7 @@ public class PluginI18n {
     }
 
     private Map<String, String> parseLang(BufferedReader reader) throws IOException {
-        return (Map<String, String>) new Gson().fromJson(reader, Map.class);
+        return GSON.fromJson(reader, new TypeToken<>(){});
     }
 }
 

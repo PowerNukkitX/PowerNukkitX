@@ -1,5 +1,6 @@
 package cn.nukkit.lang;
 
+import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,6 +54,7 @@ public final class PluginI18nManager {
                 String name = entry.getName();
                 if (name.startsWith("language") && name.endsWith(".json")) {
                     // 开始读取文件内容
+                    // Start reading file content
                     InputStream inputStream = plugin.getResource(name);
                     assert inputStream != null;
                     i18n.reloadLang(LangCode.from(name.substring(9, name.indexOf("."))), inputStream);
@@ -115,6 +117,7 @@ public final class PluginI18nManager {
                 String name = entry.getName();
                 if (name.startsWith("language") && name.endsWith(".json")) {
                     // 开始读取文件内容
+                    // Start reading file content
                     InputStream inputStream = plugin.getResource(name);
                     assert inputStream != null;
                     pluginMultiLanguage.addLang(LangCode.valueOf(name.substring(9, name.indexOf("."))), inputStream);
