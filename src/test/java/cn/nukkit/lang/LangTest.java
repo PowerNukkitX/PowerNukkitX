@@ -4,7 +4,6 @@ import cn.nukkit.GameMockExtension;
 import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +34,13 @@ public class LangTest {
         assertEquals("hello \n world", i18n.tr(LangCode.en_US, "test2"));
         assertEquals("你好 \n 世界", i18n.tr(LangCode.zh_CN, "test2"));
         assertEquals("Hello \n World", Server.getInstance().getLanguage().tr("Hello \n World"));
+    }
+
+    @Test
+    void test_placeholders() {
+        assertEquals("Test placeholders 1 2", i18n.tr(LangCode.en_US, "test3", "1","2"));
+        assertEquals("测试 placeholders 1 2", i18n.tr(LangCode.zh_CN, "test3", "1","2"));
+        assertEquals("§7CoolLoong §ejoin the server!", i18n.tr(LangCode.zh_CN, "test4", "CoolLoong"));
     }
 
     @Test

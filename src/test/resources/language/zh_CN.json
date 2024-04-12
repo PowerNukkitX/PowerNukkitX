@@ -1,4 +1,5 @@
 {
   "test1": "{%0}",
-  "test2": "你好 \n 世界"
+  "test2": "你好 \n 世界",
+  "test3": "测试 placeholders {%0} {%1}"
 }

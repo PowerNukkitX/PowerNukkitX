@@ -1,4 +1,6 @@
 {
   "test1": "{%0}",
-  "test2": "hello \n world"
+  "test2": "hello \n world",
+  "test3": "Test placeholders {%0} {%1}",
+  "test4": "§7{%0} §ejoin the server!"
 }
