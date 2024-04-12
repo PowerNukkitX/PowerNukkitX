@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
 import org.jetbrains.annotations.NotNull;
 
@@ -69,10 +68,5 @@ public class BlockLightBlock extends BlockTransparent {
     @Override
     public boolean canPassThrough() {
         return true;
-    }
-
-    @Override
-    public Item toItem() {
-        return Item.AIR;
     }
 }
