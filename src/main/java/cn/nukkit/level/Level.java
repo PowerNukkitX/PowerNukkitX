@@ -2136,27 +2136,30 @@ public class Level implements Metadatable {
     }
 
     /**
-     * 设置一个方块
+     * Sets a block at the specified position and determines whether to immediately synchronize changes to clients or perform block update tick.
      *
-     * @param x      方块的x坐标
-     * @param y      方块的y坐标
-     * @param z      方块的z坐标
-     * @param layer  设置的方块层级。例如含水方块位置上的layer1对应的方块为水
-     * @param block  方块
-     * @param direct 是否立即同步方块变更到客户端。
-     * @param update 是否进行方块更新
-     * @return 是否设置成功
+     * @param x         The x-coordinate of the block.
+     * @param y         The y-coordinate of the block. Must be within the valid range.
+     * @param z         The z-coordinate of the block.
+     * @param layer     The block layer to set, used for handling layered blocks like water (e.g., blocks beneath water).
+     * @param block     The block to be set.
+     * @param direct    Whether to immediately synchronize changes to clients
+     * @param update    Whether to perform update on block, such as lighting, event, cause around update etc.
+     * @return          True if the block was successfully set, otherwise false.
      */
     public boolean setBlock(int x, int y, int z, int layer, Block block, boolean direct, boolean update) {
         if (!isYInRange(y) || layer < 0 || layer > this.requireProvider().getMaximumLayer()) {
             return false;
         }
+
         BlockState state = block.getBlockState();
         IChunk chunk = this.getChunk(x >> 4, z >> 4, true);
         BlockState statePrevious = chunk.getAndSetBlockState(x & 0xF, y, z & 0xF, state, layer);
+
         if (state == statePrevious) {
             return false;
         }
+
         block.x = x;
         block.y = y;
         block.z = z;
@@ -2173,21 +2176,25 @@ public class Level implements Metadatable {
         int cx = x >> 4;
         int cz = z >> 4;
         long index = Level.chunkHash(cx, cz);
+
         if (direct) {
             this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
         } else {
             addBlockChange(index, x, y, z);
         }
+
         if (update) {
             if (Server.getInstance().getConfig("chunk-ticking.light-updates", true)) {
                 updateAllLight(block);
             }
+
             BlockUpdateEvent ev = new BlockUpdateEvent(block);
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
                 for (Entity entity : this.getNearbyEntities(new SimpleAxisAlignedBB(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1))) {
                     entity.scheduleUpdate();
                 }
+
                 block = ev.getBlock();
                 block.onUpdate(BLOCK_UPDATE_NORMAL);
                 block.getLevelBlockAtLayer(layer == 0 ? 1 : 0).onUpdate(BLOCK_UPDATE_NORMAL);
@@ -2198,9 +2205,11 @@ public class Level implements Metadatable {
                 }
             }
         }
+
         blockPrevious.afterRemoval(block, update);
         return true;
     }
+
 
     private void addBlockChange(int x, int y, int z) {
         long index = Level.chunkHash(x >> 4, z >> 4);
@@ -2985,10 +2994,7 @@ public class Level implements Metadatable {
     }
 
     public void setBlockStateAt(int x, int y, int z, int layer, BlockState state) {
-        IChunk chunk = this.getChunk(x >> 4, z >> 4, true);
-        chunk.setBlockState(x & 0x0f, ensureY(y), z & 0x0f, state, layer);
-        addBlockChange(x, y, z);
-        temporalVector.setComponents(x, y, z);
+        setBlock(new Vector3(x, y, z), layer, state.toBlock());
     }
 
     public BlockState getBlockStateAt(int x, int y, int z, int layer) {

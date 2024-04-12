@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -288,7 +289,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         if (blockEntity == null) {
             return false;
         }
-        List<BlockVector3> finalToMoveBlockVec = toMoveBlockVec;
+        final List<BlockVector3> finalToMoveBlockVec = toMoveBlockVec;
         Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             blockEntity.preMove(extending, finalToMoveBlockVec);
             //生成moving_block
@@ -324,7 +325,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 this.getLevel().addSound(this, Sound.TILE_PISTON_IN);
                 this.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.PISTON_CONTRACT));
             }
-        }, 5);
+        }, 1);
         return true;
     }
 
@@ -363,7 +364,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         private final Block blockToMove;
         private final BlockFace moveDirection;
         private final boolean extending;
-        private final List<Block> toMove = new ArrayList<>() {
+        private final List<Block> toMove = new CopyOnWriteArrayList<>() {
             @Override
             public int indexOf(Object o) {
                 if (o == null) {
@@ -427,7 +428,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 return true;
             }
 
-            if (!this.addBlockLine(this.blockToMove, this.blockToMove.getSide(this.moveDirection.getOpposite()), true)) {
+            if (!this.addBlockLine(this.blockToMove, this.blockToMove.getSide(this.moveDirection), true)) {
                 return false;
             }
 
@@ -548,7 +549,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
 
         protected boolean addBranchingBlocks(Block block) {
             for (BlockFace face : BlockFace.values()) {
-                if (face.getAxis() == this.moveDirection.getAxis() && !this.addBlockLine(block.getSide(face), block, false))
+                if (face.getAxis() != this.moveDirection.getAxis() && !this.addBlockLine(block.getSide(face), block, false))
                     return false;
             }
             return true;

@@ -92,27 +92,36 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         );
     }
 
+    /**
+     * Performs the preparatory operations before a move.
+     * This method initializes the state prior to movement, including setting whether the structure is extending or contracting,
+     * progress, state, and updates relevant moving data.
+     *
+     * @param extending A boolean indicating whether is extending
+     * @param attachedBlocks A list of BlockVector3 representing the blocks attached to the moving block.
+     */
     public void preMove(boolean extending, List<BlockVector3> attachedBlocks) {
-        this.finished = false;
-        this.extending = extending;
-        this.lastProgress = this.progress = extending ? 0 : 1;
-        this.state = this.newState = (byte) (extending ? 1 : 3);
-        this.attachedBlocks = attachedBlocks;
-        this.movable = false;
-        //必须先于MOVING_BLOCK发包过去，所以immediately=true
+        this.finished = false; // Initialize movement as unfinished
+        this.extending = extending; // Set the extending status
+        this.lastProgress = this.progress = extending ? 0 : 1; // Set progress: 0 for extending, 1 for contracting
+        this.state = this.newState = (byte) (extending ? 1 : 3); // Set current and new states: 1 for extending, 3 for contracting
+        this.attachedBlocks = attachedBlocks; // Set the attached blocks list
+        this.movable = false; // Set the structure as immovable
+        // Update moving data immediately to ensure timeliness
         updateMovingData(true);
     }
+
 
     //需要先调用preMove
     public void move() {
         //开始推动
-        this.lastProgress = this.extending ? -MOVE_STEP : 1 + MOVE_STEP;
+        this.lastProgress = this.extending ? 0 : 1;
         this.moveCollidedEntities();
         this.scheduleUpdate();
     }
 
     /**
-     * 活塞伸出过程持续2gt
+     * The piston extension process lasts 2gt.
      */
     @Override
     public boolean onUpdate() {
@@ -154,9 +163,10 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                     moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
                 }
             }
-            for (var update : redstoneUpdateList)
+            for (var update : redstoneUpdateList){
                 //红石更新
                 RedstoneComponent.updateAllAroundRedstone(new Position(update.x, update.y, update.z, this.level));
+            }
             var pos = getSide(facing);
             if (!extending) {
                 //未伸出的活塞可以被推动
@@ -182,8 +192,8 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        this.state = (byte) this.namedTag.getByte("State");
-        this.newState = (byte) this.namedTag.getByte("NewState");
+        this.state = this.namedTag.getByte("State");
+        this.newState = this.namedTag.getByte("NewState");
         if (namedTag.contains("Progress"))
             this.progress = namedTag.getFloat("Progress");
         if (namedTag.contains("LastProgress"))
