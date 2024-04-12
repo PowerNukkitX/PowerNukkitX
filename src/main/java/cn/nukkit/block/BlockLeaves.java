@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.block.property.CommonBlockProperties.OLD_LEAF_TYPE;
 import static cn.nukkit.block.property.CommonBlockProperties.PERSISTENT_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;
 
@@ -212,9 +211,7 @@ public abstract class BlockLeaves extends BlockTransparent {
         return getType() == WoodType.OAK;
     }
 
-    protected Item getSapling() {
-        return Item.get(BlockID.SAPLING, getPropertyValue(OLD_LEAF_TYPE).ordinal());
-    }
+    public abstract Item getSapling();
 
     @Override
     public boolean diffusesSkyLight() {

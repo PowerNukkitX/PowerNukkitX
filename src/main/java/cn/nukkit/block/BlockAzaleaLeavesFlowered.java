@@ -28,7 +28,7 @@ public class BlockAzaleaLeavesFlowered extends BlockAzaleaLeaves {
     }
 
     @Override
-    protected Item getSapling() {
+    public Item getSapling() {
         return Block.get(FLOWERING_AZALEA).toItem();
     }
 }

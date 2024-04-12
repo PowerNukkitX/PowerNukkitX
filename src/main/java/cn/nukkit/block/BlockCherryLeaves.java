@@ -32,7 +32,7 @@ public class BlockCherryLeaves extends BlockLeaves {
     }
 
     @Override
-    protected Item getSapling() {
+    public Item getSapling() {
         return new BlockCherrySapling().toItem();
     }
     /*这里写木质类型为BIRCH只是为了获取凋落物时的概率正确，并不代表真的就是白桦木*/

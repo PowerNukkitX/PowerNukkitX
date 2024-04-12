@@ -86,7 +86,7 @@ record BlockStateImpl(String identifier,
                 return (DATATYPE) property.getValue();
             }
         }
-        throw new IllegalArgumentException("Property " + p + " is not supported by this block");
+        throw new IllegalArgumentException("Property " + p + " is not supported by this block " + this.identifier);
     }
 
     @Override
@@ -107,7 +107,7 @@ record BlockStateImpl(String identifier,
             } else newPropertyValues[i] = v;
         }
         if (!succeed) {
-            throw new IllegalArgumentException("Property " + propertyValue.getPropertyType() + " is not supported by this block");
+            throw new IllegalArgumentException("Property " + propertyValue.getPropertyType() + " is not supported by this block " + this.identifier);
         }
         return getNewBlockState(properties, newPropertyValues);
     }
@@ -140,7 +140,7 @@ record BlockStateImpl(String identifier,
                         errorMsgBuilder.append(", ");
                 }
             }
-            errorMsgBuilder.append(" are not supported by this block");
+            errorMsgBuilder.append(" are not supported by this block ").append(this.identifier);
             throw new IllegalArgumentException(errorMsgBuilder.toString());
         }
         return getNewBlockState(properties, newPropertyValues);
