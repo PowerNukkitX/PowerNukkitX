@@ -509,6 +509,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(WOODEN_DOOR, ItemWoodenDoor.class);
             register(IRON_DOOR, ItemIronDoor.class);
             register(CAMPFIRE, ItemCampfire.class);
+            register(SOUL_CAMPFIRE, ItemSoulCampfire.class);
             register(CAULDRON, ItemCauldron.class);
             register(CHAIN, ItemChain.class);
             register(WHEAT, ItemWheat.class);
