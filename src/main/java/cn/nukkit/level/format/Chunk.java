@@ -316,13 +316,7 @@ public class Chunk implements IChunk {
 
     @Override
     public void recalculateHeightMap() {
-        batchProcess(unsafeChunk -> {
-            for (int z = 0; z < 16; ++z) {
-                for (int x = 0; x < 16; ++x) {
-                    unsafeChunk.recalculateHeightMapColumn(x, z);
-                }
-            }
-        });
+        batchProcess(UnsafeChunk::recalculateHeightMap);
     }
 
     @Override

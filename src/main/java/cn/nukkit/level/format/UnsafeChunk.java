@@ -143,6 +143,14 @@ public class UnsafeChunk {
         return y;
     }
 
+    public void recalculateHeightMap() {
+        for (int z = 0; z < 16; ++z) {
+            for (int x = 0; x < 16; ++x) {
+                this.recalculateHeightMapColumn(x, z);
+            }
+        }
+    }
+
     public int getHeightMap(int x, int z) {
         return this.chunk.heightMap[(z << 4) | x] + getDimensionData().getMinHeight();
     }

@@ -113,7 +113,7 @@ public class PluginI18n {
     public String get(LangCode lang, String id) {
         final var map = this.MULTI_LANGUAGE.get(lang);
         final Map<String, String> fallbackMap;
-        if (map.containsKey(id)) {
+        if (Optional.ofNullable(map).map(t -> t.containsKey(id)).orElse(false)) {
             return map.get(id);
         } else if (Optional.ofNullable(fallbackMap = this.MULTI_LANGUAGE.get(fallback)).map(t -> t.containsKey(id)).orElse(false)) {
             return fallbackMap.get(id);

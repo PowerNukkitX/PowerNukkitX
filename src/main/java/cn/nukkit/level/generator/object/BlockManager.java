@@ -38,7 +38,7 @@ public class BlockManager {
     }
 
     public String getBlockIdAt(int x, int y, int z, int layer) {
-        Block block = this.caches.computeIfAbsent(hashXYZ(x, y, z, layer), k -> level.getBlock(x, y, z));
+        Block block = this.caches.computeIfAbsent(hashXYZ(x, y, z, layer), k -> level.getBlock(x, y, z, layer));
         return block.getId();
     }
 
@@ -136,6 +136,7 @@ public class BlockManager {
                 value.forEach(b -> {
                     unsafeChunk.setBlockState(b.getFloorX() & 15, b.getFloorY(), b.getFloorZ() & 15, b.getBlockState(), b.layer);
                 });
+                unsafeChunk.recalculateHeightMap();
             });
         });
         for (var p : batchs.values()) {
