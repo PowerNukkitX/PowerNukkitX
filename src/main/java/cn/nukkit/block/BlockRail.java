@@ -356,4 +356,9 @@ public class BlockRail extends BlockFlowable implements Faceable {
     public boolean breaksWhenMoved() {
         return false;
     }
+
+    @Override
+    public int getWaterloggingLevel() {
+        return 1;
+    }
 }

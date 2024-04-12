@@ -112,4 +112,8 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
         }
     }
 
+    @Override
+    public int getWaterloggingLevel() {
+        return 1;
+    }
 }
