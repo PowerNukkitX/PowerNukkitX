@@ -4,10 +4,11 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkShrieker;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.AxisAlignedBB;
 import org.jetbrains.annotations.NotNull;
 
 
-public class BlockSculkShrieker extends BlockSolid implements BlockEntityHolder<BlockEntitySculkShrieker> {
+public class BlockSculkShrieker extends BlockFlowable implements BlockEntityHolder<BlockEntitySculkShrieker> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_SHRIEKER, CommonBlockProperties.ACTIVE, CommonBlockProperties.CAN_SUMMON);
 
@@ -64,4 +65,27 @@ public class BlockSculkShrieker extends BlockSolid implements BlockEntityHolder<
         return BlockEntity.SCULK_SHRIEKER;
     }
 
+    @Override
+    public boolean canPassThrough() {
+        return false;
+    }
+
+    @Override
+    public boolean breaksWhenMoved() {
+        return false;
+    }
+
+    @Override
+    public boolean canBeFlowedInto() {
+        return false;
+    }
+
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return this;
+    }
+
+    @Override
+    public int getWaterloggingLevel() {
+        return 1;
+    }
 }

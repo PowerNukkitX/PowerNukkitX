@@ -16,8 +16,4 @@ public class ItemSoulCampfire extends Item {
         this.block = new BlockSoulCampfire();
     }
 
-    @Override
-    public int getMaxStackSize() {
-        return 1;
-    }
 }

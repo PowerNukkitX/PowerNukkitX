@@ -5,6 +5,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDecoratedPot;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -16,7 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 
 
-public class BlockDecoratedPot extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityDecoratedPot> {
+public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockEntityHolder<BlockEntityDecoratedPot> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(DECORATED_POT, CommonBlockProperties.DIRECTION);
 
@@ -77,5 +78,24 @@ public class BlockDecoratedPot extends BlockTransparent implements Faceable, Blo
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
+    }
+
+    @Override
+    public boolean canPassThrough() {
+        return false;
+    }
+
+    @Override
+    public boolean canBeFlowedInto() {
+        return false;
+    }
+
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return this;
+    }
+
+    @Override
+    public int getWaterloggingLevel() {
+        return 1;
     }
 }

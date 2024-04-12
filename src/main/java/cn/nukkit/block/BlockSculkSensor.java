@@ -4,6 +4,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkSensor;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.SCULK_SENSOR_PHASE;
 /**
  * @author LT_Name
  */
-public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<BlockEntitySculkSensor>, RedstoneComponent {
+public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder<BlockEntitySculkSensor>, RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_SENSOR, SCULK_SENSOR_PHASE);
 
     @Override
@@ -95,4 +96,27 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
         return false;
     }
 
+    @Override
+    public boolean canPassThrough() {
+        return false;
+    }
+
+    @Override
+    public boolean breaksWhenMoved() {
+        return false;
+    }
+
+    @Override
+    public boolean canBeFlowedInto() {
+        return false;
+    }
+
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return this;
+    }
+
+    @Override
+    public int getWaterloggingLevel() {
+        return 1;
+    }
 }
