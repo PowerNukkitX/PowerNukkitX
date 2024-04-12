@@ -1,15 +1,18 @@
 package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.entity.item.EntityEnderCrystal;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
-import cn.nukkit.event.entity.*;
+import cn.nukkit.event.entity.EntityCombustByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.event.entity.ProjectileHitEvent;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
@@ -22,6 +25,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -156,9 +160,9 @@ public abstract class EntityProjectile extends Entity {
     protected boolean collideEntityFilter(Entity entity) {
         if ((entity == this.shootingEntity && this.ticksLived < 5) ||
                 (entity instanceof Player player && player.getGamemode() == Player.SPECTATOR)
-                || (this.shootingEntity instanceof Player && this.shootingEntity.riding.equals(entity))) {
+                || (this.shootingEntity instanceof Player && Optional.ofNullable(this.shootingEntity.riding).map(e -> e.equals(entity)).orElse(false))) {
             return false;
-        }else return true;
+        } else return true;
     }
 
     @Override
