@@ -23,6 +23,10 @@ public class CraftCreativeActionProcessor implements ItemStackRequestActionProce
     @Override
     public ActionResponse handle(CraftCreativeAction action, Player player, ItemStackRequestContext context) {
         var item = Registries.CREATIVE.get(action.getCreativeItemNetworkId() - 1);
+        if (!player.isCreative()) {
+            log.warn("This player {} is get createitems in non-creative mode, which may be a hacker!",player.getName());
+            return context.error();
+        }
         if (item == null) {
             log.warn("Unknown creative item network id: {}", action.getCreativeItemNetworkId() - 1);
             return context.error();
