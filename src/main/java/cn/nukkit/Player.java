@@ -715,8 +715,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             bb.setMinY(bb.getMinY() - 1);
 
             AxisAlignedBB realBB = this.boundingBox.clone();
-            realBB.setMaxY(realBB.getMinY() + 0.1);
-            realBB.setMinY(realBB.getMinY() - 0.2);
+            realBB.setMaxY(realBB.getMinY());
+            realBB.setMinY(realBB.getMinY() - 0.1);
+            double realBBX = (realBB.getMinX() + realBB.getMaxX()) / 2;
+            double realBBZ = (realBB.getMinZ() + realBB.getMaxZ()) / 2;
+            realBB.setMinX(realBBX);
+            realBB.setMaxX(realBBX);
+            realBB.setMinZ(realBBZ);
+            realBB.setMaxZ(realBBZ);
 
             int minX = NukkitMath.floorDouble(bb.getMinX());
             int minY = NukkitMath.floorDouble(bb.getMinY());
@@ -2482,10 +2488,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
     @ApiStatus.Internal
     public boolean fastMove(double dx, double dy, double dz) {
-
         this.x += dx;
         this.y += dy;
         this.z += dz;
@@ -2494,12 +2498,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.checkChunks();
 
         if (!this.isSpectator()) {
-            if (!this.onGround || dy != 0) {
-                AxisAlignedBB bb = this.boundingBox.clone();
-                bb.setMinY(bb.getMinY() - 0.75);
-                this.onGround = this.level.getCollisionBlocks(bb).length > 0;
-            }
-            this.isCollided = this.onGround;
+            this.checkGroundState(dx, dy, dz, dx, dy, dz);
             this.updateFallState(this.onGround);
         }
         return true;

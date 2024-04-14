@@ -630,7 +630,7 @@ public class Server {
         this.safeSpawn = this.getConfig().getBoolean("settings.safe-spawn", true);
         this.forceSkinTrusted = this.getConfig().getBoolean("player.force-skin-trusted", false);
         this.checkMovement = this.getConfig().getBoolean("player.check-movement", true);
-        this.serverAuthoritativeMovementMode = switch (this.properties.get("server-authoritative-movement", "client-auth")) {
+        this.serverAuthoritativeMovementMode = switch (this.properties.get("server-authoritative-movement", "server-auth")) {
             case "client-auth" -> 0;
             case "server-auth" -> 1;
             case "server-auth-with-rewind" -> 2;

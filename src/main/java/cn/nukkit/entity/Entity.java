@@ -1,6 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
@@ -78,7 +77,6 @@ import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.collect.Iterables;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -2127,37 +2125,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         Block b = this.getLevelBlock();
 
         return Block.LADDER.equals(b.getId());
-    }
-
-    @ApiStatus.Internal
-    public boolean fastMove(double dx, double dy, double dz) {
-        if (dx == 0 && dy == 0 && dz == 0) {
-            return true;
-        }
-
-        AxisAlignedBB newBB = this.boundingBox.getOffsetBoundingBox(dx, dy, dz);
-
-        if (server.getAllowFlight()
-                || isPlayer && ((Player) this).getAdventureSettings().get(AdventureSettings.Type.NO_CLIP)
-                || !this.level.hasCollision(this, newBB, false)) {
-            this.boundingBox = newBB;
-        }
-
-        this.x = (this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2;
-        this.y = this.boundingBox.getMinY() - this.ySize;
-        this.z = (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2;
-
-        this.checkChunks();
-
-        if ((!this.onGround || dy != 0) && !this.noClip) {
-            AxisAlignedBB bb = this.boundingBox.clone();
-            bb.setMinY(bb.getMinY() - 0.75);
-
-            this.onGround = this.level.getCollisionBlocks(bb).length > 0;
-        }
-        this.isCollided = this.onGround;
-        this.updateFallState(this.onGround);
-        return true;
     }
 
     //Player do not use
