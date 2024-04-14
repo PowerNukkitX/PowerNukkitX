@@ -47,10 +47,10 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 }
 
                 switch (action.getAction()) {
-                    case START_DESTROY_BLOCK -> playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                    case START_DESTROY_BLOCK,CONTINUE_DESTROY_BLOCK -> playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
                     case ABORT_DESTROY_BLOCK, STOP_DESTROY_BLOCK ->
                             playerHandle.onBlockBreakAbort(blockPos.asVector3());
-                    case PREDICT_DESTROY_BLOCK, CONTINUE_DESTROY_BLOCK -> {
+                    case PREDICT_DESTROY_BLOCK-> {
                         playerHandle.onBlockBreakAbort(blockPos.asVector3());
                         playerHandle.onBlockBreakComplete(blockPos, blockFace);
                     }
