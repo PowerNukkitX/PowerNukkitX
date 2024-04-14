@@ -65,7 +65,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                 context.setCurrentActionIndex(index);
                 ItemStackRequestActionProcessor<ItemStackRequestAction> processor = (ItemStackRequestActionProcessor<ItemStackRequestAction>) PROCESSORS.get(action.getType());
                 if (processor == null) {
-                    log.warn("Unhandled inventory action type " + action.getType());
+                    log.warn("Unhandled inventory action type {}", action.getType());
                     continue;
                 }
 
@@ -88,6 +88,8 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                         itemStackResponse.setResult(ItemStackResponseStatus.ERROR);
                         itemStackResponse.getContainers().clear();
                         responses.add(itemStackResponse);
+                        player.getCreativeOutputInventory().clearAll();
+                        player.resetInventory();
                         break;
                     }
                     for (var container : response.containers()) {

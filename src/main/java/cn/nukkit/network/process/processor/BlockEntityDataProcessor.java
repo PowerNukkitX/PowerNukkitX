@@ -19,12 +19,11 @@ public class BlockEntityDataProcessor extends DataPacketProcessor<BlockEntityDat
             return;
         }
 
-        player.resetCraftingGridType();
-
         Vector3 pos = new Vector3(pk.x, pk.y, pk.z);
         if (pos.distanceSquared(player) > 10000) {
             return;
         }
+        player.resetInventory();
 
         BlockEntity t = player.level.getBlockEntity(pos);
         if (t instanceof BlockEntitySpawnable) {

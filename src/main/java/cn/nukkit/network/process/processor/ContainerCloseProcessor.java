@@ -30,13 +30,13 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
             }
         }
         if (pk.windowId == -1) {
-            player.resetCraftingGridType();
             player.addWindow(player.getCraftingGrid(), SpecialWindowId.NONE.getId());
         }
         ContainerClosePacket pk2 = new ContainerClosePacket();
         pk2.wasServerInitiated = false;
         pk2.windowId = pk.windowId;
         player.dataPacket(pk2);
+        player.resetInventory();
     }
 
     @Override

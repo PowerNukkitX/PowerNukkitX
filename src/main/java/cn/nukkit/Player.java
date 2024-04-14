@@ -60,6 +60,7 @@ import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.PlayerCursorInventory;
 import cn.nukkit.inventory.SpecialWindowId;
+import cn.nukkit.inventory.fake.FakeInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemArrow;
@@ -523,8 +524,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        this.resetCraftingGridType();
-
         Item handItem = this.getInventory().getItemInHand();
         Item clone = handItem.clone();
 
@@ -627,6 +626,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.spawned = true;
 
         this.getSession().syncInventory();
+        this.resetInventory();
 
         this.setEnableClientCommand(true);
 
@@ -1323,7 +1323,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        this.resetCraftingGridType();
+        this.resetInventory();
 
         //level spawn point < block spawn = self spawn
         Pair<Position, SpawnPointType> spawnPair = this.getSpawn();
@@ -2896,7 +2896,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return false;
         }
 
-        this.resetCraftingGridType();
+        this.resetInventory();
 
         if (this.removeFormat) {
             message = TextFormat.clean(message, true);
@@ -3421,7 +3421,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.stopFishing(false);
             }
         }
-        resetCraftingGridType();
+        resetInventory();
         // Close the temporary windows first, so they have chance to change all inventories before being disposed
         if (ev != null && ev.getAutoSave() && namedTag != null) {
             this.save();
@@ -4624,27 +4624,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.creativeOutputInventory;
     }
 
-    /**
-     * Reset crafting grid type.
-     */
-    public void resetCraftingGridType() {
+    @ApiStatus.Internal
+    public void resetInventory() {
         if (spawned) {
-            List<Item> drops = new ArrayList<>(this.getCraftingGrid().getContents().values());//small craft
+            Map<Integer, Item> contents = this.getCraftingGrid().getContents();
+            this.getCraftingGrid().clearAll();
+            List<Item> puts = new ArrayList<>(contents.values());
 
-            drops.add(this.getCursorInventory().getItem(0));//cursor
+            Map<Integer, Item> contents2 = this.getCursorInventory().getContents();
+            this.getCursorInventory().clearAll();
+            puts.addAll(contents2.values());
 
             Optional<Inventory> topWindow = getTopWindow();
             Inventory value;
             if (topWindow.isPresent()) {
-                if ((value = topWindow.get()) instanceof CraftTypeInventory) {
-                    drops.addAll(value.getContents().values());
+                value = topWindow.get();
+                if (value instanceof CraftTypeInventory || (value instanceof FakeInventory fakeInventory && fakeInventory.getFakeInventoryType().isCraftType())) {
+                    puts.addAll(value.getContents().values());
+                    value.clearAll();
                 }
                 removeWindow(value);
             }
+            Item[] drops = getInventory().addItem(puts.toArray(Item.EMPTY_ARRAY));
             for (Item drop : drops) {
-                if (!drop.isNull()) {
-                    this.dropItem(drop);
-                }
+                this.dropItem(drop);
             }
         }
     }

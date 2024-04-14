@@ -299,7 +299,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 if (!player.spawned || !player.isAlive() || player.isCreative()) {
                     return;
                 }
-                player.resetCraftingGridType();
+                player.resetInventory();
                 Item i = player.getInventory().getItemInHand();
                 Item oldItem = i.clone();
                 if (player.isSurvival() || player.isAdventure()) {
