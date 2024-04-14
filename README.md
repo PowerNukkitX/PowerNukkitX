@@ -31,7 +31,7 @@
 3. Make sure you have a github account, login it, if not [sign up](https://docs.github.com/en/get-started/start-your-journey/creating-an-account-on-github)!
 4. Click to the version you want to use and scroll down to find artifacts.
 5. Download the `PowerNukkitX-Run.zip`  
-![img.png](.github/img/003.png)
+[![img.png](.github/img/003.png)](https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess)
 6. Unzip `PowerNukkitX-Run.zip` to the directory you want.
 
 ## Usage
