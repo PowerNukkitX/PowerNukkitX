@@ -20,12 +20,12 @@ public class MessageStringNode extends ParamNode<String> {
 
     @Override
     public void fill(String arg) {
-        if (this.parent.getIndex() != parent.getParent().getArgs().length) TMP.add(arg);
+        if (this.paramList.getIndex() != paramList.getParamTree().getArgs().length) TMP.add(arg);
         else {
             TMP.add(arg);
 
             var str = String.join(" ", TMP);
-            var match = EntitySelectorAPI.getENTITY_SELECTOR().matcher(str);
+            var match = EntitySelectorAPI.ENTITY_SELECTOR.matcher(str);
             this.value = match.replaceAll(r -> {
                 var start = Math.max(0, match.start() - 1);
                 var end = Math.min(str.length(), match.end());
@@ -41,7 +41,7 @@ public class MessageStringNode extends ParamNode<String> {
                 if (EntitySelectorAPI.getAPI().checkValid(m)) {
                     StringJoiner join = new StringJoiner(", ");
                     try {
-                        for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(parent.getParent().getSender(), m)) {
+                        for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(paramList.getParamTree().getSender(), m)) {
                             var name = entity.getName();
                             if (name.isBlank()) name = entity.getOriginalName();
                             join.add(name);

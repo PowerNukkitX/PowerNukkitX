@@ -32,7 +32,7 @@ public class ChainedCommandNode extends EnumNode {
             TMP.add(arg);
             remain = true;
         } else {
-            if (this.parent.getIndex() != this.parent.getParent().getArgs().length) TMP.add(arg);
+            if (this.paramList.getIndex() != this.paramList.getParamTree().getArgs().length) TMP.add(arg);
             else {
                 TMP.add(arg);
                 var join = new StringJoiner(" ", "execute ", "");

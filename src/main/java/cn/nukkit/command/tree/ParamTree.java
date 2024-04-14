@@ -71,6 +71,7 @@ public class ParamTree {
                         case MESSAGE -> new MessageStringNode();
                         case JSON -> new RemainStringNode();
                         case RAWTEXT -> new RawTextNode();
+                        case BLOCK_STATES -> new BlockStateNode();
                         default -> new VoidNode();
                     };
                 } else {
@@ -114,7 +115,9 @@ public class ParamTree {
             final var list = entry.getValue();
             list.reset();
             f2:
-            for (var node : list) {
+            for (int i = 0; i < list.size(); i++) {
+                list.nodeIndex = i;
+                final var node = list.get(i);
                 while (!node.hasResult()) {
                     if (list.getIndex() >= args.length) {//参数用完
                         if (node.isOptional()) break f2;

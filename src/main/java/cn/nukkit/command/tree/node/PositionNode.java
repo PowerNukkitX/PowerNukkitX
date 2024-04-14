@@ -25,7 +25,7 @@ public abstract class PositionNode extends ParamNode<Position> {
 
     @Override
     public <E> E get() {
-        return this.get(parent.getParent().getSender().getPosition());
+        return this.get(paramList.getParamTree().getSender().getPosition());
     }
 
     @SuppressWarnings("unchecked")
@@ -57,7 +57,7 @@ public abstract class PositionNode extends ParamNode<Position> {
         else {
             //parse
             try {
-                Location loc = parent.getParent().getSender().getLocation();
+                Location loc = paramList.getParamTree().getSender().getLocation();
                 for (String s : TMP) {
                     if (s.charAt(0) == '~') {
                         this.setRelative(index);

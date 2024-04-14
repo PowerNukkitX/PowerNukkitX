@@ -10,7 +10,7 @@ import cn.nukkit.command.tree.ParamList;
 public abstract class ParamNode<T> implements IParamNode<T> {
     protected T value = null;
     protected boolean optional;
-    protected ParamList parent;
+    protected ParamList paramList;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -35,13 +35,13 @@ public abstract class ParamNode<T> implements IParamNode<T> {
     }
 
     @Override
-    public ParamList getParent() {
-        return parent;
+    public ParamList getParamList() {
+        return paramList;
     }
 
     @Override
     public IParamNode<T> init(ParamList parent, String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
-        this.parent = parent;
+        this.paramList = parent;
         this.optional = optional;
         return this;
     }

@@ -18,7 +18,6 @@ import cn.nukkit.utils.DummyBossBar;
 import cn.nukkit.utils.LoginChainData;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.collect.BiMap;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
@@ -365,8 +364,8 @@ public final class PlayerHandle {
         player.onBlockBreakStart(pos, face);
     }
 
-    public void onBlockBreakAbort(Vector3 pos, BlockFace face) {
-        player.onBlockBreakAbort(pos, face);
+    public void onBlockBreakAbort(Vector3 pos) {
+        player.onBlockBreakAbort(pos);
     }
 
     public void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {

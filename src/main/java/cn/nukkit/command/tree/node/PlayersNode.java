@@ -25,7 +25,7 @@ public class PlayersNode extends TargetNode<Player> {
             List<Entity> entities;
             List<Player> result;
             try {
-                entities = EntitySelectorAPI.getAPI().matchEntities(parent.getParent().getSender(), arg);
+                entities = EntitySelectorAPI.getAPI().matchEntities(paramList.getParamTree().getSender(), arg);
             } catch (SelectorSyntaxException exception) {
                 error(exception.getMessage());
                 return;

@@ -10,8 +10,6 @@ import java.util.List;
  * <p>
  * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#COMMAND COMMAND}如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
-
-
 public class CommandNode extends ParamNode<String> {
     private final List<String> TMP = new ArrayList<>();
 
@@ -26,7 +24,7 @@ public class CommandNode extends ParamNode<String> {
             this.error("commands.generic.unknown", arg);
             return;
         }
-        if (this.parent.getIndex() != this.parent.getParent().getArgs().length) {
+        if (this.paramList.getIndex() != this.paramList.getParamTree().getArgs().length) {
             first = false;
             TMP.add(arg);
         } else {

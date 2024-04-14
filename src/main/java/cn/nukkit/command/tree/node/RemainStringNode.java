@@ -14,7 +14,7 @@ public class RemainStringNode extends ParamNode<String> {
 
     @Override
     public void fill(String arg) {
-        if (this.parent.getIndex() != parent.getParent().getArgs().length) TMP.add(arg);
+        if (this.paramList.getIndex() != paramList.getParamTree().getArgs().length) TMP.add(arg);
         else {
             TMP.add(arg);
             this.value = String.join("", TMP);

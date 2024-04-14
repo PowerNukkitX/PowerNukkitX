@@ -46,13 +46,13 @@ public interface IParamNode<T> {
      *
      * @return the parent
      */
-    ParamList getParent();
+    ParamList getParamList();
 
     /**
      * 标记该节点的{@link #fill(String)}出现错误，输出默认错误信息
      */
     default void error() {
-        this.getParent().error();
+        this.getParamList().error();
     }
 
     /**
@@ -71,7 +71,7 @@ public interface IParamNode<T> {
      * @param params 填充多语言文本的参数
      */
     default void error(String key, String... params) {
-        var list = this.getParent();
+        var list = this.getParamList();
         list.error();
         list.addMessage(key, params);
     }
@@ -82,7 +82,7 @@ public interface IParamNode<T> {
      * @param messages 添加的错误信息{@link CommandOutputMessage}
      */
     default void error(CommandOutputMessage... messages) {
-        var list = this.getParent();
+        var list = this.getParamList();
         list.error();
         list.addMessage(messages);
     }
@@ -100,5 +100,13 @@ public interface IParamNode<T> {
      */
     default IParamNode<T> init(ParamList parent, String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
         return this;
+    }
+
+    /**
+     * Retrieves the node before the current node.
+     */
+    default IParamNode<?> getBefore() {
+        int index = getParamList().getNodeIndex();
+        return getParamList().get(Math.max(0, index - 1));
     }
 }

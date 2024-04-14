@@ -20,7 +20,7 @@ public class VoidNode implements IParamNode<Void> {
     }
 
     @Override
-    public ParamList getParent() {
+    public ParamList getParamList() {
         return null;
     }
 

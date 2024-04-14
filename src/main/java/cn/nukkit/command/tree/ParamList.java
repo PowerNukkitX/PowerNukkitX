@@ -3,6 +3,7 @@ package cn.nukkit.command.tree;
 import cn.nukkit.command.tree.node.IParamNode;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 
@@ -10,11 +11,12 @@ import java.util.ArrayList;
 public class ParamList extends ArrayList<IParamNode<?>> {
     private int error = Integer.MIN_VALUE;
     private int index = 0;
+    protected int nodeIndex = 0;
     private final CommandOutputContainer messageContainer;
-    private final ParamTree parent;
+    private final ParamTree paramTree;
 
     public ParamList(ParamTree parent) {
-        this.parent = parent;
+        this.paramTree = parent;
         this.messageContainer = new CommandOutputContainer();
     }
 
@@ -22,6 +24,7 @@ public class ParamList extends ArrayList<IParamNode<?>> {
         this.error = Integer.MIN_VALUE;
         this.messageContainer.getMessages().clear();
         this.index = 0;
+        this.nodeIndex = 0;
         for (var node : this) {
             node.reset();
         }
@@ -54,6 +57,13 @@ public class ParamList extends ArrayList<IParamNode<?>> {
     }
 
     /**
+     * Get the current {@link ParamList} parses several {@link IParamNode} (start at 0)
+     */
+    public int getNodeIndex() {
+        return nodeIndex;
+    }
+
+    /**
      * 获取指定索引处参数节点的值。
      */
     public <E> E getResult(int index) {
@@ -82,8 +92,9 @@ public class ParamList extends ArrayList<IParamNode<?>> {
         }
     }
 
-    public ParamTree getParent() {
-        return parent;
+    @ApiStatus.Internal
+    public ParamTree getParamTree() {
+        return paramTree;
     }
 
     /**

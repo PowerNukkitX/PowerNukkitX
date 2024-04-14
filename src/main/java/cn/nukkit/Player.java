@@ -424,7 +424,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     var timeDiff = time - breakingBlockTime;
                     blockBreakProgress += timeDiff / (miningTimeRequired * 1000);
                     if (blockBreakProgress > 0.99) {
-                        this.onBlockBreakAbort(pos, face);
+                        this.onBlockBreakAbort(pos);
                         this.onBlockBreakComplete(pos.asBlockVector3(), face);
                     }
                     breakingBlockTime = time;
@@ -437,7 +437,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         BlockVector3 blockPos = pos.asBlockVector3();
         long currentBreak = System.currentTimeMillis();
         // HACK: Client spams multiple left clicks so we need to skip them.
-        if ((this.lastBreakPosition.equals(blockPos) && (currentBreak - this.lastBreak) < 10) || pos.distanceSquared(this) > 100) {
+        if ((this.lastBreakPosition.equals(blockPos) && (currentBreak - this.lastBreak) < 10) || pos.distanceSquared(this) > 1000) {
             return;
         }
 
@@ -457,13 +457,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         target.onTouch(pos, this.getInventory().getItemInHand(), face, 0, 0, 0, this, playerInteractEvent.getAction());
 
         Block block = target.getSide(face);
-        if (block.getId() == Block.FIRE || block.getId() == BlockID.SOUL_FIRE) {
+        if (block.getId().equals(Block.FIRE) || block.getId().equals(BlockID.SOUL_FIRE)) {
             this.level.setBlock(block, Block.get(BlockID.AIR), true);
             this.level.addLevelSoundEvent(block, LevelSoundEventPacket.SOUND_EXTINGUISH_FIRE);
             return;
         }
 
-        if (block.getId() == BlockID.SWEET_BERRY_BUSH && block.isDefaultState()) {
+        if (block.getId().equals(BlockID.SWEET_BERRY_BUSH) && block.isDefaultState()) {
             Item oldItem = playerInteractEvent.getItem();
             Item i = this.level.useBreakOn(block, oldItem, this, true);
             if (this.isSurvival() || this.isAdventure()) {
@@ -504,8 +504,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastBreakPosition = blockPos;
     }
 
-    protected void onBlockBreakAbort(Vector3 pos, BlockFace face) {
-        if (pos.distanceSquared(this) < 100) {// same as with ACTION_START_BREAK
+    protected void onBlockBreakAbort(Vector3 pos) {
+        if (pos.distanceSquared(this) < 1000) {// same as with ACTION_START_BREAK
             LevelEventPacket pk = new LevelEventPacket();
             pk.evid = LevelEventPacket.EVENT_BLOCK_STOP_BREAK;
             pk.x = (float) pos.x;
@@ -4511,6 +4511,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.windowIndex.get(id);
     }
 
+    /**
+     * Add inventory to the current player.
+     *
+     * @param inventory The Inventory object representing the window, must not be null.
+     * @return The unique identifier assigned to the window if successfully added and opened; -1 if the window fails to be added.
+     */
     public int addWindow(@NotNull Inventory inventory) {
         Preconditions.checkNotNull(inventory);
         if (this.windows.containsKey(inventory)) {

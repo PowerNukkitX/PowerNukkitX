@@ -12,9 +12,12 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import lombok.Getter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -22,7 +25,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static cn.nukkit.command.selector.SelectorType.*;
+import static cn.nukkit.command.selector.SelectorType.NEAREST_PLAYER;
+import static cn.nukkit.command.selector.SelectorType.NPC_INITIATOR;
+import static cn.nukkit.command.selector.SelectorType.RANDOM_PLAYER;
+import static cn.nukkit.command.selector.SelectorType.SELF;
+import static cn.nukkit.command.selector.SelectorType.parseSelectorType;
 
 /**
  * 目标选择器API<p/>
@@ -31,22 +38,19 @@ import static cn.nukkit.command.selector.SelectorType.*;
 
 
 public class EntitySelectorAPI {
-    @Getter
     private static final EntitySelectorAPI API = new EntitySelectorAPI();
 
     static {
         registerDefaultArguments();
     }
 
-    @Getter
-    private static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprs]|initiator)(?:\\[(.*)])?$");
-    @Getter
-    private static final String ARGUMENT_JOINER = "=";
+    public static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprs]|initiator)(?:\\[(.*)])?$");
+    public static final String ARGUMENT_JOINER = "=";
     /**
      * 对目标选择器文本的预解析缓存
      */
-    private static final Cache<String, Map<String, List<String>>> ARGS_CACHE = Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
-    private static final Cache<String, Boolean> MATCHES_CACHE = Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
+    public static final Cache<String, Map<String, List<String>>> ARGS_CACHE = Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
+    public static final Cache<String, Boolean> MATCHES_CACHE = Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
 
     Map<String, ISelectorArgument> registry;
     List<ISelectorArgument> orderedArgs;
@@ -54,6 +58,10 @@ public class EntitySelectorAPI {
     private EntitySelectorAPI() {
         registry = new HashMap<>();
         orderedArgs = new ArrayList<>();
+    }
+
+    public static EntitySelectorAPI getAPI() {
+        return API;
     }
 
     private static void registerDefaultArguments() {
