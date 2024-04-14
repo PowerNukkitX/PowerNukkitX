@@ -31,47 +31,29 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerAuthInputPacket pk) {
         Player player = playerHandle.player;
-        /*if (!player.locallyInitialized) return;*/
         if (!pk.blockActionData.isEmpty()) {
             for (PlayerBlockActionData action : pk.blockActionData.values()) {
                 //hack 自从1.19.70开始，创造模式剑客户端不会发送PREDICT_DESTROY_BLOCK，但仍然发送START_DESTROY_BLOCK，过滤掉
                 if (player.getInventory().getItemInHand().isSword() && player.isCreative() && action.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
                     continue;
                 }
-
-
                 BlockVector3 blockPos = action.getPosition();
                 BlockFace blockFace = BlockFace.fromIndex(action.getFacing());
-                if (playerHandle.getLastBlockAction() != null && playerHandle.getLastBlockAction().getAction() == PlayerActionType.PREDICT_DESTROY_BLOCK &&
-                        action.getAction() == PlayerActionType.CONTINUE_DESTROY_BLOCK) {
-                    playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
-                }
 
                 BlockVector3 lastBreakPos = playerHandle.getLastBlockAction() == null ? null : playerHandle.getLastBlockAction().getPosition();
-                if (lastBreakPos != null && (lastBreakPos.getX() != blockPos.getX() ||
-                        lastBreakPos.getY() != blockPos.getY() || lastBreakPos.getZ() != blockPos.getZ())) {
-                    playerHandle.onBlockBreakAbort(lastBreakPos.asVector3(), BlockFace.DOWN);
+                if (lastBreakPos != null && (lastBreakPos.getX() != blockPos.getX() || lastBreakPos.getY() != blockPos.getY() || lastBreakPos.getZ() != blockPos.getZ())) {
+                    playerHandle.onBlockBreakAbort(lastBreakPos.asVector3());
                     playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
                 }
 
                 switch (action.getAction()) {
-                    case START_DESTROY_BLOCK:
-                        playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
-                        break;
-                    case ABORT_DESTROY_BLOCK:
-                    case STOP_DESTROY_BLOCK:
-                        playerHandle.onBlockBreakAbort(blockPos.asVector3(), blockFace);
-                        break;
-                    case CONTINUE_DESTROY_BLOCK://破坏完一个方块后接着破坏下一个方块
-                        break;
-                    case PREDICT_DESTROY_BLOCK:
-                        if (player.isBreakingBlock()) {
-                            playerHandle.onBlockBreakAbort(blockPos.asVector3(), blockFace);
-                            playerHandle.onBlockBreakComplete(blockPos, blockFace);
-                        } else {
-                            playerHandle.onBlockBreakAbort(blockPos.asVector3(), blockFace);
-                        }
-                        break;
+                    case START_DESTROY_BLOCK -> playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                    case ABORT_DESTROY_BLOCK, STOP_DESTROY_BLOCK ->
+                            playerHandle.onBlockBreakAbort(blockPos.asVector3());
+                    case PREDICT_DESTROY_BLOCK, CONTINUE_DESTROY_BLOCK -> {
+                        playerHandle.onBlockBreakAbort(blockPos.asVector3());
+                        playerHandle.onBlockBreakComplete(blockPos, blockFace);
+                    }
                 }
                 playerHandle.setLastBlockAction(action);
             }
