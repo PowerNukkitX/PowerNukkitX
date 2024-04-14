@@ -711,18 +711,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             boolean onGround = false;
 
             AxisAlignedBB bb = this.boundingBox.clone();
-            bb.setMaxY(bb.getMinY() + 0.5);
+            bb.setMaxY(bb.getMinY());
             bb.setMinY(bb.getMinY() - 1);
 
             AxisAlignedBB realBB = this.boundingBox.clone();
-            realBB.setMaxY(realBB.getMinY());
-            realBB.setMinY(realBB.getMinY() - 0.1);
-            double realBBX = (realBB.getMinX() + realBB.getMaxX()) / 2;
-            double realBBZ = (realBB.getMinZ() + realBB.getMaxZ()) / 2;
-            realBB.setMinX(realBBX);
-            realBB.setMaxX(realBBX);
-            realBB.setMinZ(realBBZ);
-            realBB.setMaxZ(realBBZ);
+            realBB.setMaxY(realBB.getMinY() - 0.1);
+            realBB.setMinY(realBB.getMinY() - 0.2);
 
             int minX = NukkitMath.floorDouble(bb.getMinX());
             int minY = NukkitMath.floorDouble(bb.getMinY());
