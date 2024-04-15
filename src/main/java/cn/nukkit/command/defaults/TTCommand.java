@@ -8,7 +8,8 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.inventory.fake.FakeInventory;
 import cn.nukkit.inventory.fake.FakeInventoryType;
 import cn.nukkit.inventory.fake.FakeStructBlock;
-import org.jetbrains.annotations.ApiStatus;
+import cn.nukkit.item.ItemApple;
+import cn.nukkit.item.ItemEmerald;
 
 import java.util.Map;
 
@@ -28,9 +29,17 @@ public class TTCommand extends TestCommand {
         if (sender.isOp()) {
             boolean isPlayer = sender.isPlayer();
             if (isPlayer) {
+                var t = new FakeInventory(FakeInventoryType.CHEST);
+                t.setItem(9, new ItemApple());
+                t.setDefaultItemHandler((inventory, slot, targetItem, sourceItem, event) -> {
+                    if (slot == 9) {
+                        System.out.println("test");
+                        inventory.setItem(9, new ItemEmerald());
+                        event.setCancelled();
+                    }
+                });
                 Player player = sender.asPlayer();
-                FakeInventory fakeInventory = new FakeInventory(FakeInventoryType.WORKBENCH);
-                player.addWindow(fakeInventory);
+                player.addWindow(t);
             }
             return 1;
         } else return 0;

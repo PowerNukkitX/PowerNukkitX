@@ -88,8 +88,6 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                         itemStackResponse.setResult(ItemStackResponseStatus.ERROR);
                         itemStackResponse.getContainers().clear();
                         responses.add(itemStackResponse);
-                        player.getCreativeOutputInventory().clearAll();
-                        player.resetInventory();
                         break;
                     }
                     for (var container : response.containers()) {
