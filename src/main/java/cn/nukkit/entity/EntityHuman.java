@@ -47,7 +47,7 @@ public class EntityHuman extends EntityHumanType {
 
     @Override
     public float getSwimmingHeight() {
-        return getWidth();
+        return 0.6f;
     }
 
     @Override
@@ -103,7 +103,8 @@ public class EntityHuman extends EntityHumanType {
     }
 
     @Override
-    @NotNull public String getName() {
+    @NotNull
+    public String getName() {
         return this.getNameTag();
     }
 

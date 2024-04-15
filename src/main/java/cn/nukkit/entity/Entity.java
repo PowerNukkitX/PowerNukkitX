@@ -630,6 +630,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (isSwimming() == value) {
             return;
         }
+        //Stopping a swim at a height of 1 block will still send a STOPSWIMMING ACTION from the client, but the player will still be swimming height,so skip the action
+        if(!value && level.getBlock(up()).isSolid() && level.getBlock(down()).isSolid()){
+            return;
+        }
         this.setDataFlag(EntityFlag.SWIMMING, value);
         if (Float.compare(getSwimmingHeight(), getHeight()) != 0) {
             recalculateBoundingBox(true);
