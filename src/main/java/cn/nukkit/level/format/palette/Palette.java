@@ -23,16 +23,10 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Allay Project 2023/4/14
- *
- * @author JukeboxMC | daoge_cmd
- */
-public final class Palette<V> {
-    private static final byte COPY_LAST_FLAG_HEADER = (byte) (0x7F << 1) | 1;
-    private final List<V> palette;
-    private BitArray bitArray;
-
+public class Palette<V> {
+    protected static final byte COPY_LAST_FLAG_HEADER = (byte) (0x7F << 1) | 1;
+    protected final List<V> palette;
+    protected BitArray bitArray;
 
     public Palette(V first) {
         this(first, BitArrayVersion.V2);
@@ -75,7 +69,7 @@ public final class Palette<V> {
         for (int i = 0; i < size; i++) this.palette.add(deserializer.deserialize(ByteBufVarInt.readInt(byteBuf)));
     }
 
-    private boolean writeEmpty(ByteBuf byteBuf) {
+    protected boolean writeEmpty(ByteBuf byteBuf) {
         if (this.isEmpty()) {
             byteBuf.writeByte(Palette.getPaletteHeader(BitArrayVersion.V0, true));
             byteBuf.writeIntLE(0);
@@ -84,7 +78,7 @@ public final class Palette<V> {
         return false;
     }
 
-    private boolean writeLast(ByteBuf byteBuf, Palette<V> last) {
+    protected boolean writeLast(ByteBuf byteBuf, Palette<V> last) {
         if (last != null && last.palette.equals(this.palette)) {
             byteBuf.writeByte(COPY_LAST_FLAG_HEADER);
             return true;
@@ -92,7 +86,7 @@ public final class Palette<V> {
         return false;
     }
 
-    private void writeWords(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {
+    protected void writeWords(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {
         byteBuf.writeByte(getPaletteHeader(this.bitArray.version(), true));
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
         this.bitArray.writeSizeToNetwork(byteBuf, this.palette.size());
@@ -193,7 +187,7 @@ public final class Palette<V> {
         } else return false;
     }
 
-    private void addBlockPalette(ByteBuf byteBuf,
+    protected void addBlockPalette(ByteBuf byteBuf,
                                  RuntimeDataDeserializer<V> deserializer,
                                  NBTInputStream input) throws IOException {
         Pair<Integer, SemVersion> p = PaletteUtils.fastReadBlockHash(input, byteBuf);
@@ -213,12 +207,12 @@ public final class Palette<V> {
     }
 
 
-    private BitArrayVersion readBitArrayVersion(ByteBuf byteBuf) {
+    protected BitArrayVersion readBitArrayVersion(ByteBuf byteBuf) {
         short header = byteBuf.readUnsignedByte();
         return Palette.getVersionFromPaletteHeader(header);
     }
 
-    private void readWords(ByteBuf byteBuf, BitArrayVersion version) {
+    protected void readWords(ByteBuf byteBuf, BitArrayVersion version) {
         final int wordCount = version.getWordsForSize(ChunkSection.SIZE);
         final int[] words = new int[wordCount];
         for (int i = 0; i < wordCount; i++) words[i] = byteBuf.readIntLE();
@@ -227,7 +221,7 @@ public final class Palette<V> {
         this.palette.clear();
     }
 
-    private void onResize(BitArrayVersion version) {
+    protected void onResize(BitArrayVersion version) {
         final BitArray newBitArray = version.createArray(ChunkSection.SIZE);
         for (int i = 0; i < ChunkSection.SIZE; i++)
             newBitArray.set(i, this.bitArray.get(i));
@@ -241,19 +235,19 @@ public final class Palette<V> {
         palette.palette.addAll(this.palette);
     }
 
-    private static boolean hasCopyLastFlag(short header) {
+    protected static boolean hasCopyLastFlag(short header) {
         return (header >> 1) == 0x7F;
     }
 
-    private static boolean isPersistent(short header) {
+    protected static boolean isPersistent(short header) {
         return (header & 1) == 0;
     }
 
-    private static int getPaletteHeader(BitArrayVersion version, boolean runtime) {
+    protected static int getPaletteHeader(BitArrayVersion version, boolean runtime) {
         return (version.bits << 1) | (runtime ? 1 : 0);
     }
 
-    private static BitArrayVersion getVersionFromPaletteHeader(short header) {
+    protected static BitArrayVersion getVersionFromPaletteHeader(short header) {
         return BitArrayVersion.get(header >> 1, true);
     }
 

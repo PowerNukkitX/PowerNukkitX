@@ -849,7 +849,7 @@ public class Server {
                     seed = seedString.hashCode();
                 }
                 //todo nether the_end overworld
-                generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", seed, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+                generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
                 LevelConfig levelConfig = new LevelConfig(this.getConfig().get("level-settings.default-format", "leveldb"), generatorConfig);
                 this.generateLevel(levelFolder, levelConfig);
             }
@@ -2449,12 +2449,13 @@ public class Server {
         LevelConfig levelConfig;
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-        Class<? extends LevelProvider> provider = null;
+        Class<? extends LevelProvider> provider;
         if (config.exists()) {
             try {
                 levelConfig = gson.fromJson(new FileReader(config), LevelConfig.class);
+                Files.writeString(config.toPath(), gson.toJson(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.WRITE);
                 provider = LevelProviderManager.getProvider(path);
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         } else {
@@ -2466,7 +2467,7 @@ public class Server {
             }
             Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
             //todo nether the_end overworld
-            map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(), DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+            map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(), false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
             levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), map);
             try {
                 config.createNewFile();
@@ -2526,7 +2527,8 @@ public class Server {
         if (config.exists()) {
             try {
                 levelConfig = gson.fromJson(new FileReader(config), LevelConfig.class);
-            } catch (FileNotFoundException e) {
+                Files.writeString(config.toPath(), gson.toJson(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.WRITE);
+            } catch (Exception e) {
                 log.error("The levelConfig is not exists under the {} path", path);
                 return false;
             }

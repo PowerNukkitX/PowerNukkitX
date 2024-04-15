@@ -3,6 +3,9 @@ package cn.nukkit.registry;
 import cn.nukkit.block.BlockState;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.UnmodifiableView;
+
+import java.util.Set;
 
 /**
  * Allay Project 12/16/2023
@@ -24,6 +27,11 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
 
     public BlockState get(int blockHash) {
         return REGISTRY.get(blockHash);
+    }
+
+    @UnmodifiableView
+    public Set<BlockState> getAllState() {
+        return Set.copyOf(REGISTRY.values());
     }
 
     @Override

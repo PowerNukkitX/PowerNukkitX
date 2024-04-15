@@ -297,12 +297,16 @@ public class Level implements Metadatable {
     private int thunderTime = 0;
     private long levelCurrentTick = 0;
     private final Map<Long, Map<Integer, Object>> lightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
-    private Iterator<cn.nukkit.utils.collection.nb.LongObjectEntry<Long>> lastUsingUnloadingIter;
     private final int dimensionCount;
 
     ///sub tick system
     private final Thread subTickThread;
     private final GameLoop gameLoop;
+    ///
+
+    ///antiXray system
+    private AntiXraySystem antiXraySystem;
+    ///
 
     public Level(Server server, String name, String path, int dimSum, Class<? extends LevelProvider> provider, LevelConfig.GeneratorConfig generatorConfig) {
         this.levelId = levelIdCounter++;
@@ -332,6 +336,18 @@ public class Level implements Metadatable {
         LevelProvider levelProvider = requireProvider();
         levelProvider.updateLevelName(name);
         log.info(this.server.getLanguage().tr("nukkit.level.preparing", TextFormat.GREEN + levelProvider.getName() + TextFormat.WHITE));
+
+        if (generatorConfig.enableAntiXray()) {
+            this.setAntiXrayEnabled(true);
+            antiXraySystem.reinitAntiXray(false);
+
+            antiXraySystem.setFakeOreDenominator(switch (generatorConfig.antiXrayMode()) {
+                case HIGH -> 4;
+                case MEDIUM -> 8;
+                default -> 16;
+            });
+            antiXraySystem.setPreDeObfuscate(generatorConfig.preDeobfuscate());
+        }
 
         this.name = name;
         this.folderPath = path;
@@ -1029,17 +1045,20 @@ public class Level implements Metadatable {
                                 Collection<Player> toSend = this.getChunkPlayers(chunkX, chunkZ).values();
                                 Player[] playerArray = toSend.toArray(Player.EMPTY_ARRAY);
                                 var size = blocks.size();
-                                var blocksArray = new Vector3[size];
-                                int i = 0;
-                                for (int blockHash : blocks.keySet()) {
-                                    Vector3 hash = getBlockXYZ(index, blockHash, this);
-                                    blocksArray[i++] = hash;
+                                if (isAntiXrayEnabled()) {
+                                    antiXraySystem.obfuscateSendBlocks(index, playerArray, blocks);
+                                } else {
+                                    var blocksArray = new Vector3[size];
+                                    int i = 0;
+                                    for (int blockHash : blocks.keySet()) {
+                                        Vector3 hash = getBlockXYZ(index, blockHash, this);
+                                        blocksArray[i++] = hash;
+                                    }
+                                    this.sendBlocks(playerArray, blocksArray, UpdateBlockPacket.FLAG_ALL);
                                 }
-                                this.sendBlocks(playerArray, blocksArray, UpdateBlockPacket.FLAG_ALL);
                             }
                         }
                     }
-
                     this.changedBlocks.clear();
                 }
             }
@@ -2138,14 +2157,14 @@ public class Level implements Metadatable {
     /**
      * Sets a block at the specified position and determines whether to immediately synchronize changes to clients or perform block update tick.
      *
-     * @param x         The x-coordinate of the block.
-     * @param y         The y-coordinate of the block. Must be within the valid range.
-     * @param z         The z-coordinate of the block.
-     * @param layer     The block layer to set, used for handling layered blocks like water (e.g., blocks beneath water).
-     * @param block     The block to be set.
-     * @param direct    Whether to immediately synchronize changes to clients
-     * @param update    Whether to perform update on block, such as lighting, event, cause around update etc.
-     * @return          True if the block was successfully set, otherwise false.
+     * @param x      The x-coordinate of the block.
+     * @param y      The y-coordinate of the block. Must be within the valid range.
+     * @param z      The z-coordinate of the block.
+     * @param layer  The block layer to set, used for handling layered blocks like water (e.g., blocks beneath water).
+     * @param block  The block to be set.
+     * @param direct Whether to immediately synchronize changes to clients
+     * @param update Whether to perform update on block, such as lighting, event, cause around update etc.
+     * @return True if the block was successfully set, otherwise false.
      */
     public boolean setBlock(int x, int y, int z, int layer, Block block, boolean direct, boolean update) {
         if (!isYInRange(y) || layer < 0 || layer > this.requireProvider().getMaximumLayer()) {
@@ -2178,6 +2197,9 @@ public class Level implements Metadatable {
         long index = Level.chunkHash(cx, cz);
 
         if (direct) {
+            if (isAntiXrayEnabled() && block.isTransparent()) {
+                this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Vector3[]{block.add(-1), block.add(1), block.add(0, -1), block.add(0, 1), block.add(0, 0, 1), block.add(0, 0, -1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
+            }
             this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
         } else {
             addBlockChange(index, x, y, z);
@@ -3102,6 +3124,7 @@ public class Level implements Metadatable {
             if (!this.isChunkInUse(index)) {
                 this.unloadChunkRequest(chunkX, chunkZ);
             } else {
+                chunk.reObfuscateChunk();
                 for (ChunkLoader loader : this.getChunkLoaders(chunkX, chunkZ)) {
                     loader.onChunkChanged(chunk);
                 }
@@ -4484,6 +4507,30 @@ public class Level implements Metadatable {
 
     public int ensureY(final int y) {
         return Math.max(Math.min(y, getDimensionData().getMaxHeight()), getDimensionData().getMinHeight());
+    }
+
+    /**
+     * Is anti-xray enabled.
+     */
+    public boolean isAntiXrayEnabled() {
+        return this.antiXraySystem != null;
+    }
+
+    /**
+     * enable the anti-xray system.
+     */
+    public void setAntiXrayEnabled(boolean antiXrayEnabled) {
+        if (antiXrayEnabled) {
+            if (antiXraySystem == null) {
+                this.antiXraySystem = new AntiXraySystem(this);
+            }
+        } else {
+            this.antiXraySystem = null;
+        }
+    }
+
+    public AntiXraySystem getAntiXraySystem() {
+        return antiXraySystem;
     }
 
     @Override

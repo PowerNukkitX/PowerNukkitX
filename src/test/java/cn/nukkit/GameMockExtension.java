@@ -207,13 +207,11 @@ public class GameMockExtension extends MockitoExtension {
             FieldUtils.writeDeclaredField(player, "foodData", new PlayerFood(player, 20, 20), true);
             FileUtils.copyDirectory(new File("src/test/resources/level"), new File("src/test/resources/newlevel"));
             level = new Level(Server.getInstance(), "newlevel", "src/test/resources/newlevel",
-                    1, LevelDBProvider.class, new LevelConfig.GeneratorConfig("flat", 114514, DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>()));
+                    1, LevelDBProvider.class, new LevelConfig.GeneratorConfig("flat", 114514, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>()));
             level.initLevel();
             player.level = level;
             player.setPosition(new Vector3(0, 100, 0));
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (IllegalAccessException | IOException e) {
             throw new RuntimeException(e);
         }
 

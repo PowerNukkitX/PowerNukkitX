@@ -13,6 +13,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.IChunkBuilder;
 import cn.nukkit.level.format.UnsafeChunk;
 import cn.nukkit.level.format.bitarray.BitArrayVersion;
+import cn.nukkit.level.format.palette.BlockPalette;
 import cn.nukkit.level.format.palette.Palette;
 import cn.nukkit.level.util.LevelDBKeyUtil;
 import cn.nukkit.nbt.NBTIO;
@@ -187,8 +188,8 @@ public class LevelDBChunkSerializer {
                             if (layers <= 2) {
                                 section = new ChunkSection((byte) ySection);
                             } else {
-                                @SuppressWarnings("rawtypes") Palette[] palettes = new Palette[layers];
-                                Arrays.fill(palettes, new Palette<>(BlockAir.PROPERTIES.getDefaultState(), new ReferenceArrayList<>(16), BitArrayVersion.V2));
+                                BlockPalette[] palettes = new BlockPalette[layers];
+                                Arrays.fill(palettes, new BlockPalette(BlockAir.PROPERTIES.getDefaultState(), new ReferenceArrayList<>(16), BitArrayVersion.V2));
                                 section = new ChunkSection((byte) ySection, palettes);
                             }
                             for (int layer = 0; layer < layers; layer++) {
