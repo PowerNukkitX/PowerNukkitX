@@ -11,6 +11,7 @@ import cn.nukkit.network.protocol.types.CompressionAlgorithm;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 import cn.nukkit.network.connection.BedrockPeer;
 import cn.nukkit.network.connection.BedrockSession;
@@ -22,6 +23,7 @@ import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec_v1;
 import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec_v2;
 import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec_v3;
 
+@Slf4j
 public abstract class BedrockChannelInitializer<T extends BedrockSession> extends ChannelInitializer<Channel> {
     public static final int RAKNET_MINECRAFT_ID = 0xFE;
     private static final FrameIdCodec RAKNET_FRAME_CODEC = new FrameIdCodec(RAKNET_MINECRAFT_ID);

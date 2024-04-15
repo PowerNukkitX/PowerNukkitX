@@ -32,6 +32,7 @@ import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.utils.ClientChainData;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.collection.FreezableArrayManager;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -58,6 +59,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Slf4j
 public class GameMockExtension extends MockitoExtension {
     final static Server server = mock(Server.class);
     static BanList banList = mock(BanList.class);
@@ -211,9 +213,7 @@ public class GameMockExtension extends MockitoExtension {
             level.initLevel();
             player.level = level;
             player.setPosition(new Vector3(0, 100, 0));
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (IllegalAccessException | IOException e) {
             throw new RuntimeException(e);
         }
 
