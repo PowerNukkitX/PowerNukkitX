@@ -119,10 +119,11 @@ public class Network {
                     public BedrockSession createSession0(BedrockPeer peer, int subClientId) {
                         BedrockSession session = new BedrockSession(peer, subClientId);
                         InetSocketAddress address = (InetSocketAddress) session.getSocketAddress();
-                        Network.this.sessionMap.put(address, session);
-                        if (blockIpMap.containsKey(address.getAddress())) {
+                        if (isAddressBlocked(address)) {
                             session.close("Your IP address has been blocked by this server!");
-                            Network.this.sessionMap.remove(address);
+                            onSessionDisconnect(address);
+                        } else {
+                            Network.this.sessionMap.put(address, session);
                         }
                         return session;
                     }
@@ -210,10 +211,26 @@ public class Network {
         return this.sessionMap.get(address);
     }
 
+    public void replaceSession(InetSocketAddress oldAddress, InetSocketAddress newAddress, BedrockSession newSession) {
+
+        if (!this.sessionMap.containsKey(oldAddress))
+            return;
+
+        if (isAddressBlocked(newAddress))
+            return;
+
+        onSessionDisconnect(oldAddress);
+        this.sessionMap.put(newAddress, newSession);
+    }
+
+    private boolean isAddressBlocked(InetSocketAddress address) {
+        return this.blockIpMap.containsKey(address.getAddress());
+    }
+
     public void process() {
         for (BedrockSession session : this.sessionMap.values()) {
             if (session.isDisconnected()) {
-                return;
+                continue;
             }
             session.tick();
         }

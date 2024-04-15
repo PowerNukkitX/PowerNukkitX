@@ -1258,6 +1258,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
           我们在玩家客户端初始化后才发送游戏模式，以解决观察者模式疾跑速度不正确的问题
           只有在玩家客户端进入游戏显示后再设置观察者模式，疾跑速度才正常
           强制更新游戏模式以确保客户端会收到模式更新包
+          After initializing the player client, we send the game mode to address the issue of incorrect
+          sprint speed in spectator mode. Only after the player client enters the game display is spectator mode set,
+          and the sprint speed behaves normally. We force an update of the game mode to ensure that the client receives the
+          mode update packet.
          */
         this.setGamemode(this.gamemode, false, null, true);
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);

@@ -7,14 +7,11 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+@Getter
 @AllArgsConstructor
 public class PlayerInfo {
-    @Getter
     private final String username;
-    @Getter
     private final UUID uniqueId;
-    @Getter
     private final Skin skin;
-    @Getter
     private final ClientChainData data;
 }
