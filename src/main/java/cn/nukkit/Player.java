@@ -2594,20 +2594,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    public void setSwimming(boolean value) {
+        //Stopping a swim at a height of 1 block will still send a STOPSWIMMING ACTION from the client, but the player will still be swimming height,so skip the action
+        if(!value && level.getBlock(up()).isSolid() && level.getBlock(down()).isSolid()){
+            return;
+        }
+        super.setSwimming(value);
+    }
+
+    @Override
     public boolean onUpdate(int currentTick) {
         if (!this.loggedIn) {
             return false;
         }
-
-//        if (currentTick % 20 == 0) {
-//            for (double x = this.getBoundingBox().getMinX(); x < this.getBoundingBox().getMaxX(); x += 0.2) {
-//                for (double y = this.getBoundingBox().getMinY(); y < this.getBoundingBox().getMaxY(); y += 0.2) {
-//                    for (double z = this.getBoundingBox().getMinZ(); z < this.getBoundingBox().getMaxZ(); z += 0.2) {
-//                        level.addParticleEffect(new Vector3(x, y, z), ParticleEffect.ENDROD);
-//                    }
-//                }
-//            }
-//        }
 
         int tickDiff = currentTick - this.lastUpdate;
 
