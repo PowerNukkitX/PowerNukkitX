@@ -30,7 +30,7 @@ public class TerraTest {
         HashMap<String, Object> objectObjectHashMap = new HashMap<>();
         objectObjectHashMap.put("pack", "overworld");
         level = new Level(Server.getInstance(), "terra", "src/test/resources/terra",
-                1, LevelDBProvider.class, new LevelConfig.GeneratorConfig("terra", 114514, DimensionEnum.OVERWORLD.getDimensionData(), objectObjectHashMap));
+                1, LevelDBProvider.class, new LevelConfig.GeneratorConfig("terra", 114514, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), objectObjectHashMap));
         level.initLevel();
     }
 

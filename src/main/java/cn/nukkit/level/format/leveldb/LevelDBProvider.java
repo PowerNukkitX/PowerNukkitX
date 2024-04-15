@@ -225,13 +225,24 @@ public class LevelDBProvider implements LevelProvider {
                 }
                 int total = subChunkCount + 1;
                 //write block
-                for (int i = 0; i < total; i++) {
-                    if (sections[i] == null) {
-                        sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
+                if (level != null && level.isAntiXrayEnabled()) {
+                    for (int i = 0; i < total; i++) {
+                        if (sections[i] == null) {
+                            sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
+                        }
+                        assert sections[i] != null;
+                        sections[i].writeObfuscatedToBuf(level, byteBuf);
                     }
-                    assert sections[i] != null;
-                    sections[i].writeToBuf(byteBuf);
+                } else {
+                    for (int i = 0; i < total; i++) {
+                        if (sections[i] == null) {
+                            sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
+                        }
+                        assert sections[i] != null;
+                        sections[i].writeToBuf(byteBuf);
+                    }
                 }
+
                 // Write biomes
                 for (int i = 0; i < total; i++) {
                     sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);

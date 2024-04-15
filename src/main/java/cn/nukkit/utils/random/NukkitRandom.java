@@ -36,7 +36,7 @@ public class NukkitRandom implements RandomSourceProvider {
     }
 
     public int nextRange(int min, int max) {
-        return nextInt(min, max + 1);
+        return provider.nextInt(min, max + 1);
     }
 
     public int nextBoundedInt(int bound) {

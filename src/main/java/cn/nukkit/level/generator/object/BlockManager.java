@@ -138,6 +138,7 @@ public class BlockManager {
                 });
                 unsafeChunk.recalculateHeightMap();
             });
+            key.reObfuscateChunk();
         });
         for (var p : batchs.values()) {
             Server.broadcastPacket(level.getPlayers().values(), p);

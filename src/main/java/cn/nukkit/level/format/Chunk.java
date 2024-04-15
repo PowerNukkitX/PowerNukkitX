@@ -727,11 +727,19 @@ public class Chunk implements IChunk {
         }
     }
 
+    @Override
+    public void reObfuscateChunk() {
+        for (var section : getSections()) {
+            section.setNeedReObfuscate();
+        }
+    }
+
     private int ensureY(final int y) {
         final int minHeight = getDimensionData().getMinHeight();
         final int maxHeight = getDimensionData().getMaxHeight();
         return Math.max(Math.min(y, maxHeight), minHeight);
     }
+
 
     public static Builder builder() {
         return new Builder();
