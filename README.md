@@ -14,6 +14,9 @@
   <a href="https://www.gnu.org/licenses/lgpl-3.0.html" target="_blank">
     <img alt="License: LGPL--3" src="https://img.shields.io/badge/License-LGPL--3-yellow.svg" />
   </a>
+  <a href="https://discord.com/invite/XXus4FB6qf">
+    <img src="https://img.shields.io/discord/944227466912870410?label=discord&color=7289DA&logo=discord" alt="Discord" />
+  </a>
 </p>
 
 > Feature-rich, highly customizable third-party server software for Minecraft: Bedrock Edition.  
