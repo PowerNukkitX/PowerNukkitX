@@ -4264,16 +4264,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
 
+        boolean switchLevel = false;
         if (!to.getLevel().equals(from.getLevel())) {
+            switchLevel = true;
             unloadAllUsedChunk();
+            //unload entities for old level
+            Arrays.stream(from.getLevel().getEntities()).forEach(e->e.despawnFrom(this));
         }
+
         //switch level, update pos and rotation, update aabb
         if (setPositionAndRotation(to, to.getYaw(), to.getPitch(), to.getHeadYaw())) {
             this.resetFallDistance();
             this.onGround = !this.noClip;
 
             //if switch level or the distance teleported is too far
-            if (!from.level.equals(to.level)) {
+            if (switchLevel) {
                 this.playerChunkManager.handleTeleport();
                 //set nextChunkOrderRun is zero means that the next tick immediately execute the playerChunkManager#tick
                 this.nextChunkOrderRun = 0;
@@ -4282,7 +4287,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.playerChunkManager.handleTeleport();
                 this.nextChunkOrderRun = 0;
             }
-
             //send to client
             this.sendPosition(to, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
             this.newPosition = to;
@@ -4292,8 +4296,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         //state update
         this.positionChanged = true;
-
-        //refresh chunks for client
         //DummyBossBar
         this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
         //Weather
