@@ -854,6 +854,21 @@ public class Server {
                 this.generateLevel(levelFolder, levelConfig);
             }
             this.setDefaultLevel(this.getLevelByName(levelFolder + " Dim0"));
+
+        }
+
+        if(this.getPropertyBoolean("allow-nether") && this.getDefaultNetherLevel() == null) {
+            String levelFolder = this.getPropertyString("level-nether-name", "nether");
+            if (levelFolder == null || levelFolder.trim().isEmpty()) {
+                log.warn("level-nether-name cannot be null, using default");
+                levelFolder = "nether";
+                this.setPropertyString("level-nether-name", levelFolder);
+            }
+
+            if (this.loadLevel(levelFolder)) {
+                this.setDefaultNetherLevel(this.getLevelByName(levelFolder + " Dim0"));;
+            }
+
         }
     }
 
