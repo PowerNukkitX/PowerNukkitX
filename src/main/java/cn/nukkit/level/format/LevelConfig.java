@@ -8,7 +8,14 @@ import lombok.experimental.Accessors;
 
 import java.util.Map;
 
-public record LevelConfig(String format, Map<Integer, GeneratorConfig> generators) {
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Accessors(fluent = true)
+public class LevelConfig {
+    String format = "leveldb";
+    boolean enable = true;
+    Map<Integer, GeneratorConfig> generators;
 
     @AllArgsConstructor
     @NoArgsConstructor

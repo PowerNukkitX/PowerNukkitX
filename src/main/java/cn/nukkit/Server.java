@@ -103,7 +103,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -823,6 +822,11 @@ public class Server {
         if (!file.isDirectory()) throw new RuntimeException("worlds isn't directory");
         //load all world from `worlds` folder
         for (var f : Objects.requireNonNull(file.listFiles(File::isDirectory))) {
+            LevelConfig levelConfig = getLevelConfig(f.getName());
+            if (levelConfig != null && !levelConfig.enable()) {
+                continue;
+            }
+
             if (!this.loadLevel(f.getName())) {
                 this.generateLevel(f.getName(), null);
             }
@@ -850,7 +854,7 @@ public class Server {
                 }
                 //todo nether the_end overworld
                 generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
-                LevelConfig levelConfig = new LevelConfig(this.getConfig().get("level-settings.default-format", "leveldb"), generatorConfig);
+                LevelConfig levelConfig = new LevelConfig(this.getConfig().get("level-settings.default-format", "leveldb"), true, generatorConfig);
                 this.generateLevel(levelFolder, levelConfig);
             }
             this.setDefaultLevel(this.getLevelByName(levelFolder + " Dim0"));
@@ -2349,12 +2353,14 @@ public class Server {
         }
     }
 
+    public static final String levelDimPattern = "^.*Dim[0-9]$";
+
     /**
      * @param name 世界名字
      * @return 世界是否已经加载<br>Is the world already loaded
      */
     public boolean isLevelLoaded(String name) {
-        if (!name.matches("^.*Dim[0-9]$")) {
+        if (!name.matches(levelDimPattern)) {
             for (int i = 0; i < 3; i++) {
                 if (this.getLevelByName(name + " Dim" + i) != null) {
                     return true;
@@ -2390,7 +2396,7 @@ public class Server {
      * @return level实例<br>level instance
      */
     public Level getLevelByName(String name) {
-        if (!name.matches("^.*Dim[0-9]$")) {
+        if (!name.matches(levelDimPattern)) {
             name = name + " Dim0";
         }
         for (Level level : this.levelArray) {
@@ -2423,52 +2429,46 @@ public class Server {
 
     }
 
-    /**
-     * @param name the level folder name
-     * @return whether load success
-     */
-    @ApiStatus.Internal
-    public boolean loadLevel(String name) {
-        if (Objects.equals(name.trim(), "")) {
+    @Nullable
+    public LevelConfig getLevelConfig(String levelFolderName) {
+        if (Objects.equals(levelFolderName.trim(), "")) {
             throw new LevelException("Invalid empty level name");
         }
         String path;
-        if (name.contains("/") || name.contains("\\")) {
-            path = name;
+        if (levelFolderName.contains("/") || levelFolderName.contains("\\")) {
+            path = levelFolderName;
         } else {
-            path = new File(this.getDataPath(), "worlds/" + name).getAbsolutePath();
+            path = new File(this.getDataPath(), "worlds/" + levelFolderName).getAbsolutePath();
         }
         Path jpath = Path.of(path);
         path = jpath.toString();
         if (!jpath.toFile().exists()) {
-            log.warn(this.getLanguage().tr("nukkit.level.notFound", name));
-            return false;
+            log.warn(this.getLanguage().tr("nukkit.level.notFound", levelFolderName));
+            return null;
         }
 
         File config = jpath.resolve("config.json").toFile();
         LevelConfig levelConfig;
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-        Class<? extends LevelProvider> provider;
         if (config.exists()) {
             try {
                 levelConfig = gson.fromJson(new FileReader(config), LevelConfig.class);
                 Files.writeString(config.toPath(), gson.toJson(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.WRITE);
-                provider = LevelProviderManager.getProvider(path);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         } else {
             //verify the provider
-            provider = LevelProviderManager.getProvider(path);
+            Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
             if (provider == null) {
-                log.error(this.getLanguage().tr("nukkit.level.loadError", name, "Unknown provider"));
-                return false;
+                log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName, "Unknown provider"));
+                return null;
             }
             Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
             //todo nether the_end overworld
             map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(), false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
-            levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), map);
+            levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), true, map);
             try {
                 config.createNewFile();
                 Files.writeString(config.toPath(), gson.toJson(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.CREATE);
@@ -2476,22 +2476,44 @@ public class Server {
                 throw new RuntimeException(e);
             }
         }
+        return levelConfig;
+    }
+
+    /**
+     * @param levelFolderName the level folder name
+     * @return whether load success
+     */
+    public boolean loadLevel(String levelFolderName) {
+        if (levelFolderName.matches(levelDimPattern)) {
+            levelFolderName = levelFolderName.replaceFirst("\\sDim\\d$", "");
+        }
+        LevelConfig levelConfig = getLevelConfig(levelFolderName);
+        if (levelConfig == null) return false;
+
+        String path;
+        if (levelFolderName.contains("/") || levelFolderName.contains("\\")) {
+            path = levelFolderName;
+        } else {
+            path = new File(this.getDataPath(), "worlds/" + levelFolderName).getAbsolutePath();
+        }
+        String pathS = Path.of(path).toString();
+        Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(pathS);
 
         Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
         for (var entry : generators.entrySet()) {
-            String levelName = name + " Dim" + entry.getKey();
+            String levelName = levelFolderName + " Dim" + entry.getKey();
             if (this.isLevelLoaded(levelName)) {
                 return true;
             }
             Level level;
             try {
                 if (provider == null) {
-                    log.error(this.getLanguage().tr("nukkit.level.loadError", name, "the level does not exist"));
+                    log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName, "the level does not exist"));
                     return false;
                 }
-                level = new Level(this, levelName, path, generators.size(), provider, entry.getValue());
+                level = new Level(this, levelName, pathS, generators.size(), provider, entry.getValue());
             } catch (Exception e) {
-                log.error(this.getLanguage().tr("nukkit.level.loadError", name, e.getMessage()), e);
+                log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName, e.getMessage()), e);
                 return false;
             }
             this.levels.put(level.getId(), level);
@@ -2503,10 +2525,6 @@ public class Server {
             WorldCommand.WORLD_NAME_ENUM.updateSoftEnum();
         }
         return true;
-    }
-
-    public boolean generateLevel(String name) {
-        return this.generateLevel(name, null);
     }
 
     public boolean generateLevel(String name, @Nullable LevelConfig levelConfig) {
