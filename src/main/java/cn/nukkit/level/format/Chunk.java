@@ -11,6 +11,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -679,7 +680,7 @@ public class Chunk implements IChunk {
         int offsetZ = getZ() << 4;
         return IntStream.rangeClosed(0, getDimensionData().getChunkSectionCount() - 1)
                 .mapToObj(sectionY -> sections[sectionY])
-                .filter(section -> !section.isEmpty()).parallel()
+                .filter(section -> section != null && !section.isEmpty()).parallel()
                 .map(section -> section.scanBlocks(getProvider(), offsetX, offsetZ, min, max, condition))
                 .flatMap(Collection::stream);
     }

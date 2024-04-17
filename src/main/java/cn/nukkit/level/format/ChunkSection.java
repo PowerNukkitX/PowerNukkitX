@@ -115,9 +115,7 @@ public record ChunkSection(byte y,
                     current.y = offsetY + y;
                     BlockState state = blockLayer[0].get(index(x, y, z));
                     if (condition.test(current, state)) {
-                        current.y -= provider.getDimensionData().getMinHeight();
                         results.add(Registries.BLOCK.get(state, current.x, current.y, current.z, provider.getLevel()));
-                        current.y += provider.getDimensionData().getMinHeight();
                     }
                 }
             }
