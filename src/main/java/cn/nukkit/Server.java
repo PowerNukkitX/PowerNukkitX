@@ -802,7 +802,7 @@ public class Server {
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
 
-        EntityProperty.buildPacket();
+        EntityProperty.buildPacketData();
         EntityProperty.buildPlayerProperty();
 
         if (this.getConfig("settings.download-spark", false)) {

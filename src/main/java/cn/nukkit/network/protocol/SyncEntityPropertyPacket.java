@@ -7,6 +7,7 @@ import io.netty.buffer.ByteBufInputStream;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteOrder;
 
@@ -14,12 +15,11 @@ import java.nio.ByteOrder;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Slf4j
 public class SyncEntityPropertyPacket extends DataPacket {
-
-
     public static final int NETWORK_ID = ProtocolInfo.SYNC_ENTITY_PROPERTY_PACKET;
 
-    private CompoundTag data;
+    public CompoundTag data;
 
     @Override
     public int pid() {
@@ -28,29 +28,20 @@ public class SyncEntityPropertyPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        try (ByteBufInputStream stream = new ByteBufInputStream(byteBuf)){
+        try (ByteBufInputStream stream = new ByteBufInputStream(byteBuf)) {
             this.data = NBTIO.read(stream, ByteOrder.BIG_ENDIAN, true);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("", e);
         }
     }
 
     @Override
-    public void encode(HandleByteBuf byteBuf){
-        
+    public void encode(HandleByteBuf byteBuf) {
         try {
             byteBuf.writeBytes(NBTIO.write(data, ByteOrder.BIG_ENDIAN, true));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("", e);
         }
-    }
-
-    public CompoundTag getData() {
-        return data;
-    }
-
-    public void setData(CompoundTag data) {
-        this.data = data;
     }
 
     public void handle(PacketHandler handler) {

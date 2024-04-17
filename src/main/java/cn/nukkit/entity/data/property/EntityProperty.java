@@ -10,12 +10,11 @@ import java.util.*;
  * @author Peng_Lx
  */
 public abstract class EntityProperty {
-    
     private static final String PLAYER_KEY = "minecraft:player";
     private static final String PROPERTIES_KEY = "properties";
 
     private static final Map<String, List<EntityProperty>> entityPropertyMap = new HashMap<>();
-    private static List<SyncEntityPropertyPacket> packetCache = new ArrayList<>();
+    private static final List<CompoundTag> nbtCache = new ArrayList<>();
     private static CompoundTag playerPropertyCache = new CompoundTag();
 
     private final String identifier;
@@ -34,16 +33,11 @@ public abstract class EntityProperty {
         return true;
     }
 
-    public static void buildPacket() {
-        List<SyncEntityPropertyPacket> packetList = new ArrayList<>();
+    public static void buildPacketData() {
         for (Map.Entry<String, List<EntityProperty>> entry : entityPropertyMap.entrySet()) {
             ListTag<CompoundTag> listProperty = buildPropertyList(entry.getValue());
-            CompoundTag nbt = new CompoundTag().putList(PROPERTIES_KEY, listProperty).putString("type", entry.getKey());
-            SyncEntityPropertyPacket packet = new SyncEntityPropertyPacket();
-            packet.setData(nbt);
-            packetList.add(packet);
+            nbtCache.add(new CompoundTag().putList(PROPERTIES_KEY, listProperty).putString("type", entry.getKey()));
         }
-        packetCache = packetList;
     }
 
     public static void buildPlayerProperty() {
@@ -57,7 +51,7 @@ public abstract class EntityProperty {
     }
 
     public static List<SyncEntityPropertyPacket> getPacketCache() {
-        return packetCache;
+        return nbtCache.stream().map(SyncEntityPropertyPacket::new).toList();
     }
 
     public static CompoundTag getPlayerPropertyCache() {
