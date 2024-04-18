@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBambooDoor;
+import cn.nukkit.level.Sound;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -30,5 +31,15 @@ public class BlockBambooDoor extends BlockWoodenDoor {
     @Override
     public Item toItem() {
         return new ItemBambooDoor();
+    }
+
+    @Override
+    public void playOpenSound() {
+        level.addSound(this, Sound.OPEN_BAMBOO_WOOD_DOOR);
+    }
+
+    @Override
+    public void playCloseSound() {
+        level.addSound(this, Sound.CLOSE_BAMBOO_WOOD_DOOR);
     }
 }

@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -56,5 +57,15 @@ public class BlockIronTrapdoor extends BlockTrapdoor {
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
+    }
+
+    @Override
+    public void playOpenSound() {
+        level.addSound(this, Sound.OPEN_IRON_TRAPDOOR);
+    }
+
+    @Override
+    public void playCloseSound() {
+        level.addSound(this, Sound.CLOSE_IRON_TRAPDOOR);
     }
 }
