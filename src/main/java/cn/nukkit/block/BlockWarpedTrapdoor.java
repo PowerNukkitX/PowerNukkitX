@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.level.Sound;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWarpedTrapdoor extends BlockTrapdoor {
@@ -32,5 +33,15 @@ public class BlockWarpedTrapdoor extends BlockTrapdoor {
     @Override
     public int getBurnAbility() {
         return 0;
+    }
+
+    @Override
+    public void playOpenSound() {
+        level.addSound(this, Sound.OPEN_NETHER_WOOD_TRAPDOOR);
+    }
+
+    @Override
+    public void playCloseSound() {
+        level.addSound(this, Sound.CLOSE_NETHER_WOOD_TRAPDOOR);
     }
 }
