@@ -1,9 +1,11 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemIronDoor;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockIronDoor extends BlockWoodenDoor {
@@ -50,5 +52,15 @@ public class BlockIronDoor extends BlockWoodenDoor {
     @Override
     public Item toItem() {
         return new ItemIronDoor();
+    }
+
+    @Override
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        return false;
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
     }
 }
