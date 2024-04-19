@@ -14,6 +14,7 @@ public class ItemStainedHardenedClay extends Item {
 
     public ItemStainedHardenedClay(Integer meta, int count) {
         super(STAINED_HARDENED_CLAY, meta, count);
+        internalAdjust();
     }
 
     public void internalAdjust() {

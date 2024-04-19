@@ -43,10 +43,11 @@ public class ItemBucket extends Item {
 
     public ItemBucket(Integer meta, int count) {
         super(BUCKET, meta, count);
+        internalAdjust();
     }
 
     public ItemBucket(String id) {
-        super(id);
+        this(id,0);
     }
 
     public ItemBucket(String id, int count) {

@@ -18,6 +18,7 @@ public class ItemBed extends Item {
 
     public ItemBed(Integer meta, int count) {
         super(BED, meta, count);
+        internalAdjust();
     }
 
     public void internalAdjust() {

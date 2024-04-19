@@ -14,6 +14,7 @@ public class ItemLog extends Item {
 
     public ItemLog(Integer meta, int count) {
         super(LOG, meta, count);
+        internalAdjust();
     }
 
     public void internalAdjust() {

@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.IHuman;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventoryContentPacket;
-import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
@@ -34,6 +33,16 @@ public class HumanOffHandInventory extends BaseInventory {
     }
 
     @Override
+    public boolean setItem(int index, Item item) {
+        return super.setItem(0, item);
+    }
+
+    @Override
+    public boolean setItem(int index, Item item, boolean send) {
+        return super.setItem(0, item, send);
+    }
+
+    @Override
     public void onSlotChange(int index, Item before, boolean send) {
         IHuman holder = this.getHolder();
         if (holder instanceof Player player) {
@@ -41,7 +50,6 @@ public class HumanOffHandInventory extends BaseInventory {
             if (send) {
                 this.sendContents(this.getViewers());
                 this.sendContents(holder.getEntity().getViewers().values());
-                this.sendContents(player);
             }
         }
     }
@@ -57,6 +65,7 @@ public class HumanOffHandInventory extends BaseInventory {
                 pk2.inventoryId = SpecialWindowId.OFFHAND.getId();
                 pk2.slots = new Item[]{item};
                 player.dataPacket(pk2);
+                player.dataPacket(pk);
             } else {
                 player.dataPacket(pk);
             }
@@ -65,19 +74,7 @@ public class HumanOffHandInventory extends BaseInventory {
 
     @Override
     public void sendSlot(int index, Player... players) {
-        Item item = this.getItem(0);
-        MobEquipmentPacket pk = this.createMobEquipmentPacket(item);
-
-        for (Player player : players) {
-            if (player == this.getHolder()) {
-                InventorySlotPacket pk2 = new InventorySlotPacket();
-                pk2.inventoryId = SpecialWindowId.OFFHAND.getId();
-                pk2.item = item;
-                player.dataPacket(pk2);
-            } else {
-                player.dataPacket(pk);
-            }
-        }
+        sendContents(players);
     }
 
     private MobEquipmentPacket createMobEquipmentPacket(Item item) {

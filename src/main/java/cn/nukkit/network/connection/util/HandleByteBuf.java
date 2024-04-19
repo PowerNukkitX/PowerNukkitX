@@ -39,6 +39,7 @@ import cn.nukkit.utils.PersonaPiece;
 import cn.nukkit.utils.PersonaPieceTint;
 import cn.nukkit.utils.SerializedImage;
 import cn.nukkit.utils.SkinAnimation;
+import cn.nukkit.utils.Utils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -1234,8 +1235,7 @@ public class HandleByteBuf extends ByteBuf {
                 stream.writeLong(0);//BlockingTicks // todo add BlockingTicks to Item Class. Find out what Blocking Ticks are
             }
 
-            byte[] bytes = new byte[userDataBuf.readableBytes()];
-            userDataBuf.readBytes(bytes);
+            byte[] bytes = Utils.convertByteBuf2Array(userDataBuf);
             writeByteArray(bytes);
         } catch (IOException e) {
             throw new IllegalStateException("Unable to write item user data", e);

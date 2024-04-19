@@ -14,6 +14,7 @@ public class ItemFence extends Item {
 
     public ItemFence(Integer meta, int count) {
         super(FENCE, meta, count);
+        internalAdjust();
     }
 
     public void internalAdjust() {
