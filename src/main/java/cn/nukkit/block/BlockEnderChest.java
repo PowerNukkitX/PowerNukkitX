@@ -131,13 +131,7 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if (player == null) {
-            return false;
-        }
-        Item itemInHand = player.getInventory().getItemInHand();
-        if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
-            return false;
-        }
+        if(isNotActivate(player)) return false;
 
         Block top = this.up();
         if (!top.isTransparent()) {

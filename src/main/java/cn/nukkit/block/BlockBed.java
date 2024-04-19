@@ -92,12 +92,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if (player != null) {
-            Item itemInHand = player.getInventory().getItemInHand();
-            if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
-                return false;
-            }
-        }
+        if(isNotActivate(player)) return false;
         BlockFace dir = getBlockFace();
 
         boolean shouldExplode = this.level.getDimension() != Level.DIMENSION_OVERWORLD;

@@ -82,9 +82,11 @@ public interface BlockEntityHolder<E extends BlockEntity> {
         return createBlockEntity();
     }
 
-    @NotNull Class<? extends E> getBlockEntityClass();
+    @NotNull
+    Class<? extends E> getBlockEntityClass();
 
-    @NotNull String getBlockEntityType();
+    @NotNull
+    String getBlockEntityType();
 
     @Nullable
     IChunk getChunk();
@@ -95,7 +97,8 @@ public interface BlockEntityHolder<E extends BlockEntity> {
 
     int getFloorZ();
 
-    @NotNull Location getLocation();
+    @NotNull
+    Location getLocation();
 
     Level getLevel();
 

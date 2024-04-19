@@ -52,6 +52,17 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     protected BlockColor color;
     public int layer;
 
+    public static boolean isNotActivate(Player player) {
+        if (player == null) {
+            return true;
+        }
+        Item itemInHand = player.getInventory().getItemInHand();
+        if ((player.isSneaking() || player.isFlySneaking()) && !(itemInHand.isTool() || itemInHand.isNull())) {
+            return true;
+        }
+        return false;
+    }
+
     @NotNull
     public static Block get(String id) {
         id = id.contains(":") ? id : "minecraft:" + id;
