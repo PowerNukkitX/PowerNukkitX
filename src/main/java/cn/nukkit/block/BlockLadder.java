@@ -5,7 +5,6 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
-import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +17,8 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(LADDER, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -80,26 +80,26 @@ public class BlockLadder extends BlockTransparent implements Faceable {
         switch (this.getBlockFace()) {
             case NORTH -> {
                 this.offMinX = 0;
-                this.offMinZ = 1 - f;
-                this.offMaxX = 1;
-                this.offMaxZ = 1;
-            }
-            case SOUTH -> {
-                this.offMinX = 0;
                 this.offMinZ = 0;
                 this.offMaxX = 1;
                 this.offMaxZ = f;
             }
-            case WEST -> {
-                this.offMinX = 1 - f;
-                this.offMinZ = 0;
+            case SOUTH -> {
+                this.offMinX = 0;
+                this.offMinZ = 1 - f;
                 this.offMaxX = 1;
                 this.offMaxZ = 1;
             }
-            case EAST -> {
+            case WEST -> {
                 this.offMinX = 0;
                 this.offMinZ = 0;
                 this.offMaxX = f;
+                this.offMaxZ = 1;
+            }
+            case EAST -> {
+                this.offMinX = 1 - f;
+                this.offMinZ = 0;
+                this.offMaxX = 1;
                 this.offMaxZ = 1;
             }
             default -> {
@@ -113,27 +113,26 @@ public class BlockLadder extends BlockTransparent implements Faceable {
 
     @Override
     public double getMinX() {
+        calculateOffsets();
         return this.x + offMinX;
     }
 
     @Override
     public double getMinZ() {
+        calculateOffsets();
         return this.z + offMinZ;
     }
 
     @Override
     public double getMaxX() {
+        calculateOffsets();
         return this.x + offMaxX;
     }
 
     @Override
     public double getMaxZ() {
+        calculateOffsets();
         return this.z + offMaxZ;
-    }
-
-    @Override
-    protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return super.recalculateBoundingBox();
     }
 
     @Override
@@ -158,14 +157,22 @@ public class BlockLadder extends BlockTransparent implements Faceable {
 
     private boolean isSupportValid(Block support, BlockFace face) {
         if (support instanceof BlockGlassStained || support instanceof BlockBlackStainedGlassPane
-        || support instanceof BlockLeaves
+                || support instanceof BlockLeaves
         ) return false;
-        if(support.getId().equals(BlockID.BEACON)) return false;
+        if (support.getId().equals(BlockID.BEACON)) return false;
         return BlockLever.isSupportValid(support, face);
     }
 
     @Override
     public int onUpdate(int type) {
+        //debug
+        /*for (double x = getMinX(); x <= getMaxX(); x += 0.2) {
+            for (double y = getMinY(); y <= getMaxY(); y += 0.2) {
+                for (double z = getMinZ(); z <= getMaxZ(); z += 0.2) {
+                    level.addParticleEffect(new Vector3(x, y, z), ParticleEffect.ENDROD);
+                }
+            }
+        }*/
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             BlockFace face = getBlockFace();
             if (!isSupportValid(this.getSide(face), face.getOpposite())) {

@@ -2,15 +2,7 @@ package cn.nukkit;
 
 import cn.nukkit.AdventureSettings.Type;
 import cn.nukkit.api.UsedByReflection;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockBed;
-import cn.nukkit.block.BlockEndPortal;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockLiquid;
-import cn.nukkit.block.BlockRespawnAnchor;
-import cn.nukkit.block.BlockWood;
-import cn.nukkit.block.BlockWool;
+import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
@@ -719,29 +711,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             bb.setMinY(bb.getMinY() - 1);
 
             AxisAlignedBB realBB = this.boundingBox.clone();
-            realBB.setMaxY(realBB.getMinY() - 0.1);
-            realBB.setMinY(realBB.getMinY() - 0.2);
-
-            int minX = NukkitMath.floorDouble(bb.getMinX());
-            int minY = NukkitMath.floorDouble(bb.getMinY());
-            int minZ = NukkitMath.floorDouble(bb.getMinZ());
-            int maxX = NukkitMath.ceilDouble(bb.getMaxX());
-            int maxY = NukkitMath.ceilDouble(bb.getMaxY());
-            int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
-
-            for (int z = minZ; z <= maxZ; ++z) {
-                for (int x = minX; x <= maxX; ++x) {
-                    for (int y = minY; y <= maxY; ++y) {
-                        Block block = this.level.getBlock(this.temporalVector.setComponents(x, y, z));
-
-                        if (!block.canPassThrough() && block.collidesWithBB(realBB)) {
-                            onGround = true;
-                            break;
-                        }
-                    }
+            realBB.setMaxY(realBB.getMinY());
+            realBB.setMinY(realBB.getMinY() - 0.5);
+            final Block[] tickCachedCollisionBlocks = level.getTickCachedCollisionBlocks(bb);
+            for (var b : tickCachedCollisionBlocks) {
+                if (!b.canPassThrough() && b.collidesWithBB(realBB)) {
+                    onGround = true;
+                    break;
                 }
             }
-
             this.onGround = onGround;
         }
 
@@ -871,8 +849,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         double diffX = clientPos.getX() - this.x;
         double diffY = clientPos.getY() - this.y;
         double diffZ = clientPos.getZ() - this.z;
-        this.fastMove(diffX, diffY, diffZ);
         this.setRotation(clientPos.getYaw(), clientPos.getPitch(), clientPos.getHeadYaw());
+        this.fastMove(diffX, diffY, diffZ);
 
         //after check
         double corrX = this.x - clientPos.getX();
@@ -911,7 +889,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.blocksAround != null && this.collisionBlocks != null) {
             blocksAround = new ArrayList<>(this.blocksAround);
             collidingBlocks = new ArrayList<>(this.collisionBlocks);
-
         }
 
         if (!this.firstMove) {
@@ -2596,7 +2573,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Override
     public void setSwimming(boolean value) {
         //Stopping a swim at a height of 1 block will still send a STOPSWIMMING ACTION from the client, but the player will still be swimming height,so skip the action
-        if(!value && level.getBlock(up()).isSolid() && level.getBlock(down()).isSolid()){
+        if (!value && level.getBlock(up()).isSolid() && level.getBlock(down()).isSolid()) {
             return;
         }
         super.setSwimming(value);
@@ -4269,7 +4246,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             switchLevel = true;
             unloadAllUsedChunk();
             //unload entities for old level
-            Arrays.stream(from.getLevel().getEntities()).forEach(e->e.despawnFrom(this));
+            Arrays.stream(from.getLevel().getEntities()).forEach(e -> e.despawnFrom(this));
         }
 
         //switch level, update pos and rotation, update aabb

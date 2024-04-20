@@ -1861,7 +1861,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
         if ((!this.isPlayer || level.getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
             int jumpBoost = this.hasEffect(EffectType.JUMP_BOOST) ? this.getEffect(EffectType.JUMP_BOOST).getLevel() : 0;
-            float damage = fallDistance - 3 - jumpBoost;
+            float damage = fallDistance - 3.255f - jumpBoost;
 
             if (damage > 0) {
                 if (!this.isSneaking()) {
@@ -2141,7 +2141,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             return true;
         } else {
 
-            this.ySize *= 0.4;
+            this.ySize *= 0.4F;
 
             double movX = dx;
             double movY = dy;
@@ -2211,7 +2211,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                     dz = cz;
                     this.boundingBox.setBB(axisalignedbb1);
                 } else {
-                    this.ySize += 0.5;
+                    this.ySize += 0.5F;
                 }
 
             }
