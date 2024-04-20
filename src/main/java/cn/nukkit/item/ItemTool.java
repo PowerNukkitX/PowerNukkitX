@@ -132,7 +132,9 @@ public abstract class ItemTool extends Item implements ItemDurable {
     @Override
     public void setDamage(int damage) {
         super.setDamage(damage);
-        this.getOrCreateNamedTag().putInt("Damage", damage);
+        if (damage != 0) {
+            this.getOrCreateNamedTag().putInt("Damage", damage);
+        }
     }
 
     public void incDamage(int v) {

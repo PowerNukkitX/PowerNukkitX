@@ -14,7 +14,6 @@ public class ItemWool extends Item {
 
     public ItemWool(Integer aux, int count) {
         super(WOOL, aux, count);
-        internalAdjust();
     }
 
     public void internalAdjust() {

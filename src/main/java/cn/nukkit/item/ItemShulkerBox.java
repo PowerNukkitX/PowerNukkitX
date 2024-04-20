@@ -14,7 +14,6 @@ public class ItemShulkerBox extends Item {
 
     public ItemShulkerBox(Integer meta, int count) {
         super(SHULKER_BOX, meta, count);
-        internalAdjust();
     }
 
     public void internalAdjust() {

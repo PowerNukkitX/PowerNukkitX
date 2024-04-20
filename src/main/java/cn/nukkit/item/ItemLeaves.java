@@ -15,7 +15,6 @@ public class ItemLeaves extends Item {
 
     public ItemLeaves(Integer meta, int count) {
         super(LEAVES, meta, count);
-        internalAdjust();
     }
 
     public void internalAdjust() {

@@ -14,7 +14,6 @@ public class ItemWood extends Item {
 
     public ItemWood(Integer meta, int count) {
         super(WOOD, meta, count);
-        internalAdjust();
     }
 
     public void internalAdjust() {

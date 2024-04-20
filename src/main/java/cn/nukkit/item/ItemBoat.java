@@ -29,7 +29,6 @@ public class ItemBoat extends Item {
 
     public ItemBoat(Integer meta, int count) {
         super(BOAT, meta, count);
-        internalAdjust();
     }
 
     public ItemBoat(String id) {

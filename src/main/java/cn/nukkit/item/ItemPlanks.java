@@ -14,7 +14,6 @@ public class ItemPlanks extends Item {
 
     public ItemPlanks(Integer meta, int count) {
         super(PLANKS, meta, count);
-        internalAdjust();
     }
 
     public void internalAdjust() {

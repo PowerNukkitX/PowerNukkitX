@@ -101,7 +101,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (name != null) {
             this.name = name.intern();
         }
-        this.meta = meta;
+        this.setDamage(meta);
         if (autoAssignStackNetworkId) {
             this.autoAssignStackNetworkId();
         }
@@ -115,7 +115,7 @@ public abstract class Item implements Cloneable, ItemID {
             this.name = name.intern();
         }
         this.block = block;
-        this.meta = meta;
+        this.setDamage(meta);
         if (autoAssignStackNetworkId) {
             this.autoAssignStackNetworkId();
         }
@@ -905,12 +905,6 @@ public abstract class Item implements Cloneable, ItemID {
         this.meta = damage & 0xffff;
         this.hasMeta = true;
         internalAdjust();
-    }
-
-    @ApiStatus.Internal
-    public void setDamageUnsafe(int damage) {
-        this.meta = damage & 0xffff;
-        this.hasMeta = true;
     }
 
     /**

@@ -22,7 +22,6 @@ public class ItemWoodenSlab extends Item {
 
     public ItemWoodenSlab(Integer meta, int count) {
         super(WOODEN_SLAB, meta, count);
-        internalAdjust();
     }
 
     public void internalAdjust() {

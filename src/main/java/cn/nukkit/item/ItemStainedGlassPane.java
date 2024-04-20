@@ -14,7 +14,6 @@ public class ItemStainedGlassPane extends Item {
 
     public ItemStainedGlassPane(Integer meta, int count) {
         super(STAINED_GLASS_PANE, meta, count);
-        internalAdjust();
     }
 
     public void internalAdjust() {
