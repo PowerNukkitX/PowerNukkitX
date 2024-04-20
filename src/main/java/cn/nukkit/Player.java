@@ -72,6 +72,7 @@ import cn.nukkit.level.PlayerChunkManager;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.particle.BlockForceFieldParticle;
 import cn.nukkit.level.particle.PunchBlockParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -706,18 +707,29 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.onGround || movX != 0 || movY != 0 || movZ != 0) {
             boolean onGround = false;
 
-            AxisAlignedBB bb = this.boundingBox.clone();
-            bb.setMaxY(bb.getMinY());
-            bb.setMinY(bb.getMinY() - 1);
-
             AxisAlignedBB realBB = this.boundingBox.clone();
             realBB.setMaxY(realBB.getMinY());
             realBB.setMinY(realBB.getMinY() - 0.5);
-            final Block[] tickCachedCollisionBlocks = level.getTickCachedCollisionBlocks(bb);
-            for (var b : tickCachedCollisionBlocks) {
-                if (!b.canPassThrough() && b.collidesWithBB(realBB)) {
+
+            Block b1 = level.getTickCachedBlock(getFloorX(), getFloorY() - 1, getFloorZ());
+            Block[] blocks = {
+                    level.getTickCachedBlock(getFloorX() - 1, getFloorY() - 1, getFloorZ()),
+                    level.getTickCachedBlock(getFloorX() + 1, getFloorY() - 1, getFloorZ()),
+                    level.getTickCachedBlock(getFloorX(), getFloorY() - 1, getFloorZ() + 1),
+                    level.getTickCachedBlock(getFloorX(), getFloorY() - 1, getFloorZ() - 1),
+                    level.getTickCachedBlock(getFloorX() - 1, getFloorY() - 1, getFloorZ() - 1),
+                    level.getTickCachedBlock(getFloorX() + 1, getFloorY() - 1, getFloorZ() - 1),
+                    level.getTickCachedBlock(getFloorX() + 1, getFloorY() - 1, getFloorZ() + 1),
+                    level.getTickCachedBlock(getFloorX() - 1, getFloorY() - 1, getFloorZ() + 1)
+            };
+            if (!b1.canPassThrough() && b1.collidesWithBB(realBB)) {
+                //level.addParticle(new BlockForceFieldParticle(b1.add(0.5, 0, 0.5)));
+                onGround = true;
+            }
+            for (Block block : blocks) {
+                //level.addParticle(new BlockForceFieldParticle(block.add(0.5, 0, 0.5)));
+                if (!block.canPassThrough() && block.collidesWithBB(realBB)) {
                     onGround = true;
-                    break;
                 }
             }
             this.onGround = onGround;
