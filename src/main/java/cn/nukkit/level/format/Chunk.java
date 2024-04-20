@@ -11,7 +11,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -731,7 +730,9 @@ public class Chunk implements IChunk {
     @Override
     public void reObfuscateChunk() {
         for (var section : getSections()) {
-            section.setNeedReObfuscate();
+            if(section!=null){
+                section.setNeedReObfuscate();
+            }
         }
     }
 

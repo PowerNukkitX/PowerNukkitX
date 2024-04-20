@@ -2888,7 +2888,7 @@ public class Level implements Metadatable {
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
                 for (Entity ent : this.getChunkEntities(x, z, loadChunks).values()) {
-                    if (ent != entity && ent.boundingBox.intersectsWith(bb)) {
+                    if (ent != null && ent != entity && ent.boundingBox.intersectsWith(bb)) {
                         overflow = addEntityToBuffer(index, overflow, ent);
                         index++;
                     }
@@ -3015,7 +3015,13 @@ public class Level implements Metadatable {
     }
 
     public void setBlockStateAt(int x, int y, int z, int layer, BlockState state) {
-        setBlock(new Vector3(x, y, z), layer, state.toBlock());
+        IChunk chunk = this.getChunk(x >> 4, z >> 4, true);
+        chunk.setBlockState(x & 0x0f, ensureY(y), z & 0x0f, state, layer);
+        addBlockChange(x, y, z);
+        temporalVector.setComponents(x, y, z);
+        if (Server.getInstance().getConfig("chunk-ticking.light-updates", true)) {
+            updateAllLight(new Vector3(x, y, z));
+        }
     }
 
     public BlockState getBlockStateAt(int x, int y, int z, int layer) {
