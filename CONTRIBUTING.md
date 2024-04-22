@@ -30,17 +30,17 @@ Scan through our [existing issues](https://github.com/PowerNukkitX/PowerNukkitX/
 
 ### Make Changes
 
-1. Fork the repository.  
-   - [Fork the repo](https://www.jetbrains.com/help/idea/fork-github-projects.html#fork)
-   - [Clone your fork](https://www.jetbrains.com/help/idea/manage-projects-hosted-on-github.html#clone-from-GitHub)
+1. Fork the repository.
+    - [Fork the repo](https://www.jetbrains.com/help/idea/fork-github-projects.html#fork)
+    - [Clone your fork](https://www.jetbrains.com/help/idea/manage-projects-hosted-on-github.html#clone-from-GitHub)
 2. Install **JDK17**.
 3. Make some changes.
 4. First build the project using `buildSkipChores` task  
-Apply changes using `buildFast` task  
-Clean build folder using `clean` task  
-<img alt="build.png"  src="img/001.png" width="250px"/>
+   Apply changes using `buildFast` task  
+   Clean build folder using `clean` task  
+   <img alt="build.png"  src="img/001.png" width="250px"/>
 5. Start the server to preview your changes.  
-<img alt="img.png" height="100" src="img/002.png"/>
+   <img alt="img.png" height="100" src="img/002.png"/>
 
 ### Pull Request
 
