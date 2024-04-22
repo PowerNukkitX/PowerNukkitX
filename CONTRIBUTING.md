@@ -8,7 +8,7 @@ Use the table of contents icon <img alt="Table of contents icon" src="https://gi
 
 ## New contributor guide
 
-To get an overview of the project, read the [README](../README.md) file. Here are some resources to help you get started with open source contributions:
+To get an overview of the project, read the [README](README.md) file. Here are some resources to help you get started with open source contributions:
 
 - [Finding ways to contribute to open source on GitHub](https://docs.github.com/en/get-started/exploring-projects-on-github/finding-ways-to-contribute-to-open-source-on-github)
 - [Set up Git](https://docs.github.com/en/get-started/getting-started-with-git/set-up-git)
@@ -38,9 +38,9 @@ Scan through our [existing issues](https://github.com/PowerNukkitX/PowerNukkitX/
 4. First build the project using `buildSkipChores` task  
    Apply changes using `buildFast` task  
    Clean build folder using `clean` task  
-   <img alt="build.png"  src="img/001.png" width="250px"/>
+   <img alt="build.png"  src=".github/img/001.png" width="250px"/>
 5. Start the server to preview your changes.  
-   <img alt="img.png" height="100" src="img/002.png"/>
+   <img alt="img.png" height="100" src=".github/img/002.png"/>
 
 ### Pull Request
 
