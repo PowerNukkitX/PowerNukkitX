@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -34,15 +32,4 @@ public class BlockRedSandstone extends BlockSandstone {
             case SMOOTH -> "Smooth Red Sandstone";
         };
     }
-
-    @Override
-    public Item toItem() {
-        return new ItemBlock(this, getSandstoneType().ordinal());
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
 }

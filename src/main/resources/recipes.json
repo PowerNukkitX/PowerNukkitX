@@ -3352,7 +3352,8 @@
       "output": [
         {
           "id": "minecraft:quartz_block",
-          "count": 1
+          "count": 1,
+          "auxValue": 1
         }
       ],
       "block": "stonecutter",
@@ -3373,7 +3374,8 @@
       "output": [
         {
           "id": "minecraft:quartz_block",
-          "count": 1
+          "count": 1,
+          "auxValue": 2
         }
       ],
       "block": "stonecutter",
@@ -3523,7 +3525,8 @@
       "output": [
         {
           "id": "minecraft:red_sandstone",
-          "count": 1
+          "count": 1,
+          "auxValue": 2
         }
       ],
       "block": "stonecutter",
@@ -3544,7 +3547,8 @@
       "output": [
         {
           "id": "minecraft:red_sandstone",
-          "count": 1
+          "count": 1,
+          "auxValue": 1
         }
       ],
       "block": "stonecutter",
@@ -3629,7 +3633,8 @@
       "output": [
         {
           "id": "minecraft:sandstone",
-          "count": 1
+          "count": 1,
+          "auxValue": 2
         }
       ],
       "block": "stonecutter",
@@ -3650,7 +3655,8 @@
       "output": [
         {
           "id": "minecraft:sandstone",
-          "count": 1
+          "count": 1,
+          "auxValue": 1
         }
       ],
       "block": "stonecutter",
@@ -15066,7 +15072,8 @@
       "output": [
         {
           "id": "minecraft:quartz_block",
-          "count": 1
+          "count": 1,
+          "auxValue": 1
         }
       ],
       "shape": [
@@ -15188,7 +15195,8 @@
       "output": [
         {
           "id": "minecraft:red_sandstone",
-          "count": 1
+          "count": 1,
+          "auxValue": 1
         }
       ],
       "shape": [
@@ -15215,7 +15223,8 @@
       "output": [
         {
           "id": "minecraft:sandstone",
-          "count": 1
+          "count": 1,
+          "auxValue": 1
         }
       ],
       "shape": [
@@ -35112,7 +35121,8 @@
       "output": [
         {
           "id": "minecraft:quartz_block",
-          "count": 2
+          "count": 2,
+          "auxValue": 2
         }
       ],
       "shape": [
@@ -39722,7 +39732,8 @@
       "output": [
         {
           "id": "minecraft:red_sandstone",
-          "count": 4
+          "count": 4,
+          "auxValue": 3
         }
       ],
       "shape": [
@@ -39777,7 +39788,8 @@
       "output": [
         {
           "id": "minecraft:sandstone",
-          "count": 4
+          "count": 4,
+          "auxValue": 3
         }
       ],
       "shape": [
@@ -67799,7 +67811,8 @@
       },
       "output": {
         "id": "minecraft:sandstone",
-        "count": 1
+        "count": 1,
+        "auxValue": 3
       },
       "block": "furnace"
     },
@@ -67974,7 +67987,8 @@
       },
       "output": {
         "id": "minecraft:quartz_block",
-        "count": 1
+        "count": 1,
+        "auxValue": 3
       },
       "block": "furnace"
     },
@@ -68020,7 +68034,8 @@
       },
       "output": {
         "id": "minecraft:red_sandstone",
-        "count": 1
+        "count": 1,
+        "auxValue": 3
       },
       "block": "furnace"
     },

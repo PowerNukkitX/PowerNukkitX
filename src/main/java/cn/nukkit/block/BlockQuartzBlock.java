@@ -16,7 +16,8 @@ public class BlockQuartzBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(QUARTZ_BLOCK, CommonBlockProperties.CHISEL_TYPE, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -44,10 +45,10 @@ public class BlockQuartzBlock extends BlockSolid {
                 "Quartz Block",
                 "Chiseled Quartz Block",
                 "Quartz Pillar",
-                "Quartz Pillar"
+                "Quartz Smooth"
         };
 
-        return names[this.blockstate.specialValue() & 0x03];
+        return names[getChiselType().ordinal()];
     }
 
     @Override
@@ -67,7 +68,7 @@ public class BlockQuartzBlock extends BlockSolid {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, this.blockstate.specialValue() & 0x03, 1);
+        return new ItemBlock(this, getChiselType().ordinal(), 1);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.enums.SandStoneType;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
@@ -64,5 +66,10 @@ public class BlockSandstone extends BlockSolid {
     @Override
     public boolean canHarvestWithHand() {
         return false;
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemBlock(this, getSandstoneType().ordinal());
     }
 }

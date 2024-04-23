@@ -121,8 +121,7 @@ public class BlockGrassBlock extends BlockDirt {
                 int y = random.nextInt((int) this.y - 3, (int) this.y + 1 + 1);
                 int z = random.nextInt((int) this.z - 1, (int) this.z + 1 + 1);
                 Block block = this.getLevel().getBlock(new Vector3(x, y, z));
-                if (block.getId() == Block.DIRT
-
+                if (block.getId().equals(Block.DIRT)
                         // It cannot spread to coarse dirt
                         && block.getPropertyValue(CommonBlockProperties.DIRT_TYPE) == DirtType.NORMAL
 
