@@ -2,10 +2,8 @@ package cn.nukkit.level.updater.item;
 
 import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.nbt.tag.Tag;
 
+import java.util.Map;
 import java.util.function.Function;
 
 public class ItemUpdater_1_20_80 implements Updater {
@@ -45,10 +43,13 @@ public class ItemUpdater_1_20_80 implements Updater {
                 .match("Name", identifier)
                 .edit("Name", helper -> {
                     Object block = helper.getRootTag().get("Block");
-                    if (block != null && block instanceof CompoundTag compoundTag) {
-                        Tag tag = compoundTag.get(typeState);
-                        if (tag != null && tag instanceof StringTag stringTag) {
-                            helper.getRootTag().put("Name", rename.apply(stringTag.data));
+                    if (block instanceof Map map) {
+                        Object states = map.get("states");
+                        if (states instanceof Map statesMap) {
+                            Object tag = statesMap.get(typeState);
+                            if (tag instanceof String string) {
+                                helper.getRootTag().put("Name", rename.apply(string));
+                            }
                         }
                     }
                 });
