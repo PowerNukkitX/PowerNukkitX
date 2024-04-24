@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemGlowFrame;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockGlowFrame extends BlockFrame {
@@ -30,10 +28,5 @@ public class BlockGlowFrame extends BlockFrame {
     @Override
     @NotNull public String getBlockEntityType() {
         return BlockEntity.GLOW_ITEM_FRAME;
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemGlowFrame();
     }
 }

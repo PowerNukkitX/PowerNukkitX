@@ -16,13 +16,13 @@ public class ProfessionFarmer extends Profession {
     public ListTag<CompoundTag> buildTrades(int seed) {
         ListTag<CompoundTag> recipes = new ListTag<>();
 
-        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.WHEAT,0,20), Item.get(Item.EMERALD))
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(BlockID.WHEAT,0,20), Item.get(Item.EMERALD))
                         .setMaxUses(16)
                         .setRewardExp((byte) 1)
                         .setTier(1)
                         .setTraderExp(2)
                         .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.BEETROOT,0,15), Item.get(Item.EMERALD))
+                .add(TradeRecipeBuildUtils.of(Item.get(BlockID.BEETROOT,0,15), Item.get(Item.EMERALD))
                         .setMaxUses(16)
                         .setRewardExp((byte) 1)
                         .setTier(1)
@@ -82,7 +82,7 @@ public class ProfessionFarmer extends Profession {
                         .setTier(4)
                         .setTraderExp(2)
                         .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD), Item.get(Item.CAKE))
+                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD), Item.get(BlockID.CAKE))
                         .setMaxUses(16)
                         .setRewardExp((byte) 1)
                         .setTier(4)

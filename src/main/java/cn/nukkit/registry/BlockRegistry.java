@@ -299,7 +299,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(BAMBOO_MOSAIC_STAIRS, BlockBambooMosaicStairs.class);
             register(BAMBOO_PLANKS, BlockBambooPlanks.class);
             register(BAMBOO_PRESSURE_PLATE, BlockBambooPressurePlate.class);
-            register(BAMBOO_SAPLING, BlockBambooSapling.class);
             register(BAMBOO_SLAB, BlockBambooSlab.class);
             register(BAMBOO_STAIRS, BlockBambooStairs.class);
             register(BAMBOO_STANDING_SIGN, BlockBambooStandingSign.class);
@@ -413,7 +412,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(CHERRY_LOG, BlockCherryLog.class);
             register(CHERRY_PLANKS, BlockCherryPlanks.class);
             register(CHERRY_PRESSURE_PLATE, BlockCherryPressurePlate.class);
-            register(CHERRY_SAPLING, BlockCherrySapling.class);
             register(CHERRY_SLAB, BlockCherrySlab.class);
             register(CHERRY_STAIRS, BlockCherryStairs.class);
             register(CHERRY_STANDING_SIGN, BlockCherryStandingSign.class);
@@ -1327,11 +1325,15 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(OAK_SAPLING, BlockOakSapling.class);
             register(SPRUCE_SAPLING, BlockSpruceSapling.class);
 
+            register(ALLIUM, BlockAllium.class);
             register(AZURE_BLUET, BlockAzureBluet.class);
             register(BLUE_ORCHID, BlockBlueOrchid.class);
+            register(CORNFLOWER, BlockCornflower.class);
+            register(LILY_OF_THE_VALLEY, BlockLilyOfTheValley.class);
             register(ORANGE_TULIP, BlockOrangeTulip.class);
             register(OXEYE_DAISY, BlockOxeyeDaisy.class);
             register(PINK_TULIP, BlockPinkTulip.class);
+            register(POPPY, BlockPoppy.class);
             register(RED_TULIP, BlockRedTulip.class);
             register(WHITE_TULIP, BlockWhiteTulip.class);
         } catch (RegisterException ignore) {

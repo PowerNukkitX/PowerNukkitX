@@ -15,10 +15,11 @@ public class BlockStateUpdater_1_20_80 implements Updater {
             case "tulip_orange" -> "minecraft:orange_tulip";
             case "tulip_pink" -> "minecraft:pink_tulip";
             case "tulip_white" -> "minecraft:white_tulip";
+            case "tulip_red" -> "minecraft:red_tulip";
             case "oxeye" -> "minecraft:oxeye_daisy";
             case "orchid" -> "minecraft:blue_orchid";
             case "houstonia" -> "minecraft:azure_bluet";
-            default -> "minecraft:red_tulip";
+            default -> "minecraft:" + type;
         });
 
         this.addTypeUpdater(ctx, "minecraft:coral_fan", "coral_color", type -> switch (type) {

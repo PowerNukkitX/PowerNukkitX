@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockLeaves;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSourceProvider;
@@ -116,9 +117,9 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
 
                 if (j * j + k * k <= i || l * l + i1 * i1 <= i || j * j + i1 * i1 <= i || l * l + k * k <= i) {
                     Vector3 blockpos = layerCenter.add(j, 0, k);
-                    String id = worldIn.getBlockIdAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z);
+                    Block block = worldIn.getBlockAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z);
 
-                    if (Objects.equals(id, Block.AIR) || Objects.equals(id, Block.LEAVES)) {
+                    if (block.isAir() || block instanceof BlockLeaves) {
                         worldIn.setBlockStateAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ(), this.leavesMetadata);
                     }
                 }
@@ -136,9 +137,8 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
             for (int k = -width; k <= width; ++k) {
                 if (j * j + k * k <= i) {
                     Vector3 blockpos = layerCenter.add(j, 0, k);
-                    String id = worldIn.getBlockIdAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z);
-
-                    if (Objects.equals(id, Block.AIR) || Objects.equals(id, Block.LEAVES)) {
+                    Block block = worldIn.getBlockAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z);
+                    if (block.isAir() || block instanceof BlockLeaves) {
                         worldIn.setBlockStateAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ(), this.leavesMetadata);
                     }
                 }

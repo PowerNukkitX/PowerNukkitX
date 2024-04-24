@@ -6,7 +6,6 @@ import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.block.ItemFrameUseEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemFrame;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
@@ -211,11 +210,6 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
                     toItem()
             };
         }
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemFrame();
     }
 
     @Override

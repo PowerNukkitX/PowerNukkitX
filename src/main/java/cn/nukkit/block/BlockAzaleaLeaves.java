@@ -45,8 +45,4 @@ public class BlockAzaleaLeaves extends BlockLeaves {
         return WoodType.OAK;
     }
 
-    @Override
-    public Item getSapling() {
-        return Block.get(AZALEA).toItem();
-    }
 }

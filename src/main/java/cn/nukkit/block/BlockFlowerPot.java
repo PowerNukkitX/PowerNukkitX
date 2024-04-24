@@ -5,7 +5,6 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityFlowerPot;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemFlowerPot;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -184,12 +183,12 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         }
         if (dropInside) {
             return new Item[]{
-                    new ItemFlowerPot(),
+                    toItem(),
                     Item.get(insideID, insideMeta)
             };
         } else {
             return new Item[]{
-                    new ItemFlowerPot()
+                    toItem()
             };
         }
     }
@@ -227,11 +226,6 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     @Override
     public boolean canPassThrough() {
         return false;
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemFlowerPot();
     }
 
     /**

@@ -1,5 +1,6 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAcaciaSlab;
 import cn.nukkit.block.BlockBirchSlab;
 import cn.nukkit.block.BlockDarkOakSlab;
@@ -128,15 +129,15 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(ItemID.DARK_OAK_SIGN, 200);
         register0(ItemID.OAK_SIGN, 200);
 
-        register0(ItemID.ACACIA_HANGING_SIGN, 200);
-        register0(ItemID.BAMBOO_HANGING_SIGN, 200);
-        register0(ItemID.BIRCH_HANGING_SIGN, 200);
-        register0(ItemID.CHERRY_HANGING_SIGN, 200);
-        register0(ItemID.JUNGLE_HANGING_SIGN, 200);
-        register0(ItemID.MANGROVE_HANGING_SIGN, 200);
-        register0(ItemID.SPRUCE_HANGING_SIGN, 200);
-        register0(ItemID.DARK_OAK_HANGING_SIGN, 200);
-        register0(ItemID.OAK_HANGING_SIGN, 200);
+        register0(Block.ACACIA_HANGING_SIGN, 200);
+        register0(Block.BAMBOO_HANGING_SIGN, 200);
+        register0(Block.BIRCH_HANGING_SIGN, 200);
+        register0(Block.CHERRY_HANGING_SIGN, 200);
+        register0(Block.JUNGLE_HANGING_SIGN, 200);
+        register0(Block.MANGROVE_HANGING_SIGN, 200);
+        register0(Block.SPRUCE_HANGING_SIGN, 200);
+        register0(Block.DARK_OAK_HANGING_SIGN, 200);
+        register0(Block.OAK_HANGING_SIGN, 200);
 
         register0(BlockID.WOODEN_PRESSURE_PLATE, 300);
         register0(BlockID.SPRUCE_PRESSURE_PLATE, 300);
@@ -148,7 +149,15 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.CHERRY_PRESSURE_PLATE, 300);
         register0(BlockID.BAMBOO_PRESSURE_PLATE, 300);
 
-        register0(BlockID.SAPLING, 100);
+        register0(BlockID.ACACIA_SAPLING,100);
+        register0(BlockID.CHERRY_SAPLING,100);
+        register0(BlockID.SPRUCE_SAPLING,100);
+        register0(BlockID.BAMBOO_SAPLING,100);
+        register0(BlockID.OAK_SAPLING,100);
+        register0(BlockID.JUNGLE_SAPLING,100);
+        register0(BlockID.DARK_OAK_SAPLING,100);
+        register0(BlockID.BIRCH_SAPLING,100);
+
         register0(ItemID.STICK, 100);
         register0(BlockID.AZALEA, 100);
         register0(ItemID.BOWL, 100);
@@ -186,7 +195,15 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockBirchSlab.PROPERTIES.getDefaultState().toItem(), 300);
         register0(BlockDarkOakSlab.PROPERTIES.getDefaultState().toItem(), 300);
 
-        register0(BlockID.DOUBLE_WOODEN_SLAB, 300);
+        register0(BlockID.ACACIA_DOUBLE_SLAB,300);
+        register0(BlockID.OAK_DOUBLE_SLAB,300);
+        register0(BlockID.SPRUCE_DOUBLE_SLAB,300);
+        register0(BlockID.DARK_OAK_DOUBLE_SLAB,300);
+        register0(BlockID.BAMBOO_DOUBLE_SLAB,300);
+        register0(BlockID.CRIMSON_DOUBLE_SLAB,300);
+        register0(BlockID.CHERRY_DOUBLE_SLAB,300);
+        register0(BlockID.BIRCH_DOUBLE_SLAB,300);
+
         register0(ItemID.BLAZE_ROD, 2400);
         register0(BlockID.BROWN_MUSHROOM_BLOCK, 300);
         register0(BlockID.RED_MUSHROOM_BLOCK, 300);
@@ -224,15 +241,15 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.CHERRY_BUTTON, 100);
         register0(BlockID.BAMBOO_BUTTON, 100);
 
-        register0(ItemID.WOODEN_DOOR, 200);
-        register0(ItemID.SPRUCE_DOOR, 200);
-        register0(ItemID.BIRCH_DOOR, 200);
-        register0(ItemID.JUNGLE_DOOR, 200);
-        register0(ItemID.ACACIA_DOOR, 200);
-        register0(ItemID.DARK_OAK_DOOR, 200);
-        register0(ItemID.BAMBOO_DOOR, 200);
-        register0(ItemID.MANGROVE_DOOR, 200);
-        register0(ItemID.CHERRY_DOOR, 200);
+        register0(BlockID.WOODEN_DOOR, 200);
+        register0(BlockID.SPRUCE_DOOR, 200);
+        register0(BlockID.BIRCH_DOOR, 200);
+        register0(BlockID.JUNGLE_DOOR, 200);
+        register0(BlockID.ACACIA_DOOR, 200);
+        register0(BlockID.DARK_OAK_DOOR, 200);
+        register0(BlockID.BAMBOO_DOOR, 200);
+        register0(BlockID.MANGROVE_DOOR, 200);
+        register0(BlockID.CHERRY_DOOR, 200);
 
         register0(BlockID.TRAPDOOR, 300);
         register0(BlockID.SPRUCE_TRAPDOOR, 300);

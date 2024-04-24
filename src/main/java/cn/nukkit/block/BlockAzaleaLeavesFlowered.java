@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.PERSISTENT_BIT;
@@ -27,8 +26,4 @@ public class BlockAzaleaLeavesFlowered extends BlockAzaleaLeaves {
         return "Azalea Leaves Flowered";
     }
 
-    @Override
-    public Item getSapling() {
-        return Block.get(FLOWERING_AZALEA).toItem();
-    }
 }

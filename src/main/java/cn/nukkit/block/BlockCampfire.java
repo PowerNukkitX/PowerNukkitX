@@ -295,11 +295,6 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
-    public Item toItem() {
-        return Item.get(ItemID.CAMPFIRE);
-    }
-
-    @Override
     public boolean hasComparatorInputOverride() {
         return true;
     }

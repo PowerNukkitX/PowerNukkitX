@@ -1,5 +1,6 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -21,6 +22,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -114,6 +116,6 @@ public class EntityPig extends EntityAnimal implements EntityWalkable {
     public boolean isBreedingItem(Item item) {
         String id = item.getId();
 
-        return id == Item.CARROT || id == Item.POTATO || id == Item.BEETROOT;
+        return Objects.equals(id, Item.CARROT) || Objects.equals(id, Item.POTATO) || Objects.equals(id, BlockID.BEETROOT);
     }
 }

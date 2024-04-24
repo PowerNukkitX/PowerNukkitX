@@ -1,9 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.ItemWoodenDoor;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWoodenDoor extends BlockDoor {
@@ -40,10 +38,5 @@ public class BlockWoodenDoor extends BlockDoor {
     @Override
     public int getToolType() {
         return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemWoodenDoor();
     }
 }

@@ -234,20 +234,18 @@ public class ObjectCherryTree extends TreeGenerator {
                 for (int dz = -LEAVES_RADIUS; dz <= LEAVES_RADIUS; dz++) {
                     var currentRadius = LEAVES_RADIUS - (Math.max(1, Math.abs(dy)));
                     if (dx * dx + dz * dz > currentRadius * currentRadius) continue;
-                    var blockId = level.getBlockIdAt(x + dx, y + dy, z + dz);
+                    var block = level.getBlockAt(x + dx, y + dy, z + dz);
+                    var blockId = block.getId();
                     if (Objects.equals(blockId, BlockID.AIR) ||
-                            Objects.equals(blockId, BlockID.LEAVES) ||
-                            Objects.equals(blockId, BlockID.LEAVES2) ||
-                            Objects.equals(blockId, BlockID.AZALEA_LEAVES) ||
+                            block instanceof BlockLeaves ||
                             Objects.equals(blockId, BlockID.AZALEA_LEAVES_FLOWERED)) {
                         level.setBlockStateAt(x + dx, y + dy, z + dz, LEAVES);
                     }
                     if (dy == -2 && rand.nextInt(0, 2) == 0) {
-                        blockId = level.getBlockIdAt(x + dx, y + dy - 1, z + dz);
+                        block = level.getBlockAt(x + dx, y + dy - 1, z + dz);
+                        blockId = block.getId();
                         if (Objects.equals(blockId, BlockID.AIR) ||
-                                Objects.equals(blockId, BlockID.LEAVES) ||
-                                Objects.equals(blockId, BlockID.LEAVES2) ||
-                                Objects.equals(blockId, BlockID.AZALEA_LEAVES) ||
+                                block instanceof BlockLeaves ||
                                 Objects.equals(blockId, BlockID.AZALEA_LEAVES_FLOWERED)) {
                             level.setBlockStateAt(x + dx, y + dy - 1, z + dz, LEAVES);
                         }

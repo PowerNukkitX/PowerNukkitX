@@ -120,7 +120,7 @@ public abstract class BlockLeaves extends BlockTransparent {
             drops.add(Item.get(ItemID.STICK));
         }
         if (random.nextInt(saplingOdds) == 0) {
-            drops.add(getSapling());
+            drops.add(toItem());
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
@@ -210,8 +210,6 @@ public abstract class BlockLeaves extends BlockTransparent {
     protected boolean canDropApple() {
         return getType() == WoodType.OAK;
     }
-
-    public abstract Item getSapling();
 
     @Override
     public boolean diffusesSkyLight() {

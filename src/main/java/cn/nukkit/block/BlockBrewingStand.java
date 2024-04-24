@@ -6,7 +6,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBrewingStand;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -130,11 +129,6 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
         }
 
         return true;
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemBrewingStand();
     }
 
     @Override

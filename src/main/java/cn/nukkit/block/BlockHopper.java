@@ -12,7 +12,6 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemHopper;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
@@ -177,11 +176,6 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemHopper();
     }
 
     @Override

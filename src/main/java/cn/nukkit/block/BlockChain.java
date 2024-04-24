@@ -4,7 +4,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
@@ -85,11 +84,6 @@ public class BlockChain extends BlockTransparent {
     @Override
     public double getMaxZ() {
         return z + 9/16.0;
-    }
-
-    @Override
-    public Item toItem() {
-        return Item.get(ItemID.CHAIN);
     }
 
     @Override

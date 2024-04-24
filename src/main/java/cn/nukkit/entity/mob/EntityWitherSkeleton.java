@@ -1,6 +1,7 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.*;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -151,7 +152,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
         }
         //掉落头的概率为2.5%
         if (Utils.rand(0, 40) == 1) {
-            drops.add(Item.get(Item.SKULL, 1, 1));
+            drops.add(Item.get(BlockID.SKULL, 1, 1));
         }
         return drops.toArray(Item.EMPTY_ARRAY);
     }

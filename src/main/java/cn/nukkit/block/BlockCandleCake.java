@@ -118,11 +118,6 @@ public class BlockCandleCake extends BlockTransparent {
         return new Item[]{toCandleForm().toItem()};
     }
 
-    @Override
-    public Item toItem() {
-        return Item.get(ItemID.CAKE);
-    }
-
     @SuppressWarnings("DuplicatedCode")
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {

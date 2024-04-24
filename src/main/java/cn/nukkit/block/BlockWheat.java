@@ -36,11 +36,6 @@ public class BlockWheat extends BlockCrops {
     }
 
     @Override
-    public Item toItem() {
-        return Item.get(ItemID.WHEAT_SEEDS);
-    }
-
-    @Override
     public Item[] getDrops(Item item) {
         // https://minecraft.wiki/w/Fortune#Seeds
         if (!isFullyGrown()) {
@@ -59,9 +54,9 @@ public class BlockWheat extends BlockCrops {
         }
 
         if (count > 0) {
-            return new Item[]{Item.get(ItemID.WHEAT), Item.get(ItemID.WHEAT_SEEDS, 0, count)};
+            return new Item[]{toItem(), Item.get(ItemID.WHEAT_SEEDS, 0, count)};
         } else {
-            return new Item[]{Item.get(ItemID.WHEAT)};
+            return new Item[]{toItem()};
         }
     }
 }

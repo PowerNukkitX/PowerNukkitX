@@ -556,11 +556,6 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     }
 
     @Override
-    public Item toItem() {
-        return Item.get(ItemID.CAULDRON);
-    }
-
-    @Override
     public boolean hasComparatorInputOverride() {
         return true;
     }
