@@ -1,13 +1,15 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.StoneBrickType;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
+import static cn.nukkit.block.property.CommonBlockProperties.STONE_BRICK_TYPE;
+
 public class BlockStonebrick extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(STONEBRICK, CommonBlockProperties.STONE_BRICK_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STONEBRICK, STONE_BRICK_TYPE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -33,11 +35,11 @@ public class BlockStonebrick extends BlockSolid {
     }
 
     public void setBrickStoneType(StoneBrickType stoneBrickType) {
-        setPropertyValue(CommonBlockProperties.STONE_BRICK_TYPE, stoneBrickType);
+        setPropertyValue(STONE_BRICK_TYPE, stoneBrickType);
     }
 
     public StoneBrickType getStoneBrickType() {
-        return getPropertyValue(CommonBlockProperties.STONE_BRICK_TYPE);
+        return getPropertyValue(STONE_BRICK_TYPE);
     }
 
     @Override
@@ -69,5 +71,10 @@ public class BlockStonebrick extends BlockSolid {
     @Override
     public boolean canHarvestWithHand() {
         return false;
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemBlock(this.getProperties().getBlockState(STONE_BRICK_TYPE.createValue(getPropertyValue(STONE_BRICK_TYPE))).toBlock());
     }
 }

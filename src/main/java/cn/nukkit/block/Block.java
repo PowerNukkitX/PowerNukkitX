@@ -1284,7 +1284,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public Item toItem() {
-        return new ItemBlock(this);
+        return new ItemBlock(this.getProperties().getDefaultState().toBlock());
     }
 
     /**
