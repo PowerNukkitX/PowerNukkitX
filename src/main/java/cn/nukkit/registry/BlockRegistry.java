@@ -250,7 +250,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             "minecraft:weathered_copper_bulb",
             "minecraft:weathered_copper_door",
             "minecraft:weathered_copper_grate",
-            "minecraft:weathered_copper_trapdoor"
+            "minecraft:weathered_copper_trapdoor",
+            "minecraft:heavy_core"
     );
 
     @Override
