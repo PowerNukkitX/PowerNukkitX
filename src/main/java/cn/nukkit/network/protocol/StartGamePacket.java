@@ -53,6 +53,7 @@ public class StartGamePacket extends DataPacket {
     public byte dimension;
     public int generator = 1;
     public int worldGamemode;
+    public boolean isHardcore = false;
     public int difficulty;
     public int spawnX;
     public int spawnY;
@@ -142,20 +143,7 @@ public class StartGamePacket extends DataPacket {
      */
     public boolean isSoundsServerAuthoritative;
 
-    @Override
-    public void decode(HandleByteBuf byteBuf) {
-
-    }
-
-    @Override
-    public void encode(HandleByteBuf byteBuf) {
-
-        byteBuf.writeEntityUniqueId(this.entityUniqueId);
-        byteBuf.writeEntityRuntimeId(this.entityRuntimeId);
-        byteBuf.writeVarInt(this.playerGamemode);
-        byteBuf.writeVector3f(this.x, this.y, this.z);
-        byteBuf.writeFloatLE(this.yaw);
-        byteBuf.writeFloatLE(this.pitch);
+    private void writeLevelSettings(HandleByteBuf byteBuf) {
         /* Level settings start */
         byteBuf.writeLongLE(this.seed);
         byteBuf.writeShortLE(0x00); // SpawnBiomeType - Default
@@ -163,6 +151,7 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeVarInt(this.dimension);
         byteBuf.writeVarInt(this.generator);
         byteBuf.writeVarInt(this.worldGamemode);
+        byteBuf.writeBoolean(this.isHardcore);
         byteBuf.writeVarInt(this.difficulty);
         byteBuf.writeBlockVector3(this.spawnX, this.spawnY, this.spawnZ);
         byteBuf.writeBoolean(this.hasAchievementsDisabled);
@@ -228,6 +217,22 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeByte(this.chatRestrictionLevel);
         byteBuf.writeBoolean(this.disablePlayerInteractions);
         /* Level settings end */
+    }
+
+    @Override
+    public void decode(HandleByteBuf byteBuf) {
+
+    }
+
+    @Override
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeEntityUniqueId(this.entityUniqueId);
+        byteBuf.writeEntityRuntimeId(this.entityRuntimeId);
+        byteBuf.writeVarInt(this.playerGamemode);
+        byteBuf.writeVector3f(this.x, this.y, this.z);
+        byteBuf.writeFloatLE(this.yaw);
+        byteBuf.writeFloatLE(this.pitch);
+        writeLevelSettings(byteBuf);
         byteBuf.writeString(this.levelId);
         byteBuf.writeString(this.worldName);
         byteBuf.writeString(this.premiumWorldTemplateId);

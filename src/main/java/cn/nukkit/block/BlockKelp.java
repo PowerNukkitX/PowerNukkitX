@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemKelp;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -164,11 +163,6 @@ public class BlockKelp extends BlockFlowable {
         }
 
         return false;
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemKelp();
     }
 
     @Override

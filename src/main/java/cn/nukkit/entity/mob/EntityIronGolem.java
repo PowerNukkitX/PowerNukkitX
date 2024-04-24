@@ -71,7 +71,7 @@ public class EntityIronGolem extends EntityMob implements EntityWalkable {
         Item[] drops;
         if (flowerAmount > 0) {
             drops = new Item[2];
-            drops[1] = Item.get(BlockID.RED_FLOWER, 0, flowerAmount);
+            drops[1] = Item.get(BlockID.RED_TULIP, 0, flowerAmount);
         } else {
             drops = new Item[1];
         }

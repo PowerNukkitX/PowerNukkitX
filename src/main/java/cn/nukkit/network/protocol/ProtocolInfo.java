@@ -8,15 +8,14 @@ import static cn.nukkit.utils.Utils.dynamic;
  * @author MagicDroidX &amp; iNevet (Nukkit Project)
  */
 public interface ProtocolInfo {
-
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(662);
+    int CURRENT_PROTOCOL = dynamic(671);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.20.70");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.20.80");
 
-    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 20, 70, 0, 0);
+    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 20, 80, 0, 0);
 
     int BLOCK_STATE_VERSION_NO_REVISION = (MINECRAFT_SEMVERSION.major() << 24) | //major
             (MINECRAFT_SEMVERSION.minor() << 16) | //minor

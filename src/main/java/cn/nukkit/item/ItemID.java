@@ -5,10 +5,6 @@ public interface ItemID {
 
     String ACACIA_CHEST_BOAT = "minecraft:acacia_chest_boat";
 
-    String ACACIA_DOOR = "minecraft:acacia_door";
-
-    String ACACIA_HANGING_SIGN = "minecraft:acacia_hanging_sign";
-
     String ACACIA_SIGN = "minecraft:acacia_sign";
 
     String AGENT_SPAWN_EGG = "minecraft:agent_spawn_egg";
@@ -22,6 +18,10 @@ public interface ItemID {
     String APPLE = "minecraft:apple";
 
     String ARCHER_POTTERY_SHERD = "minecraft:archer_pottery_sherd";
+
+    String ARMADILLO_SCUTE = "minecraft:armadillo_scute";
+
+    String ARMADILLO_SPAWN_EGG = "minecraft:armadillo_spawn_egg";
 
     String ARMOR_STAND = "minecraft:armor_stand";
 
@@ -39,10 +39,6 @@ public interface ItemID {
 
     String BAMBOO_CHEST_RAFT = "minecraft:bamboo_chest_raft";
 
-    String BAMBOO_DOOR = "minecraft:bamboo_door";
-
-    String BAMBOO_HANGING_SIGN = "minecraft:bamboo_hanging_sign";
-
     String BAMBOO_RAFT = "minecraft:bamboo_raft";
 
     String BAMBOO_SIGN = "minecraft:bamboo_sign";
@@ -53,13 +49,9 @@ public interface ItemID {
 
     String BAT_SPAWN_EGG = "minecraft:bat_spawn_egg";
 
-    String BED = "minecraft:bed";
-
     String BEE_SPAWN_EGG = "minecraft:bee_spawn_egg";
 
     String BEEF = "minecraft:beef";
-
-    String BEETROOT = "minecraft:beetroot";
 
     String BEETROOT_SEEDS = "minecraft:beetroot_seeds";
 
@@ -68,10 +60,6 @@ public interface ItemID {
     String BIRCH_BOAT = "minecraft:birch_boat";
 
     String BIRCH_CHEST_BOAT = "minecraft:birch_chest_boat";
-
-    String BIRCH_DOOR = "minecraft:birch_door";
-
-    String BIRCH_HANGING_SIGN = "minecraft:birch_hanging_sign";
 
     String BIRCH_SIGN = "minecraft:birch_sign";
 
@@ -91,6 +79,10 @@ public interface ItemID {
 
     String BOAT = "minecraft:boat";
 
+    String BOGGED_SPAWN_EGG = "minecraft:bogged_spawn_egg";
+
+    String BOLT_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:bolt_armor_trim_smithing_template";
+
     String BONE = "minecraft:bone";
 
     String BONE_MEAL = "minecraft:bone_meal";
@@ -105,9 +97,11 @@ public interface ItemID {
 
     String BREAD = "minecraft:bread";
 
-    String BREWER_POTTERY_SHERD = "minecraft:brewer_pottery_sherd";
+    String BREEZE_ROD = "minecraft:breeze_rod";
 
-    String BREWING_STAND = "minecraft:brewing_stand";
+    String BREEZE_SPAWN_EGG = "minecraft:breeze_spawn_egg";
+
+    String BREWER_POTTERY_SHERD = "minecraft:brewer_pottery_sherd";
 
     String BRICK = "minecraft:brick";
 
@@ -119,11 +113,7 @@ public interface ItemID {
 
     String BURN_POTTERY_SHERD = "minecraft:burn_pottery_sherd";
 
-    String CAKE = "minecraft:cake";
-
     String CAMEL_SPAWN_EGG = "minecraft:camel_spawn_egg";
-
-    String CAMPFIRE = "minecraft:campfire";
 
     String CARPET = "minecraft:carpet";
 
@@ -133,11 +123,7 @@ public interface ItemID {
 
     String CAT_SPAWN_EGG = "minecraft:cat_spawn_egg";
 
-    String CAULDRON = "minecraft:cauldron";
-
     String CAVE_SPIDER_SPAWN_EGG = "minecraft:cave_spider_spawn_egg";
-
-    String CHAIN = "minecraft:chain";
 
     String CHAINMAIL_BOOTS = "minecraft:chainmail_boots";
 
@@ -152,10 +138,6 @@ public interface ItemID {
     String CHERRY_BOAT = "minecraft:cherry_boat";
 
     String CHERRY_CHEST_BOAT = "minecraft:cherry_chest_boat";
-
-    String CHERRY_DOOR = "minecraft:cherry_door";
-
-    String CHERRY_HANGING_SIGN = "minecraft:cherry_hanging_sign";
 
     String CHERRY_SIGN = "minecraft:cherry_sign";
 
@@ -213,21 +195,19 @@ public interface ItemID {
 
     String COOKIE = "minecraft:cookie";
 
-    String COPPER_DOOR = "minecraft:copper_door";
-
     String COPPER_INGOT = "minecraft:copper_ingot";
 
     String CORAL = "minecraft:coral";
+
+    String CORAL_FAN = "minecraft:coral_fan";
+
+    String CORAL_FAN_DEAD = "minecraft:coral_fan_dead";
 
     String COW_SPAWN_EGG = "minecraft:cow_spawn_egg";
 
     String CREEPER_BANNER_PATTERN = "minecraft:creeper_banner_pattern";
 
     String CREEPER_SPAWN_EGG = "minecraft:creeper_spawn_egg";
-
-    String CRIMSON_DOOR = "minecraft:crimson_door";
-
-    String CRIMSON_HANGING_SIGN = "minecraft:crimson_hanging_sign";
 
     String CRIMSON_SIGN = "minecraft:crimson_sign";
 
@@ -240,10 +220,6 @@ public interface ItemID {
     String DARK_OAK_BOAT = "minecraft:dark_oak_boat";
 
     String DARK_OAK_CHEST_BOAT = "minecraft:dark_oak_chest_boat";
-
-    String DARK_OAK_DOOR = "minecraft:dark_oak_door";
-
-    String DARK_OAK_HANGING_SIGN = "minecraft:dark_oak_hanging_sign";
 
     String DARK_OAK_SIGN = "minecraft:dark_oak_sign";
 
@@ -319,8 +295,6 @@ public interface ItemID {
 
     String EXPLORER_POTTERY_SHERD = "minecraft:explorer_pottery_sherd";
 
-    String EXPOSED_COPPER_DOOR = "minecraft:exposed_copper_door";
-
     String EYE_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:eye_armor_trim_smithing_template";
 
     String FEATHER = "minecraft:feather";
@@ -345,13 +319,15 @@ public interface ItemID {
 
     String FLINT_AND_STEEL = "minecraft:flint_and_steel";
 
+    String FLOW_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:flow_armor_trim_smithing_template";
+
+    String FLOW_BANNER_PATTERN = "minecraft:flow_banner_pattern";
+
+    String FLOW_POTTERY_SHERD = "minecraft:flow_pottery_sherd";
+
     String FLOWER_BANNER_PATTERN = "minecraft:flower_banner_pattern";
 
-    String FLOWER_POT = "minecraft:flower_pot";
-
     String FOX_SPAWN_EGG = "minecraft:fox_spawn_egg";
-
-    String FRAME = "minecraft:frame";
 
     String FRIEND_POTTERY_SHERD = "minecraft:friend_pottery_sherd";
 
@@ -368,8 +344,6 @@ public interface ItemID {
     String GLOBE_BANNER_PATTERN = "minecraft:globe_banner_pattern";
 
     String GLOW_BERRIES = "minecraft:glow_berries";
-
-    String GLOW_FRAME = "minecraft:glow_frame";
 
     String GLOW_INK_SAC = "minecraft:glow_ink_sac";
 
@@ -419,6 +393,14 @@ public interface ItemID {
 
     String GUNPOWDER = "minecraft:gunpowder";
 
+    String GUSTER_BANNER_PATTERN = "minecraft:guster_banner_pattern";
+
+    String GUSTER_POTTERY_SHERD = "minecraft:guster_pottery_sherd";
+
+    String HARD_STAINED_GLASS = "minecraft:hard_stained_glass";
+
+    String HARD_STAINED_GLASS_PANE = "minecraft:hard_stained_glass_pane";
+
     String HEART_OF_THE_SEA = "minecraft:heart_of_the_sea";
 
     String HEART_POTTERY_SHERD = "minecraft:heart_pottery_sherd";
@@ -430,8 +412,6 @@ public interface ItemID {
     String HONEY_BOTTLE = "minecraft:honey_bottle";
 
     String HONEYCOMB = "minecraft:honeycomb";
-
-    String HOPPER = "minecraft:hopper";
 
     String HOPPER_MINECART = "minecraft:hopper_minecart";
 
@@ -452,8 +432,6 @@ public interface ItemID {
     String IRON_BOOTS = "minecraft:iron_boots";
 
     String IRON_CHESTPLATE = "minecraft:iron_chestplate";
-
-    String IRON_DOOR = "minecraft:iron_door";
 
     String IRON_GOLEM_SPAWN_EGG = "minecraft:iron_golem_spawn_egg";
 
@@ -479,13 +457,7 @@ public interface ItemID {
 
     String JUNGLE_CHEST_BOAT = "minecraft:jungle_chest_boat";
 
-    String JUNGLE_DOOR = "minecraft:jungle_door";
-
-    String JUNGLE_HANGING_SIGN = "minecraft:jungle_hanging_sign";
-
     String JUNGLE_SIGN = "minecraft:jungle_sign";
-
-    String KELP = "minecraft:kelp";
 
     String LAPIS_LAZULI = "minecraft:lapis_lazuli";
 
@@ -505,6 +477,10 @@ public interface ItemID {
 
     String LEATHER_LEGGINGS = "minecraft:leather_leggings";
 
+    String LEAVES = "minecraft:leaves";
+
+    String LEAVES2 = "minecraft:leaves2";
+
     String LIGHT_BLUE_DYE = "minecraft:light_blue_dye";
 
     String LIGHT_GRAY_DYE = "minecraft:light_gray_dye";
@@ -521,6 +497,8 @@ public interface ItemID {
 
     String LOG2 = "minecraft:log2";
 
+    String MACE = "minecraft:mace";
+
     String MAGENTA_DYE = "minecraft:magenta_dye";
 
     String MAGMA_CREAM = "minecraft:magma_cream";
@@ -530,10 +508,6 @@ public interface ItemID {
     String MANGROVE_BOAT = "minecraft:mangrove_boat";
 
     String MANGROVE_CHEST_BOAT = "minecraft:mangrove_chest_boat";
-
-    String MANGROVE_DOOR = "minecraft:mangrove_door";
-
-    String MANGROVE_HANGING_SIGN = "minecraft:mangrove_hanging_sign";
 
     String MANGROVE_SIGN = "minecraft:mangrove_sign";
 
@@ -597,11 +571,7 @@ public interface ItemID {
 
     String NAUTILUS_SHELL = "minecraft:nautilus_shell";
 
-    String NETHER_SPROUTS = "minecraft:nether_sprouts";
-
     String NETHER_STAR = "minecraft:nether_star";
-
-    String NETHER_WART = "minecraft:nether_wart";
 
     String NETHERBRICK = "minecraft:netherbrick";
 
@@ -635,15 +605,11 @@ public interface ItemID {
 
     String OAK_CHEST_BOAT = "minecraft:oak_chest_boat";
 
-    String OAK_HANGING_SIGN = "minecraft:oak_hanging_sign";
-
     String OAK_SIGN = "minecraft:oak_sign";
 
     String OCELOT_SPAWN_EGG = "minecraft:ocelot_spawn_egg";
 
     String ORANGE_DYE = "minecraft:orange_dye";
-
-    String OXIDIZED_COPPER_DOOR = "minecraft:oxidized_copper_door";
 
     String PAINTING = "minecraft:painting";
 
@@ -735,6 +701,8 @@ public interface ItemID {
 
     String RED_DYE = "minecraft:red_dye";
 
+    String RED_FLOWER = "minecraft:red_flower";
+
     String REDSTONE = "minecraft:redstone";
 
     String REPEATER = "minecraft:repeater";
@@ -751,7 +719,9 @@ public interface ItemID {
 
     String SALMON_SPAWN_EGG = "minecraft:salmon_spawn_egg";
 
-    String TURTLE_SCUTE = "minecraft:turtle_scute";
+    String SAPLING = "minecraft:sapling";
+
+    String SCRAPE_POTTERY_SHERD = "minecraft:scrape_pottery_sherd";
 
     String SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:sentry_armor_trim_smithing_template";
 
@@ -781,8 +751,6 @@ public interface ItemID {
 
     String SKELETON_SPAWN_EGG = "minecraft:skeleton_spawn_egg";
 
-    String SKULL = "minecraft:skull";
-
     String SKULL_BANNER_PATTERN = "minecraft:skull_banner_pattern";
 
     String SKULL_POTTERY_SHERD = "minecraft:skull_pottery_sherd";
@@ -801,8 +769,6 @@ public interface ItemID {
 
     String SNOWBALL = "minecraft:snowball";
 
-    String SOUL_CAMPFIRE = "minecraft:soul_campfire";
-
     String SPARKLER = "minecraft:sparkler";
 
     String SPAWN_EGG = "minecraft:spawn_egg";
@@ -818,10 +784,6 @@ public interface ItemID {
     String SPRUCE_BOAT = "minecraft:spruce_boat";
 
     String SPRUCE_CHEST_BOAT = "minecraft:spruce_chest_boat";
-
-    String SPRUCE_DOOR = "minecraft:spruce_door";
-
-    String SPRUCE_HANGING_SIGN = "minecraft:spruce_hanging_sign";
 
     String SPRUCE_SIGN = "minecraft:spruce_sign";
 
@@ -875,6 +837,8 @@ public interface ItemID {
 
     String TRADER_LLAMA_SPAWN_EGG = "minecraft:trader_llama_spawn_egg";
 
+    String TRIAL_KEY = "minecraft:trial_key";
+
     String TRIDENT = "minecraft:trident";
 
     String TROPICAL_FISH = "minecraft:tropical_fish";
@@ -884,6 +848,8 @@ public interface ItemID {
     String TROPICAL_FISH_SPAWN_EGG = "minecraft:tropical_fish_spawn_egg";
 
     String TURTLE_HELMET = "minecraft:turtle_helmet";
+
+    String TURTLE_SCUTE = "minecraft:turtle_scute";
 
     String TURTLE_SPAWN_EGG = "minecraft:turtle_spawn_egg";
 
@@ -901,29 +867,13 @@ public interface ItemID {
 
     String WARDEN_SPAWN_EGG = "minecraft:warden_spawn_egg";
 
-    String WARPED_DOOR = "minecraft:warped_door";
-
     String WARPED_FUNGUS_ON_A_STICK = "minecraft:warped_fungus_on_a_stick";
-
-    String WARPED_HANGING_SIGN = "minecraft:warped_hanging_sign";
 
     String WARPED_SIGN = "minecraft:warped_sign";
 
     String WATER_BUCKET = "minecraft:water_bucket";
 
-    String WAXED_COPPER_DOOR = "minecraft:waxed_copper_door";
-
-    String WAXED_EXPOSED_COPPER_DOOR = "minecraft:waxed_exposed_copper_door";
-
-    String WAXED_OXIDIZED_COPPER_DOOR = "minecraft:waxed_oxidized_copper_door";
-
-    String WAXED_WEATHERED_COPPER_DOOR = "minecraft:waxed_weathered_copper_door";
-
     String WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:wayfinder_armor_trim_smithing_template";
-
-    String WEATHERED_COPPER_DOOR = "minecraft:weathered_copper_door";
-
-    String WHEAT = "minecraft:wheat";
 
     String WHEAT_SEEDS = "minecraft:wheat_seeds";
 
@@ -931,23 +881,29 @@ public interface ItemID {
 
     String WILD_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:wild_armor_trim_smithing_template";
 
+    String WIND_CHARGE = "minecraft:wind_charge";
+
     String WITCH_SPAWN_EGG = "minecraft:witch_spawn_egg";
 
     String WITHER_SKELETON_SPAWN_EGG = "minecraft:wither_skeleton_spawn_egg";
 
     String WITHER_SPAWN_EGG = "minecraft:wither_spawn_egg";
 
+    String WOLF_ARMOR = "minecraft:wolf_armor";
+
     String WOLF_SPAWN_EGG = "minecraft:wolf_spawn_egg";
 
-    String WOODEN_AXE = "minecraft:wooden_axe";
+    String WOOD = "minecraft:wood";
 
-    String WOODEN_DOOR = "minecraft:wooden_door";
+    String WOODEN_AXE = "minecraft:wooden_axe";
 
     String WOODEN_HOE = "minecraft:wooden_hoe";
 
     String WOODEN_PICKAXE = "minecraft:wooden_pickaxe";
 
     String WOODEN_SHOVEL = "minecraft:wooden_shovel";
+
+    String WOODEN_SLAB = "minecraft:wooden_slab";
 
     String WOODEN_SWORD = "minecraft:wooden_sword";
 
@@ -968,30 +924,4 @@ public interface ItemID {
     String ZOMBIE_SPAWN_EGG = "minecraft:zombie_spawn_egg";
 
     String ZOMBIE_VILLAGER_SPAWN_EGG = "minecraft:zombie_villager_spawn_egg";
-
-    String LEAVES = "minecraft:leaves";
-
-    String LEAVES2 = "minecraft:leaves2";
-
-    String ARMADILLO_SCUTE = "minecraft:armadillo_scute";
-
-    String ARMADILLO_SPAWN_EGG = "minecraft:armadillo_spawn_egg";
-
-    String BOGGED_SPAWN_EGG = "minecraft:bogged_spawn_egg";
-
-    String BREEZE_SPAWN_EGG = "minecraft:breeze_spawn_egg";
-
-    String HARD_STAINED_GLASS = "minecraft:hard_stained_glass";
-
-    String HARD_STAINED_GLASS_PANE = "minecraft:hard_stained_glass_pane";
-
-    String TRIAL_KEY = "minecraft:trial_key";
-
-    String WIND_CHARGE = "minecraft:wind_charge";
-
-    String WOLF_ARMOR = "minecraft:wolf_armor";
-
-    String WOOD = "minecraft:wood";
-
-    String WOODEN_SLAB = "minecraft:wooden_slab";
 }

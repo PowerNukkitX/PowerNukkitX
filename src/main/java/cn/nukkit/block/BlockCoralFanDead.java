@@ -1,24 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.level.Level;
-import org.jetbrains.annotations.NotNull;
-
-import static cn.nukkit.block.property.CommonBlockProperties.CORAL_COLOR;
-import static cn.nukkit.block.property.CommonBlockProperties.CORAL_FAN_DIRECTION;
 
 
-public class BlockCoralFanDead extends BlockCoralFan {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_DEAD, CORAL_COLOR, CORAL_FAN_DIRECTION);
-
-    @Override
-    @NotNull public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    public BlockCoralFanDead() {
-        this(PROPERTIES.getDefaultState());
-    }
-
+public abstract class BlockCoralFanDead extends BlockCoralFan {
     public BlockCoralFanDead(BlockState blockstate) {
         super(blockstate);
     }
@@ -44,5 +29,10 @@ public class BlockCoralFanDead extends BlockCoralFan {
             return super.onUpdate(type);
         }
         return 0;
+    }
+
+    @Override
+    public Block getDeadCoralFan() {
+        return this;
     }
 }

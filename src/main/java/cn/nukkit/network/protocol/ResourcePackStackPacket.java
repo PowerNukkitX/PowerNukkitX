@@ -22,6 +22,7 @@ public class ResourcePackStackPacket extends DataPacket {
     public ResourcePack[] resourcePackStack = ResourcePack.EMPTY_ARRAY;
     public final List<ExperimentData> experiments = new ObjectArrayList<>();
     public String gameVersion = "*";
+    public boolean isHasEditorPacks = false;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -30,7 +31,7 @@ public class ResourcePackStackPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
+
         byteBuf.writeBoolean(this.mustAccept);
 
         byteBuf.writeUnsignedVarInt(this.behaviourPackStack.length);
@@ -54,6 +55,7 @@ public class ResourcePackStackPacket extends DataPacket {
             byteBuf.writeBoolean(experimentData.isEnabled());
         }
         byteBuf.writeBoolean(true); // Were experiments previously toggled
+        byteBuf.writeBoolean(isHasEditorPacks);
     }
 
     @Override

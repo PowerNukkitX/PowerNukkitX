@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemCake;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -115,11 +114,6 @@ public class BlockCake extends BlockTransparent {
     @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemCake();
     }
 
     @Override

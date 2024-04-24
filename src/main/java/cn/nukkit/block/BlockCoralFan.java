@@ -11,40 +11,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.block.property.CommonBlockProperties.CORAL_COLOR;
 import static cn.nukkit.block.property.CommonBlockProperties.CORAL_FAN_DIRECTION;
-import static cn.nukkit.block.property.CommonBlockProperties.DEAD_BIT;
 
 
-public class BlockCoralFan extends BlockFlowable implements Faceable {
-    //                                                                              3bit         1bit
-    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN, CORAL_COLOR, CORAL_FAN_DIRECTION);
-
-    @Override
-    @NotNull
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    public BlockCoralFan() {
-        this(PROPERTIES.getDefaultState());
-    }
-
+public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
     public BlockCoralFan(BlockState blockstate) {
         super(blockstate);
-    }
-
-    static final String[] names = new String[]{
-            "Tube Coral Fan",
-            "Brain Coral Fan",
-            "Bubble Coral Fan",
-            "Fire Coral Fan",
-            "Horn Coral Fan"
-    };
-
-    @Override
-    public String getName() {
-        return names[getType()];
     }
 
     @Override
@@ -56,9 +28,7 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
         return false;
     }
 
-    public int getType() {
-        return getPropertyValue(CORAL_COLOR).ordinal();
-    }
+    public abstract Block getDeadCoralFan();
 
     @Override
     public BlockFace getBlockFace() {
@@ -87,7 +57,7 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
             }
 
             if (!isDead() && !(getLevelBlockAtLayer(1) instanceof BlockFlowingWater) && !(getLevelBlockAtLayer(1) instanceof BlockFrostedIce)) {
-                BlockFadeEvent event = new BlockFadeEvent(this, new BlockCoralFanDead(blockstate));
+                BlockFadeEvent event = new BlockFadeEvent(this, getDeadCoralFan());
                 if (!event.isCancelled()) {
                     this.getLevel().setBlock(this, event.getNewState(), true, true);
                 }
@@ -132,27 +102,10 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
             }
             int axisBit = rotation >= 0 && rotation < 12 || (342 <= rotation && rotation < 360) ? 0 : 1;
             setPropertyValue(CORAL_FAN_DIRECTION, axisBit);
-            this.getLevel().setBlock(this, 0, hasWater ?
-                    new BlockCoralFan(blockstate)
-                    :
-                    new BlockCoralFanDead().setPropertyValues(blockstate.getBlockPropertyValues()), true, true);
+            this.getLevel().setBlock(this, 0, hasWater ? this.clone() : getDeadCoralFan().setPropertyValues(blockstate.getBlockPropertyValues()), true, true);
         } else {
-            int type = getType();
-            int typeBit = type % 2;
-            int deadBit = isDead() ? 0x1 : 0;
-            int faceBit = switch (face) {
-                case WEST -> 0;
-                case EAST -> 1;
-                case NORTH -> 2;
-                default -> 3;
-            };
-            int deadData = faceBit << 2 | deadBit << 1 | typeBit;
-            String deadBlockId = switch (type) {
-                default -> CORAL_FAN_HANG;
-                case BlockCoral.TYPE_BUBBLE, BlockCoral.TYPE_FIRE -> CORAL_FAN_HANG2;
-                case BlockCoral.TYPE_HORN -> CORAL_FAN_HANG3;
-            };
-            this.getLevel().setBlock(this, 0, Block.get(deadBlockId).setPropertyValue(DEAD_BIT, deadData > 0), true, true);
+            Block deadBlock = getDeadCoralFan();
+            this.getLevel().setBlock(this, 0, deadBlock, true, true);
         }
 
         return true;

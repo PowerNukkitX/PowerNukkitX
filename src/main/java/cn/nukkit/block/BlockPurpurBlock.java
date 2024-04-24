@@ -68,11 +68,6 @@ public class BlockPurpurBlock extends BlockSolid {
         return ItemTool.TIER_WOODEN;
     }
 
-    @Override
-    public Item toItem() {
-        return new ItemBlock(Block.get(BlockID.PURPUR_BLOCK), this.blockstate.specialValue() & 0x03, 1);
-    }
-
     public BlockFace.Axis getPillarAxis() {
         return getPropertyValue(PILLAR_AXIS);
     }
@@ -87,5 +82,10 @@ public class BlockPurpurBlock extends BlockSolid {
 
     public void setChiselType(ChiselType type) {
         setPropertyValue(CHISEL_TYPE, type);
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemBlock(this.getProperties().getBlockState(CHISEL_TYPE.createValue(getPropertyValue(CHISEL_TYPE))).toBlock());
     }
 }

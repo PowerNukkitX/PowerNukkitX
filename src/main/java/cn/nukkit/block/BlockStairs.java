@@ -58,7 +58,7 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
         double maxSlabY = 0.5;
         double minHalfSlabY = 0.5;
         double maxHalfSlabY = 1;
-        
+
         if (isUpsideDown()) {
             minSlabY = 0.5;
             maxSlabY = 1;

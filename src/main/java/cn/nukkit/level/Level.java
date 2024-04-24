@@ -152,7 +152,14 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.GRASS_BLOCK);
         randomTickBlocks.add(BlockID.FARMLAND);
         randomTickBlocks.add(BlockID.MYCELIUM);
-        randomTickBlocks.add(BlockID.SAPLING);
+        randomTickBlocks.add(BlockID.ACACIA_SAPLING);
+        randomTickBlocks.add(BlockID.CHERRY_SAPLING);
+        randomTickBlocks.add(BlockID.SPRUCE_SAPLING);
+        randomTickBlocks.add(BlockID.BAMBOO_SAPLING);
+        randomTickBlocks.add(BlockID.OAK_SAPLING);
+        randomTickBlocks.add(BlockID.JUNGLE_SAPLING);
+        randomTickBlocks.add(BlockID.DARK_OAK_SAPLING);
+        randomTickBlocks.add(BlockID.BIRCH_SAPLING);
         randomTickBlocks.add(BlockID.ACACIA_LEAVES);
         randomTickBlocks.add(BlockID.AZALEA_LEAVES);
         randomTickBlocks.add(BlockID.BIRCH_LEAVES);
@@ -182,13 +189,20 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.LIT_REDSTONE_ORE);
         randomTickBlocks.add(BlockID.COCOA);
         randomTickBlocks.add(BlockID.VINE);
-        randomTickBlocks.add(BlockID.CORAL_FAN);
-        randomTickBlocks.add(BlockID.CORAL_FAN_DEAD);
+        randomTickBlocks.add(BlockID.BRAIN_CORAL_FAN);
+        randomTickBlocks.add(BlockID.BUBBLE_CORAL_FAN);
+        randomTickBlocks.add(BlockID.DEAD_BRAIN_CORAL_FAN);
+        randomTickBlocks.add(BlockID.DEAD_BUBBLE_CORAL_FAN);
+        randomTickBlocks.add(BlockID.DEAD_FIRE_CORAL_FAN);
+        randomTickBlocks.add(BlockID.DEAD_HORN_CORAL_FAN);
+        randomTickBlocks.add(BlockID.DEAD_TUBE_CORAL_FAN);
+        randomTickBlocks.add(BlockID.FIRE_CORAL_FAN);
+        randomTickBlocks.add(BlockID.HORN_CORAL_FAN);
+        randomTickBlocks.add(BlockID.TUBE_CORAL_FAN);
         randomTickBlocks.add(BlockID.KELP);
         randomTickBlocks.add(BlockID.SWEET_BERRY_BUSH);
         randomTickBlocks.add(BlockID.TURTLE_EGG);
         randomTickBlocks.add(BlockID.BAMBOO);
-        randomTickBlocks.add(BlockID.BAMBOO_SAPLING);
         randomTickBlocks.add(BlockID.CRIMSON_NYLIUM);
         randomTickBlocks.add(BlockID.WARPED_NYLIUM);
         randomTickBlocks.add(BlockID.TWISTING_VINES);
@@ -214,11 +228,6 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.CAVE_VINES);
         randomTickBlocks.add(BlockID.CAVE_VINES_BODY_WITH_BERRIES);
         randomTickBlocks.add(BlockID.CAVE_VINES_HEAD_WITH_BERRIES);
-        randomTickBlocks.add(BlockID.AZALEA_LEAVES);
-        randomTickBlocks.add(BlockID.AZALEA_LEAVES_FLOWERED);
-        randomTickBlocks.add(BlockID.MANGROVE_LEAVES);
-        randomTickBlocks.add(BlockID.CHERRY_SAPLING);
-        randomTickBlocks.add(BlockID.CHERRY_LEAVES);
         randomTickBlocks.add(BlockID.TORCHFLOWER_CROP);
     }
 

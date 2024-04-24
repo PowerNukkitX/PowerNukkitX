@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemAcaciaDoor;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockAcaciaDoor extends BlockWoodenDoor {
@@ -24,10 +22,5 @@ public class BlockAcaciaDoor extends BlockWoodenDoor {
     @Override
     public String getName() {
         return "Acacia Door Block";
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemAcaciaDoor();
     }
 }

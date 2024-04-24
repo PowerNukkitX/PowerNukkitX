@@ -4,7 +4,6 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 
 public class ProfessionCleric extends Profession {
@@ -71,7 +70,7 @@ public class ProfessionCleric extends Profession {
                         .setTier(4)
                         .setTraderExp(15)
                         .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.NETHER_WART,0,22), Item.get(Item.EMERALD, 0, 1))
+                .add(TradeRecipeBuildUtils.of(Item.get(BlockID.NETHER_WART,0,22), Item.get(Item.EMERALD, 0, 1))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(5)

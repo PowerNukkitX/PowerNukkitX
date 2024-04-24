@@ -1,19 +1,17 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.enums.FlowerType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 
-public class BlockWitherRose extends BlockRedFlower {
+public class BlockWitherRose extends BlockFlower {
     public static final BlockProperties PROPERTIES = new BlockProperties(WITHER_ROSE);
 
     @Override
@@ -60,20 +58,5 @@ public class BlockWitherRose extends BlockRedFlower {
     @Override
     public boolean hasEntityCollision() {
         return true;
-    }
-
-    @Override
-    public void setFlowerType(FlowerType flowerType) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public FlowerType getFlowerType() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemBlock(this);
     }
 }

@@ -55,7 +55,7 @@ public class ProfessionCartographer extends Profession {
                         .setTier(3)
                         .setTraderExp(10)
                         .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 7), Item.get(Item.FRAME))
+                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 7), Item.get(BlockID.FRAME))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(4)

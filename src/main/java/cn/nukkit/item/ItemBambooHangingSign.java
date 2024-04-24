@@ -1,7 +1,9 @@
 package cn.nukkit.item;
 
+import cn.nukkit.block.BlockID;
+
 public class ItemBambooHangingSign extends ItemHangingSign {
     public ItemBambooHangingSign() {
-        super(BAMBOO_HANGING_SIGN);
+        super(BlockID.BAMBOO_HANGING_SIGN);
     }
 }

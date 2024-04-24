@@ -250,7 +250,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             "minecraft:weathered_copper_bulb",
             "minecraft:weathered_copper_door",
             "minecraft:weathered_copper_grate",
-            "minecraft:weathered_copper_trapdoor"
+            "minecraft:weathered_copper_trapdoor",
+            "minecraft:heavy_core"
     );
 
     @Override
@@ -299,7 +300,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(BAMBOO_MOSAIC_STAIRS, BlockBambooMosaicStairs.class);
             register(BAMBOO_PLANKS, BlockBambooPlanks.class);
             register(BAMBOO_PRESSURE_PLATE, BlockBambooPressurePlate.class);
-            register(BAMBOO_SAPLING, BlockBambooSapling.class);
             register(BAMBOO_SLAB, BlockBambooSlab.class);
             register(BAMBOO_STAIRS, BlockBambooStairs.class);
             register(BAMBOO_STANDING_SIGN, BlockBambooStandingSign.class);
@@ -413,7 +413,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(CHERRY_LOG, BlockCherryLog.class);
             register(CHERRY_PLANKS, BlockCherryPlanks.class);
             register(CHERRY_PRESSURE_PLATE, BlockCherryPressurePlate.class);
-            register(CHERRY_SAPLING, BlockCherrySapling.class);
             register(CHERRY_SLAB, BlockCherrySlab.class);
             register(CHERRY_STAIRS, BlockCherryStairs.class);
             register(CHERRY_STANDING_SIGN, BlockCherryStandingSign.class);
@@ -454,8 +453,16 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(COPPER_ORE, BlockCopperOre.class);
             register(COPPER_TRAPDOOR, BlockCopperTrapdoor.class);
             register(CORAL_BLOCK, BlockCoralBlock.class);
-            register(CORAL_FAN, BlockCoralFan.class);
-            register(CORAL_FAN_DEAD, BlockCoralFanDead.class);
+            register(BRAIN_CORAL_FAN, BlockBrainCoralFan.class);
+            register(BUBBLE_CORAL_FAN, BlockBubbleCoralFan.class);
+            register(DEAD_BRAIN_CORAL_FAN, BlockDeadBrainCoralFan.class);
+            register(DEAD_BUBBLE_CORAL_FAN, BlockDeadBubbleCoralFan.class);
+            register(DEAD_FIRE_CORAL_FAN, BlockDeadFireCoralFan.class);
+            register(DEAD_HORN_CORAL_FAN, BlockDeadHornCoralFan.class);
+            register(DEAD_TUBE_CORAL_FAN, BlockDeadTubeCoralFan.class);
+            register(FIRE_CORAL_FAN, BlockFireCoralFan.class);
+            register(HORN_CORAL_FAN, BlockHornCoralFan.class);
+            register(TUBE_CORAL_FAN, BlockTubeCoralFan.class);
             register(CORAL_FAN_HANG, BlockCoralFanHang.class);
             register(CORAL_FAN_HANG2, BlockCoralFanHang2.class);
             register(CORAL_FAN_HANG3, BlockCoralFanHang3.class);
@@ -1056,7 +1063,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(RED_CARPET, BlockRedCarpet.class);
             register(RED_CONCRETE, BlockRedConcrete.class);
             register(RED_CONCRETE_POWDER, BlockRedConcretePowder.class);
-            register(RED_FLOWER, BlockRedFlower.class);
             register(RED_GLAZED_TERRACOTTA, BlockRedGlazedTerracotta.class);
             register(RED_MUSHROOM, BlockRedMushroom.class);
             register(RED_MUSHROOM_BLOCK, BlockRedMushroomBlock.class);
@@ -1082,7 +1088,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(SAND, BlockSand.class);
             register(SANDSTONE, BlockSandstone.class);
             register(SANDSTONE_STAIRS, BlockSandstoneStairs.class);
-            register(SAPLING, BlockSapling.class);
             register(SCAFFOLDING, BlockScaffolding.class);
             register(SCULK, BlockSculk.class);
             register(SCULK_CATALYST, BlockSculkCatalyst.class);
@@ -1311,6 +1316,27 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(YELLOW_STAINED_GLASS_PANE, BlockYellowStainedGlassPane.class);
             register(YELLOW_TERRACOTTA, BlockYellowTerracotta.class);
             register(YELLOW_WOOL, BlockYellowWool.class);
+
+            register(ACACIA_SAPLING, BlockAcaciaSapling.class);
+            register(BAMBOO_SAPLING, BlockBambooSapling.class);
+            register(BIRCH_SAPLING, BlockBirchSapling.class);
+            register(CHERRY_SAPLING, BlockCherrySapling.class);
+            register(DARK_OAK_SAPLING, BlockDarkOakSapling.class);
+            register(JUNGLE_SAPLING, BlockJungleSapling.class);
+            register(OAK_SAPLING, BlockOakSapling.class);
+            register(SPRUCE_SAPLING, BlockSpruceSapling.class);
+
+            register(ALLIUM, BlockAllium.class);
+            register(AZURE_BLUET, BlockAzureBluet.class);
+            register(BLUE_ORCHID, BlockBlueOrchid.class);
+            register(CORNFLOWER, BlockCornflower.class);
+            register(LILY_OF_THE_VALLEY, BlockLilyOfTheValley.class);
+            register(ORANGE_TULIP, BlockOrangeTulip.class);
+            register(OXEYE_DAISY, BlockOxeyeDaisy.class);
+            register(PINK_TULIP, BlockPinkTulip.class);
+            register(POPPY, BlockPoppy.class);
+            register(RED_TULIP, BlockRedTulip.class);
+            register(WHITE_TULIP, BlockWhiteTulip.class);
         } catch (RegisterException ignore) {
         }
     }

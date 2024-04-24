@@ -1,8 +1,10 @@
 package cn.nukkit.item;
 
 
+import cn.nukkit.block.BlockID;
+
 public class ItemAcaciaHangingSign extends ItemHangingSign {
     public ItemAcaciaHangingSign() {
-        super(ACACIA_HANGING_SIGN);
+        super(BlockID.ACACIA_HANGING_SIGN);
     }
 }

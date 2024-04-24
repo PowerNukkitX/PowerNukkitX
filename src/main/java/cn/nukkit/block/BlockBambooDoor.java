@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBambooDoor;
 import cn.nukkit.level.Sound;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,11 +24,6 @@ public class BlockBambooDoor extends BlockWoodenDoor {
     @Override
     public String getName() {
         return "Bamboo Door Block";
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemBambooDoor();
     }
 
     @Override

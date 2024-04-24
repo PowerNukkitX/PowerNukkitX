@@ -18,15 +18,19 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.WALL_CONNECTION_TYPE_EAST;
+import static cn.nukkit.block.property.CommonBlockProperties.WALL_CONNECTION_TYPE_NORTH;
+import static cn.nukkit.block.property.CommonBlockProperties.WALL_CONNECTION_TYPE_SOUTH;
+import static cn.nukkit.block.property.CommonBlockProperties.WALL_CONNECTION_TYPE_WEST;
+import static cn.nukkit.block.property.CommonBlockProperties.WALL_POST_BIT;
 import static cn.nukkit.math.VectorMath.calculateAxis;
 import static cn.nukkit.math.VectorMath.calculateFace;
 
 
 @Slf4j
 public abstract class BlockWallBase extends BlockTransparent implements BlockConnectable {
-    private static final double MIN_POST_BB =  5.0/16;
-    private static final double MAX_POST_BB = 11.0/16;
+    private static final double MIN_POST_BB = 5.0 / 16;
+    private static final double MAX_POST_BB = 11.0 / 16;
 
     public BlockWallBase(BlockState blockstate) {
         super(blockstate);
@@ -122,7 +126,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
                 try {
                     connect(blockFace, above, false);
                 } catch (RuntimeException e) {
-                    log.error("Failed to connect the block {} at {} to {} which is {} at {}", 
+                    log.error("Failed to connect the block {} at {} to {} which is {} at {}",
                             this, getLocation(), blockFace, side, side.getLocation(), e);
                     throw e;
                 }
@@ -132,13 +136,13 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         }
 
         recheckPostConditions(above);
-        return  blockstate.specialValue() != previousMeta;
+        return blockstate.specialValue() != previousMeta;
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if(autoConfigureState()) {
+            if (autoConfigureState()) {
                 level.setBlock(this, this, true);
             }
             return type;
@@ -218,9 +222,9 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     }
 
     public boolean hasConnections() {
-        return getPropertyValue(WALL_CONNECTION_TYPE_EAST) != WallConnectionType.NONE 
+        return getPropertyValue(WALL_CONNECTION_TYPE_EAST) != WallConnectionType.NONE
                 || getPropertyValue(WALL_CONNECTION_TYPE_WEST) != WallConnectionType.NONE
-                || getPropertyValue(WALL_CONNECTION_TYPE_NORTH) != WallConnectionType.NONE 
+                || getPropertyValue(WALL_CONNECTION_TYPE_NORTH) != WallConnectionType.NONE
                 || getPropertyValue(WALL_CONNECTION_TYPE_SOUTH) != WallConnectionType.NONE;
     }
 
@@ -343,7 +347,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     }
 
     private boolean connect(BlockFace blockFace, Block above, boolean recheckPost) {
-        WallConnectionType type = shouldBeTall(above, blockFace)? WallConnectionType.TALL : WallConnectionType.SHORT;
+        WallConnectionType type = shouldBeTall(above, blockFace) ? WallConnectionType.TALL : WallConnectionType.SHORT;
         if (setConnection(blockFace, type)) {
             if (recheckPost) {
                 recheckPostConditions(above);
@@ -364,7 +368,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         }
         return false;
     }
-    
+
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
 

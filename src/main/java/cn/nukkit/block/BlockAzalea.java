@@ -66,7 +66,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
         double chance = ThreadLocalRandom.current().nextDouble(1);
         boolean aged = chance > 0.8;
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!BlockRedFlower.isSupportValid(down())) {
+            if (!BlockFlower.isSupportValid(down())) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -87,7 +87,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (BlockRedFlower.isSupportValid(down())) {
+        if (BlockFlower.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }

@@ -53,13 +53,14 @@ public class BlockCoralFanHang extends BlockCoralFan {
     }
 
     @Override
-    public int getType() {
+    public Block getDeadCoralFan() {
         if (getPropertyValue(CORAL_HANG_TYPE_BIT)) {
-            return BlockCoral.TYPE_TUBE;
+            return new BlockDeadTubeCoralFan();
         } else {
-            return BlockCoral.TYPE_BRAIN;
+            return new BlockDeadBrainCoralFan();
         }
     }
+
 
     @Override
     public BlockFace getBlockFace() {
@@ -79,6 +80,6 @@ public class BlockCoralFanHang extends BlockCoralFan {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(isDead() ? new BlockCoralFanDead() : new BlockCoralFan(), getType());
+        return new ItemBlock(isDead() ? getDeadCoralFan() : this);
     }
 }

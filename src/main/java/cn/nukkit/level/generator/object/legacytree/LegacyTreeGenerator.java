@@ -37,16 +37,24 @@ public abstract class LegacyTreeGenerator {
     protected boolean overridable(Block b) {
         if (b instanceof BlockWood) return true;
         return switch (b.getId()) {
-            case Block.AIR, Block.SAPLING, BlockID.ACACIA_LEAVES,
-                    BlockID.AZALEA_LEAVES,
-                    BlockID.BIRCH_LEAVES,
-                    BlockID.AZALEA_LEAVES_FLOWERED,
-                    BlockID.CHERRY_LEAVES,
-                    BlockID.DARK_OAK_LEAVES,
-                    BlockID.JUNGLE_LEAVES,
-                    BlockID.MANGROVE_LEAVES,
-                    BlockID.OAK_LEAVES,
-                    BlockID.SPRUCE_LEAVES, Block.SNOW_LAYER -> true;
+            case Block.AIR, BlockID.ACACIA_LEAVES,
+                 BlockID.AZALEA_LEAVES,
+                 BlockID.BIRCH_LEAVES,
+                 BlockID.AZALEA_LEAVES_FLOWERED,
+                 BlockID.CHERRY_LEAVES,
+                 BlockID.DARK_OAK_LEAVES,
+                 BlockID.JUNGLE_LEAVES,
+                 BlockID.MANGROVE_LEAVES,
+                 BlockID.OAK_LEAVES,
+                 BlockID.SPRUCE_LEAVES, Block.SNOW_LAYER,
+                 BlockID.ACACIA_SAPLING,
+                 BlockID.CHERRY_SAPLING,
+                 BlockID.SPRUCE_SAPLING,
+                 BlockID.BAMBOO_SAPLING,
+                 BlockID.OAK_SAPLING,
+                 BlockID.JUNGLE_SAPLING,
+                 BlockID.DARK_OAK_SAPLING,
+                 BlockID.BIRCH_SAPLING -> true;
             default -> false;
         };
     }

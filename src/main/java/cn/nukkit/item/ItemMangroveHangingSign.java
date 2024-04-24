@@ -1,7 +1,9 @@
 package cn.nukkit.item;
 
+import cn.nukkit.block.BlockID;
+
 public class ItemMangroveHangingSign extends ItemHangingSign {
     public ItemMangroveHangingSign() {
-        super(MANGROVE_HANGING_SIGN);
+        super(BlockID.MANGROVE_HANGING_SIGN);
     }
 }

@@ -5,8 +5,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
-import cn.nukkit.item.ItemSoulCampfire;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSoulCampfire extends BlockCampfire {
@@ -33,11 +31,6 @@ public class BlockSoulCampfire extends BlockCampfire {
     @Override
     public int getLightLevel() {
         return isExtinguished() ? 0 : 10;
-    }
-
-    @Override
-    public Item toItem() {
-        return Item.get(ItemID.SOUL_CAMPFIRE);
     }
 
     @Override

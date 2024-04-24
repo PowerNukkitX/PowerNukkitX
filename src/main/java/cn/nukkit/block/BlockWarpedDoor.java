@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemWarpedDoor;
 import cn.nukkit.level.Sound;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,11 +23,6 @@ public class BlockWarpedDoor extends BlockWoodenDoor {
     @Override
     public String getName() {
         return "Warped Door Block";
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemWarpedDoor();
     }
 
     @Override

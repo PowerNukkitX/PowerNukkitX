@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.block.BlockID;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
@@ -14,7 +16,7 @@ public class ItemBeetroot extends ItemFood {
     }
 
     public ItemBeetroot(Integer meta, int count) {
-        super(BEETROOT, meta, count, "Beetroot");
+        super(BlockID.BEETROOT, meta, count, "Beetroot");
     }
 
     @Override

@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemNetherWart;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +21,8 @@ public class BlockNetherWart extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_WART, AGE_4);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -81,18 +82,13 @@ public class BlockNetherWart extends BlockFlowable {
     public Item[] getDrops(Item item) {
         if (this.getAge() == 0x03) {
             return new Item[]{
-                    new ItemNetherWart(0, 2 + (int) (Math.random() * ((4 - 2) + 1)))
+                    new ItemBlock(this, 0, 2 + (int) (Math.random() * ((4 - 2) + 1)))
             };
         } else {
             return new Item[]{
-                    new ItemNetherWart()
+                    toItem()
             };
         }
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemNetherWart();
     }
 
     public int getAge() {

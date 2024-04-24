@@ -1,5 +1,6 @@
 package cn.nukkit.item;
 
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockSkull;
 import cn.nukkit.block.property.CommonBlockProperties;
 
@@ -24,32 +25,32 @@ public class ItemSkull extends Item {
     }
 
     public ItemSkull(Integer meta, int count) {
-        super(SKULL, meta, count);
+        super(BlockID.SKULL, meta, count);
     }
 
     public void internalAdjust() {
         switch (getDamage()) {
-            case 0, 6, 7 -> {
+            case SKELETON_SKULL, 6, 7 -> {
                 name = "Skeleton Skull";
                 setBlockUnsafe(BlockSkull.PROPERTIES.getBlockState(CommonBlockProperties.FACING_DIRECTION.createValue(0)).toBlock());
             }
-            case 1 -> {
+            case WITHER_SKELETON_SKULL -> {
                 name = "Wither Skeleton Skull";
                 setBlockUnsafe(BlockSkull.PROPERTIES.getBlockState(CommonBlockProperties.FACING_DIRECTION.createValue(1)).toBlock());
             }
-            case 2 -> {
+            case ZOMBIE_HEAD -> {
                 name = "Zombie Head";
                 setBlockUnsafe(BlockSkull.PROPERTIES.getBlockState(CommonBlockProperties.FACING_DIRECTION.createValue(2)).toBlock());
             }
-            case 3 -> {
+            case HEAD -> {
                 name = "Head";
                 setBlockUnsafe(BlockSkull.PROPERTIES.getBlockState(CommonBlockProperties.FACING_DIRECTION.createValue(3)).toBlock());
             }
-            case 4 -> {
+            case CREEPER_HEAD -> {
                 name = "Creeper Head";
                 setBlockUnsafe(BlockSkull.PROPERTIES.getBlockState(CommonBlockProperties.FACING_DIRECTION.createValue(4)).toBlock());
             }
-            case 5 -> {
+            case DRAGON_HEAD -> {
                 name = "Dragon Head";
                 setBlockUnsafe(BlockSkull.PROPERTIES.getBlockState(CommonBlockProperties.FACING_DIRECTION.createValue(5)).toBlock());
             }

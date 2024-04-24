@@ -5,6 +5,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
+import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,6 @@ public class BlockPropertiesTest {
                 }
             }
         }
-        Assertions.assertEquals(BlockRegistry.skipBlockSet.size(), errors.size());
+        Assertions.assertEquals(BlockRegistry.skipBlockSet.size(), errors.size(), Sets.difference(errors.keySet(), BlockRegistry.skipBlockSet).toString());
     }
 }

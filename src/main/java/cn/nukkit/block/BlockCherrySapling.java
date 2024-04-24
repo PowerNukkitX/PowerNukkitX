@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -18,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static cn.nukkit.block.property.CommonBlockProperties.AGE_BIT;
 
 
-public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+public class BlockCherrySapling extends BlockSapling implements BlockFlowerPot.FlowerPotBlock {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_SAPLING, AGE_BIT);
 
@@ -36,16 +37,13 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
     }
 
     @Override
+    public WoodType getWoodType() {
+        return null;
+    }
+
+    @Override
     public String getName() {
         return "Cherry Sapling";
-    }
-
-    public boolean isAged() {
-        return getPropertyValue(AGE_BIT);
-    }
-
-    public void setAged(boolean aged) {
-        setPropertyValue(AGE_BIT, aged);
     }
 
     @Override

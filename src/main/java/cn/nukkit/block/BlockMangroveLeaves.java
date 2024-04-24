@@ -39,11 +39,6 @@ public class BlockMangroveLeaves extends BlockLeaves {
     }
 
     @Override
-    public Item getSapling() {
-        return new BlockMangrovePropagule().toItem();
-    }
-
-    @Override
     public String getName() {
         return "Mangrove Leaves";
     }

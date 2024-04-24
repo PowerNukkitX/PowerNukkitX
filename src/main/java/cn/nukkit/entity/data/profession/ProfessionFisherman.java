@@ -56,7 +56,7 @@ public class ProfessionFisherman extends Profession {
                         .setTier(2)
                         .setTraderExp(2)
                         .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 2), Item.get(Item.CAMPFIRE, 0, 1))
+                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 2), Item.get(BlockID.CAMPFIRE, 0, 1))
                         .setMaxUses(16)
                         .setRewardExp((byte) 1)
                         .setTier(2)

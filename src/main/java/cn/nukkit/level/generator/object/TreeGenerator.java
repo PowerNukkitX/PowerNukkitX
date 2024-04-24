@@ -14,21 +14,30 @@ public abstract class TreeGenerator extends ObjectGenerator {
      * For example, a tree will not grow into stone
      */
     protected boolean canGrowInto(String id) {
+
         return switch (id) {
             case Block.AIR, BlockID.ACACIA_LEAVES,
-                    BlockID.AZALEA_LEAVES,
-                    BlockID.BIRCH_LEAVES,
-                    BlockID.AZALEA_LEAVES_FLOWERED,
-                    BlockID.CHERRY_LEAVES,
-                    BlockID.DARK_OAK_LEAVES,
-                    BlockID.JUNGLE_LEAVES,
-                    BlockID.MANGROVE_LEAVES,
-                    BlockID.OAK_LEAVES,
-                    BlockID.SPRUCE_LEAVES, Block.GRASS_BLOCK, Block.DIRT, Block.ACACIA_LOG, Block.BIRCH_LOG, Block.OAK_LOG, Block.DARK_OAK_LOG,
-                    Block.JUNGLE_LOG, Block.MANGROVE_LOG, Block.SPRUCE_LOG, Block.SAPLING, Block.VINE,
-                    Block.DIRT_WITH_ROOTS,
-                    Block.CHERRY_LOG, Block.CHERRY_SAPLING,Block.MANGROVE_ROOTS, Block.MANGROVE_PROPAGULE ->
-                    true;
+                 BlockID.AZALEA_LEAVES,
+                 BlockID.BIRCH_LEAVES,
+                 BlockID.AZALEA_LEAVES_FLOWERED,
+                 BlockID.CHERRY_LEAVES,
+                 BlockID.DARK_OAK_LEAVES,
+                 BlockID.JUNGLE_LEAVES,
+                 BlockID.MANGROVE_LEAVES,
+                 BlockID.OAK_LEAVES,
+                 BlockID.SPRUCE_LEAVES, Block.GRASS_BLOCK, Block.DIRT, Block.ACACIA_LOG, Block.BIRCH_LOG, Block.OAK_LOG,
+                 Block.DARK_OAK_LOG,
+                 Block.JUNGLE_LOG, Block.MANGROVE_LOG, Block.SPRUCE_LOG, Block.VINE,
+                 Block.DIRT_WITH_ROOTS,
+                 Block.CHERRY_LOG, Block.MANGROVE_ROOTS, Block.MANGROVE_PROPAGULE,
+                 BlockID.ACACIA_SAPLING,
+                 BlockID.CHERRY_SAPLING,
+                 BlockID.SPRUCE_SAPLING,
+                 BlockID.BAMBOO_SAPLING,
+                 BlockID.OAK_SAPLING,
+                 BlockID.JUNGLE_SAPLING,
+                 BlockID.DARK_OAK_SAPLING,
+                 BlockID.BIRCH_SAPLING -> true;
             default -> false;
         };
     }

@@ -1,8 +1,6 @@
 package cn.nukkit.level.generator.object.legacytree;
 
 import cn.nukkit.block.*;
-import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.FlowerType;
 import cn.nukkit.block.property.enums.TallGrassType;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.Vector3;
@@ -17,17 +15,17 @@ public class LegacyTallGrass {
             BlockTallgrass.PROPERTIES.getBlockState(TALL_GRASS_TYPE, TallGrassType.DEFAULT),// 50
             BlockTallgrass.PROPERTIES.getBlockState(TALL_GRASS_TYPE, TallGrassType.TALL),// 30
             BlockYellowFlower.PROPERTIES.getDefaultState(),// 10
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.POPPY),// 10
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.HOUSTONIA),// 5
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.OXEYE),// 5
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.ALLIUM),// 2
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.CORNFLOWER),// 2
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.ORCHID),// 2
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.LILY_OF_THE_VALLEY),// 2
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.TULIP_RED),// 2
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.TULIP_ORANGE),// 2
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.TULIP_PINK),// 2
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.TULIP_WHITE),// 2
+            BlockPoppy.PROPERTIES.getDefaultState(),// 10
+            BlockAzureBluet.PROPERTIES.getDefaultState(),// 5
+            BlockOxeyeDaisy.PROPERTIES.getDefaultState(),// 5
+            BlockAllium.PROPERTIES.getDefaultState(),// 2
+            BlockCornflower.PROPERTIES.getDefaultState(),// 2
+            BlockBlueOrchid.PROPERTIES.getDefaultState(),// 2
+            BlockLilyOfTheValley.PROPERTIES.getDefaultState(),// 2
+            BlockRedTulip.PROPERTIES.getDefaultState(),// 2
+            BlockOrangeTulip.PROPERTIES.getDefaultState(),// 2
+            BlockPinkTulip.PROPERTIES.getDefaultState(),// 2
+            BlockWhiteTulip.PROPERTIES.getDefaultState(),// 2
     };
 
     public static void growGrass(BlockManager level, Vector3 pos, RandomSourceProvider random) {

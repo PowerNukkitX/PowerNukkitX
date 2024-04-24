@@ -13,9 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.*;
-
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -71,7 +68,7 @@ public class CraftingDataPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
+
         byteBuf.writeUnsignedVarInt(entries.size());
 
         int recipeNetworkId = 1;
@@ -139,6 +136,7 @@ public class CraftingDataPacket extends DataPacket {
                     }
                     byteBuf.writeUUID(shaped.getUUID());
                     byteBuf.writeString(CRAFTING_TAG_CRAFTING_TABLE);
+                    byteBuf.writeBoolean(shaped.isMirror());
                     byteBuf.writeVarInt(shaped.getPriority());
                     byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
@@ -146,7 +144,8 @@ public class CraftingDataPacket extends DataPacket {
                     byteBuf.writeUUID(((MultiRecipe) recipe).getId());
                     byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
-                case FURNACE, FURNACE_DATA, SMOKER, SMOKER_DATA, BLAST_FURNACE, BLAST_FURNACE_DATA, CAMPFIRE, CAMPFIRE_DATA, SOUL_CAMPFIRE_DATA, SOUL_CAMPFIRE -> {
+                case FURNACE, FURNACE_DATA, SMOKER, SMOKER_DATA, BLAST_FURNACE, BLAST_FURNACE_DATA, CAMPFIRE,
+                     CAMPFIRE_DATA, SOUL_CAMPFIRE_DATA, SOUL_CAMPFIRE -> {
                     SmeltingRecipe smelting = (SmeltingRecipe) recipe;
                     Item input = smelting.getInput().toItem();
                     byteBuf.writeVarInt(input.getRuntimeId());

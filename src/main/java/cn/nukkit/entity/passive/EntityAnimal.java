@@ -2,6 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.item.Item;
@@ -9,6 +10,8 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
+
+import java.util.Objects;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -58,7 +61,7 @@ public abstract class EntityAnimal extends EntityIntelligent {
      * @return boolean 是否可以导致繁殖<br>Whether it can lead to reproduction
      */
     public boolean isBreedingItem(Item item) {
-        return item.getId() == Item.WHEAT; //default
+        return Objects.equals(item.getId(), BlockID.WHEAT); //default
     }
 
     @Override

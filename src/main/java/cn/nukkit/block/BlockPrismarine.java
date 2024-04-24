@@ -1,13 +1,16 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.PrismarineBlockType;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
+import static cn.nukkit.block.property.CommonBlockProperties.PRISMARINE_BLOCK_TYPE;
+
 
 public class BlockPrismarine extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(PRISMARINE, CommonBlockProperties.PRISMARINE_BLOCK_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(PRISMARINE, PRISMARINE_BLOCK_TYPE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -47,11 +50,11 @@ public class BlockPrismarine extends BlockSolid {
     }
 
     public void setPrismarineBlockType(PrismarineBlockType prismarineBlockType) {
-        setPropertyValue(CommonBlockProperties.PRISMARINE_BLOCK_TYPE, prismarineBlockType);
+        setPropertyValue(PRISMARINE_BLOCK_TYPE, prismarineBlockType);
     }
 
     public PrismarineBlockType getPrismarineBlockType() {
-        return getPropertyValue(CommonBlockProperties.PRISMARINE_BLOCK_TYPE);
+        return getPropertyValue(PRISMARINE_BLOCK_TYPE);
     }
 
     @Override
@@ -64,4 +67,8 @@ public class BlockPrismarine extends BlockSolid {
         return false;
     }
 
+    @Override
+    public Item toItem() {
+        return new ItemBlock(this.getProperties().getBlockState(PRISMARINE_BLOCK_TYPE.createValue(getPropertyValue(PRISMARINE_BLOCK_TYPE))).toBlock());
+    }
 }
