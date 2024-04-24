@@ -1,5 +1,6 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.block.BlockID;
 import cn.nukkit.item.*;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
@@ -481,39 +482,22 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(ZOMBIE_PIGMAN_SPAWN_EGG, ItemZombiePigmanSpawnEgg.class);
             register(ZOMBIE_SPAWN_EGG, ItemZombieSpawnEgg.class);
             register(ZOMBIE_VILLAGER_SPAWN_EGG, ItemZombieVillagerSpawnEgg.class);
-            register(BED, ItemBed.class);
-            register(SKULL, ItemSkull.class);
+            register(BlockID.BED, ItemBed.class);
+            register(BlockID.SKULL, ItemSkull.class);
 
-            register(BIRCH_HANGING_SIGN, ItemBirchHangingSign.class);
-            register(ACACIA_HANGING_SIGN, ItemAcaciaHangingSign.class);
-            register(BAMBOO_HANGING_SIGN, ItemBambooHangingSign.class);
-            register(CHERRY_HANGING_SIGN, ItemCherryHangingSign.class);
-            register(CRIMSON_HANGING_SIGN, ItemCrimsonHangingSign.class);
-            register(DARK_OAK_HANGING_SIGN, ItemDarkOakHangingSign.class);
-            register(JUNGLE_HANGING_SIGN, ItemJungleHangingSign.class);
-            register(MANGROVE_HANGING_SIGN, ItemMangroveHangingSign.class);
-            register(OAK_HANGING_SIGN, ItemOakHangingSign.class);
-            register(SPRUCE_HANGING_SIGN, ItemSpruceHangingSign.class);
-            register(WARPED_HANGING_SIGN, ItemWarpedHangingSign.class);
+            register(BlockID.BIRCH_HANGING_SIGN, ItemBirchHangingSign.class);
+            register(BlockID.ACACIA_HANGING_SIGN, ItemAcaciaHangingSign.class);
+            register(BlockID.BAMBOO_HANGING_SIGN, ItemBambooHangingSign.class);
+            register(BlockID.CHERRY_HANGING_SIGN, ItemCherryHangingSign.class);
+            register(BlockID.CRIMSON_HANGING_SIGN, ItemCrimsonHangingSign.class);
+            register(BlockID.DARK_OAK_HANGING_SIGN, ItemDarkOakHangingSign.class);
+            register(BlockID.JUNGLE_HANGING_SIGN, ItemJungleHangingSign.class);
+            register(BlockID.MANGROVE_HANGING_SIGN, ItemMangroveHangingSign.class);
+            register(BlockID.OAK_HANGING_SIGN, ItemOakHangingSign.class);
+            register(BlockID.SPRUCE_HANGING_SIGN, ItemSpruceHangingSign.class);
+            register(BlockID.WARPED_HANGING_SIGN, ItemWarpedHangingSign.class);
 
-            register(BIRCH_DOOR, ItemBirchDoor.class);
-            register(ACACIA_DOOR, ItemAcaciaDoor.class);
-            register(BAMBOO_DOOR, ItemBambooDoor.class);
-            register(CHERRY_DOOR, ItemCherryDoor.class);
-            register(CRIMSON_DOOR, ItemCrimsonDoor.class);
-            register(DARK_OAK_DOOR, ItemDarkOakDoor.class);
-            register(JUNGLE_DOOR, ItemJungleDoor.class);
-            register(MANGROVE_DOOR, ItemMangroveDoor.class);
-            register(SPRUCE_DOOR, ItemSpruceDoor.class);
-            register(WARPED_DOOR, ItemWarpedDoor.class);
-            register(WOODEN_DOOR, ItemWoodenDoor.class);
-            register(IRON_DOOR, ItemIronDoor.class);
-            register(CAMPFIRE, ItemCampfire.class);
-            register(SOUL_CAMPFIRE, ItemSoulCampfire.class);
-            register(CAULDRON, ItemCauldron.class);
-            register(CHAIN, ItemChain.class);
-            register(WHEAT, ItemWheat.class);
-            register(BEETROOT, ItemBeetroot.class);
+            register(BlockID.BEETROOT, ItemBeetroot.class);
         } catch (RegisterException ignore) {
         }
     }

@@ -24,11 +24,11 @@ public class BlockCoralFanHang2 extends BlockCoralFanHang {
     }
 
     @Override
-    public int getType() {
+    public Block getDeadCoralFan() {
         if (getPropertyValue(CORAL_HANG_TYPE_BIT)) {
-            return BlockCoral.TYPE_FIRE;
+            return new BlockDeadFireCoralFan();
         } else {
-            return BlockCoral.TYPE_BUBBLE;
+            return new BlockDeadBubbleCoralFan();
         }
     }
 }

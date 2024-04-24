@@ -8,17 +8,25 @@ public interface BlockID {
 
     String ACACIA_DOOR = "minecraft:acacia_door";
 
+    String ACACIA_DOUBLE_SLAB = "minecraft:acacia_double_slab";
+
     String ACACIA_FENCE = "minecraft:acacia_fence";
 
     String ACACIA_FENCE_GATE = "minecraft:acacia_fence_gate";
 
     String ACACIA_HANGING_SIGN = "minecraft:acacia_hanging_sign";
 
+    String ACACIA_LEAVES = "minecraft:acacia_leaves";
+
     String ACACIA_LOG = "minecraft:acacia_log";
 
     String ACACIA_PLANKS = "minecraft:acacia_planks";
 
     String ACACIA_PRESSURE_PLATE = "minecraft:acacia_pressure_plate";
+
+    String ACACIA_SAPLING = "minecraft:acacia_sapling";
+
+    String ACACIA_SLAB = "minecraft:acacia_slab";
 
     String ACACIA_STAIRS = "minecraft:acacia_stairs";
 
@@ -28,9 +36,13 @@ public interface BlockID {
 
     String ACACIA_WALL_SIGN = "minecraft:acacia_wall_sign";
 
+    String ACACIA_WOOD = "minecraft:acacia_wood";
+
     String ACTIVATOR_RAIL = "minecraft:activator_rail";
 
     String AIR = "minecraft:air";
+
+    String ALLIUM = "minecraft:allium";
 
     String ALLOW = "minecraft:allow";
 
@@ -51,6 +63,8 @@ public interface BlockID {
     String AZALEA_LEAVES = "minecraft:azalea_leaves";
 
     String AZALEA_LEAVES_FLOWERED = "minecraft:azalea_leaves_flowered";
+
+    String AZURE_BLUET = "minecraft:azure_bluet";
 
     String BAMBOO = "minecraft:bamboo";
 
@@ -118,17 +132,25 @@ public interface BlockID {
 
     String BIRCH_DOOR = "minecraft:birch_door";
 
+    String BIRCH_DOUBLE_SLAB = "minecraft:birch_double_slab";
+
     String BIRCH_FENCE = "minecraft:birch_fence";
 
     String BIRCH_FENCE_GATE = "minecraft:birch_fence_gate";
 
     String BIRCH_HANGING_SIGN = "minecraft:birch_hanging_sign";
 
+    String BIRCH_LEAVES = "minecraft:birch_leaves";
+
     String BIRCH_LOG = "minecraft:birch_log";
 
     String BIRCH_PLANKS = "minecraft:birch_planks";
 
     String BIRCH_PRESSURE_PLATE = "minecraft:birch_pressure_plate";
+
+    String BIRCH_SAPLING = "minecraft:birch_sapling";
+
+    String BIRCH_SLAB = "minecraft:birch_slab";
 
     String BIRCH_STAIRS = "minecraft:birch_stairs";
 
@@ -137,6 +159,8 @@ public interface BlockID {
     String BIRCH_TRAPDOOR = "minecraft:birch_trapdoor";
 
     String BIRCH_WALL_SIGN = "minecraft:birch_wall_sign";
+
+    String BIRCH_WOOD = "minecraft:birch_wood";
 
     String BLACK_CANDLE = "minecraft:black_candle";
 
@@ -186,6 +210,8 @@ public interface BlockID {
 
     String BLUE_ICE = "minecraft:blue_ice";
 
+    String BLUE_ORCHID = "minecraft:blue_orchid";
+
     String BLUE_SHULKER_BOX = "minecraft:blue_shulker_box";
 
     String BLUE_STAINED_GLASS = "minecraft:blue_stained_glass";
@@ -203,6 +229,8 @@ public interface BlockID {
     String BORDER_BLOCK = "minecraft:border_block";
 
     String BRAIN_CORAL = "minecraft:brain_coral";
+
+    String BRAIN_CORAL_FAN = "minecraft:brain_coral_fan";
 
     String BREWING_STAND = "minecraft:brewing_stand";
 
@@ -239,6 +267,8 @@ public interface BlockID {
     String BUBBLE_COLUMN = "minecraft:bubble_column";
 
     String BUBBLE_CORAL = "minecraft:bubble_coral";
+
+    String BUBBLE_CORAL_FAN = "minecraft:bubble_coral_fan";
 
     String BUDDING_AMETHYST = "minecraft:budding_amethyst";
 
@@ -382,15 +412,13 @@ public interface BlockID {
 
     String CORAL_BLOCK = "minecraft:coral_block";
 
-    String CORAL_FAN = "minecraft:coral_fan";
-
-    String CORAL_FAN_DEAD = "minecraft:coral_fan_dead";
-
     String CORAL_FAN_HANG = "minecraft:coral_fan_hang";
 
     String CORAL_FAN_HANG2 = "minecraft:coral_fan_hang2";
 
     String CORAL_FAN_HANG3 = "minecraft:coral_fan_hang3";
+
+    String CORNFLOWER = "minecraft:cornflower";
 
     String CRACKED_DEEPSLATE_BRICKS = "minecraft:cracked_deepslate_bricks";
 
@@ -474,11 +502,15 @@ public interface BlockID {
 
     String DARK_OAK_DOOR = "minecraft:dark_oak_door";
 
+    String DARK_OAK_DOUBLE_SLAB = "minecraft:dark_oak_double_slab";
+
     String DARK_OAK_FENCE = "minecraft:dark_oak_fence";
 
     String DARK_OAK_FENCE_GATE = "minecraft:dark_oak_fence_gate";
 
     String DARK_OAK_HANGING_SIGN = "minecraft:dark_oak_hanging_sign";
+
+    String DARK_OAK_LEAVES = "minecraft:dark_oak_leaves";
 
     String DARK_OAK_LOG = "minecraft:dark_oak_log";
 
@@ -486,9 +518,15 @@ public interface BlockID {
 
     String DARK_OAK_PRESSURE_PLATE = "minecraft:dark_oak_pressure_plate";
 
+    String DARK_OAK_SAPLING = "minecraft:dark_oak_sapling";
+
+    String DARK_OAK_SLAB = "minecraft:dark_oak_slab";
+
     String DARK_OAK_STAIRS = "minecraft:dark_oak_stairs";
 
     String DARK_OAK_TRAPDOOR = "minecraft:dark_oak_trapdoor";
+
+    String DARK_OAK_WOOD = "minecraft:dark_oak_wood";
 
     String DARK_PRISMARINE_STAIRS = "minecraft:dark_prismarine_stairs";
 
@@ -502,13 +540,23 @@ public interface BlockID {
 
     String DEAD_BRAIN_CORAL = "minecraft:dead_brain_coral";
 
+    String DEAD_BRAIN_CORAL_FAN = "minecraft:dead_brain_coral_fan";
+
     String DEAD_BUBBLE_CORAL = "minecraft:dead_bubble_coral";
+
+    String DEAD_BUBBLE_CORAL_FAN = "minecraft:dead_bubble_coral_fan";
 
     String DEAD_FIRE_CORAL = "minecraft:dead_fire_coral";
 
+    String DEAD_FIRE_CORAL_FAN = "minecraft:dead_fire_coral_fan";
+
     String DEAD_HORN_CORAL = "minecraft:dead_horn_coral";
 
+    String DEAD_HORN_CORAL_FAN = "minecraft:dead_horn_coral_fan";
+
     String DEAD_TUBE_CORAL = "minecraft:dead_tube_coral";
+
+    String DEAD_TUBE_CORAL_FAN = "minecraft:dead_tube_coral_fan";
 
     String DEADBUSH = "minecraft:deadbush";
 
@@ -581,8 +629,6 @@ public interface BlockID {
     String DOUBLE_STONE_BLOCK_SLAB3 = "minecraft:double_stone_block_slab3";
 
     String DOUBLE_STONE_BLOCK_SLAB4 = "minecraft:double_stone_block_slab4";
-
-    String DOUBLE_WOODEN_SLAB = "minecraft:double_wooden_slab";
 
     String DRAGON_EGG = "minecraft:dragon_egg";
 
@@ -880,6 +926,8 @@ public interface BlockID {
 
     String FIRE_CORAL = "minecraft:fire_coral";
 
+    String FIRE_CORAL_FAN = "minecraft:fire_coral_fan";
+
     String FLETCHING_TABLE = "minecraft:fletching_table";
 
     String FLOWER_POT = "minecraft:flower_pot";
@@ -976,13 +1024,79 @@ public interface BlockID {
 
     String HANGING_ROOTS = "minecraft:hanging_roots";
 
+    String HARD_BLACK_STAINED_GLASS = "minecraft:hard_black_stained_glass";
+
+    String HARD_BLACK_STAINED_GLASS_PANE = "minecraft:hard_black_stained_glass_pane";
+
+    String HARD_BLUE_STAINED_GLASS = "minecraft:hard_blue_stained_glass";
+
+    String HARD_BLUE_STAINED_GLASS_PANE = "minecraft:hard_blue_stained_glass_pane";
+
+    String HARD_BROWN_STAINED_GLASS = "minecraft:hard_brown_stained_glass";
+
+    String HARD_BROWN_STAINED_GLASS_PANE = "minecraft:hard_brown_stained_glass_pane";
+
+    String HARD_CYAN_STAINED_GLASS = "minecraft:hard_cyan_stained_glass";
+
+    String HARD_CYAN_STAINED_GLASS_PANE = "minecraft:hard_cyan_stained_glass_pane";
+
     String HARD_GLASS = "minecraft:hard_glass";
 
     String HARD_GLASS_PANE = "minecraft:hard_glass_pane";
 
+    String HARD_GRAY_STAINED_GLASS = "minecraft:hard_gray_stained_glass";
+
+    String HARD_GRAY_STAINED_GLASS_PANE = "minecraft:hard_gray_stained_glass_pane";
+
+    String HARD_GREEN_STAINED_GLASS = "minecraft:hard_green_stained_glass";
+
+    String HARD_GREEN_STAINED_GLASS_PANE = "minecraft:hard_green_stained_glass_pane";
+
+    String HARD_LIGHT_BLUE_STAINED_GLASS = "minecraft:hard_light_blue_stained_glass";
+
+    String HARD_LIGHT_BLUE_STAINED_GLASS_PANE = "minecraft:hard_light_blue_stained_glass_pane";
+
+    String HARD_LIGHT_GRAY_STAINED_GLASS = "minecraft:hard_light_gray_stained_glass";
+
+    String HARD_LIGHT_GRAY_STAINED_GLASS_PANE = "minecraft:hard_light_gray_stained_glass_pane";
+
+    String HARD_LIME_STAINED_GLASS = "minecraft:hard_lime_stained_glass";
+
+    String HARD_LIME_STAINED_GLASS_PANE = "minecraft:hard_lime_stained_glass_pane";
+
+    String HARD_MAGENTA_STAINED_GLASS = "minecraft:hard_magenta_stained_glass";
+
+    String HARD_MAGENTA_STAINED_GLASS_PANE = "minecraft:hard_magenta_stained_glass_pane";
+
+    String HARD_ORANGE_STAINED_GLASS = "minecraft:hard_orange_stained_glass";
+
+    String HARD_ORANGE_STAINED_GLASS_PANE = "minecraft:hard_orange_stained_glass_pane";
+
+    String HARD_PINK_STAINED_GLASS = "minecraft:hard_pink_stained_glass";
+
+    String HARD_PINK_STAINED_GLASS_PANE = "minecraft:hard_pink_stained_glass_pane";
+
+    String HARD_PURPLE_STAINED_GLASS = "minecraft:hard_purple_stained_glass";
+
+    String HARD_PURPLE_STAINED_GLASS_PANE = "minecraft:hard_purple_stained_glass_pane";
+
+    String HARD_RED_STAINED_GLASS = "minecraft:hard_red_stained_glass";
+
+    String HARD_RED_STAINED_GLASS_PANE = "minecraft:hard_red_stained_glass_pane";
+
+    String HARD_WHITE_STAINED_GLASS = "minecraft:hard_white_stained_glass";
+
+    String HARD_WHITE_STAINED_GLASS_PANE = "minecraft:hard_white_stained_glass_pane";
+
+    String HARD_YELLOW_STAINED_GLASS = "minecraft:hard_yellow_stained_glass";
+
+    String HARD_YELLOW_STAINED_GLASS_PANE = "minecraft:hard_yellow_stained_glass_pane";
+
     String HARDENED_CLAY = "minecraft:hardened_clay";
 
     String HAY_BLOCK = "minecraft:hay_block";
+
+    String HEAVY_CORE = "minecraft:heavy_core";
 
     String HEAVY_WEIGHTED_PRESSURE_PLATE = "minecraft:heavy_weighted_pressure_plate";
 
@@ -993,6 +1107,8 @@ public interface BlockID {
     String HOPPER = "minecraft:hopper";
 
     String HORN_CORAL = "minecraft:horn_coral";
+
+    String HORN_CORAL_FAN = "minecraft:horn_coral_fan";
 
     String ICE = "minecraft:ice";
 
@@ -1022,17 +1138,25 @@ public interface BlockID {
 
     String JUNGLE_DOOR = "minecraft:jungle_door";
 
+    String JUNGLE_DOUBLE_SLAB = "minecraft:jungle_double_slab";
+
     String JUNGLE_FENCE = "minecraft:jungle_fence";
 
     String JUNGLE_FENCE_GATE = "minecraft:jungle_fence_gate";
 
     String JUNGLE_HANGING_SIGN = "minecraft:jungle_hanging_sign";
 
+    String JUNGLE_LEAVES = "minecraft:jungle_leaves";
+
     String JUNGLE_LOG = "minecraft:jungle_log";
 
     String JUNGLE_PLANKS = "minecraft:jungle_planks";
 
     String JUNGLE_PRESSURE_PLATE = "minecraft:jungle_pressure_plate";
+
+    String JUNGLE_SAPLING = "minecraft:jungle_sapling";
+
+    String JUNGLE_SLAB = "minecraft:jungle_slab";
 
     String JUNGLE_STAIRS = "minecraft:jungle_stairs";
 
@@ -1041,6 +1165,8 @@ public interface BlockID {
     String JUNGLE_TRAPDOOR = "minecraft:jungle_trapdoor";
 
     String JUNGLE_WALL_SIGN = "minecraft:jungle_wall_sign";
+
+    String JUNGLE_WOOD = "minecraft:jungle_wood";
 
     String KELP = "minecraft:kelp";
 
@@ -1055,10 +1181,6 @@ public interface BlockID {
     String LARGE_AMETHYST_BUD = "minecraft:large_amethyst_bud";
 
     String LAVA = "minecraft:lava";
-
-    String LEAVES = "minecraft:leaves";
-
-    String LEAVES2 = "minecraft:leaves2";
 
     String LECTERN = "minecraft:lectern";
 
@@ -1111,6 +1233,8 @@ public interface BlockID {
     String LIGHT_WEIGHTED_PRESSURE_PLATE = "minecraft:light_weighted_pressure_plate";
 
     String LIGHTNING_ROD = "minecraft:lightning_rod";
+
+    String LILY_OF_THE_VALLEY = "minecraft:lily_of_the_valley";
 
     String LIME_CANDLE = "minecraft:lime_candle";
 
@@ -1274,15 +1398,25 @@ public interface BlockID {
 
     String NOTEBLOCK = "minecraft:noteblock";
 
+    String OAK_DOUBLE_SLAB = "minecraft:oak_double_slab";
+
     String OAK_FENCE = "minecraft:oak_fence";
 
     String OAK_HANGING_SIGN = "minecraft:oak_hanging_sign";
+
+    String OAK_LEAVES = "minecraft:oak_leaves";
 
     String OAK_LOG = "minecraft:oak_log";
 
     String OAK_PLANKS = "minecraft:oak_planks";
 
+    String OAK_SAPLING = "minecraft:oak_sapling";
+
+    String OAK_SLAB = "minecraft:oak_slab";
+
     String OAK_STAIRS = "minecraft:oak_stairs";
+
+    String OAK_WOOD = "minecraft:oak_wood";
 
     String OBSERVER = "minecraft:observer";
 
@@ -1310,7 +1444,11 @@ public interface BlockID {
 
     String ORANGE_TERRACOTTA = "minecraft:orange_terracotta";
 
+    String ORANGE_TULIP = "minecraft:orange_tulip";
+
     String ORANGE_WOOL = "minecraft:orange_wool";
+
+    String OXEYE_DAISY = "minecraft:oxeye_daisy";
 
     String OXIDIZED_CHISELED_COPPER = "minecraft:oxidized_chiseled_copper";
 
@@ -1359,6 +1497,8 @@ public interface BlockID {
     String PINK_STAINED_GLASS_PANE = "minecraft:pink_stained_glass_pane";
 
     String PINK_TERRACOTTA = "minecraft:pink_terracotta";
+
+    String PINK_TULIP = "minecraft:pink_tulip";
 
     String PINK_WOOL = "minecraft:pink_wool";
 
@@ -1432,6 +1572,8 @@ public interface BlockID {
 
     String POLISHED_TUFF_WALL = "minecraft:polished_tuff_wall";
 
+    String POPPY = "minecraft:poppy";
+
     String PORTAL = "minecraft:portal";
 
     String POTATOES = "minecraft:potatoes";
@@ -1504,8 +1646,6 @@ public interface BlockID {
 
     String RED_CONCRETE_POWDER = "minecraft:red_concrete_powder";
 
-    String RED_FLOWER = "minecraft:red_flower";
-
     String RED_GLAZED_TERRACOTTA = "minecraft:red_glazed_terracotta";
 
     String RED_MUSHROOM = "minecraft:red_mushroom";
@@ -1527,6 +1667,8 @@ public interface BlockID {
     String RED_STAINED_GLASS_PANE = "minecraft:red_stained_glass_pane";
 
     String RED_TERRACOTTA = "minecraft:red_terracotta";
+
+    String RED_TULIP = "minecraft:red_tulip";
 
     String RED_WOOL = "minecraft:red_wool";
 
@@ -1555,8 +1697,6 @@ public interface BlockID {
     String SANDSTONE = "minecraft:sandstone";
 
     String SANDSTONE_STAIRS = "minecraft:sandstone_stairs";
-
-    String SAPLING = "minecraft:sapling";
 
     String SCAFFOLDING = "minecraft:scaffolding";
 
@@ -1628,17 +1768,25 @@ public interface BlockID {
 
     String SPRUCE_DOOR = "minecraft:spruce_door";
 
+    String SPRUCE_DOUBLE_SLAB = "minecraft:spruce_double_slab";
+
     String SPRUCE_FENCE = "minecraft:spruce_fence";
 
     String SPRUCE_FENCE_GATE = "minecraft:spruce_fence_gate";
 
     String SPRUCE_HANGING_SIGN = "minecraft:spruce_hanging_sign";
 
+    String SPRUCE_LEAVES = "minecraft:spruce_leaves";
+
     String SPRUCE_LOG = "minecraft:spruce_log";
 
     String SPRUCE_PLANKS = "minecraft:spruce_planks";
 
     String SPRUCE_PRESSURE_PLATE = "minecraft:spruce_pressure_plate";
+
+    String SPRUCE_SAPLING = "minecraft:spruce_sapling";
+
+    String SPRUCE_SLAB = "minecraft:spruce_slab";
 
     String SPRUCE_STAIRS = "minecraft:spruce_stairs";
 
@@ -1647,6 +1795,8 @@ public interface BlockID {
     String SPRUCE_TRAPDOOR = "minecraft:spruce_trapdoor";
 
     String SPRUCE_WALL_SIGN = "minecraft:spruce_wall_sign";
+
+    String SPRUCE_WOOD = "minecraft:spruce_wood";
 
     String STANDING_BANNER = "minecraft:standing_banner";
 
@@ -1682,9 +1832,13 @@ public interface BlockID {
 
     String STRIPPED_ACACIA_LOG = "minecraft:stripped_acacia_log";
 
+    String STRIPPED_ACACIA_WOOD = "minecraft:stripped_acacia_wood";
+
     String STRIPPED_BAMBOO_BLOCK = "minecraft:stripped_bamboo_block";
 
     String STRIPPED_BIRCH_LOG = "minecraft:stripped_birch_log";
+
+    String STRIPPED_BIRCH_WOOD = "minecraft:stripped_birch_wood";
 
     String STRIPPED_CHERRY_LOG = "minecraft:stripped_cherry_log";
 
@@ -1696,7 +1850,11 @@ public interface BlockID {
 
     String STRIPPED_DARK_OAK_LOG = "minecraft:stripped_dark_oak_log";
 
+    String STRIPPED_DARK_OAK_WOOD = "minecraft:stripped_dark_oak_wood";
+
     String STRIPPED_JUNGLE_LOG = "minecraft:stripped_jungle_log";
+
+    String STRIPPED_JUNGLE_WOOD = "minecraft:stripped_jungle_wood";
 
     String STRIPPED_MANGROVE_LOG = "minecraft:stripped_mangrove_log";
 
@@ -1704,7 +1862,11 @@ public interface BlockID {
 
     String STRIPPED_OAK_LOG = "minecraft:stripped_oak_log";
 
+    String STRIPPED_OAK_WOOD = "minecraft:stripped_oak_wood";
+
     String STRIPPED_SPRUCE_LOG = "minecraft:stripped_spruce_log";
+
+    String STRIPPED_SPRUCE_WOOD = "minecraft:stripped_spruce_wood";
 
     String STRIPPED_WARPED_HYPHAE = "minecraft:stripped_warped_hyphae";
 
@@ -1738,11 +1900,15 @@ public interface BlockID {
 
     String TRAPPED_CHEST = "minecraft:trapped_chest";
 
+    String TRIAL_SPAWNER = "minecraft:trial_spawner";
+
     String TRIP_WIRE = "minecraft:trip_wire";
 
     String TRIPWIRE_HOOK = "minecraft:tripwire_hook";
 
     String TUBE_CORAL = "minecraft:tube_coral";
+
+    String TUBE_CORAL_FAN = "minecraft:tube_coral_fan";
 
     String TUFF = "minecraft:tuff";
 
@@ -1779,6 +1945,8 @@ public interface BlockID {
     String UNPOWERED_COMPARATOR = "minecraft:unpowered_comparator";
 
     String UNPOWERED_REPEATER = "minecraft:unpowered_repeater";
+
+    String VAULT = "minecraft:vault";
 
     String VERDANT_FROGLIGHT = "minecraft:verdant_froglight";
 
@@ -1956,6 +2124,8 @@ public interface BlockID {
 
     String WHITE_TERRACOTTA = "minecraft:white_terracotta";
 
+    String WHITE_TULIP = "minecraft:white_tulip";
+
     String WHITE_WOOL = "minecraft:white_wool";
 
     String WITHER_ROSE = "minecraft:wither_rose";
@@ -1989,75 +2159,4 @@ public interface BlockID {
     String YELLOW_TERRACOTTA = "minecraft:yellow_terracotta";
 
     String YELLOW_WOOL = "minecraft:yellow_wool";
-
-    String ACACIA_LEAVES = "minecraft:acacia_leaves";
-    String BIRCH_LEAVES = "minecraft:birch_leaves";
-    String DARK_OAK_LEAVES = "minecraft:dark_oak_leaves";
-    String JUNGLE_LEAVES = "minecraft:jungle_leaves";
-    String OAK_LEAVES = "minecraft:oak_leaves";
-    String SPRUCE_LEAVES = "minecraft:spruce_leaves";
-
-    String ACACIA_DOUBLE_SLAB = "minecraft:acacia_double_slab";
-    String BIRCH_DOUBLE_SLAB = "minecraft:birch_double_slab";
-    String DARK_OAK_DOUBLE_SLAB = "minecraft:dark_oak_double_slab";
-    String JUNGLE_DOUBLE_SLAB = "minecraft:jungle_double_slab";
-    String OAK_DOUBLE_SLAB = "minecraft:oak_double_slab";
-    String SPRUCE_DOUBLE_SLAB = "minecraft:spruce_double_slab";
-
-    String ACACIA_SLAB = "minecraft:acacia_slab";
-    String BIRCH_SLAB = "minecraft:birch_slab";
-    String DARK_OAK_SLAB = "minecraft:dark_oak_slab";
-    String JUNGLE_SLAB = "minecraft:jungle_slab";
-    String OAK_SLAB = "minecraft:oak_slab";
-    String SPRUCE_SLAB = "minecraft:spruce_slab";
-
-    String ACACIA_WOOD = "minecraft:acacia_wood";
-    String BIRCH_WOOD = "minecraft:birch_wood";
-    String DARK_OAK_WOOD = "minecraft:dark_oak_wood";
-    String JUNGLE_WOOD = "minecraft:jungle_wood";
-    String OAK_WOOD = "minecraft:oak_wood";
-    String SPRUCE_WOOD = "minecraft:spruce_wood";
-    String STRIPPED_ACACIA_WOOD = "minecraft:stripped_acacia_wood";
-    String STRIPPED_BIRCH_WOOD = "minecraft:stripped_birch_wood";
-    String STRIPPED_DARK_OAK_WOOD = "minecraft:stripped_dark_oak_wood";
-    String STRIPPED_JUNGLE_WOOD = "minecraft:stripped_jungle_wood";
-    String STRIPPED_OAK_WOOD = "minecraft:stripped_oak_wood";
-    String STRIPPED_SPRUCE_WOOD = "minecraft:stripped_spruce_wood";
-
-    String HARD_BLACK_STAINED_GLASS = "minecraft:hard_black_stained_glass";
-    String HARD_BLACK_STAINED_GLASS_PANE = "minecraft:hard_black_stained_glass_pane";
-    String HARD_BLUE_STAINED_GLASS = "minecraft:hard_blue_stained_glass";
-    String HARD_BLUE_STAINED_GLASS_PANE = "minecraft:hard_blue_stained_glass_pane";
-    String HARD_BROWN_STAINED_GLASS = "minecraft:hard_brown_stained_glass";
-    String HARD_BROWN_STAINED_GLASS_PANE = "minecraft:hard_brown_stained_glass_pane";
-    String HARD_CYAN_STAINED_GLASS = "minecraft:hard_cyan_stained_glass";
-    String HARD_CYAN_STAINED_GLASS_PANE = "minecraft:hard_cyan_stained_glass_pane";
-    String HARD_GRAY_STAINED_GLASS = "minecraft:hard_gray_stained_glass";
-    String HARD_GRAY_STAINED_GLASS_PANE = "minecraft:hard_gray_stained_glass_pane";
-    String HARD_GREEN_STAINED_GLASS = "minecraft:hard_green_stained_glass";
-    String HARD_GREEN_STAINED_GLASS_PANE = "minecraft:hard_green_stained_glass_pane";
-    String HARD_LIGHT_BLUE_STAINED_GLASS = "minecraft:hard_light_blue_stained_glass";
-    String HARD_LIGHT_BLUE_STAINED_GLASS_PANE = "minecraft:hard_light_blue_stained_glass_pane";
-    String HARD_LIGHT_GRAY_STAINED_GLASS = "minecraft:hard_light_gray_stained_glass";
-    String HARD_LIGHT_GRAY_STAINED_GLASS_PANE = "minecraft:hard_light_gray_stained_glass_pane";
-    String HARD_LIME_STAINED_GLASS = "minecraft:hard_lime_stained_glass";
-    String HARD_LIME_STAINED_GLASS_PANE = "minecraft:hard_lime_stained_glass_pane";
-    String HARD_MAGENTA_STAINED_GLASS = "minecraft:hard_magenta_stained_glass";
-    String HARD_MAGENTA_STAINED_GLASS_PANE = "minecraft:hard_magenta_stained_glass_pane";
-    String HARD_ORANGE_STAINED_GLASS = "minecraft:hard_orange_stained_glass";
-    String HARD_ORANGE_STAINED_GLASS_PANE = "minecraft:hard_orange_stained_glass_pane";
-    String HARD_PINK_STAINED_GLASS = "minecraft:hard_pink_stained_glass";
-    String HARD_PINK_STAINED_GLASS_PANE = "minecraft:hard_pink_stained_glass_pane";
-    String HARD_PURPLE_STAINED_GLASS = "minecraft:hard_purple_stained_glass";
-    String HARD_PURPLE_STAINED_GLASS_PANE = "minecraft:hard_purple_stained_glass_pane";
-    String HARD_RED_STAINED_GLASS = "minecraft:hard_red_stained_glass";
-    String HARD_RED_STAINED_GLASS_PANE = "minecraft:hard_red_stained_glass_pane";
-    String HARD_WHITE_STAINED_GLASS = "minecraft:hard_white_stained_glass";
-    String HARD_WHITE_STAINED_GLASS_PANE = "minecraft:hard_white_stained_glass_pane";
-    String HARD_YELLOW_STAINED_GLASS = "minecraft:hard_yellow_stained_glass";
-    String HARD_YELLOW_STAINED_GLASS_PANE = "minecraft:hard_yellow_stained_glass_pane";
-
-    String TRIAL_SPAWNER = "minecraft:trial_spawner";
-
-    String VAULT = "minecraft:vault";
 }

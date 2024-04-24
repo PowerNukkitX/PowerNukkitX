@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.OldLeafType;
-import cn.nukkit.block.property.enums.SaplingType;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
@@ -30,35 +28,16 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static cn.nukkit.block.property.CommonBlockProperties.AGE_BIT;
-import static cn.nukkit.block.property.CommonBlockProperties.SAPLING_TYPE;
 
 /**
  * @author Angelic47 (Nukkit Project)
  */
-public class BlockSapling extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SAPLING, CommonBlockProperties.AGE_BIT, SAPLING_TYPE);
-
-    @Override
-    @NotNull
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    public BlockSapling() {
-        this(PROPERTIES.getDefaultState());
-    }
-
+public abstract class BlockSapling extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
     public BlockSapling(BlockState blockstate) {
         super(blockstate);
     }
 
-    public WoodType getWoodType() {
-        return WoodType.valueOf(getPropertyValue(SAPLING_TYPE).name().toUpperCase());
-    }
-
-    public void setWoodType(WoodType woodType) {
-        setPropertyValue(SAPLING_TYPE, SaplingType.valueOf(woodType.name().toUpperCase()));
-    }
+    public abstract WoodType getWoodType();
 
     public boolean isAged() {
         return getPropertyValue(AGE_BIT);
@@ -75,7 +54,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (BlockRedFlower.isSupportValid(down())) {
+        if (BlockFlower.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }
@@ -110,7 +89,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!BlockRedFlower.isSupportValid(down())) {
+            if (!BlockFlower.isSupportValid(down())) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }

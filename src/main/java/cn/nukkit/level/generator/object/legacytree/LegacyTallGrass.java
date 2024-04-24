@@ -17,17 +17,17 @@ public class LegacyTallGrass {
             BlockTallgrass.PROPERTIES.getBlockState(TALL_GRASS_TYPE, TallGrassType.DEFAULT),// 50
             BlockTallgrass.PROPERTIES.getBlockState(TALL_GRASS_TYPE, TallGrassType.TALL),// 30
             BlockYellowFlower.PROPERTIES.getDefaultState(),// 10
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.POPPY),// 10
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.HOUSTONIA),// 5
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.OXEYE),// 5
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.ALLIUM),// 2
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.CORNFLOWER),// 2
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.ORCHID),// 2
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.LILY_OF_THE_VALLEY),// 2
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.TULIP_RED),// 2
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.TULIP_ORANGE),// 2
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.TULIP_PINK),// 2
-            BlockRedFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.TULIP_WHITE),// 2
+            BlockFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.POPPY),// 10
+            BlockFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.HOUSTONIA),// 5
+            BlockFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.OXEYE),// 5
+            BlockFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.ALLIUM),// 2
+            BlockFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.CORNFLOWER),// 2
+            BlockFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.ORCHID),// 2
+            BlockFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.LILY_OF_THE_VALLEY),// 2
+            BlockFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.TULIP_RED),// 2
+            BlockFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.TULIP_ORANGE),// 2
+            BlockFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.TULIP_PINK),// 2
+            BlockFlower.PROPERTIES.getBlockState(CommonBlockProperties.FLOWER_TYPE, FlowerType.TULIP_WHITE),// 2
     };
 
     public static void growGrass(BlockManager level, Vector3 pos, RandomSourceProvider random) {

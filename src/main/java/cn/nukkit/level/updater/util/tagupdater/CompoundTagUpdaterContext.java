@@ -31,15 +31,22 @@ public class CompoundTagUpdaterContext {
         return this.addUpdater(major, minor, patch, false);
     }
 
-    public CompoundTagUpdater.Builder addUpdater(int major, int minor, int patch, boolean ignoreVersion) {
+    public CompoundTagUpdater.Builder addUpdater(int major, int minor, int patch, boolean resetVersion) {
+        return this.addUpdater(major, minor, patch, resetVersion, true);
+    }
+
+    public CompoundTagUpdater.Builder addUpdater(int major, int minor, int patch, boolean resetVersion, boolean bumpVersion) {
         int version = makeVersion(major, minor, patch);
         CompoundTagUpdater prevUpdater = this.getLatestUpdater();
 
         int updaterVersion;
-        if (ignoreVersion || prevUpdater == null || baseVersion(prevUpdater.getVersion()) != version) {
+        if (resetVersion || prevUpdater == null || baseVersion(prevUpdater.getVersion()) != version) {
             updaterVersion = 0;
         } else {
-            updaterVersion = updaterVersion(prevUpdater.getVersion()) + 1;
+            updaterVersion = updaterVersion(prevUpdater.getVersion());
+            if (bumpVersion) {
+                updaterVersion++;
+            }
         }
         version = mergeVersions(version, updaterVersion);
 

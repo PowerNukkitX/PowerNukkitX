@@ -8,7 +8,7 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 
-public class BlockTorchflower extends BlockRedFlower {
+public class BlockTorchflower extends BlockFlower {
     public static final BlockProperties PROPERTIES = new BlockProperties(TORCHFLOWER);
 
     @Override

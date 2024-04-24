@@ -10,7 +10,8 @@ public class BlockCoralFanHang3 extends BlockCoralFanHang {
     public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_HANG3, CORAL_DIRECTION, CORAL_HANG_TYPE_BIT, DEAD_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -23,7 +24,7 @@ public class BlockCoralFanHang3 extends BlockCoralFanHang {
     }
 
     @Override
-    public int getType() {
-        return BlockCoral.TYPE_HORN;
+    public Block getDeadCoralFan() {
+        return new BlockDeadHornCoralFan();
     }
 }

@@ -216,7 +216,7 @@ public class BlockComposter extends BlockSolid {
 
     private static void registerDefaults() {
         registerItems(30,
-                ItemID.KELP,
+                BlockID.KELP,
                 ItemID.BEETROOT_SEEDS,
                 ItemID.DRIED_KELP,
                 ItemID.MELON_SEEDS,
@@ -225,19 +225,19 @@ public class BlockComposter extends BlockSolid {
                 ItemID.WHEAT_SEEDS,
                 ItemID.GLOW_BERRIES
         );
-        registerItems(50, ItemID.MELON_SLICE, ItemID.SUGAR_CANE, ItemID.NETHER_SPROUTS);
-        registerItems(65, ItemID.APPLE, ItemID.BEETROOT, ItemID.CARROT, ItemID.COCOA_BEANS, ItemID.POTATO, ItemID.WHEAT);
+        registerItems(50, ItemID.MELON_SLICE, ItemID.SUGAR_CANE, BlockID.NETHER_SPROUTS);
+        registerItems(65, ItemID.APPLE, BlockID.BEETROOT, ItemID.CARROT, ItemID.COCOA_BEANS, ItemID.POTATO, BlockID.WHEAT);
         registerItems(85, ItemID.BAKED_POTATO, ItemID.BREAD, ItemID.COOKIE, ItemID.MUSHROOM_STEW);
-        registerItems(100, ItemID.CAKE, ItemID.PUMPKIN_PIE);
+        registerItems(100, BlockID.CAKE, ItemID.PUMPKIN_PIE);
 
-        registerBlocks(30, PINK_PETALS, LEAVES, LEAVES2, SAPLING, SEAGRASS, SWEET_BERRY_BUSH, MOSS_CARPET, HANGING_ROOTS, SMALL_DRIPLEAF_BLOCK);
+        registerBlocks(30, PINK_PETALS, ItemID.LEAVES, ItemID.LEAVES2, ItemID.SAPLING, SEAGRASS, SWEET_BERRY_BUSH, MOSS_CARPET, HANGING_ROOTS, SMALL_DRIPLEAF_BLOCK);
         registerBlocks(50, GLOW_LICHEN, GRASS_BLOCK, CACTUS, DRIED_KELP_BLOCK, VINE, NETHER_SPROUTS,
                 TWISTING_VINES, WEEPING_VINES, GLOW_LICHEN);
         registerBlock(50, TALLGRASS, 0);
         registerBlock(50, TALLGRASS, 1);
         registerBlock(65, TALLGRASS, 2);
         registerBlock(65, TALLGRASS, 3);
-        registerBlocks(65, YELLOW_FLOWER, RED_FLOWER, DOUBLE_PLANT, WITHER_ROSE, WATERLILY, MELON_BLOCK,
+        registerBlocks(65, YELLOW_FLOWER, ItemID.RED_FLOWER, DOUBLE_PLANT, WITHER_ROSE, WATERLILY, MELON_BLOCK,
                 PUMPKIN, CARVED_PUMPKIN, SEA_PICKLE, BROWN_MUSHROOM, RED_MUSHROOM,
                 WARPED_ROOTS, CRIMSON_ROOTS, SHROOMLIGHT, AZALEA, BIG_DRIPLEAF, MOSS_BLOCK,
                 SPORE_BLOSSOM);

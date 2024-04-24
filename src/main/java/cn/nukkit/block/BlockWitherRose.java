@@ -13,7 +13,7 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 
-public class BlockWitherRose extends BlockRedFlower {
+public class BlockWitherRose extends BlockFlower {
     public static final BlockProperties PROPERTIES = new BlockProperties(WITHER_ROSE);
 
     @Override

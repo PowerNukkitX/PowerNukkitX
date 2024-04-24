@@ -1,10 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.FlowerType;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -16,29 +13,9 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * The default is red flower, but there are other flower variants
  */
-public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-    public static final BlockProperties PROPERTIES = new BlockProperties(RED_FLOWER, CommonBlockProperties.FLOWER_TYPE);
-
-    @Override
-    @NotNull
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    public BlockRedFlower() {
-        super(PROPERTIES.getDefaultState());
-    }
-
-    public BlockRedFlower(BlockState blockstate) {
+public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+    public BlockFlower(BlockState blockstate) {
         super(blockstate);
-    }
-
-    public FlowerType getFlowerType() {
-        return getPropertyValue(CommonBlockProperties.FLOWER_TYPE);
-    }
-
-    public void setFlowerType(FlowerType flowerType) {
-        setPropertyValue(CommonBlockProperties.FLOWER_TYPE, flowerType);
     }
 
     public static boolean isSupportValid(Block block) {
@@ -61,12 +38,6 @@ public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.Flow
             return true;
         }
         return false;
-    }
-
-    @Override
-    public Item toItem() {
-        int aux = getFlowerType().ordinal();
-        return new ItemBlock(this, aux);
     }
 
     @Override

@@ -286,6 +286,10 @@ public class ShapedRecipe extends CraftingRecipe {
         return false;
     }
 
+    public boolean isMirror() {
+        return mirror;
+    }
+
     @Override
     public RecipeType getType() {
         return RecipeType.SHAPED;
