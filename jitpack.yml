@@ -1,3 +1,2 @@
-before_install:
-  - sdk install java 21.0.3-graalce
-  - sdk use java 21.0.3-graalce
+jdk:
+  - openjdk21
