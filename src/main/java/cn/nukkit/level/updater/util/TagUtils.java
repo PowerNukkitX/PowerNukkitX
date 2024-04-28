@@ -32,7 +32,7 @@ public class TagUtils {
             case Map<?, ?> map -> {
                 CompoundTag compoundTag = new CompoundTag();
                 map.forEach((k, v) -> {
-                    if (k instanceof String stringKey && v != null) {
+                    if (k instanceof String stringKey) {
                         compoundTag.put(stringKey, toImmutable(v));
                     }
                 });
@@ -58,6 +58,7 @@ public class TagUtils {
             case String v -> new StringTag(v);
             case byte[] v -> new ByteArrayTag(v);
             case int[] v -> new IntArrayTag(v);
+            case null -> new EndTag();
             default -> throw new IllegalArgumentException("unhandled error in TagUtils");
         };
     }
