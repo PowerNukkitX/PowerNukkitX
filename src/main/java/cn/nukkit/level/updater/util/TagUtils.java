@@ -10,80 +10,56 @@ import java.util.Map;
 public class TagUtils {
 
     public static Object toMutable(Tag immutable) {
-        if (immutable instanceof CompoundTag compoundTag) {
-            Map<String, Object> mutable = new LinkedHashMap<>();
-            for (Map.Entry<String, Tag> entry : compoundTag.getTags().entrySet()) {
-                mutable.put(entry.getKey(), toMutable(entry.getValue()));
+        return switch (immutable) {
+            case CompoundTag t -> {
+                Map<String, Object> mutable = new LinkedHashMap<>();
+                t.getTags().forEach((k, v) -> mutable.put(k, toMutable(v)));
+                yield mutable;
             }
-            return mutable;
-        } else if (immutable instanceof ListTag<?> listTag) {
-            List<Object> list = new ArrayList<>();
-            for (Tag value : listTag.getAll()) {
-                list.add(toMutable(value));
+            case ListTag<?> t -> {
+                List<Object> list = new ArrayList<>();
+                t.getAll().forEach((v -> list.add(toMutable(v))));
+                yield list;
             }
-            return list;
-        } else if (immutable instanceof ByteTag tag) {
-            return (byte) (tag.parseValue() & 0xff);
-        } else if (immutable instanceof ShortTag tag) {
-            return (short) (tag.parseValue() & 0xffff);
-        } else if (immutable instanceof IntTag tag) {
-            return tag.parseValue();
-        } else if (immutable instanceof LongTag tag) {
-            return tag.parseValue();
-        } else if (immutable instanceof FloatTag tag) {
-            return tag.parseValue();
-        } else if (immutable instanceof DoubleTag tag) {
-            return tag.parseValue();
-        } else if (immutable instanceof ByteArrayTag tag) {
-            return tag.parseValue();
-        } else if (immutable instanceof IntArrayTag tag) {
-            return tag.parseValue();
-        } else if (immutable instanceof StringTag tag) {
-            return tag.parseValue();
-        }
-        throw new IllegalArgumentException("unhandle error in TagUtil");
+            case ByteTag t -> (byte) (t.parseValue() & 0xff);
+            case ShortTag t -> (short) (t.parseValue() & 0xffff);
+            default -> immutable.parseValue();
+        };
     }
 
     public static Tag toImmutable(Object mutable) {
-        if (mutable instanceof Map) {
-            Map<String, Object> map = (Map<String, Object>) mutable;
-            CompoundTag compoundTag = new CompoundTag();
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                compoundTag.put(entry.getKey(), toImmutable(entry.getValue()));
+        return switch (mutable) {
+            case Map<?, ?> map -> {
+                CompoundTag compoundTag = new CompoundTag();
+                map.forEach((k, v) -> {
+                    if (k instanceof String stringKey) {
+                        compoundTag.put(stringKey, toImmutable(v));
+                    }
+                });
+                yield compoundTag;
             }
-            return compoundTag;
-        } else if (mutable instanceof List list) {
-            ListTag<? extends Tag> listTag = new ListTag<>();
-            for (Object value : list) {
-                list.add(toImmutable(value));
+            case List<?> list -> {
+                ListTag<Tag> listTag = new ListTag<>();
+                list.forEach(v -> listTag.add(toImmutable(v)));
+                yield listTag;
             }
-            return listTag;
-        }
-        return byClass(mutable);
+            default -> byClass(mutable);
+        };
     }
 
     private static Tag byClass(Object mutable) {
-        if (mutable instanceof Integer v) {
-            return new IntTag(v);
-        } else if (mutable instanceof Byte v) {
-            return new ByteTag(v);
-        } else if (mutable instanceof Short v) {
-            return new ShortTag(v);
-        } else if (mutable instanceof Long v) {
-            return new LongTag(v);
-        } else if (mutable instanceof Float v) {
-            return new FloatTag(v);
-        } else if (mutable instanceof Double v) {
-            return new DoubleTag(v);
-        } else if (mutable instanceof String v) {
-            return new StringTag( v);
-        } else if (mutable instanceof byte[] v) {
-            return new ByteArrayTag(v);
-        } else if (mutable instanceof int[] v) {
-            return new IntArrayTag(v);
-        } else if (mutable instanceof Void) {
-            return new EndTag();
-        }
-        throw new IllegalArgumentException("unhandle error in TagUtil");
+        return switch (mutable) {
+            case Integer v -> new IntTag(v);
+            case Byte v -> new ByteTag(v);
+            case Short v -> new ShortTag(v);
+            case Long v -> new LongTag(v);
+            case Float v -> new FloatTag(v);
+            case Double v -> new DoubleTag(v);
+            case String v -> new StringTag(v);
+            case byte[] v -> new ByteArrayTag(v);
+            case int[] v -> new IntArrayTag(v);
+            case null -> new EndTag();
+            default -> throw new IllegalArgumentException("unhandled error in TagUtils");
+        };
     }
 }
