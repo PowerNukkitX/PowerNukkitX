@@ -247,12 +247,13 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             Arrays.stream(tags).forEach(Identifier::assertValid);
             var list = this.nbt.getCompound("components").getList("item_tags", StringTag.class);
             if (list == null) {
-                list = new ListTag<>();
-                this.nbt.getCompound("components").putList("item_tags", list);
+                this.nbt.getCompound("components").putList("item_tags", new ListTag<>());
+                return this;
             }
             for (var s : tags) {
                 list.add(new StringTag(s));
             }
+            this.nbt.getCompound("components").putList("item_tags", list);
             return this;
         }
 

@@ -1,6 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -53,11 +54,11 @@ public class SetBlockCommand extends VanillaCommand {
 
         Level level = sender.getPosition().getLevel();
         Block current = level.getBlock(position);
-        if (current.getId() == block.getId() && current.getBlockState() == block.getBlockState()) {
+        if (current.getId().equals(block.getId()) && current.getBlockState() == block.getBlockState()) {
             log.addError("commands.setblock.noChange").output();
             return 0;
         }
-        if (current.getId() != Block.AIR) {
+        if (!(current instanceof BlockAir)) {
             switch (oldBlockHandling) {
                 case "destroy" -> {
                     if (sender.isPlayer()) {
