@@ -149,8 +149,9 @@ public class EntityTnt extends Entity implements EntityExplosive {
             fuse -= tickDiff;
 
             if (fuse <= 0) {
-                if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES))
+                if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)){
                     explode();
+                }
                 kill();
             }
 

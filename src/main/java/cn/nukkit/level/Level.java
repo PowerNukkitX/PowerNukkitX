@@ -4463,6 +4463,10 @@ public class Level implements Metadatable {
 
     public boolean isRayCollidingWithBlocks(double srcX, double srcY, double srcZ, double dstX, double dstY, double dstZ, double stepSize) {
         Vector3 direction = new Vector3(dstX - srcX, dstY - srcY, dstZ - srcZ);
+        if (direction.x == 0.0 && direction.y == 0.0 && direction.z == 0.0) {
+            return false;
+        }
+
         double length = direction.length();
         Vector3 normalizedDirection = direction.divide(length);
 
@@ -4484,36 +4488,40 @@ public class Level implements Metadatable {
     }
 
     public float getBlockDensity(Vector3 source, AxisAlignedBB boundingBox) {
-        double xInterval = 1 / ((boundingBox.getMaxX() - boundingBox.getMinX()) * 2 + 1);
-        double yInterval = 1 / ((boundingBox.getMaxY() - boundingBox.getMinY()) * 2 + 1);
-        double zInterval = 1 / ((boundingBox.getMaxZ() - boundingBox.getMinZ()) * 2 + 1);
+        double diffX = boundingBox.getMaxX() - boundingBox.getMinX();
+        double diffY = boundingBox.getMaxY() - boundingBox.getMinY();
+        double diffZ = boundingBox.getMaxZ() - boundingBox.getMinZ();
+        double xInterval = 1 / (diffX * 2 + 1);
+        double yInterval = 1 / (diffY * 2 + 1);
+        double zInterval = 1 / (diffZ * 2 + 1);
+
+        if (xInterval < 0.0 || yInterval < 0.0 || zInterval < 0.0) {
+            return 0.0f;
+        }
+
         double xOffset = (1 - Math.floor(1 / xInterval) * xInterval) / 2;
+        double yOffset = boundingBox.getMinY();
         double zOffset = (1 - Math.floor(1 / zInterval) * zInterval) / 2;
 
-        if (xInterval >= 0 && yInterval >= 0 && zInterval >= 0) {
-            int visibleBlocks = 0;
-            int totalBlocks = 0;
+        int visibleBlocks = 0;
+        int totalBlocks = 0;
 
-            for (float x = 0; x <= 1; x = (float) ((double) x + xInterval)) {
-                for (float y = 0; y <= 1; y = (float) ((double) y + yInterval)) {
-                    for (float z = 0; z <= 1; z = (float) ((double) z + zInterval)) {
-                        double blockX = boundingBox.getMinX() + (boundingBox.getMaxX() - boundingBox.getMinX()) * (double) x;
-                        double blockY = boundingBox.getMinY() + (boundingBox.getMaxY() - boundingBox.getMinY()) * (double) y;
-                        double blockZ = boundingBox.getMinZ() + (boundingBox.getMaxZ() - boundingBox.getMinZ()) * (double) z;
+        for (float x = 0; x <= 1; x = (float) ((double) x + xInterval)) {
+            final double fromX = Math.fma(x, diffX, xOffset);
+            for (float y = 0; y <= 1; y = (float) ((double) y + yInterval)) {
+                final double fromY = Math.fma(y, diffY, yOffset);
+                for (float z = 0; z <= 1; z = (float) ((double) z + zInterval)) {
+                    totalBlocks++;
+                    final double fromZ = Math.fma(z, diffZ, zOffset);
 
-                        if (this.isRayCollidingWithBlocks(source.x, source.y, source.z, blockX + xOffset, blockY, blockZ + zOffset, 0.3)) {
-                            visibleBlocks++;
-                        }
-
-                        totalBlocks++;
+                    if (this.isRayCollidingWithBlocks(source.x, source.y, source.z, fromX, fromY, fromZ, 0.3)) {
+                        visibleBlocks++;
                     }
                 }
             }
-
-            return (float) visibleBlocks / (float) totalBlocks;
-        } else {
-            return 0;
         }
+
+        return (float) visibleBlocks / (float) totalBlocks;
     }
 
     public VibrationManager getVibrationManager() {

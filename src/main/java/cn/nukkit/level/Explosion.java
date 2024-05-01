@@ -60,8 +60,8 @@ public class Explosion {
      * Creates explosion at given position with given power.
      *
      * @param center center position
-     * @param size the power of explosion
-     * @param what the source object, used for tracking damage
+     * @param size   the power of explosion
+     * @param what   the source object, used for tracking damage
      */
     protected Explosion(Position center, double size, Object what) {
         this.level = center.getLevel();
@@ -249,10 +249,13 @@ public class Explosion {
 
             if (distance <= 1) {
                 Vector3 motion = entity.subtract(this.source).normalize();
-                float exposure = 1 - level.getBlockDensity(this.source, entity.boundingBox);
-                double impact = (1 - distance) * exposure;
 
-                int damage = this.doesDamage ? (int) (((impact * impact + impact) / 2) * 8 * explosionSize + 1) : 0;
+                float blockDensity = level.getBlockDensity(this.source, entity.boundingBox);
+                double force = this.size * 2.0F;
+                double d = entity.distance(source) / force;
+                double impact = (1.0D - d) * blockDensity;
+                float entityDamageAmount = (float) ((float) (impact * impact + impact) / 2.0D * 7.0D * force + 1.0D);
+                float damage = this.doesDamage ? entityDamageAmount : 0f;
 
                 if (this.what instanceof Entity) {
                     entity.attack(new EntityDamageByEntityEvent((Entity) this.what, entity, DamageCause.ENTITY_EXPLOSION, damage));
