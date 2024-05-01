@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockPoppy extends Block {
+public class BlockPoppy extends BlockFlower {
     public static final BlockProperties PROPERTIES = new BlockProperties(POPPY);
 
     @Override
@@ -18,4 +18,5 @@ public class BlockPoppy extends Block {
     public BlockPoppy(BlockState blockstate) {
         super(blockstate);
     }
+
 }

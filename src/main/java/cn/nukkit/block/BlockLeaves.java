@@ -120,7 +120,7 @@ public abstract class BlockLeaves extends BlockTransparent {
             drops.add(Item.get(ItemID.STICK));
         }
         if (random.nextInt(saplingOdds) == 0) {
-            drops.add(toItem());
+            drops.add(toSapling());
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
@@ -224,5 +224,9 @@ public abstract class BlockLeaves extends BlockTransparent {
     @Override
     public boolean sticksToPiston() {
         return false;
+    }
+
+    public Item toSapling() {
+        return Item.AIR;
     }
 }

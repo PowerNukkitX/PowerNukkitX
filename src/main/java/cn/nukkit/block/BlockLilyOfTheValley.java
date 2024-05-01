@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockLilyOfTheValley extends Block {
+public class BlockLilyOfTheValley extends BlockFlower {
      public static final BlockProperties PROPERTIES = new BlockProperties(LILY_OF_THE_VALLEY);
 
      @Override
