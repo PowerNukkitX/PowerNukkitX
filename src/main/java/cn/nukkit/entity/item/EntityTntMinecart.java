@@ -57,6 +57,10 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
 
     @Override
     public boolean onUpdate(int currentTick) {
+        // 记录最大高度，用于计算坠落伤害
+        if (!this.onGround && this.y > highestPosition) {
+            this.highestPosition = this.y;
+        }
         if (fuse < 80) {
             int tickDiff = currentTick - lastUpdate;
 
@@ -80,7 +84,21 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
         return super.onUpdate(currentTick);
     }
 
-    
+    @Override
+    protected void updateFallState(boolean onGround) {
+        if (onGround) {
+            fallDistance = (float) (this.highestPosition - this.y);
+
+            if (fallDistance > 4) {
+                if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
+                    this.explode(ThreadLocalRandom.current().nextInt(5));
+                }
+                this.resetFallDistance();
+                this.close();
+            }
+        }
+    }
+
     @Override
     public void activate(int x, int y, int z, boolean flag) {
         level.addSound(this, Sound.FIRE_IGNITE);
