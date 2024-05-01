@@ -2652,7 +2652,7 @@ public class Level implements Metadatable {
     private Block beforePlaceBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
         Block hand;
         if (item.canBePlaced()) {
-            hand = item.getBlockUnsafe();
+            hand = item.getBlock();
             hand.position(block);
         } else {
             return null;
