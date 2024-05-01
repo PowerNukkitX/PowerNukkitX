@@ -207,7 +207,7 @@ public class ItemBucket extends Item {
                     result = Item.get(BUCKET, 0, 1);
                 } else if (target instanceof BlockPowderSnow) {
                     result = Item.get(BUCKET, 11, 1);
-                } else if (target instanceof BlockLava) {
+                } else if (target instanceof BlockFlowingLava ) {
                     result = Item.get(BUCKET, 10, 1);
                 } else {
                     result = Item.get(BUCKET, 8, 1);

@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.enums.OldLeafType;
 import cn.nukkit.block.property.enums.WoodType;
+import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.*;
@@ -35,5 +36,10 @@ public class BlockCherryLeaves extends BlockLeaves {
     @Override
     public WoodType getType() {
         return WoodType.valueOf(OldLeafType.BIRCH.name().toUpperCase());
+    }
+
+    @Override
+    public Item toSapling() {
+        return Item.get(CHERRY_SAPLING);
     }
 }
