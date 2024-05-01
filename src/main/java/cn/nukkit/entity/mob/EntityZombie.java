@@ -1,7 +1,6 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -9,6 +8,7 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
+import cn.nukkit.entity.ai.evaluator.AttackCheckEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
@@ -46,19 +46,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
                 this.tickSpread,
                 Set.of(),
                 Set.of(
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30),
-                                entity -> {
-                                    if (!entity.isAlive()) return false;
-                                    if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
-                                        return false;
-                                    } else {
-                                        Entity e = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
-                                        if (e instanceof Player player) {
-                                            return player.isSurvival() || player.isAdventure();
-                                        }
-                                        return true;
-                                    }
-                                }, 3, 1),
+                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), new AttackCheckEvaluator(), 3, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 30),
                                 entity -> {
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) {

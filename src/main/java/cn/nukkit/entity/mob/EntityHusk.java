@@ -7,6 +7,7 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
+import cn.nukkit.entity.ai.evaluator.AttackCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
@@ -47,7 +48,7 @@ public class EntityHusk extends EntityZombie {
                 Set.of(
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 10, Effect.get(EffectType.HUNGER).setDuration(140)), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET),
-                                entity -> !entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET) || !(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player player) || player.isSurvival() || player.isAdventure()
+                                new AttackCheckEvaluator()
                         ), 3, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 10, Effect.get(EffectType.HUNGER).setDuration(140)), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
