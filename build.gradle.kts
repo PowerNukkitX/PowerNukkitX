@@ -8,7 +8,7 @@ plugins {
     `maven-publish`
     idea
     jacoco
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.github.goooler.shadow") version "8.1.7"
     id("io.freefair.lombok") version "8.4"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
 }
@@ -40,7 +40,6 @@ dependencies {
     api(libs.snakeyaml)
     api(libs.stateless4j)
 
-
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 
@@ -57,9 +56,8 @@ dependencies {
     implementation(libs.terra)
     implementation(libs.bundles.compress)
     implementation(libs.bundles.terminal)
-    implementation(libs.bundles.graalvm)
+    implementation(libs.graalvm.polyglot)
     runtimeOnly(libs.bundles.graalvm.runtime)
-
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
     testImplementation(libs.commonslang3)
@@ -169,7 +167,7 @@ tasks.named<AbstractArchiveTask>("sourcesJar") {
 tasks.jar {
     destinationDirectory = layout.buildDirectory
     doLast {//execution phase
-        val f: RegularFile =  archiveFile.get()
+        val f: RegularFile = archiveFile.get()
         val tf: RegularFile = layout.buildDirectory.file("${project.description}.jar").get()
         Files.copy(Path.of(f.asFile.absolutePath), Path.of(tf.asFile.absolutePath), StandardCopyOption.REPLACE_EXISTING)
     }
@@ -179,7 +177,7 @@ tasks.shadowJar {
     dependsOn("copyDependencies")
     manifest {
         attributes(
-                "Main-Class" to "cn.nukkit.JarStart"
+            "Main-Class" to "cn.nukkit.JarStart"
         )
     }
 
@@ -201,8 +199,8 @@ tasks.javadoc {
     includes.add("**/**.java")
     val javadocOptions = options as CoreJavadocOptions
     javadocOptions.addStringOption(
-            "source",
-            java.sourceCompatibility.toString()
+        "source",
+        java.sourceCompatibility.toString()
     )
     // Suppress some meaningless warnings
     javadocOptions.addStringOption("Xdoclint:none", "-quiet")

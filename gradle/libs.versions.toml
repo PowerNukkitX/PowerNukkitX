@@ -21,13 +21,9 @@ net-minecrell-terminalconsoleappender = "1.3.0"
 net-sf-jopt-simple-jopt-simple = "5.0.4"
 org-apache-logging-log4j-log4j-core = "2.22.0"
 org-apache-logging-log4j-log4j-slf4j2-impl = "2.22.0"
-org-bitbucket-b-c-jose4j = "0.9.3"
+org-bitbucket-b-c-jose4j = "0.9.4"
 org-cloudburstmc-netty-netty-transport-raknet = "1.0.0.CR3-SNAPSHOT"
-org-graalvm-js-js = "23.0.0"
-org-graalvm-js-js-scriptengine = "23.0.0"
-org-graalvm-sdk-graal-sdk = "23.0.0"
-org-graalvm-tools-chromeinspector = "23.0.0"
-org-graalvm-tools-profiler = "23.0.0"
+graalvm-version = "23.1.3"
 org-jetbrains-annotations = "24.1.0"
 org-jline-jline-reader = "3.25.0"
 org-jline-jline-terminal = "3.25.0"
@@ -37,7 +33,7 @@ org-lz4-lz4-java = "1.8.0"
 org-mockito-mockito-junit-jupiter = "5.8.0"
 org-openjdk-jmh-jmh-core = "1.37"
 org-openjdk-jmh-jmh-generator-annprocess = "1.37"
-org-ow2-asm-asm = "9.6"
+org-ow2-asm-asm = "9.7"
 org-projectlombok-lombok = "1.18.30"
 org-xerial-snappy-snappy-java = "1.1.10.5"
 org-yaml-snakeyaml = "2.2"
@@ -64,7 +60,7 @@ annotations = { module = "org.jetbrains:annotations", version.ref = "org-jetbrai
 asm = { module = "org.ow2.asm:asm", version.ref = "org-ow2-asm-asm" }
 lombok = { module = "org.projectlombok:lombok", version.ref = "org-projectlombok-lombok" }
 snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "org-yaml-snakeyaml" }
-stateless4j = { module = "com.github.stateless4j:stateless4j", version.ref = "com-github-stateless4j"}
+stateless4j = { module = "com.github.stateless4j:stateless4j", version.ref = "com-github-stateless4j" }
 # Command-line parser
 joptsimple = { module = "net.sf.jopt-simple:jopt-simple", version.ref = "net-sf-jopt-simple-jopt-simple" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "org-apache-logging-log4j-log4j-core" }
@@ -73,11 +69,9 @@ jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "org-bitbucket-b-c
 netty-epoll = { module = "io.netty:netty-transport-classes-epoll", version.ref = "io-netty-netty-transport-classes-epoll" }
 netty-kqueue = { module = "io.netty:netty-transport-classes-kqueue", version.ref = "io-netty-netty-transport-classes-kqueue" }
 netty-raknet = { module = "org.cloudburstmc.netty:netty-transport-raknet", version.ref = "org-cloudburstmc-netty-netty-transport-raknet" }
-graalvm-js = { module = "org.graalvm.js:js", version.ref = "org-graalvm-js-js" }
-graalvm-js-scriptengine = { module = "org.graalvm.js:js-scriptengine", version.ref = "org-graalvm-js-js-scriptengine" }
-graalsdk = { module = "org.graalvm.sdk:graal-sdk", version.ref = "org-graalvm-sdk-graal-sdk" }
-graalvm-chromeinspector = { module = "org.graalvm.tools:chromeinspector", version.ref = "org-graalvm-tools-chromeinspector" }
-graalvm-profiler = { module = "org.graalvm.tools:profiler", version.ref = "org-graalvm-tools-profiler" }
+graalvm-polyglot = { module = "org.graalvm.polyglot:polyglot", version.ref = "graalvm-version" }
+graalvm-js = { module = "org.graalvm.js:js-language", version.ref = "graalvm-version" }
+graalvm-truffle = { module = "org.graalvm.truffle:truffle-runtime", version.ref = "graalvm-version" }
 terminalconsoleappender = { module = "net.minecrell:terminalconsoleappender", version.ref = "net-minecrell-terminalconsoleappender" }
 jline-reader = { module = "org.jline:jline-reader", version.ref = "org-jline-jline-reader" }
 jline-terminal = { module = "org.jline:jline-terminal", version.ref = "org-jline-jline-terminal" }
@@ -93,8 +87,7 @@ rng-sampling = { module = "org.apache.commons:commons-rng-sampling", version.ref
 
 [bundles]
 netty = ["netty-raknet", "netty-epoll", "netty-kqueue"]
-graalvm-runtime = ["graalvm-js", "graalvm-chromeinspector", "graalvm-profiler"]
-graalvm = ["graalvm-js-scriptengine", "graalsdk"]
+graalvm-runtime = ["graalvm-js", "graalvm-truffle"]
 terminal = ["jline-reader", "jline-terminal", "jline-terminaljna", "terminalconsoleappender"]
 logging = ["log4j-slf4j2-impl", "log4j-core"]
 test = ["junit", "mockito", "jmh-core", "jmh-generator"]
