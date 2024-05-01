@@ -211,7 +211,6 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     }
 
     public int getColor() {
-        System.out.println(namedTag.getByte("Color"));
         return namedTag.getByte("Color");
     }
 
