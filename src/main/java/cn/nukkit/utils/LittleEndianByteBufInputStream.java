@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBufInputStream;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 
 public class LittleEndianByteBufInputStream extends ByteBufInputStream {
@@ -50,5 +51,12 @@ public class LittleEndianByteBufInputStream extends ByteBufInputStream {
     @Override
     public int readInt() throws IOException {
         return buffer.readIntLE();
+    }
+
+    @Override
+    @NotNull
+    public String readUTF() throws IOException {
+        int length = readUnsignedShort();
+        return (String) buffer.readCharSequence(length, StandardCharsets.UTF_8);
     }
 }

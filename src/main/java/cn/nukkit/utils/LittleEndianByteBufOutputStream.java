@@ -2,6 +2,7 @@ package cn.nukkit.utils;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.ByteBufUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -50,8 +51,8 @@ public class LittleEndianByteBufOutputStream extends ByteBufOutputStream {
 
     @Override
     public void writeUTF(String string) throws IOException {
-        byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
-        this.writeShort(bytes.length);
-        this.write(bytes);
+        int length = ByteBufUtil.utf8Bytes(string);
+        this.writeShort(length);
+        this.buffer.writeCharSequence(string, StandardCharsets.UTF_8);
     }
 }

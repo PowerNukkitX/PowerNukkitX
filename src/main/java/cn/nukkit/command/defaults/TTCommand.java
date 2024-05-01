@@ -1,15 +1,14 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Player;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.inventory.fake.FakeInventory;
-import cn.nukkit.inventory.fake.FakeInventoryType;
 import cn.nukkit.inventory.fake.FakeStructBlock;
-import cn.nukkit.item.ItemApple;
-import cn.nukkit.item.ItemEmerald;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 
 import java.util.Map;
 
@@ -29,17 +28,9 @@ public class TTCommand extends TestCommand {
         if (sender.isOp()) {
             boolean isPlayer = sender.isPlayer();
             if (isPlayer) {
-                var t = new FakeInventory(FakeInventoryType.CHEST);
-                t.setItem(9, new ItemApple());
-                t.setDefaultItemHandler((inventory, slot, targetItem, sourceItem, event) -> {
-                    if (slot == 9) {
-                        System.out.println("test");
-                        inventory.setItem(9, new ItemEmerald());
-                        event.setCancelled();
-                    }
-                });
-                Player player = sender.asPlayer();
-                player.addWindow(t);
+                Item item = Item.get(ItemID.APPLE);
+                item.addCanDestroy(Block.get(BlockID.WARPED_DOOR));
+                sender.asPlayer().getInventory().addItem(item);
             }
             return 1;
         } else return 0;

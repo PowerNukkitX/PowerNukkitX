@@ -13,6 +13,7 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.stream.LittleEndianByteBufInputStreamNBTInputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
@@ -31,15 +32,7 @@ import cn.nukkit.recipe.descriptor.ItemDescriptorType;
 import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
 import cn.nukkit.recipe.descriptor.MolangDescriptor;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.utils.Binary;
-import cn.nukkit.utils.ByteBufVarInt;
-import cn.nukkit.utils.LittleEndianByteBufOutputStream;
-import cn.nukkit.utils.OptionalValue;
-import cn.nukkit.utils.PersonaPiece;
-import cn.nukkit.utils.PersonaPieceTint;
-import cn.nukkit.utils.SerializedImage;
-import cn.nukkit.utils.SkinAnimation;
-import cn.nukkit.utils.Utils;
+import cn.nukkit.utils.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -1136,14 +1129,16 @@ public class HandleByteBuf extends ByteBuf {
         readBytes(bytes);
         ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer(bytes.length);
         buf.writeBytes(bytes);
-        try (ByteBufInputStream stream = new ByteBufInputStream(buf)) {
+        try (LittleEndianByteBufInputStream stream = new LittleEndianByteBufInputStream(buf)) {
             int nbtSize = stream.readShort();
             if (nbtSize > 0) {
-                compoundTag = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN, false);
+                LittleEndianByteBufInputStreamNBTInputStream ls = new LittleEndianByteBufInputStreamNBTInputStream(stream);
+                compoundTag = (CompoundTag) ls.readTag();
             } else if (nbtSize == -1) {
                 int tagCount = stream.readUnsignedByte();
                 if (tagCount != 1) throw new IllegalArgumentException("Expected 1 tag but got " + tagCount);
-                compoundTag = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN, false);
+                LittleEndianByteBufInputStreamNBTInputStream ls = new LittleEndianByteBufInputStreamNBTInputStream(stream);
+                compoundTag = (CompoundTag) ls.readTag();
             }
 
             canPlace = new String[stream.readInt()];

@@ -117,7 +117,8 @@ public enum EntityFlag {
     CRAWLING(114),
     TIMER_FLAG_1(115),
     TIMER_FLAG_2(116),
-    TIMER_FLAG_3(117);
+    TIMER_FLAG_3(117),
+    BODY_ROTATION_BLOCKED(118);
 
     private final int value;
 
