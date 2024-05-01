@@ -184,30 +184,26 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
 
     @Override
     public Item[] getDrops() {
-        if (this.lastDamageCause instanceof EntityDamageByEntityEvent) {
-            Item woolItem = switch (getColor()) {
-                case 0 -> Item.get(Block.WHITE_WOOL);
-                case 1 -> Item.get(Block.ORANGE_WOOL);
-                case 2 -> Item.get(Block.MAGENTA_WOOL);
-                case 3 -> Item.get(Block.LIGHT_BLUE_WOOL);
-                case 4 -> Item.get(Block.YELLOW_WOOL);
-                case 5 -> Item.get(Block.LIME_WOOL);
-                case 6 -> Item.get(Block.PINK_WOOL);
-                case 7 -> Item.get(Block.GRAY_WOOL);
-                case 8 -> Item.get(Block.LIGHT_GRAY_WOOL);
-                case 9 -> Item.get(Block.CYAN_WOOL);
-                case 10 -> Item.get(Block.PURPLE_WOOL);
-                case 11 -> Item.get(Block.BLUE_WOOL);
-                case 12 -> Item.get(Block.BROWN_WOOL);
-                case 13 -> Item.get(Block.GREEN_WOOL);
-                case 14 -> Item.get(Block.RED_WOOL);
-                case 15 -> Item.get(Block.BLACK_WOOL);
-                default -> throw new IllegalStateException("Unexpected value: " + getColor());
-            };
-
-            return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_MUTTON : Item.MUTTON)), woolItem};
-        }
-        return Item.EMPTY_ARRAY;
+        Item woolItem = switch (getColor()) {
+            case 0 -> Item.get(Block.WHITE_WOOL);
+            case 1 -> Item.get(Block.ORANGE_WOOL);
+            case 2 -> Item.get(Block.MAGENTA_WOOL);
+            case 3 -> Item.get(Block.LIGHT_BLUE_WOOL);
+            case 4 -> Item.get(Block.YELLOW_WOOL);
+            case 5 -> Item.get(Block.LIME_WOOL);
+            case 6 -> Item.get(Block.PINK_WOOL);
+            case 7 -> Item.get(Block.GRAY_WOOL);
+            case 8 -> Item.get(Block.LIGHT_GRAY_WOOL);
+            case 9 -> Item.get(Block.CYAN_WOOL);
+            case 10 -> Item.get(Block.PURPLE_WOOL);
+            case 11 -> Item.get(Block.BLUE_WOOL);
+            case 12 -> Item.get(Block.BROWN_WOOL);
+            case 13 -> Item.get(Block.GREEN_WOOL);
+            case 14 -> Item.get(Block.RED_WOOL);
+            case 15 -> Item.get(Block.BLACK_WOOL);
+            default -> throw new IllegalStateException("Unexpected value: " + getColor());
+        };
+        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_MUTTON : Item.MUTTON)), woolItem};
     }
 
     public int getColor() {
