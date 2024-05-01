@@ -30,10 +30,11 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmite {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return ZOMBIE;
     }
-    
+
 
     public EntityZombie(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -47,6 +48,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
                 Set.of(
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30),
                                 entity -> {
+                                    if (!entity.isAlive()) return false;
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
                                         return false;
                                     } else {
@@ -75,7 +77,6 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         );
     }
 
-    
 
     @Override
     protected void initEntity() {
