@@ -154,8 +154,8 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
             return true;
         }
 
-        if (item instanceof ItemDye) {
-            this.setColor(((ItemDye) item).getDyeColor().getWoolData());
+        if (item instanceof ItemDye dye) {
+            this.setColor(dye.getDyeColor().getWoolData());
             return true;
         }
 
@@ -170,7 +170,9 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         this.sheared = true;
         this.setDataFlag(EntityFlag.SHEARED, true);
 
-        this.level.dropItem(this, Item.get(Item.WOOL, getColor(), ThreadLocalRandom.current().nextInt(2) + 1));
+        Item woolItem = this.getWoolItem();
+        woolItem.setCount(ThreadLocalRandom.current().nextInt(2) + 1);
+        this.level.dropItem(this, woolItem);
 
         level.addSound(this, Sound.MOB_SHEEP_SHEAR);
         level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SHEAR));
@@ -184,7 +186,22 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
 
     @Override
     public Item[] getDrops() {
-        Item woolItem = switch (getColor()) {
+        Item woolItem = sheared ? Item.AIR : this.getWoolItem();
+        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_MUTTON : Item.MUTTON)), woolItem};
+    }
+
+    public int getColor() {
+        return namedTag.getByte("Color");
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+        this.setDataProperty(COLOR, color);
+        this.namedTag.putByte("Color", this.color);
+    }
+
+    public Item getWoolItem() {
+        return switch (getColor()) {
             case 0 -> Item.get(Block.WHITE_WOOL);
             case 1 -> Item.get(Block.ORANGE_WOOL);
             case 2 -> Item.get(Block.MAGENTA_WOOL);
@@ -203,17 +220,6 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
             case 15 -> Item.get(Block.BLACK_WOOL);
             default -> throw new IllegalStateException("Unexpected value: " + getColor());
         };
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_MUTTON : Item.MUTTON)), woolItem};
-    }
-
-    public int getColor() {
-        return namedTag.getByte("Color");
-    }
-
-    public void setColor(int color) {
-        this.color = color;
-        this.setDataProperty(COLOR, color);
-        this.namedTag.putByte("Color", this.color);
     }
 
     private int randomColor() {
