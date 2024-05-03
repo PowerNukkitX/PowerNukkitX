@@ -242,11 +242,6 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
-        return new Item[]{new BlockSmallDripleafBlock().toItem()};
-    }
-
-    @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         setTiltAndScheduleTick(BigDripleafTilt.FULL_TILT);
         return true;
