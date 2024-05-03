@@ -112,7 +112,7 @@ public final class BlockRegistryPopulator {
         }
     }
 
-    static final Set<String> experimentalBlocks = Set.of(
+    public static final Set<String> experimentalBlocks = Set.of(
             "minecraft:waxed_oxidized_copper_grate",
             "minecraft:hard_glass",
             "minecraft:element_38",

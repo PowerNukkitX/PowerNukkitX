@@ -712,6 +712,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             realBB.setMinY(realBB.getMinY() - 0.5);
 
             Block b1 = level.getTickCachedBlock(getFloorX(), getFloorY() - 1, getFloorZ());
+            Block b2 = level.getTickCachedBlock(getFloorX(), getFloorY(), getFloorZ());
             Block[] blocks = {
                     level.getTickCachedBlock(getFloorX() - 1, getFloorY() - 1, getFloorZ()),
                     level.getTickCachedBlock(getFloorX() + 1, getFloorY() - 1, getFloorZ()),
@@ -722,12 +723,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     level.getTickCachedBlock(getFloorX() + 1, getFloorY() - 1, getFloorZ() + 1),
                     level.getTickCachedBlock(getFloorX() - 1, getFloorY() - 1, getFloorZ() + 1)
             };
-            if (!b1.canPassThrough() && b1.collidesWithBB(realBB)) {
-                //level.addParticle(new BlockForceFieldParticle(b1.add(0.5, 0, 0.5)));
+            if ((!b1.canPassThrough() && b1.collidesWithBB(realBB)) || (!b2.canPassThrough() && b2.collidesWithBB(realBB)) ) {
+//                level.addParticle(new BlockForceFieldParticle(b1.add(0.5, 0, 0.5)));
                 onGround = true;
             }
             for (Block block : blocks) {
-                //level.addParticle(new BlockForceFieldParticle(block.add(0.5, 0, 0.5)));
+//                level.addParticle(new BlockForceFieldParticle(block.add(0.5, 0, 0.5)));
                 if (!block.canPassThrough() && block.collidesWithBB(realBB)) {
                     onGround = true;
                 }
