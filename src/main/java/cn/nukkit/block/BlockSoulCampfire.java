@@ -35,7 +35,7 @@ public class BlockSoulCampfire extends BlockCampfire {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{toItem()};
+        return new Item[]{Item.get(BlockID.SOUL_SOIL, 0, 1)};
     }
 
     @Override
