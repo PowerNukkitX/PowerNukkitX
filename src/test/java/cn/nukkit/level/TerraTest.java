@@ -1,8 +1,8 @@
 package cn.nukkit.level;
 
 import cn.nukkit.GameMockExtension;
-import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.TestPlayer;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.level.generator.terra.PNXPlatform;
@@ -40,7 +40,7 @@ public class TerraTest {
      * after teleporting in the Terra generator
      */
     @Test
-    void test_terra(Player player) {
+    void test_terra(TestPlayer player, Level flatLevel) {
         player.level = level;
         player.setViewDistance(1);
         GameLoop loop = GameLoop.builder().loopCountPerSec(200).onTick((d) -> {
@@ -53,10 +53,10 @@ public class TerraTest {
         int limit = 10;
         while (limit-- != 0) {
             try {
-                Thread.sleep(1000);
                 if (5 == player.getUsedChunks().size()) {
                     break;
                 }
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -83,6 +83,7 @@ public class TerraTest {
         }
         loop.stop();
         player.setPosition(new Vector3(0, 100, 0));
+        player.level = flatLevel;
     }
 
     @SneakyThrows
