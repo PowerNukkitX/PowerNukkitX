@@ -35,6 +35,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.ChunkSection;
+import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
@@ -3098,9 +3099,6 @@ public class Level implements Metadatable {
      * Set chunk to the level provider
      */
     public void setChunk(int chunkX, int chunkZ, @NotNull IChunk chunk) {
-        if (chunk == null) {
-            return;
-        }
         IChunk oldChunk = this.getChunk(chunkX, chunkZ, false);
 
         if (oldChunk != chunk) {
@@ -3758,17 +3756,34 @@ public class Level implements Metadatable {
 
 
     public void regenerateChunk(int x, int z) {
+        ChunkLoader[] chunkLoadersCopy = getChunkLoaders(x, z);
+        IChunk chunk = this.requireProvider().getChunk(x, z);
+        chunk.setChunkState(ChunkState.NEW);
         this.unloadChunk(x, z, false);
         this.cancelUnloadChunkRequest(x, z);
+        for (var loader : chunkLoadersCopy) {
+            if (loader instanceof Player player) {
+                player.onChunkChanged(chunk);
+            }
+        }
     }
 
     public void syncRegenerateChunk(int x, int z) {
+        ChunkLoader[] chunkLoadersCopy = getChunkLoaders(x, z);
+        IChunk chunk = this.requireProvider().getChunk(x, z);
+        chunk.setChunkState(ChunkState.NEW);
         this.unloadChunk(x, z, false);
         this.cancelUnloadChunkRequest(x, z);
 
         final LevelProvider levelProvider = requireProvider();
         syncGenerateChunk(x, z);
         levelProvider.setChunk(x, z, this.getChunk(x, z));
+
+        for (var loader : chunkLoadersCopy) {
+            if (loader instanceof Player player) {
+                player.onChunkChanged(chunk);
+            }
+        }
     }
 
     public void generateChunk(int x, int z) {

@@ -4708,18 +4708,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void onChunkChanged(IChunk chunk) {
-        this.playerChunkManager.getUsedChunks().remove(Level.chunkHash(chunk.getX(), chunk.getZ()));
+        this.playerChunkManager.addSendChunk(chunk.getX(), chunk.getZ());
     }
 
     @Override
     public void onChunkLoaded(IChunk chunk) {
-
     }
 
 
     @Override
     public void onChunkUnloaded(IChunk chunk) {
-        this.playerChunkManager.getUsedChunks().remove(Level.chunkHash(chunk.getX(), chunk.getZ()));
+        this.unloadChunk(chunk.getX(), chunk.getZ(), chunk.getProvider().getLevel());
     }
 
     @Override
