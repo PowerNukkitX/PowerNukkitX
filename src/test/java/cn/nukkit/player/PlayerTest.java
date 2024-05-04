@@ -1,8 +1,8 @@
 package cn.nukkit.player;
 
 import cn.nukkit.GameMockExtension;
-import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.TestPlayer;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.MovePlayerPacket;
@@ -26,7 +26,7 @@ public class PlayerTest {
 
     @Test
     @Order(1)
-    void test_player_teleport(Player player, Level level) {
+    void test_player_teleport(TestPlayer player, Level level) {
         player.level = level;
         player.setViewDistance(4);//view 4
         GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
@@ -41,10 +41,10 @@ public class PlayerTest {
         int limit = 10;
         while (limit-- != 0) {
             try {
-                Thread.sleep(1000);
                 if (level.isChunkLoaded(10000 >> 4, 10000 >> 4)) {
                     break;
                 }
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -61,7 +61,7 @@ public class PlayerTest {
 
     @Test
     @Order(2)
-    void test_player_chunk_load(Player player, Level level) {
+    void test_player_chunk_load(TestPlayer player, Level level) {
         player.level = level;
         player.setViewDistance(4);//view 4
         GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
@@ -75,10 +75,10 @@ public class PlayerTest {
         int limit = 30;
         while (limit-- != 0) {
             try {
-                Thread.sleep(1000);
                 if (49 == player.getUsedChunks().size()) {
                     break;
                 }
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -92,7 +92,7 @@ public class PlayerTest {
 
     @Test
     @Order(3)
-    void test_player_chunk_unload(Player player, Level level) {
+    void test_player_chunk_unload(TestPlayer player, Level level) {
         player.level = level;
         player.setViewDistance(4);//view 4
         GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
@@ -109,10 +109,10 @@ public class PlayerTest {
         int limit = 10;
         while (limit-- != 0) {
             try {
-                Thread.sleep(1000);
                 if (49 == player.getUsedChunks().size()) {
                     break;
                 }
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -124,10 +124,10 @@ public class PlayerTest {
         player.setPosition(new Vector3(1000, 100, 1000));
         while (limit2-- != 0) {
             try {
-                Thread.sleep(1000);
                 if (level.getChunks().size() == 50) {
                     break;
                 }
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
