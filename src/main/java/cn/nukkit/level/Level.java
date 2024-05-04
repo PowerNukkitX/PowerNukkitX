@@ -3762,6 +3762,15 @@ public class Level implements Metadatable {
         this.cancelUnloadChunkRequest(x, z);
     }
 
+    public void syncRegenerateChunk(int x, int z) {
+        this.unloadChunk(x, z, false);
+        this.cancelUnloadChunkRequest(x, z);
+
+        final LevelProvider levelProvider = requireProvider();
+        syncGenerateChunk(x, z);
+        levelProvider.setChunk(x, z, this.getChunk(x, z));
+    }
+
     public void generateChunk(int x, int z) {
         generateChunk(x, z, false);
     }
@@ -3782,7 +3791,7 @@ public class Level implements Metadatable {
         if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
             IChunk chunk = this.getChunk(x, z, true);
             this.generator.syncGenerate(chunk);
-            chunkGenerationQueue.remove(chunk.getIndex());
+            chunkGenerationQueue.remove(index);
         }
     }
 
