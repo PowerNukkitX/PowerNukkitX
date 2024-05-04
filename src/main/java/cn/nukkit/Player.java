@@ -2,7 +2,15 @@ package cn.nukkit;
 
 import cn.nukkit.AdventureSettings.Type;
 import cn.nukkit.api.UsedByReflection;
-import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockBed;
+import cn.nukkit.block.BlockEndPortal;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockLiquid;
+import cn.nukkit.block.BlockRespawnAnchor;
+import cn.nukkit.block.BlockWood;
+import cn.nukkit.block.BlockWool;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
@@ -72,7 +80,6 @@ import cn.nukkit.level.PlayerChunkManager;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.level.particle.BlockForceFieldParticle;
 import cn.nukkit.level.particle.PunchBlockParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -723,7 +730,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     level.getTickCachedBlock(getFloorX() + 1, getFloorY() - 1, getFloorZ() + 1),
                     level.getTickCachedBlock(getFloorX() - 1, getFloorY() - 1, getFloorZ() + 1)
             };
-            if ((!b1.canPassThrough() && b1.collidesWithBB(realBB)) || (!b2.canPassThrough() && b2.collidesWithBB(realBB)) ) {
+            if ((!b1.canPassThrough() && b1.collidesWithBB(realBB)) || (!b2.canPassThrough() && b2.collidesWithBB(realBB))) {
 //                level.addParticle(new BlockForceFieldParticle(b1.add(0.5, 0, 0.5)));
                 onGround = true;
             }
@@ -4712,7 +4719,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void onChunkUnloaded(IChunk chunk) {
-
+        this.playerChunkManager.getUsedChunks().remove(Level.chunkHash(chunk.getX(), chunk.getZ()));
     }
 
     @Override
