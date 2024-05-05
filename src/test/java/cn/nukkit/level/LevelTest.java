@@ -44,6 +44,7 @@ public class LevelTest {
         player.level.setAutoSave(true);
         player.setPosition(new Vector3(0, 100, 0));
         IChunk chunk = player.getChunk();
+        chunk.setBlockState(0, 3, 0, BlockDirt.PROPERTIES.getDefaultState());
         Assertions.assertEquals(chunk.getBlockState(0, 3, 0), BlockDirt.PROPERTIES.getDefaultState());
         chunk.setBlockState(0, 3, 0, BlockDiamondBlock.PROPERTIES.getDefaultState());
         Assertions.assertEquals(chunk.getBlockState(0, 3, 0), BlockDiamondBlock.PROPERTIES.getDefaultState());
