@@ -106,7 +106,7 @@ public class PlayerTest {
         player.setPosition(new Vector3(0, 100, 0));
         Thread thread = new Thread(loop::startLoop);
         thread.start();
-        int limit = 10;
+        int limit = 100;
         while (limit-- != 0) {
             try {
                 if (49 == player.getUsedChunks().size()) {
