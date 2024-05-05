@@ -197,7 +197,7 @@ public class LevelDBProvider implements LevelProvider {
             this.unloadChunk(chunkX, chunkZ, false);
         }
         this.lastChunk.remove();//remove cache
-        this.chunks.put(index, chunk);
+        putChunk(index, chunk);
     }
 
     @Override

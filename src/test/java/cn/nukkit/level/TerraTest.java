@@ -50,13 +50,13 @@ public class TerraTest {
         }).build();
         Thread thread = new Thread(loop::startLoop);
         thread.start();
-        int limit = 10;
+        int limit = 100;
         while (limit-- != 0) {
             try {
                 if (5 == player.getUsedChunks().size()) {
                     break;
                 }
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

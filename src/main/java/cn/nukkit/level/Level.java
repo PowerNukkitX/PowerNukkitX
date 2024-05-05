@@ -871,7 +871,7 @@ public class Level implements Metadatable {
         }
     }
 
-    public boolean unregisterChunkLoader(ChunkLoader loader, int chunkX, int chunkZ) {
+    public boolean unregisterChunkLoader(ChunkLoader loader, int chunkX, int chunkZ, boolean isSafeUnload) {
         int loaderId = loader.getLoaderId();
         long chunkHash = Level.chunkHash(chunkX, chunkZ);
         Map<Integer, ChunkLoader> chunkLoadersIndex = this.chunkLoaders.get(chunkHash);
@@ -880,7 +880,7 @@ public class Level implements Metadatable {
             if (oldLoader != null) {
                 if (chunkLoadersIndex.isEmpty()) {
                     this.chunkLoaders.remove(chunkHash);
-                    return this.unloadChunkRequest(chunkX, chunkZ, true);
+                    return this.unloadChunkRequest(chunkX, chunkZ, isSafeUnload);
                 }
 
                 int count = this.loaderCounter.get(loaderId);
@@ -895,6 +895,10 @@ public class Level implements Metadatable {
             return false;
         }
         return false;
+    }
+
+    public boolean unregisterChunkLoader(ChunkLoader loader, int chunkX, int chunkZ) {
+        return unregisterChunkLoader(loader, chunkX, chunkZ, true);
     }
 
     public void checkTime() {
@@ -3549,7 +3553,7 @@ public class Level implements Metadatable {
      * @return whether the request commit was successful
      */
     public boolean unloadChunkRequest(int x, int z, boolean safe) {
-        if ((safe && this.isChunkInUse(x, z))) {
+        if (safe && this.isChunkInUse(x, z)) {
             return false;
         }
 

@@ -2137,7 +2137,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void unloadChunk(int x, int z, Level level) {
         level = level == null ? this.level : level;
         long index = Level.chunkHash(x, z);
-        if (level.unregisterChunkLoader(this, x, z)) {
+        if (level.unregisterChunkLoader(this, x, z, false)) {
             if (playerChunkManager.getUsedChunks().contains(index)) {
                 for (Entity entity : level.getChunkEntities(x, z).values()) {
                     if (entity != this) {
@@ -3484,7 +3484,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             long l = iterator.nextLong();
             int chunkX = Level.getHashX(l);
             int chunkZ = Level.getHashZ(l);
-            if (level.unregisterChunkLoader(this, chunkX, chunkZ)) {
+            if (level.unregisterChunkLoader(this, chunkX, chunkZ, false)) {
                 for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
                     if (entity != this) {
                         entity.despawnFrom(this);

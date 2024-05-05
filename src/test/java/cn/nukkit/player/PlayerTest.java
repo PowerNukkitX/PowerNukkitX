@@ -38,13 +38,13 @@ public class PlayerTest {
         thread.start();
         player.teleport(new Vector3(10000, 6, 10000));
 
-        int limit = 10;
+        int limit = 100;
         while (limit-- != 0) {
             try {
                 if (level.isChunkLoaded(10000 >> 4, 10000 >> 4)) {
                     break;
                 }
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -72,13 +72,13 @@ public class PlayerTest {
         player.setPosition(new Vector3(0, 100, 0));
         Thread thread = new Thread(loop::startLoop);
         thread.start();
-        int limit = 30;
+        int limit = 300;
         while (limit-- != 0) {
             try {
                 if (49 == player.getUsedChunks().size()) {
                     break;
                 }
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -112,7 +112,7 @@ public class PlayerTest {
                 if (49 == player.getUsedChunks().size()) {
                     break;
                 }
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -120,14 +120,14 @@ public class PlayerTest {
         if (limit <= 0) {
             Assertions.fail("Chunks cannot be successfully loaded in 10s");
         }
-        int limit2 = 30;
+        int limit2 = 300;
         player.setPosition(new Vector3(1000, 100, 1000));
         while (limit2-- != 0) {
             try {
-                if (level.getChunks().size() == 50) {
+                if (50 == player.getUsedChunks().size()) {
                     break;
                 }
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
