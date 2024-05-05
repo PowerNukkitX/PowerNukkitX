@@ -6,7 +6,6 @@ import cn.nukkit.TestPlayer;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.level.generator.terra.PNXPlatform;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.GameLoop;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
@@ -19,6 +18,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
+
+import static cn.nukkit.TestUtils.resetPlayerStatus;
 
 @ExtendWith(GameMockExtension.class)
 public class TerraTest {
@@ -40,8 +41,9 @@ public class TerraTest {
      * after teleporting in the Terra generator
      */
     @Test
-    void test_terra(TestPlayer player, Level flatLevel) {
-        player.level = level;
+    void test_terra(TestPlayer player) {
+        resetPlayerStatus(player);
+
         player.setViewDistance(1);
         GameLoop loop = GameLoop.builder().loopCountPerSec(200).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
@@ -50,6 +52,7 @@ public class TerraTest {
         }).build();
         Thread thread = new Thread(loop::startLoop);
         thread.start();
+
         int limit = 100;
         while (limit-- != 0) {
             try {
@@ -62,6 +65,7 @@ public class TerraTest {
             }
         }
         if (limit <= 0) {
+            resetPlayerStatus(player);
             Assertions.fail("Chunks cannot be successfully loaded in 10s");
         }
         //teleport
@@ -79,11 +83,11 @@ public class TerraTest {
             }
         }
         if (limit2 == 0) {
+            resetPlayerStatus(player);
             Assertions.fail("Players are unable to load Terra generator chunks normally");
         }
         loop.stop();
-        player.setPosition(new Vector3(0, 100, 0));
-        player.level = flatLevel;
+        resetPlayerStatus(player);
     }
 
     @SneakyThrows

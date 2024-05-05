@@ -75,8 +75,7 @@ public class GameMockExtension extends MockitoExtension {
     final static GameMockExtension gameMockExtension;
     final static BlockRegistry BLOCK_REGISTRY;
     final static TestPlayer player;
-    static Level level;
-    static Level terra;
+    public static Level level;
 
     static {
         Registries.PACKET.init();

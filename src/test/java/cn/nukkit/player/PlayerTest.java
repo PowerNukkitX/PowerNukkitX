@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import static cn.nukkit.TestUtils.resetPlayerStatus;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
@@ -62,8 +63,9 @@ public class PlayerTest {
     @Test
     @Order(2)
     void test_player_chunk_load(TestPlayer player, Level level) {
-        player.level = level;
+        resetPlayerStatus(player);
         player.setViewDistance(4);//view 4
+
         GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
             level.subTick(d);
@@ -85,9 +87,10 @@ public class PlayerTest {
         }
         loop.stop();
         if (limit <= 0) {
+            resetPlayerStatus(player);
             Assertions.fail("Chunks cannot be successfully loaded in 10s,the number of chunks that are now loaded: " + player.getUsedChunks().size());
         }
-        player.setPosition(new Vector3(0, 100, 0));
+        resetPlayerStatus(player);
     }
 
     @Test
