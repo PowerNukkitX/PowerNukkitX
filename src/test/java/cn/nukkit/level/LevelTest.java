@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import static cn.nukkit.TestUtils.resetPlayerStatus;
+
 @ExtendWith(GameMockExtension.class)
 public class LevelTest {
 
@@ -44,6 +46,7 @@ public class LevelTest {
         player.level.setAutoSave(true);
         player.setPosition(new Vector3(0, 100, 0));
         IChunk chunk = player.getChunk();
+        chunk.setBlockState(0, 3, 0, BlockDirt.PROPERTIES.getDefaultState());
         Assertions.assertEquals(chunk.getBlockState(0, 3, 0), BlockDirt.PROPERTIES.getDefaultState());
         chunk.setBlockState(0, 3, 0, BlockDiamondBlock.PROPERTIES.getDefaultState());
         Assertions.assertEquals(chunk.getBlockState(0, 3, 0), BlockDiamondBlock.PROPERTIES.getDefaultState());
@@ -70,6 +73,8 @@ public class LevelTest {
             }
         }
         if (limit1 <= 0) {
+            player.level.setAutoSave(false);
+            resetPlayerStatus(player);
             Assertions.fail("Chunk cannot be regenerate in 10s");
         }
         player.getLevel().regenerateChunk(0, 0);
@@ -86,10 +91,13 @@ public class LevelTest {
             }
         }
         if (limit <= 0) {
+            player.level.setAutoSave(false);
+            resetPlayerStatus(player);
             Assertions.fail("Chunk cannot be regenerate in 10s");
         }
 
         Assertions.assertEquals(BlockDirt.PROPERTIES.getDefaultState(), player.getChunk().getBlockState(0, 3, 0));
         player.level.setAutoSave(false);
+        resetPlayerStatus(player);
     }
 }

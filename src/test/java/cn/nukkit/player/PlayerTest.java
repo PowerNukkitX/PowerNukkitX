@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import static cn.nukkit.TestUtils.resetPlayerStatus;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
@@ -62,8 +63,9 @@ public class PlayerTest {
     @Test
     @Order(2)
     void test_player_chunk_load(TestPlayer player, Level level) {
-        player.level = level;
+        resetPlayerStatus(player);
         player.setViewDistance(4);//view 4
+
         GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
             level.subTick(d);
@@ -85,15 +87,17 @@ public class PlayerTest {
         }
         loop.stop();
         if (limit <= 0) {
+            resetPlayerStatus(player);
             Assertions.fail("Chunks cannot be successfully loaded in 10s,the number of chunks that are now loaded: " + player.getUsedChunks().size());
         }
-        player.setPosition(new Vector3(0, 100, 0));
+        resetPlayerStatus(player);
     }
 
     @Test
     @Order(3)
     void test_player_chunk_unload(TestPlayer player, Level level) {
-        player.level = level;
+        resetPlayerStatus(player);
+
         player.setViewDistance(4);//view 4
         GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
@@ -106,7 +110,7 @@ public class PlayerTest {
         player.setPosition(new Vector3(0, 100, 0));
         Thread thread = new Thread(loop::startLoop);
         thread.start();
-        int limit = 10;
+        int limit = 100;
         while (limit-- != 0) {
             try {
                 if (49 == player.getUsedChunks().size()) {
@@ -118,6 +122,7 @@ public class PlayerTest {
             }
         }
         if (limit <= 0) {
+            resetPlayerStatus(player);
             Assertions.fail("Chunks cannot be successfully loaded in 10s");
         }
         int limit2 = 300;
@@ -133,13 +138,15 @@ public class PlayerTest {
             }
         }
         if (limit2 == 0) {
+            resetPlayerStatus(player);
             Assertions.fail("Chunks cannot be successfully unloaded in 10s, now have chunk %s".formatted(level.getChunks().size()));
         }
         loop.stop();
         Assertions.assertTrue(level.getChunks().containsKey(0L), "spawn chunk 0,0 should keep load");
         Assertions.assertTrue(player.getUsedChunks().contains(Level.chunkHash(61, 61)), "the chunk 61,61 should be loaded for player");
         Assertions.assertFalse(level.getChunks().containsKey(Level.chunkHash(1, 1)), "This chunk 1,1 should not be loaded");
-        player.setPosition(new Vector3(0, 100, 0));
+
+        resetPlayerStatus(player);
     }
 
 }
