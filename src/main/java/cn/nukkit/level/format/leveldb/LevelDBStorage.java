@@ -7,6 +7,7 @@ import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
+import org.iq80.leveldb.WriteOptions;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +52,9 @@ public final class LevelDBStorage {
     public void writeChunk(IChunk chunk) throws IOException {
         try (WriteBatch writeBatch = this.db.createWriteBatch()) {
             LevelDBChunkSerializer.INSTANCE.serialize(writeBatch, chunk);
-            this.db.write(writeBatch);
+            WriteOptions writeOptions = new WriteOptions();
+            writeOptions.sync(true);
+            this.db.write(writeBatch, writeOptions);
         }
     }
 

@@ -521,7 +521,9 @@ public class Level implements Metadatable {
         this.gameRules = this.requireProvider().getGamerules();
         log.info("Preparing start region for level \"{}\"", this.getName());
         Position spawn = this.getSpawnLocation();
-        this.generateChunk(spawn.getChunkX(), spawn.getChunkZ());
+        if (!getChunk(spawn.getChunkX(), spawn.getChunkZ(), true).getChunkState().canSend()) {
+            this.generateChunk(spawn.getChunkX(), spawn.getChunkZ());
+        }
     }
 
     public Generator getGenerator() {
@@ -3078,7 +3080,7 @@ public class Level implements Metadatable {
         return this.getChunk(x >> 4, z >> 4, true).getBiomeId(x & 0x0f, y, z & 0x0f);
     }
 
-    public void setBiomeId(int x, int y, int z, byte biomeId) {
+    public void setBiomeId(int x, int y, int z, int biomeId) {
         this.getChunk(x >> 4, z >> 4, true).setBiomeId(x & 0x0f, y, z & 0x0f, biomeId);
     }
 

@@ -206,8 +206,8 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
-    public Pair<byte[], Integer> requestChunkData(int X, int Z) {
-        IChunk chunk = this.getChunk(X, Z, false);
+    public Pair<byte[], Integer> requestChunkData(int x, int z) {
+        IChunk chunk = this.getChunk(x, z, false);
         if (chunk == null) {
             throw new ChunkException("Invalid Chunk Set");
         }
@@ -217,7 +217,7 @@ public class LevelDBProvider implements LevelProvider {
             final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
             try {
                 final ChunkSection[] sections = unsafeChunk.getSections();
-                int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount() - 1;
+                int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount();
                 while (subChunkCount-- != 0) {
                     if (sections[subChunkCount] != null) {
                         break;
