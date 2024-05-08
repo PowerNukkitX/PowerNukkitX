@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.DirtType;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
@@ -93,6 +94,11 @@ public class BlockDirt extends BlockSolid {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{Block.get(DIRT).toItem()};
+        return new Item[]{this.toItem()};
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemBlock(this);
     }
 }
