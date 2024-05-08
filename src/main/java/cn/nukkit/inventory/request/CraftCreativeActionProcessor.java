@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Allay Project 2023/7/26
  *
- * @author daoge_cmd
+ * @author daoge_cmd | CoolLoong
  */
 @Slf4j
 public class CraftCreativeActionProcessor implements ItemStackRequestActionProcessor<CraftCreativeAction> {
