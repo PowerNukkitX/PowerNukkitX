@@ -42,6 +42,7 @@ public class LevelTest {
 
     @Test
     void test_regenerateChunk(TestPlayer player, Level level) {
+        final TestPlayer p = player;
         player.level = level;
         player.level.setAutoSave(true);
         player.setPosition(new Vector3(0, 100, 0));
@@ -53,9 +54,9 @@ public class LevelTest {
 
         GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
-            player.getLevel().subTick(d);
+            p.getLevel().subTick(d);
             try {
-                player.checkNetwork();
+                p.checkNetwork();
             } catch (LevelException ignore) {
             }
         }).build();
