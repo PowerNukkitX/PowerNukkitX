@@ -1,6 +1,7 @@
 package cn.nukkit.network.connection.util;
 
-import com.google.gson.Gson;
+import cn.nukkit.utils.JSONUtils;
+import com.google.gson.reflect.TypeToken;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.security.NoSuchAlgorithmException;
@@ -11,7 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-import static cn.nukkit.network.connection.util.JsonUtils.childAsType;
+import static cn.nukkit.utils.JSONUtils.childAsType;
 
 public final class ChainValidationResult {
     private final boolean signed;
@@ -20,7 +21,8 @@ public final class ChainValidationResult {
 
 
     public ChainValidationResult(boolean signed, String rawPayload) {
-        this(signed, new Gson().fromJson(rawPayload, Map.class));
+        this(signed, JSONUtils.from(rawPayload, new TypeToken<Map<String, Object>>() {
+        }));
     }
 
     public ChainValidationResult(boolean signed, Map<String, Object> parsedPayload) {

@@ -1,8 +1,16 @@
 package cn.nukkit.form.window;
 
-import cn.nukkit.form.element.*;
+import cn.nukkit.form.element.Element;
+import cn.nukkit.form.element.ElementButtonImageData;
+import cn.nukkit.form.element.ElementDropdown;
+import cn.nukkit.form.element.ElementInput;
+import cn.nukkit.form.element.ElementLabel;
+import cn.nukkit.form.element.ElementSlider;
+import cn.nukkit.form.element.ElementStepSlider;
+import cn.nukkit.form.element.ElementToggle;
 import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.response.FormResponseData;
+import cn.nukkit.utils.JSONUtils;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -77,7 +85,7 @@ public class FormWindowCustom extends FormWindow {
             return;
         }
 
-        List<String> elementResponses = GSON.fromJson(data, new TypeToken<List<String>>() {
+        List<String> elementResponses = JSONUtils.from(data, new TypeToken<List<String>>() {
         }.getType());
         //elementResponses.remove(elementResponses.size() - 1); //submit button //maybe mojang removed that?
 

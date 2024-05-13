@@ -703,6 +703,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.getHealth() < 1) {
             this.setHealth(0);
         }
+
         Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             this.session.getMachine().fire(SessionState.IN_GAME);
         }, 5);

@@ -16,7 +16,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 /**
@@ -547,9 +553,7 @@ public class Config {
                     this.parseProperties(content);
                     break;
                 case Config.JSON:
-                    GsonBuilder builder = new GsonBuilder();
-                    Gson gson = builder.create();
-                    this.config = new ConfigSection(gson.fromJson(content, new TypeToken<LinkedHashMap<String, Object>>() {
+                    this.config = new ConfigSection(JSONUtils.from(content, new TypeToken<LinkedHashMap<String, Object>>() {
                     }.getType()));
                     break;
                 case Config.YAML:

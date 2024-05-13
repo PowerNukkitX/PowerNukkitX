@@ -25,9 +25,10 @@
 
 package cn.nukkit.level.generator.terra.mappings.loader;
 
-import cn.nukkit.level.generator.terra.mappings.MappingRegistries;
 import cn.nukkit.level.generator.terra.mappings.RegistryLoader;
+import cn.nukkit.utils.JSONUtils;
 import com.google.common.collect.HashBiMap;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -41,9 +42,10 @@ public class BiomeRegistryLoader implements RegistryLoader<String, HashBiMap<Int
         try (var stream = new InputStreamReader(
                 Objects.requireNonNull(BiomeRegistryLoader.class.getClassLoader().getResourceAsStream("mappings/biomes.json")))
         ) {
-            final Map<String, Map<String, Number>> biomeEntries = MappingRegistries.JSON_MAPPER.fromJson(
+            final Map<String, Map<String, Number>> biomeEntries = JSONUtils.from(
                     stream,
-                    Map.class
+                    new TypeToken<Map<String, Map<String, Number>>>() {
+                    }
             );
             HashBiMap<Integer, String> biomes = HashBiMap.create(biomeEntries.size());
             biomeEntries.forEach((k, v) -> {

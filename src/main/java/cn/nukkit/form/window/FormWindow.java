@@ -2,20 +2,17 @@ package cn.nukkit.form.window;
 
 import cn.nukkit.form.handler.FormResponseHandler;
 import cn.nukkit.form.response.FormResponse;
-import com.google.gson.Gson;
+import cn.nukkit.utils.JSONUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.List;
 
 public abstract class FormWindow {
-
-    protected static final Gson GSON = new Gson();
-
     protected transient boolean closed = false;
     protected final transient List<FormResponseHandler> handlers = new ObjectArrayList<>();
 
     public String getJSONData() {
-        return FormWindow.GSON.toJson(this);
+        return JSONUtils.to(this);
     }
 
     public abstract void setResponse(String data);

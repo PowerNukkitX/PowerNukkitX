@@ -481,6 +481,11 @@ public abstract class BlockLiquid extends BlockTransparent {
         }
     }
 
+    /**
+     * Gets a liquid block instance with a new depth.
+     *
+     * @param depth the new depth
+     */
     public abstract BlockLiquid getLiquidWithNewDepth(int depth);
 
     @Override

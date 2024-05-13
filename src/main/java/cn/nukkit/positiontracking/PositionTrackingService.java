@@ -558,11 +558,6 @@ public class PositionTrackingService implements Closeable {
         }
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        close();
-    }
-
     private void checkClosed() throws IOException {
         if (closed.get()) {
             throw new IOException("The service is closed");

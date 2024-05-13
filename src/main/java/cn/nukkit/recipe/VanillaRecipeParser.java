@@ -1,15 +1,15 @@
 package cn.nukkit.recipe;
 
+import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemPotion;
-import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
 import cn.nukkit.registry.RecipeRegistry;
 import cn.nukkit.registry.Registries;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import cn.nukkit.utils.JSONUtils;
+import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,10 +26,6 @@ import java.util.Map;
 
 @Slf4j
 public class VanillaRecipeParser {
-    private static final Gson GSON = new GsonBuilder().setObjectToNumberStrategy(jsonReader -> {
-        String value = jsonReader.nextString();
-        return Double.valueOf(value).intValue();
-    }).create();
     private static final String SHAPED_KEY = "minecraft:recipe_shaped";
     private static final String SHAPELESS_KEY = "minecraft:recipe_shapeless";
     private static final String FURNACE_KEY = "minecraft:recipe_furnace";
@@ -70,7 +66,8 @@ public class VanillaRecipeParser {
     }
 
     private void matchAndParse(InputStreamReader reader) {
-        Map<String, Object> map = GSON.fromJson(reader, Map.class);
+        Map<String, Object> map = JSONUtils.from(reader, new TypeToken<Map<String, Object>>() {
+        });
         if (map.containsKey(SHAPED_KEY)) {
             parseAndRegisterShapedRecipe((Map<String, Object>) map.get(SHAPED_KEY));
         } else if (map.containsKey(SHAPELESS_KEY)) {

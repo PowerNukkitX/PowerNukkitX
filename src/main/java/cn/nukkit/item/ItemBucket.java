@@ -6,7 +6,6 @@ import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockFlowingLava;
 import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockLava;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.BlockPowderSnow;
 import cn.nukkit.entity.Entity;
@@ -46,7 +45,7 @@ public class ItemBucket extends Item {
     }
 
     public ItemBucket(String id) {
-        this(id,0);
+        this(id, 0);
     }
 
     public ItemBucket(String id, int count) {
@@ -113,8 +112,8 @@ public class ItemBucket extends Item {
 
     public static String getDamageByTarget(String target) {
         return switch (target) {
-            case COD_BUCKET, SALMON_BUCKET, TROPICAL_FISH_BUCKET, PUFFERFISH_BUCKET, WATER_BUCKET, AXOLOTL_BUCKET, TADPOLE_BUCKET ->
-                    BlockID.FLOWING_WATER;
+            case COD_BUCKET, SALMON_BUCKET, TROPICAL_FISH_BUCKET, PUFFERFISH_BUCKET, WATER_BUCKET, AXOLOTL_BUCKET,
+                 TADPOLE_BUCKET -> BlockID.FLOWING_WATER;
             case LAVA_BUCKET -> BlockID.FLOWING_LAVA;
             case POWDER_SNOW_BUCKET -> BlockID.POWDER_SNOW;
             default -> BlockID.AIR;
@@ -127,8 +126,8 @@ public class ItemBucket extends Item {
 
     public boolean isWater() {
         return switch (getId()) {
-            case COD_BUCKET, SALMON_BUCKET, TROPICAL_FISH_BUCKET, PUFFERFISH_BUCKET, WATER_BUCKET, AXOLOTL_BUCKET, TADPOLE_BUCKET ->
-                    true;
+            case COD_BUCKET, SALMON_BUCKET, TROPICAL_FISH_BUCKET, PUFFERFISH_BUCKET, WATER_BUCKET, AXOLOTL_BUCKET,
+                 TADPOLE_BUCKET -> true;
             default -> false;
         };
     }
@@ -181,7 +180,7 @@ public class ItemBucket extends Item {
             return false;
         }
         if (player.isItemCoolDownEnd(BUCKET)) {
-            player.setItemCoolDown(5,BUCKET);
+            player.setItemCoolDown(5, BUCKET);
         } else {
             return false;
         }
@@ -207,7 +206,7 @@ public class ItemBucket extends Item {
                     result = Item.get(BUCKET, 0, 1);
                 } else if (target instanceof BlockPowderSnow) {
                     result = Item.get(BUCKET, 11, 1);
-                } else if (target instanceof BlockFlowingLava ) {
+                } else if (target instanceof BlockFlowingLava) {
                     result = Item.get(BUCKET, 10, 1);
                 } else {
                     result = Item.get(BUCKET, 8, 1);
@@ -219,8 +218,7 @@ public class ItemBucket extends Item {
 
                     level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
 
-                    // When water is removed ensure any adjacent still water is
-                    // replaced with water that can flow.
+                    // When water is removed ensure any adjacent still water is replaced with water that can flow.
                     for (BlockFace side : Plane.HORIZONTAL) {
                         Block b = target.getSideAtLayer(0, side);
                         if (b.getId().equals(BlockID.WATER)) {
@@ -300,7 +298,7 @@ public class ItemBucket extends Item {
                 afterUse(level, block);
 
                 return true;
-            } else if (nether) {
+            } else if (nether) {//handle the logic that the player cant use water bucket in nether
                 if (!player.isCreative()) {
                     this.setDamage(0); // Empty bucket
                     player.getInventory().setItemInHand(this);
@@ -333,6 +331,9 @@ public class ItemBucket extends Item {
         return true;
     }
 
+    /**
+     * update the count of bucket and set to inventory
+     */
     private void updateBucketItem(Player player, PlayerBucketEmptyEvent ev) {
         if (player.isSurvival()) {
             if (this.getCount() - 1 <= 0) {
@@ -350,14 +351,16 @@ public class ItemBucket extends Item {
         }
     }
 
+    /**
+     * whether the bucket can be used in the dimension
+     */
     protected boolean canBeUsedOnDimension(int dimension) {
-        if (!Objects.equals(getId(), BUCKET)) {
-            return true;
-        }
-
-        return dimension != Level.DIMENSION_NETHER || (isLava() || isMilk());
+        return dimension != Level.DIMENSION_NETHER || (isEmpty() || isLava() || isMilk());
     }
 
+    /**
+     * handle logic after use bucket.
+     */
     protected void afterUse(Level level, Block block) {
         if (isLava()) {
             level.addSound(block, Sound.BUCKET_EMPTY_LAVA);

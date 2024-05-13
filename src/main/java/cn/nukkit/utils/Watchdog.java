@@ -13,8 +13,6 @@ public class Watchdog extends Thread {
     private final long time;
     public volatile boolean running;
     private boolean responding = true;
-    private Thread forcedFinalizer;
-    private boolean warnedAboutFinalizer;
 
     public Watchdog(Server server, long time) {
         this.server = server;
@@ -30,38 +28,9 @@ public class Watchdog extends Thread {
         interrupt();
     }
 
-    private void checkFinalizer() {
-        if (forcedFinalizer != null && forcedFinalizer.isAlive()) {
-            StringBuilder sb = new StringBuilder("--------- The finalizer thread didn't complete in time! ---------").append('\n')
-                    .append("This detection means that the finalizer thread may be stuck and").append('\n')
-                    .append("RAM memory might be leaking!").append('\n')
-                    .append(" - https://github.com/PowerNukkitX/PowerNukkitX/issues/new").append('\n')
-                    .append("---------------- ForcedFinalizer ----------------").append('\n');
-            dumpThread(ManagementFactory.getThreadMXBean().getThreadInfo(forcedFinalizer.getId(), Integer.MAX_VALUE), sb);
-            sb.append("-------------------------------------------------");
-            log.error(sb.toString());
-            warnedAboutFinalizer = true;
-        } else {
-            if (warnedAboutFinalizer) {
-                log.warn("The ForcedFinalizer has finished");
-                warnedAboutFinalizer = false;
-            }
-            forcedFinalizer = new Thread(() -> {
-                log.trace("Forcing finalization");
-                System.runFinalization();
-                log.trace("Forced finalization completed");
-            });
-            forcedFinalizer.setName("ForcedFinalizer");
-            forcedFinalizer.setDaemon(true);
-            forcedFinalizer.start();
-        }
-    }
-
     @Override
     public void run() {
         while (this.running) {
-            checkFinalizer();
-
             //Refresh the advanced network information in watchdog, as this is time-consuming operate and will block the main thread
             server.getNetwork().resetStatistics();
 

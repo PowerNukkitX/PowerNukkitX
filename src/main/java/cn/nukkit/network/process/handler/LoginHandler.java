@@ -2,7 +2,6 @@ package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.network.Network;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.connection.util.EncryptionUtils;
 import cn.nukkit.network.process.SessionState;
@@ -67,7 +66,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         if (server.isWaterdogCapable() && chainData.getWaterdogIP() != null) {
             InetSocketAddress oldAddress = session.getAddress();
             session.setAddress(new InetSocketAddress(chainData.getWaterdogIP(), session.getAddress().getPort()));
-            Server.getInstance().getNetwork().replaceSession(oldAddress, session.getAddress(), session);
+            Server.getInstance().getNetwork().replaceSessionAddress(oldAddress, session.getAddress(), session);
         }
 
         var uniqueId = pk.clientUUID;

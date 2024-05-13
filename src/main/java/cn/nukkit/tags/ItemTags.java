@@ -2,7 +2,7 @@ package cn.nukkit.tags;
 
 import cn.nukkit.Server;
 import cn.nukkit.utils.Identifier;
-import com.google.gson.Gson;
+import cn.nukkit.utils.JSONUtils;
 import com.google.gson.reflect.TypeToken;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +10,11 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public final class ItemTags {
@@ -71,12 +75,11 @@ public final class ItemTags {
 
     static {
         try {
-            Gson gson = new Gson();
             try (var stream = Server.class.getClassLoader().getResourceAsStream("item_tags.json")) {
                 TypeToken<HashMap<String, HashSet<String>>> typeToken = new TypeToken<>() {
                 };
                 assert stream != null;
-                HashMap<String, HashSet<String>> map = gson.fromJson(new InputStreamReader(stream), typeToken.getType());
+                HashMap<String, HashSet<String>> map = JSONUtils.from(new InputStreamReader(stream), typeToken);
                 TAG_2_ITEMS.putAll(map);
                 for (var e : TAG_2_ITEMS.entrySet()) {
                     for (var item : e.getValue()) {

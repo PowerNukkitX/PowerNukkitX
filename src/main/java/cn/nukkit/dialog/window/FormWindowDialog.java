@@ -4,8 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.dialog.element.ElementDialogButton;
 import cn.nukkit.dialog.handler.FormDialogHandler;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.utils.JSONUtils;
 import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,10 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FormWindowDialog implements Dialog{
-
-    protected static final Gson GSON = new Gson();
-
+public class FormWindowDialog implements Dialog {
     private static long dialogId = 0;
 
     private String title = "";
@@ -36,7 +33,7 @@ public class FormWindowDialog implements Dialog{
     protected final transient List<FormDialogHandler> handlers = new ObjectArrayList<>();
 
     public FormWindowDialog(String title, String content, Entity bindEntity) {
-        this(title, content,bindEntity, new ArrayList<>());
+        this(title, content, bindEntity, new ArrayList<>());
     }
 
     public FormWindowDialog(String title, String content, Entity bindEntity, List<ElementDialogButton> buttons) {
@@ -73,7 +70,7 @@ public class FormWindowDialog implements Dialog{
     }
 
     public void addButton(String text) {
-        this.addButton(new ElementDialogButton(text,text));
+        this.addButton(new ElementDialogButton(text, text));
     }
 
     public void addButton(ElementDialogButton button) {
@@ -92,11 +89,11 @@ public class FormWindowDialog implements Dialog{
         this.bindEntity = bindEntity;
     }
 
-    public String getSkinData(){
+    public String getSkinData() {
         return this.skinData;
     }
 
-    public void setSkinData(String data){
+    public void setSkinData(String data) {
         this.skinData = data;
     }
 
@@ -109,11 +106,12 @@ public class FormWindowDialog implements Dialog{
     }
 
     public String getButtonJSONData() {
-        return GSON.toJson(this.buttons);
+        return JSONUtils.to(this.buttons);
     }
 
-    public void setButtonJSONData(String json){
-        var buttons = GSON.<List<ElementDialogButton>>fromJson(json, new TypeToken<List<ElementDialogButton>>(){}.getType());
+    public void setButtonJSONData(String json) {
+        List<ElementDialogButton> buttons = JSONUtils.from(json, new TypeToken<List<ElementDialogButton>>() {
+        }.getType());
         //Cannot be null
         if (buttons == null) buttons = new ArrayList<>();
         this.setButtons(buttons);
@@ -133,7 +131,7 @@ public class FormWindowDialog implements Dialog{
     }
 
     @Override
-    public void send(@NotNull Player player){
+    public void send(@NotNull Player player) {
         player.showDialogWindow(this);
     }
 }

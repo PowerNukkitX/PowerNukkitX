@@ -3,12 +3,12 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.BinaryStream;
+import cn.nukkit.utils.JSONUtils;
 import cn.nukkit.utils.PersonaPiece;
 import cn.nukkit.utils.PersonaPieceTint;
 import cn.nukkit.utils.SerializedImage;
 import cn.nukkit.utils.SkinAnimation;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -31,9 +31,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.LOGIN_PACKET;
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public String username;
     public int protocol;
@@ -70,9 +68,9 @@ public class LoginPacket extends DataPacket {
     }
 
     private void decodeChainData(BinaryStream binaryStream) {
-        Map<String, List<String>> map = GSON.fromJson(new String(binaryStream.get(binaryStream.getLInt()), StandardCharsets.UTF_8),
+        Map<String, List<String>> map = JSONUtils.from(new String(binaryStream.get(binaryStream.getLInt()), StandardCharsets.UTF_8),
                 new TypeToken<Map<String, List<String>>>() {
-                }.getType());
+                });
         if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty()) return;
         List<String> chains = map.get("chain");
         for (String c : chains) {
