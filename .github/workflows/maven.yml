@@ -103,14 +103,14 @@ jobs:
           md5sum libs.tar.gz > hash/md5/libs.tar.gz.md5
 
       - name: Archive PNX Core
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: success()
         with:
           name: PowerNukkitX-Core
           path: build/powernukkitx.jar
 
       - name: Archive PNX SHADED
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: success()
         with:
           name: PowerNukkitX-Shaded
@@ -124,7 +124,7 @@ jobs:
           ls -l
 
       - name: Archive PNX RUN Full
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: success()
         with:
           name: PowerNukkitX-Run
@@ -134,14 +134,14 @@ jobs:
             build/cli.jar
 
       - name: Archive Libraries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: success()
         with:
           name: PowerNukkitX-Libs
           path: build/libs/
 
       - name: Archive Hashes
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: success()
         with:
           name: Hashes(md5 & sha256)
