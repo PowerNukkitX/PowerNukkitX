@@ -18,7 +18,7 @@ jobs:
 
       - name: Check for file changes
         id: check-changed-files
-        uses: tj-actions/changed-files@v11.4
+        uses: tj-actions/changed-files@v44
 
       - name: output list of changed files
         run: echo ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
@@ -48,6 +48,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+
       - run: chmod +x gradlew
 
       - name: Setup Gradle
@@ -68,7 +69,7 @@ jobs:
           jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
 
       - name: Commit and push the badge (if it changed)
-        uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v9
         if: github.repository == 'PowerNukkitX/PowerNukkitX' && github.repository_owner=='PowerNukkitX' && github.ref != 'refs/heads/master'
         with:
           default_author: github_actions
@@ -148,7 +149,7 @@ jobs:
 
       - name: Get Short SHA
         id: vars
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_STATE
 
       - uses: ncipollo/release-action@v1
         name: Release new version
