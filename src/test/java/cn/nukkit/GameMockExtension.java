@@ -233,8 +233,8 @@ public class GameMockExtension extends MockitoExtension {
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext context) throws ParameterResolutionException {
         boolean b = super.supportsParameter(parameterContext, context);
-        return b || parameterContext.getParameter().getType() == GameMockExtension.class ||
-                parameterContext.getParameter().getType().equals(BlockRegistry.class)
+        return b || parameterContext.getParameter().getType() == GameMockExtension.class
+                || parameterContext.getParameter().getType().equals(BlockRegistry.class)
                 || parameterContext.getParameter().getType().equals(LevelProvider.class)
                 || parameterContext.getParameter().getType().equals(TestPlayer.class)
                 || parameterContext.getParameter().getType().equals(Level.class);
@@ -244,17 +244,13 @@ public class GameMockExtension extends MockitoExtension {
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext context) throws ParameterResolutionException {
         if (parameterContext.getParameter().getType() == GameMockExtension.class) {
             return gameMockExtension;
-        }
-        if (parameterContext.getParameter().getType().equals(BlockRegistry.class)) {
+        } else if (parameterContext.getParameter().getType().equals(BlockRegistry.class)) {
             return BLOCK_REGISTRY;
-        }
-        if (parameterContext.getParameter().getType().equals(LevelProvider.class)) {
+        } else if (parameterContext.getParameter().getType().equals(LevelProvider.class)) {
             return level.getProvider();
-        }
-        if (parameterContext.getParameter().getType().equals(Level.class)) {
+        } else if (parameterContext.getParameter().getType().equals(Level.class)) {
             return level;
-        }
-        if (parameterContext.getParameter().getType().equals(TestPlayer.class)) {
+        } else if (parameterContext.getParameter().getType().equals(TestPlayer.class)) {
             return player;
         }
         return super.resolveParameter(parameterContext, context);
