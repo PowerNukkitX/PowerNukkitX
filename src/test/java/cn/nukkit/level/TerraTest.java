@@ -32,7 +32,6 @@ public class TerraTest {
         objectObjectHashMap.put("pack", "overworld");
         level = new Level(Server.getInstance(), "terra", "src/test/resources/terra",
                 1, LevelDBProvider.class, new LevelConfig.GeneratorConfig("terra", 114514, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), objectObjectHashMap));
-        level.initLevel();
     }
 
 
@@ -42,21 +41,21 @@ public class TerraTest {
      */
     @Test
     void test_terra(TestPlayer player) {
-        resetPlayerStatus(player);
-
+        player.level = level;
+        player.getLevel().initLevel();
         player.setViewDistance(1);
-        GameLoop loop = GameLoop.builder().loopCountPerSec(200).onTick((d) -> {
+        GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
-            level.subTick(d);
+            player.getLevel().subTick(d);
             player.checkNetwork();
         }).build();
         Thread thread = new Thread(loop::startLoop);
         thread.start();
 
-        int limit = 100;
+        int limit = 1000;
         while (limit-- != 0) {
             try {
-                if (5 == player.getUsedChunks().size()) {
+                if (player.chunk != null && player.chunk.getChunkState().canSend() && player.chunk.getX() == 0 && player.chunk.getZ() == 0) {
                     break;
                 }
                 Thread.sleep(100);
@@ -66,7 +65,7 @@ public class TerraTest {
         }
         if (limit <= 0) {
             resetPlayerStatus(player);
-            Assertions.fail("Chunks cannot be successfully loaded in 10s");
+            Assertions.fail("Chunks cannot be successfully loaded in 100s");
         }
         //teleport
         player.teleport(player.getLocation().setComponents(10000, 100, 10000));

@@ -88,7 +88,7 @@ public class PlayerTest {
         loop.stop();
         if (limit <= 0) {
             resetPlayerStatus(player);
-            Assertions.fail("Chunks cannot be successfully loaded in 10s,the number of chunks that are now loaded: " + player.getUsedChunks().size());
+            Assertions.fail("Chunks cannot be successfully loaded in 30s,the number of chunks that are now loaded: " + player.getUsedChunks().size());
         }
         resetPlayerStatus(player);
     }
