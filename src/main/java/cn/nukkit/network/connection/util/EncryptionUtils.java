@@ -1,5 +1,6 @@
 package cn.nukkit.network.connection.util;
 
+import cn.nukkit.utils.JSONUtils;
 import lombok.experimental.UtilityClass;
 import org.jose4j.json.JsonUtil;
 import org.jose4j.jwa.AlgorithmConstraints;
@@ -129,7 +130,7 @@ public class EncryptionUtils {
                     }
 
                     parsedPayload = JsonUtil.parseJson(signature.getUnverifiedPayload());
-                    String identityPublicKey = JsonUtils.childAsType(parsedPayload, "identityPublicKey", String.class);
+                    String identityPublicKey = JSONUtils.childAsType(parsedPayload, "identityPublicKey", String.class);
                     currentKey = parseKey(identityPublicKey);
                 }
                 return new ChainValidationResult(true, parsedPayload);

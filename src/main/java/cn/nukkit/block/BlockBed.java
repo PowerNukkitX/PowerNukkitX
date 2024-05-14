@@ -17,7 +17,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.player.info.SpawnPointType;
+import cn.nukkit.network.protocol.types.SpawnPointType;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.TextFormat;
@@ -26,7 +26,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.HEAD_PIECE_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.OCCUPIED_BIT;
 
 /**
  * @author MagicDroidX (Nukkit Project)

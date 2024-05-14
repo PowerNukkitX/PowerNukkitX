@@ -3,12 +3,19 @@ package cn.nukkit.lang;
 
 import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
+import cn.nukkit.utils.JSONUtils;
 import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.netty.util.internal.EmptyArrays;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -301,7 +308,8 @@ public class PluginI18n {
 
     private boolean reloadLang(LangCode lang, BufferedReader reader) {
         Map<String, String> d = this.MULTI_LANGUAGE.get(lang);
-        Map<String, String> map = new Gson().fromJson(reader, Map.class);
+        Map<String, String> map = JSONUtils.from(reader, new TypeToken<Map<String, String>>() {
+        });
         if (d == null) {
             this.MULTI_LANGUAGE.put(lang, map);
         } else {
@@ -312,7 +320,8 @@ public class PluginI18n {
     }
 
     private Map<String, String> parseLang(BufferedReader reader) throws IOException {
-        return (Map<String, String>) new Gson().fromJson(reader, Map.class);
+        return JSONUtils.from(reader, new TypeToken<Map<String, String>>() {
+        });
     }
 }
 

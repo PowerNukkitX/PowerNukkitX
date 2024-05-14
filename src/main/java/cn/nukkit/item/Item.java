@@ -20,8 +20,8 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.Identifier;
+import cn.nukkit.utils.JSONUtils;
 import cn.nukkit.utils.TextFormat;
-import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
@@ -1480,8 +1480,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public static class ItemJsonComponents {
-        private static final Gson gson = new Gson();
-
         public static class CanPlaceOn {
             public String[] blocks;
         }
@@ -1497,7 +1495,7 @@ public abstract class Item implements Cloneable, ItemID {
         }
 
         public static ItemJsonComponents fromJson(String json) {
-            return gson.fromJson(json, ItemJsonComponents.class);
+            return JSONUtils.from(json, ItemJsonComponents.class);
         }
 
         public static class KeepOnDeath {

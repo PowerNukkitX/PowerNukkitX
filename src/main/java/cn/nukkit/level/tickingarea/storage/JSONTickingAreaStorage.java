@@ -3,27 +3,28 @@ package cn.nukkit.level.tickingarea.storage;
 import cn.nukkit.Server;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.tickingarea.TickingArea;
+import cn.nukkit.utils.JSONUtils;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class JSONTickingAreaStorage implements TickingAreaStorage {
 
-    private static final Type type = new TypeToken<HashSet<TickingArea>>() {
-    }.getType();
-
-    protected static Gson gson = new Gson();
+    private static final TypeToken<HashSet<TickingArea>> type = new TypeToken<HashSet<TickingArea>>() {
+    };
 
     /**
      * 存储常加载区域的根目录
@@ -66,7 +67,7 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
             var jsonFile = new File(each, "tickingarea.json");
             if (jsonFile.exists()) {
                 try (var fr = new FileReader(jsonFile)) {
-                    Set<TickingArea> areas = gson.fromJson(fr, type);
+                    Set<TickingArea> areas = JSONUtils.from(fr, type);
                     for (var area : areas) {
                         areaMap.put(area.getLevelName(), area.getName(), area);
                         aMap.put(area.getName(), area);
@@ -100,7 +101,7 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
         try {
             for (Level level : Server.getInstance().getLevels().values()) {
                 if (areaMap.containsRow(level.getName())) {
-                    Files.writeString(Path.of(filePath.toString(), level.getFolderName(), "tickingarea.json"), gson.toJson(areaMap.rowMap().get(level.getName()).values().toArray()));
+                    Files.writeString(Path.of(filePath.toString(), level.getFolderName(), "tickingarea.json"), JSONUtils.toPretty(areaMap.rowMap().get(level.getName()).values().toArray()));
                 } else {
                     Files.deleteIfExists(Path.of(filePath.toString(), level.getFolderName(), "tickingarea.json"));
                 }

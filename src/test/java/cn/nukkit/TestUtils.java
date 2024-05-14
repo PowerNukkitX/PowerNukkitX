@@ -2,6 +2,7 @@ package cn.nukkit;
 
 import cn.nukkit.level.PlayerChunkManager;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.GameLoop;
 
 import java.lang.reflect.Field;
 
@@ -14,6 +15,18 @@ public class TestUtils {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static GameLoop gameLoop(TestPlayer p) {
+        GameLoop loop = GameLoop.builder().loopCountPerSec(100).onTick((d) -> {
+            Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
+            Server.getInstance().getNetwork().process();
+            p.getLevel().subTick(d);
+            p.checkNetwork();
+        }).build();
+        Thread thread = new Thread(loop::startLoop);
+        thread.start();
+        return loop;
     }
 
     public static void resetPlayerStatus(TestPlayer player) {

@@ -74,7 +74,6 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
      *
      * @return 新创建的行为组
      */
-
     protected IBehaviorGroup requireBehaviorGroup() {
         return new EmptyBehaviorGroup(this);
     }

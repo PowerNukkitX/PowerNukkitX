@@ -5,7 +5,13 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.EntityArmorInventory;
+import cn.nukkit.inventory.EntityEquipmentInventory;
+import cn.nukkit.inventory.EntityInventoryHolder;
+import cn.nukkit.inventory.HumanEnderChestInventory;
+import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.HumanOffHandInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -154,7 +160,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
                     this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
                 }
             }
-            this.broadcastMovement();
+            this.broadcastMovement(false);
             this.lastX = this.x;
             this.lastY = this.y;
             this.lastZ = this.z;

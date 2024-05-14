@@ -10,7 +10,12 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.io.*;
+import java.io.Closeable;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -542,12 +547,5 @@ public class PositionTrackingStorage implements Closeable {
     @Override
     public synchronized void close() throws IOException {
         persistence.close();
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        if (persistence != null) {
-            persistence.close();
-        }
     }
 }

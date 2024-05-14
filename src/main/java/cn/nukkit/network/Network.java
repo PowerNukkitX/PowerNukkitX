@@ -34,6 +34,8 @@ import oshi.hardware.NetworkIF;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,7 +53,7 @@ public class Network {
     @Nullable
     private final List<NetworkIF> hardWareNetworkInterfaces;
     private final Map<InetSocketAddress, BedrockSession> sessionMap = new ConcurrentHashMap<>();
-    private final Map<InetAddress, Long> blockIpMap = new HashMap<>();
+    private final Map<InetAddress, LocalDateTime> blockIpMap = new HashMap<>();
     private final RakServerChannel channel;
     private BedrockPong pong;
 
@@ -173,6 +175,9 @@ public class Network {
         netWorkStatisticDataList.add(new NetWorkStatisticData(upload, download));
     }
 
+    /**
+     * process tick for all network interfaces.
+     */
     public void processInterfaces() {
         try {
             this.process();
@@ -190,29 +195,65 @@ public class Network {
     }
 
 
+    /**
+     * Get network latency for specific player.
+     *
+     * @param player the player
+     * @return the network latency
+     */
     public int getNetworkLatency(Player player) {
         var session = this.sessionMap.get(player.getRawSocketAddress());
         return session == null ? -1 : (int) session.getPing();
     }
 
+    /**
+     * Block an address forever.
+     *
+     * @param address the address
+     */
     public void blockAddress(InetAddress address) {
-        blockIpMap.put(address, -1L);
+        blockIpMap.put(address, LocalDateTime.of(9999, 1, 1, 0, 0));
     }
 
+    /**
+     * Block an address.
+     *
+     * @param address the address
+     * @param timeout the timeout,unit millisecond
+     */
     public void blockAddress(InetAddress address, int timeout) {
-        blockIpMap.put(address, (long) timeout);
+        blockIpMap.put(address, LocalDateTime.now().plus(timeout, ChronoUnit.MILLIS));
     }
 
+    /**
+     * Recover an address of banned.
+     *
+     * @param address the address
+     */
     public void unblockAddress(InetAddress address) {
         blockIpMap.remove(address);
     }
 
+    /**
+     * Get a session of player.
+     *
+     * @param address the address of session
+     * @return the session
+     */
     public BedrockSession getSession(InetSocketAddress address) {
         return this.sessionMap.get(address);
     }
 
-    public void replaceSession(InetSocketAddress oldAddress, InetSocketAddress newAddress, BedrockSession newSession) {
-
+    /**
+     * Replace session address.
+     * <p>
+     * handle a scenario that the player from proxy
+     *
+     * @param oldAddress the old address
+     * @param newAddress the new address,usually the IP of the proxy
+     * @param newSession original session
+     */
+    public void replaceSessionAddress(InetSocketAddress oldAddress, InetSocketAddress newAddress, BedrockSession newSession) {
         if (!this.sessionMap.containsKey(oldAddress))
             return;
 
@@ -223,10 +264,21 @@ public class Network {
         this.sessionMap.put(newAddress, newSession);
     }
 
-    private boolean isAddressBlocked(InetSocketAddress address) {
-        return this.blockIpMap.containsKey(address.getAddress());
+    /**
+     * whether the address is blocked
+     */
+    public boolean isAddressBlocked(InetSocketAddress address) {
+        InetAddress a = address.getAddress();
+        if (this.blockIpMap.containsKey(a)) {
+            LocalDateTime localDateTime = this.blockIpMap.get(a);
+            return LocalDateTime.now().isBefore(localDateTime);
+        }
+        return false;
     }
 
+    /**
+     * A function of tick for network session
+     */
     public void process() {
         for (BedrockSession session : this.sessionMap.values()) {
             if (session.isDisconnected()) {
@@ -236,10 +288,16 @@ public class Network {
         }
     }
 
+    /**
+     * call on session disconnect.
+     */
     public void onSessionDisconnect(InetSocketAddress address) {
         this.sessionMap.remove(address);
     }
 
+    /**
+     * Gets raknet pong.
+     */
     public BedrockPong getPong() {
         return pong;
     }

@@ -1582,7 +1582,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
 
-    protected void broadcastMovement() {
+    protected void broadcastMovement(boolean tp) {
         var pk = new MoveEntityAbsolutePacket();
         pk.eid = this.getId();
         pk.x = this.x;
@@ -1591,7 +1591,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         pk.headYaw = yaw;
         pk.pitch = pitch;
         pk.yaw = yaw;
-        pk.teleport = false;
+        pk.teleport = tp;
         pk.onGround = this.onGround;
         Server.broadcastPacket(hasSpawned.values(), pk);
     }

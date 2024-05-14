@@ -2,13 +2,16 @@ package cn.nukkit.level.updater.block;
 
 import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
-import com.google.gson.*;
+import cn.nukkit.utils.JSONUtils;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -19,13 +22,12 @@ public class BlockStateUpdaterBase implements Updater {
     public static final Updater INSTANCE = new BlockStateUpdaterBase();
 
     public static final Map<String, Map<String, Object>[]> LEGACY_BLOCK_DATA_MAP = new HashMap<>();
-    private static final Gson JSON_MAPPER = new Gson();
 
     static {
         JsonObject node;
         try (InputStream stream = Updater.class.getClassLoader().getResourceAsStream("legacy_block_data_map.json")) {
             assert stream != null;
-            node = (JsonObject) JSON_MAPPER.toJsonTree(JSON_MAPPER.fromJson(new InputStreamReader(stream), Map.class));
+            node = JSONUtils.fromAsJsonTree(stream, Map.class);
         } catch (IOException e) {
             throw new AssertionError("Error loading legacy block data map", e);
         }

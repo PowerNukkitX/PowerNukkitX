@@ -5,7 +5,6 @@ import cn.nukkit.block.BlockFlowingLava;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.level.generator.terra.mappings.BlockMappings;
 import cn.nukkit.level.generator.terra.mappings.JeBlockState;
-import cn.nukkit.level.generator.terra.mappings.MappingRegistries;
 import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.updater.block.BlockStateUpdater_1_20_10;
 import cn.nukkit.level.updater.block.BlockStateUpdater_1_20_30;
@@ -18,11 +17,12 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.TreeMapCompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.HashUtils;
+import cn.nukkit.utils.JSONUtils;
+import com.google.gson.reflect.TypeToken;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,9 +63,10 @@ public final class BlockRegistryPopulator {
 
     public static BlockMappings initMapping() {
         try (InputStream stream = BlockRegistryPopulator.class.getClassLoader().getResourceAsStream("mappings/blocks.json")) {
-            Map<String, Map<String, Object>> blocks = MappingRegistries.JSON_MAPPER.fromJson(
-                    new InputStreamReader(stream),
-                    Map.class
+            Map<String, Map<String, Object>> blocks = JSONUtils.from(
+                    stream,
+                    new TypeToken<Map<String, Map<String, Object>>>() {
+                    }
             );
             Object2ObjectOpenHashMap<JeBlockState, cn.nukkit.block.BlockState> MAP1 = new Object2ObjectOpenHashMap<>();
             Object2ObjectOpenHashMap<cn.nukkit.block.BlockState, JeBlockState> MAP2 = new Object2ObjectOpenHashMap<>();

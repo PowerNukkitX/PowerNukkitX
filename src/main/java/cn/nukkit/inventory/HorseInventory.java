@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -28,9 +29,11 @@ public class HorseInventory extends BaseInventory {
     }
 
     static {
-        ListTag<CompoundTag> saddle = new ListTag<CompoundTag>().add(new CompoundTag().putCompound("slotItem", new CompoundTag().putShort("Aux", Short.MAX_VALUE).putString("Name", "minecraft:saddle")));
+        ListTag<CompoundTag> saddle = new ListTag<CompoundTag>().add(new CompoundTag().putCompound("slotItem", new CompoundTag()
+                .putShort("Aux", Short.MAX_VALUE)
+                .putString("Name", ItemID.SADDLE)));
         ListTag<CompoundTag> horseArmor = new ListTag<>();
-        for (var h : List.of("minecraft:leather_horse_armor", "minecraft:iron_horse_armor", "minecraft:golden_horse_armor", "minecraft:diamond_horse_armor")) {
+        for (var h : List.of(ItemID.LEATHER_HORSE_ARMOR, ItemID.IRON_HORSE_ARMOR, ItemID.GOLDEN_HORSE_ARMOR, ItemID.DIAMOND_HORSE_ARMOR)) {
             horseArmor.add(new CompoundTag().putCompound("slotItem", new CompoundTag().putShort("Aux", Short.MAX_VALUE).putString("Name", h)));
         }
         slot0 = new CompoundTag().putList("acceptedItems", saddle).putInt("slotNumber", 0);

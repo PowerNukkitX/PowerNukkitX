@@ -51,7 +51,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * @author MagicDroidX (Nukkit Project)
+ * @author CoolLoong (PNX Project)
  */
 @Slf4j
 public class LevelDBProvider implements LevelProvider {
@@ -519,7 +519,6 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void close() {
-        CACHE.remove(path);
         storage.close();
     }
 

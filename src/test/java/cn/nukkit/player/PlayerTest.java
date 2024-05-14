@@ -1,13 +1,11 @@
 package cn.nukkit.player;
 
 import cn.nukkit.GameMockExtension;
-import cn.nukkit.Server;
 import cn.nukkit.TestPlayer;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.MovePlayerPacket;
 import cn.nukkit.utils.GameLoop;
-import cn.nukkit.utils.LevelException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -17,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import static cn.nukkit.TestUtils.gameLoop;
 import static cn.nukkit.TestUtils.resetPlayerStatus;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -28,16 +27,13 @@ public class PlayerTest {
     @Test
     @Order(1)
     void test_player_teleport(TestPlayer player, Level level) {
-        player.level = level;
-        player.setViewDistance(4);//view 4
-        GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
-            Server.getInstance().getNetwork().process();
-            Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
-            player.checkNetwork();
-        }).build();
-        Thread thread = new Thread(loop::startLoop);
-        thread.start();
-        player.teleport(new Vector3(10000, 6, 10000));
+        final TestPlayer p = player;
+        p.level = level;
+        p.setViewDistance(4);//view 4
+
+        GameLoop loop = gameLoop(p);
+
+        p.teleport(new Vector3(10000, 6, 10000));
 
         int limit = 100;
         while (limit-- != 0) {
@@ -55,29 +51,26 @@ public class PlayerTest {
         if (limit <= 0) {
             Assertions.fail("Chunks cannot be successfully loaded in 10s");
         }
-        InOrder orderSendPk = Mockito.inOrder(player.getSession());
-        orderSendPk.verify(player.getSession(), times(1)).sendPacket(any(MovePlayerPacket.class));
-        player.setPosition(new Vector3(0, 100, 0));
+        InOrder orderSendPk = Mockito.inOrder(p.getSession());
+        orderSendPk.verify(p.getSession(), times(1)).sendPacket(any(MovePlayerPacket.class));
+        p.setPosition(new Vector3(0, 100, 0));
     }
 
     @Test
     @Order(2)
-    void test_player_chunk_load(TestPlayer player, Level level) {
-        resetPlayerStatus(player);
-        player.setViewDistance(4);//view 4
+    void test_player_chunk_load(TestPlayer player) {
+        final TestPlayer p = player;
+        resetPlayerStatus(p);
 
-        GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
-            Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
-            level.subTick(d);
-            player.checkNetwork();
-        }).build();
-        player.setPosition(new Vector3(0, 100, 0));
-        Thread thread = new Thread(loop::startLoop);
-        thread.start();
+        p.setViewDistance(4);//view 4
+        p.setPosition(new Vector3(0, 100, 0));
+
+        GameLoop loop = gameLoop(p);
+
         int limit = 300;
         while (limit-- != 0) {
             try {
-                if (49 == player.getUsedChunks().size()) {
+                if (49 == p.getUsedChunks().size()) {
                     break;
                 }
                 Thread.sleep(100);
@@ -86,11 +79,12 @@ public class PlayerTest {
             }
         }
         loop.stop();
+
         if (limit <= 0) {
-            resetPlayerStatus(player);
-            Assertions.fail("Chunks cannot be successfully loaded in 10s,the number of chunks that are now loaded: " + player.getUsedChunks().size());
+            resetPlayerStatus(p);
+            Assertions.fail("Chunks cannot be successfully loaded in 30s,the number of chunks that are now loaded: " + p.getUsedChunks().size());
         }
-        resetPlayerStatus(player);
+        resetPlayerStatus(p);
     }
 
     @Test
@@ -99,14 +93,8 @@ public class PlayerTest {
         resetPlayerStatus(player);
 
         player.setViewDistance(4);//view 4
-        GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
-            Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
-            level.subTick(d);
-            try {
-                player.checkNetwork();
-            } catch (LevelException ignore) {
-            }
-        }).build();
+        GameLoop loop = gameLoop(player);
+
         player.setPosition(new Vector3(0, 100, 0));
         Thread thread = new Thread(loop::startLoop);
         thread.start();

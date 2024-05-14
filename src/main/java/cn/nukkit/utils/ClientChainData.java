@@ -3,7 +3,6 @@ package cn.nukkit.utils;
 import cn.nukkit.Server;
 import cn.nukkit.network.connection.util.EncryptionUtils;
 import cn.nukkit.network.protocol.LoginPacket;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import org.jose4j.jws.JsonWebSignature;
@@ -16,7 +15,12 @@ import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
-import java.util.*;
+import java.util.Base64;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * ClientChainData is a container of chain data sent from clients.
@@ -244,11 +248,11 @@ public final class ClientChainData implements LoginChainData {
         if (base.length < 2) return null;
         String json = new String(Base64.getDecoder().decode(base[1]), StandardCharsets.UTF_8);
         //Server.getInstance().getLogger().debug(json);
-        return new Gson().fromJson(json, JsonObject.class);
+        return JSONUtils.from(json, JsonObject.class);
     }
 
     private void decodeChainData() {
-        Map<String, List<String>> map = new Gson().fromJson(new String(bs.get(bs.getLInt()), StandardCharsets.UTF_8),
+        Map<String, List<String>> map = JSONUtils.from(new String(bs.get(bs.getLInt()), StandardCharsets.UTF_8),
                 new TypeToken<Map<String, List<String>>>() {
                 }.getType());
         if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty()) return;
@@ -310,7 +314,8 @@ public final class ClientChainData implements LoginChainData {
                 mojangKeyVerified = true;
             }
 
-            Map<String, Object> payload = (Map<String, Object>) new Gson().fromJson(jws.getPayload(), Map.class);
+            Map<String, Object> payload = JSONUtils.from(jws.getPayload(), new TypeToken<Map<String, Object>>() {
+            });
 
             // chain expiry check
             Object chainExpiresObj = payload.get("exp");

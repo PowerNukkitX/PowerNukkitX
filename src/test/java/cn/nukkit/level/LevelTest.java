@@ -1,7 +1,6 @@
 package cn.nukkit.level;
 
 import cn.nukkit.GameMockExtension;
-import cn.nukkit.Server;
 import cn.nukkit.TestPlayer;
 import cn.nukkit.block.BlockDiamondBlock;
 import cn.nukkit.block.BlockDirt;
@@ -13,11 +12,11 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.GameLoop;
-import cn.nukkit.utils.LevelException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import static cn.nukkit.TestUtils.gameLoop;
 import static cn.nukkit.TestUtils.resetPlayerStatus;
 
 @ExtendWith(GameMockExtension.class)
@@ -41,30 +40,23 @@ public class LevelTest {
     }
 
     @Test
-    void test_regenerateChunk(TestPlayer player, Level level) {
-        player.level = level;
-        player.level.setAutoSave(true);
-        player.setPosition(new Vector3(0, 100, 0));
-        IChunk chunk = player.getChunk();
+    void test_regenerateChunk(TestPlayer player) {
+        final TestPlayer p = player;
+        resetPlayerStatus(p);
+
+        p.level.setAutoSave(true);
+        p.setPosition(new Vector3(0, 100, 0));
+        IChunk chunk = p.getChunk();
         chunk.setBlockState(0, 3, 0, BlockDirt.PROPERTIES.getDefaultState());
         Assertions.assertEquals(chunk.getBlockState(0, 3, 0), BlockDirt.PROPERTIES.getDefaultState());
         chunk.setBlockState(0, 3, 0, BlockDiamondBlock.PROPERTIES.getDefaultState());
         Assertions.assertEquals(chunk.getBlockState(0, 3, 0), BlockDiamondBlock.PROPERTIES.getDefaultState());
 
-        GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
-            Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
-            player.getLevel().subTick(d);
-            try {
-                player.checkNetwork();
-            } catch (LevelException ignore) {
-            }
-        }).build();
-        Thread thread = new Thread(loop::startLoop);
-        thread.start();
+        GameLoop gameLoop = gameLoop(p);
         int limit1 = 100;
         while (limit1-- != 0) {
             try {
-                if (49 == player.getUsedChunks().size()) {
+                if (49 == p.getUsedChunks().size()) {
                     break;
                 }
                 Thread.sleep(100);
@@ -73,16 +65,16 @@ public class LevelTest {
             }
         }
         if (limit1 <= 0) {
-            player.level.setAutoSave(false);
-            resetPlayerStatus(player);
-            Assertions.fail("Chunk cannot be regenerate in 10s");
+            p.level.setAutoSave(false);
+            resetPlayerStatus(p);
+            Assertions.fail("Chunk cannot be regenerate in 10s, chunk size " + p.getUsedChunks().size());
         }
-        player.getLevel().regenerateChunk(0, 0);
+        p.getLevel().regenerateChunk(0, 0);
 
         int limit = 100;
         while (limit-- != 0) {
             try {
-                if (player.getUsedChunks().contains(Level.chunkHash(0, 0))) {
+                if (p.getUsedChunks().contains(Level.chunkHash(0, 0))) {
                     break;
                 }
                 Thread.sleep(100);
@@ -91,13 +83,15 @@ public class LevelTest {
             }
         }
         if (limit <= 0) {
-            player.level.setAutoSave(false);
-            resetPlayerStatus(player);
+            p.level.setAutoSave(false);
+            resetPlayerStatus(p);
             Assertions.fail("Chunk cannot be regenerate in 10s");
         }
 
-        Assertions.assertEquals(BlockDirt.PROPERTIES.getDefaultState(), player.getChunk().getBlockState(0, 3, 0));
-        player.level.setAutoSave(false);
-        resetPlayerStatus(player);
+        Assertions.assertEquals(BlockDirt.PROPERTIES.getDefaultState(), p.getChunk().getBlockState(0, 3, 0));
+        p.level.setAutoSave(false);
+
+        gameLoop.stop();
+        resetPlayerStatus(p);
     }
 }

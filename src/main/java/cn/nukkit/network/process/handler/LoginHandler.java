@@ -2,15 +2,14 @@ package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.network.Network;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.connection.util.EncryptionUtils;
 import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ServerToClientHandshakePacket;
-import cn.nukkit.player.info.PlayerInfo;
-import cn.nukkit.player.info.XboxLivePlayerInfo;
+import cn.nukkit.network.protocol.types.PlayerInfo;
+import cn.nukkit.network.protocol.types.XboxLivePlayerInfo;
 import cn.nukkit.utils.ClientChainData;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +66,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         if (server.isWaterdogCapable() && chainData.getWaterdogIP() != null) {
             InetSocketAddress oldAddress = session.getAddress();
             session.setAddress(new InetSocketAddress(chainData.getWaterdogIP(), session.getAddress().getPort()));
-            Server.getInstance().getNetwork().replaceSession(oldAddress, session.getAddress(), session);
+            Server.getInstance().getNetwork().replaceSessionAddress(oldAddress, session.getAddress(), session);
         }
 
         var uniqueId = pk.clientUUID;

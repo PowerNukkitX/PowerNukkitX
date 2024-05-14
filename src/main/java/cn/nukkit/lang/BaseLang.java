@@ -1,6 +1,7 @@
 package cn.nukkit.lang;
 
-import com.google.gson.Gson;
+import cn.nukkit.utils.JSONUtils;
+import com.google.gson.reflect.TypeToken;
 import io.netty.util.internal.EmptyArrays;
 import lombok.extern.slf4j.Slf4j;
 
@@ -117,9 +118,8 @@ public class BaseLang {
     }
 
     private Map<String, String> parseLang(BufferedReader reader) throws IOException {
-        Map<String, String> d = new HashMap<>();
-        d.putAll((Map<String, String>) new Gson().fromJson(reader, Map.class));
-        return d;
+        return JSONUtils.from(reader, new TypeToken<Map<String, String>>() {
+        });
     }
 
     /**

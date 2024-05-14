@@ -54,13 +54,13 @@ import cn.nukkit.network.Network;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PlayerListPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.protocol.types.PlayerInfo;
+import cn.nukkit.network.protocol.types.XboxLivePlayerInfo;
 import cn.nukkit.network.rcon.RCON;
 import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.permission.DefaultPermissions;
 import cn.nukkit.permission.Permissible;
-import cn.nukkit.player.info.PlayerInfo;
-import cn.nukkit.player.info.XboxLivePlayerInfo;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.JavaPluginLoader;
 import cn.nukkit.plugin.Plugin;
@@ -87,8 +87,6 @@ import cn.nukkit.utils.*;
 import cn.nukkit.utils.collection.FreezableArrayManager;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongLists;
@@ -813,7 +811,6 @@ public class Server {
             this.watchdog = new Watchdog(this, 60000);//60s
             this.watchdog.start();
         }
-        System.runFinalization();
         this.start();
     }
 
@@ -1062,7 +1059,6 @@ public class Server {
         getScheduler().scheduleDelayedTask(new Task() {
             @Override
             public void onRun(int currentTick) {
-                System.runFinalization();
                 System.gc();
             }
         }, 60);
@@ -2449,12 +2445,10 @@ public class Server {
 
         File config = jpath.resolve("config.json").toFile();
         LevelConfig levelConfig;
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
         if (config.exists()) {
             try {
-                levelConfig = gson.fromJson(new FileReader(config), LevelConfig.class);
-                Files.writeString(config.toPath(), gson.toJson(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.WRITE);
+                levelConfig = JSONUtils.from(config, LevelConfig.class);
+                Files.writeString(config.toPath(), JSONUtils.to(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.WRITE);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -2471,7 +2465,7 @@ public class Server {
             levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), true, map);
             try {
                 config.createNewFile();
-                Files.writeString(config.toPath(), gson.toJson(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.CREATE);
+                Files.writeString(config.toPath(), JSONUtils.toPretty(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.CREATE);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -2521,7 +2515,7 @@ public class Server {
             this.getPluginManager().callEvent(new LevelLoadEvent(level));
             level.setTickRate(this.baseTickRate);
         }
-        if (tickCounter != 0) {
+        if (tickCounter != 0) {//update world enum when load  
             WorldCommand.WORLD_NAME_ENUM.updateSoftEnum();
         }
         return true;
@@ -2538,14 +2532,13 @@ public class Server {
             path = this.getDataPath() + "worlds/" + name + "/";
         }
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Path jpath = Path.of(path);
         path = jpath.toString();
         File config = jpath.resolve("config.json").toFile();
         if (config.exists()) {
             try {
-                levelConfig = gson.fromJson(new FileReader(config), LevelConfig.class);
-                Files.writeString(config.toPath(), gson.toJson(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.WRITE);
+                levelConfig = JSONUtils.from(new FileReader(config), LevelConfig.class);
+                Files.writeString(config.toPath(), JSONUtils.toPretty(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.WRITE);
             } catch (Exception e) {
                 log.error("The levelConfig is not exists under the {} path", path);
                 return false;
@@ -2554,7 +2547,7 @@ public class Server {
             try {
                 jpath.toFile().mkdirs();
                 config.createNewFile();
-                Files.writeString(config.toPath(), gson.toJson(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.CREATE);
+                Files.writeString(config.toPath(), JSONUtils.toPretty(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.CREATE);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
