@@ -5,7 +5,13 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDirt;
 import cn.nukkit.block.BlockTurtleEgg;
-import cn.nukkit.entity.*;
+import cn.nukkit.entity.Attribute;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityMarkVariant;
+import cn.nukkit.entity.EntityOwnable;
+import cn.nukkit.entity.EntityRideable;
+import cn.nukkit.entity.EntityVariant;
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -42,7 +48,10 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.UpdateAttributesPacket;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -348,7 +357,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         this.move(clientLoc.x - this.x, clientLoc.y - this.y, clientLoc.z - this.z);
         this.yaw = clientLoc.yaw;
         this.headYaw = clientLoc.headYaw;
-        broadcastMovement();
+        broadcastMovement(false);
     }
 
     @Override

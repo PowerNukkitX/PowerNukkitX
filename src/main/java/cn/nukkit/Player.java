@@ -347,6 +347,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected boolean fakeInventoryOpen;
     ///
 
+    ///todo hack for receive a error position after teleport
+    private Pair<Location, Long> lastTeleportMessage;
+    ///
+
     private final @NotNull PlayerInfo info;
 
     @UsedByReflection
@@ -934,7 +938,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
                         }
                     }
-                    this.broadcastMovement();
+                    this.broadcastMovement(false);
                 }
             } else {
                 this.blocksAround = blocksAround;
@@ -971,6 +975,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 || (float) Math.abs(this.getHeadYaw() - newPosition.headYaw) > ROTATION_UPDATE_THRESHOLD;
         var isHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
         if (isHandle) {
+            //todo hack for receive a error position after teleport
+            long now = System.currentTimeMillis();
+            if (lastTeleportMessage != null && (now - lastTeleportMessage.right()) < 200) {
+                var dis = newPosition.distance(lastTeleportMessage.left());
+                if (dis < MOVEMENT_DISTANCE_THRESHOLD) return;
+            }
             this.newPosition = newPosition;
             this.clientMovements.offer(newPosition);
         }
@@ -4239,6 +4249,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return false;
         }
         Location from = this.getLocation();
+        this.lastTeleportMessage = Pair.of(from, System.currentTimeMillis());
+
         Location to = location;
         //event
         if (cause != null) {
@@ -4271,11 +4283,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             Arrays.stream(from.getLevel().getEntities()).forEach(e -> e.despawnFrom(this));
         }
 
+        clientMovements.clear();
         //switch level, update pos and rotation, update aabb
         if (setPositionAndRotation(to, to.getYaw(), to.getPitch(), to.getHeadYaw())) {
-            this.resetFallDistance();
-            this.onGround = !this.noClip;
-
             //if switch level or the distance teleported is too far
             if (switchLevel) {
                 this.playerChunkManager.handleTeleport();
@@ -4293,6 +4303,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.sendPosition(this, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
             this.newPosition = this;
         }
+
+        this.resetFallDistance();
         //state update
         this.positionChanged = true;
         //DummyBossBar

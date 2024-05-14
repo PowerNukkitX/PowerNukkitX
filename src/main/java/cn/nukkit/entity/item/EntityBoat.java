@@ -589,6 +589,6 @@ public class EntityBoat extends EntityVehicle {
         this.move(loc.x - this.x, loc.y - this.y, loc.z - this.z);
         this.yaw = loc.yaw;
         this.headYaw = loc.headYaw;
-        broadcastMovement();
+        broadcastMovement(false);
     }
 }
