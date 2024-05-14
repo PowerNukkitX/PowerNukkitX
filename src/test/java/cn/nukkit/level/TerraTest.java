@@ -41,6 +41,7 @@ public class TerraTest {
      */
     @Test
     void test_terra(TestPlayer player) {
+        resetPlayerStatus(player);
         player.level = level;
         player.getLevel().initLevel();
         player.setViewDistance(1);

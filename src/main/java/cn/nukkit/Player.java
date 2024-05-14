@@ -4247,18 +4247,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (event.isCancelled()) return false;
             to = event.getTo();
         }
-        //remove inventory
+
+        //remove inventory,ride,sign editor
         for (Inventory window : new ArrayList<>(this.windows.keySet())) {
             if (window == this.inventory) {
                 continue;
             }
             this.removeWindow(window);
         }
-        //remove ride
         final Entity currentRide = getRiding();
         if (currentRide != null && !currentRide.dismountEntity(this)) {
             return false;
         }
+        setOpenSignFront(null);
+
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
 
         boolean switchLevel = false;
@@ -5372,6 +5374,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return openSignFront;
     }
 
+    /**
+     * Set the status of the current player opening sign
+     *
+     * @param frontSide true means open sign front, vice versa. If it is null, it means that the player has not opened sign
+     */
     public void setOpenSignFront(Boolean frontSide) {
         openSignFront = frontSide;
     }
