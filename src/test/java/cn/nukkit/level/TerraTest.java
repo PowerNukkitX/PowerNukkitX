@@ -19,6 +19,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
 
+import static cn.nukkit.TestUtils.gameLoop;
 import static cn.nukkit.TestUtils.resetPlayerStatus;
 
 @ExtendWith(GameMockExtension.class)
@@ -41,22 +42,19 @@ public class TerraTest {
      */
     @Test
     void test_terra(TestPlayer player) {
-        resetPlayerStatus(player);
-        player.level = level;
-        player.getLevel().initLevel();
-        player.setViewDistance(1);
-        GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
-            Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
-            player.getLevel().subTick(d);
-            player.checkNetwork();
-        }).build();
-        Thread thread = new Thread(loop::startLoop);
-        thread.start();
+        final TestPlayer p = player;
+        resetPlayerStatus(p);
 
-        int limit = 1000;
+        p.level = level;
+        p.getLevel().initLevel();
+        p.setViewDistance(1);
+
+        GameLoop loop = gameLoop(p);
+
+        int limit = 100;
         while (limit-- != 0) {
             try {
-                if (player.chunk != null && player.chunk.getChunkState().canSend() && player.chunk.getX() == 0 && player.chunk.getZ() == 0) {
+                if (p.getPlayerChunkManager().getUsedChunks().size() >= 5) {
                     break;
                 }
                 Thread.sleep(100);
@@ -65,17 +63,18 @@ public class TerraTest {
             }
         }
         if (limit <= 0) {
-            resetPlayerStatus(player);
-            Assertions.fail("Chunks cannot be successfully loaded in 100s");
+            resetPlayerStatus(p);
+            Assertions.fail("Chunks cannot be successfully loaded in 10s");
         }
+
         //teleport
-        player.teleport(player.getLocation().setComponents(10000, 100, 10000));
+        p.teleport(p.getLocation().setComponents(10000, 100, 10000));
 
         int limit2 = 1000;
         while (limit2-- != 0) {
             try {
                 Thread.sleep(100);
-                if (player.chunk != null && player.chunk.getChunkState().canSend() && player.chunk.getX() == 625 && player.chunk.getZ() == 625) {
+                if (p.chunk != null && p.chunk.getChunkState().canSend() && p.chunk.getX() == 625 && p.chunk.getZ() == 625) {
                     break;
                 }
             } catch (InterruptedException e) {
@@ -83,11 +82,11 @@ public class TerraTest {
             }
         }
         if (limit2 == 0) {
-            resetPlayerStatus(player);
+            resetPlayerStatus(p);
             Assertions.fail("Players are unable to load Terra generator chunks normally");
         }
         loop.stop();
-        resetPlayerStatus(player);
+        resetPlayerStatus(p);
     }
 
     @SneakyThrows
