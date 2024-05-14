@@ -1,4 +1,4 @@
-package cn.nukkit.player.info;
+package cn.nukkit.network.protocol.types;
 
 public enum SpawnPointType {
     WORLD,

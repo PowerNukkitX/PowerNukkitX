@@ -3,7 +3,7 @@ package cn.nukkit.event.player;
 import cn.nukkit.Player;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Position;
-import cn.nukkit.player.info.SpawnPointType;
+import cn.nukkit.network.protocol.types.SpawnPointType;
 import it.unimi.dsi.fastutil.Pair;
 
 public class PlayerRespawnEvent extends PlayerEvent {

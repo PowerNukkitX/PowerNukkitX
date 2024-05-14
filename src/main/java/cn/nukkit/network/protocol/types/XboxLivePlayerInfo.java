@@ -1,4 +1,4 @@
-package cn.nukkit.player.info;
+package cn.nukkit.network.protocol.types;
 
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.utils.ClientChainData;

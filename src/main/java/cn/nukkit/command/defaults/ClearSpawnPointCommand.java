@@ -8,7 +8,7 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.player.info.SpawnPointType;
+import cn.nukkit.network.protocol.types.SpawnPointType;
 
 import java.util.List;
 import java.util.Map;
