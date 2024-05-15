@@ -10,12 +10,4 @@ public final class PNXLibDeflater extends LibdeflateCompressor {
     public PNXLibDeflater(int level) {
         super(level);
     }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    protected void finalize() throws Throwable {
-        if (!closed) {
-            close();
-        }
-    }
 }

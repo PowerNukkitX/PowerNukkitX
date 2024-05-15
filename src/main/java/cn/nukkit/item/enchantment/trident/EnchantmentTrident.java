@@ -1,6 +1,5 @@
 package cn.nukkit.item.enchantment.trident;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.EnchantmentType;
 

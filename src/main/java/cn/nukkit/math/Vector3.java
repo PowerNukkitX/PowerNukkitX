@@ -1,6 +1,5 @@
 package cn.nukkit.math;
 
-import cn.nukkit.api.DeprecationDetails;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 

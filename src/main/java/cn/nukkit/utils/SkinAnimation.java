@@ -1,6 +1,5 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.DeprecationDetails;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 

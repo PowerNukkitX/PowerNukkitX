@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 public class JarPluginResourcePackLoader implements ResourcePackLoader {
@@ -23,7 +24,7 @@ public class JarPluginResourcePackLoader implements ResourcePackLoader {
     public List<ResourcePack> loadPacks() {
         var baseLang = Server.getInstance().getLanguage();
         List<ResourcePack> loadedResourcePacks = new ArrayList<>();
-        for (File jar : jarPath.listFiles()) {
+        for (File jar : Objects.requireNonNull(jarPath.listFiles())) {
             try {
                 ResourcePack resourcePack = null;
                 String fileExt = Files.getFileExtension(jar.getName());

@@ -2,6 +2,7 @@ package cn.nukkit.compression;
 
 import cn.nukkit.Server;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
+import cn.nukkit.utils.CleanerHandle;
 import cn.nukkit.utils.PNXLibDeflater;
 import cn.nukkit.utils.PNXLibInflater;
 import cn.nukkit.utils.ThreadCache;
@@ -19,8 +20,8 @@ import java.util.zip.Inflater;
 public class LibDeflateThreadLocal implements ZlibProvider {
     private static final ThreadLocal<Inflater> INFLATER = ThreadLocal.withInitial(Inflater::new);
     private static final ThreadLocal<Inflater> INFLATER_RAW = ThreadLocal.withInitial(() -> new Inflater(true));
-    private static final ThreadLocal<LibdeflateDecompressor> PNX_INFLATER = ThreadLocal.withInitial(PNXLibInflater::new);
-    private static final ThreadLocal<LibdeflateCompressor> PNX_DEFLATER = ThreadLocal.withInitial(PNXLibDeflater::new);
+    private static final ThreadLocal<CleanerHandle<LibdeflateDecompressor>> PNX_INFLATER = ThreadLocal.withInitial(() -> new CleanerHandle<>(new PNXLibInflater()));
+    private static final ThreadLocal<CleanerHandle<LibdeflateCompressor>> PNX_DEFLATER = ThreadLocal.withInitial(() -> new CleanerHandle<>(new PNXLibDeflater()));
     private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[8192]);
 
     private static final ThreadLocal<ByteBuffer> DIRECT_BUFFER = ThreadLocal.withInitial(() -> {
@@ -37,7 +38,7 @@ public class LibDeflateThreadLocal implements ZlibProvider {
 
     @Override
     public byte[] deflate(byte[] data, int level, boolean raw) throws IOException {
-        var deflater = PNX_DEFLATER.get();
+        var deflater = PNX_DEFLATER.get().getResource();
         CompressionType type = raw ? CompressionType.DEFLATE : CompressionType.ZLIB;
         byte[] buffer = deflater.getCompressBound(data.length, type) < 8192 ? BUFFER.get() : new byte[data.length];
         int compressedSize = deflater.compress(data, buffer, type);
@@ -50,7 +51,7 @@ public class LibDeflateThreadLocal implements ZlibProvider {
     @Override
     public byte[] inflate(byte[] data, int maxSize, boolean raw) throws IOException {
         CompressionType type = raw ? CompressionType.DEFLATE : CompressionType.ZLIB;
-        var pnxInflater = PNX_INFLATER.get();
+        var pnxInflater = PNX_INFLATER.get().getResource();
         try {
             if (maxSize < 8192) {
                 byte[] buffer = BUFFER.get();
@@ -72,7 +73,7 @@ public class LibDeflateThreadLocal implements ZlibProvider {
     }
 
     public byte[] inflateD(byte[] data, int maxSize, CompressionType type) throws IOException {
-        var pnxInflater = PNX_INFLATER.get();
+        var pnxInflater = PNX_INFLATER.get().getResource();
         try {
             var directBuffer = DIRECT_BUFFER.get();
             if (directBuffer == null || directBuffer.capacity() == 0) {
@@ -93,6 +94,7 @@ public class LibDeflateThreadLocal implements ZlibProvider {
         }
     }
 
+    //Fallback
     public byte[] inflate0(byte[] data, int maxSize, CompressionType type) throws IOException {
         Inflater inflater;
         if (type == CompressionType.DEFLATE) {

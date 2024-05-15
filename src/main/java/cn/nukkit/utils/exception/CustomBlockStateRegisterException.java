@@ -1,4 +1,6 @@
-package cn.nukkit.utils;
+package cn.nukkit.utils.exception;
+
+import cn.nukkit.utils.ServerException;
 
 public class CustomBlockStateRegisterException extends ServerException {
     public CustomBlockStateRegisterException(String message) {

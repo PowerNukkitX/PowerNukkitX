@@ -1,6 +1,5 @@
 package cn.nukkit.level;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
