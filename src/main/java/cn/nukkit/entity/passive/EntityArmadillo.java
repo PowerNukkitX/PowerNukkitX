@@ -31,8 +31,8 @@ public class EntityArmadillo extends EntityAnimal {
     @Override
     public float getHeight() {
         if (isBaby()) {
-            return 0.65F;
+            return 0.39f;
         }
-        return 0.39f;
+        return 0.65F;
     }
 }
