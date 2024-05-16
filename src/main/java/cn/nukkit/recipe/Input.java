@@ -57,4 +57,15 @@ public class Input {
     public void setData(Item[][] data) {
         this.data = data;
     }
+
+    public Item[] getFlatItems() {
+        Item[] items = new Item[getCol() * getRow()];
+        int index = 0;
+        for (var i : data) {
+            for (var p : i) {
+                items[index++] = p;
+            }
+        }
+        return items;
+    }
 }

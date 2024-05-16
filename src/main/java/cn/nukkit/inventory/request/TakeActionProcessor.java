@@ -25,10 +25,6 @@ public class TakeActionProcessor extends TransferItemActionProcessor<TakeAction>
     public ActionResponse handle(TakeAction action, Player player, ItemStackRequestContext context) {
         ContainerSlotType sourceSlotType = action.getSource().getContainer();
         if (sourceSlotType == ContainerSlotType.CREATED_OUTPUT) {
-            if (!player.isCreative()) {
-                log.warn("This player {} is get createitems in non-creative mode, which may be a hacker!", player.getName());
-                return context.error();
-            }
             Inventory source = NetworkMapping.getInventory(player, sourceSlotType);
             Item sourItem = source.getUnclonedItem(0);
             int count = action.getCount();
