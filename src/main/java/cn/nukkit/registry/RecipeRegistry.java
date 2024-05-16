@@ -3,6 +3,8 @@ package cn.nukkit.registry;
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.CraftingDataPacket;
 import cn.nukkit.recipe.*;
@@ -28,6 +30,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -735,10 +738,12 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                     name = data.get("id").toString();
                 } else if (data.containsKey("itemId")) {
                     name = data.get("itemId").toString();
+                } else if (data.containsKey("name")) {
+                    name = data.get("name").toString();
                 }
                 if (name == null) yield null;
 
-                int count = data.containsKey("count") ? ((Number) data.get("count")).intValue() : 1;
+                int count = data.containsKey("count") ? Utils.toInt(data.get("count")) : 1;
 
                 String nbt = (String) data.get("nbt");
                 byte[] nbtBytes = nbt != null ? Base64.getDecoder().decode(nbt) : EmptyArrays.EMPTY_BYTES;
@@ -749,6 +754,28 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 } else if (data.containsKey("auxValue")) {
                     meta = Utils.toInt(data.get("auxValue"));
                 }
+
+                //block item
+                if (data.containsKey("block_states")) {
+                    try {
+                        item = NBTIO.getBlockStateHelper(new CompoundTag()
+                                .putString("name", name)
+                                .putCompound("states", NBTIO.read(Base64.getDecoder().decode(data.get("block_states").toString()), ByteOrder.LITTLE_ENDIAN))
+                        ).toItem();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    item.setCount(count);
+                    if (nbtBytes != EmptyArrays.EMPTY_BYTES) {
+                        item.setCompoundTag(nbtBytes);
+                    }
+                    if (meta != null && (meta == Short.MAX_VALUE || meta == -1)) {
+                        item.disableMeta();
+                    }
+                    yield new DefaultDescriptor(item);
+                }
+
+                //normal item
                 if (meta != null) {
                     if (meta == Short.MAX_VALUE || meta == -1) {
                         item = Item.get(name, 0, count, nbtBytes, false);
@@ -767,7 +794,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             }
             case ITEM_TAG -> {
                 var itemTag = data.get("itemTag").toString();
-                int count = data.containsKey("count") ? ((Number) data.get("count")).intValue() : 1;
+                int count = data.containsKey("count") ? Utils.toInt(data.get("count")) : 1;
                 yield new ItemTagDescriptor(itemTag, count);
             }
             default -> throw new IllegalStateException("Unexpected value: " + type);
