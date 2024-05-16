@@ -146,4 +146,9 @@ public class BlockGrassBlock extends BlockDirt {
     public boolean canSilkTouch() {
         return true;
     }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return new Item[]{Item.get(DIRT)};
+    }
 }

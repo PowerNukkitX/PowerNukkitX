@@ -232,6 +232,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return this.getLevel().setBlock(this, layer, Block.get(AIR), true, true);
     }
 
+    /**
+     * When the player break block with canSilkTouch enchantment and the canSilkTouch=true,
+     * the drop will be set to the original item {@link Block#toItem()}
+     */
     public boolean canSilkTouch() {
         return false;
     }
@@ -1288,10 +1292,9 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * 控制方块被破坏时掉落的物品
-     * 常在{@link cn.nukkit.level.Level#useBreakOn(Vector3, int, BlockFace, Item, Player, boolean, boolean)}方法被调用
+     * Control the item dropped when a block is broken normally
      *
-     * @return 掉落的物品数组
+     * @return An array of dropped items
      */
     public Item[] getDrops(Item item) {
         if (canHarvestWithHand() || canHarvest(item)) {
