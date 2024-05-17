@@ -15,6 +15,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -111,13 +112,13 @@ public class LoginHandler extends BedrockSessionPacketHandler {
 
         this.consumer.accept(info);
 
-        if (!server.isWhitelisted((info.getUsername()).toLowerCase())) {
+        if (!server.isWhitelisted((info.getUsername()).toLowerCase(Locale.ENGLISH))) {
             log.debug("disconnection due to white-listed");
             session.close("Server is white-listed");
             return;
         }
 
-        var entry = server.getNameBans().getEntires().get(info.getUsername().toLowerCase());
+        var entry = server.getNameBans().getEntires().get(info.getUsername().toLowerCase(Locale.ENGLISH));
         if (entry != null) {
             String reason = entry.getReason();
             log.debug("disconnection due to named ban");

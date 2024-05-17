@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -42,7 +43,7 @@ public class JarPluginResourcePack extends AbstractResourcePack {
         ZipEntry manifest = jar.getEntry(RESOURCE_PACK_PATH + "manifest.json");
         if (manifest == null) {
             manifest = jar.stream()
-                    .filter(e -> e.getName().toLowerCase().endsWith("manifest.json") && !e.isDirectory())
+                    .filter(e -> e.getName().toLowerCase(Locale.ENGLISH).endsWith("manifest.json") && !e.isDirectory())
                     .filter(e -> {
                         File fe = new File(e.getName());
                         if (!fe.getName().equalsIgnoreCase("manifest.json")) {

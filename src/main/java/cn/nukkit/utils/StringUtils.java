@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.StringJoiner;
 
 
@@ -29,9 +30,9 @@ public final class StringUtils {
             return "";
         }
         if (str.length() == 1) {
-            return str.toUpperCase();
+            return str.toUpperCase(Locale.ENGLISH);
         }
-        return str.substring(0, 1).toUpperCase() + str.substring(1);
+        return str.substring(0, 1).toUpperCase(Locale.ENGLISH) + str.substring(1);
     }
 
     /**

@@ -1,6 +1,12 @@
 package cn.nukkit.utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author fromgate
@@ -705,9 +711,9 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public boolean exists(String key, boolean ignoreCase) {
-        if (ignoreCase) key = key.toLowerCase();
+        if (ignoreCase) key = key.toLowerCase(Locale.ENGLISH);
         for (String existKey : this.getKeys(true)) {
-            if (ignoreCase) existKey = existKey.toLowerCase();
+            if (ignoreCase) existKey = existKey.toLowerCase(Locale.ENGLISH);
             if (existKey.equals(key)) return true;
         }
         return false;

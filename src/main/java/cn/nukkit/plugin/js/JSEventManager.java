@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public final class JSEventManager {
@@ -278,7 +279,7 @@ public final class JSEventManager {
             if (currentCommandPatternId != null && currentCommandParameterList.size() != 0) {
                 commandParameters.put(currentCommandPatternId, currentCommandParameterList.toArray(CommandParameter.EMPTY_ARRAY));
             }
-            if (commandName.toLowerCase().equals(commandName)) {
+            if (commandName.toLowerCase(Locale.ENGLISH).equals(commandName)) {
                 if (!callback.canExecute()) {
                     return false;
                 }
@@ -320,7 +321,7 @@ public final class JSEventManager {
                 commandParameters.put(currentCommandPatternId, currentCommandParameterList.toArray(CommandParameter.EMPTY_ARRAY));
             }
             if (commandParameters.isEmpty()) commandParameters.put("default", CommandParameter.EMPTY_ARRAY);
-            if (commandName.toLowerCase().equals(commandName)) {//强制命令名小写
+            if (commandName.toLowerCase(Locale.ENGLISH).equals(commandName)) {//强制命令名小写
                 if (!callback.canExecute()) {
                     return false;
                 }

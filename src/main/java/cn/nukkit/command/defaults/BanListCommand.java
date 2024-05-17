@@ -10,6 +10,7 @@ import cn.nukkit.permission.BanList;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -35,7 +36,7 @@ public class BanListCommand extends VanillaCommand {
 
         if (paramList.hasResult(0)) {
             String type = paramList.getResult(0);
-            switch (type.toLowerCase()) {
+            switch (type.toLowerCase(Locale.ENGLISH)) {
                 case "ips" -> {
                     list = sender.getServer().getIPBans();
                     ips = true;

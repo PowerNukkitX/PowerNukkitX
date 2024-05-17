@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -25,7 +26,7 @@ public class BanEntry {
     private String reason = "Banned by an operator.";
 
     public BanEntry(String name) {
-        this.name = name.toLowerCase();
+        this.name = name.toLowerCase(Locale.ENGLISH);
         this.creationDate = new Date();
     }
 

@@ -1,6 +1,8 @@
 package cn.nukkit.level.vibration;
 
 
+import java.util.Locale;
+
 public enum VibrationType {
     STEP(1),
     FLAP(2),
@@ -44,7 +46,7 @@ public enum VibrationType {
     LIGHTNING_STRIKE(15),
     PISTON_EXTEND(15);
 
-    public final String identifier = "minecraft:" + this.name().toLowerCase();
+    public final String identifier = "minecraft:" + this.name().toLowerCase(Locale.ENGLISH);
     public final int frequency;
 
     VibrationType(int frequency) {

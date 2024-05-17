@@ -7,7 +7,6 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginDescription;
 import cn.nukkit.utils.TextFormat;
@@ -25,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -134,10 +134,10 @@ public class VersionCommand extends Command implements CoreCommand {
             final Plugin[] exactPlugin = {sender.getServer().getPluginManager().getPlugin(pluginName.toString())};
 
             if (exactPlugin[0] == null) {
-                pluginName = new StringBuilder(pluginName.toString().toLowerCase());
+                pluginName = new StringBuilder(pluginName.toString().toLowerCase(Locale.ENGLISH));
                 final String finalPluginName = pluginName.toString();
                 sender.getServer().getPluginManager().getPlugins().forEach((s, p) -> {
-                    if (s.toLowerCase().contains(finalPluginName)) {
+                    if (s.toLowerCase(Locale.ENGLISH).contains(finalPluginName)) {
                         exactPlugin[0] = p;
                         found[0] = true;
                     }

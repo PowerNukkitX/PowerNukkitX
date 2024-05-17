@@ -2,7 +2,12 @@ package cn.nukkit.permission;
 
 import cn.nukkit.Server;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -17,29 +22,12 @@ public class Permission {
     public static final String DEFAULT_PERMISSION = DEFAULT_OP;
 
     public static String getByName(String value) {
-        switch (value.toLowerCase()) {
-            case "op":
-            case "isop":
-            case "operator":
-            case "isoperator":
-            case "admin":
-            case "isadmin":
-                return DEFAULT_OP;
-
-            case "!op":
-            case "notop":
-            case "!operator":
-            case "notoperator":
-            case "!admin":
-            case "notadmin":
-                return DEFAULT_NOT_OP;
-
-            case "true":
-                return DEFAULT_TRUE;
-
-            default:
-                return DEFAULT_FALSE;
-        }
+        return switch (value.toLowerCase(Locale.ENGLISH)) {
+            case "op", "isop", "operator", "isoperator", "admin", "isadmin" -> DEFAULT_OP;
+            case "!op", "notop", "!operator", "notoperator", "!admin", "notadmin" -> DEFAULT_NOT_OP;
+            case "true" -> DEFAULT_TRUE;
+            default -> DEFAULT_FALSE;
+        };
     }
 
     private final String name;

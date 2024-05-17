@@ -3,7 +3,12 @@ package cn.nukkit.command;
 import cn.nukkit.Server;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.defaults.*;
-import cn.nukkit.command.simple.*;
+import cn.nukkit.command.simple.Arguments;
+import cn.nukkit.command.simple.CommandParameters;
+import cn.nukkit.command.simple.CommandPermission;
+import cn.nukkit.command.simple.ForbidConsole;
+import cn.nukkit.command.simple.Parameters;
+import cn.nukkit.command.simple.SimpleCommand;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TranslationContainer;
@@ -14,7 +19,13 @@ import io.netty.util.internal.EmptyArrays;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -129,8 +140,8 @@ public class SimpleCommandMap implements CommandMap {
         if (label == null) {
             label = command.getName();
         }
-        label = label.trim().toLowerCase();
-        fallbackPrefix = fallbackPrefix.trim().toLowerCase();
+        label = label.trim().toLowerCase(Locale.ENGLISH);
+        fallbackPrefix = fallbackPrefix.trim().toLowerCase(Locale.ENGLISH);
 
         boolean registered = this.registerAlias(command, false, fallbackPrefix, label);
 
@@ -292,7 +303,7 @@ public class SimpleCommandMap implements CommandMap {
             return -1;
         }
 
-        String sentCommandLabel = parsed.remove(0).toLowerCase();//command name
+        String sentCommandLabel = parsed.remove(0).toLowerCase(Locale.ENGLISH);//command name
         String[] args = parsed.toArray(EmptyArrays.EMPTY_STRINGS);
         Command target = this.getCommand(sentCommandLabel);
 
@@ -345,7 +356,7 @@ public class SimpleCommandMap implements CommandMap {
 
     @Override
     public Command getCommand(String name) {
-        name = name.toLowerCase();
+        name = name.toLowerCase(Locale.ENGLISH);
         if (this.knownCommands.containsKey(name)) {
             return this.knownCommands.get(name);
         }
@@ -397,9 +408,9 @@ public class SimpleCommandMap implements CommandMap {
             }
 
             if (!targets.isEmpty()) {
-                this.knownCommands.put(alias.toLowerCase(), new FormattedCommandAlias(alias.toLowerCase(), targets));
+                this.knownCommands.put(alias.toLowerCase(Locale.ENGLISH), new FormattedCommandAlias(alias.toLowerCase(Locale.ENGLISH), targets));
             } else {
-                this.knownCommands.remove(alias.toLowerCase());
+                this.knownCommands.remove(alias.toLowerCase(Locale.ENGLISH));
             }
         }
     }

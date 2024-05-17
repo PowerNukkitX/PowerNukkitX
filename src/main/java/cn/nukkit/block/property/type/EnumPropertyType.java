@@ -6,6 +6,7 @@ import cn.nukkit.utils.Utils;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Allay Project 2023/3/19
@@ -46,7 +47,7 @@ public final class EnumPropertyType<T extends Enum<T>> extends BaseBlockProperty
         if (enumClass.isInstance(value)) {
             return cachedValues.get(enumClass.cast(value));
         } else if (value instanceof String str) {
-            return cachedValues.get(Enum.valueOf(enumClass, str.toUpperCase()));
+            return cachedValues.get(Enum.valueOf(enumClass, str.toUpperCase(Locale.ENGLISH)));
         }
         throw new IllegalArgumentException("Invalid value for enum property type: " + value);
     }
@@ -57,7 +58,7 @@ public final class EnumPropertyType<T extends Enum<T>> extends BaseBlockProperty
 
         EnumPropertyValue(T value) {
             super(EnumPropertyType.this, value);
-            serializedValue = value.name().toLowerCase();
+            serializedValue = value.name().toLowerCase(Locale.ENGLISH);
         }
 
         @Override

@@ -17,11 +17,19 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static cn.nukkit.utils.Utils.dynamic;
@@ -183,7 +191,7 @@ public class Nukkit {
 
     private static boolean requiresShortTitle() {
         //Shorter title for windows 8/2012
-        String osName = System.getProperty("os.name").toLowerCase();
+        String osName = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
         return osName.contains("windows") && (osName.contains("windows 8") || osName.contains("2012"));
     }
 

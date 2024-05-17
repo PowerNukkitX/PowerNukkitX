@@ -10,7 +10,12 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.TreeMap;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -47,7 +52,7 @@ public class BanList {
         } else {
             this.removeExpired();
 
-            return this.list.containsKey(name.toLowerCase());
+            return this.list.containsKey(name.toLowerCase(Locale.ENGLISH));
         }
     }
 
@@ -80,7 +85,7 @@ public class BanList {
     }
 
     public void remove(String name) {
-        name = name.toLowerCase();
+        name = name.toLowerCase(Locale.ENGLISH);
         if (this.list.containsKey(name)) {
             this.list.remove(name);
             this.save();

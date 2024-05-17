@@ -18,6 +18,7 @@ import com.dfsek.terra.api.world.chunk.generation.util.GeneratorWrapper;
 import com.dfsek.terra.api.world.info.WorldProperties;
 
 import java.util.ConcurrentModificationException;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -71,7 +72,7 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
     private static ConfigPack createConfigPack(final String packName) {
         Optional<ConfigPack> byID = PNXPlatform.getInstance().getConfigRegistry().getByID(packName);
         return byID.orElseGet(
-                () -> PNXPlatform.getInstance().getConfigRegistry().getByID(packName.toUpperCase())
+                () -> PNXPlatform.getInstance().getConfigRegistry().getByID(packName.toUpperCase(Locale.ENGLISH))
                         .orElseThrow(() -> new IllegalArgumentException("Cant find terra config pack " + packName))
         );
     }
