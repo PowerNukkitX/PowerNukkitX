@@ -5,7 +5,10 @@ import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import java.util.Locale;
+
+import static cn.nukkit.block.property.CommonBlockProperties.PERSISTENT_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;
 
 
 public class BlockCherryLeaves extends BlockLeaves {
@@ -35,7 +38,7 @@ public class BlockCherryLeaves extends BlockLeaves {
 
     @Override
     public WoodType getType() {
-        return WoodType.valueOf(OldLeafType.BIRCH.name().toUpperCase());
+        return WoodType.valueOf(OldLeafType.BIRCH.name().toUpperCase(Locale.ENGLISH));
     }
 
     @Override

@@ -25,6 +25,7 @@ import cn.nukkit.network.protocol.CameraInstructionPacket;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -234,7 +235,7 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase());
+                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
                         .ease(new Ease(easeTime, easeType))
@@ -247,7 +248,7 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase());
+                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
                         .ease(new Ease(easeTime, easeType))
@@ -261,7 +262,7 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase());
+                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
                 Position position = list.get(7).get();
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
@@ -276,7 +277,7 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase());
+                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
                 Position position = list.get(7).get();
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)

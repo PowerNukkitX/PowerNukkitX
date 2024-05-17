@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 
 /**
  * 一般的Nukkit插件需要继承的类。<br>
@@ -172,7 +173,7 @@ public abstract class PluginBase implements Plugin {
     public PluginIdentifiableCommand getCommand(String name) {
         PluginIdentifiableCommand command = this.getServer().getPluginCommand(name);
         if (command == null || !command.getPlugin().equals(this)) {
-            command = this.getServer().getPluginCommand(this.description.getName().toLowerCase() + ":" + name);
+            command = this.getServer().getPluginCommand(this.description.getName().toLowerCase(Locale.ENGLISH) + ":" + name);
         }
 
         if (command != null && command.getPlugin().equals(this)) {

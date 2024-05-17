@@ -60,6 +60,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -1386,7 +1387,7 @@ public class HandleByteBuf extends ByteBuf {
 
         this.writeUnsignedVarInt(rules.size());
         rules.forEach((gameRule, value) -> {
-            this.writeString(gameRule.getName().toLowerCase());
+            this.writeString(gameRule.getName().toLowerCase(Locale.ENGLISH));
             value.write(this);
         });
     }

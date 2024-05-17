@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -57,7 +58,7 @@ public class BaseLang {
     }
 
     public BaseLang(String lang, String path, String fallback) {
-        this.langName = lang.toLowerCase();
+        this.langName = lang.toLowerCase(Locale.ENGLISH);
         boolean useFallback = !lang.equals(fallback);
 
         if (path == null) {

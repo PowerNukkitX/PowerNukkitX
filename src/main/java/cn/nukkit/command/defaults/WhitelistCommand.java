@@ -9,6 +9,7 @@ import cn.nukkit.command.tree.node.StringNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.utils.TextFormat;
 
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -51,10 +52,10 @@ public class WhitelistCommand extends VanillaCommand {
         switch (result.getKey()) {
             case "1arg" -> {
                 String action = list.getResult(0);
-                if (this.badPerm(log, sender, action.toLowerCase())) {
+                if (this.badPerm(log, sender, action.toLowerCase(Locale.ENGLISH))) {
                     return 0;
                 }
-                switch (action.toLowerCase()) {
+                switch (action.toLowerCase(Locale.ENGLISH)) {
                     case "reload" -> {
                         sender.getServer().reloadWhitelist();
                         log.addSuccess("commands.allowlist.reloaded").output(true);
@@ -86,10 +87,10 @@ public class WhitelistCommand extends VanillaCommand {
             case "2args" -> {
                 String action = list.getResult(0);
                 String name = list.getResult(1);
-                if (this.badPerm(log, sender, action.toLowerCase())) {
+                if (this.badPerm(log, sender, action.toLowerCase(Locale.ENGLISH))) {
                     return 0;
                 }
-                switch (action.toLowerCase()) {
+                switch (action.toLowerCase(Locale.ENGLISH)) {
                     case "add" -> {
                         sender.getServer().getOfflinePlayer(name).setWhitelisted(true);
                         log.addSuccess("commands.allowlist.add.success", name).output(true);

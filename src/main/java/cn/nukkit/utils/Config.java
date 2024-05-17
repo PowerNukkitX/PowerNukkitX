@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -513,7 +514,7 @@ public class Config {
                 }
                 final String key = line.substring(0, splitIndex);
                 final String value = line.substring(splitIndex + 1);
-                final String valueLower = value.toLowerCase();
+                final String valueLower = value.toLowerCase(Locale.ENGLISH);
                 if (this.config.containsKey(key)) {
                     log.debug("[Config] Repeated property {} on file {}", key, this.file.toString());
                 }

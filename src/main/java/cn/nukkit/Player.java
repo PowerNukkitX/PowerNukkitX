@@ -1572,15 +1572,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public boolean isWhitelisted() {
-        return this.server.isWhitelisted(this.getName().toLowerCase());
+        return this.server.isWhitelisted(this.getName().toLowerCase(Locale.ENGLISH));
     }
 
     @Override
     public void setWhitelisted(boolean value) {
         if (value) {
-            this.server.addWhitelist(this.getName().toLowerCase());
+            this.server.addWhitelist(this.getName().toLowerCase(Locale.ENGLISH));
         } else {
-            this.server.removeWhitelist(this.getName().toLowerCase());
+            this.server.removeWhitelist(this.getName().toLowerCase(Locale.ENGLISH));
         }
     }
 

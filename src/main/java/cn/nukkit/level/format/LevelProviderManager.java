@@ -42,7 +42,7 @@ public abstract class LevelProviderManager {
     }
 
     public static Class<? extends LevelProvider> getProviderByName(String name) {
-        name = name.trim().toLowerCase();
+        name = name.trim().toLowerCase(Locale.ENGLISH);
         return providers.getOrDefault(name, null);
     }
 

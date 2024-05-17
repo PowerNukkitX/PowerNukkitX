@@ -1840,7 +1840,7 @@ public class Server {
      * @return 玩家的UUID，可为空.<br>The player's UUID, which can be empty.
      */
     public Optional<UUID> lookupName(String name) {
-        byte[] nameBytes = name.toLowerCase().getBytes(StandardCharsets.UTF_8);
+        byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
         byte[] uuidBytes = playerDataDB.get(nameBytes);
         if (uuidBytes == null) {
             return Optional.empty();
@@ -1867,7 +1867,7 @@ public class Server {
         var uniqueId = info.getUniqueId();
         var name = info.getUsername();
 
-        byte[] nameBytes = name.toLowerCase().getBytes(StandardCharsets.UTF_8);
+        byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
 
         ByteBuffer buffer = ByteBuffer.allocate(16);
         buffer.putLong(uniqueId.getMostSignificantBits());
@@ -1883,7 +1883,7 @@ public class Server {
     }
 
     public IPlayer getOfflinePlayer(final String name) {
-        IPlayer result = this.getPlayerExact(name.toLowerCase());
+        IPlayer result = this.getPlayerExact(name.toLowerCase(Locale.ENGLISH));
         if (result != null) {
             return result;
         }
@@ -2092,10 +2092,10 @@ public class Server {
      */
     public Player getPlayer(String name) {
         Player found = null;
-        name = name.toLowerCase();
+        name = name.toLowerCase(Locale.ENGLISH);
         int delta = Integer.MAX_VALUE;
         for (Player player : this.getOnlinePlayers().values()) {
-            if (player.getName().toLowerCase().startsWith(name)) {
+            if (player.getName().toLowerCase(Locale.ENGLISH).startsWith(name)) {
                 int curDelta = player.getName().length() - name.length();
                 if (curDelta < delta) {
                     found = player;
@@ -2119,9 +2119,9 @@ public class Server {
      * @return 玩家实例对象，获取失败为null<br>Player instance object,failed to get null
      */
     public Player getPlayerExact(String name) {
-        name = name.toLowerCase();
+        name = name.toLowerCase(Locale.ENGLISH);
         for (Player player : this.getOnlinePlayers().values()) {
-            if (player.getName().toLowerCase().equals(name)) {
+            if (player.getName().toLowerCase(Locale.ENGLISH).equals(name)) {
                 return player;
             }
         }
@@ -2138,12 +2138,12 @@ public class Server {
      * @return 匹配到的所有玩家, 若匹配不到则为一个空数组<br>All players matched, if not matched then an empty array
      */
     public Player[] matchPlayer(String partialName) {
-        partialName = partialName.toLowerCase();
+        partialName = partialName.toLowerCase(Locale.ENGLISH);
         List<Player> matchedPlayer = new ArrayList<>();
         for (Player player : this.getOnlinePlayers().values()) {
-            if (player.getName().toLowerCase().equals(partialName)) {
+            if (player.getName().toLowerCase(Locale.ENGLISH).equals(partialName)) {
                 return new Player[]{player};
-            } else if (player.getName().toLowerCase().contains(partialName)) {
+            } else if (player.getName().toLowerCase(Locale.ENGLISH).contains(partialName)) {
                 matchedPlayer.add(player);
             }
         }
@@ -2593,7 +2593,7 @@ public class Server {
     }
 
     public void addOp(String name) {
-        this.operators.set(name.toLowerCase(), true);
+        this.operators.set(name.toLowerCase(Locale.ENGLISH), true);
         Player player = this.getPlayerExact(name);
         if (player != null) {
             player.recalculatePermissions();
@@ -2605,7 +2605,7 @@ public class Server {
     }
 
     public void removeOp(String name) {
-        this.operators.remove(name.toLowerCase());
+        this.operators.remove(name.toLowerCase(Locale.ENGLISH));
         Player player = this.getPlayerExact(name);
         if (player != null) {
             player.recalculatePermissions();
@@ -2617,12 +2617,12 @@ public class Server {
     }
 
     public void addWhitelist(String name) {
-        this.whitelist.set(name.toLowerCase(), true);
+        this.whitelist.set(name.toLowerCase(Locale.ENGLISH), true);
         this.whitelist.save(true);
     }
 
     public void removeWhitelist(String name) {
-        this.whitelist.remove(name.toLowerCase());
+        this.whitelist.remove(name.toLowerCase(Locale.ENGLISH));
         this.whitelist.save(true);
     }
 
@@ -2769,7 +2769,7 @@ public class Server {
      * @return 游戏模式id<br>gamemode id
      */
     public static int getGamemodeFromString(String str) {
-        return switch (str.trim().toLowerCase()) {
+        return switch (str.trim().toLowerCase(Locale.ENGLISH)) {
             case "0", "survival", "s" -> Player.SURVIVAL;
             case "1", "creative", "c" -> Player.CREATIVE;
             case "2", "adventure", "a" -> Player.ADVENTURE;
@@ -2787,7 +2787,7 @@ public class Server {
      * @return 游戏难度id<br>game difficulty id
      */
     public static int getDifficultyFromString(String str) {
-        switch (str.trim().toLowerCase()) {
+        switch (str.trim().toLowerCase(Locale.ENGLISH)) {
             case "0":
             case "peaceful":
             case "p":
