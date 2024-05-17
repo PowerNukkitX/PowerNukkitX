@@ -8,7 +8,7 @@
     <img alt="Action" src="https://github.com/PowerNukkitX/PowerNukkitX/actions/workflows/maven.yml/badge.svg?branch=master" />
   </a>
   <a href="https://app.codecov.io/github/PowerNukkitX/PowerNukkitX" target="_blank">
-    <img alt="Action" src="https://img.shields.io/codecov/c/github/MemoriesOfTime/raknet-rs?style=flat-square&logo=codecov" />
+    <img alt="Action" src="https://img.shields.io/codecov/c/github/PowerNukkitX/PowerNukkitX?style=flat-square&logo=codecov" />
   </a>
   <a href="https://pnx-wiki.pages.dev" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
