@@ -116,7 +116,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public double motionZ;
     public int deadTicks = 0;
     /**
-     * 临时向量，其值没有任何含义
+     * temporalVector，its value has no meaning
      */
     public Vector3 temporalVector;
     public double lastMotionX;
@@ -133,14 +133,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public boolean onGround;
     public boolean positionChanged;
     public boolean motionChanged;
-    /**
-     * Player do not use
-     */
-    public boolean keepMovement = false;
     public float fallDistance = 0;
     public int ticksLived = 0;
     public int lastUpdate;
-    public int maxFireTicks;
     public int fireTicks = 0;
     public int inPortalTicks = 0;
     public int freezingTicks = 0;//0 - 140
@@ -156,10 +151,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public double highestPosition;
     public boolean closed = false;
     public boolean noClip = false;
-    //spawned by server
-    //player's UUID is sent by client,so this value cannot be used in Player
+    /**
+     * spawned by server
+     * <p>
+     * player's UUID is sent by client,so this value cannot be used in Player
+     */
     protected UUID entityUniqueId;
-    //runtime id (changed after you restart the server)
+    /**
+     * runtime id (changed after you restart the server)
+     */
     protected volatile long id;
     protected EntityDamageEvent lastDamageCause = null;
     protected int age = 0;
@@ -1265,18 +1265,27 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return !this.justCreated && this != entity && !this.noClip;
     }
 
-
+    /**
+     * Whether the entity is persisted to disk
+     *
+     * @return the boolean
+     */
     public boolean canBeSavedWithChunk() {
         return saveWithChunk;
     }
 
 
+    /**
+     * Set this entity is persisted to disk
+     *
+     * @param saveWithChunk value
+     */
     public void setCanBeSavedWithChunk(boolean saveWithChunk) {
         this.saveWithChunk = saveWithChunk;
     }
 
     protected boolean checkObstruction(double x, double y, double z) {
-        if (this.level.fastCollisionCubes(this, this.getBoundingBox(), false).size() == 0 || this.noClip) {
+        if (this.level.fastCollisionCubes(this, this.getBoundingBox(), false).isEmpty() || this.noClip) {
             return false;
         }
 
@@ -2127,37 +2136,65 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return Block.LADDER.equals(b.getId());
     }
 
-    //Player do not use
+    /**
+     * Player do not use
+     */
     public boolean move(double dx, double dy, double dz) {
         if (dx == 0 && dz == 0 && dy == 0) {
             this.onGround = !this.getPosition().setComponents(this.down()).getTickCachedLevelBlock().canPassThrough();
             return true;
         }
 
-        if (this.keepMovement) {
-            this.boundingBox.offset(dx, dy, dz);
-            this.setPosition(this.temporalVector.setComponents((this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2, this.boundingBox.getMinY(), (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2));
-            this.onGround = this.isPlayer;
-            return true;
-        } else {
 
-            this.ySize *= 0.4F;
+        this.ySize *= 0.4F;
 
-            double movX = dx;
-            double movY = dy;
-            double movZ = dz;
+        double movX = dx;
+        double movY = dy;
+        double movZ = dz;
 
-            AxisAlignedBB axisalignedbb = this.boundingBox.clone();
+        AxisAlignedBB axisalignedbb = this.boundingBox.clone();
 
-            var list = this.noClip ? AxisAlignedBB.EMPTY_LIST : this.level.fastCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
+        var list = this.noClip ? AxisAlignedBB.EMPTY_LIST : this.level.fastCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
+
+        for (AxisAlignedBB bb : list) {
+            dy = bb.calculateYOffset(this.boundingBox, dy);
+        }
+
+        this.boundingBox.offset(0, dy, 0);
+
+        boolean fallingFlag = (this.onGround || (dy != movY && movY < 0));
+
+        for (AxisAlignedBB bb : list) {
+            dx = bb.calculateXOffset(this.boundingBox, dx);
+        }
+
+        this.boundingBox.offset(dx, 0, 0);
+
+        for (AxisAlignedBB bb : list) {
+            dz = bb.calculateZOffset(this.boundingBox, dz);
+        }
+
+        this.boundingBox.offset(0, 0, dz);
+
+        if (this.getStepHeight() > 0 && fallingFlag && this.ySize < 0.05 && (movX != dx || movZ != dz)) {
+            double cx = dx;
+            double cy = dy;
+            double cz = dz;
+            dx = movX;
+            dy = this.getStepHeight();
+            dz = movZ;
+
+            AxisAlignedBB axisalignedbb1 = this.boundingBox.clone();
+
+            this.boundingBox.setBB(axisalignedbb);
+
+            list = this.level.fastCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
 
             for (AxisAlignedBB bb : list) {
                 dy = bb.calculateYOffset(this.boundingBox, dy);
             }
 
             this.boundingBox.offset(0, dy, 0);
-
-            boolean fallingFlag = (this.onGround || (dy != movY && movY < 0));
 
             for (AxisAlignedBB bb : list) {
                 dx = bb.calculateXOffset(this.boundingBox, dx);
@@ -2171,75 +2208,42 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
             this.boundingBox.offset(0, 0, dz);
 
-            if (this.getStepHeight() > 0 && fallingFlag && this.ySize < 0.05 && (movX != dx || movZ != dz)) {
-                double cx = dx;
-                double cy = dy;
-                double cz = dz;
-                dx = movX;
-                dy = this.getStepHeight();
-                dz = movZ;
+            this.boundingBox.offset(0, 0, dz);
 
-                AxisAlignedBB axisalignedbb1 = this.boundingBox.clone();
-
-                this.boundingBox.setBB(axisalignedbb);
-
-                list = this.level.fastCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
-
-                for (AxisAlignedBB bb : list) {
-                    dy = bb.calculateYOffset(this.boundingBox, dy);
-                }
-
-                this.boundingBox.offset(0, dy, 0);
-
-                for (AxisAlignedBB bb : list) {
-                    dx = bb.calculateXOffset(this.boundingBox, dx);
-                }
-
-                this.boundingBox.offset(dx, 0, 0);
-
-                for (AxisAlignedBB bb : list) {
-                    dz = bb.calculateZOffset(this.boundingBox, dz);
-                }
-
-                this.boundingBox.offset(0, 0, dz);
-
-                this.boundingBox.offset(0, 0, dz);
-
-                if ((cx * cx + cz * cz) >= (dx * dx + dz * dz)) {
-                    dx = cx;
-                    dy = cy;
-                    dz = cz;
-                    this.boundingBox.setBB(axisalignedbb1);
-                } else {
-                    this.ySize += 0.5F;
-                }
-
+            if ((cx * cx + cz * cz) >= (dx * dx + dz * dz)) {
+                dx = cx;
+                dy = cy;
+                dz = cz;
+                this.boundingBox.setBB(axisalignedbb1);
+            } else {
+                this.ySize += 0.5F;
             }
 
-            this.x = (this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2;
-            this.y = this.boundingBox.getMinY() - this.ySize;
-            this.z = (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2;
-
-            this.checkChunks();
-
-            this.checkGroundState(movX, movY, movZ, dx, dy, dz);
-            this.updateFallState(this.onGround);
-
-            if (movX != dx) {
-                this.motionX = 0;
-            }
-
-            if (movY != dy) {
-                this.motionY = 0;
-            }
-
-            if (movZ != dz) {
-                this.motionZ = 0;
-            }
-
-            //TODO: vehicle collision events (first we need to spawn them!)
-            return true;
         }
+
+        this.x = (this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2;
+        this.y = this.boundingBox.getMinY() - this.ySize;
+        this.z = (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2;
+
+        this.checkChunks();
+
+        this.checkGroundState(movX, movY, movZ, dx, dy, dz);
+        this.updateFallState(this.onGround);
+
+        if (movX != dx) {
+            this.motionX = 0;
+        }
+
+        if (movY != dy) {
+            this.motionY = 0;
+        }
+
+        if (movZ != dz) {
+            this.motionZ = 0;
+        }
+
+        //TODO: vehicle collision events (first we need to spawn them!)
+        return true;
     }
 
     protected void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {

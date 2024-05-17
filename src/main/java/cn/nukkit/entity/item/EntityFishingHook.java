@@ -110,12 +110,6 @@ public class EntityFishingHook extends SlenderProjectile {
             this.motionY -= getGravity() * -0.04;
             this.motionZ = 0;
             hasUpdate = true;
-        } else if (this.isCollided && this.keepMovement) {
-            this.motionX = 0;
-            this.motionY = 0;
-            this.motionZ = 0;
-            this.keepMovement = false;
-            hasUpdate = true;
         }
 
         if (inWater) {
