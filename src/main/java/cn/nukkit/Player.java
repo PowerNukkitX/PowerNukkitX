@@ -3486,7 +3486,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.session.close(null);
     }
 
-    public void unloadAllUsedChunk() {
+    public synchronized void unloadAllUsedChunk() {
         //save player data
         //unload chunk for the player
         LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
