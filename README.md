@@ -32,21 +32,18 @@
 > - Built-in AI framework
 > - Terra Generator
 > - Full Vanilla Command Support
+> - Full Item, Block and Container Support
 > - More features to discover...
 
 ### 🏠 [Homepage](https://v2.powernukkitx.com/)
 
 ## Install
 
-1. Make sure you have `JDK21` installed and environment variables set, if
-   not [download from](https://www.graalvm.org/downloads)
-2. [Select the version you want to use](https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess)
-3. Make sure you have a github account, login it, if
-   not [sign up](https://docs.github.com/en/get-started/start-your-journey/creating-an-account-on-github)!
-4. Click to the version you want to use and scroll down to find artifacts.
-5. Download the `PowerNukkitX-Run.zip`  
-   [![img.png](.github/img/003.png)](https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess)
-6. Unzip `PowerNukkitX-Run.zip` to the directory you want.
+1. Make sure you have `JDK21` installed, if not [download from here](https://www.graalvm.org/downloads)
+2. Download
+   the [`PowerNukkitX-Run.zip`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/nightly-build/powernukkitx-run.zip)
+3. Unzip `PowerNukkitX-Run.zip` to the directory you want.
+4. Set Java environment variables or unzip JDK to the same directory as the previous step.
 
 ## Usage
 

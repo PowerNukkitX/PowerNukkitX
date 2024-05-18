@@ -33,7 +33,7 @@ Scan through our [existing issues](https://github.com/PowerNukkitX/PowerNukkitX/
 1. Fork the repository.
     - [Fork the repo](https://www.jetbrains.com/help/idea/fork-github-projects.html#fork)
     - [Clone your fork](https://www.jetbrains.com/help/idea/manage-projects-hosted-on-github.html#clone-from-GitHub)
-2. Install **JDK17**.
+2. Install **JDK21**.
 3. Make some changes.
 4. First build the project using `buildSkipChores` task  
    Apply changes using `buildFast` task  
