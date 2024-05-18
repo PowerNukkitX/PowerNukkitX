@@ -132,7 +132,7 @@ jobs:
             Corresponding commit: <https://github.com/aya-prover/aya-dev/commit/${{ github.sha }}>_
           assets: build/powernukkitx-run.zip;build/powernukkitx.jar;build/libs.tar.gz;build/hash/sha256/powernukkitx.jar.sha256;build/hash/sha256/libs.tar.gz.sha256;build/hash/md5/powernukkitx.jar.md5;build/hash/md5/libs.tar.gz.md5;
           replace_assets: true
-          github_token: ${{ secrets.GH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release new version
         uses: ncipollo/release-action@v1
