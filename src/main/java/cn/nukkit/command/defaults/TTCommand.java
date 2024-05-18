@@ -9,6 +9,7 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.inventory.fake.FakeStructBlock;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.generator.object.BlockManager;
 
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -41,20 +42,16 @@ public class TTCommand extends TestCommand {
                     case "set" -> {
                         Position startPos = new Position(0, 0, 0);
                         Position endPos = new Position(100, 100, 100);
+                        BlockManager blockManager = new BlockManager(player.getLevel());
                         for (int x = (int) startPos.getX(); x <= endPos.getX(); x++) {
                             for (int y = (int) startPos.getY(); y <= endPos.getY(); y++) {
                                 for (int z = (int) startPos.getZ(); z <= endPos.getZ(); z++) {
                                     Block randomBlockId = ThreadLocalRandom.current().nextBoolean() ? Block.get(BlockID.AMETHYST_BLOCK) : Block.get(BlockID.BAMBOO_BLOCK);
-                                    Position placingPos = new Position();
-                                    placingPos.setLevel(player.getLevel());
-                                    placingPos.setX(x);
-                                    placingPos.setY(y);
-                                    placingPos.setZ(z);
-
-                                    player.getLevel().setBlock(placingPos, randomBlockId);
+                                    blockManager.setBlockStateAt(x, y, z, randomBlockId.getBlockState());
                                 }
                             }
                         }
+                        blockManager.applySubChunkUpdate();
                     }
                 }
             }

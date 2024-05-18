@@ -102,6 +102,14 @@ abstract public class ItemArmor extends Item implements ItemDurable {
     }
 
     @Override
+    public void setDamage(int damage) {
+        super.setDamage(damage);
+        if (damage != 0) {
+            this.getOrCreateNamedTag().putInt("Damage", damage);
+        }
+    }
+
+    @Override
     public int getEnchantAbility() {
         return switch (this.getTier()) {
             case TIER_CHAIN -> 12;
