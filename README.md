@@ -16,7 +16,7 @@
    <a href="https://discord.com/invite/XXus4FB6qf">
       <img alt="Discord" src="https://img.shields.io/discord/944227466912870410?label=discord&color=7289DA&logo=discord" />
    </a>
-   <a href="https://pnx-wiki.pages.dev" target="_blank">
+   <a href="https://docs.powernukkitx.com" target="_blank">
       <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
    </a>
    <a href="https://codecov.io/github/PowerNukkitX/PowerNukkitX" > 
