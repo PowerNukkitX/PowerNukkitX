@@ -1,14 +1,17 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.inventory.fake.FakeStructBlock;
-import cn.nukkit.level.biome.BiomeID;
+import cn.nukkit.level.Position;
 
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class TTCommand extends TestCommand {
@@ -34,15 +37,21 @@ public class TTCommand extends TestCommand {
                 Player player = sender.asPlayer();
                 switch (s) {
                     case "get" -> {
-                        player.sendMessage(player.getLevel().getBiomeId(0, 3, 0) + "");
-                        player.sendMessage(player.getLevel().getBiomeId(0, 4, 0) + "");
-                        player.sendMessage(player.getLevel().getBlock(player.down()).getBlockState() + "");
                     }
                     case "set" -> {
-                        for (int i = 0; i < 16; i++) {
-                            for (int j = 0; j < 16; j++) {
-                                for (int k = 0; k < 16; k++) {
-                                    player.getLevel().setBiomeId(i, j, k, BiomeID.SWAMPLAND);
+                        Position startPos = new Position(0, 0, 0);
+                        Position endPos = new Position(100, 100, 100);
+                        for (int x = (int) startPos.getX(); x <= endPos.getX(); x++) {
+                            for (int y = (int) startPos.getY(); y <= endPos.getY(); y++) {
+                                for (int z = (int) startPos.getZ(); z <= endPos.getZ(); z++) {
+                                    Block randomBlockId = ThreadLocalRandom.current().nextBoolean() ? Block.get(BlockID.AMETHYST_BLOCK) : Block.get(BlockID.BAMBOO_BLOCK);
+                                    Position placingPos = new Position();
+                                    placingPos.setLevel(player.getLevel());
+                                    placingPos.setX(x);
+                                    placingPos.setY(y);
+                                    placingPos.setZ(z);
+
+                                    player.getLevel().setBlock(placingPos, randomBlockId);
                                 }
                             }
                         }

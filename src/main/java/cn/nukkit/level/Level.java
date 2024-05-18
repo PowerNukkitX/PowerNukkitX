@@ -1320,12 +1320,7 @@ public class Level implements Metadatable {
                 }
                 runtimeId = hash;
             }
-            try {
-                updateBlockPacket.blockRuntimeId = runtimeId;
-            } catch (NoSuchElementException e) {
-                throw new IllegalStateException("Unable to create BlockUpdatePacket at (" +
-                        b.x + ", " + b.y + ", " + b.z + ") in " + getName(), e);
-            }
+            updateBlockPacket.blockRuntimeId = runtimeId;
             packets.add(updateBlockPacket);
         }
         for (var p : packets) {
