@@ -130,8 +130,8 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public FurnaceRecipe findFurnaceRecipe(Item... items) {
         Int2ObjectArrayMap<Set<Recipe>> map1 = recipeMaps.get(RecipeType.FURNACE);
-        if (map1 != null) {
-            Set<Recipe> recipes = map1.get(items.length);
+        Set<Recipe> recipes = map1.get(items.length);
+        if (recipes != null) {
             for (var r : recipes) {
                 if (r.fastCheck(items)) return (FurnaceRecipe) r;
             }
@@ -139,8 +139,10 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         Int2ObjectArrayMap<Set<Recipe>> map2 = recipeMaps.get(RecipeType.FURNACE_DATA);
         if (map2 == null) return null;
         Set<Recipe> recipes2 = map2.get(items.length);
-        for (var r : recipes2) {
-            if (r.fastCheck(items)) return (FurnaceRecipe) r;
+        if (recipes2 != null) {
+            for (var r : recipes2) {
+                if (r.fastCheck(items)) return (FurnaceRecipe) r;
+            }
         }
         return null;
     }
@@ -458,7 +460,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     @Override
     public void register(String key, Recipe recipe) throws RegisterException {
         if (recipe instanceof CraftingRecipe craftingRecipe) {
-            Item item = recipe.getResults().get(0);
+            Item item = recipe.getResults().getFirst();
             UUID id = Utils.dataToUUID(String.valueOf(RECIPE_COUNT), String.valueOf(item.getId()), String.valueOf(item.getDamage()), String.valueOf(item.getCount()), Arrays.toString(item.getCompoundTag()));
             if (craftingRecipe.getUUID() == null) craftingRecipe.setUUID(id);
         }
@@ -665,7 +667,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         if (outputs.size() > 1) {
             return null;
         }
-        Map<String, Object> first = outputs.get(0);
+        Map<String, Object> first = outputs.getFirst();
 
         int priority = recipeObject.containsKey("priority") ? Utils.toInt(recipeObject.get("priority")) : 0;
 
@@ -696,7 +698,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         UUID uuid = UUID.fromString(recipeObject.get("uuid").toString());
         List<Map<String, Object>> outputs = (List<Map<String, Object>>) recipeObject.get("output");
 
-        Map<String, Object> first = outputs.remove(0);
+        Map<String, Object> first = outputs.removeFirst();
         String[] shape = ((List<String>) recipeObject.get("shape")).toArray(EmptyArrays.EMPTY_STRINGS);
         Map<Character, ItemDescriptor> ingredients = new CharObjectHashMap<>();
 
@@ -711,7 +713,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             extraResults.add(output.toItem());
         }
 
-        Map input = (Map) recipeObject.get("input");
+        Map<?, ?> input = (Map<?, ?>) recipeObject.get("input");
         boolean mirror = false;
         if (input.containsKey("mirror")) {
             mirror = Boolean.parseBoolean(input.remove("mirror").toString());
