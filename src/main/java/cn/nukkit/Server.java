@@ -547,7 +547,6 @@ public class Server {
                 put("hardcore", false);
                 put("pvp", true);
                 put("difficulty", 1);
-                put("generator-settings", "");
                 put("level-name", "world");
                 put("level-seed", "");
                 put("allow-nether", false);
@@ -560,7 +559,7 @@ public class Server {
                 put("force-resources", false);
                 put("force-resources-allow-client-packs", false);
                 put("xbox-auth", true);
-                put("check-login-time", true);
+                put("check-login-time", false);
                 put("disable-auto-bug-report", false);
                 put("allow-shaded", false);
                 put("server-authoritative-movement", "server-auth");// Allowed values: "client-auth", "server-auth", "server-auth-with-rewind"
@@ -572,7 +571,7 @@ public class Server {
 
         this.useTerra = this.properties.getBoolean("use-terra", false);
 
-        this.checkLoginTime = this.properties.getBoolean("check-login-time", true);
+        this.checkLoginTime = this.properties.getBoolean("check-login-time", false);
 
         if (this.isWaterdogCapable()) {
             this.checkLoginTime = false;
