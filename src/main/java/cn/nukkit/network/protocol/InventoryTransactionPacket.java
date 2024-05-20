@@ -137,7 +137,7 @@ public class InventoryTransactionPacket extends DataPacket {
         //InventoryTransactionType
         this.transactionType = byteBuf.readUnsignedVarInt();
 
-        int length = (int) byteBuf.readUnsignedVarInt();
+        int length = byteBuf.readUnsignedVarInt();
         Collection<NetworkInventoryAction> actions = new ArrayDeque<>();
         for (int i = 0; i < length; i++) {
             actions.add(new NetworkInventoryAction().read(this, byteBuf));
@@ -152,14 +152,14 @@ public class InventoryTransactionPacket extends DataPacket {
             case TYPE_USE_ITEM:
                 UseItemData itemData = new UseItemData();
 
-                itemData.actionType = (int) byteBuf.readUnsignedVarInt();
+                itemData.actionType = byteBuf.readUnsignedVarInt();
                 itemData.blockPos = byteBuf.readBlockVector3();
                 itemData.face = byteBuf.readBlockFace();
                 itemData.hotbarSlot = byteBuf.readVarInt();
                 itemData.itemInHand = byteBuf.readSlot();
                 itemData.playerPos = byteBuf.readVector3f().asVector3();
                 itemData.clickPos = byteBuf.readVector3f();
-                itemData.blockRuntimeId = (int) byteBuf.readUnsignedVarInt();
+                itemData.blockRuntimeId = byteBuf.readUnsignedVarInt();
 
                 this.transactionData = itemData;
                 break;
@@ -167,7 +167,7 @@ public class InventoryTransactionPacket extends DataPacket {
                 UseItemOnEntityData useItemOnEntityData = new UseItemOnEntityData();
 
                 useItemOnEntityData.entityRuntimeId = byteBuf.readEntityRuntimeId();
-                useItemOnEntityData.actionType = (int) byteBuf.readUnsignedVarInt();
+                useItemOnEntityData.actionType = byteBuf.readUnsignedVarInt();
                 useItemOnEntityData.hotbarSlot = byteBuf.readVarInt();
                 useItemOnEntityData.itemInHand = byteBuf.readSlot();
                 useItemOnEntityData.playerPos = byteBuf.readVector3f().asVector3();
@@ -178,7 +178,7 @@ public class InventoryTransactionPacket extends DataPacket {
             case TYPE_RELEASE_ITEM:
                 ReleaseItemData releaseItemData = new ReleaseItemData();
 
-                releaseItemData.actionType = (int) byteBuf.readUnsignedVarInt();
+                releaseItemData.actionType = byteBuf.readUnsignedVarInt();
                 releaseItemData.hotbarSlot = byteBuf.readVarInt();
                 releaseItemData.itemInHand = byteBuf.readSlot();
                 releaseItemData.headRot = byteBuf.readVector3f().asVector3();

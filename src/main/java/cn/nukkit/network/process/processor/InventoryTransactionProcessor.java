@@ -39,6 +39,7 @@ import cn.nukkit.network.protocol.types.inventory.transaction.UseItemOnEntityDat
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
@@ -88,32 +89,38 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
             }
         } else if (pk.transactionType == InventoryTransactionPacket.TYPE_NORMAL) {
             for (var action : pk.actions) {
-                if (action.getInventorySource().getType().equals(InventorySource.Type.WORLD_INTERACTION)) {
-                    if (action.getInventorySource().getFlag().equals(InventorySource.Flag.DROP_ITEM)) {//handle throw item such as enter Q
-                        var count = action.newItem.getCount();
-                        Item item = player.getInventory().getItemInHand();
-                        if (item.isNull()) return;
+                if (!action.getInventorySource().getType().equals(InventorySource.Type.CONTAINER))
+                    continue;
 
-                        PlayerDropItemEvent ev;
-                        player.getServer().getPluginManager().callEvent(ev = new PlayerDropItemEvent(player, item));
-                        if (ev.isCancelled()) {
-                            player.getInventory().sendContents(player);
-                            return;
-                        }
+                if (!action.getInventorySource().getFlag().equals(InventorySource.Flag.NONE))
+                    continue;
 
-                        HumanInventory inventory = player.getInventory();
-                        int c = item.getCount() - count;
-                        if (c <= 0) {
-                            inventory.clear(inventory.getHeldItemIndex());
-                        } else {
-                            item.setCount(c);
-                            inventory.setItem(inventory.getHeldItemIndex(), item);
-                        }
-                        item.setCount(count);
-                        player.dropItem(item);
-                        return;
-                    }
+                //handle throw item such as enter Q
+                Item item = action.oldItem;
+                var count = item.getCount() - action.newItem.getCount();
+                int slot = action.inventorySlot;
+
+                if (item.isNull())
+                    return;
+
+                PlayerDropItemEvent ev;
+                player.getServer().getPluginManager().callEvent(ev = new PlayerDropItemEvent(player, item));
+                if (ev.isCancelled()) {
+                    player.getInventory().sendContents(player);
+                    return;
                 }
+
+                HumanInventory inventory = player.getInventory();
+                int c = item.getCount() - count;
+                if (c <= 0) {
+                    inventory.clear(slot);
+                } else {
+                    item.setCount(c);
+                    inventory.setItem(slot, item);
+                }
+                item.setCount(count);
+                player.dropItem(item);
+                return;
             }
         }
     }
@@ -342,7 +349,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, item, directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
                 player.getServer().getPluginManager().callEvent(interactEvent);
                 if (interactEvent.isCancelled()) {
-                    if(interactEvent.getItem() != null && interactEvent.getItem().isArmor()) {
+                    if (interactEvent.getItem() != null && interactEvent.getItem().isArmor()) {
                         player.getInventory().sendArmorContents(player);
                     }
                     player.getInventory().sendHeldItem(player);
