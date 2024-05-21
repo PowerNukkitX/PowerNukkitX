@@ -118,7 +118,7 @@ public class SimpleCommandMap implements CommandMap {
 
         this.register("nukkit", new StatusCommand("status"));
         this.register("nukkit", new GarbageCollectorCommand("gc"));
-        if (this.server.getConfig("debug.commands", false)) {
+        if (this.server.getSettings().debugSettings().command()) {
             this.register("nukkit", new DebugCommand("debug"));
         }
     }
@@ -299,7 +299,7 @@ public class SimpleCommandMap implements CommandMap {
     @Override
     public int executeCommand(CommandSender sender, String cmdLine) {
         ArrayList<String> parsed = parseArguments(cmdLine);
-        if (parsed.size() == 0) {
+        if (parsed.isEmpty()) {
             return -1;
         }
 
@@ -370,48 +370,5 @@ public class SimpleCommandMap implements CommandMap {
      */
     public Map<String, Command> getCommands() {
         return knownCommands;
-    }
-
-    /**
-     * 注册插件在plugin.yml中定义的命令别名
-     */
-    public void registerServerAliases() {
-        Map<String, List<String>> values = this.server.getCommandAliases();
-        for (Map.Entry<String, List<String>> entry : values.entrySet()) {
-            String alias = entry.getKey();
-            List<String> commandStrings = entry.getValue();
-            if (alias.contains(" ") || alias.contains(":")) {
-                log.warn(this.server.getLanguage().tr("nukkit.command.alias.illegal", alias));
-                continue;
-            }
-            List<String> targets = new ArrayList<>();
-
-            StringBuilder bad = new StringBuilder();
-
-            for (String commandString : commandStrings) {
-                String[] args = commandString.split(" ");
-                Command command = this.getCommand(args[0]);
-
-                if (command == null) {
-                    if (bad.length() > 0) {
-                        bad.append(", ");
-                    }
-                    bad.append(commandString);
-                } else {
-                    targets.add(commandString);
-                }
-            }
-
-            if (bad.length() > 0) {
-                log.warn(this.server.getLanguage().tr("nukkit.command.alias.notFound", new String[]{alias, bad.toString()}));
-                continue;
-            }
-
-            if (!targets.isEmpty()) {
-                this.knownCommands.put(alias.toLowerCase(Locale.ENGLISH), new FormattedCommandAlias(alias.toLowerCase(Locale.ENGLISH), targets));
-            } else {
-                this.knownCommands.remove(alias.toLowerCase(Locale.ENGLISH));
-            }
-        }
     }
 }

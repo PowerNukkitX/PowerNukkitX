@@ -76,8 +76,8 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         if (power <= 0 || ticks <= 0) {
             return deactivatePower();
         }
-        
-        if (!level.getServer().isRedstoneEnabled()) {
+
+        if (!level.getServer().getSettings().levelSettings().enableRedstone()) {
             return false;
         }
 
@@ -98,7 +98,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
             int currentPower = target.getActivePower();
             target.setActivePower(0);
             target.close();
-            if (currentPower != 0 && level.getServer().isRedstoneEnabled()) {
+            if (currentPower != 0 && level.getServer().getSettings().levelSettings().enableRedstone()) {
                 updateAroundRedstone();
             }
             return true;

@@ -27,7 +27,7 @@ public class BlockEntityDaylightDetector extends BlockEntity {
 
     @Override
     public boolean onUpdate() {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return false;
         }
         if (this.level.getCurrentTick() % 20 != 0) {

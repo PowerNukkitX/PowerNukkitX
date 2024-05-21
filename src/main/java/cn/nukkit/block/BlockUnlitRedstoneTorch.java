@@ -54,7 +54,7 @@ public class BlockUnlitRedstoneTorch extends BlockTorch implements RedstoneCompo
     @Override
     public int onUpdate(int type) {
         if (super.onUpdate(type) == 0) {
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
                 return 0;
             }
 

@@ -9,9 +9,6 @@ import lombok.ToString;
 
 import java.util.UUID;
 
-import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.*;
-
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -52,7 +49,7 @@ public class PlayerListPacket extends DataPacket {
             }
 
             for (Entry entry : this.entries) {
-                byteBuf.writeBoolean(entry.trustedSkin || Server.getInstance().isForceSkinTrusted());
+                byteBuf.writeBoolean(entry.trustedSkin || Server.getInstance().getSettings().playerSettings().forceSkinTrusted());
             }
         } else {
             for (Entry entry : this.entries) {

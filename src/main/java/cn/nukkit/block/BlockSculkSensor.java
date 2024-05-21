@@ -69,7 +69,7 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
     public int onUpdate(int type) {
         getOrCreateBlockEntity();
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (level.getServer().isRedstoneEnabled()) {
+            if (level.getServer().getSettings().levelSettings().enableRedstone()) {
                 this.getBlockEntity().calPower();
                 this.setPhase(0);
                 updateAroundRedstone();

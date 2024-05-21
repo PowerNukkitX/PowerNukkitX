@@ -40,6 +40,7 @@ org-yaml-snakeyaml = "2.2"
 commons-lang3 = "3.14.0"
 commons-rng = "1.5"
 com-github-stateless4j = "2.6.0"
+eu-okaeri-core = "5.0.1"
 
 [libraries]
 libdeflate = { module = "cn.powernukkitx:libdeflate-java", version.ref = "cn-powernukkitx-libdeflate-java" }
@@ -84,6 +85,7 @@ jmh-generator = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.r
 snappy = { module = "org.xerial.snappy:snappy-java", version.ref = "org-xerial-snappy-snappy-java" }
 rng-simple = { module = "org.apache.commons:commons-rng-simple", version.ref = "commons-rng" }
 rng-sampling = { module = "org.apache.commons:commons-rng-sampling", version.ref = "commons-rng" }
+okaeri = { module = "eu.okaeri:okaeri-configs-core", version.ref = "eu-okaeri-core" }
 
 [bundles]
 netty = ["netty-raknet", "netty-epoll", "netty-kqueue"]

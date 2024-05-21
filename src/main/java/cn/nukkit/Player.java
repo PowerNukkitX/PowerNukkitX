@@ -364,8 +364,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.socketAddress = this.getSession().getAddress();
         this.rawSocketAddress = socketAddress;
         this.loaderId = Level.generateChunkLoaderId(this);
-        this.chunksPerTick = this.server.getConfig("chunk-sending.per-tick", 8);
-        this.spawnThreshold = this.server.getConfig("chunk-sending.spawn-threshold", 56);
+        this.chunksPerTick = this.server.getSettings().chunkSettings().perTickSend();
+        this.spawnThreshold = this.server.getSettings().chunkSettings().spawnThreshold();
         this.spawnPoint = null;
         this.gamemode = this.server.getGamemode();
         this.setLevel(this.server.getDefaultLevel());
@@ -695,7 +695,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         //客户端初始化完毕再传送玩家，避免下落 (x)
         //已经设置immobile了所以不用管下落了
         Location pos;
-        if (this.server.isSafeSpawn() && (this.gamemode & 0x01) == 0) {
+        if (this.server.getSettings().baseSettings().safeSpawn() && (this.gamemode & 0x01) == 0) {
             pos = this.level.getSafeSpawn(this).getLocation();
             pos.yaw = this.yaw;
             pos.pitch = this.pitch;
@@ -1219,7 +1219,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.fogStack.add(i, new PlayerFogPacket.Fog(Identifier.tryParse(fogIdentifiers.get(i).data), userProvidedFogIds.get(i).data));
         }
 
-        if (!this.server.isCheckMovement()) {
+        if (!this.server.getSettings().playerSettings().checkMovement()) {
             this.checkMovement = false;
         }
 
@@ -3097,16 +3097,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public void sendTranslation(String message, String[] parameters) {
         TextPacket pk = new TextPacket();
-        if (!this.server.isLanguageForced()) {
+        if (this.server.getSettings().baseSettings().forceServerTranslate()) {
+            pk.type = TextPacket.TYPE_RAW;
+            pk.message = this.server.getLanguage().tr(message, parameters);
+        } else {
             pk.type = TextPacket.TYPE_TRANSLATION;
             pk.message = this.server.getLanguage().tr(message, parameters, "nukkit.", true);
             for (int i = 0; i < parameters.length; i++) {
                 parameters[i] = this.server.getLanguage().tr(parameters[i], parameters, "nukkit.", true);
             }
             pk.parameters = parameters;
-        } else {
-            pk.type = TextPacket.TYPE_RAW;
-            pk.message = this.server.getLanguage().tr(message, parameters);
         }
         this.dataPacket(pk);
     }
@@ -5263,9 +5263,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.server.getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return false;
-        }
-        if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-            log.trace("Immediate Outbound {}: {}", this.getName(), packet);
         }
         this.getSession().sendPacketImmediately(packet);
         return true;

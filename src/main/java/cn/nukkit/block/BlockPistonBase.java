@@ -132,13 +132,13 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
 
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED) {
-            if (!this.level.getServer().isRedstoneEnabled())
+            if (!this.level.getServer().getSettings().levelSettings().enableRedstone())
                 return 0;
             level.scheduleUpdate(this, 1);
             return type;
         }
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (!this.level.getServer().isRedstoneEnabled())
+            if (!this.level.getServer().getSettings().levelSettings().enableRedstone())
                 return 0;
             // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
             // before the "real" BlockEntity is set. That means, if we'd use the other method here,
@@ -198,7 +198,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     }
 
     protected boolean checkState(Boolean isPowered) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return false;
         }
 

@@ -116,7 +116,7 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
     public void onNeighborChange(@NotNull BlockFace side) {
         Server server = level.getServer();
         BlockFace blockFace = getBlockFace();
-        if (!server.isRedstoneEnabled() || side != blockFace || level.isUpdateScheduled(this, this)) {
+        if (!server.getSettings().levelSettings().enableRedstone() || side != blockFace || level.isUpdateScheduled(this, this)) {
             return;
         }
 

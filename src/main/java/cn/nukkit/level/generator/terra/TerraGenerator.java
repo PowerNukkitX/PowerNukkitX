@@ -16,12 +16,13 @@ import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.util.GeneratorWrapper;
 import com.dfsek.terra.api.world.info.WorldProperties;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.ConcurrentModificationException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 public class TerraGenerator extends Generator implements GeneratorWrapper {
     private final BiomeProvider biomeProvider;
     private final ConfigPack configPack;
@@ -103,13 +104,11 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
                 for (var generationStage : configPack.getStages()) {
                     generationStage.populate(tmp);
                 }
-            } catch (ConcurrentModificationException e) {
-                //TODO: 未知原因的 ConcurrentModificationException
             } catch (Exception e) {
-                //TODO: 未知原因的 ConcurrentModificationException
+                log.error("", e);
             }
 
-            if (Server.getInstance().getConfig("chunk-ticking.light-updates", true)) {
+            if (Server.getInstance().getSettings().chunkSettings().lightUpdates()) {
                 chunk.recalculateHeightMap();
                 chunk.populateSkyLight();
                 chunk.setLightPopulated();

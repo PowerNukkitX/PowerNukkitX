@@ -6,12 +6,8 @@ import cn.nukkit.utils.TextFormat;
 import cn.powernukkitx.libdeflate.Libdeflate;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.util.zip.Deflater;
-
 @Slf4j
 public final class ZlibChooser {
-    private static final int MAX_INFLATE_LEN = 1024 * 1024 * 10;
     private static final ZlibProvider[] providers;
     private static ZlibProvider provider;
 
@@ -35,13 +31,15 @@ public final class ZlibChooser {
             case 2:
                 if (providers[providerIndex] == null)
                     providers[providerIndex] = new ZlibThreadLocal();
-                if (Libdeflate.isAvailable())
-                    log.info(TextFormat.WHITE + lang.tr("nukkit.zlib.acceleration-can-enable"));
+                if (Libdeflate.isAvailable()) {
+                    log.info("{}{}", TextFormat.WHITE, lang.tr("nukkit.zlib.acceleration-can-enable"));
+                }
                 break;
             case 3:
                 if (Libdeflate.isAvailable()) {
                     if (providers[providerIndex] == null) {
-                        providers[providerIndex] = new LibDeflateThreadLocal();
+                        LibDeflateThreadLocal libDeflateThreadLocal = new LibDeflateThreadLocal((ZlibThreadLocal) providers[2]);
+                        providers[providerIndex] = libDeflateThreadLocal;
                     }
                 } else {
                     log.warn(lang.tr("nukkit.zlib.unavailable"));
@@ -57,24 +55,10 @@ public final class ZlibChooser {
             log.warn(lang.tr("nukkit.zlib.affect-performance"));
         }
         provider = providers[providerIndex];
-        log.info(lang.tr("nukkit.zlib.selected") + ": {} ({})", providerIndex, provider.getClass().getCanonicalName());
+        log.info("{}: {} ({})", lang.tr("nukkit.zlib.selected"), providerIndex, provider.getClass().getCanonicalName());
     }
 
-
-    public static byte[] deflate(byte[] data, boolean raw) throws IOException {
-        return deflate(data, Deflater.DEFAULT_COMPRESSION, raw);
-    }
-
-
-    public static byte[] deflate(byte[] data, int level, boolean raw) throws IOException {
-        return provider.deflate(data, level, raw);
-    }
-
-    public static byte[] inflate(byte[] data, boolean raw) throws IOException {
-        return inflate(data, MAX_INFLATE_LEN, raw);
-    }
-
-    public static byte[] inflate(byte[] data, int maxSize, boolean raw) throws IOException {
-        return provider.inflate(data, maxSize, raw);
+    public static ZlibProvider getCurrentProvider() {
+        return provider;
     }
 }

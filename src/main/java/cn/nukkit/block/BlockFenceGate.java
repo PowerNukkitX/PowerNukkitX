@@ -20,7 +20,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.Set;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.IN_WALL_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.OPEN_BIT;
 
 /**
  * @author xtypr
@@ -136,7 +138,7 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
             return false;
         }
 
-        if (level.getServer().isRedstoneEnabled() && !this.isOpen() && this.isGettingPower()) {
+        if (level.getServer().getSettings().levelSettings().enableRedstone() && !this.isOpen() && this.isGettingPower()) {
             this.setOpen(null, true);
         }
         
@@ -255,7 +257,7 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
                 level.setBlock(this, this, true);
                 return type;
             }
-        } else if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().isRedstoneEnabled()) {
+        } else if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             this.onRedstoneUpdate();
             return type;
         }

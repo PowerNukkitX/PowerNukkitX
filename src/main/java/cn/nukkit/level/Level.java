@@ -380,12 +380,11 @@ public class Level implements Metadatable {
         this.levelCurrentTick = levelProvider.getCurrentTick();
         this.updateQueue = new BlockUpdateScheduler(this, levelCurrentTick);
 
-        this.chunkTickRadius = Math.min(this.server.getViewDistance(),
-                Math.max(1, this.server.getConfig("chunk-ticking.tick-radius", 4)));
-        this.chunkGenerationQueueSize = this.server.getConfig("chunk-generation.queue-size", 8);
-        this.chunksPerTicks = this.server.getConfig("chunk-ticking.per-tick", 40);
+        this.chunkTickRadius = Math.min(this.server.getViewDistance(), Math.max(1, this.server.getSettings().chunkSettings().tickRadius()));
+        this.chunkGenerationQueueSize = this.server.getSettings().chunkSettings().generationQueueSize();
+        this.chunksPerTicks = this.server.getSettings().chunkSettings().chunksPerTicks();
+        this.clearChunksOnTick = this.server.getSettings().chunkSettings().clearTickList();
         this.chunkTickList.clear();
-        this.clearChunksOnTick = this.server.getConfig("chunk-ticking.clear-tick-list", true);
         this.temporalVector = new Vector3(0, 0, 0);
         this.tickRate = 1;
 
@@ -2258,7 +2257,8 @@ public class Level implements Metadatable {
         }
 
         if (update) {
-            if (Server.getInstance().getConfig("chunk-ticking.light-updates", true)) {
+
+            if (server.getSettings().chunkSettings().lightUpdates()) {
                 updateAllLight(block);
             }
 
@@ -3071,7 +3071,7 @@ public class Level implements Metadatable {
         chunk.setBlockState(x & 0x0f, ensureY(y), z & 0x0f, state, layer);
         addBlockChange(x, y, z);
         temporalVector.setComponents(x, y, z);
-        if (Server.getInstance().getConfig("chunk-ticking.light-updates", true)) {
+        if (server.getSettings().chunkSettings().lightUpdates()) {
             updateAllLight(new Vector3(x, y, z));
         }
     }
@@ -3926,7 +3926,7 @@ public class Level implements Metadatable {
                     long time = entry.getValue();
                     if (maxUnload <= 0) {
                         break;
-                    } else if (time > (now - Server.getInstance().getChunkUnloadDelay())) {
+                    } else if (time > (now - Server.getInstance().getSettings().levelSettings().chunkUnloadDelay())) {
                         continue;
                     }
                 }

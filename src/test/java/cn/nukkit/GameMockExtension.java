@@ -2,6 +2,8 @@ package cn.nukkit;
 
 import cn.nukkit.block.BlockComposter;
 import cn.nukkit.command.SimpleCommandMap;
+import cn.nukkit.config.ServerSettings;
+import cn.nukkit.config.YamlSnakeYamlConfigurer;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
@@ -32,6 +34,7 @@ import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.utils.ClientChainData;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.collection.FreezableArrayManager;
+import eu.okaeri.configs.ConfigManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -54,7 +57,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
 
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -105,9 +107,6 @@ public class GameMockExtension extends MockitoExtension {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-        when(server.getConfig()).thenReturn(config);
-        when(server.getConfig(anyString())).thenCallRealMethod();
-        when(server.getConfig(any(), any())).thenCallRealMethod();
         serverScheduler = new ServerScheduler();
         when(server.getScheduler()).thenReturn(serverScheduler);
 
@@ -124,15 +123,15 @@ public class GameMockExtension extends MockitoExtension {
         pluginManager.loadInternalPlugin();
 
         freezableArrayManager = new FreezableArrayManager(
-                server.getConfig("memory-compression.enable", true),
-                server.getConfig("memory-compression.slots", 32),
-                server.getConfig("memory-compression.default-temperature", 32),
-                server.getConfig("memory-compression.threshold.freezing-point", 0),
-                server.getConfig("memory-compression.threshold.absolute-zero", -256),
-                server.getConfig("memory-compression.threshold.boiling-point", 1024),
-                server.getConfig("memory-compression.heat.melting", 16),
-                server.getConfig("memory-compression.heat.single-operation", 1),
-                server.getConfig("memory-compression.heat.batch-operation", 32));
+                server.getSettings().memoryCompressionSettings().enable(),
+                server.getSettings().memoryCompressionSettings().slots(),
+                server.getSettings().memoryCompressionSettings().defaultTemperature(),
+                server.getSettings().memoryCompressionSettings().freezingPoint(),
+                server.getSettings().memoryCompressionSettings().absoluteZero(),
+                server.getSettings().memoryCompressionSettings().boilingPoint(),
+                server.getSettings().memoryCompressionSettings().melting(),
+                server.getSettings().memoryCompressionSettings().singleOperation(),
+                server.getSettings().memoryCompressionSettings().batchOperation());
         when(server.getFreezableArrayManager()).thenReturn(freezableArrayManager);
         when(server.getMotd()).thenReturn("PNX");
         when(server.getOnlinePlayers()).thenReturn(new HashMap<>());
@@ -147,7 +146,6 @@ public class GameMockExtension extends MockitoExtension {
         queryRegenerateEvent = new QueryRegenerateEvent(server);
         when(server.getQueryInformation()).thenReturn(queryRegenerateEvent);
         when(server.getNetwork()).thenCallRealMethod();
-        when(server.isEnableSnappy()).thenCallRealMethod();
         when(server.getAutoSave()).thenReturn(false);
         when(server.getTick()).thenReturn(1);
         when(server.getViewDistance()).thenReturn(4);
@@ -156,7 +154,13 @@ public class GameMockExtension extends MockitoExtension {
         when(server.getComputeThreadPool()).thenReturn(pool);
         when(server.getCommandMap()).thenReturn(simpleCommandMap);
         when(server.getScoreboardManager()).thenReturn(null);
-        when(server.getChunkUnloadDelay()).thenReturn(100);
+        when(server.getSettings()).thenReturn(ConfigManager.create(ServerSettings.class, it -> {
+            it.withConfigurer(new YamlSnakeYamlConfigurer());
+            it.withBindFile("nukkit.yml");
+            it.withRemoveOrphans(true);
+            it.saveDefaults();
+            it.load(true);
+        }));
         try {
             PositionTrackingService positionTrackingService = new PositionTrackingService(new File(Nukkit.DATA_PATH, "services/position_tracking_db"));
             when(server.getPositionTrackingService()).thenReturn(positionTrackingService);

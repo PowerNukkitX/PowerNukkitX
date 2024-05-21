@@ -61,7 +61,6 @@ import java.util.function.Consumer;
 
 @Slf4j
 public class BedrockSession {
-    protected boolean logging;
     private final AtomicBoolean closed = new AtomicBoolean();
     protected final BedrockPeer peer;
     protected final int subClientId;
@@ -301,14 +300,14 @@ public class BedrockSession {
     }
 
     protected void logOutbound(DataPacket packet) {
-        if (log.isTraceEnabled() && this.logging) {
-            log.trace("Outbound {}{}: {}", this.getSocketAddress(), this.subClientId, packet);
+        if (log.isTraceEnabled() && !Server.getInstance().isIgnoredPacket(packet.getClass())) {
+            log.trace("Outbound {}({}): {}", this.getSocketAddress(), this.subClientId, packet);
         }
     }
 
     protected void logInbound(DataPacket packet) {
-        if (log.isTraceEnabled() && this.logging) {
-            log.trace("Inbound {}{}: {}", this.getSocketAddress(), this.subClientId, packet);
+        if (log.isTraceEnabled() && !Server.getInstance().isIgnoredPacket(packet.getClass())) {
+            log.trace("Inbound {}({}): {}", this.getSocketAddress(), this.subClientId, packet);
         }
     }
 
@@ -318,14 +317,6 @@ public class BedrockSession {
 
     public boolean isSubClient() {
         return this.subClientId != 0;
-    }
-
-    public boolean isLogging() {
-        return logging;
-    }
-
-    public void setLogging(boolean logging) {
-        this.logging = logging;
     }
 
     public boolean isDisconnected() {
@@ -448,7 +439,7 @@ public class BedrockSession {
         if (ev.isCancelled())
             return;
 
-        if(this.packetHandler == null)
+        if (this.packetHandler == null)
             return;
 
         if (this.packetHandler instanceof InGamePacketHandler i) {

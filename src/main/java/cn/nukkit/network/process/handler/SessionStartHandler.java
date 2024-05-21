@@ -34,7 +34,7 @@ public class SessionStartHandler extends BedrockSessionPacketHandler {
         var settingsPacket = new NetworkSettingsPacket();
         //FIXME there is no way out there to disable compression
         PacketCompressionAlgorithm algorithm;
-        if (Server.getInstance().isEnableSnappy()) {
+        if (Server.getInstance().getSettings().networkSettings().snappy()) {
             algorithm = PacketCompressionAlgorithm.SNAPPY;
         } else {
             algorithm = PacketCompressionAlgorithm.ZLIB;

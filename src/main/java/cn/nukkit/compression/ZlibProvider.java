@@ -5,7 +5,7 @@ import java.io.IOException;
 /**
  * @author ScraMTeam
  */
-interface ZlibProvider {
+public interface ZlibProvider {
 
     byte[] deflate(byte[] data, int level, boolean raw) throws IOException;
 

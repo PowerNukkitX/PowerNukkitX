@@ -41,7 +41,7 @@ public class PlayerSkinPacket extends DataPacket {
         byteBuf.writeSkin(skin);
         byteBuf.writeString(newSkinName);
         byteBuf.writeString(oldSkinName);
-        byteBuf.writeBoolean(skin.isTrusted() || Server.getInstance().isForceSkinTrusted());
+        byteBuf.writeBoolean(skin.isTrusted() || Server.getInstance().getSettings().playerSettings().forceSkinTrusted());
     }
 
     public void handle(PacketHandler handler) {
