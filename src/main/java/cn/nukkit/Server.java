@@ -105,6 +105,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -272,24 +273,65 @@ public class Server {
             new File(commandDataPath).mkdirs();
         }
 
-        this.baseLang = new BaseLang(predefinedLanguage);
-        this.baseLangCode = mapInternalLang(predefinedLanguage);
-        
+        this.console = new NukkitConsole(this);
+        this.consoleThread = new ConsoleThread();
+        this.consoleThread.start();
+        this.console.setExecutingCommands(true);
+
+        File config = new File(this.dataPath + "nukkit.yml");
+        String chooseLanguage = null;
+        if (!config.exists()) {
+            log.info("{}Welcome! Please choose a language first!", TextFormat.GREEN);
+            try {
+                InputStream languageList = this.getClass().getModule().getResourceAsStream("language/language.list");
+                if (languageList == null) {
+                    throw new IllegalStateException("language/language.list is missing. If you are running a development version, make sure you have run 'git submodule update --init'.");
+                }
+                String[] lines = Utils.readFile(languageList).split("\n");
+                for (String line : lines) {
+                    log.info(line);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            while (chooseLanguage == null) {
+                String lang;
+                if (predefinedLanguage != null) {
+                    log.info("Trying to load language from predefined language: {}", predefinedLanguage);
+                    lang = predefinedLanguage;
+                } else {
+                    lang = this.console.readLine();
+                }
+
+                try (InputStream conf = this.getClass().getClassLoader().getResourceAsStream("language/" + lang + "/lang.json")) {
+                    if (conf != null) {
+                        chooseLanguage = lang;
+                    } else if (predefinedLanguage != null) {
+                        log.warn("No language found for predefined language: {}, please choose a valid language", predefinedLanguage);
+                        predefinedLanguage = null;
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } else {
+            Config configInstance = new Config(config);
+            chooseLanguage = configInstance.getString("settings.language", "eng");
+        }
+        this.baseLang = new BaseLang(chooseLanguage);
+        this.baseLangCode = mapInternalLang(chooseLanguage);
         log.info("Loading {} ...", TextFormat.GREEN + "nukkit.yml" + TextFormat.WHITE);
         this.settings = ConfigManager.create(ServerSettings.class, it -> {
             it.withConfigurer(new YamlSnakeYamlConfigurer()); // specify configurer implementation, optionally additional serdes packages
-            it.withBindFile("nukkit.yml"); // specify Path, File or pathname
+            it.withBindFile(config); // specify Path, File or pathname
             it.withRemoveOrphans(true); // automatic removal of undeclared keys
             it.saveDefaults(); // save file if it does not exist
             it.load(true); // load and save to update comments/new fields
         });
-        this.settings.baseSettings().language(predefinedLanguage);
+        this.settings.baseSettings().language(chooseLanguage);
 
-        this.console = new NukkitConsole(this);
-        this.consoleThread = new ConsoleThread();
-        this.consoleThread.start();
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
-        this.console.setExecutingCommands(true);
 
         levelArray = Level.EMPTY_ARRAY;
 
