@@ -143,113 +143,69 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Server {
     public static final String BROADCAST_CHANNEL_ADMINISTRATIVE = "nukkit.broadcast.admin";
     public static final String BROADCAST_CHANNEL_USERS = "nukkit.broadcast.user";
-
     private static Server instance = null;
 
     private BanList banByName;
-
     private BanList banByIP;
-
     private Config operators;
-
     private Config whitelist;
-
-    private AtomicBoolean isRunning = new AtomicBoolean(true);
-
-    private LongList busyingTime = LongLists.synchronize(new LongArrayList(0));
-
+    private final AtomicBoolean isRunning = new AtomicBoolean(true);
+    private final LongList busyingTime = LongLists.synchronize(new LongArrayList(0));
     private boolean hasStopped = false;
-
     private PluginManager pluginManager;
-
-    private int profilingTickrate = 20;
-
     private ServerScheduler scheduler;
-
     /**
      * 一个tick计数器,记录服务器已经经过的tick数
      */
     private int tickCounter;
-
     private long nextTick;
-
     private final float[] tickAverage = {20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
-
     private final float[] useAverage = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
     private float maxTick = 20;
-
     private float maxUse = 0;
-
     private int sendUsageTicker = 0;
-
-    private boolean dispatchSignals = false;
-
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
-
     /**
      * 负责地形生成，数据压缩等计算任务的FJP线程池<br/>
      * <p>
      * FJP thread pool responsible for terrain generation, data compression and other computing tasks
      */
     public final ForkJoinPool computeThreadPool;
-
     private SimpleCommandMap commandMap;
-
     private ResourcePackManager resourcePackManager;
-
     private ConsoleCommandSender consoleSender;
-
     private IScoreboardManager scoreboardManager;
-
     private FunctionManager functionManager;
-
     private TickingAreaManager tickingAreaManager;
-
     private int maxPlayers;
-
     private boolean autoSave = true;
-
     /**
      * 配置项是否检查登录时间.<P>Does the configuration item check the login time.
      */
     public boolean checkLoginTime = true;
-
     private RCON rcon;
-
     private EntityMetadataStore entityMetadata;
-
     private PlayerMetadataStore playerMetadata;
-
     private LevelMetadataStore levelMetadata;
-
     private Network network;
-
     private int serverAuthoritativeMovementMode = 0;
     private Boolean getAllowFlight = null;
     private int difficulty = Integer.MAX_VALUE;
     private int defaultGamemode = Integer.MAX_VALUE;
-
     private int autoSaveTicker = 0;
     private int autoSaveTicks = 6000;
-
     private BaseLang baseLang;
     private LangCode baseLangCode;
-
     private UUID serverID;
-
     private final String filePath;
     private final String dataPath;
     private final String pluginPath;
-    private final String commandDataPath;
     private final Set<UUID> uniquePlayers = new HashSet<>();
-    private QueryRegenerateEvent queryRegenerateEvent;
-    private Config properties;
+    private final Config properties;
     private final Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
-
     private final Map<UUID, Player> playerList = new ConcurrentHashMap<>();
-
+    private QueryRegenerateEvent queryRegenerateEvent;
     private PositionTrackingService positionTrackingService;
 
     private final Map<Integer, Level> levels = new HashMap<>() {
@@ -278,6 +234,7 @@ public class Server {
     private final ServiceManager serviceManager = new NKServiceManager();
     private final Thread currentThread;
     private final long launchTime;
+    private final ServerSettings settings;
     private Watchdog watchdog;
     private DB playerDataDB;
     private boolean useTerra;
@@ -291,8 +248,6 @@ public class Server {
     private boolean allowNether;
     private boolean allowTheEnd;
     ///
-
-    private ServerSettings settings;
 
     Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage) {
         Preconditions.checkState(instance == null, "Already initialized!");
@@ -312,7 +267,7 @@ public class Server {
         }
         this.dataPath = new File(dataPath).getAbsolutePath() + "/";
         this.pluginPath = new File(pluginPath).getAbsolutePath() + "/";
-        this.commandDataPath = new File(dataPath).getAbsolutePath() + "/command_data";
+        String commandDataPath = new File(dataPath).getAbsolutePath() + "/command_data";
         if (!new File(commandDataPath).exists()) {
             new File(commandDataPath).mkdirs();
         }
@@ -410,7 +365,7 @@ public class Server {
         String poolSize = settings.baseSettings().asyncWorkers();
         int poolSizeNumber;
         try {
-            poolSizeNumber = Integer.valueOf(poolSize);
+            poolSizeNumber = Integer.parseInt(poolSize);
         } catch (Exception e) {
             poolSizeNumber = Math.max(Runtime.getRuntime().availableProcessors(), 4);
         }
@@ -495,17 +450,17 @@ public class Server {
         }
 
         freezableArrayManager = new FreezableArrayManager(
-                this.settings.memoryCompressionSettings().enable(),
-                this.settings.memoryCompressionSettings().slots(),
-                this.settings.memoryCompressionSettings().defaultTemperature(),
-                this.settings.memoryCompressionSettings().freezingPoint(),
-                this.settings.memoryCompressionSettings().absoluteZero(),
-                this.settings.memoryCompressionSettings().boilingPoint(),
-                this.settings.memoryCompressionSettings().melting(),
-                this.settings.memoryCompressionSettings().singleOperation(),
-                this.settings.memoryCompressionSettings().batchOperation());
-        scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
-        functionManager = new FunctionManager(this.commandDataPath + "/functions");
+                this.settings.freezeArraySettings().enable(),
+                this.settings.freezeArraySettings().slots(),
+                this.settings.freezeArraySettings().defaultTemperature(),
+                this.settings.freezeArraySettings().freezingPoint(),
+                this.settings.freezeArraySettings().absoluteZero(),
+                this.settings.freezeArraySettings().boilingPoint(),
+                this.settings.freezeArraySettings().melting(),
+                this.settings.freezeArraySettings().singleOperation(),
+                this.settings.freezeArraySettings().batchOperation());
+        scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(commandDataPath + "/scoreboard.json"));
+        functionManager = new FunctionManager(commandDataPath + "/functions");
         tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.dataPath + "worlds/"));
 
         // Convert legacy data before plugins get the chance to mess with it.
