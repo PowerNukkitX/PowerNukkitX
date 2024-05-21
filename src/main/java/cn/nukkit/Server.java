@@ -276,7 +276,6 @@ public class Server {
         this.console = new NukkitConsole(this);
         this.consoleThread = new ConsoleThread();
         this.consoleThread.start();
-        this.console.setExecutingCommands(true);
 
         File config = new File(this.dataPath + "nukkit.yml");
         String chooseLanguage = null;
@@ -525,6 +524,7 @@ public class Server {
         this.pluginManager.subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this.consoleSender);
         this.pluginManager.registerInterface(JavaPluginLoader.class);
         //this.pluginManager.registerInterface(JSPluginLoader.class);
+        this.console.setExecutingCommands(true);
 
         try {
             log.debug("Loading position tracking service");
@@ -767,6 +767,8 @@ public class Server {
             for (Player player : new ArrayList<>(this.players.values())) {
                 player.close(player.getLeaveMessage(), settings.baseSettings().shutdownMessage());
             }
+
+            this.settings.save();
 
             log.debug("Disabling all plugins");
             this.pluginManager.disablePlugins();
