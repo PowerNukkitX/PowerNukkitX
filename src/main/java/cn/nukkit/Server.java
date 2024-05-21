@@ -322,11 +322,11 @@ public class Server {
         this.baseLangCode = mapInternalLang(chooseLanguage);
         log.info("Loading {} ...", TextFormat.GREEN + "nukkit.yml" + TextFormat.WHITE);
         this.settings = ConfigManager.create(ServerSettings.class, it -> {
-            it.withConfigurer(new YamlSnakeYamlConfigurer()); // specify configurer implementation, optionally additional serdes packages
-            it.withBindFile(config); // specify Path, File or pathname
-            it.withRemoveOrphans(true); // automatic removal of undeclared keys
-            it.saveDefaults(); // save file if it does not exist
-            it.load(true); // load and save to update comments/new fields
+            it.withConfigurer(new YamlSnakeYamlConfigurer());
+            it.withBindFile(config);
+            it.withRemoveOrphans(true);
+            it.saveDefaults();
+            it.load(true); 
         });
         this.settings.baseSettings().language(chooseLanguage);
 
