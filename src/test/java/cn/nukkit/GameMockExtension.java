@@ -228,6 +228,7 @@ public class GameMockExtension extends MockitoExtension {
                 if (file3.exists()) {
                     FileUtils.delete(file3);
                 }
+                System.out.println("TEST END!!!!!");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

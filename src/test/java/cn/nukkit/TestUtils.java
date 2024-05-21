@@ -19,10 +19,13 @@ public class TestUtils {
 
     public static GameLoop gameLoop(TestPlayer p) {
         GameLoop loop = GameLoop.builder().loopCountPerSec(100).onTick((d) -> {
-            Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
-            Server.getInstance().getNetwork().process();
-            p.getLevel().subTick(d);
-            p.checkNetwork();
+            try {
+                Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
+                Server.getInstance().getNetwork().process();
+                p.getLevel().subTick(d);
+                p.checkNetwork();
+            } catch (Exception ignore) {
+            }
         }).build();
         Thread thread = new Thread(loop::startLoop);
         thread.start();

@@ -271,6 +271,10 @@ public class Server {
         if (!new File(commandDataPath).exists()) {
             new File(commandDataPath).mkdirs();
         }
+
+        this.baseLang = new BaseLang(predefinedLanguage);
+        this.baseLangCode = mapInternalLang(predefinedLanguage);
+        
         log.info("Loading {} ...", TextFormat.GREEN + "nukkit.yml" + TextFormat.WHITE);
         this.settings = ConfigManager.create(ServerSettings.class, it -> {
             it.withConfigurer(new YamlSnakeYamlConfigurer()); // specify configurer implementation, optionally additional serdes packages
@@ -356,8 +360,6 @@ public class Server {
         if (this.getSettings().baseSettings().waterdogpe()) {
             this.checkLoginTime = false;
         }
-        this.baseLang = new BaseLang(settings.baseSettings().language());
-        this.baseLangCode = mapInternalLang(settings.baseSettings().language());
 
         log.info(this.getLanguage().tr("language.selected", getLanguage().getName(), getLanguage().getLang()));
         log.info(getLanguage().tr("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
