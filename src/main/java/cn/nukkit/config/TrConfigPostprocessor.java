@@ -67,15 +67,25 @@ public class TrConfigPostprocessor {
     public static String createComment(String commentPrefix, String[] strings) {
         if (strings == null) return null;
         if (commentPrefix == null) commentPrefix = "";
-        List<String> lines = new ArrayList<>();
 
+        List<String> newLines = new ArrayList<>();
         for (String line : strings) {
             String trLine = Server.getInstance().getLanguage().tr(line);
             String prefix = trLine.startsWith(commentPrefix.trim()) ? "" : commentPrefix;
-            lines.add((trLine.isEmpty() ? "" : prefix) + trLine);
+            String result = (trLine.isEmpty() ? "" : prefix) + trLine;
+
+            String[] parts = result.split("\n");
+            if (parts.length != 0) {
+                for (var p : parts) {
+                    prefix = p.startsWith(commentPrefix.trim()) ? "" : commentPrefix;
+                    newLines.add((p.isEmpty() ? "" : prefix) + p);
+                }
+            } else {
+                newLines.add(result);
+            }
         }
 
-        return String.join("\n", lines) + "\n";
+        return String.join("\n", newLines) + "\n";
     }
 
     private static String readInput(InputStream inputStream) {

@@ -1,5 +1,6 @@
 package cn.nukkit.compression;
 
+import cn.nukkit.Server;
 import cn.nukkit.utils.CleanerHandle;
 import cn.nukkit.utils.PNXLibDeflater;
 import cn.nukkit.utils.PNXLibInflater;
@@ -18,16 +19,15 @@ public class LibDeflateThreadLocal implements ZlibProvider {
     private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[8192]);
 
     private static final ThreadLocal<ByteBuffer> DIRECT_BUFFER = ThreadLocal.withInitial(() -> {
-//        var maximumSizePerChunk = CompressionProvider.MAX_INFLATE_LEN;
-//        if (Server.getInstance() != null) {
-//            maximumSizePerChunk = Server.getInstance().compressionBufferSize();
-//        }
-//        if (maximumSizePerChunk < 8192 || maximumSizePerChunk > 1024 * 1024 * 16) {
-//            return null;
-//        } else {
-//            return ByteBuffer.allocateDirect(maximumSizePerChunk).order(ByteOrder.nativeOrder());
-//        }
-        return ByteBuffer.allocateDirect(512).order(ByteOrder.nativeOrder());
+        var maximumSizePerChunk = CompressionProvider.MAX_INFLATE_LEN;
+        if (Server.getInstance() != null) {
+            maximumSizePerChunk = Server.getInstance().getSettings().networkSettings().compressionBufferSize();
+        }
+        if (maximumSizePerChunk < 8192 || maximumSizePerChunk > 1024 * 1024 * 16) {
+            return null;
+        } else {
+            return ByteBuffer.allocateDirect(maximumSizePerChunk).order(ByteOrder.nativeOrder());
+        }
     });
 
     public LibDeflateThreadLocal(ZlibThreadLocal zlibThreadLocal) {

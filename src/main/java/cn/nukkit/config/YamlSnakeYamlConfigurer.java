@@ -3,7 +3,6 @@ package cn.nukkit.config;
 
 import eu.okaeri.configs.configurer.Configurer;
 import eu.okaeri.configs.postprocessor.ConfigLineInfo;
-import eu.okaeri.configs.postprocessor.ConfigPostprocessor;
 import eu.okaeri.configs.postprocessor.format.YamlSectionWalker;
 import eu.okaeri.configs.schema.ConfigDeclaration;
 import eu.okaeri.configs.schema.FieldDeclaration;
@@ -155,8 +154,8 @@ public class YamlSnakeYamlConfigurer extends Configurer {
                             return line;
                         }
 
-                        String comment = ConfigPostprocessor.createComment(YamlSnakeYamlConfigurer.this.commentPrefix, fieldComment);
-                        return ConfigPostprocessor.addIndent(comment, lineInfo.getIndent()) + line;
+                        String comment = TrConfigPostprocessor.createComment(YamlSnakeYamlConfigurer.this.commentPrefix, fieldComment);
+                        return TrConfigPostprocessor.addIndent(comment, lineInfo.getIndent()) + line;
                     }
                 })
                 // add header if available
