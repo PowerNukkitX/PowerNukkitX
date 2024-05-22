@@ -166,15 +166,17 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public BlastFurnaceRecipe findBlastFurnaceRecipe(Item... items) {
         Int2ObjectArrayMap<Set<Recipe>> map1 = recipeMaps.get(RecipeType.BLAST_FURNACE);
-        if (map1 != null) {
-            Set<Recipe> recipes = map1.get(items.length);
+        Set<Recipe> recipes = map1.get(items.length);
+        if (recipes != null) {
             for (var r : recipes) {
                 if (r.fastCheck(items)) return (BlastFurnaceRecipe) r;
             }
         }
         Int2ObjectArrayMap<Set<Recipe>> map2 = recipeMaps.get(RecipeType.BLAST_FURNACE_DATA);
-        if (map2 == null) return null;
         Set<Recipe> recipes2 = map2.get(items.length);
+        if (recipes2 == null)
+            return null;
+
         for (var r : recipes2) {
             if (r.fastCheck(items)) return (BlastFurnaceRecipe) r;
         }
