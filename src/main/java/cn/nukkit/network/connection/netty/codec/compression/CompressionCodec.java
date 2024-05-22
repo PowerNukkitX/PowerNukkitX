@@ -1,8 +1,10 @@
 package cn.nukkit.network.connection.netty.codec.compression;
 
+import cn.nukkit.Server;
 import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
 import cn.nukkit.network.protocol.types.CompressionAlgorithm;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -61,6 +63,7 @@ public class CompressionCodec extends MessageToMessageCodec<BedrockBatchWrapper,
     @Override
     protected void decode(ChannelHandlerContext ctx, BedrockBatchWrapper msg, List<Object> out) throws Exception {
         ByteBuf compressed = msg.getCompressed().slice();
+        Preconditions.checkArgument(compressed.capacity() <= Server.getInstance().getSettings().networkSettings().maxDecompressSize(), "Compressed data size is too big: %s", compressed.capacity());
 
         BatchCompression compression;
         if (this.prefixed) {
@@ -71,6 +74,7 @@ public class CompressionCodec extends MessageToMessageCodec<BedrockBatchWrapper,
         }
 
         msg.setAlgorithm(compression.getAlgorithm());
+
         msg.setUncompressed(compression.decode(ctx, compressed.slice()));
         this.onDecompressed(ctx, msg);
         out.add(msg.retain());

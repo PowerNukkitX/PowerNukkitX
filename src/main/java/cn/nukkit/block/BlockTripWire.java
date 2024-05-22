@@ -16,7 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 import static cn.nukkit.block.BlockTripwireHook.MAX_TRIPWIRE_CIRCUIT_LENGTH;
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.ATTACHED_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.DISARMED_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.POWERED_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.SUSPENDED_BIT;
 
 public class BlockTripWire extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(TRIP_WIRE,
@@ -126,7 +129,7 @@ public class BlockTripWire extends BlockTransparent {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return;
         }
         if (!entity.doesTriggerPressurePlate()) {
@@ -145,7 +148,7 @@ public class BlockTripWire extends BlockTransparent {
     }
 
     private void updateHook(boolean scheduleUpdate) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return;
         }
 
@@ -173,7 +176,7 @@ public class BlockTripWire extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return 0;
         }
 

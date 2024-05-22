@@ -1,19 +1,15 @@
 package cn.nukkit.compression;
 
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
-import cn.nukkit.utils.BinaryStream;
 import org.xerial.snappy.Snappy;
 
 import java.io.IOException;
 
 
 public interface CompressionProvider {
-    CompressionProvider NONE = new CompressionProvider() {
-        @Override
-        public byte[] compress(BinaryStream packet, int level) throws IOException {
-            return packet.getBuffer();
-        }
+    int MAX_INFLATE_LEN = 1024 * 1024 * 10;
 
+    CompressionProvider NONE = new CompressionProvider() {
         @Override
         public byte[] compress(byte[] data, int level) throws IOException {
             return data;
@@ -27,44 +23,29 @@ public interface CompressionProvider {
 
     CompressionProvider ZLIB = new CompressionProvider() {
         @Override
-        public byte[] compress(BinaryStream packet, int level) throws IOException {
-            return ZlibChooser.deflate(packet.getBuffer(), level, false);
-        }
-
-        @Override
         public byte[] compress(byte[] data, int level) throws IOException {
-            return ZlibChooser.deflate(data, false);
+            return ZlibChooser.getCurrentProvider().deflate(data, level, false);
         }
 
         @Override
         public byte[] decompress(byte[] compressed) throws IOException {
-            return ZlibChooser.inflate(compressed, false);
+            return ZlibChooser.getCurrentProvider().inflate(compressed, MAX_INFLATE_LEN, false);
         }
     };
 
     CompressionProvider ZLIB_RAW = new CompressionProvider() {
         @Override
-        public byte[] compress(BinaryStream packet, int level) throws IOException {
-            return ZlibChooser.deflate(packet.getBuffer(), level, true);
-        }
-
-        @Override
         public byte[] compress(byte[] data, int level) throws IOException {
-            return ZlibChooser.deflate(data, true);
+            return ZlibChooser.getCurrentProvider().deflate(data, level, true);
         }
 
         @Override
         public byte[] decompress(byte[] compressed) throws IOException {
-            return ZlibChooser.inflate(compressed, true);
+            return ZlibChooser.getCurrentProvider().inflate(compressed, MAX_INFLATE_LEN, true);
         }
     };
 
     CompressionProvider SNAPPY = new CompressionProvider() {
-        @Override
-        public byte[] compress(BinaryStream packet, int level) throws IOException {
-            return Snappy.compress(packet.getBuffer());
-        }
-
         @Override
         public byte[] compress(byte[] data, int level) throws IOException {
             return Snappy.compress(data);
@@ -75,9 +56,6 @@ public interface CompressionProvider {
             return Snappy.uncompress(compressed);
         }
     };
-
-
-    byte[] compress(BinaryStream packet, int level) throws IOException;
 
     byte[] compress(byte[] data, int level) throws IOException;
 

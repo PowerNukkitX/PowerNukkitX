@@ -25,12 +25,12 @@ public class PlayerSkinProcessor extends DataPacketProcessor<PlayerSkinPacket> {
             return;
         }
 
-        if (player.getServer().isForceSkinTrusted()) {
+        if (player.getServer().getSettings().playerSettings().forceSkinTrusted()) {
             skin.setTrusted(true);
         }
 
         PlayerChangeSkinEvent playerChangeSkinEvent = new PlayerChangeSkinEvent(player, skin);
-        var tooQuick = TimeUnit.SECONDS.toMillis(player.getServer().getPlayerSkinChangeCooldown()) > System.currentTimeMillis() - player.lastSkinChange;
+        var tooQuick = TimeUnit.SECONDS.toMillis(player.getServer().getSettings().playerSettings().skinChangeCooldown()) > System.currentTimeMillis() - player.lastSkinChange;
         if (tooQuick) {
             playerChangeSkinEvent.setCancelled(true);
             log.warn("Player " + playerHandle.getUsername() + " change skin too quick!");

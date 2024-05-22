@@ -168,7 +168,7 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return 0;
         }
 

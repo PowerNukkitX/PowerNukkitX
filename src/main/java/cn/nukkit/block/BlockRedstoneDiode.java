@@ -41,7 +41,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
     public boolean onBreak(Item item) {
         this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             updateAllAroundRedstone();
         }
         return true;
@@ -58,7 +58,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
             return false;
         }
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             if (shouldBePowered()) {
                 this.level.scheduleUpdate(this, 1);
             }
@@ -73,7 +73,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
                 return 0;
             }
 
@@ -102,7 +102,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
             if (type == Level.BLOCK_UPDATE_NORMAL && !isSupportValid(down())) {
                 this.level.useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
-            } else if (this.level.getServer().isRedstoneEnabled()) {
+            } else if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
                 // Redstone event
                 RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
                 getLevel().getServer().getPluginManager().callEvent(ev);

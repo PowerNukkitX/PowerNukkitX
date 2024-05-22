@@ -76,7 +76,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return 0;
         }
 
@@ -96,7 +96,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
             return false;
         }
         if (getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
-            if (this.level.getServer().isRedstoneEnabled()) {
+            if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
                 updatePower();
             }
         }
@@ -108,7 +108,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
         if(isNotActivate(player)) return false;
         BlockDaylightDetectorInverted block = new BlockDaylightDetectorInverted();
         getLevel().setBlock(this, block, true, true);
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             block.updatePower();
         }
         return true;

@@ -15,7 +15,9 @@ import cn.nukkit.utils.RedstoneComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.OUTPUT_LIT_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.OUTPUT_SUBTRACT_BIT;
 
 /**
  * @author CreeperFace
@@ -152,7 +154,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     }
 
     private void onChange() {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return;
         }
 

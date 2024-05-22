@@ -47,7 +47,7 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
             return false;
         }
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             if (!checkState()) {
                 updateAllAroundRedstone(getBlockFace().getOpposite());
             }
@@ -74,7 +74,7 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
             return false;
         }
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             updateAllAroundRedstone(getBlockFace().getOpposite());
         }
         return true;
@@ -83,7 +83,7 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
     @Override
     public int onUpdate(int type) {
         if (super.onUpdate(type) == 0) {
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
                 return 0;
             }
 

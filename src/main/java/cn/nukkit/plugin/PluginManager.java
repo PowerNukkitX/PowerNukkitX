@@ -3,7 +3,11 @@ package cn.nukkit.plugin;
 import cn.nukkit.Server;
 import cn.nukkit.command.PluginCommand;
 import cn.nukkit.command.SimpleCommandMap;
-import cn.nukkit.event.*;
+import cn.nukkit.event.Event;
+import cn.nukkit.event.EventHandler;
+import cn.nukkit.event.EventPriority;
+import cn.nukkit.event.HandlerList;
+import cn.nukkit.event.Listener;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.permission.Permissible;
 import cn.nukkit.permission.Permission;
@@ -614,7 +618,7 @@ public class PluginManager {
             for (Class<?> clazz = eventClass; Event.class.isAssignableFrom(clazz); clazz = clazz.getSuperclass()) {
                 // This loop checks for extending deprecated events
                 if (clazz.getAnnotation(Deprecated.class) != null) {
-                    if (Boolean.parseBoolean(String.valueOf(this.server.getConfig("settings.deprecated-verbose", true)))) {
+                    if (Boolean.parseBoolean(String.valueOf(this.server.getSettings().baseSettings().deprecatedVerbose()))) {
                         log.warn(this.server.getLanguage().tr("nukkit.plugin.deprecatedEvent", plugin.getName(), clazz.getName(), listener.getClass().getName() + "." + method.getName() + "()"));
                     }
                     break;

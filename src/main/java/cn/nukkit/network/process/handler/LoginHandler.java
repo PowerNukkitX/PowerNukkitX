@@ -64,7 +64,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         }
 
         //set proxy ip
-        if (server.isWaterdogCapable() && chainData.getWaterdogIP() != null) {
+        if (server.getSettings().baseSettings().waterdogpe() && chainData.getWaterdogIP() != null) {
             InetSocketAddress oldAddress = session.getAddress();
             session.setAddress(new InetSocketAddress(chainData.getWaterdogIP(), session.getAddress().getPort()));
             Server.getInstance().getNetwork().replaceSessionAddress(oldAddress, session.getAddress(), session);
@@ -89,7 +89,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         }
 
         Skin skin = pk.skin;
-        if (server.isForceSkinTrusted()) {
+        if (server.getSettings().playerSettings().forceSkinTrusted()) {
             skin.setTrusted(true);
         }
 

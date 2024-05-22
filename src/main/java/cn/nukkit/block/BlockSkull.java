@@ -116,7 +116,7 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
 
     @Override
     public int onUpdate(int type) {
-        if ((type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_NORMAL) || !level.getServer().isRedstoneEnabled()) {
+        if ((type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_NORMAL) || !level.getServer().getSettings().levelSettings().enableRedstone()) {
             return 0;
         }
 

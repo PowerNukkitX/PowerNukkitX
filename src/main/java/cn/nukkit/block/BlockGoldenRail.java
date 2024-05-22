@@ -45,7 +45,7 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
                 return 0; // Already broken
             }
 
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
                 return 0;
             }
             boolean wasPowered = isActive();

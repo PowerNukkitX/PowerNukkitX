@@ -172,7 +172,7 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(this.commandsEnabled);
         byteBuf.writeBoolean(this.isTexturePacksRequired);
         byteBuf.writeGameRules(this.gameRules);
-        if (!Server.getInstance().isWaterdogCapable()) {
+        if (!Server.getInstance().getSettings().baseSettings().waterdogpe()) {
             byteBuf.writeIntLE(6); // Experiment count
             {
                 byteBuf.writeString("data_driven_items");

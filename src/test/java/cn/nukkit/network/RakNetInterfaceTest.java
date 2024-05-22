@@ -102,7 +102,7 @@ public class RakNetInterfaceTest {
                         dataPacket.decode(HandleByteBuf.of(Unpooled.wrappedBuffer(byteBuf)));
                         RequestNetworkSettingsPacket target = (RequestNetworkSettingsPacket) dataPacket;
                         assert target.protocolVersion == ProtocolInfo.CURRENT_PROTOCOL;
-                        gameMockExtension.stop();
+                        gameMockExtension.stopNetworkTickLoop();
                     }
                 });
             }

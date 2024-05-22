@@ -11,7 +11,6 @@ import cn.nukkit.event.inventory.InventoryMoveItemEvent;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.inventory.RecipeInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
@@ -91,7 +90,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
 
         setBlockFace(facing);
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             boolean powered = this.isGettingPower();
 
             if (powered == this.isEnabled()) {
@@ -143,7 +142,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return 0;
         }
 

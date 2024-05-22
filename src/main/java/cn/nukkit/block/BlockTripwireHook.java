@@ -16,7 +16,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.ATTACHED_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.POWERED_BIT;
 
 /**
  * @author CreeperFace
@@ -105,7 +107,9 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
 
     public void updateLine(boolean isHookBroken, boolean doUpdateAroundHook,
                            int eventDistance, BlockTripWire eventBlock) {
-        if (!this.level.getServer().isRedstoneEnabled()) { return; }
+        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+            return;
+        }
 
         BlockFace facing = this.getFacing();
         Position position = this.getLocation();

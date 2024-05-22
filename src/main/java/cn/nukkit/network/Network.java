@@ -132,7 +132,6 @@ public class Network {
 
                     @Override
                     protected void initSession(BedrockSession session) {
-                        session.setLogging(true);
                     }
                 })
                 .bind(bindAddress)

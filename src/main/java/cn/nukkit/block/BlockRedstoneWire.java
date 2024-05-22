@@ -50,7 +50,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             return false;
         }
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             this.getLevel().setBlock(block, this, true);
 
             this.updateSurroundingRedstone(true);
@@ -165,7 +165,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
         Position pos = getLocation();
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             this.updateSurroundingRedstone(false);
             this.getLevel().setBlock(this, air, true, true);
 
@@ -197,7 +197,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             return 0;
         }
 
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return 0;
         }
 

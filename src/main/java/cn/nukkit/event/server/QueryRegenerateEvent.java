@@ -52,7 +52,7 @@ public class QueryRegenerateEvent extends ServerEvent {
     public QueryRegenerateEvent(Server server, int timeout) {
         this.timeout = timeout;
         this.serverName = server.getMotd();
-        this.listPlugins = server.getConfig("settings.query-plugins", true);
+        this.listPlugins = server.getSettings().baseSettings().queryPlugins();
         this.plugins = server.getPluginManager() == null ? Plugin.EMPTY_ARRAY : server.getPluginManager().getPlugins().values().toArray(Plugin.EMPTY_ARRAY);
         this.players = server.getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY);
         this.gameType = (server.getGamemode() & 0x01) == 0 ? "SMP" : "CMP";

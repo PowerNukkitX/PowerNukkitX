@@ -126,7 +126,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return;
         }
 
