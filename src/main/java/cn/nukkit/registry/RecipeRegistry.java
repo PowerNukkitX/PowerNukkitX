@@ -89,8 +89,10 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public ShapelessRecipe findShapelessRecipe(Item... items) {
         Set<Recipe> recipes = recipeMaps.get(RecipeType.SHAPELESS).get(items.length);
-        for (var r : recipes) {
-            if (r.fastCheck(items)) return (ShapelessRecipe) r;
+        if (recipes != null) {
+            for (var r : recipes) {
+                if (r.fastCheck(items)) return (ShapelessRecipe) r;
+            }
         }
         return null;
     }
@@ -105,8 +107,10 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public ShapedRecipe findShapedRecipe(Item... items) {
         Set<Recipe> recipes = recipeMaps.get(RecipeType.SHAPED).get(items.length);
-        for (var r : recipes) {
-            if (r.fastCheck(items)) return (ShapedRecipe) r;
+        if (recipes != null) {
+            for (var r : recipes) {
+                if (r.fastCheck(items)) return (ShapedRecipe) r;
+            }
         }
         return null;
     }
@@ -166,15 +170,17 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public BlastFurnaceRecipe findBlastFurnaceRecipe(Item... items) {
         Int2ObjectArrayMap<Set<Recipe>> map1 = recipeMaps.get(RecipeType.BLAST_FURNACE);
-        if (map1 != null) {
-            Set<Recipe> recipes = map1.get(items.length);
+        Set<Recipe> recipes = map1.get(items.length);
+        if (recipes != null) {
             for (var r : recipes) {
                 if (r.fastCheck(items)) return (BlastFurnaceRecipe) r;
             }
         }
         Int2ObjectArrayMap<Set<Recipe>> map2 = recipeMaps.get(RecipeType.BLAST_FURNACE_DATA);
-        if (map2 == null) return null;
         Set<Recipe> recipes2 = map2.get(items.length);
+        if (recipes2 == null)
+            return null;
+
         for (var r : recipes2) {
             if (r.fastCheck(items)) return (BlastFurnaceRecipe) r;
         }
@@ -209,8 +215,10 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         Int2ObjectArrayMap<Set<Recipe>> map2 = recipeMaps.get(RecipeType.SMOKER_DATA);
         if (map2 == null) return null;
         Set<Recipe> recipes2 = map2.get(items.length);
-        for (var r : recipes2) {
-            if (r.fastCheck(items)) return (SmokerRecipe) r;
+        if (recipes2 != null) {
+            for (var r : recipes2) {
+                if (r.fastCheck(items)) return (SmokerRecipe) r;
+            }
         }
         return null;
     }
@@ -245,14 +253,17 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     }
 
     public CampfireRecipe findCampfireRecipe(Item... items) {
-        Item item = items[0];
         Set<Recipe> recipes = recipeMaps.get(RecipeType.CAMPFIRE).get(items.length);
-        for (var r : recipes) {
-            if (r.fastCheck(items)) return (CampfireRecipe) r;
+        if (recipes != null) {
+            for (var r : recipes) {
+                if (r.fastCheck(items)) return (CampfireRecipe) r;
+            }
         }
         Set<Recipe> recipes2 = recipeMaps.get(RecipeType.CAMPFIRE_DATA).get(items.length);
-        for (var r : recipes2) {
-            if (r.fastCheck(items)) return (CampfireRecipe) r;
+        if (recipes2 != null) {
+            for (var r : recipes2) {
+                if (r.fastCheck(items)) return (CampfireRecipe) r;
+            }
         }
         return null;
     }
@@ -267,8 +278,10 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public MultiRecipe findMultiRecipe(Item... items) {
         Set<Recipe> recipes = recipeMaps.get(RecipeType.MULTI).get(items.length);
-        for (var r : recipes) {
-            if (r.fastCheck(items)) return (MultiRecipe) r;
+        if (recipes != null) {
+            for (var r : recipes) {
+                if (r.fastCheck(items)) return (MultiRecipe) r;
+            }
         }
         return null;
     }
@@ -283,8 +296,10 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public StonecutterRecipe findStonecutterRecipe(Item... items) {
         Set<Recipe> recipes = recipeMaps.get(RecipeType.STONECUTTER).get(items.length);
-        for (var r : recipes) {
-            if (r.fastCheck(items)) return (StonecutterRecipe) r;
+        if (recipes != null) {
+            for (var r : recipes) {
+                if (r.fastCheck(items)) return (StonecutterRecipe) r;
+            }
         }
         return null;
     }
@@ -315,8 +330,10 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public SmithingTransformRecipe findSmithingTransform(Item... items) {
         Set<Recipe> recipes = recipeMaps.get(RecipeType.SMITHING_TRANSFORM).get(items.length);
-        for (var r : recipes) {
-            if (r.fastCheck(items)) return (SmithingTransformRecipe) r;
+        if (recipes != null) {
+            for (var r : recipes) {
+                if (r.fastCheck(items)) return (SmithingTransformRecipe) r;
+            }
         }
         return null;
     }
@@ -331,8 +348,10 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public BrewingRecipe findBrewingRecipe(Item... items) {
         Set<Recipe> recipes = recipeMaps.get(RecipeType.BREWING).get(items.length);
-        for (var r : recipes) {
-            if (r.fastCheck(items)) return (BrewingRecipe) r;
+        if (recipes != null) {
+            for (var r : recipes) {
+                if (r.fastCheck(items)) return (BrewingRecipe) r;
+            }
         }
         return null;
     }
@@ -347,8 +366,10 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public ContainerRecipe findContainerRecipe(Item... items) {
         Set<Recipe> recipes = recipeMaps.get(RecipeType.CONTAINER).get(items.length);
-        for (var r : recipes) {
-            if (r.fastCheck(items)) return (ContainerRecipe) r;
+        if (recipes != null) {
+            for (var r : recipes) {
+                if (r.fastCheck(items)) return (ContainerRecipe) r;
+            }
         }
         return null;
     }
@@ -363,8 +384,10 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public ModProcessRecipe findModProcessRecipe(Item... items) {
         Set<Recipe> recipes = recipeMaps.get(RecipeType.MOD_PROCESS).get(items.length);
-        for (var r : recipes) {
-            if (r.fastCheck(items)) return (ModProcessRecipe) r;
+        if (recipes != null) {
+            for (var r : recipes) {
+                if (r.fastCheck(items)) return (ModProcessRecipe) r;
+            }
         }
         return null;
     }
