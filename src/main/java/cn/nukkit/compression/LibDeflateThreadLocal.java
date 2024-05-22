@@ -37,7 +37,6 @@ public class LibDeflateThreadLocal implements ZlibProvider {
     @Override
     public byte[] deflate(byte[] data, int level, boolean raw) throws IOException {
         PNXLibDeflater deflater = PNX_DEFLATER.get().getResource();
-        deflater.setLevel(level);
         CompressionType type = raw ? CompressionType.DEFLATE : CompressionType.ZLIB;
         byte[] buffer = deflater.getCompressBound(data.length, type) < 8192 ? BUFFER.get() : new byte[data.length];
         int compressedSize = deflater.compress(data, buffer, type);
