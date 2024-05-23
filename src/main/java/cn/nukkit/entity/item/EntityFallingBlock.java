@@ -1,6 +1,12 @@
 package cn.nukkit.entity.item;
 
-import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockAnvil;
+import cn.nukkit.block.BlockFlowingLava;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockLiquid;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.Damage;
 import cn.nukkit.entity.Entity;
@@ -10,7 +16,6 @@ import cn.nukkit.event.entity.EntityBlockChangeEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
-import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
@@ -184,13 +189,14 @@ public class EntityFallingBlock extends Entity {
                     server.getPluginManager().callEvent(event);
                     if (!event.isCancelled()) {
                         Block eventTo = event.getTo();
-                        if (!breakOnGround)
-                            getLevel().setBlock(pos, eventTo, true);
-                        else {
+
+                        if (breakOnGround) {
                             if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
                                 dropItems();
                             }
                             level.addParticle(new DestroyBlockParticle(pos, Block.get(blockState)));
+                        } else {
+                            getLevel().setBlock(pos, eventTo, true);
                         }
 
                         if (eventTo.getId().equals(Block.ANVIL)) {
@@ -261,8 +267,6 @@ public class EntityFallingBlock extends Entity {
     }
 
     private void dropItems() {
-        for (var i : Block.get(blockState).getDrops(Item.AIR)) {
-            getLevel().dropItem(this, i);
-        }
+        getLevel().dropItem(this, blockState.toItem());
     }
 }

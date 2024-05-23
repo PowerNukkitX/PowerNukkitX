@@ -5,9 +5,10 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.Damage;
 import cn.nukkit.inventory.AnvilInventory;
-import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.BlockInventoryHolder;
+import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
@@ -104,7 +105,7 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(isNotActivate(player)) return false;
+        if (isNotActivate(player)) return false;
         player.addWindow(getOrCreateInventory());
         return true;
     }
@@ -140,5 +141,10 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
         double xOffset = Math.abs(face.getXOffset()) * (2 / 16.0);
         double zOffset = Math.abs(face.getZOffset()) * (2 / 16.0);
         return new SimpleAxisAlignedBB(x + xOffset, y, z + zOffset, x + 1 - xOffset, y + 1, z + 1 - zOffset);
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemBlock(this.clone().setPropertyValue(MINECRAFT_CARDINAL_DIRECTION.createDefaultValue()));
     }
 }
