@@ -715,6 +715,10 @@ public class Level implements Metadatable {
         this.addParticle(particle, new Player[]{player});
     }
 
+    public void addParticle(Particle particle, Collection<Player> players) {
+        this.addParticle(particle, players.toArray(Player.EMPTY_ARRAY));
+    }
+
     public void addParticle(Particle particle, Player[] players) {
         DataPacket[] packets = particle.encode();
 
@@ -731,10 +735,6 @@ public class Level implements Metadatable {
                 }
             }
         }
-    }
-
-    public void addParticle(Particle particle, Collection<Player> players) {
-        this.addParticle(particle, players.toArray(Player.EMPTY_ARRAY));
     }
 
     public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect) {

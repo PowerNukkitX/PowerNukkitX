@@ -26,10 +26,14 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 /**
  * @author MagicDroidX
  */
 public class EntityFallingBlock extends Entity {
+    private static final int sandAliveTick = 600;
+
     @Override
     @NotNull
     public String getIdentifier() {
@@ -39,6 +43,7 @@ public class EntityFallingBlock extends Entity {
     protected BlockState blockState;
     protected boolean breakOnLava;
     protected boolean breakOnGround;
+    protected int aliveTick = 0;
 
     public EntityFallingBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -76,7 +81,7 @@ public class EntityFallingBlock extends Entity {
 
     @Override
     public boolean canCollide() {
-        return blockState.getIdentifier() == BlockID.ANVIL;
+        return Objects.equals(blockState.getIdentifier(), BlockID.ANVIL);
     }
 
     @Override
@@ -103,7 +108,7 @@ public class EntityFallingBlock extends Entity {
 
     @Override
     public boolean canCollideWith(Entity entity) {
-        return blockState.getIdentifier() == BlockID.ANVIL;
+        return Objects.equals(blockState.getIdentifier(), BlockID.ANVIL);
     }
 
     @Override
@@ -127,6 +132,17 @@ public class EntityFallingBlock extends Entity {
         boolean hasUpdate = entityBaseTick(tickDiff);
 
         if (isAlive()) {
+            Block b = blockState.toBlock();
+            if ((b.getId().equals(BlockID.SAND) || b.getId().equals(BlockID.GRAVEL))) {
+                aliveTick++;
+                if (aliveTick > sandAliveTick) {
+                    aliveTick = 0;
+                    level.addParticle(new DestroyBlockParticle(this, b));
+                    this.close();
+                    dropItems();
+                }
+            }
+
             motionY -= getGravity();
 
             move(motionX, motionY, motionZ);
@@ -251,7 +267,7 @@ public class EntityFallingBlock extends Entity {
 
     @Override
     public boolean canBeMovedByCurrents() {
-        return false;
+        return !onGround;
     }
 
     @Override
@@ -261,12 +277,12 @@ public class EntityFallingBlock extends Entity {
         }
     }
 
+    private void dropItems() {
+        getLevel().dropItem(this, blockState.toItem());
+    }
+
     @Override
     public String getOriginalName() {
         return "Falling Block";
-    }
-
-    private void dropItems() {
-        getLevel().dropItem(this, blockState.toItem());
     }
 }
