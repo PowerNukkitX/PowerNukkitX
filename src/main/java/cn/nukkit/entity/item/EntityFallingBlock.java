@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 /**
- * @author MagicDroidX
+ * @author MagicDroidX | CoolLoong
  */
 public class EntityFallingBlock extends Entity {
     private static final int sandAliveTick = 600;
@@ -132,12 +132,15 @@ public class EntityFallingBlock extends Entity {
         boolean hasUpdate = entityBaseTick(tickDiff);
 
         if (isAlive()) {
-            Block b = blockState.toBlock();
-            if ((b.getId().equals(BlockID.SAND) || b.getId().equals(BlockID.GRAVEL))) {
+            String b = blockState.getIdentifier();
+            if ((b.equals(BlockID.SAND) ||
+                    b.equals(BlockID.GRAVEL) ||
+                    b.equals(BlockID.ANVIL)
+            )) {
                 aliveTick++;
                 if (aliveTick > sandAliveTick) {
                     aliveTick = 0;
-                    level.addParticle(new DestroyBlockParticle(this, b));
+                    level.addParticle(new DestroyBlockParticle(this, blockState.toBlock()));
                     this.close();
                     dropItems();
                 }
@@ -267,7 +270,7 @@ public class EntityFallingBlock extends Entity {
 
     @Override
     public boolean canBeMovedByCurrents() {
-        return !onGround;
+        return !onGround && !this.blockState.getIdentifier().equals(BlockID.DRIPSTONE_BLOCK);
     }
 
     @Override
