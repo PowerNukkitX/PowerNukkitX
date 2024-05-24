@@ -5,8 +5,10 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A slider letting the player choose between different values
+ */
 public class ElementStepSlider extends Element {
-
     @SuppressWarnings("unused")
     private final String type = "step_slider"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
     private String text = "";
@@ -14,14 +16,32 @@ public class ElementStepSlider extends Element {
     @SerializedName("default")
     private int defaultStepIndex = 0;
 
+    /**
+     * create a step slider.
+     *
+     * @param text the text displayed above the slider
+     */
     public ElementStepSlider(String text) {
         this(text, new ArrayList<>());
     }
 
+    /**
+     * create a step slider.
+     *
+     * @param text  the text displayed above the slider
+     * @param steps the steps to choose
+     */
     public ElementStepSlider(String text, List<String> steps) {
         this(text, steps, 0);
     }
 
+    /**
+     * create a step slider.
+     *
+     * @param text        the text displayed above the slider
+     * @param steps       the steps to choose
+     * @param defaultStep index of the default slider value
+     */
     public ElementStepSlider(String text, List<String> steps, int defaultStep) {
         this.text = text;
         this.steps = steps;

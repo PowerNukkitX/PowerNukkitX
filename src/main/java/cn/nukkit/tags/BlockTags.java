@@ -1,7 +1,6 @@
 package cn.nukkit.tags;
 
 import cn.nukkit.Server;
-import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.JSONUtils;
 import com.google.gson.reflect.TypeToken;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -109,11 +108,6 @@ public final class BlockTags {
      * @param tags       The tags to register
      */
     public static void register(String identifier, Collection<String> tags) {
-        register(identifier, true, tags);
-    }
-
-    public static void register(String identifier, boolean check, Collection<String> tags) {
-        if (check) Identifier.assertValid(identifier);
         final var tagSet = BLOCKS_2_TAGS.get(identifier);
         if (tagSet != null) tagSet.addAll(tags);
         else BLOCKS_2_TAGS.put(identifier, new HashSet<>(tags));

@@ -2,6 +2,9 @@ package cn.nukkit.form.window;
 
 import cn.nukkit.form.response.FormResponseModal;
 
+/**
+ * Modal Forms consist of a title,text content and two buttons
+ */
 public class FormWindowModal extends FormWindow {
 
     @SuppressWarnings("unused")

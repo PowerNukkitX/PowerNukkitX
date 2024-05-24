@@ -6,6 +6,9 @@ import cn.nukkit.form.response.FormResponseSimple;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Simple Forms return an integer corresponding to the index of the button the player pressed. If the player closed the form (with the cross at the top right, or by hitting escape for example), null is returned.
+ */
 public class FormWindowSimple extends FormWindow {
 
     @SuppressWarnings("unused")

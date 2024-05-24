@@ -1,6 +1,6 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.utils.exception.FormativeException;
+import cn.nukkit.utils.exception.FormativeRuntimeException;
 import com.dfsek.terra.lib.commons.lang3.BooleanUtils;
 import com.dfsek.terra.lib.commons.lang3.math.NumberUtils;
 import com.google.gson.Gson;
@@ -753,7 +753,7 @@ public class JSONUtils {
 
     @Setter
     @Getter
-    public static class GsonException extends FormativeException {
+    public static class GsonException extends FormativeRuntimeException {
 
         public GsonException() {
             super();

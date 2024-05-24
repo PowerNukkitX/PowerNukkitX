@@ -1,11 +1,18 @@
 package cn.nukkit.form.element;
 
+/**
+ * Pure text content element
+ */
 public class ElementLabel extends Element {
-
     @SuppressWarnings("unused")
     private final String type = "label"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
     private String text = "";
 
+    /**
+     * create a label
+     *
+     * @param text to be displayed
+     */
     public ElementLabel(String text) {
         this.text = text;
     }

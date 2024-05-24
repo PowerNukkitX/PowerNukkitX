@@ -39,7 +39,7 @@ public final class BlockProperties {
 
     public BlockProperties(String identifier, Set<String> blockTags, BlockPropertyType<?>... properties) {
         Identifier.assertValid(identifier);
-        BlockTags.register(identifier, false, blockTags);
+        BlockTags.register(identifier, blockTags);
         this.identifier = identifier.intern();
         this.propertyTypeSet = Sets.newHashSet(properties);
 

@@ -23,10 +23,10 @@ import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.connection.BedrockSession;
+import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.protocol.types.PlayerInfo;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.plugin.JavaPluginLoader;
-import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
@@ -64,7 +64,7 @@ import static org.mockito.Mockito.when;
 @Slf4j
 public class GameMockExtension extends MockitoExtension {
     static BanList banList = mock(BanList.class);
-    static PluginManager pluginManager;
+    static TestPluginManager pluginManager;
     static SimpleCommandMap simpleCommandMap = mock(SimpleCommandMap.class);
     static ServerScheduler serverScheduler;
     static FreezableArrayManager freezableArrayManager;
@@ -118,7 +118,7 @@ public class GameMockExtension extends MockitoExtension {
             when(server.getApiVersion()).thenReturn("1.0.0");
             when(simpleCommandMap.getCommands()).thenReturn(Collections.emptyMap());
 
-            pluginManager = new PluginManager(server, simpleCommandMap);
+            pluginManager = new TestPluginManager(server, simpleCommandMap);
             pluginManager.registerInterface(JavaPluginLoader.class);
             when(server.getPluginManager()).thenReturn(pluginManager);
             pluginManager.loadInternalPlugin();
@@ -188,10 +188,13 @@ public class GameMockExtension extends MockitoExtension {
                 null,
                 mock(ClientChainData.class)
         );
+        final DataPacketManager dataPacketManager = new DataPacketManager();
+        when(serverSession.getDataPacketManager()).thenReturn(dataPacketManager);
         doNothing().when(serverSession).sendPacketImmediately(any());
         doNothing().when(serverSession).sendPacket(any());
         player = new TestPlayer(serverSession, info);
         player.loggedIn = true;
+        player.spawned = true;
         TestUtils.setField(Player.class, player, "info", new PlayerInfo("test", UUID.nameUUIDFromBytes(new byte[]{1, 2, 3}), mock(Skin.class), mock(ClientChainData.class)));
         player.temporalVector = new Vector3(0, 100, 0);
         player.setInventories(new Inventory[]{
@@ -260,6 +263,7 @@ public class GameMockExtension extends MockitoExtension {
                 || parameterContext.getParameter().getType().equals(BlockRegistry.class)
                 || parameterContext.getParameter().getType().equals(LevelProvider.class)
                 || parameterContext.getParameter().getType().equals(TestPlayer.class)
+                || parameterContext.getParameter().getType().equals(TestPluginManager.class)
                 || parameterContext.getParameter().getType().equals(Level.class);
     }
 
@@ -275,6 +279,8 @@ public class GameMockExtension extends MockitoExtension {
             return level;
         } else if (parameterContext.getParameter().getType().equals(TestPlayer.class)) {
             return player;
+        } else if (parameterContext.getParameter().getType().equals(TestPluginManager.class)) {
+            return pluginManager;
         }
         return super.resolveParameter(parameterContext, context);
     }

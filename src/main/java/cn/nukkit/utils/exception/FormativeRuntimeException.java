@@ -6,27 +6,27 @@ import com.dfsek.terra.lib.commons.lang3.exception.ExceptionUtils;
 /**
  * Custom runtime exceptions that support formatting strings
  */
-public class FormativeException extends Exception {
+public class FormativeRuntimeException extends RuntimeException {
 
     private int[] indices;
     private int usedCount;
     private String message;
     private transient Throwable throwable;
 
-    public FormativeException() {
+    public FormativeRuntimeException() {
         super();
     }
 
-    public FormativeException(String message) {
+    public FormativeRuntimeException(String message) {
         this.message = message;
     }
 
-    public FormativeException(Throwable cause) {
+    public FormativeRuntimeException(Throwable cause) {
         this.throwable = cause;
         this.message = ExceptionUtils.getStackTrace(throwable);
     }
 
-    public FormativeException(String format, Object... arguments) {
+    public FormativeRuntimeException(String format, Object... arguments) {
         init(format, arguments);
         fillInStackTrace();
         this.message = formatMessage(format, arguments);

@@ -1,9 +1,16 @@
 package cn.nukkit.registry;
 
-public class RegisterException extends Exception {
+import cn.nukkit.utils.exception.FormativeException;
+
+public class RegisterException extends FormativeException {
     public RegisterException(String msg) {
         super(msg);
     }
+
+    public RegisterException(String format, Object... arguments) {
+        super(format, arguments);
+    }
+
     public RegisterException(Exception e) {
         super(e);
     }

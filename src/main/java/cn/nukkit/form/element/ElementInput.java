@@ -2,8 +2,10 @@ package cn.nukkit.form.element;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * An input field letting the player input text
+ */
 public class ElementInput extends Element {
-
     @SuppressWarnings("unused")
     private final String type = "input"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
     private String text = "";
@@ -11,14 +13,32 @@ public class ElementInput extends Element {
     @SerializedName("default")
     private String defaultText = "";
 
+    /**
+     * create an input.
+     *
+     * @param text displayed above the input field
+     */
     public ElementInput(String text) {
         this(text, "");
     }
 
+    /**
+     * create an input.
+     *
+     * @param text        displayed above the input field
+     * @param placeholder text displayed in the input field
+     */
     public ElementInput(String text, String placeholder) {
         this(text, placeholder, "");
     }
 
+    /**
+     * create an input.
+     *
+     * @param text        displayed above the input field
+     * @param placeholder text displayed in the input field
+     * @param defaultText already entered text
+     */
     public ElementInput(String text, String placeholder, String defaultText) {
         this.text = text;
         this.placeholder = placeholder;

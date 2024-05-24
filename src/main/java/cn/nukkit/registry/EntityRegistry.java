@@ -321,6 +321,34 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     }
 
     /**
+     * Register an entity to override internal entity.
+     *
+     * @param plugin   the plugin
+     * @param entityId the entity id {@link EntityID}
+     * @param value    the entity class,must extends internal entity
+     * @throws RegisterException the register exception
+     */
+    public void registerOverrideEntity(Plugin plugin, String entityId, Class<? extends Entity> value) throws RegisterException {
+        EntityDefinition key = getEntityDefinition(entityId);
+        Class<? extends Entity> entityClass = getEntityClass(entityId);
+        if (entityClass == null) {
+            throw new RegisterException("This entity class does not override because cant find entity class from entityId {}", entityId);
+        }
+        if (!entityClass.isAssignableFrom(value)) {
+            throw new RegisterException("This entity class {} does not override the {} because is not assignable from {}!", entityClass.getSimpleName(), value.getSimpleName(), value.getSimpleName());
+        }
+        try {
+            FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
+            FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false));
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+        ID2RID.put(key.id, key.rid);
+        RID2ID.put(key.rid, key.id);
+        DEFINITIONS.put(key.id, key);
+    }
+
+    /**
      * register custom entity
      */
     public void registerCustomEntity(Plugin plugin, CustomEntityDefinition key, Class<? extends Entity> value) throws RegisterException {
