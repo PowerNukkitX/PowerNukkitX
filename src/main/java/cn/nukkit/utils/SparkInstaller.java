@@ -26,9 +26,14 @@ public class SparkInstaller {
                 assert in != null;
                 File targetPath = new File(server.getPluginPath(), "spark.jar");
                 if (!targetPath.exists()) {
-                    Files.copy(in, targetPath.toPath());
-                    server.getPluginManager().enablePlugin(server.getPluginManager().loadPlugin(targetPath));
-                    log.info("Spark has been installed.");
+                    //Do not remove this try catch block!!!
+                    try {
+                        Files.copy(in, targetPath.toPath());
+                        server.getPluginManager().enablePlugin(server.getPluginManager().loadPlugin(targetPath));
+                        log.info("Spark has been installed.");
+                    } catch (Exception e)  {
+                        log.warn("Failed to copy spark: {}", Arrays.toString(e.getStackTrace()));
+                    }
                 }
             } catch (IOException e) {
                 log.warn("Failed to download spark: {}", Arrays.toString(e.getStackTrace()));
