@@ -422,7 +422,6 @@ public class Server {
         this.enabledNetworkEncryption = this.properties.getBoolean("network-encryption", true);
         if (this.getSettings().baseSettings().waterdogpe()) {
             this.checkLoginTime = false;
-//            this.enabledNetworkEncryption = false;
         }
         
         if (this.getPropertyBoolean("enable-rcon", false)) {
