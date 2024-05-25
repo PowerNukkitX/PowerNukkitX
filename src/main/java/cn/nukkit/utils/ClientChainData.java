@@ -150,11 +150,7 @@ public final class ClientChainData implements LoginChainData {
     }
 
     private boolean isWaterdog() {
-        if (waterdogXUID == null || Server.getInstance() == null) {
-            return false;
-        }
-
-        return Server.getInstance().getSettings().baseSettings().waterdogpe();
+        return waterdogXUID != null && Server.getInstance() != null;
     }
 
     ///////////////////////////////////////////////////////////////////////////

@@ -94,6 +94,7 @@ import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongLists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
@@ -112,9 +113,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.Permission;
@@ -326,7 +325,7 @@ public class Server {
             it.withBindFile(config);
             it.withRemoveOrphans(true);
             it.saveDefaults();
-            it.load(true); 
+            it.load(true);
         });
         this.settings.baseSettings().language(chooseLanguage);
 
@@ -398,9 +397,6 @@ public class Server {
         this.allowTheEnd = this.properties.getBoolean("allow-the_end", true);
         this.useTerra = this.properties.getBoolean("use-terra", false);
         this.checkLoginTime = this.properties.getBoolean("check-login-time", false);
-        if (this.getSettings().baseSettings().waterdogpe()) {
-            this.checkLoginTime = false;
-        }
 
         log.info(this.getLanguage().tr("language.selected", getLanguage().getName(), getLanguage().getLang()));
         log.info(getLanguage().tr("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
@@ -590,6 +586,7 @@ public class Server {
             this.watchdog = new Watchdog(this, 60000);//60s
             this.watchdog.start();
         }
+        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
         this.start();
     }
 
@@ -2208,7 +2205,7 @@ public class Server {
         if (config.exists()) {
             try {
                 levelConfig = JSONUtils.from(config, LevelConfig.class);
-                Files.writeString(config.toPath(), JSONUtils.to(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.WRITE);
+                FileUtils.write(config, JSONUtils.toPretty(levelConfig), StandardCharsets.UTF_8);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -2225,7 +2222,7 @@ public class Server {
             levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), true, map);
             try {
                 config.createNewFile();
-                Files.writeString(config.toPath(), JSONUtils.toPretty(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.CREATE);
+                FileUtils.write(config, JSONUtils.toPretty(levelConfig), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -2298,7 +2295,7 @@ public class Server {
         if (config.exists()) {
             try {
                 levelConfig = JSONUtils.from(new FileReader(config), LevelConfig.class);
-                Files.writeString(config.toPath(), JSONUtils.toPretty(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.WRITE);
+                FileUtils.write(config, JSONUtils.toPretty(levelConfig), StandardCharsets.UTF_8);
             } catch (Exception e) {
                 log.error("The levelConfig is not exists under the {} path", path);
                 return false;
@@ -2307,7 +2304,7 @@ public class Server {
             try {
                 jpath.toFile().mkdirs();
                 config.createNewFile();
-                Files.writeString(config.toPath(), JSONUtils.toPretty(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.CREATE);
+                FileUtils.write(config, JSONUtils.toPretty(levelConfig), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

@@ -3,11 +3,15 @@ package cn.nukkit.resourcepacks;
 import cn.nukkit.Server;
 import cn.nukkit.resourcepacks.loader.ResourcePackLoader;
 import cn.nukkit.resourcepacks.loader.ZippedResourcePackLoader;
-import com.dfsek.terra.lib.google.common.collect.Sets;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @Slf4j
 public class ResourcePackManager {

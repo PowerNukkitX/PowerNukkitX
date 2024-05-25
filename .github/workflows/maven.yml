@@ -107,6 +107,20 @@ jobs:
           md5sum powernukkitx.jar > hash/md5/powernukkitx.jar.md5
           md5sum libs.tar.gz > hash/md5/libs.tar.gz.md5
 
+      - name: Archive PNX Core
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: PowerNukkitX-Core
+          path: build/powernukkitx.jar
+
+      - name: Archive Libraries
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: PowerNukkitX-Libs
+          path: build/libs/
+
       - name: Archive PNX SHADED
         uses: actions/upload-artifact@v4
         if: success()
@@ -117,7 +131,7 @@ jobs:
       - name: Download PNX CLI
         run: |
           cd build
-          wget -O cli.jar https://github.com/PowerNukkitX/PNX-CLI/releases/download/0.2.2/PNX-CLI-0.2.2.jar
+          wget -O cli.jar https://github.com/PowerNukkitX/PNX-CLI/releases/download/0.2.3/PNX-CLI-0.2.3.jar
           zip -q -r powernukkitx-run.zip powernukkitx.jar cli.jar libs
           ls -l
 
