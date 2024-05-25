@@ -13,7 +13,7 @@ import cn.nukkit.level.Level;
  */
 public interface EntitySmite {
     default void burn(Entity entity) {
-        if (entity.getLevel().getDimension() == Level.DIMENSION_OVERWORLD && entity.getLevel().isDaytime()
+        if (entity.getLevel().getDimension() == Level.DIMENSION_OVERWORLD && entity.getLevel().isDaytime() && !entity.getLevel().isRaining()
                 && (!entity.hasEffect(EffectType.FIRE_RESISTANCE) || (entity instanceof EntityInventoryHolder entityInventoryHolder && entityInventoryHolder.getHelmet().isNull()))
                 && !entity.isInsideOfWater() && !entity.isUnderBlock() && !entity.isOnFire()) {
             entity.setOnFire(1);
