@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.nbt.NBTIO;
@@ -171,24 +172,27 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(this.commandsEnabled);
         byteBuf.writeBoolean(this.isTexturePacksRequired);
         byteBuf.writeGameRules(this.gameRules);
-
-        byteBuf.writeIntLE(6); // Experiment count
-        {
-            byteBuf.writeString("data_driven_items");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("data_driven_biomes");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("upcoming_creator_features");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("gametest");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("experimental_molang_features");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("cameras");
-            byteBuf.writeBoolean(true);
+        if (!Server.getInstance().getSettings().baseSettings().waterdogpe()) {
+            byteBuf.writeIntLE(6); // Experiment count
+            {
+                byteBuf.writeString("data_driven_items");
+                byteBuf.writeBoolean(true);
+                byteBuf.writeString("data_driven_biomes");
+                byteBuf.writeBoolean(true);
+                byteBuf.writeString("upcoming_creator_features");
+                byteBuf.writeBoolean(true);
+                byteBuf.writeString("gametest");
+                byteBuf.writeBoolean(true);
+                byteBuf.writeString("experimental_molang_features");
+                byteBuf.writeBoolean(true);
+                byteBuf.writeString("cameras");
+                byteBuf.writeBoolean(true);
+            }
+            byteBuf.writeBoolean(true); // Were experiments previously toggled
+        } else {
+            byteBuf.writeIntLE(0);
+            byteBuf.writeBoolean(false); // Were experiments previously toggled
         }
-        byteBuf.writeBoolean(true); // Were experiments previously toggled
-        
         byteBuf.writeBoolean(this.bonusChest);
         byteBuf.writeBoolean(this.hasStartWithMapEnabled);
         byteBuf.writeVarInt(this.permissionLevel);

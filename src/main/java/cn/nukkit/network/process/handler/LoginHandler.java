@@ -64,7 +64,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         }
 
         //set proxy ip
-        if (chainData.getWaterdogIP() != null) {
+        if (server.getSettings().baseSettings().waterdogpe() && chainData.getWaterdogIP() != null) {
             InetSocketAddress oldAddress = session.getAddress();
             session.setAddress(new InetSocketAddress(chainData.getWaterdogIP(), session.getAddress().getPort()));
             Server.getInstance().getNetwork().replaceSessionAddress(oldAddress, session.getAddress(), session);

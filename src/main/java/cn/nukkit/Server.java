@@ -183,7 +183,7 @@ public class Server {
     /**
      * 配置项是否检查登录时间.<P>Does the configuration item check the login time.
      */
-    public boolean checkLoginTime = true;
+    public boolean checkLoginTime = false;
     private RCON rcon;
     private EntityMetadataStore entityMetadata;
     private PlayerMetadataStore playerMetadata;
@@ -420,6 +420,11 @@ public class Server {
             default -> throw new IllegalArgumentException();
         };
         this.enabledNetworkEncryption = this.properties.getBoolean("network-encryption", true);
+        if (this.getSettings().baseSettings().waterdogpe()) {
+            this.checkLoginTime = false;
+//            this.enabledNetworkEncryption = false;
+        }
+        
         if (this.getPropertyBoolean("enable-rcon", false)) {
             try {
                 this.rcon = new RCON(this, this.getPropertyString("rcon.password", ""), (!this.getIp().equals("")) ? this.getIp() : "0.0.0.0", this.getPropertyInt("rcon.port", this.getPort()));

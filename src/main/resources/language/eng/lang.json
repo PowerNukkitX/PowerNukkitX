@@ -7,6 +7,7 @@
   "nukkit.server.settings.baseSettings.deprecatedVerbose": "Whether to prompt for deprecated events for plugin",
   "nukkit.server.settings.baseSettings.asyncWorkers": "Number of threads used by the server scheduler, 'auto' means automatic allocation",
   "nukkit.server.settings.baseSettings.installSpark": "Whether to install the Spark plugin on the server",
+  "nukkit.server.settings.baseSettings.waterdogpe": "Whether to enable WaterdogPE compatibility mode on the server",
   "nukkit.server.settings.baseSettings.autosave": "Tick cycle for server auto-save",
   "nukkit.server.settings.networkSettings": "Server's network configuration",
   "nukkit.server.settings.networkSettings.compressionLevel": "Compression level of the compression algorithm used by the server",
