@@ -2,7 +2,6 @@ package cn.nukkit;
 
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.plugin.js.JSIInitiator;
-import cn.nukkit.utils.ServerKiller;
 import com.google.common.base.Preconditions;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.internal.logging.InternalLoggerFactory;
@@ -167,7 +166,7 @@ public class Nukkit {
         }
         log.info("Stopping other threads");
 
-        // 停止JS定时器
+        // cancel JSTimer
         JSIInitiator.jsTimer.cancel();
         // 强制关闭PGZIPOutputStream中的线程池
         PGZIPOutputStream.getSharedThreadPool().shutdownNow();
@@ -181,12 +180,11 @@ public class Nukkit {
             }
         }
 
-        ServerKiller killer = new ServerKiller(8);
-        killer.start();
         if (TITLE) {
             System.out.print((char) 0x1b + "]0;Server Stopped" + (char) 0x07);
         }
-        System.exit(0);
+        LogManager.shutdown();
+        Runtime.getRuntime().halt(0); // force exit
     }
 
     private static boolean requiresShortTitle() {

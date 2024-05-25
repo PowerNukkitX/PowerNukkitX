@@ -3400,14 +3400,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 String.valueOf(this.getPort()),
                 this.getServer().getLanguage().tr(reason)));
 
-        //send disconnection packet
-        DisconnectPacket packet = new DisconnectPacket();
-        if (reason == null || reason.isBlank()) {
-            packet.hideDisconnectionScreen = true;
-            reason = BedrockDisconnectReasons.DISCONNECTED;
+        resetInventory();
+        for (var inv : this.windows.keySet()) {
+            if (this.permanentWindows.contains(windows.get(inv))) {
+                int windowId = this.getWindowId(inv);
+                playerHandle.setClosingWindowId(windowId);
+                inv.close(this);
+                updateTrackingPositions(true);
+            }
         }
-        packet.message = reason;
-        this.getSession().sendPacketSync(packet);
 
         //handle scoreboardManager#beforePlayerQuit
         var scoreboardManager = this.getServer().getScoreboardManager();
@@ -3420,6 +3421,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             entityRideable.dismountEntity(this);
         }
 
+        unloadAllUsedChunk();
+
+        //send disconnection packet
+        DisconnectPacket packet = new DisconnectPacket();
+        if (reason == null || reason.isBlank()) {
+            packet.hideDisconnectionScreen = true;
+            reason = BedrockDisconnectReasons.DISCONNECTED;
+        }
+        packet.message = reason;
+        this.getSession().sendPacketSync(packet);
+
         //call quit event
         PlayerQuitEvent ev = null;
         if (this.getName() != null && !this.getName().isEmpty()) {
@@ -3428,18 +3440,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.stopFishing(false);
             }
         }
-        resetInventory();
         // Close the temporary windows first, so they have chance to change all inventories before being disposed
         if (ev != null && ev.getAutoSave() && namedTag != null) {
             this.save();
         }
         super.close();
-        this.removeAllWindows(true);
+
         this.windows.clear();
         this.hiddenPlayers.clear();
-
-        unloadAllUsedChunk();
-
         //remove player from playerlist
         this.server.removeOnlinePlayer(this);
         //remove player from players map
