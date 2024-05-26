@@ -76,7 +76,7 @@ public class BlockRedstoneOre extends BlockOre {
     }
 
     public Block getUnlitBlock() {
-        return new BlockRedstoneBlock();
+        return new BlockRedstoneOre();
     }
 
     @Override
