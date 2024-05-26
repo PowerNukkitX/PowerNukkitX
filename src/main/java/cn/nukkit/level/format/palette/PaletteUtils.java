@@ -42,9 +42,7 @@ public class PaletteUtils {
             case Tag.TAG_Short -> input.skipBytes(2);
             case Tag.TAG_Int, Tag.TAG_Float -> input.skipBytes(4);
             case Tag.TAG_Long, Tag.TAG_Double -> input.skipBytes(8);
-            case Tag.TAG_Byte_Array -> {
-                input.skipBytes(input.readInt());
-            }
+            case Tag.TAG_Byte_Array -> input.skipBytes(input.readInt());
             case Tag.TAG_String -> input.skipBytes(input.readUnsignedShort());
             case Tag.TAG_Compound -> {
                 int nbtType;

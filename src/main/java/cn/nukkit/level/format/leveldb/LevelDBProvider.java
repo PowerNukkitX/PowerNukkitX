@@ -255,8 +255,6 @@ public class LevelDBProvider implements LevelProvider {
                 for (BlockEntity blockEntity : unsafeChunk.getBlockEntities().values()) {
                     if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
                         tagList.add(blockEntitySpawnable.getSpawnCompound());
-                        //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
-                        level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
                     }
                 }
                 try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf)) {

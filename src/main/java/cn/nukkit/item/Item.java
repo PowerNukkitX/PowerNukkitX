@@ -164,7 +164,7 @@ public abstract class Item implements Cloneable, ItemID {
             if (tags != null) {
                 item.setCompoundTag(tags);
             }
-        }else if (autoAssignStackNetworkId) {
+        } else if (autoAssignStackNetworkId) {
             item.autoAssignStackNetworkId();
         }
         return item;
@@ -695,22 +695,31 @@ public abstract class Item implements Cloneable, ItemID {
         return null;
     }
 
-
-    public Item setCompoundTag(CompoundTag tag) {
-        this.tags = writeCompoundTag(tag);
+    public Item setNamedTag(@Nullable CompoundTag tag) {
         this.cachedNBT = tag;
+        this.tags = writeCompoundTag(tag);
         return this;
+    }
+
+    @Nullable
+    public CompoundTag getNamedTag() {
+        if (!this.hasCompoundTag()) {
+            return null;
+        }
+
+        if (this.cachedNBT == null) {
+            this.cachedNBT = parseCompoundTag(this.tags);
+        }
+        return this.cachedNBT;
+    }
+
+    public Item setCompoundTag(@Nullable CompoundTag tag) {
+        return setNamedTag(tag);
     }
 
     public Item setCompoundTag(byte[] tags) {
         this.tags = tags;
         this.cachedNBT = parseCompoundTag(tags);
-        return this;
-    }
-
-    public Item setNamedTag(CompoundTag tag) {
-        this.cachedNBT = tag;
-        this.tags = writeCompoundTag(tag);
         return this;
     }
 
@@ -723,17 +732,6 @@ public abstract class Item implements Cloneable, ItemID {
             if (cachedNBT == null) cachedNBT = parseCompoundTag(tags);
             return !cachedNBT.isEmpty();
         } else return false;
-    }
-
-    public CompoundTag getNamedTag() {
-        if (!this.hasCompoundTag()) {
-            return null;
-        }
-
-        if (this.cachedNBT == null) {
-            this.cachedNBT = parseCompoundTag(this.tags);
-        }
-        return this.cachedNBT;
     }
 
     public CompoundTag getOrCreateNamedTag() {
@@ -760,6 +758,9 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public byte[] writeCompoundTag(CompoundTag tag) {
+        if (tag == null) {
+            return EmptyArrays.EMPTY_BYTES;
+        }
         try {
             return NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN);
         } catch (IOException e) {
@@ -1256,7 +1257,7 @@ public abstract class Item implements Cloneable, ItemID {
 
     public boolean equalItemBlock(Item item) {
         if (this.isBlock() && item.isBlock()) {
-            return  this.getBlockUnsafe().getBlockState() == item.getBlockUnsafe().getBlockState();
+            return this.getBlockUnsafe().getBlockState() == item.getBlockUnsafe().getBlockState();
         }
         return true;
     }

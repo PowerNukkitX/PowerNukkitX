@@ -1,5 +1,8 @@
 package cn.nukkit.level.format.palette;
 
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockState;
+import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.bitarray.BitArray;
 import cn.nukkit.level.format.bitarray.BitArrayVersion;
@@ -8,6 +11,7 @@ import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.LinkedCompoundTag;
 import cn.nukkit.nbt.tag.TreeMapCompoundTag;
 import cn.nukkit.utils.ByteBufVarInt;
 import cn.nukkit.utils.HashUtils;
@@ -17,12 +21,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.Pair;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class Palette<V> {
     protected static final byte COPY_LAST_FLAG_HEADER = (byte) (0x7F << 1) | 1;
     protected final List<V> palette;
@@ -99,7 +105,11 @@ public class Palette<V> {
         byteBuf.writeIntLE(this.palette.size());
         try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(byteBuf)) {
             for (V value : this.palette) {
-                NBTIO.write(serializer.serialize(value), bufOutputStream, ByteOrder.LITTLE_ENDIAN);
+                if (value instanceof BlockState blockState && blockState.getIdentifier().equals(BlockID.UNKNOWN)) {
+                    NBTIO.write(blockState.getBlockStateTag().getCompound("Block"), bufOutputStream, ByteOrder.LITTLE_ENDIAN);
+                } else {
+                    NBTIO.write(serializer.serialize(value), bufOutputStream, ByteOrder.LITTLE_ENDIAN);
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -188,9 +198,9 @@ public class Palette<V> {
     }
 
     protected void addBlockPalette(ByteBuf byteBuf,
-                                 RuntimeDataDeserializer<V> deserializer,
-                                 NBTInputStream input) throws IOException {
-        Pair<Integer, SemVersion> p = PaletteUtils.fastReadBlockHash(input, byteBuf);
+                                   RuntimeDataDeserializer<V> deserializer,
+                                   NBTInputStream input) throws IOException {
+        Pair<Integer, SemVersion> p = PaletteUtils.fastReadBlockHash(input, byteBuf);//depend on LinkCompoundTag
         if (p.left() == null) {
             CompoundTag oldBlockNbt = (CompoundTag) input.readTag();
             SemVersion semVersion = p.right();
@@ -200,9 +210,32 @@ public class Palette<V> {
             var newBlockNbt = new CompoundTag()
                     .putString("name", newNbtMap.getString("name"))
                     .putCompound("states", states);
-            this.palette.add(deserializer.deserialize(HashUtils.fnv1a_32_nbt(newBlockNbt)));
+
+            final int hash = HashUtils.fnv1a_32_nbt(newBlockNbt);
+            V deserialize = deserializer.deserialize(hash);
+            if (deserialize == BlockUnknown.PROPERTIES.getDefaultState()) {
+                log.warn("missing block palette, block_hash: {}, block_id: {}", hash, newBlockNbt.getString("name"));
+                BlockState blockState = BlockState.makeUnknownBlockState(hash, new LinkedCompoundTag()
+                        .putString("name", newNbtMap.getString("name"))
+                        .putCompound("states", states)
+                        .putInt("version", newNbtMap.getInt("version")));
+                deserialize = (V) blockState;
+            }
+            this.palette.add(deserialize);
         } else {
-            this.palette.add(deserializer.deserialize(p.left()));
+            final int hash = p.left();
+            V deserialize = deserializer.deserialize(hash);
+            if (deserialize == BlockUnknown.PROPERTIES.getDefaultState()) {
+                byteBuf.resetReaderIndex();
+                CompoundTag oldBlockNbt = (CompoundTag) input.readTag();
+                log.warn("missing block palette, block_hash: {}, block_id: {}", hash, oldBlockNbt.getString("name"));
+                BlockState blockState = BlockState.makeUnknownBlockState(hash, new LinkedCompoundTag()
+                        .putString("name", oldBlockNbt.getString("name"))
+                        .putCompound("states", new TreeMapCompoundTag(oldBlockNbt.getCompound("states").getTags()))
+                        .putInt("version", oldBlockNbt.getInt("version")));
+                deserialize = (V) blockState;
+            }
+            this.palette.add(deserialize);
         }
     }
 

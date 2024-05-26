@@ -1,5 +1,6 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -24,7 +25,7 @@ public class HashUtils {
     private static final long FNV1_PRIME_64 = 1099511628211L;
 
     public int computeBlockStateHash(String identifier, List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> propertyValues) {
-        if (identifier.equals("minecraft:unknown")) {
+        if (identifier.equals(BlockID.UNKNOWN)) {
             return -2; // This is special case
         }
 
@@ -45,7 +46,7 @@ public class HashUtils {
     }
 
     public int computeBlockStateHash(String identifier, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
-        if (identifier.equals("minecraft:unknown")) {
+        if (identifier.equals(BlockID.UNKNOWN)) {
             return -2; // This is special case
         }
 

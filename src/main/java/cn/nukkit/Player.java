@@ -3,6 +3,7 @@ package cn.nukkit;
 import cn.nukkit.AdventureSettings.Type;
 import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockBed;
 import cn.nukkit.block.BlockEndPortal;
 import cn.nukkit.block.BlockID;
@@ -1277,30 +1278,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setGamemode(this.gamemode, false, null, true);
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
         this.spawnToAll();
-
-        //Now it should be fixed, keep this hack code to avoid again
-//        Server.getInstance().getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
-//            for (var b : this.level.getBlockEntities().values()) {
-//                if (b instanceof BlockEntitySpawnable blockEntitySpawnable) {
-//                    UpdateBlockPacket setAir = new UpdateBlockPacket();
-//                    setAir.blockRuntimeId = BlockAir.STATE.blockStateHash();
-//                    setAir.flags = UpdateBlockPacket.FLAG_NETWORK;
-//                    setAir.x = b.getFloorX();
-//                    setAir.y = b.getFloorY();
-//                    setAir.z = b.getFloorZ();
-//                    this.dataPacket(setAir);
-//
-//                    UpdateBlockPacket revertAir = new UpdateBlockPacket();
-//                    revertAir.blockRuntimeId = b.getBlock().getRuntimeId();
-//                    revertAir.flags = UpdateBlockPacket.FLAG_NETWORK;
-//                    revertAir.x = b.getFloorX();
-//                    revertAir.y = b.getFloorY();
-//                    revertAir.z = b.getFloorZ();
-//                    this.dataPacket(revertAir);
-//                    blockEntitySpawnable.spawnTo(this);
-//                }
-//            }
-//        }, true);
+        this.refreshBlockEntity(1);
     }
 
     /**
@@ -4311,10 +4289,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.sendPosition(this, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
             this.newPosition = this;
         }
-
-        this.resetFallDistance();
         //state update
         this.positionChanged = true;
+
+        if (switchLevel) {
+            refreshBlockEntity(10);
+            refreshChunkRender();
+        }
+        this.resetFallDistance();
         //DummyBossBar
         this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
         //Weather
@@ -4327,6 +4309,38 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.setGamemode(this.gamemode, false, null, true);
         }
         return true;
+    }
+
+    public void refreshChunkRender() {
+        final int origin = getViewDistance();
+        this.setViewDistance(1);
+        this.setViewDistance(32);
+        this.setViewDistance(origin);
+    }
+
+    public void refreshBlockEntity(int delay) {
+        Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+            for (var b : this.level.getBlockEntities().values()) {
+                if (b instanceof BlockEntitySpawnable blockEntitySpawnable) {
+                    UpdateBlockPacket setAir = new UpdateBlockPacket();
+                    setAir.blockRuntimeId = BlockAir.STATE.blockStateHash();
+                    setAir.flags = UpdateBlockPacket.FLAG_NETWORK;
+                    setAir.x = b.getFloorX();
+                    setAir.y = b.getFloorY();
+                    setAir.z = b.getFloorZ();
+                    this.dataPacket(setAir);
+
+                    UpdateBlockPacket revertAir = new UpdateBlockPacket();
+                    revertAir.blockRuntimeId = b.getBlock().getRuntimeId();
+                    revertAir.flags = UpdateBlockPacket.FLAG_NETWORK;
+                    revertAir.x = b.getFloorX();
+                    revertAir.y = b.getFloorY();
+                    revertAir.z = b.getFloorZ();
+                    this.dataPacket(revertAir);
+                    blockEntitySpawnable.spawnTo(this);
+                }
+            }
+        }, delay, true);
     }
 
     /**
