@@ -137,6 +137,7 @@ public class Network {
                     }
                 })
                 .bind(bindAddress)
+                .syncUninterruptibly()
                 .channel();
         this.pong.channel(channel);
     }
