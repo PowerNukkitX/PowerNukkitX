@@ -379,13 +379,12 @@ public class Server {
                 put("network-encryption", true);
             }
         });
+
         var isShaded = StartArgUtils.isShaded();
-        // 检测启动参数
         if (!StartArgUtils.isValidStart() || (JarStart.isUsingJavaJar() && !isShaded)) {
             log.error(getLanguage().tr("nukkit.start.invalid"));
             return;
         }
-        // 检测非法使用shaded包启动
         if (!this.properties.getBoolean("allow-shaded", false) && isShaded) {
             log.error(getLanguage().tr("nukkit.start.shaded1"));
             log.error(getLanguage().tr("nukkit.start.shaded2"));
@@ -423,7 +422,7 @@ public class Server {
         if (this.getSettings().baseSettings().waterdogpe()) {
             this.checkLoginTime = false;
         }
-        
+
         if (this.getPropertyBoolean("enable-rcon", false)) {
             try {
                 this.rcon = new RCON(this, this.getPropertyString("rcon.password", ""), (!this.getIp().equals("")) ? this.getIp() : "0.0.0.0", this.getPropertyInt("rcon.port", this.getPort()));
@@ -434,27 +433,20 @@ public class Server {
         this.entityMetadata = new EntityMetadataStore();
         this.playerMetadata = new PlayerMetadataStore();
         this.levelMetadata = new LevelMetadataStore();
-
         this.operators = new Config(this.dataPath + "ops.txt", Config.ENUM);
         this.whitelist = new Config(this.dataPath + "white-list.txt", Config.ENUM);
         this.banByName = new BanList(this.dataPath + "banned-players.json");
         this.banByName.load();
         this.banByIP = new BanList(this.dataPath + "banned-ips.json");
         this.banByIP.load();
-
         this.maxPlayers = this.getPropertyInt("max-players", 20);
         this.setAutoSave(this.getPropertyBoolean("auto-save", true));
-
         if (this.getPropertyBoolean("hardcore", false) && this.getDifficulty() < 3) {
             this.setPropertyInt("difficulty", 3);
         }
 
-        log.info(this.getLanguage().tr("nukkit.server.networkStart", this.getIp().equals("") ? "*" : this.getIp(), String.valueOf(this.getPort())));
-        this.serverID = UUID.randomUUID();
-
         log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + " (" + this.getGitCommit() + ")" + TextFormat.WHITE, this.getApiVersion()));
         log.info(this.getLanguage().tr("nukkit.server.license"));
-
         this.consoleSender = new ConsoleCommandSender();
 
         // Initialize metrics
@@ -534,11 +526,10 @@ public class Server {
         }
         this.pluginManager.loadInternalPlugin();
 
+        this.serverID = UUID.randomUUID();
         this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
         this.network = new Network(this);
-
         this.pluginManager.loadPlugins(this.pluginPath);
-
         {//trim
             Registries.POTION.trim();
             Registries.PACKET.trim();
@@ -818,17 +809,14 @@ public class Server {
     public void start() {
         for (BanEntry entry : this.getIPBans().getEntires().values()) {
             try {
-                this.network.blockAddress(InetAddress.getByName(entry.getName()), -1);
-            } catch (UnknownHostException e) {
-                // ignore
+                this.network.blockAddress(InetAddress.getByName(entry.getName()));
+            } catch (UnknownHostException ignore) {
             }
         }
-
-        //todo send usage setting
         this.tickCounter = 0;
 
         log.info(this.getLanguage().tr("nukkit.server.defaultGameMode", getGamemodeString(this.getGamemode())));
-
+        log.info(this.getLanguage().tr("nukkit.server.networkStart", TextFormat.YELLOW + (this.getIp().isEmpty() ? "*" : this.getIp()), TextFormat.YELLOW + String.valueOf(this.getPort())));
         log.info(this.getLanguage().tr("nukkit.server.startFinished", String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
 
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
@@ -838,7 +826,7 @@ public class Server {
     }
 
     public void tickProcessor() {
-        getScheduler().scheduleDelayedTask(new Task() {
+        getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, new Task() {
             @Override
             public void onRun(int currentTick) {
                 System.gc();

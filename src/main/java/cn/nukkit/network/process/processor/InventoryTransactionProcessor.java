@@ -39,7 +39,6 @@ import cn.nukkit.network.protocol.types.inventory.transaction.UseItemOnEntityDat
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
@@ -88,41 +87,36 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 player.removeLastUseTick(releaseItemData.itemInHand.getId());
             }
         } else if (pk.transactionType == InventoryTransactionPacket.TYPE_NORMAL) {
-            for (var action : pk.actions) {
-                if (!action.getInventorySource().getType().equals(InventorySource.Type.CONTAINER))
-                    continue;
-
-                if (!action.getInventorySource().getFlag().equals(InventorySource.Flag.NONE))
-                    continue;
-
-                //handle throw item such as enter Q
-                Item item = action.oldItem;
-                var count = item.getCount() - action.newItem.getCount();
-                int slot = action.inventorySlot;
-
-                if (item.isNull())
-                    return;
-
-                PlayerDropItemEvent ev;
-                player.getServer().getPluginManager().callEvent(ev = new PlayerDropItemEvent(player, item));
-                if (ev.isCancelled()) {
-                    player.getInventory().sendContents(player);
-                    return;
-                }
-
-                HumanInventory inventory = player.getInventory();
-                int c = item.getCount() - count;
-                if (c <= 0) {
-                    inventory.clear(slot);
-                } else {
-                    item.setCount(c);
-                    inventory.setItem(slot, item);
-                }
-                item.setCount(count);
-                player.dropItem(item);
-                return;
+            if (pk.actions.length == 2 && pk.actions[0].getInventorySource().getType().equals(InventorySource.Type.WORLD_INTERACTION) &&
+                    pk.actions[0].getInventorySource().getFlag().equals(InventorySource.Flag.DROP_ITEM) &&
+                    pk.actions[1].getInventorySource().getType().equals(InventorySource.Type.CONTAINER)
+                    && pk.actions[1].getInventorySource().getFlag().equals(InventorySource.Flag.NONE)) {//handle throw hotbar item for player
+                dropHotBarItemForPlayer(pk.actions[1].inventorySlot, pk.actions[0].newItem.count, player);
             }
         }
+    }
+
+    private static void dropHotBarItemForPlayer(int hotbarSlot, int dropCount, Player player) {
+        final HumanInventory inventory = player.getInventory();
+        Item item = inventory.getItem(hotbarSlot);
+        if (item.isNull()) return;
+
+        PlayerDropItemEvent ev;
+        player.getServer().getPluginManager().callEvent(ev = new PlayerDropItemEvent(player, item));
+        if (ev.isCancelled()) {
+            player.getInventory().sendContents(player);
+            return;
+        }
+
+        int c = item.getCount() - dropCount;
+        if (c <= 0) {
+            inventory.clear(hotbarSlot);
+        } else {
+            item.setCount(c);
+            inventory.setItem(hotbarSlot, item);
+        }
+        item.setCount(dropCount);
+        player.dropItem(item);
     }
 
     @Override

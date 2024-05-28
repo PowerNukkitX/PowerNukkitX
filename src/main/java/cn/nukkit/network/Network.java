@@ -9,6 +9,7 @@ import cn.nukkit.network.connection.netty.initializer.BedrockServerInitializer;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.query.codec.QueryPacketCodec;
 import cn.nukkit.network.query.handler.QueryPacketHandler;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -50,8 +52,7 @@ import java.util.concurrent.ThreadFactory;
 public class Network {
     private final Server server;
     private final LinkedList<NetWorkStatisticData> netWorkStatisticDataList = new LinkedList<>();
-    @Nullable
-    private final List<NetworkIF> hardWareNetworkInterfaces;
+    private final AtomicReference<List<NetworkIF>> hardWareNetworkInterfaces = new AtomicReference<>(null);
     private final Map<InetSocketAddress, BedrockSession> sessionMap = new ConcurrentHashMap<>();
     private final Map<InetAddress, LocalDateTime> blockIpMap = new HashMap<>();
     private final RakServerChannel channel;
@@ -63,14 +64,15 @@ public class Network {
 
     public Network(Server server, int nettyThreadNumber, ThreadFactory threadFactory) {
         this.server = server;
-        List<NetworkIF> tmpIfs = null;
-        try {
-            tmpIfs = new SystemInfo().getHardware().getNetworkIFs();
-        } catch (Throwable t) {
-            log.warn(Server.getInstance().getLanguage().get("nukkit.start.hardwareMonitorDisabled"));
-        } finally {
-            this.hardWareNetworkInterfaces = tmpIfs;
-        }
+        server.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
+            List<NetworkIF> tmpIfs = null;
+            try {
+                tmpIfs = new SystemInfo().getHardware().getNetworkIFs();
+            } catch (Throwable t) {
+                log.warn(Server.getInstance().getLanguage().get("nukkit.start.hardwareMonitorDisabled"));
+            }
+            hardWareNetworkInterfaces.set(tmpIfs);
+        }, true);
 
         Class<? extends DatagramChannel> oclass;
         EventLoopGroup eventloopgroup;
@@ -135,7 +137,6 @@ public class Network {
                     }
                 })
                 .bind(bindAddress)
-                .syncUninterruptibly()
                 .channel();
         this.pong.channel(channel);
     }
@@ -164,8 +165,8 @@ public class Network {
         if (netWorkStatisticDataList.size() > 1) {
             netWorkStatisticDataList.removeFirst();
         }
-        if (this.hardWareNetworkInterfaces != null) {
-            for (var networkIF : this.hardWareNetworkInterfaces) {
+        if (this.getHardWareNetworkInterfaces() != null) {
+            for (var networkIF : this.getHardWareNetworkInterfaces()) {
                 networkIF.updateAttributes();
                 upload += networkIF.getBytesSent();
                 download += networkIF.getBytesRecv();
@@ -190,7 +191,7 @@ public class Network {
     }
 
     public @Nullable List<NetworkIF> getHardWareNetworkInterfaces() {
-        return hardWareNetworkInterfaces;
+        return hardWareNetworkInterfaces.get();
     }
 
 

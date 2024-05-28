@@ -119,9 +119,7 @@ public class JavaPluginLoader implements PluginLoader {
     public void enablePlugin(Plugin plugin) {
         if (plugin instanceof PluginBase && !plugin.isEnabled()) {
             log.info(this.server.getLanguage().tr("nukkit.plugin.enable", plugin.getDescription().getFullName()));
-
             ((PluginBase) plugin).setEnabled(true);
-
             this.server.getPluginManager().callEvent(new PluginEnableEvent(plugin));
         }
     }

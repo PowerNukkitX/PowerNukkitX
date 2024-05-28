@@ -213,7 +213,7 @@ public class Palette<V> {
 
             final int hash = HashUtils.fnv1a_32_nbt(newBlockNbt);
             V deserialize = deserializer.deserialize(hash);
-            if (deserialize == BlockUnknown.PROPERTIES.getDefaultState()) {
+            if (hash != -2 && deserialize == BlockUnknown.PROPERTIES.getDefaultState()) {
                 log.warn("missing block palette, block_hash: {}, block_id: {}", hash, newBlockNbt.getString("name"));
                 BlockState blockState = BlockState.makeUnknownBlockState(hash, new LinkedCompoundTag()
                         .putString("name", newNbtMap.getString("name"))
@@ -225,7 +225,7 @@ public class Palette<V> {
         } else {
             final int hash = p.left();
             V deserialize = deserializer.deserialize(hash);
-            if (deserialize == BlockUnknown.PROPERTIES.getDefaultState()) {
+            if (hash != -2 && deserialize == BlockUnknown.PROPERTIES.getDefaultState()) {
                 byteBuf.resetReaderIndex();
                 CompoundTag oldBlockNbt = (CompoundTag) input.readTag();
                 log.warn("missing block palette, block_hash: {}, block_id: {}", hash, oldBlockNbt.getString("name"));
