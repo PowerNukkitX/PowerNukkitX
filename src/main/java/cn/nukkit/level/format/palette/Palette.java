@@ -222,7 +222,9 @@ public class Palette<V> {
                         .putInt("version", newNbtMap.getInt("version")));
                 deserialize = (V) blockState;
             }
-            this.palette.add(deserialize);
+            if (deserialize != null) {
+                this.palette.add(deserialize);
+            }
         } else {
             final int hash = p.left();
             V deserialize = deserializer.deserialize(hash);
@@ -236,7 +238,9 @@ public class Palette<V> {
                         .putInt("version", oldBlockNbt.getInt("version")));
                 deserialize = (V) blockState;
             }
-            this.palette.add(deserialize);
+            if (deserialize != null) {
+                this.palette.add(deserialize);
+            }
         }
     }
 
