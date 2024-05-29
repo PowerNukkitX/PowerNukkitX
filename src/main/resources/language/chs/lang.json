@@ -9,6 +9,7 @@
   "nukkit.server.settings.baseSettings.installSpark": "服务器是否安装spark监控插件",
   "nukkit.server.settings.baseSettings.waterdogpe": "服务器是否开启waterdogpe兼容模式",
   "nukkit.server.settings.baseSettings.autosave": "服务器自动保存的tick周期",
+  "nukkit.server.settings.baseSettings.saveUnknownBlock": "是否保存未知的方块,例如未被注册的自定义方块",
   "nukkit.server.settings.networkSettings": "服务器的网络配置",
   "nukkit.server.settings.networkSettings.compressionLevel": "服务器的使用压缩算法的压缩等级",
   "nukkit.server.settings.networkSettings.zlibProvider": "服务器的使用zlib压缩算法提供者 0为java原始算法\n 1为单线程低内存占用算法\n 2为多线程缓存算法\n 3为硬件加速算法",
