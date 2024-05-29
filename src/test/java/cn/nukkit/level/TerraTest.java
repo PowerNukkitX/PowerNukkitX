@@ -42,19 +42,18 @@ public class TerraTest {
      */
     @Test
     void test_terra(TestPlayer player) {
-        final TestPlayer p = player;
-        resetPlayerStatus(p);
+        resetPlayerStatus(player);
 
-        p.level = level;
-        p.getLevel().initLevel();
-        p.setViewDistance(1);
+        player.level = level;
+        player.getLevel().initLevel();
+        player.setViewDistance(1);
 
-        GameLoop loop = gameLoop0(p);
+        GameLoop loop = gameLoop0(player);
 
         int limit = 100;
         while (limit-- != 0) {
             try {
-                if (p.getPlayerChunkManager().getUsedChunks().size() >= 5) {
+                if (player.getPlayerChunkManager().getUsedChunks().size() >= 5) {
                     break;
                 }
                 Thread.sleep(100);
@@ -63,18 +62,18 @@ public class TerraTest {
             }
         }
         if (limit <= 0) {
-            resetPlayerStatus(p);
+            resetPlayerStatus(player);
             Assertions.fail("Chunks cannot be successfully loaded in 10s");
         }
 
         //teleport
-        p.teleport(p.getLocation().setComponents(10000, 100, 10000));
+        player.teleport(player.getLocation().setComponents(10000, 100, 10000));
 
         int limit2 = 1000;
         while (limit2-- != 0) {
             try {
                 Thread.sleep(100);
-                if (p.chunk != null && p.chunk.getChunkState().canSend() && p.chunk.getX() == 625 && p.chunk.getZ() == 625) {
+                if (player.chunk != null && player.chunk.getChunkState().canSend() && player.chunk.getX() == 625 && player.chunk.getZ() == 625) {
                     break;
                 }
             } catch (InterruptedException e) {
@@ -82,11 +81,11 @@ public class TerraTest {
             }
         }
         if (limit2 == 0) {
-            resetPlayerStatus(p);
+            resetPlayerStatus(player);
             Assertions.fail("Players are unable to load Terra generator chunks normally");
         }
         loop.stop();
-        resetPlayerStatus(p);
+        resetPlayerStatus(player);
     }
 
     @SneakyThrows

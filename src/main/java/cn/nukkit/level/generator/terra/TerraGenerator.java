@@ -39,6 +39,7 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
         this.chunkGenerator = createGenerator(this.configPack);
         this.biomeProvider = this.configPack.getBiomeProvider();
         this.worldProperties = new WorldProperties() {
+            
             @Override
             public long getSeed() {
                 return level.getSeed();

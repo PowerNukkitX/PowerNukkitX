@@ -107,6 +107,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -287,7 +288,7 @@ public class Level implements Metadatable {
      */
     public int tickRateOptDelay = 1;
     public GameRules gameRules;
-    private LevelProvider provider;
+    private AtomicReference<LevelProvider> provider;
     private float time;
     private int nextTimeSendTick;
     private final String name;
@@ -341,7 +342,7 @@ public class Level implements Metadatable {
         }
 
         try {
-            this.provider = provider.getConstructor(Level.class, String.class).newInstance(this, path);
+            this.provider = new AtomicReference<>(provider.getConstructor(Level.class, String.class).newInstance(this, path));
         } catch (ReflectiveOperationException e) {
             throw new LevelException("Constructor of " + provider + " failed", e);
         }
@@ -540,7 +541,7 @@ public class Level implements Metadatable {
     }
 
     public final LevelProvider getProvider() {
-        return provider;
+        return provider.get();
     }
 
     /**
@@ -569,14 +570,14 @@ public class Level implements Metadatable {
 
     public void close() {
         this.gameLoop.stop();
-        LevelProvider levelProvider = this.provider;
+        LevelProvider levelProvider = this.provider.get();
         if (levelProvider != null) {
             if (this.getAutoSave()) {
                 this.save(true);
             }
             levelProvider.close();
         }
-        this.provider = null;
+        this.provider.set(null);
         this.blockMetadata = null;
         this.server.getLevels().remove(this.levelId);
     }
