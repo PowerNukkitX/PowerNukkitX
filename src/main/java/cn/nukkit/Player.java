@@ -1374,7 +1374,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.offhandInventory.sendContents(this);
         this.teleport(Location.fromObject(respawnPos.add(0, this.getEyeHeight(), 0), respawnPos.level), TeleportCause.PLAYER_SPAWN);
         this.spawnToAll();
-        this.scheduleUpdate();
     }
 
     @Override
@@ -4310,6 +4309,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (isSpectator()) {
             this.setGamemode(this.gamemode, false, null, true);
         }
+        this.scheduleUpdate();
         return true;
     }
 
