@@ -757,10 +757,10 @@ public class Server {
             }
 
             for (Player player : new ArrayList<>(this.players.values())) {
-                player.close(player.getLeaveMessage(), settings.baseSettings().shutdownMessage());
+                player.close(player.getLeaveMessage(), getSettings().baseSettings().shutdownMessage());
             }
 
-            this.settings.save();
+            this.getSettings().save();
 
             log.debug("Disabling all plugins");
             this.pluginManager.disablePlugins();
@@ -859,15 +859,15 @@ public class Server {
     }
 
     private void checkTickUpdates(int currentTick, long tickTime) {
-        if (settings.levelSettings().alwaysTickPlayers()) {
+        if (getSettings().levelSettings().alwaysTickPlayers()) {
             for (Player p : new ArrayList<>(this.players.values())) {
                 p.onUpdate(currentTick);
             }
         }
 
-        int baseTickRate = settings.levelSettings().baseTickRate();
+        int baseTickRate = getSettings().levelSettings().baseTickRate();
         //Do level ticks
-        for (Level level : this.levelArray) {
+        for (Level level : this.getLevels().values()) {
             if (level.getTickRate() > baseTickRate && --level.tickRateCounter > 0) {
                 continue;
             }
@@ -886,7 +886,7 @@ public class Server {
                     level.tickRateOptDelay = level.recalcTickOptDelay();
                 }
 
-                if (settings.levelSettings().autoTickRate()) {
+                if (getSettings().levelSettings().autoTickRate()) {
                     if (tickMs < 50 && level.getTickRate() > baseTickRate) {
                         int r;
                         level.setTickRate(r = level.getTickRate() - 1);
@@ -895,7 +895,7 @@ public class Server {
                         }
                         log.debug("Raising level \"{}\" tick rate to {} ticks", level.getName(), level.getTickRate());
                     } else if (tickMs >= 50) {
-                        int autoTickRateLimit = settings.levelSettings().autoTickRateLimit();
+                        int autoTickRateLimit = getSettings().levelSettings().autoTickRateLimit();
                         if (level.getTickRate() == baseTickRate) {
                             level.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
                             log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(), NukkitMath.round(tickMs, 2), level.getTickRate());
@@ -954,7 +954,7 @@ public class Server {
             this.rcon.check();
         }
 
-        this.scheduler.mainThreadHeartbeat(this.tickCounter);
+        this.getScheduler().mainThreadHeartbeat(this.tickCounter);
 
         this.checkTickUpdates(this.tickCounter, tickTime);
 
@@ -989,14 +989,10 @@ public class Server {
         // 处理可冻结数组
         int freezableArrayCompressTime = (int) (50 - (System.currentTimeMillis() - tickTime));
         if (freezableArrayCompressTime > 4) {
-            freezableArrayManager.setMaxCompressionTime(freezableArrayCompressTime).tick();
+            getFreezableArrayManager().setMaxCompressionTime(freezableArrayCompressTime).tick();
         }
 
-        //long now = System.currentTimeMillis();
         long nowNano = System.nanoTime();
-        //float tick = Math.min(20, 1000 / Math.max(1, now - tickTime));
-        //float use = Math.min(1, (now - tickTime) / 50);
-
         float tick = (float) Math.min(20, 1000000000 / Math.max(1000000, ((double) nowNano - tickTimeNano)));
         float use = (float) Math.min(1, ((double) (nowNano - tickTimeNano)) / 50000000);
 
@@ -1731,7 +1727,7 @@ public class Server {
         }
 
         if (create) {
-            if (this.settings.playerSettings().savePlayerData()) {
+            if (this.getSettings().playerSettings().savePlayerData()) {
                 log.info(this.getLanguage().tr("nukkit.data.playerNotFound", uuid));
             }
             Position spawn = this.getDefaultLevel().getSafeSpawn();
@@ -1799,9 +1795,9 @@ public class Server {
      */
     public void saveOfflinePlayerData(String nameOrUUid, CompoundTag tag, boolean async) {
         UUID uuid = lookupName(nameOrUUid).orElse(UUID.fromString(nameOrUUid));
-        if (this.settings.playerSettings().savePlayerData()) {
+        if (this.getSettings().playerSettings().savePlayerData()) {
             this.getScheduler().scheduleTask(InternalPlugin.INSTANCE, new Task() {
-                AtomicBoolean hasRun = new AtomicBoolean(false);
+                final AtomicBoolean hasRun = new AtomicBoolean(false);
 
                 @Override
                 public void onRun(int currentTick) {
@@ -2262,7 +2258,7 @@ public class Server {
             this.levels.put(level.getId(), level);
             level.initLevel();
             this.getPluginManager().callEvent(new LevelLoadEvent(level));
-            level.setTickRate(settings.levelSettings().baseTickRate());
+            level.setTickRate(getSettings().levelSettings().baseTickRate());
         }
         if (tickCounter != 0) {//update world enum when load  
             WorldCommand.WORLD_NAME_ENUM.updateSoftEnum();
@@ -2318,9 +2314,9 @@ public class Server {
                 }
                 level = new Level(this, levelName, path, levelConfig.generators().size(), provider, generatorConfig);
 
-                this.levels.put(level.getId(), level);
+                this.getLevels().put(level.getId(), level);
                 level.initLevel();
-                level.setTickRate(settings.levelSettings().baseTickRate());
+                level.setTickRate(getSettings().levelSettings().baseTickRate());
                 this.getPluginManager().callEvent(new LevelInitEvent(level));
                 this.getPluginManager().callEvent(new LevelLoadEvent(level));
             } catch (Exception e) {
@@ -2795,7 +2791,7 @@ public class Server {
     }
 
     public boolean isIgnoredPacket(Class<? extends DataPacket> clazz) {
-        return this.settings.debugSettings().ignoredPackets().contains(clazz.getSimpleName());
+        return this.getSettings().debugSettings().ignoredPackets().contains(clazz.getSimpleName());
     }
 
     public int getServerAuthoritativeMovement() {

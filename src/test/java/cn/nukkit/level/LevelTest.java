@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static cn.nukkit.TestUtils.gameLoop;
+import static cn.nukkit.TestUtils.gameLoop0;
 import static cn.nukkit.TestUtils.resetPlayerStatus;
 
 @ExtendWith(GameMockExtension.class)
@@ -52,7 +52,7 @@ public class LevelTest {
         chunk.setBlockState(0, 3, 0, BlockDiamondBlock.PROPERTIES.getDefaultState());
         Assertions.assertEquals(chunk.getBlockState(0, 3, 0), BlockDiamondBlock.PROPERTIES.getDefaultState());
 
-        GameLoop gameLoop = gameLoop(p);
+        GameLoop gameLoop = gameLoop0(p);
         int limit1 = 100;
         while (limit1-- != 0) {
             try {

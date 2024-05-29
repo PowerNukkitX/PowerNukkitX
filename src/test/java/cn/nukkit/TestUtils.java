@@ -5,8 +5,20 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.GameLoop;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class TestUtils {
+    public static void serverTick(Server server) {
+        try {
+            Method tick = Server.class.getDeclaredMethod("tick");
+            tick.setAccessible(true);
+            tick.invoke(server);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void setField(Class<?> clazz, Object target, String fieldName, Object value) {
         try {
             Field infoF = clazz.getDeclaredField(fieldName);
@@ -17,7 +29,7 @@ public class TestUtils {
         }
     }
 
-    public static GameLoop gameLoop(TestPlayer p) {
+    public static GameLoop gameLoop0(TestPlayer p) {
         GameLoop loop = GameLoop.builder().loopCountPerSec(100).onTick((d) -> {
             try {
                 Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());

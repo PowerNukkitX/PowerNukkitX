@@ -19,7 +19,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
 
-import static cn.nukkit.TestUtils.gameLoop;
+import static cn.nukkit.TestUtils.gameLoop0;
 import static cn.nukkit.TestUtils.resetPlayerStatus;
 
 @ExtendWith(GameMockExtension.class)
@@ -49,7 +49,7 @@ public class TerraTest {
         p.getLevel().initLevel();
         p.setViewDistance(1);
 
-        GameLoop loop = gameLoop(p);
+        GameLoop loop = gameLoop0(p);
 
         int limit = 100;
         while (limit-- != 0) {

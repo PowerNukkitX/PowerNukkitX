@@ -182,6 +182,6 @@ public class FreezableArrayManager {
                     }
                 }
             }
-        }), Server.getInstance().computeThreadPool).thenRun(set::clearDeadReferences);
+        }), Server.getInstance().getComputeThreadPool()).thenRun(set::clearDeadReferences);
     }
 }

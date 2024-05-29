@@ -278,7 +278,7 @@ public class Level implements Metadatable {
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
     private final VibrationManager vibrationManager = new SimpleVibrationManager(this);
     public boolean stopTime;
-    public float skyLightSubtracted;
+    public int skyLightSubtracted;
     public int sleepTicks = 0;
     public int tickRateTime = 0;
     public int tickRateCounter = 0;
@@ -989,7 +989,7 @@ public class Level implements Metadatable {
                             if (entity != null && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
                                 entityAsyncPrepare.asyncPrepare(currentTick);
                             }
-                        }), Server.getInstance().computeThreadPool).join();
+                        }), Server.getInstance().getComputeThreadPool()).join();
                 for (long id : this.updateEntities.keySetLong()) {
                     Entity entity = this.updateEntities.get(id);
                     if (entity instanceof EntityIntelligent intelligent) {
@@ -1810,13 +1810,12 @@ public class Level implements Metadatable {
         if (chunk != null) {
             level = chunk.getBlockSkyLight((int) pos.x & 0x0f, ensureY((int) pos.y), (int) pos.z & 0x0f);
             level -= this.skyLightSubtracted;
-
             if (level < 15) {
-                level = Math.max(chunk.getBlockLight((int) pos.x & 0x0f, ensureY((int) pos.y), (int) pos.z & 0x0f),
+                level = Math.max(chunk.getBlockLight(
+                                (int) pos.x & 0x0f, ensureY((int) pos.y), (int) pos.z & 0x0f),
                         level);
             }
         }
-
         return level;
     }
 

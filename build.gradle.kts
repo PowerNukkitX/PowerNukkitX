@@ -133,6 +133,7 @@ tasks.build {
 
 tasks.clean {
     group = "alpha build"
+    delete("nukkit.yml", "terra", "services")
 }
 
 tasks.compileJava {

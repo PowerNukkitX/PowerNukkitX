@@ -15,7 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import static cn.nukkit.TestUtils.gameLoop;
+import static cn.nukkit.TestUtils.gameLoop0;
 import static cn.nukkit.TestUtils.resetPlayerStatus;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -31,7 +31,7 @@ public class PlayerTest {
         p.level = level;
         p.setViewDistance(4);//view 4
 
-        GameLoop loop = gameLoop(p);
+        GameLoop loop = gameLoop0(p);
 
         p.teleport(new Vector3(10000, 6, 10000));
 
@@ -65,7 +65,7 @@ public class PlayerTest {
         p.setViewDistance(4);//view 4
         p.setPosition(new Vector3(0, 100, 0));
 
-        GameLoop loop = gameLoop(p);
+        GameLoop loop = gameLoop0(p);
 
         int limit = 300;
         while (limit-- != 0) {
@@ -93,7 +93,7 @@ public class PlayerTest {
         resetPlayerStatus(player);
 
         player.setViewDistance(4);//view 4
-        GameLoop loop = gameLoop(player);
+        GameLoop loop = gameLoop0(player);
 
         player.setPosition(new Vector3(0, 100, 0));
         Thread thread = new Thread(loop::startLoop);

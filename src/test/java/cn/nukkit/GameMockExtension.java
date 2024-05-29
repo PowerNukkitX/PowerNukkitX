@@ -47,10 +47,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -193,6 +195,7 @@ public class GameMockExtension extends MockitoExtension {
         doNothing().when(serverSession).sendPacketImmediately(any());
         doNothing().when(serverSession).sendPacket(any());
         player = new TestPlayer(serverSession, info);
+        player.adventureSettings = new AdventureSettings(player);
         player.loggedIn = true;
         player.spawned = true;
         TestUtils.setField(Player.class, player, "info", new PlayerInfo("test", UUID.nameUUIDFromBytes(new byte[]{1, 2, 3}), mock(Skin.class), mock(ClientChainData.class)));
@@ -213,6 +216,15 @@ public class GameMockExtension extends MockitoExtension {
         level = new Level(Server.getInstance(), "newlevel", "src/test/resources/newlevel",
                 1, LevelDBProvider.class, new LevelConfig.GeneratorConfig("flat", 114514, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>()));
         level.initLevel();
+
+        HashMap<Integer, Level> map = new HashMap<>();
+        map.put(1, level);
+        when(server.getLevels()).thenReturn(map);
+
+        Map<InetSocketAddress, Player> players = new HashMap<>();
+        players.put(new InetSocketAddress("127.0.0.1", 63333), player);
+        TestUtils.setField(Server.class, server, "players", players);
+
         player.level = level;
         player.setPosition(new Vector3(0, 100, 0));
 
