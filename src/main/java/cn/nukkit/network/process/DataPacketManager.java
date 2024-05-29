@@ -79,7 +79,8 @@ public final class DataPacketManager {
                 new TickSyncProcessor(),
                 new RequestPermissionsProcessor(),
                 new RiderJumpProcessor(),
-                new ItemStackRequestPacketProcessor()
+                new ItemStackRequestPacketProcessor(),
+                new SetLocalPlayerAsInitializedPacketProcessor()
         );
     }
 }

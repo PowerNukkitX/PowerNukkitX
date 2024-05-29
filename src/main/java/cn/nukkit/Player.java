@@ -191,7 +191,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /// static fields
     public boolean playedBefore;
     public boolean spawned = false;
-    public boolean locallyInitialized = false;
+    public volatile boolean locallyInitialized = false;
     public boolean loggedIn = false;
     public final HashSet<String> achievements = new HashSet<>();
     public int gamemode;
@@ -1249,11 +1249,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * 玩家客户端初始化完成后调用
      */
     protected void onPlayerLocallyInitialized() {
+        if (locallyInitialized) return;
+        locallyInitialized = true;
+
         //init entity data property
         this.setDataProperty(NAME, info.getUsername(), false);
         this.setDataProperty(NAMETAG_ALWAYS_SHOW, 1, false);
 
-        locallyInitialized = true;
         PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(this,
                 new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.joined", new String[]{
                         this.getDisplayName()

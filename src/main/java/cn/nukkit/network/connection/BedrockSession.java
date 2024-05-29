@@ -421,7 +421,6 @@ public class BedrockSession {
     private void onClientSpawned() {
         log.debug("Received spawn response, entering in-game phase");
         Objects.requireNonNull(getPlayer()).setImmobile(false); //TODO: HACK: we set this during the spawn sequence to prevent the client sending junk movements
-        handle.onPlayerLocallyInitialized();
     }
 
     protected void onServerDeath() {

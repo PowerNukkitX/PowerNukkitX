@@ -151,5 +151,6 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
     @Override
     public void handle(SetLocalPlayerAsInitializedPacket pk) {
         log.debug("receive SetLocalPlayerAsInitializedPacket for {}", this.player.getPlayerInfo().getUsername());
+        handle.onPlayerLocallyInitialized();
     }
 }
