@@ -80,7 +80,9 @@ public class LevelDBChunkSerializer {
         if (finalized == null) {
             builder.state(ChunkState.FINISHED);
         } else {
-            builder.state(ChunkState.values()[Unpooled.wrappedBuffer(finalized).readIntLE() + 1]);
+            ByteBuf byteBuf = Unpooled.wrappedBuffer(finalized);
+            final int i = byteBuf.readableBytes() >= 4 ? byteBuf.readIntLE() : byteBuf.readByte();
+            builder.state(ChunkState.values()[i + 1]);
         }
         byte[] extraData = db.get(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(builder.getChunkX(), builder.getChunkZ(), builder.getDimensionData()));
         CompoundTag pnxExtraData = null;

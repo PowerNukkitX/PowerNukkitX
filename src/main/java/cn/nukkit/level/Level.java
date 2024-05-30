@@ -521,11 +521,11 @@ public class Level implements Metadatable {
 
     public void initLevel() {
         this.gameRules = this.requireProvider().getGamerules();
-        log.info("Preparing start region for level \"{}\"", this.getName());
         Position spawn = this.getSpawnLocation();
         if (!getChunk(spawn.getChunkX(), spawn.getChunkZ(), true).getChunkState().canSend()) {
             this.generateChunk(spawn.getChunkX(), spawn.getChunkZ());
         }
+        log.info("Loading is complete for level \"{}\"", TextFormat.GREEN + this.getName());
     }
 
     public Generator getGenerator() {
