@@ -136,4 +136,9 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
     public void setBlockFace(BlockFace face) {
         setPropertyValue(WEIRDO_DIRECTION, CommonPropertyMap.EWSN_DIRECTION.get(face));
     }
+
+    @Override
+    public int getLightFilter() {
+        return this.isUpsideDown() ? 1 : 15;
+    }
 }
