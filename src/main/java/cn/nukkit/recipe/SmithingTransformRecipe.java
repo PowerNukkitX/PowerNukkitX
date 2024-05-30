@@ -23,8 +23,10 @@ import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 /**
+ * The type Smithing recipe for upgrade equipment.
+ *
  * @author joserobjr
- * @since 2020-09-28
+ * @since 2020 -09-28
  */
 public class SmithingTransformRecipe extends BaseRecipe {
 
@@ -33,38 +35,16 @@ public class SmithingTransformRecipe extends BaseRecipe {
         this.ingredients.add(base);
         this.ingredients.add(addition);
         this.ingredients.add(template);
-
         this.results.add(result);
     }
 
     @Override
     public boolean match(Input input) {
-        return true;
+        return false;
     }
 
     public Item getResult() {
-        return results.get(0);
-    }
-
-    public Item getFinalResult(Item equip) {
-        Item finalResult = getResult().clone();
-
-        if (equip.hasCompoundTag()) {
-            finalResult.setCompoundTag(equip.getCompoundTag());
-        }
-
-        int maxDurability = finalResult.getMaxDurability();
-        if (maxDurability <= 0 || equip.getMaxDurability() <= 0) {
-            return finalResult;
-        }
-
-        int damage = equip.getDamage();
-        if (damage <= 0) {
-            return finalResult;
-        }
-
-        finalResult.setDamage(Math.min(maxDurability, damage));
-        return finalResult;
+        return results.getFirst();
     }
 
     @Override
@@ -73,7 +53,7 @@ public class SmithingTransformRecipe extends BaseRecipe {
     }
 
     public ItemDescriptor getBase() {
-        return ingredients.get(0);
+        return ingredients.getFirst();
     }
 
     public ItemDescriptor getAddition() {

@@ -3,11 +3,14 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.event.block.ComposterEmptyEvent;
 import cn.nukkit.event.block.ComposterFillEvent;
-import cn.nukkit.item.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.ItemBoneMeal;
+import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.utils.DyeColor;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +25,7 @@ public class BlockComposter extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(COMPOSTER, COMPOSTER_FILL_LEVEL);
     private static final Object2IntMap<String> compostableItems = new Object2IntOpenHashMap<>();
     private static final Object2IntMap<BlockState> compostableBlocks = new Object2IntOpenHashMap<>();
-    public static final Item OUTPUT_ITEM = new ItemDye(DyeColor.BONE_MEAL, 1);
+    public static final Item OUTPUT_ITEM = new ItemBoneMeal();
 
     public static void init(){
         registerDefaults();
@@ -155,7 +158,7 @@ public class BlockComposter extends BlockSolid {
     }
 
     public Item empty(@Nullable Item item, @Nullable Player player) {
-        ComposterEmptyEvent event = new ComposterEmptyEvent(this, player, item, new ItemDye(DyeColor.BONE_MEAL), 0);
+        ComposterEmptyEvent event = new ComposterEmptyEvent(this, player, item, new ItemBoneMeal(), 0);
         this.level.getServer().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
             setPropertyValue(COMPOSTER_FILL_LEVEL, event.getNewLevel());

@@ -4,11 +4,10 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.utils.BannerPattern;
+import cn.nukkit.network.protocol.types.BannerPattern;
 import cn.nukkit.utils.DyeColor;
 
 public class BlockEntityBanner extends BlockEntitySpawnable {
-
     public int color;
 
     public BlockEntityBanner(IChunk chunk, CompoundTag nbt) {
@@ -27,7 +26,7 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        return this.getBlock().getId() == Block.WALL_BANNER || this.getBlock().getId() == Block.STANDING_BANNER;
+        return this.getBlock().getId().equals(Block.WALL_BANNER) || this.getBlock().getId().equals(Block.STANDING_BANNER);
     }
 
     @Override
@@ -61,12 +60,14 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
         ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
         patterns.add(new CompoundTag().
                 putInt("Color", pattern.color().getDyeData() & 0x0f).
-                putString("Pattern", pattern.type().getName()));
+                putString("Pattern", pattern.type().getCode()));
         this.namedTag.putList("Patterns", patterns);
     }
 
     public BannerPattern getPattern(int index) {
-        return BannerPattern.fromCompoundTag(this.namedTag.getList("Patterns").size() > index && index >= 0 ? this.namedTag.getList("Patterns", CompoundTag.class).get(index) : new CompoundTag());
+        return BannerPattern.fromCompoundTag(this.namedTag.getList("Patterns").size() > index && index >= 0 ?
+                this.namedTag.getList("Patterns", CompoundTag.class).get(index) :
+                new CompoundTag());
     }
 
     public void removePattern(int index) {

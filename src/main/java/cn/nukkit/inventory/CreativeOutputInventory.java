@@ -60,7 +60,7 @@ public class CreativeOutputInventory implements Inventory {
     }
 
     public boolean setItem(@NotNull Item item) {
-        return setItem(0, item, true);
+        return setItem(0, item, false);
     }
 
     @Override

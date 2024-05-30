@@ -396,22 +396,28 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         return buffer.copy();
     }
 
-    public String computeRecipeIdWithItem(Collection<Item> results, Collection<Item> inputs, RecipeType type) {
+    public int getRecipeCount() {
+        return RECIPE_COUNT;
+    }
+
+    public Recipe getRecipeByNetworkId(int networkId) {
+        return networkIdRecipeList.get(networkId - 1);
+    }
+
+    public static String computeRecipeIdWithItem(Collection<Item> results, Collection<Item> inputs, RecipeType type) {
         List<Item> inputs1 = new ArrayList<>(inputs);
         return computeRecipeId(results, inputs1.stream().map(DefaultDescriptor::new).toList(), type);
     }
 
-    public String computeRecipeId(Collection<Item> results, Collection<? extends ItemDescriptor> inputs, RecipeType type) {
+    public static String computeRecipeId(Collection<Item> results, Collection<? extends ItemDescriptor> inputs, RecipeType type) {
         StringBuilder builder = new StringBuilder();
         Optional<Item> first = results.stream().findFirst();
-        first.ifPresent(item -> {
-            builder.append(new Identifier(item.getId()).getPath())
-                    .append('_')
-                    .append(item.getCount())
-                    .append('_')
-                    .append(item.isBlock() ? item.getBlockUnsafe().getBlockState().specialValue() : item.getDamage())
-                    .append("_from_");
-        });
+        first.ifPresent(item -> builder.append(new Identifier(item.getId()).getPath())
+                .append('_')
+                .append(item.getCount())
+                .append('_')
+                .append(item.isBlock() ? item.getBlockUnsafe().getBlockState().specialValue() : item.getDamage())
+                .append("_from_"));
         int limit = 5;
         for (var des : inputs) {
             if ((limit--) == 0) {
@@ -431,14 +437,6 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         }
         String r = builder.toString();
         return r.substring(0, r.lastIndexOf("_and_")) + "_" + type.name().toLowerCase(Locale.ENGLISH);
-    }
-
-    public int getRecipeCount() {
-        return RECIPE_COUNT;
-    }
-
-    public Recipe getRecipeByNetworkId(int networkId) {
-        return networkIdRecipeList.get(networkId - 1);
     }
 
     public static void setCraftingPacket(ByteBuf craftingPacket) {
@@ -495,8 +493,8 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         r.add(recipe);
         ++RECIPE_COUNT;
         switch (recipe.getType()) {
-            case STONECUTTER, SHAPELESS, CARTOGRAPHY, SHULKER_BOX, SMITHING_TRANSFORM, SHAPED, MULTI ->
-                    this.networkIdRecipeList.add(recipe);
+            case STONECUTTER, SHAPELESS, CARTOGRAPHY, SHULKER_BOX, SMITHING_TRANSFORM, SMITHING_TRIM,
+                 SHAPED, MULTI -> this.networkIdRecipeList.add(recipe);
         }
     }
 
@@ -598,8 +596,17 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 int type = Utils.toInt(recipe.get("type"));
                 Recipe re = switch (type) {
                     case 9 -> {
-                        //todo trim smithing recipe
-                        yield null;
+                        String id = recipe.get("id").toString();
+                        Map<String, Object> base = (Map<String, Object>) recipe.get("base");
+                        ItemDescriptor baseItem = parseRecipeItem(base);
+                        Map<String, Object> addition = (Map<String, Object>) recipe.get("addition");
+                        ItemDescriptor additionItem = parseRecipeItem(addition);
+                        Map<String, Object> template = (Map<String, Object>) recipe.get("template");
+                        ItemDescriptor templateItem = parseRecipeItem(template);
+                        if (additionItem == null || baseItem == null || templateItem == null) {
+                            yield null;
+                        }
+                        yield new SmithingTrimRecipe(id, baseItem, additionItem, templateItem, "smithing_table");
                     }
                     case 4 -> {
                         UUID uuid = UUID.fromString(recipe.get("uuid").toString());
@@ -641,9 +648,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                     default -> throw new IllegalStateException("Unexpected value: " + recipe);
                 };
                 if (re == null) {
-                    if (type != 9) {//todo trim smithing recipe
-                        log.warn("Load recipe {} with null!", recipe.toString().substring(0, 60));
-                    }
+                    log.warn("Load recipe {} with null!", recipe.toString().substring(0, 60));
                     continue;
                 }
                 this.register(re);

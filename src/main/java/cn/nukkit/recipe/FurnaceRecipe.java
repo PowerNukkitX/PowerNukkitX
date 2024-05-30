@@ -2,7 +2,7 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
-import cn.nukkit.registry.Registries;
+import cn.nukkit.registry.RecipeRegistry;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -17,7 +17,7 @@ public class FurnaceRecipe extends SmeltingRecipe {
 
     public FurnaceRecipe(@Nullable String recipeId, Item result, Item ingredient) {
         super(recipeId == null ?
-                Registries.RECIPE.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)),
+                RecipeRegistry.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)),
                         ingredient.hasMeta() ? RecipeType.FURNACE_DATA : RecipeType.FURNACE) :
                 recipeId);
         this.ingredients.add(new DefaultDescriptor(ingredient.clone()));

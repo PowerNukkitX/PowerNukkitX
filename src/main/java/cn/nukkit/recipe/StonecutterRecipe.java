@@ -2,7 +2,7 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
-import cn.nukkit.registry.Registries;
+import cn.nukkit.registry.RecipeRegistry;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +18,7 @@ public class StonecutterRecipe extends CraftingRecipe {
     }
 
     public StonecutterRecipe(String recipeId, UUID uuid, int priority, Item result, Item ingredient) {
-        super(recipeId == null ? Registries.RECIPE.computeRecipeIdWithItem(List.of(result), List.of(ingredient), RecipeType.STONECUTTER) : recipeId, priority);
+        super(recipeId == null ? RecipeRegistry.computeRecipeIdWithItem(List.of(result), List.of(ingredient), RecipeType.STONECUTTER) : recipeId, priority);
         this.uuid = uuid;
         this.results.add(result.clone());
         if (ingredient.getCount() < 1) {
@@ -28,11 +28,11 @@ public class StonecutterRecipe extends CraftingRecipe {
     }
 
     public Item getResult() {
-        return this.results.get(0).clone();
+        return this.results.getFirst().clone();
     }
 
     public Item getIngredient() {
-        return ingredients.get(0).toItem().clone();
+        return ingredients.getFirst().toItem().clone();
     }
 
     @Override

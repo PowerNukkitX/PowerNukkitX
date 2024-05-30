@@ -7,11 +7,11 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
 import cn.nukkit.network.protocol.types.itemstack.request.action.CraftRecipeOptionalAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.level.Sound;
 import io.netty.util.internal.StringUtil;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectIntMutablePair;
@@ -54,7 +54,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
         if (inventory instanceof AnvilInventory anvilInventory) {
             Pair<Item, Integer> pair = updateAnvilResult(player, anvilInventory, filterString);
             if (pair != null) {
-                player.getCreativeOutputInventory().setItem(0, pair.left());
+                player.getCreativeOutputInventory().setItem(pair.left());
                 player.setExperience(player.getExperience() - pair.right());
             } else{
                 return context.error();

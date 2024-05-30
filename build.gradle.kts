@@ -212,6 +212,17 @@ tasks.javadoc {
 publishing {
     publications.create<MavenPublication>("maven") {
         from(components["java"])
+        pom {
+            repositories {
+                mavenLocal()
+                mavenCentral()
+                maven("https://repo.maven.apache.org/maven2/")
+                maven("https://jitpack.io")
+                maven("https://repo.opencollab.dev/maven-releases/")
+                maven("https://repo.opencollab.dev/maven-snapshots/")
+                maven("https://storehouse.okaeri.eu/repository/maven-public/")
+            }
+        }
     }
 }
 

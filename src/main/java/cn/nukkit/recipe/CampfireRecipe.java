@@ -2,7 +2,7 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
-import cn.nukkit.registry.Registries;
+import cn.nukkit.registry.RecipeRegistry;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public class CampfireRecipe extends SmeltingRecipe {
 
     public CampfireRecipe(String recipeId, Item result, Item ingredient) {
         super(recipeId == null ?
-                Registries.RECIPE.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)),
+                RecipeRegistry.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)),
                         ingredient.hasMeta() ? RecipeType.CAMPFIRE_DATA : RecipeType.CAMPFIRE) :
                 recipeId);
         this.results.add(result);

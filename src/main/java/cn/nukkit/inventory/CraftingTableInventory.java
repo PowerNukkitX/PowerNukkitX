@@ -1,7 +1,9 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.BlockCraftingTable;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.ContainerOpenPacket;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.recipe.Input;
 import com.google.common.collect.BiMap;
@@ -9,7 +11,7 @@ import com.google.common.collect.BiMap;
 import java.util.List;
 import java.util.Map;
 
-public class CraftingTableInventory extends ContainerInventory implements CraftTypeInventory, InputInventory {
+public class CraftingTableInventory extends BaseInventory implements CraftTypeInventory, InputInventory {
     public CraftingTableInventory(BlockCraftingTable table) {
         super(table, InventoryType.WORKBENCH, 9);
     }
@@ -25,6 +27,25 @@ public class CraftingTableInventory extends ContainerInventory implements CraftT
         for (int i = 0; i < getSize(); i++) {
             map2.put(i, ContainerSlotType.CRAFTING_INPUT);
         }
+    }
+
+    @Override
+    public void onOpen(Player who) {
+        super.onOpen(who);
+        ContainerOpenPacket pk = new ContainerOpenPacket();
+        pk.windowId = who.getWindowId(this);
+        pk.type = this.getType().getNetworkType();
+        InventoryHolder holder = this.getHolder();
+        pk.x = (int) holder.getX();
+        pk.y = (int) holder.getY();
+        pk.z = (int) holder.getZ();
+        who.dataPacket(pk);
+        this.sendContents(who);
+    }
+
+    @Override
+    public void onClose(Player who) {
+        super.onClose(who);
     }
 
     @Override

@@ -1,7 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.utils.DyeColor;
 
 /**
@@ -26,10 +24,6 @@ public class ItemDye extends Item {
 
     public ItemDye(Integer meta, int amount) {
         super(DYE, meta, amount, meta <= 15 ? DyeColor.getByDyeData(meta).getDyeName() : DyeColor.getByDyeData(meta).getName() + " Dye");
-
-        if (this.meta == DyeColor.BROWN.getDyeData()) {
-            this.block = Block.get(BlockID.COCOA);
-        }
     }
 
     public ItemDye(String id) {
@@ -38,15 +32,7 @@ public class ItemDye extends Item {
 
     @Override
     public boolean isFertilizer() {
-        return getDyeColor().equals(DyeColor.BONE_MEAL);
-    }
-
-    public boolean isLapisLazuli() {
-        return getDyeColor().equals(DyeColor.BLUE);
-    }
-
-    public boolean isCocoaBeans() {
-        return getDyeColor().equals(DyeColor.BROWN);
+        return meta == 15;
     }
 
     public DyeColor getDyeColor() {

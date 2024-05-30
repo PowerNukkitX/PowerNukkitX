@@ -24,11 +24,11 @@ public class TrimDataPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        int length1 = (int) byteBuf.readUnsignedVarInt();
+        int length1 = byteBuf.readUnsignedVarInt();
         for (int i = 0; i < length1; i++) {
             patterns.add(new TrimPattern(byteBuf.readString(), byteBuf.readString()));
         }
-        int length2 = (int) byteBuf.readUnsignedVarInt();
+        int length2 = byteBuf.readUnsignedVarInt();
         for (int i = 0; i < length2; i++) {
             materials.add(new TrimMaterial(byteBuf.readString(), byteBuf.readString(), byteBuf.readString()));
         }
@@ -36,7 +36,6 @@ public class TrimDataPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUnsignedVarInt(patterns.size());
         patterns.forEach(p -> {
             byteBuf.writeString(p.itemName());
