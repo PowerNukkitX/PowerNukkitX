@@ -1,5 +1,6 @@
 package cn.nukkit.level.format.palette;
 
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
@@ -52,7 +53,8 @@ public class Palette<V> {
     }
 
     public V get(int index) {
-        return this.palette.get(this.bitArray.get(index));
+        final int i = this.bitArray.get(index);
+        return i >= palette.size() ? this.palette.getFirst() : this.palette.get(i);
     }
 
     public void set(int index, V value) {
