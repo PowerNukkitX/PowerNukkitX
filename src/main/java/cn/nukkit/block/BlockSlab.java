@@ -124,4 +124,9 @@ public abstract class BlockSlab extends BlockTransparent {
 
         return true;
     }
+
+    @Override
+    public int getLightFilter() {
+        return this.isOnTop() ? 1 : 15;
+    }
 }
