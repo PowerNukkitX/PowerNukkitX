@@ -527,8 +527,6 @@ public class Server {
         this.pluginManager.loadInternalPlugin();
 
         this.serverID = UUID.randomUUID();
-        this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
-        this.network = new Network(this);
         this.pluginManager.loadPlugins(this.pluginPath);
         {//trim
             Registries.POTION.trim();
@@ -555,6 +553,8 @@ public class Server {
 
         loadLevels();
 
+        this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
+        this.network = new Network(this);
         this.getTickingAreaManager().loadAllTickingArea();
 
         this.properties.save(true);
