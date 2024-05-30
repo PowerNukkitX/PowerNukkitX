@@ -31,17 +31,17 @@ public class ShapedRecipe extends CraftingRecipe {
     /**
      * Constructs a ShapedRecipe instance.
      *
-     * @param primaryResult    Primary result of the recipe
-     * @param shape<br>        Array of 1, 2, or 3 strings representing the rows of the recipe.
-     *                         This accepts an array of 1, 2 or 3 strings. Each string should be of the same length and must be at most 3
-     *                         characters long. Each character represents a unique type of ingredient. Spaces are interpreted as air.
-     * @param ingredients<br>  Char =&gt; Item map of items to be set into the shape.
-     *                         This accepts an array of Items, indexed by character. Every unique character (except space) in the shape
-     *                         array MUST have a corresponding item in this list. Space character is automatically treated as air.
-     * @param extraResults<br> List of additional result items to leave in the crafting grid afterwards. Used for things like cake recipe
-     *                         empty buckets.
-     *                         <p>
-     *                         Note: Recipes **do not** need to be square. Do NOT add padding for empty rows/columns.
+     * @param primaryResult Primary result of the recipe
+     * @param shape         <br>        Array of 1, 2, or 3 strings representing the rows of the recipe.
+     *                      This accepts an array of 1, 2 or 3 strings. Each string should be of the same length and must be at most 3
+     *                      characters long. Each character represents a unique type of ingredient. Spaces are interpreted as air.
+     * @param ingredients   <br>  Char =&gt; Item map of items to be set into the shape.
+     *                      This accepts an array of Items, indexed by character. Every unique character (except space) in the shape
+     *                      array MUST have a corresponding item in this list. Space character is automatically treated as air.
+     * @param extraResults  <br> List of additional result items to leave in the crafting grid afterwards. Used for things like cake recipe
+     *                      empty buckets.
+     *                      <p>
+     *                      Note: Recipes do not need to be square. Do NOT add padding for empty rows/columns.
      */
     public ShapedRecipe(String recipeId, int priority, Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
         this(recipeId, priority, primaryResult, shape,
@@ -58,12 +58,12 @@ public class ShapedRecipe extends CraftingRecipe {
         this.uuid = uuid;
         this.row = shape.length;
         this.mirror = mirror;
-        if (this.row > 3 || this.row <= 0) {
+        if (this.row > 3 || this.row == 0) {
             throw new RuntimeException("Shaped recipes may only have 1, 2 or 3 rows, not " + this.row);
         }
 
         this.col = shape[0].length();
-        if (this.col > 3 || this.col <= 0) {
+        if (this.col > 3 || this.col == 0) {
             throw new RuntimeException("Shaped recipes may only have 1, 2 or 3 columns, not " + this.col);
         }
 
@@ -105,7 +105,7 @@ public class ShapedRecipe extends CraftingRecipe {
     }
 
     public Item getResult() {
-        return this.results.get(0);
+        return this.results.getFirst();
     }
 
     public ShapedRecipe setIngredient(String key, Item item) {

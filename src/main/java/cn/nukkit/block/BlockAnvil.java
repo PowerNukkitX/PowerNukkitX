@@ -6,7 +6,7 @@ import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.Damage;
 import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.inventory.BlockInventoryHolder;
-import cn.nukkit.inventory.ContainerInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -111,7 +111,7 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
     }
 
     @Override
-    public Supplier<ContainerInventory> blockInventorySupplier() {
+    public Supplier<Inventory> blockInventorySupplier() {
         return () -> new AnvilInventory(this);
     }
 

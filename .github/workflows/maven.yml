@@ -131,7 +131,7 @@ jobs:
       - name: Download PNX CLI
         run: |
           cd build
-          wget -O cli.jar https://github.com/PowerNukkitX/PNX-CLI/releases/download/0.2.3/PNX-CLI-0.2.3.jar
+          wget -O cli.jar https://github.com/PowerNukkitX/PNX-CLI/releases/download/0.2.4/PNX-CLI-0.2.4.jar
           zip -q -r powernukkitx-run.zip powernukkitx.jar cli.jar libs
           ls -l
 

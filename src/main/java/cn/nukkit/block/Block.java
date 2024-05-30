@@ -390,7 +390,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     // https://minecraft.wiki/w/Opacity#Lighting
-
     public boolean diffusesSkyLight() {
         return false;
     }

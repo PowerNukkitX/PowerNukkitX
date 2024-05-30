@@ -10,6 +10,8 @@ import cn.nukkit.network.protocol.RequestChunkRadiusPacket;
 import cn.nukkit.network.protocol.SetLocalPlayerAsInitializedPacket;
 import cn.nukkit.network.protocol.StartGamePacket;
 import cn.nukkit.network.protocol.SyncEntityPropertyPacket;
+import cn.nukkit.network.protocol.TrimDataPacket;
+import cn.nukkit.network.protocol.types.TrimData;
 import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +25,6 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         var server = player.getServer();
 
         this.startGame();
-
-        this.session.syncCraftingData();
 
         // 写入自定义物品数据
         // Write custom item data
@@ -89,6 +89,11 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
 
         log.debug("Sending crafting data");
         this.session.syncCraftingData();
+
+        TrimDataPacket trimDataPacket = new TrimDataPacket();
+        trimDataPacket.materials.addAll(TrimData.trimMaterials);
+        trimDataPacket.patterns.addAll(TrimData.trimPatterns);
+        this.session.sendPacket(trimDataPacket);
 
         player.setNameTagVisible(true);
         player.setNameTagAlwaysVisible(true);

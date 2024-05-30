@@ -14,6 +14,5 @@ public class ItemInkSac extends ItemDye {
 
     @Override
     public void setDamage(int meta) {
-        
     }
 }

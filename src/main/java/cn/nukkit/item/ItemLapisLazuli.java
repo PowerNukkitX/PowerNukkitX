@@ -14,6 +14,5 @@ public class ItemLapisLazuli extends ItemDye {
 
     @Override
     public void setDamage(int meta) {
-        
     }
 }

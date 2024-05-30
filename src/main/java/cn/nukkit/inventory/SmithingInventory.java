@@ -19,101 +19,70 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.block.BlockSmithingTable;
 import cn.nukkit.item.Item;
-import cn.nukkit.recipe.SmithingTransformRecipe;
-import org.jetbrains.annotations.NotNull;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import com.google.common.collect.BiMap;
 
-import javax.annotation.Nullable;
+import java.util.Map;
 
 /**
- * @author joserobjr
+ * @author joserobjr | CoolLoong
  * @since 2020-09-28
  */
-
-
-public class SmithingInventory extends ContainerInventory implements CraftTypeInventory{
+public class SmithingInventory extends ContainerInventory implements CraftTypeInventory {
     private static final int EQUIPMENT = 0;
     private static final int INGREDIENT = 1;
-    private Item currentResult = Item.AIR;
-
+    private static final int TEMPLATE = 2;
 
     public SmithingInventory(BlockSmithingTable blockSmithingTable) {
         super(blockSmithingTable, InventoryType.SMITHING_TABLE, 3);
     }
 
-
-    @Nullable
-    public SmithingTransformRecipe matchRecipe() {
-        return Server.getInstance().getRecipeRegistry().findSmithingTransform(getEquipment(), getIngredient());
-    }
-
     @Override
-    public void onSlotChange(int index, Item before, boolean send) {
-        if (index == EQUIPMENT || index == INGREDIENT) {
-            updateResult();
+    public void init() {
+        BiMap<Integer, Integer> map = super.networkSlotMap();
+        for (int i = 0; i < getSize(); i++) {
+            map.put(i, 51 + i);
         }
-        super.onSlotChange(index, before, send);
+
+        Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
+        map2.put(0, ContainerSlotType.SMITHING_TABLE_INPUT);
+        map2.put(1, ContainerSlotType.SMITHING_TABLE_MATERIAL);
+        map2.put(2, ContainerSlotType.SMITHING_TABLE_TEMPLATE);
     }
-
-
-    public void updateResult() {
-        Item result;
-        SmithingTransformRecipe recipe = matchRecipe();
-        if (recipe == null) {
-            result = Item.AIR;
-        } else {
-            result = recipe.getFinalResult(getEquipment());
-        }
-        setResult(result);
-    }
-
-    private void setResult(Item result) {
-        this.currentResult = result;
-    }
-
-
-    @NotNull
-    public Item getResult() {
-        SmithingTransformRecipe recipe = matchRecipe();
-        if (recipe == null) {
-            return Item.AIR;
-        }
-        return recipe.getFinalResult(getEquipment());
-    }
-
 
     public Item getEquipment() {
         return getItem(EQUIPMENT);
     }
 
-
     public void setEquipment(Item equipment) {
         setItem(EQUIPMENT, equipment);
     }
-
 
     public Item getIngredient() {
         return getItem(INGREDIENT);
     }
 
-
     public void setIngredient(Item ingredient) {
         setItem(INGREDIENT, ingredient);
+    }
+
+    public Item getTemplate() {
+        return getItem(TEMPLATE);
+    }
+
+    public void setTemplate(Item template) {
+        setItem(TEMPLATE, template);
     }
 
     @Override
     public void onClose(Player who) {
         super.onClose(who);
 
-        who.giveItem(getItem(EQUIPMENT), getItem(INGREDIENT));
+        who.giveItem(getItem(EQUIPMENT), getItem(INGREDIENT), getItem(TEMPLATE));
 
         this.clear(EQUIPMENT);
         this.clear(INGREDIENT);
-    }
-
-    public @NotNull Item getCurrentResult() {
-        return currentResult;
     }
 }

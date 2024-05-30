@@ -2,6 +2,9 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.inventory.BlockInventoryHolder;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.LoomInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -9,15 +12,18 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Supplier;
+
 /**
  * @implNote Faceable since FUTURE
  */
 
-public class BlockLoom extends BlockSolid implements Faceable {
+public class BlockLoom extends BlockSolid implements Faceable, BlockInventoryHolder {
     public static final BlockProperties PROPERTIES = new BlockProperties(LOOM, CommonBlockProperties.DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -55,19 +61,20 @@ public class BlockLoom extends BlockSolid implements Faceable {
     }
 
     @Override
-    public boolean canHarvestWithHand() {
-        return true;
-    }
-
-    @Override
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        //TODO Loom's inventory
-        return false;
+        if (player != null) {
+            Item itemInHand = player.getInventory().getItemInHand();
+            if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
+                return false;
+            }
+            player.addWindow(getOrCreateInventory());
+        }
+        return true;
     }
 
     @Override
@@ -87,5 +94,10 @@ public class BlockLoom extends BlockSolid implements Faceable {
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.DIRECTION, face.getHorizontalIndex());
+    }
+
+    @Override
+    public Supplier<Inventory> blockInventorySupplier() {
+        return () -> new LoomInventory(this);
     }
 }

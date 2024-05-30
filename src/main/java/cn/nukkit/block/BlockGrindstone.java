@@ -3,7 +3,9 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.Attachment;
-import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.BlockInventoryHolder;
+import cn.nukkit.inventory.GrindstoneInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -215,7 +217,7 @@ public class BlockGrindstone extends BlockTransparent implements Faceable, Block
     }
 
     @Override
-    public Supplier<ContainerInventory> blockInventorySupplier() {
+    public Supplier<Inventory> blockInventorySupplier() {
         return () -> new GrindstoneInventory(this);
     }
 }

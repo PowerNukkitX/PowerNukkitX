@@ -4,16 +4,23 @@ import cn.nukkit.Player;
 import cn.nukkit.event.inventory.CraftItemEvent;
 import cn.nukkit.inventory.InputInventory;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.SmithingInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.PlayerEnchantOptionsPacket;
+import cn.nukkit.network.protocol.types.TrimData;
+import cn.nukkit.network.protocol.types.TrimMaterial;
+import cn.nukkit.network.protocol.types.TrimPattern;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ConsumeAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.CraftRecipeAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.recipe.Input;
+import cn.nukkit.recipe.SmithingTransformRecipe;
+import cn.nukkit.recipe.SmithingTrimRecipe;
+import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Allay Project 2023/12/1
@@ -76,7 +84,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         } else if (action.getRecipeNetworkId() >= TradeRecipeBuildUtils.TRADE_RECIPEID) {//handle village trade recipe
             CompoundTag tradeRecipe = TradeRecipeBuildUtils.RECIPE_MAP.get(action.getRecipeNetworkId());
             if (tradeRecipe == null) {
-                log.error("cant find trade recipe from netId " + action.getRecipeNetworkId());
+                log.error("cant find trade recipe from netId {}", action.getRecipeNetworkId());
                 return context.error();
             }
             Item first = inventory.getItem(0);
@@ -128,6 +136,11 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         }
         var matched = recipe.match(input);
         if (!matched) {
+            if (recipe instanceof SmithingTrimRecipe) {
+                return handleSmithingTrim(player, context);
+            } else if (recipe instanceof SmithingTransformRecipe smithingTransformRecipe) {
+                return handleSmithingUpgrade(smithingTransformRecipe, player, context);
+            }
             log.warn("Mismatched recipe! Network id: {},Recipe name: {},Recipe type: {}", action.getRecipeNetworkId(), recipe.getRecipeId(), recipe.getType());
             return context.error();
         } else {
@@ -143,12 +156,73 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             if (recipe.getResults().size() == 1) {
                 // 若配方输出物品为1，客户端将不会发送CreateAction，此时我们直接在CraftRecipeAction输出物品到CREATED_OUTPUT
                 // 若配方输出物品为多个，客户端将会发送CreateAction，此时我们将在CreateActionProcessor里面输出物品到CREATED_OUTPUT
-                var output = recipe.getResults().get(0);
+                var output = recipe.getResults().getFirst();
                 var createdOutput = player.getCreativeOutputInventory();
                 createdOutput.setItem(0, output.clone().autoAssignStackNetworkId(), false);
             }
         }
         return null;
+    }
+
+    public ActionResponse handleSmithingUpgrade(SmithingTransformRecipe recipe, Player player, ItemStackRequestContext context) {
+        Optional<Inventory> topWindow = player.getTopWindow();
+        if (topWindow.isEmpty()) {
+            log.error("the player's haven't open any inventory!");
+            return context.error();
+        }
+        if (!(topWindow.get() instanceof SmithingInventory smithingInventory)) {
+            log.error("the player's haven't open smithing inventory!");
+            return context.error();
+        }
+        Item equipment = smithingInventory.getEquipment();
+        Item ingredient = smithingInventory.getIngredient();
+        Item template = smithingInventory.getTemplate();
+
+        ItemDescriptor expectEquipment = recipe.getBase();
+        ItemDescriptor expectIngredient = recipe.getAddition();
+        ItemDescriptor expectTemplate = recipe.getTemplate();
+        boolean match = expectEquipment.match(equipment);
+        match &= expectIngredient.match(ingredient);
+        match &= expectTemplate.match(template);
+        if (match) {
+            Item result = recipe.getResult().clone();
+            player.getCreativeOutputInventory().setItem(result);
+            return null;
+        }
+        return context.error();
+    }
+
+    public ActionResponse handleSmithingTrim(Player player, ItemStackRequestContext context) {
+        Optional<Inventory> topWindow = player.getTopWindow();
+        if (topWindow.isEmpty()) {
+            log.error("the player's haven't open any inventory!");
+            return context.error();
+        }
+        if (!(topWindow.get() instanceof SmithingInventory smithingInventory)) {
+            log.error("the player's haven't open smithing inventory!");
+            return context.error();
+        }
+        Item equipment = smithingInventory.getEquipment();
+        Item ingredient = smithingInventory.getIngredient();
+        Item template = smithingInventory.getTemplate();
+
+        if (!ingredient.isNull() && !template.isNull()) {
+            Optional<TrimPattern> find1 = TrimData.trimPatterns.stream().filter(trimPattern -> template.getId().equals(trimPattern.itemName())).findFirst();
+            Optional<TrimMaterial> find2 = TrimData.trimMaterials.stream().filter(trimMaterial -> ingredient.getId().equals(trimMaterial.itemName())).findFirst();
+            if (equipment.isNull() || find1.isEmpty() || find2.isEmpty()) {
+                return context.error();
+            }
+            TrimPattern trimPattern = find1.get();
+            TrimMaterial trimMaterial = find2.get();
+            Item result = equipment.clone();
+            CompoundTag trim = new CompoundTag().putString("Material", trimMaterial.materialId())
+                    .putString("Pattern", trimPattern.patternId());
+            CompoundTag compound = result.getOrCreateNamedTag();
+            compound.putCompound("Trim", trim);
+            player.getCreativeOutputInventory().setItem(result);
+            return null;
+        }
+        return context.error();
     }
 
     @Override

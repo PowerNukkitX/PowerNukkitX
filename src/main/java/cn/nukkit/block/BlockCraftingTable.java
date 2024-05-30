@@ -2,8 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.inventory.BlockInventoryHolder;
-import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.CraftingTableInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
@@ -72,7 +72,7 @@ public class BlockCraftingTable extends BlockSolid implements BlockInventoryHold
     }
 
     @Override
-    public Supplier<ContainerInventory> blockInventorySupplier() {
+    public Supplier<Inventory> blockInventorySupplier() {
         return () -> new CraftingTableInventory(this);
     }
 }

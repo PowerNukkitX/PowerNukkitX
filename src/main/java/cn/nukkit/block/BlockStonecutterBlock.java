@@ -3,7 +3,9 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.CommonPropertyMap;
-import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.BlockInventoryHolder;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.StonecutterInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -118,7 +120,7 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable,
     }
 
     @Override
-    public Supplier<ContainerInventory> blockInventorySupplier() {
+    public Supplier<Inventory> blockInventorySupplier() {
         return () -> new StonecutterInventory(this);
     }
 }

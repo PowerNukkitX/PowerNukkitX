@@ -68,7 +68,6 @@ public class CraftingDataPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeUnsignedVarInt(entries.size());
 
         int recipeNetworkId = 1;
@@ -108,7 +107,6 @@ public class CraftingDataPacket extends DataPacket {
                 case SMITHING_TRANSFORM -> {
                     SmithingTransformRecipe smithing = (SmithingTransformRecipe) recipe;
                     byteBuf.writeString(smithing.getRecipeId());
-                    //todo 1.19.80还没有模板，下个版本再加入
                     byteBuf.writeRecipeIngredient(smithing.getTemplate());
                     byteBuf.writeRecipeIngredient(smithing.getBase());
                     byteBuf.writeRecipeIngredient(smithing.getAddition());
@@ -117,7 +115,13 @@ public class CraftingDataPacket extends DataPacket {
                     byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case SMITHING_TRIM -> {
-                    //todo
+                    SmithingTrimRecipe shaped = (SmithingTrimRecipe) recipe;
+                    byteBuf.writeString(shaped.getRecipeId());
+                    byteBuf.writeRecipeIngredient(shaped.getIngredients().get(0));
+                    byteBuf.writeRecipeIngredient(shaped.getIngredients().get(1));
+                    byteBuf.writeRecipeIngredient(shaped.getIngredients().get(2));
+                    byteBuf.writeString(shaped.getTag());
+                    byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case SHAPED -> {
                     ShapedRecipe shaped = (ShapedRecipe) recipe;

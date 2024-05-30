@@ -3,7 +3,7 @@ package cn.nukkit.recipe;
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
-import cn.nukkit.registry.Registries;
+import cn.nukkit.registry.RecipeRegistry;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +24,7 @@ public class ShapelessRecipe extends CraftingRecipe {
     }
 
     public ShapelessRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients) {
-        super(recipeId == null ? Registries.RECIPE.computeRecipeId(List.of(result), ingredients, RecipeType.SHAPELESS) : recipeId, priority);
+        super(recipeId == null ? RecipeRegistry.computeRecipeId(List.of(result), ingredients, RecipeType.SHAPELESS) : recipeId, priority);
         this.uuid = uuid;
         this.results.add(result.clone());
         if (ingredients.size() > 9) {
