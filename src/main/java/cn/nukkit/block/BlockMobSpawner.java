@@ -70,4 +70,8 @@ public class BlockMobSpawner extends BlockSolid {
         return false;
     }
 
+    @Override
+    public int getLightFilter() {
+        return 15;
+    }
 }
