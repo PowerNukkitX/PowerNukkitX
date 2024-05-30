@@ -72,4 +72,9 @@ public class BlockGrassPath extends BlockGrassBlock {
     public boolean isTransparent() {
         return true;
     }
+
+    @Override
+    public int getLightFilter() {
+        return 15;
+    }
 }
