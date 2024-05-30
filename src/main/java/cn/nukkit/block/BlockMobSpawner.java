@@ -69,9 +69,4 @@ public class BlockMobSpawner extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
-
-    @Override
-    public int getLightFilter() {
-        return 15;
-    }
 }
