@@ -129,7 +129,7 @@ public final class ServerSettings extends OkaeriConfig {
         @Comment("nukkit.server.settings.chunkSettings.clearTickList")
         boolean clearTickList = false;
         @Comment("nukkit.server.settings.chunkSettings.generationQueueSize")
-        int generationQueueSize = 16;
+        int generationQueueSize = 128;
     }
 
     @EqualsAndHashCode(callSuper = true)

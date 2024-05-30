@@ -346,7 +346,7 @@ public class Server {
                 put("sub-motd", "v2.powernukkitx.com");
                 put("server-port", 19132);
                 put("server-ip", "0.0.0.0");
-                put("view-distance", 12);
+                put("view-distance", 16);
                 put("white-list", false);
                 put("achievements", true);
                 put("announce-player-achievements", true);

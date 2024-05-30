@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockMagma extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(MAGMA);
 
-    public BlockMagma(){
+    public BlockMagma() {
         super(PROPERTIES.getDefaultState());
     }
 
@@ -31,7 +31,8 @@ public class BlockMagma extends BlockSolid {
     }
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -87,7 +88,7 @@ public class BlockMagma extends BlockSolid {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block up = up();
             if (up instanceof BlockFlowingWater blockFlowingWater && (blockFlowingWater.getLiquidDepth() == 0 || blockFlowingWater.getLiquidDepth() == 8)) {
-                BlockFormEvent event = new BlockFormEvent(up, new BlockBubbleColumn().setPropertyValue(CommonBlockProperties.LIQUID_DEPTH, 1));
+                BlockFormEvent event = new BlockFormEvent(up, new BlockBubbleColumn().setPropertyValue(CommonBlockProperties.DRAG_DOWN, true));
                 if (!event.isCancelled()) {
                     if (event.getNewState().getWaterloggingLevel() > 0) {
                         this.getLevel().setBlock(up, 1, new BlockFlowingWater(), true, false);
