@@ -58,7 +58,7 @@ public class ZlibSingleThreadLowMem implements ZlibProvider {
                 while (!INFLATER_RAW.finished()) {
                     int i = INFLATER_RAW.inflate(BUFFER);
                     length += i;
-                    if (maxSize > 0 && length >= maxSize) {
+                    if (maxSize > 0 && length > maxSize) {
                         throw new IOException("Inflated data exceeds maximum size");
                     }
                     bos.write(BUFFER, 0, i);
@@ -78,7 +78,7 @@ public class ZlibSingleThreadLowMem implements ZlibProvider {
                 while (!INFLATER.finished()) {
                     int i = INFLATER.inflate(BUFFER);
                     length += i;
-                    if (maxSize > 0 && length >= maxSize) {
+                    if (maxSize > 0 && length > maxSize) {
                         throw new IOException("Inflated data exceeds maximum size");
                     }
                     bos.write(BUFFER, 0, i);

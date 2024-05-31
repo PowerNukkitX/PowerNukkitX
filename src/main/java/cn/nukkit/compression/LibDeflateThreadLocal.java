@@ -59,7 +59,7 @@ public class LibDeflateThreadLocal implements ZlibProvider {
                 var result = pnxInflater.decompressUnknownSize(data, 0, data.length, buffer, 0, buffer.length, type);
                 if (result == -1) {
                     return inflateD(data, maxSize, type);
-                } else if (maxSize > 0 && result >= maxSize) {
+                } else if (maxSize > 0 && result > maxSize) {
                     throw new IOException("Inflated data exceeds maximum size");
                 }
                 byte[] output = new byte[(int) result];
@@ -86,7 +86,7 @@ public class LibDeflateThreadLocal implements ZlibProvider {
                 result = pnxLibInflater.decompressUnknownSize(ByteBuffer.wrap(data), directBuffer, type);
                 if (result == -1) {
                     return inflate0(data, maxSize, type);
-                } else if (maxSize > 0 && result >= maxSize) {
+                } else if (maxSize > 0 && result > maxSize) {
                     throw new IOException("Inflated data exceeds maximum size");
                 }
             } catch (IllegalArgumentException ignore) {
