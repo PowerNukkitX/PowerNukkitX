@@ -1,15 +1,19 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.inventory.BlockInventoryHolder;
+import cn.nukkit.inventory.CartographyTableInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 
-public class BlockCartographyTable extends BlockSolid {
+public class BlockCartographyTable extends BlockSolid implements BlockInventoryHolder {
     public static final BlockProperties PROPERTIES = new BlockProperties(CARTOGRAPHY_TABLE);
 
     @Override
@@ -61,9 +65,14 @@ public class BlockCartographyTable extends BlockSolid {
     }
 
     @Override
-    //todo feature
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
-        return false;
+        player.addWindow(getOrCreateInventory());
+        return true;
+    }
+
+    @Override
+    public Supplier<Inventory> blockInventorySupplier() {
+        return () -> new CartographyTableInventory(this);
     }
 }

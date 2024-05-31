@@ -37,6 +37,7 @@ public class NetworkMapping {
                  ANVIL_INPUT, ANVIL_MATERIAL, ANVIL_RESULT,
                  STONECUTTER_INPUT, STONECUTTER_RESULT,
                  GRINDSTONE_ADDITIONAL, GRINDSTONE_INPUT, GRINDSTONE_RESULT,
+                 CARTOGRAPHY_INPUT, CARTOGRAPHY_ADDITIONAL, CARTOGRAPHY_RESULT,
                  LEVEL_ENTITY, SHULKER_BOX -> {
                 if (player.getFakeInventoryOpen() && player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof FakeInventory) {
                     yield player.getTopWindow().get();
