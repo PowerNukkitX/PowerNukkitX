@@ -730,7 +730,7 @@ public class Chunk implements IChunk {
     @Override
     public void reObfuscateChunk() {
         for (var section : getSections()) {
-            if(section!=null){
+            if (section != null) {
                 section.setNeedReObfuscate();
             }
         }

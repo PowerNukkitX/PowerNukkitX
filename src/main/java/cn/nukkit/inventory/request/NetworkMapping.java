@@ -28,7 +28,8 @@ public class NetworkMapping {
             case INVENTORY, HOTBAR, HOTBAR_AND_INVENTORY -> player.getInventory();
             case ARMOR -> player.getInventory().getArmorInventory();
             case OFFHAND -> player.getOffhandInventory();
-            case TRADE2_INGREDIENT_1, TRADE2_INGREDIENT_2, TRADE2_RESULT,
+            case BEACON_PAYMENT,
+                 TRADE2_INGREDIENT_1, TRADE2_INGREDIENT_2, TRADE2_RESULT,
                  LOOM_DYE, LOOM_MATERIAL, LOOM_INPUT, LOOM_RESULT,
                  BARREL, BREWING_RESULT, BREWING_FUEL, BREWING_INPUT,
                  FURNACE_FUEL, FURNACE_INGREDIENT, FURNACE_RESULT, SMOKER_INGREDIENT, BLAST_FURNACE_INGREDIENT,

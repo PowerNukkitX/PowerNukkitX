@@ -81,13 +81,13 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         Item resultDestItem;
         //first case：transfer all item
         if (sourItem.getCount() == count) {
-            source.clear(sourceSlot, false);
+            source.clear(sourceSlot);
             resultSourItem = source.getItem(sourceSlot);
             if (!destItem.isNull()) {
                 //目标物品不为空，直接添加数量，目标物品网络堆栈id不变
                 resultDestItem = destItem;
                 resultDestItem.setCount(destItem.getCount() + count);
-                destination.setItem(destinationSlot, resultDestItem, false);
+                destination.setItem(destinationSlot, resultDestItem);
             } else {
                 //目标物品为空，直接移动原有堆栈到新位置，网络堆栈id使用源物品的网络堆栈id（相当于换个位置）
                 if (source instanceof CreativeOutputInventory) {
@@ -95,20 +95,20 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
                     sourItem = sourItem.clone().autoAssignStackNetworkId();
                 }
                 resultDestItem = sourItem;
-                destination.setItem(destinationSlot, resultDestItem, false);
+                destination.setItem(destinationSlot, resultDestItem);
             }
         } else {//second case：transfer a part of item
             resultSourItem = sourItem;
             resultSourItem.setCount(resultSourItem.getCount() - count);
-            source.setItem(sourceSlot, resultSourItem, false);//减少源库存数量
+            source.setItem(sourceSlot, resultSourItem);//减少源库存数量
             if (!destItem.isNull()) {//目标物品不为空
                 resultDestItem = destItem;
                 resultDestItem.setCount(destItem.getCount() + count);//增加目的库存数量
-                destination.setItem(destinationSlot, resultDestItem, false);
+                destination.setItem(destinationSlot, resultDestItem);
             } else {//目标物品为空，为分出来的子物品堆栈新建网络堆栈id
                 resultDestItem = sourItem.clone().autoAssignStackNetworkId();
                 resultDestItem.setCount(count);
-                destination.setItem(destinationSlot, resultDestItem, false);
+                destination.setItem(destinationSlot, resultDestItem);
             }
         }
         var destItemStackResponseSlot =

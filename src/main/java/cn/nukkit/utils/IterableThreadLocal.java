@@ -1,5 +1,8 @@
 package cn.nukkit.utils;
 
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.ref.Reference;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -9,9 +12,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+@Slf4j
 public abstract class IterableThreadLocal<T> extends ThreadLocal<T> implements Iterable<T> {
     private ThreadLocal<T> flag;
-    private ConcurrentLinkedDeque<T> allValues = new ConcurrentLinkedDeque<>();
+    private final ConcurrentLinkedDeque<T> allValues = new ConcurrentLinkedDeque<>();
 
     public IterableThreadLocal() {
     }
@@ -26,6 +30,7 @@ public abstract class IterableThreadLocal<T> extends ThreadLocal<T> implements I
     }
 
     @Override
+    @NotNull
     public final Iterator<T> iterator() {
         return getAll().iterator();
     }
@@ -72,7 +77,7 @@ public abstract class IterableThreadLocal<T> extends ThreadLocal<T> implements I
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("", e);
         }
     }
 
@@ -114,11 +119,5 @@ public abstract class IterableThreadLocal<T> extends ThreadLocal<T> implements I
 
     public final Collection<T> getAll() {
         return Collections.unmodifiableCollection(allValues);
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        clean(this);
-        super.finalize();
     }
 }

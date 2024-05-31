@@ -75,6 +75,10 @@ public class BlockManager {
         caches.put(hashXYZ, block);
     }
 
+    public Level getLevel() {
+        return level;
+    }
+
     public IChunk getChunk(int chunkX, int chunkZ) {
         return this.level.getChunk(chunkX, chunkZ);
     }
