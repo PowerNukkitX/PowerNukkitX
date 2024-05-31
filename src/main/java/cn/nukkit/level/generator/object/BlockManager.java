@@ -11,7 +11,6 @@ import cn.nukkit.network.protocol.UpdateBlockPacket;
 import cn.nukkit.network.protocol.UpdateSubChunkBlocksPacket;
 import cn.nukkit.network.protocol.types.BlockChangeEntry;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +18,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class BlockManager {
-    @Getter
     private final Level level;
     private final Long2ObjectOpenHashMap<Block> caches;
     private final Long2ObjectOpenHashMap<Block> places;
@@ -75,6 +73,10 @@ public class BlockManager {
         Block block = Block.get(blockId, level, x, y, z, 0);
         places.put(hashXYZ, block);
         caches.put(hashXYZ, block);
+    }
+
+    public Level getLevel() {
+        return level;
     }
 
     public IChunk getChunk(int chunkX, int chunkZ) {
