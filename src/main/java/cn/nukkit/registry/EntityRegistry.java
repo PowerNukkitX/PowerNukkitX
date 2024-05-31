@@ -332,7 +332,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         EntityDefinition key = getEntityDefinition(entityId);
         Class<? extends Entity> entityClass = getEntityClass(entityId);
         if (entityClass == null) {
-            throw new RegisterException("This entity class does not override because cant find entity class from entityId {}", entityId);
+            throw new RegisterException("This entity class does not override because can't find entity class from entityId {}", entityId);
         }
         if (!entityClass.isAssignableFrom(value)) {
             throw new RegisterException("This entity class {} does not override the {} because is not assignable from {}!", entityClass.getSimpleName(), value.getSimpleName(), value.getSimpleName());

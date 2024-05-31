@@ -1312,7 +1312,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     protected void respawn() {
-        //the player cant respawn if the server is hardcore
+        //the player can't respawn if the server is hardcore
         if (this.server.isHardcore()) {
             this.setBanned(true);
             return;

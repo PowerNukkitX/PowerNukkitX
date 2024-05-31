@@ -52,7 +52,7 @@ public enum LangCode {
         try {
             return valueOf(LangCode.class, name);
         } catch (IllegalArgumentException illegalArgumentException) {
-            log.error("cant find LangCode for {},return null", name);
+            log.error("Can't find LangCode for {},return null", name);
             return null;
         }
     }

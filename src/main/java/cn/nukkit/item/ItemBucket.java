@@ -298,7 +298,7 @@ public class ItemBucket extends Item {
                 afterUse(level, block);
 
                 return true;
-            } else if (nether) {//handle the logic that the player cant use water bucket in nether
+            } else if (nether) {//handle the logic that the player can't use water bucket in nether
                 if (!player.isCreative()) {
                     this.setDamage(0); // Empty bucket
                     player.getInventory().setItemInHand(this);

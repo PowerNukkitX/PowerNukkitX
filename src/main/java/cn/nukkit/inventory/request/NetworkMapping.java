@@ -20,7 +20,7 @@ public class NetworkMapping {
                 if (riding instanceof InventoryHolder inventoryHolder) {
                     yield inventoryHolder.getInventory();
                 } else {
-                    throw new IllegalArgumentException("Cant handle horse inventory: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
+                    throw new IllegalArgumentException("Can't handle horse inventory: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
                 }
             }
             case CREATED_OUTPUT -> player.getCreativeOutputInventory();
@@ -46,7 +46,7 @@ public class NetworkMapping {
                 } else if (player.getTopWindow().isPresent()) {
                     yield player.getTopWindow().get();
                 } else {
-                    throw new IllegalArgumentException("Cant handle inventory: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
+                    throw new IllegalArgumentException("Can't handle inventory: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
                 }
             }
             case CRAFTING_INPUT -> {
@@ -59,7 +59,7 @@ public class NetworkMapping {
                 }
             }
             default -> {
-                throw new IllegalArgumentException("Cant handle containerSlotType: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
+                throw new IllegalArgumentException("Can't handle containerSlotType: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
             }
         };
     }
