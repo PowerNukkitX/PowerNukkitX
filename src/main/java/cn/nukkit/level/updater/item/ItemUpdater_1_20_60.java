@@ -4,9 +4,13 @@ import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 
 public class ItemUpdater_1_20_60 implements Updater {
-    public static final Updater INSTANCE = new ItemUpdater_1_20_60();
+    public static final Updater $1 = new ItemUpdater_1_20_60();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext ctx) {
         ctx.addUpdater(1, 20, 60)
                 .match("Name", "minecraft:scute")

@@ -14,13 +14,17 @@ import cn.nukkit.level.Position;
  */
 
 public class EntitySpawnEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final int entityType;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntitySpawnEvent(cn.nukkit.entity.Entity entity) {
         this.entity = entity;
@@ -30,26 +34,50 @@ public class EntitySpawnEvent extends EntityEvent implements Cancellable {
     public Position getPosition() {
         return this.entity.getPosition();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getType() {
         return this.entityType;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isCreature() {
         return this.entity instanceof EntityCreature;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isHuman() {
         return this.entity instanceof EntityHuman;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isProjectile() {
         return this.entity instanceof EntityProjectile;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isVehicle() {
         return this.entity instanceof Entity;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isItem() {
         return this.entity instanceof EntityItem;

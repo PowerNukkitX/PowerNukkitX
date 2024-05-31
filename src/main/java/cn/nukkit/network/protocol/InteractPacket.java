@@ -13,23 +13,31 @@ import lombok.ToString;
 @AllArgsConstructor
 public class InteractPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.INTERACT_PACKET;
+    public static final int $1 = ProtocolInfo.INTERACT_PACKET;
 
-    public static final int ACTION_VEHICLE_EXIT = 3;
-    public static final int ACTION_MOUSEOVER = 4;
+    public static final int $2 = 3;
+    public static final int $3 = 4;
 
-    public static final int ACTION_OPEN_INVENTORY = 6;
+    public static final int $4 = 6;
 
     public int action;
     public long target;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.action = byteBuf.readByte();
         this.target = byteBuf.readEntityRuntimeId();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeByte((byte) this.action);
@@ -37,9 +45,17 @@ public class InteractPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

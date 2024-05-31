@@ -9,7 +9,7 @@ import cn.nukkit.item.Item;
 
 public class ComposterFillEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -19,6 +19,10 @@ public class ComposterFillEvent extends BlockEvent implements Cancellable {
     private final Item item;
     private final int chance;
     private boolean success;
+    /**
+     * @deprecated 
+     */
+    
 
     public ComposterFillEvent(Block block, Player player, Item item, int chance, boolean success) {
         super(block);
@@ -35,14 +39,26 @@ public class ComposterFillEvent extends BlockEvent implements Cancellable {
     public Item getItem() {
         return item;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getChance() {
         return chance;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSuccess() {
         return success;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSuccess(boolean success) {
         this.success = success;

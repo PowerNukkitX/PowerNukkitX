@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class SmithingTableEvent extends InventoryEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -42,6 +42,10 @@ public class SmithingTableEvent extends InventoryEvent implements Cancellable {
     private final @NotNull Item resultItem;
     private final @NotNull Item ingredientItem;
     private final @NotNull Player player;
+    /**
+     * @deprecated 
+     */
+    
 
     public SmithingTableEvent(SmithingInventory inventory, @NotNull Item equipmentItem, @NotNull Item resultItem, @NotNull Item ingredientItem, @NotNull Player player) {
         super(inventory);

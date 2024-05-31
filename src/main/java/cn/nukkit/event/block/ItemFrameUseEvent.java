@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 
 
 public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -29,6 +29,10 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
     protected final Item item;
     protected final BlockEntityItemFrame itemFrame;
     protected final Action action;
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemFrameUseEvent(@Nullable Player player, @NotNull Block block, @NotNull BlockEntityItemFrame itemFrame, @Nullable Item item, Action action) {
         super(block);

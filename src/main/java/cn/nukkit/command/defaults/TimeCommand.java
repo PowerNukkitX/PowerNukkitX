@@ -16,6 +16,10 @@ import java.util.Map;
  * @since 2015/11/11
  */
 public class TimeCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public TimeCommand(String name) {
         super(name, "commands.time.description");
@@ -43,11 +47,15 @@ public class TimeCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         switch (result.getKey()) {
             case "1arg" -> {
-                String mode = list.getResult(0);
+                String $2 = list.getResult(0);
                 if ("start".equals(mode)) {
                     if (!sender.hasPermission("nukkit.command.time.start")) {
                         log.addMessage("nukkit.command.generic.permission").output();
@@ -90,7 +98,7 @@ public class TimeCommand extends VanillaCommand {
                     log.addMessage("nukkit.command.generic.permission").output();
                     return 0;
                 }
-                int value = list.getResult(1);
+                int $3 = list.getResult(1);
                 if (value < 0) {
                     log.addNumTooSmall(1, 0).output();
                     return 0;
@@ -108,7 +116,7 @@ public class TimeCommand extends VanillaCommand {
                     log.addMessage("nukkit.command.generic.permission").output();
                     return 0;
                 }
-                int value = list.getResult(1);
+                int $4 = list.getResult(1);
                 if (value < 0) {
                     log.addNumTooSmall(1, 0).output();
                     return 0;
@@ -126,8 +134,8 @@ public class TimeCommand extends VanillaCommand {
                     log.addMessage("nukkit.command.generic.permission").output();
                     return 0;
                 }
-                int value = 0;
-                String str = list.getResult(1);
+                int $5 = 0;
+                String $6 = list.getResult(1);
                 if ("day".equals(str)) {
                     value = Level.TIME_DAY;
                 } else if ("night".equals(str)) {

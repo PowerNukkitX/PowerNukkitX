@@ -7,6 +7,10 @@ import cn.nukkit.plugin.Plugin;
  * @author MagicDroidX (Nukkit Project)
  */
 public class PluginDisableEvent extends PluginEvent {
+    /**
+     * @deprecated 
+     */
+    
     public PluginDisableEvent(Plugin plugin) {
         super(plugin);
     }

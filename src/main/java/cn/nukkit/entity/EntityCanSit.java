@@ -9,11 +9,19 @@ import cn.nukkit.entity.data.EntityFlag;
 
 
 public interface EntityCanSit extends EntityComponent {
-    default boolean isSitting() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isSitting() {
         return getMemoryStorage().get(CoreMemoryTypes.IS_SITTING);
     }
 
-    default void setSitting(boolean sitting) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void setSitting(boolean sitting) {
         getMemoryStorage().put(CoreMemoryTypes.IS_SITTING, sitting);
         asEntity().setDataFlag(EntityFlag.SITTING, sitting);
     }

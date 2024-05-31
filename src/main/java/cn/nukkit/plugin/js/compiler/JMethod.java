@@ -6,6 +6,10 @@ import org.objectweb.asm.Type;
 import java.util.Arrays;
 
 public record JMethod(JClassBuilder builder, String methodName, String delegateName, JType returnType, JType... argTypes) {
+    /**
+     * @deprecated 
+     */
+    
     public JMethod(JClassBuilder builder, String name, JType returnType, JType... argTypes) {
         this(builder, name, name, returnType, argTypes);
     }

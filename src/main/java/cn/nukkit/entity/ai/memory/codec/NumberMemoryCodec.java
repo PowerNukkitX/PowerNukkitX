@@ -5,6 +5,10 @@ import cn.nukkit.nbt.tag.*;
 
 @SuppressWarnings("unchecked")
 public class NumberMemoryCodec<Data extends Number> extends MemoryCodec<Data> {
+    /**
+     * @deprecated 
+     */
+    
     public NumberMemoryCodec(String key) {
         super(
                 tag -> tag.contains(key) ? (new TagReader<>((NumberTag<Data>) tag.get(key))).getData() : null,
@@ -32,14 +36,18 @@ public class NumberMemoryCodec<Data extends Number> extends MemoryCodec<Data> {
 
     private static class TagReader<Data extends Number> {
         NumberTag<Data> tag;
+    /**
+     * @deprecated 
+     */
+    
 
         public TagReader(NumberTag<Data> tag) {
             this.tag = tag;
         }
 
         Data getData() {
-            String simpleName = tag.getClass().getSimpleName();
-            Number data = tag.getData();
+            String $1 = tag.getClass().getSimpleName();
+            Number $2 = tag.getData();
             //hack convert byteTag and shortTag because they data storage is all int type
             if (simpleName.equals("ByteTag")) {
                 return (Data) Byte.valueOf(data.byteValue());

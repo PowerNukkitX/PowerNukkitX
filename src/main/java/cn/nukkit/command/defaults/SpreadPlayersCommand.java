@@ -16,6 +16,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class SpreadPlayersCommand extends VanillaCommand {
 
     private final ThreadLocalRandom random;
+    /**
+     * @deprecated 
+     */
+    
 
     public SpreadPlayersCommand(String name) {
         super(name, "commands.spreadplayers.description");
@@ -33,12 +37,16 @@ public class SpreadPlayersCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
-        double x = list.getResult(0);
-        double z = list.getResult(1);
-        float spreadDistance = list.getResult(2);
-        float maxRange = list.getResult(3);
+        var $1 = result.getValue();
+        double $2 = list.getResult(0);
+        double $3 = list.getResult(1);
+        float $4 = list.getResult(2);
+        float $5 = list.getResult(3);
         List<Entity> targets = list.getResult(4);
         if (targets.isEmpty()) {
             log.addNoTargetMatch().output();
@@ -53,7 +61,7 @@ public class SpreadPlayersCommand extends VanillaCommand {
             return 0;
         }
         for (Entity target : targets) {
-            Vector3 vec3 = this.nextXZ(x, z, (int) maxRange);
+            Vector3 $6 = this.nextXZ(x, z, (int) maxRange);
             vec3.y = target.getLevel().getHighestBlockAt(vec3.getFloorX(), vec3.getFloorZ()) + 1;
             target.teleport(vec3);
         }
@@ -63,7 +71,7 @@ public class SpreadPlayersCommand extends VanillaCommand {
     }
 
     private Vector3 nextXZ(double centerX, double centerZ, int maxRange) {
-        Vector3 vec3 = new Vector3(centerX, 0, centerZ);
+        Vector3 $7 = new Vector3(centerX, 0, centerZ);
         vec3.x = Math.round(vec3.x) + this.random.nextInt(-maxRange, maxRange) + 0.5;
         vec3.z = Math.round(vec3.z) + this.random.nextInt(-maxRange, maxRange) + 0.5;
         return vec3;

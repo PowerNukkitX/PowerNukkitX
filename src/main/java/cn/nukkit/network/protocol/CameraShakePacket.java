@@ -15,11 +15,19 @@ public class CameraShakePacket extends DataPacket {
     public CameraShakeAction shakeAction;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.CAMERA_SHAKE_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.intensity = byteBuf.readFloatLE();
         this.duration = byteBuf.readFloatLE();
@@ -28,6 +36,10 @@ public class CameraShakePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeFloatLE(this.intensity);
@@ -45,6 +57,10 @@ public class CameraShakePacket extends DataPacket {
         POSITIONAL,
         ROTATIONAL
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

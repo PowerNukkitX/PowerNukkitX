@@ -8,16 +8,24 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 
 public class BlockOrangeShulkerBox extends BlockUndyedShulkerBox {
-    public static final BlockProperties PROPERTIES = new BlockProperties(ORANGE_SHULKER_BOX, Set.of(BlockTags.PNX_SHULKERBOX));
+    public static final BlockProperties $1 = new BlockProperties(ORANGE_SHULKER_BOX, Set.of(BlockTags.PNX_SHULKERBOX));
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockOrangeShulkerBox() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockOrangeShulkerBox(BlockState blockstate) {
         super(blockstate);

@@ -19,32 +19,48 @@ import javax.annotation.Nullable;
 
 public class BlockTrappedChest extends BlockChest {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(TRAPPED_CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(TRAPPED_CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTrappedChest() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTrappedChest(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Trapped Chest";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
 
-        BlockEntityChest chest = null;
+        BlockEntityChest $2 = null;
 
         for (BlockFace side : Plane.HORIZONTAL) {
             if ((getBlockFace() == BlockFace.WEST || getBlockFace() == BlockFace.EAST) && (side == BlockFace.WEST || side == BlockFace.EAST)) {
@@ -52,9 +68,9 @@ public class BlockTrappedChest extends BlockChest {
             } else if ((getBlockFace() == BlockFace.NORTH || getBlockFace() == BlockFace.SOUTH) && (side == BlockFace.NORTH || side == BlockFace.SOUTH)) {
                 continue;
             }
-            Block c = this.getSide(side);
+            Blo$3k $1 = this.getSide(side);
             if (c instanceof BlockTrappedChest trappedChest && trappedChest.getBlockFace() == getBlockFace()) {
-                BlockEntity blockEntity = this.getLevel().getBlockEntity(trappedChest);
+                BlockEntity $4 = this.getLevel().getBlockEntity(trappedChest);
                 if (blockEntity instanceof BlockEntityChest && !((BlockEntityChest) blockEntity).isPaired()) {
                     chest = (BlockEntityChest) blockEntity;
                     break;
@@ -63,7 +79,7 @@ public class BlockTrappedChest extends BlockChest {
         }
 
         this.getLevel().setBlock(block, this, true, true);
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $5 = new CompoundTag()
                 .putList("Items", new ListTag<>())
                 .putString("id", BlockEntity.CHEST)
                 .putInt("x", (int) this.x)
@@ -81,7 +97,7 @@ public class BlockTrappedChest extends BlockChest {
             }
         }
 
-        BlockEntityChest blockEntity = (BlockEntityChest) BlockEntity.createBlockEntity(BlockEntity.CHEST, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
+        BlockEntityChest $6 = (BlockEntityChest) BlockEntity.createBlockEntity(BlockEntity.CHEST, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
 
         if (blockEntity == null) {
             return false;
@@ -96,10 +112,14 @@ public class BlockTrappedChest extends BlockChest {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWeakPower(BlockFace face) {
-        int playerCount = 0;
+        int $7 = 0;
 
-        BlockEntity blockEntity = this.level.getBlockEntity(this);
+        BlockEntity $8 = this.level.getBlockEntity(this);
 
         if (blockEntity instanceof BlockEntityChest) {
             playerCount = ((BlockEntityChest) blockEntity).getInventory().getViewers().size();
@@ -109,11 +129,19 @@ public class BlockTrappedChest extends BlockChest {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getStrongPower(BlockFace side) {
-        return side == BlockFace.UP ? this.getWeakPower(side) : 0;
+        return $9 == BlockFace.UP ? this.getWeakPower(side) : 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPowerSource() {
         return true;
     }

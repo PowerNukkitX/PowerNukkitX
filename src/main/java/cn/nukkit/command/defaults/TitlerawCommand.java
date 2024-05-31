@@ -15,6 +15,10 @@ import java.util.Map;
 
 
 public class TitlerawCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public TitlerawCommand(String name) {
         super(name, "commands.titleraw.description");
@@ -44,8 +48,12 @@ public class TitlerawCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         List<Player> players = list.getResult(0);
         if (players.isEmpty()) {
             log.addNoTargetMatch().output();
@@ -70,8 +78,8 @@ public class TitlerawCommand extends VanillaCommand {
                 return 1;
             }
             case "set" -> {
-                String titleLocation = list.getResult(1);
-                RawText rawText = list.getResult(2);
+                String $2 = list.getResult(1);
+                RawText $3 = list.getResult(2);
                 switch (titleLocation) {
                     case "title" -> {
                         for (Player player : players) {
@@ -102,9 +110,9 @@ public class TitlerawCommand extends VanillaCommand {
                 return 1;
             }
             case "times" -> {
-                int fadeIn = list.getResult(2);
-                int stay = list.getResult(3);
-                int fadeOut = list.getResult(4);
+                int $4 = list.getResult(2);
+                int $5 = list.getResult(3);
+                int $6 = list.getResult(4);
                 for (var player : players) {
                     log.addMessage(TextFormat.WHITE + "%nukkit.command.title.times.success", String.valueOf(fadeIn), String.valueOf(stay), String.valueOf(fadeOut), player.getName());
                 }

@@ -8,27 +8,43 @@ import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSoulCampfire extends BlockCampfire {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_CAMPFIRE, CommonBlockProperties.EXTINGUISHED, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(SOUL_CAMPFIRE, CommonBlockProperties.EXTINGUISHED, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSoulCampfire() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSoulCampfire(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Soul Campfire";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return isExtinguished() ? 0 : 10;
     }

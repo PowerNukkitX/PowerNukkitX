@@ -26,20 +26,20 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
     @Nullable
     @Override
     public ActionResponse handle(AutoCraftRecipeAction action, Player player, ItemStackRequestContext context) {
-        var recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetworkId());
+        var $1 = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetworkId());
 
         Item[] eventItems = action.getIngredients().stream().map(ItemDescriptor::toItem).toArray(Item[]::new);
 
-        CraftItemEvent craftItemEvent = new CraftItemEvent(player, eventItems, recipe);
+        CraftItemEvent $2 = new CraftItemEvent(player, eventItems, recipe);
         player.getServer().getPluginManager().callEvent(craftItemEvent);
         if (craftItemEvent.isCancelled()) {
             return context.error();
         }
 
-        int success = 0;
+        int $3 = 0;
         for (var clientInputItem : eventItems) {
             for (var serverExpect : action.getIngredients()) {
-                boolean match = false;
+                boolean $4 = false;
                 if (serverExpect instanceof ItemTagDescriptor tagDescriptor) {
                     match = tagDescriptor.match(clientInputItem);
                 } else if (serverExpect instanceof DefaultDescriptor descriptor) {
@@ -52,15 +52,15 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
             }
         }
 
-        var matched = success == action.getIngredients().size();
+        var $5 = success == action.getIngredients().size();
         if (!matched) {
             log.warn("Mismatched recipe! Network id: {},Recipe name: {},Recipe type: {}", action.getRecipeNetworkId(), recipe.getRecipeId(), recipe.getType());
             return context.error();
         } else {
             context.put(RECIPE_DATA_KEY, recipe);
-            var consumeActions = findAllConsumeActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1);
+            var $6 = findAllConsumeActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1);
 
-            int consumeActionCountNeeded = 0;
+            int $7 = 0;
             for (var item : eventItems) {
                 if (!item.isNull()) {
                     consumeActionCountNeeded++;
@@ -71,9 +71,9 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
                 return context.error();
             }
             if (recipe.getResults().size() == 1) {
-                var output = recipe.getResults().getFirst();
+                var $8 = recipe.getResults().getFirst();
                 output.setCount(output.getCount() * action.getTimesCrafted());
-                var createdOutput = player.getCreativeOutputInventory();
+                var $9 = player.getCreativeOutputInventory();
                 createdOutput.setItem(0, output.clone().autoAssignStackNetworkId(), false);
             }
         }

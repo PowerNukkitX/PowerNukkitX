@@ -15,6 +15,10 @@ public class PluginCommand<T extends Plugin> extends Command implements PluginId
     private final T owningPlugin;
 
     private CommandExecutor executor;
+    /**
+     * @deprecated 
+     */
+    
 
     public PluginCommand(String name, T owner) {
         super(name);
@@ -22,6 +26,10 @@ public class PluginCommand<T extends Plugin> extends Command implements PluginId
         this.executor = owner;
         this.usageMessage = "";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PluginCommand(String name, String description, T owner) {
         super(name, description);
@@ -30,6 +38,10 @@ public class PluginCommand<T extends Plugin> extends Command implements PluginId
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         if (!this.owningPlugin.isEnabled()) {
             return 0;
@@ -38,6 +50,10 @@ public class PluginCommand<T extends Plugin> extends Command implements PluginId
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.owningPlugin.isEnabled()) {
             return false;
@@ -47,7 +63,7 @@ public class PluginCommand<T extends Plugin> extends Command implements PluginId
             return false;
         }
 
-        boolean success = this.executor.onCommand(sender, this, commandLabel, args);
+        boolean $1 = this.executor.onCommand(sender, this, commandLabel, args);
 
         if (!success && !this.usageMessage.isEmpty()) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
@@ -59,6 +75,10 @@ public class PluginCommand<T extends Plugin> extends Command implements PluginId
     public CommandExecutor getExecutor() {
         return executor;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setExecutor(CommandExecutor executor) {
         this.executor = (executor != null) ? executor : this.owningPlugin;

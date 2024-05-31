@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 public class HudCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public HudCommand(String name) {
         super(name, "commands.hud.description", "%commands.hud.usage");
@@ -28,8 +32,12 @@ public class HudCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
 
         List<Player> players = list.getResult(0);
         if (players.isEmpty()) {
@@ -37,13 +45,13 @@ public class HudCommand extends VanillaCommand {
             return 0;
         }
 
-        HudVisibility visibility = switch ((String) list.getResult(1)) {
+        HudVisibility $2 = switch ((String) list.getResult(1)) {
             case "hide" -> HudVisibility.HIDE;
             case "reset" -> HudVisibility.RESET;
             default -> null;
         };
 
-        HudElement element = switch ((String) list.getResult(2)) {
+        HudElement $3 = switch ((String) list.getResult(2)) {
             case "armor" -> HudElement.ARMOR;
             case "air_bubbles_bar" -> HudElement.AIR_BUBBLES_BAR;
             case "crosshair" -> HudElement.CROSSHAIR;
@@ -65,7 +73,7 @@ public class HudCommand extends VanillaCommand {
 
 
         for (Player player : players) {
-            SetHudPacket packet = new SetHudPacket();
+            SetHudPacket $4 = new SetHudPacket();
             packet.elements.add(element);
             packet.visibility = visibility;
             player.dataPacket(packet);

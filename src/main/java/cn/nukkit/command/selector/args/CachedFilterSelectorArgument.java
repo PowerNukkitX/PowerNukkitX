@@ -23,6 +23,10 @@ import java.util.function.Function;
 public abstract class CachedFilterSelectorArgument implements ISelectorArgument {
 
     Cache<Set<String>, Function<List<Entity>, List<Entity>>> cache;
+    /**
+     * @deprecated 
+     */
+    
 
     public CachedFilterSelectorArgument() {
         this.cache = provideCacheService();
@@ -30,7 +34,7 @@ public abstract class CachedFilterSelectorArgument implements ISelectorArgument 
 
     @Override
     public Function<List<Entity>, List<Entity>> getFilter(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
-        var value = cache.getIfPresent(Sets.newHashSet(arguments));
+        var $1 = cache.getIfPresent(Sets.newHashSet(arguments));
         if (value == null) {
             value = cache(selectorType, sender, basePos, arguments);
             cache.put(Sets.newHashSet(arguments), value);
@@ -39,6 +43,10 @@ public abstract class CachedFilterSelectorArgument implements ISelectorArgument 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isFilter() {
         return true;
     }

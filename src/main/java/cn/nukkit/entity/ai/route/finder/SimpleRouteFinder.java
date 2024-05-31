@@ -21,27 +21,43 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
     protected List<Node> nodes = new ArrayList<>();
 
     //索引值
-    protected int currentIndex = 0;
+    protected int $1 = 0;
 
     //方块评估器
     @Getter
     protected IPosEvaluator evalPos;
+    /**
+     * @deprecated 
+     */
+    
 
     public SimpleRouteFinder(IPosEvaluator blockEvaluator) {
         this.evalPos = blockEvaluator;
     }
 
     //添加寻路结果节点
+    
+    /**
+     * @deprecated 
+     */
     protected void addNode(Node node) {
         nodes.add(node);
     }
 
     //批量添加寻路结果节点
+    
+    /**
+     * @deprecated 
+     */
     protected void addNode(List<Node> node) {
         nodes.addAll(node);
     }
 
     //重置寻路结果
+    
+    /**
+     * @deprecated 
+     */
     protected void resetNodes() {
         this.nodes.clear();
     }
@@ -60,6 +76,10 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasNext() {
         try {
             if (this.currentIndex + 1 < nodes.size()) {
@@ -79,16 +99,28 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasCurrentNode() {
         return currentIndex < this.nodes.size();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getNodeIndex() {
         return this.currentIndex;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setNodeIndex(int index) {
         this.currentIndex = index;
     }

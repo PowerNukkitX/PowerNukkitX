@@ -8,9 +8,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BlockStateUpdater_1_10_0 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_10_0();
+    public static final Updater $1 = new BlockStateUpdater_1_10_0();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext context) {
         // TODO: mapped types. (I'm not sure if these are needed)
     }

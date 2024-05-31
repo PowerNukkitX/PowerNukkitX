@@ -11,7 +11,7 @@ import cn.nukkit.item.Item;
  */
 public class PlayerBlockPickEvent extends PlayerEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -19,6 +19,10 @@ public class PlayerBlockPickEvent extends PlayerEvent implements Cancellable {
 
     private final Block blockClicked;
     private Item item;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerBlockPickEvent(Player player, Block blockClicked, Item item) {
         this.blockClicked = blockClicked;
@@ -29,6 +33,10 @@ public class PlayerBlockPickEvent extends PlayerEvent implements Cancellable {
     public Item getItem() {
         return item;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setItem(Item item) {
         this.item = item;

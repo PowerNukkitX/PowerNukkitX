@@ -25,7 +25,11 @@ public interface BiMappedRegistry<LEFT, RIGHT> extends Registry<BiMap<LEFT, RIGH
         return getContent().inverse().getOrDefault(right, defaultValue);
     }
 
-    default void register(LEFT left, RIGHT right) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void register(LEFT left, RIGHT right) {
         getContent().put(left, right);
     }
 

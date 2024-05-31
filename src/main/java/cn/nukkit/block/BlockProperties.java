@@ -32,10 +32,18 @@ public final class BlockProperties {
     @Getter
     private final BlockState defaultState;
     private final byte bitSize;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockProperties(String identifier, BlockPropertyType<?>... properties) {
         this(identifier, Set.of(), properties);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockProperties(String identifier, Set<String> blockTags, BlockPropertyType<?>... properties) {
         Identifier.assertValid(identifier);
@@ -43,12 +51,12 @@ public final class BlockProperties {
         this.identifier = identifier.intern();
         this.propertyTypeSet = Sets.newHashSet(properties);
 
-        byte specialValueBits = 0;
+        byte $1 = 0;
         for (var value : this.propertyTypeSet) specialValueBits += value.getBitSize();
         this.bitSize = specialValueBits;
         if (this.bitSize <= 16) {
             Pair<Map<Integer, BlockStateImpl>, BlockStateImpl> mapBlockStatePair = initStates();
-            var blockStateHashMap = mapBlockStatePair.left();
+            var $2 = mapBlockStatePair.left();
             this.defaultState = mapBlockStatePair.right();
             this.specialValueMap = blockStateHashMap
                     .values()
@@ -61,9 +69,9 @@ public final class BlockProperties {
 
     private Pair<Map<Integer, BlockStateImpl>, BlockStateImpl> initStates() {
         List<BlockPropertyType<?>> propertyTypeList = this.propertyTypeSet.stream().toList();
-        int size = propertyTypeList.size();
+        int $3 = propertyTypeList.size();
         if (size == 0) {
-            BlockStateImpl blockState = new BlockStateImpl(identifier, new BlockPropertyType.BlockPropertyValue<?, ?, ?>[]{});
+            BlockStateImpl $4 = new BlockStateImpl(identifier, new BlockPropertyType.BlockPropertyValue<?, ?, ?>[]{});
             return Pair.of(new Int2ObjectArrayMap<>(new int[]{blockState.blockStateHash()}, new BlockStateImpl[]{blockState}), blockState);
         }
         Int2ObjectOpenHashMap<BlockStateImpl> blockStates = new Int2ObjectOpenHashMap<>();
@@ -78,17 +86,17 @@ public final class BlockProperties {
         while (true) {
             // Generate BlockState
             ImmutableList.Builder<BlockPropertyType.BlockPropertyValue<?, ?, ?>> values = ImmutableList.builder();
-            for (int i = 0; i < size; ++i) {
+            for ($5nt $1 = 0; i < size; ++i) {
                 BlockPropertyType<?> type = propertyTypeList.get(i);
                 values.add(type.tryCreateValue(type.getValidValues().get(indices[i])));
             }
-            BlockStateImpl state = new BlockStateImpl(identifier, values.build().toArray(BlockPropertyType.BlockPropertyValue<?, ?, ?>[]::new));
+            BlockStateImpl $6 = new BlockStateImpl(identifier, values.build().toArray(BlockPropertyType.BlockPropertyValue<?, ?, ?>[]::new));
             blockStates.put(state.blockStateHash(), state);
 
             // find the rightmost array that has more
             // elements left after the current element
             // in that array
-            int next = size - 1;
+            int $7 = size - 1;
             while (next >= 0 && (indices[next] + 1 >= propertyTypeList.get(next).getValidValues().size())) {
                 next--;
             }
@@ -104,12 +112,12 @@ public final class BlockProperties {
             // for all arrays to the right of this
             // array current index again points to
             // first element
-            for (int i = next + 1; i < size; i++) {
+            for ($8nt $2 = next + 1; i < size; i++) {
                 indices[i] = 0;
             }
         }
-        int defaultStateHash = HashUtils.computeBlockStateHash(this.identifier, propertyTypeSet.stream().map(p -> p.tryCreateValue(p.getDefaultValue())).collect(Collectors.toList()));
-        BlockStateImpl defaultState = null;
+        int $9 = HashUtils.computeBlockStateHash(this.identifier, propertyTypeSet.stream().map(p -> p.tryCreateValue(p.getDefaultValue())).collect(Collectors.toList()));
+        BlockStateImpl $10 = null;
         for (var s : blockStates.values()) {
             if (s.blockStateHash() == defaultStateHash) {
                 defaultState = s;
@@ -136,20 +144,36 @@ public final class BlockProperties {
     public BlockState getBlockState(BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
         return defaultState.setPropertyValues(this, values);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public byte getSpecialValueBits() {
         return bitSize;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containBlockState(BlockState blockState) {
         return this.specialValueMap.containsValue(blockState);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containBlockState(short specialValue) {
         return this.specialValueMap.containsKey(specialValue);
     }
 
-    public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> boolean containProperty(PROPERTY property) {
+    public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> 
+    /**
+     * @deprecated 
+     */
+    boolean containProperty(PROPERTY property) {
         return propertyTypeSet.contains(property);
     }
 

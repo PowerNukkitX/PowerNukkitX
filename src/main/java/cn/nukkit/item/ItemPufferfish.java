@@ -9,29 +9,53 @@ import cn.nukkit.entity.effect.EffectType;
  * @since 2016/1/14
  */
 public class ItemPufferfish extends ItemFish {
+    /**
+     * @deprecated 
+     */
+    
     public ItemPufferfish() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemPufferfish(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemPufferfish(Integer meta, int count) {
         super(PUFFERFISH, meta, count);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getFoodRestore() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getSaturationRestore() {
         return 0.2F;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onEaten(Player player) {
         player.addEffect(Effect.get(EffectType.HUNGER)
                 .setDuration(15*20)

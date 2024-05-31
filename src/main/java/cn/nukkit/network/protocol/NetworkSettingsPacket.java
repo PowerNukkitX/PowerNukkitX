@@ -19,11 +19,19 @@ public class NetworkSettingsPacket
     public float clientThrottleScalar;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.NETWORK_SETTINGS_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeShortLE(this.compressionThreshold);
@@ -34,6 +42,10 @@ public class NetworkSettingsPacket
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.compressionThreshold = byteBuf.readShortLE();
         this.compressionAlgorithm = PacketCompressionAlgorithm.values()[byteBuf.readShortLE()];
@@ -41,6 +53,10 @@ public class NetworkSettingsPacket
         this.clientThrottleThreshold = byteBuf.readByte();
         this.clientThrottleScalar = byteBuf.readFloatLE();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

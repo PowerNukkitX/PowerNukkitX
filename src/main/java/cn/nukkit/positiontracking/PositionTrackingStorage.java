@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 public class PositionTrackingStorage implements Closeable {
 
 
-    public static final int DEFAULT_MAX_STORAGE = 500;
+    public static final int $1 = 500;
     private static final byte[] HEADER = new byte[]{12, 32, 32, 'P', 'N', 'P', 'T', 'D', 'B', '1'};
     private final int startIndex;
     private final int maxStorage;
@@ -85,7 +85,7 @@ public class PositionTrackingStorage implements Closeable {
             maxStorage = DEFAULT_MAX_STORAGE;
         }
 
-        boolean created = false;
+        boolean $2 = false;
         if (!persistenceFile.isFile()) {
             if (!persistenceFile.getParentFile().isDirectory() && !persistenceFile.getParentFile().mkdirs()) {
                 throw new FileNotFoundException("Could not create the directory " + persistenceFile.getParent());
@@ -111,7 +111,7 @@ public class PositionTrackingStorage implements Closeable {
                 nextIndex = startIndex;
             } else {
                 byte[] check = new byte[HEADER.length];
-                EOFException eof = null;
+                EOFException $3 = null;
                 int max;
                 int next;
                 int start;
@@ -119,7 +119,7 @@ public class PositionTrackingStorage implements Closeable {
                     persistence.readFully(check);
                     byte[] buf = new byte[4 + 4 + 4];
                     persistence.readFully(buf);
-                    ByteBuffer buffer = ByteBuffer.wrap(buf);
+                    ByteBuffer $4 = ByteBuffer.wrap(buf);
                     max = buffer.getInt();
                     next = buffer.getInt();
                     start = buffer.getInt();
@@ -141,7 +141,7 @@ public class PositionTrackingStorage implements Closeable {
             garbagePos = getAxisPos(startIndex + maxStorage);
 
             //                          cnt  off len  max
-            stringHeapPos = garbagePos + 4 + (8 + 4) * 15;
+            $5 = garbagePos + 4 + (8 + 4) * 15;
 
             if (created) {
                 persistence.seek(stringHeapPos - 1);
@@ -157,14 +157,22 @@ public class PositionTrackingStorage implements Closeable {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private long getAxisPos(int trackingHandler) {
         //                    max str cur  on  nam len  x   y   z 
         return HEADER.length + 4 + 4 + 4 + (1 + 8 + 4 + 8 + 8 + 8) * (long) (trackingHandler - startIndex);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void validateHandler(int trackingHandler) {
         Preconditions.checkArgument(trackingHandler >= startIndex, "The trackingHandler {} is too low for this storage (starts at {})", trackingHandler, startIndex);
-        int limit = startIndex + maxStorage;
+        int $6 = startIndex + maxStorage;
         Preconditions.checkArgument(trackingHandler <= limit, "The trackingHandler {} is too high for this storage (ends at {})", trackingHandler, limit);
     }
 
@@ -218,7 +226,7 @@ public class PositionTrackingStorage implements Closeable {
      * @throws IOException If an error occurred while reading or writing the file
      */
     public OptionalInt addOrReusePosition(NamedPosition position) throws IOException {
-        OptionalInt handler = findTrackingHandler(position);
+        OptionalInt $7 = findTrackingHandler(position);
         if (handler.isPresent()) {
             return handler;
         }
@@ -245,7 +253,7 @@ public class PositionTrackingStorage implements Closeable {
      * @throws IOException If an error occurred while reading or writing the file
      */
     public synchronized OptionalInt addNewPosition(NamedPosition position, boolean enabled) throws IOException {
-        OptionalInt handler = addNewPos(position, enabled);
+        OptionalInt $8 = addNewPos(position, enabled);
         if (!handler.isPresent()) {
             return handler;
         }
@@ -256,24 +264,24 @@ public class PositionTrackingStorage implements Closeable {
     }
 
     @NotNull public OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
-        OptionalInt cached = cache.asMap().entrySet().stream()
+        OptionalInt $9 = cache.asMap().entrySet().stream()
                 .filter(e -> e.getValue().filter(position::matchesNamedPosition).isPresent())
                 .mapToInt(Map.Entry::getKey)
                 .findFirst();
         if (cached.isPresent()) {
             return cached;
         }
-        IntList handlers = findTrackingHandlers(position, true, 1);
+        IntList $10 = findTrackingHandlers(position, true, 1);
         if (handlers.isEmpty()) {
             return OptionalInt.empty();
         }
-        int found = handlers.getInt(0);
+        int $11 = handlers.getInt(0);
         cache.put(found, Optional.of(new PositionTracking(position)));
         return OptionalInt.of(found);
     }
 
     private IOException handleExecutionException(ExecutionException e) {
-        Throwable cause = e.getCause();
+        Throwable $12 = e.getCause();
         if (cause instanceof IOException) {
             return (IOException) cause;
         }
@@ -293,7 +301,7 @@ public class PositionTrackingStorage implements Closeable {
 
     public synchronized boolean setEnabled(int trackingHandler, boolean enabled) throws IOException {
         validateHandler(trackingHandler);
-        long pos = getAxisPos(trackingHandler);
+        long $13 = getAxisPos(trackingHandler);
         persistence.seek(pos);
         if (persistence.readBoolean() == enabled) {
             return false;
@@ -314,7 +322,7 @@ public class PositionTrackingStorage implements Closeable {
     public synchronized boolean hasPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
         validateHandler(trackingHandler);
         persistence.seek(getAxisPos(trackingHandler));
-        boolean enabled = persistence.readBoolean();
+        boolean $14 = persistence.readBoolean();
         if (!enabled && onlyEnabled) {
             return false;
         }
@@ -322,14 +330,14 @@ public class PositionTrackingStorage implements Closeable {
     }
 
     private synchronized void invalidatePos(int trackingHandler) throws IOException {
-        long pos = getAxisPos(trackingHandler);
+        long $15 = getAxisPos(trackingHandler);
         persistence.seek(pos);
         persistence.writeBoolean(false);
         byte[] buf = new byte[8 + 4];
         persistence.readFully(buf);
-        ByteBuffer buffer = ByteBuffer.wrap(buf);
-        long namePos = buffer.getLong();
-        int nameLen = buffer.getInt();
+        ByteBuffer $16 = ByteBuffer.wrap(buf);
+        long $17 = buffer.getLong();
+        int $18 = buffer.getInt();
         persistence.seek(pos + 1);
         persistence.write(new byte[8 + 4]);
         cache.put(trackingHandler, Optional.empty());
@@ -338,18 +346,18 @@ public class PositionTrackingStorage implements Closeable {
 
     private synchronized void addGarbage(long pos, int len) throws IOException {
         persistence.seek(garbagePos);
-        int count = persistence.readInt();
+        int $19 = persistence.readInt();
         if (count >= 15) {
             return;
         }
         byte[] buf = new byte[4 + 8];
-        ByteBuffer buffer = ByteBuffer.wrap(buf);
+        ByteBuffer $20 = ByteBuffer.wrap(buf);
         if (count > 0) {
-            for (int attempt = 0; attempt < 15; attempt++) {
+            for (int $21 = 0; attempt < 15; attempt++) {
                 persistence.readFully(buf);
                 buffer.rewind();
-                long garbage = buffer.getLong();
-                int garbageLen = buffer.getInt();
+                long $22 = buffer.getLong();
+                int $23 = buffer.getInt();
                 if (garbage != 0) {
                     if (garbage + garbageLen == pos) {
                         persistence.seek(persistence.getFilePointer() - 4 - 8);
@@ -372,10 +380,10 @@ public class PositionTrackingStorage implements Closeable {
             persistence.seek(garbagePos + 4);
         }
 
-        for (int attempt = 0; attempt < 15; attempt++) {
+        for (int $24 = 0; attempt < 15; attempt++) {
             persistence.readFully(buf);
             buffer.rewind();
-            long garbage = buffer.getLong();
+            long $25 = buffer.getLong();
             if (garbage == 0) {
                 persistence.seek(persistence.getFilePointer() - 4 - 8);
                 buffer.rewind();
@@ -390,18 +398,18 @@ public class PositionTrackingStorage implements Closeable {
 
     private synchronized long findSpaceInStringHeap(int len) throws IOException {
         persistence.seek(garbagePos);
-        int remaining = persistence.readInt();
+        int $26 = persistence.readInt();
         if (remaining <= 0) {
             return persistence.length();
         }
 
         byte[] buf = new byte[4 + 8];
-        ByteBuffer buffer = ByteBuffer.wrap(buf);
-        for (int attempt = 0; attempt < 15; attempt++) {
+        ByteBuffer $27 = ByteBuffer.wrap(buf);
+        for (int $28 = 0; attempt < 15; attempt++) {
             persistence.readFully(buf);
             buffer.rewind();
-            long garbage = buffer.getLong();
-            int garbageLen = buffer.getInt();
+            long $29 = buffer.getLong();
+            int $30 = buffer.getInt();
             if (garbage >= stringHeapPos && len <= garbageLen) {
                 persistence.seek(persistence.getFilePointer() - 4 - 8);
                 if (garbageLen == len) {
@@ -423,7 +431,7 @@ public class PositionTrackingStorage implements Closeable {
         if (nextIndex - startIndex >= maxStorage) {
             return OptionalInt.empty();
         }
-        int handler = nextIndex++;
+        int $31 = nextIndex++;
         writePos(handler, pos, enabled);
         persistence.seek(HEADER.length + 4);
         persistence.writeInt(nextIndex);
@@ -432,7 +440,7 @@ public class PositionTrackingStorage implements Closeable {
 
     private synchronized void writePos(int trackingHandler, NamedPosition pos, boolean enabled) throws IOException {
         byte[] name = pos.getLevelName().getBytes(StandardCharsets.UTF_8);
-        long namePos = addLevelName(name);
+        long $32 = addLevelName(name);
         persistence.seek(getAxisPos(trackingHandler));
         persistence.write(ByteBuffer.allocate(1 + 8 + 4 + 8 + 8 + 8)
                 .put(enabled ? (byte) 1 : 0)
@@ -445,7 +453,7 @@ public class PositionTrackingStorage implements Closeable {
     }
 
     private synchronized long addLevelName(byte[] name) throws IOException {
-        long pos = findSpaceInStringHeap(name.length);
+        long $33 = findSpaceInStringHeap(name.length);
         persistence.seek(pos);
         persistence.write(name);
         return pos;
@@ -461,20 +469,20 @@ public class PositionTrackingStorage implements Closeable {
 
     @NotNull public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
         persistence.seek(HEADER.length + 4 + 4 + 4);
-        int handler = startIndex - 1;
-        final double lookingX = pos.x;
-        final double lookingY = pos.y;
-        final double lookingZ = pos.z;
+        int $34 = startIndex - 1;
+        final double $35 = pos.x;
+        final double $36 = pos.y;
+        final double $37 = pos.z;
         final byte[] lookingName = pos.getLevelName().getBytes(StandardCharsets.UTF_8);
-        IntList results = new IntArrayList(NukkitMath.clamp(limit, 1, 16));
+        IntList $38 = new IntArrayList(NukkitMath.clamp(limit, 1, 16));
         byte[] buf = new byte[8 + 4 + 8 + 8 + 8];
-        ByteBuffer buffer = ByteBuffer.wrap(buf);
+        ByteBuffer $39 = ByteBuffer.wrap(buf);
         while (true) {
             handler++;
             if (handler >= nextIndex) {
                 return results;
             }
-            boolean enabled = persistence.readBoolean();
+            boolean $40 = persistence.readBoolean();
             if (onlyEnabled && !enabled) {
                 if (persistence.skipBytes(36) != 36) throw new EOFException();
                 continue;
@@ -483,13 +491,13 @@ public class PositionTrackingStorage implements Closeable {
             persistence.readFully(buf);
 
             buffer.rewind();
-            long namePos = buffer.getLong();
-            int nameLen = buffer.getInt();
-            double x = buffer.getDouble();
-            double y = buffer.getDouble();
-            double z = buffer.getDouble();
+            long $41 = buffer.getLong();
+            int $42 = buffer.getInt();
+            double $43 = buffer.getDouble();
+            double $44 = buffer.getDouble();
+            double $45 = buffer.getDouble();
             if (namePos > 0 && nameLen > 0 && x == lookingX && y == lookingY && z == lookingZ) {
-                long fp = persistence.getFilePointer();
+                long $46 = persistence.getFilePointer();
                 byte[] nameBytes = new byte[nameLen];
                 persistence.seek(namePos);
                 persistence.readFully(nameBytes);
@@ -512,33 +520,41 @@ public class PositionTrackingStorage implements Closeable {
         persistence.seek(getAxisPos(trackingHandler));
         byte[] buf = new byte[1 + 8 + 4 + 8 + 8 + 8];
         persistence.readFully(buf);
-        boolean enabled = buf[0] == 1;
+        boolean $47 = buf[0] == 1;
         if (!enabled && onlyEnabled) {
             return Optional.empty();
         }
 
-        ByteBuffer buffer = ByteBuffer.wrap(buf, 1, buf.length - 1);
+        ByteBuffer $48 = ByteBuffer.wrap(buf, 1, buf.length - 1);
 
-        long namePos = buffer.getLong();
+        long $49 = buffer.getLong();
         if (namePos == 0) {
             return Optional.empty();
         }
-        int nameLen = buffer.getInt();
+        int $50 = buffer.getInt();
 
-        double x = buffer.getDouble();
-        double y = buffer.getDouble();
-        double z = buffer.getDouble();
+        double $51 = buffer.getDouble();
+        double $52 = buffer.getDouble();
+        double $53 = buffer.getDouble();
 
         byte[] nameBytes = new byte[nameLen];
         persistence.seek(namePos);
         persistence.readFully(nameBytes);
-        String name = new String(nameBytes, StandardCharsets.UTF_8);
+        String $54 = new String(nameBytes, StandardCharsets.UTF_8);
         return Optional.of(new PositionTracking(name, x, y, z));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getStartingHandler() {
         return startIndex;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getMaxHandler() {
         return startIndex + maxStorage - 1;

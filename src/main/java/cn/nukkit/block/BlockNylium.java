@@ -15,16 +15,28 @@ import javax.annotation.Nullable;
 
 
 public abstract class BlockNylium extends BlockSolid {
+    /**
+     * @deprecated 
+     */
+    
     public BlockNylium(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM && !up().isTransparent()) {
             level.setBlock(this, Block.get(NETHERRACK), false);
@@ -34,13 +46,21 @@ public abstract class BlockNylium extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        Block up = up();
+        Block $1 = up();
         if (item.isNull() || !item.isFertilizer() || !up.isAir()) {
             return false;
         }
@@ -55,20 +75,32 @@ public abstract class BlockNylium extends BlockSolid {
 
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean grow() {
-        BlockManager blockManager = new BlockManager(this.level);
+        BlockManager $2 = new BlockManager(this.level);
         ObjectNyliumVegetation.growVegetation(blockManager, this, new NukkitRandom());
         blockManager.applySubChunkUpdate();
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0.4;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.4;
     }
@@ -82,11 +114,19 @@ public abstract class BlockNylium extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }

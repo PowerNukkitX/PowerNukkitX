@@ -20,9 +20,13 @@ import java.util.Map;
 
 public class NPCCommandSender implements CommandSender {
 
-    protected PermissibleBase perm = new PermissibleBase(this);
+    protected PermissibleBase $1 = new PermissibleBase(this);
     private Player initiator;
     private EntityNpc npc;
+    /**
+     * @deprecated 
+     */
+    
 
     public NPCCommandSender(EntityNpc npc, Player initiator) {
         this.npc = npc;
@@ -38,12 +42,24 @@ public class NPCCommandSender implements CommandSender {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendMessage(String message) {}
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendMessage(TextContainer message) {}
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendCommandOutput(CommandOutputContainer container) {}
 
     @Override
@@ -52,16 +68,28 @@ public class NPCCommandSender implements CommandSender {
     }
 
     @Override
-    @NotNull public String getName() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getName() {
         return npc.getName();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPlayer() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isEntity() {
         return true;
     }
@@ -87,21 +115,37 @@ public class NPCCommandSender implements CommandSender {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPermissionSet(String name) {
         return this.perm.isPermissionSet(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPermissionSet(Permission permission) {
         return this.perm.isPermissionSet(permission);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasPermission(String name) {
         return this.perm.hasPermission(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasPermission(Permission permission) {
         return this.perm.hasPermission(permission);
     }
@@ -122,11 +166,19 @@ public class NPCCommandSender implements CommandSender {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeAttachment(PermissionAttachment attachment) {
         this.perm.removeAttachment(attachment);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void recalculatePermissions() {
         this.perm.recalculatePermissions();
     }
@@ -137,10 +189,18 @@ public class NPCCommandSender implements CommandSender {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isOp() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setOp(boolean value) {}
 }

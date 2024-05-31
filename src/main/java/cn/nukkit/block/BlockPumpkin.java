@@ -14,17 +14,29 @@ import org.jetbrains.annotations.NotNull;
 public class BlockPumpkin extends BlockSolid implements Faceable {
 
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(PUMPKIN, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(PUMPKIN, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPumpkin() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPumpkin(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Pumpkin";
     }
@@ -35,16 +47,28 @@ public class BlockPumpkin extends BlockSolid implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
@@ -55,14 +79,22 @@ public class BlockPumpkin extends BlockSolid implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isShears()) {
-            BlockCarvedPumpkin carvedPumpkin = new BlockCarvedPumpkin();
+            BlockCarvedPumpkin $2 = new BlockCarvedPumpkin();
             // TODO: Use the activated block face not the player direction
             if (player == null) {
                 carvedPumpkin.setBlockFace(BlockFace.SOUTH);
@@ -78,6 +110,10 @@ public class BlockPumpkin extends BlockSolid implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (player == null) {
             setBlockFace(BlockFace.SOUTH);
@@ -89,11 +125,19 @@ public class BlockPumpkin extends BlockSolid implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean sticksToPiston() {
         return false;
     }
@@ -104,6 +148,10 @@ public class BlockPumpkin extends BlockSolid implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         this.setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }

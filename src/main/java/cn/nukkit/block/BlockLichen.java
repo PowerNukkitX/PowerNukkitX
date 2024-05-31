@@ -16,7 +16,11 @@ import java.util.stream.Stream;
 
 
 public abstract class BlockLichen extends BlockTransparent {
-    public static final NukkitRandom RANDOM = new NukkitRandom();
+    public static final NukkitRandom $1 = new NukkitRandom();
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockLichen(BlockState blockState) {
         super(blockState);
@@ -26,6 +30,10 @@ public abstract class BlockLichen extends BlockTransparent {
         Stream<BlockFace> returns = Arrays.stream(BlockFace.values()).filter(this::isGrowthToSide);
         return returns.toArray(BlockFace[]::new);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void witherAtSide(BlockFace side) {
         if (isGrowthToSide(side)) {
@@ -33,10 +41,18 @@ public abstract class BlockLichen extends BlockTransparent {
             getLevel().setBlock(this, this, true, true);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isGrowthToSide(@NotNull BlockFace side) {
         return ((getPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS) >> side.getDUSWNEIndex()) & 0x1) > 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void growToSide(BlockFace side) {
         if (!isGrowthToSide(side)) {
@@ -46,13 +62,17 @@ public abstract class BlockLichen extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
 
         if (!target.isSolid() && target instanceof BlockLichen) {
             return false;
         }
 
-        int currentMeta = 0;
+        int $2 = 0;
         if (block instanceof BlockLichen) {
             currentMeta = block.getPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS);
         }
@@ -78,9 +98,13 @@ public abstract class BlockLichen extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         for (BlockFace side : BlockFace.values()) {
-            final Block support = this.getSide(side);
+            final Block $3 = this.getSide(side);
             if (isGrowthToSide(side) && support != null && !support.isSolid()) {
                 this.witherAtSide(side);
             }
@@ -89,76 +113,136 @@ public abstract class BlockLichen extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvest(Item item) {
         return item.isAxe() || item.isShears();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean sticksToPiston() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeReplaced() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeFlowedInto() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
         return false;
     }

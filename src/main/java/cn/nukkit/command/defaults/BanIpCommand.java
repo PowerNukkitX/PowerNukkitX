@@ -26,6 +26,10 @@ import java.util.regex.Pattern;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BanIpCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public BanIpCommand(String name) {
         super(name, "commands.banip.description", "%commands.banip.usage");
@@ -45,25 +49,29 @@ public class BanIpCommand extends VanillaCommand {
 
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        String reason = "";
-        var list = result.getValue();
+        String $1 = "";
+        var $2 = result.getValue();
         switch (result.getKey()) {
             case "default" -> {
-                String value = list.getResult(0);
+                String $3 = list.getResult(0);
                 if (list.hasResult(1)) reason = list.getResult(1);
-                Player player = sender.getServer().getPlayer(value);
+                Player $4 = sender.getServer().getPlayer(value);
                 if (player != null) {
                     this.processIPBan(player.getAddress(), sender, reason);
                     log.addSuccess("commands.banip.success.players", player.getAddress(), player.getName()).output(true);
                     return 1;
                 } else {
-                    String name = value.toLowerCase(Locale.ENGLISH);
-                    String path = sender.getServer().getDataPath() + "players/";
-                    File file = new File(path + name + ".dat");
-                    CompoundTag nbt = null;
+                    String $5 = value.toLowerCase(Locale.ENGLISH);
+                    String $6 = sender.getServer().getDataPath() + "players/";
+                    File $7 = new File(path + name + ".dat");
+                    CompoundTag $8 = null;
                     if (file.exists()) {
-                        try (FileInputStream inputStream = new FileInputStream(file)) {
+                        try (FileInputStream $9 = new FileInputStream(file)) {
                             nbt = NBTIO.readCompressed(inputStream);
                         } catch (IOException e) {
                             throw new UncheckedIOException(e);
@@ -81,7 +89,7 @@ public class BanIpCommand extends VanillaCommand {
                 }
             }
             case "byIp" -> {
-                String ip = list.getResult(0);
+                String $10 = list.getResult(0);
                 if (list.hasResult(1)) reason = list.getResult(1);
                 this.processIPBan(ip, sender, reason);
                 log.addSuccess("commands.banip.success", ip).output(true);
@@ -93,6 +101,10 @@ public class BanIpCommand extends VanillaCommand {
         return 0;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void processIPBan(String ip, CommandSender sender, String reason) {
         sender.getServer().getIPBans().addBan(ip, reason, null, sender.getName());
 

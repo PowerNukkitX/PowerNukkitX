@@ -9,27 +9,47 @@ import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;
 
 public class BlockAzaleaLeaves extends BlockLeaves {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(AZALEA_LEAVES, PERSISTENT_BIT, UPDATE_BIT);
+    public static final BlockProperties $1 = new BlockProperties(AZALEA_LEAVES, PERSISTENT_BIT, UPDATE_BIT);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockAzaleaLeaves() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockAzaleaLeaves(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Azalea Leaves";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvest(Item item) {
         return item.isShears();
     }

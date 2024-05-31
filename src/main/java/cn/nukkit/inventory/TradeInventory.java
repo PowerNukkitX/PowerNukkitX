@@ -14,6 +14,10 @@ import java.util.Map;
 public class TradeInventory extends BaseInventory {
     protected EntityVillagerV2 holder;
     public String displayName;
+    /**
+     * @deprecated 
+     */
+    
 
     public TradeInventory(EntityVillagerV2 holder) {
         super(holder, InventoryType.TRADE, 3);
@@ -21,6 +25,10 @@ public class TradeInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         BiMap<Integer, Integer> networkedSlotMap = networkSlotMap();
         networkedSlotMap.put(0, 4);
@@ -36,18 +44,22 @@ public class TradeInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onOpen(Player who) {
         super.onOpen(who);
-        var villager = this.getHolder();
+        var $1 = this.getHolder();
         villager.setTradingPlayer(who.getId());
-        var pk1 = new UpdateTradePacket();
+        var $2 = new UpdateTradePacket();
         pk1.containerId = (byte) who.getWindowId(this);
         pk1.tradeTier = villager.getTradeTier();
         pk1.traderUniqueEntityId = villager.getId();
         pk1.playerUniqueEntityId = who.getId();
         pk1.displayName = villager.getDisplayName();
-        var tierExpRequirements = new ListTag<CompoundTag>();
-        for (int i = 0, len = villager.tierExpRequirement.length; i < len; ++i) {
+        var $3 = new ListTag<CompoundTag>();
+        for ($4nt $1 = 0, len = villager.tierExpRequirement.length; i < len; ++i) {
             tierExpRequirements.add(i, new CompoundTag().putInt(String.valueOf(i), villager.tierExpRequirement[i]));
         }
         pk1.offers = new CompoundTag()
@@ -59,6 +71,10 @@ public class TradeInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onClose(Player who) {
         this.getHolder().setTradingPlayer(0L);
         super.onClose(who);

@@ -10,15 +10,27 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityLlamaSpit extends EntityAnimal implements EntityWalkable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return LLAMA_SPIT;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityLlamaSpit(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.45f;
@@ -27,6 +39,10 @@ public class EntityLlamaSpit extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.isBaby()) {
             return 0.935f;
@@ -35,6 +51,10 @@ public class EntityLlamaSpit extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getEyeHeight() {
         if (this.isBaby()) {
             return 0.65f;
@@ -43,12 +63,20 @@ public class EntityLlamaSpit extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(15);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Llama";
     }

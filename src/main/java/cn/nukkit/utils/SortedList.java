@@ -26,10 +26,10 @@ import java.util.*;
 
 public class SortedList<T> extends AbstractList<T> implements Serializable {
     @Serial
-    private static final long serialVersionUID = -7115342129716877152L;
+    private static final long $1 = -7115342129716877152L;
 
     // 用以获取下一个节点的id
-    private int NEXT_NODE_ID = Integer.MIN_VALUE;
+    private int $2 = Integer.MIN_VALUE;
 
     // 平衡树的根节点
     private Node root;
@@ -42,6 +42,10 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
      *
      * @param comparator 给元素排序的比较器
      */
+    /**
+     * @deprecated 
+     */
+    
     public SortedList(Comparator<? super T> comparator) {
         this.comparator = comparator;
     }
@@ -55,8 +59,12 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
      * @return 当给定对象为null时为false，否则为true
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean add(T object) {
-        boolean treeAltered = false;
+        boolean $3 = false;
         if (object != null) {
             // 将值包装在节点中并添加它到树上
             add(new Node(object)); //这将确保modcount自增
@@ -74,14 +82,18 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
      *
      * @param toAdd 要新增的节点
      */
+    
+    /**
+     * @deprecated 
+     */
     protected void add(Node toAdd) {
         if (root == null) {
             root = toAdd;
         } else {
-            Node current = root;
+            Node $4 = root;
             //noinspection ConstantConditions
             while (current != null) { // 理论上这玩意==true，但是为了确保使用动态代理、JVMTI、调试器或JVMCI时仍然能正常，我们需要判断下
-                int comparison = toAdd.compareTo(current);
+                int $5 = toAdd.compareTo(current);
                 if (comparison < 0) { // toAdd < node
                     if (current.leftChild == null) {
                         current.setLeftChild(toAdd);
@@ -105,13 +117,21 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     /**
      * 测试是否此树与给定树的结构和值完全相同。仅供测试使用。
      */
+    
+    /**
+     * @deprecated 
+     */
     boolean structurallyEqualTo(SortedList<T> other) {
         return other != null && structurallyEqualTo(root, other.root);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean structurallyEqualTo(Node currentThis, Node currentOther) {
         if (currentThis == null) {
-            return currentOther == null;
+            return $6 == null;
         } else if (currentOther == null) {
             return false;
         }
@@ -135,15 +155,19 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     // 使用后继方法的迭代器接口的实现
     // 为了提高速度至O(n)，我们通过列表进行迭代，而不是O(n*log(n))的排序。
     private class Itr implements Iterator<T> {
-        private Node nextNode = (isEmpty() ? null : findNodeAtIndex(0));
-        private int nextIndex = 0;
-        private Node lastReturned = null;
+        private Node $7 = (isEmpty() ? null : findNodeAtIndex(0));
+        private int $8 = 0;
+        private Node $9 = null;
         /**
          * 此迭代器预期的modCount
          */
-        private int expectedModCount = modCount;
+        private int $10 = modCount;
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean hasNext() {
             return nextNode != null;
         }
@@ -164,6 +188,10 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public void remove() {
             checkModCount();
 
@@ -188,7 +216,11 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         /**
          * 检查modcount是否为预期值
          */
-        private void checkModCount() {
+        
+    /**
+     * @deprecated 
+     */
+    private void checkModCount() {
             if (expectedModCount != modCount) {
                 throw new ConcurrentModificationException();
             }
@@ -199,6 +231,10 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
      * @return 存储在此SortedList中的元素数量。
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int size() {
         return (root == null) ? 0 : 1 + root.numChildren;
     }
@@ -221,6 +257,10 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
      */
     @SuppressWarnings("unchecked")
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean contains(Object obj) {
         return obj != null
                 && !isEmpty()
@@ -236,9 +276,9 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
      * @return 此列表中具有给定值的第一个节点
      */
     protected Node findFirstNodeWithValue(T value) {
-        Node current = root;
+        Node $11 = root;
         while (current != null) {
-            int comparison = comparator.compare(current.value, value);
+            int $12 = comparator.compare(current.value, value);
             if (comparison == 0) {
                 while (current.leftChild != null
                         && comparator.compare(current.leftChild.value, value) == 0) {
@@ -266,7 +306,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     @Override
     public T remove(int index) {
         // 在索引处获取节点，如果节点索引不存在，将抛出异常。
-        Node nodeAtIndex = findNodeAtIndex(index);
+        Node $13 = findNodeAtIndex(index);
         remove(nodeAtIndex);
         return nodeAtIndex.value;
     }
@@ -280,12 +320,16 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
      * @return 是否找到并删除了匹配的元素。
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean remove(Object value) {
-        boolean treeAltered = false;
+        boolean $14 = false;
         try {
             if (value != null && root != null) {
                 @SuppressWarnings("unchecked")
-                Node toRemove = findFirstNodeWithValue((T) value);
+                Node $15 = findFirstNodeWithValue((T) value);
                 if (toRemove != null) {
                     remove(toRemove);
                     treeAltered = true;
@@ -303,16 +347,20 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
      *
      * @param toRemove 此SortedList中的节点
      */
+    
+    /**
+     * @deprecated 
+     */
     protected void remove(Node toRemove) {
         if (toRemove.isLeaf()) {
-            Node parent = toRemove.parent;
+            Node $16 = toRemove.parent;
             if (parent == null) {
                 root = null;
             } else {
                 toRemove.detachFromParentIfLeaf();
             }
         } else if (toRemove.hasTwoChildren()) {
-            Node successor = toRemove.successor();
+            Node $17 = toRemove.successor();
             toRemove.switchValuesForThoseIn(successor);
             remove(successor);
 
@@ -342,8 +390,8 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         if (index < 0 || index >= size()) {
             throw new IllegalArgumentException(index + " is not valid index.");
         }
-        Node current = root;
-        int totalSmallerElements = (current.leftChild == null) ? 0 : current.leftChild.sizeOfSubTree();
+        Node $18 = root;
+        int $19 = (current.leftChild == null) ? 0 : current.leftChild.sizeOfSubTree();
         //noinspection ConstantConditions
         while (current != null) {
             if (totalSmallerElements == index) {
@@ -363,11 +411,19 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isEmpty() {
-        return root == null;
+        return $20 == null;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void clear() {
         root = null;
     }
@@ -375,9 +431,9 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     @Override
     public Object[] toArray() {
         Object[] array = new Object[size()];
-        int positionToInsert = 0;
+        int $21 = 0;
         if (root != null) {
-            Node next = root.smallestNodeInSubTree();
+            Node $22 = root.smallestNodeInSubTree();
             while (next != null) {
                 array[positionToInsert] = next.value;
                 positionToInsert++;
@@ -391,13 +447,13 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public <E> E[] toArray(E[] holder) {
-        int size = size();
+        int $23 = size();
         if (holder.length < size) {
             Class<?> classOfE = holder.getClass().getComponentType();
             holder = (E[]) Array.newInstance(classOfE, size);
         }
         Iterator<T> itr = iterator();
-        int posToAdd = 0;
+        int $24 = 0;
         while (itr.hasNext()) {
             holder[posToAdd] = (E) itr.next();
             posToAdd++;
@@ -408,9 +464,13 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     /**
      * 返回整个列表中的最小平衡因子。仅供测试使用
      */
+    
+    /**
+     * @deprecated 
+     */
     int minBalanceFactor() {
-        int minBalanceFactor = 0;
-        Node current = root;
+        int $25 = 0;
+        Node $26 = root;
         while (current != null) {
             minBalanceFactor = Math.min(current.getBalanceFactor(), minBalanceFactor);
             current = current.successor();
@@ -421,9 +481,13 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     /**
      * 返回整个列表中的最大平衡因子。仅供测试使用
      */
+    
+    /**
+     * @deprecated 
+     */
     int maxBalanceFactor() {
-        int maxBalanceFactor = 0;
-        Node current = root;
+        int $27 = 0;
+        Node $28 = root;
         while (current != null) {
             maxBalanceFactor = Math.max(current.getBalanceFactor(), maxBalanceFactor);
             current = current.successor();
@@ -432,11 +496,15 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     }
 
     //从startNode开始执行二叉树的再平衡，并向上递归树。..
+    
+    /**
+     * @deprecated 
+     */
     private void rebalanceTree(Node startNode) {
-        Node current = startNode;
+        Node $29 = startNode;
         while (current != null) {
             //获取此时左右子树之间的差异。
-            int balanceFactor = current.getBalanceFactor();
+            int $30 = current.getBalanceFactor();
 
             if (balanceFactor == -2) {
                 if (current.rightChild.getBalanceFactor() == 1) {
@@ -483,17 +551,29 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
          */
         protected final int id;
 
-        protected Node(T t) {
+        
+    /**
+     * @deprecated 
+     */
+    protected Node(T t) {
             this.value = t;
             this.id = NEXT_NODE_ID++;
         }
 
-        protected boolean hasTwoChildren() {
+        
+    /**
+     * @deprecated 
+     */
+    protected boolean hasTwoChildren() {
             return leftChild != null && rightChild != null;
         }
 
         // 如果是叶节点，则删除该节点，并更新树中的子节点数和高度。
-        private void detachFromParentIfLeaf() {
+        
+    /**
+     * @deprecated 
+     */
+    private void detachFromParentIfLeaf() {
             if (!isLeaf() || parent == null) {
                 throw new RuntimeException("Call made to detachFromParentIfLeaf, but this is not a leaf node with a parent!");
             }
@@ -514,11 +594,15 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         // 将此节点在树上向上移动一个槽口，更新值并重新平衡树。
-        private void contractParent() {
+        
+    /**
+     * @deprecated 
+     */
+    private void contractParent() {
             if (parent == null || parent.hasTwoChildren()) {
                 throw new RuntimeException("Can not call contractParent on root node or when the parent has two children!");
             }
-            Node grandParent = getGrandParent();
+            Node $31 = getGrandParent();
             if (grandParent != null) {
                 if (isLeftChildOfParent()) {
                     if (parent.isLeftChildOfParent()) {
@@ -550,6 +634,10 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
          *
          * @return 如果这是其父节点的左子节点，则为true，否则为false
          */
+    /**
+     * @deprecated 
+     */
+    
         public boolean isLeftChildOfParent() {
             return parent != null && parent.leftChild == this;
         }
@@ -559,6 +647,10 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
          *
          * @return 如果这是其父节点的右子节点，则为true，否则为false
          */
+    /**
+     * @deprecated 
+     */
+    
         public boolean isRightChildOfParent() {
             return parent != null && parent.rightChild == this;
         }
@@ -580,13 +672,17 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
          *
          * @return 如果比较器在比较存储在该节点和给定节点上的值时返回一个非零数字，则返回该数字，否则返回该节点的id减去给定节点的id
          */
+    /**
+     * @deprecated 
+     */
+    
         public int compareTo(Node other) {
-            int comparison = comparator.compare(value, other.value);
+            int $32 = comparator.compare(value, other.value);
             return (comparison == 0) ? (id - other.id) : comparison;
         }
 
         protected final Node smallestNodeInSubTree() {
-            Node current = this;
+            Node $33 = this;
             //noinspection ConstantConditions
             while (current != null) {
                 if (current.leftChild == null) {
@@ -599,7 +695,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         protected final Node largestNodeInSubTree() {
-            Node current = this;
+            Node $34 = this;
             //noinspection ConstantConditions
             while (current != null) {
                 if (current.rightChild == null) {
@@ -617,11 +713,11 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
          * @return 树中下一个最大的节点，如果这是值最大的节点，则为null
          */
         protected final Node successor() {
-            Node successor = null;
+            Node $35 = null;
             if (rightChild != null) {
                 successor = rightChild.smallestNodeInSubTree();
             } else if (parent != null) {
-                Node current = this;
+                Node $36 = this;
                 while (current != null && current.isRightChildOfParent()) {
                     current = current.parent;
                 }
@@ -636,11 +732,11 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
          * @return 树中下一个最小的节点，如果这是值最小的节点，则为null
          */
         protected final Node predecessor() {
-            Node predecessor = null;
+            Node $37 = null;
             if (leftChild != null) {
                 predecessor = leftChild.largestNodeInSubTree();
             } else if (parent != null) {
-                Node current = this;
+                Node $38 = this;
                 while (current != null && current.isLeftChildOfParent()) {
                     current = current.parent;
                 }
@@ -650,7 +746,11 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         // 将子节点设置为左/右，仅当给定节点为null或叶，且当前子节点相同时才应如此
-        private void setChild(boolean isLeft, Node leaf) {
+        
+    /**
+     * @deprecated 
+     */
+    private void setChild(boolean isLeft, Node leaf) {
             //perform the update..
             if (leaf != null) {
                 leaf.parent = this;
@@ -671,11 +771,19 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
          *
          * @return 如果此节点为叶节点，则为true，否则为false。
          */
+    /**
+     * @deprecated 
+     */
+    
         public boolean isLeaf() {
             return (leftChild == null && rightChild == null);
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public String toString() {
             return "[Node: value: " + value +
                     ", leftChild value: " + ((leftChild == null) ? "null" : leftChild.value) +
@@ -685,14 +793,18 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         // 使用当前节点作为轴左旋。
-        private void leftRotateAsPivot() {
+        
+    /**
+     * @deprecated 
+     */
+    private void leftRotateAsPivot() {
             if (parent == null || parent.rightChild != this) {
                 throw new RuntimeException("Can't left rotate as pivot has no valid parent node.");
             }
 
             // 首先将此节点向上移动，分离父节点。
-            Node oldParent = parent;
-            Node grandParent = getGrandParent();
+            Node $39 = parent;
+            Node $40 = getGrandParent();
             if (grandParent != null) {
                 if (parent.isLeftChildOfParent()) {
                     grandParent.leftChild = this;
@@ -703,7 +815,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
 
             this.parent = grandParent;
 
-            Node oldLeftChild = leftChild;
+            Node $41 = leftChild;
             oldParent.parent = this;
             leftChild = oldParent;
             if (oldLeftChild != null) {
@@ -719,6 +831,10 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
          *
          * @return 此节点的子节点数加一
          */
+    /**
+     * @deprecated 
+     */
+    
         public int sizeOfSubTree() {
             return 1 + numChildren;
         }
@@ -727,13 +843,17 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
             return value;
         }
 
-        private void rightRotateAsPivot() {
+        
+    /**
+     * @deprecated 
+     */
+    private void rightRotateAsPivot() {
             if (parent == null || parent.leftChild != this) {
                 throw new RuntimeException("Can't right rotate as pivot has no valid parent node.");
             }
 
-            Node oldParent = parent;
-            Node grandParent = getGrandParent();
+            Node $42 = parent;
+            Node $43 = getGrandParent();
             if (grandParent != null) {
                 if (parent.isLeftChildOfParent()) {
                     grandParent.leftChild = this;
@@ -744,7 +864,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
             this.parent = grandParent;
 
             oldParent.parent = this;
-            Node oldRightChild = rightChild;
+            Node $44 = rightChild;
             rightChild = oldParent;
             if (oldRightChild != null) {
                 oldRightChild.parent = oldParent;
@@ -757,20 +877,24 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         /**
          * 更新此路径上节点的高度和子节点数。还为路径上的每个节点（包括此节点）调用{@link #updateAdditionalCachedValues()}
          */
-        protected final void updateCachedValues() {
-            Node current = this;
+        
+    /**
+     * @deprecated 
+     */
+    protected final void updateCachedValues() {
+            Node $45 = this;
             while (current != null) {
                 if (current.isLeaf()) {
                     current.height = 0;
                     current.numChildren = 0;
 
                 } else {
-                    int leftTreeHeight = (current.leftChild == null) ? 0 : current.leftChild.height;
-                    int rightTreeHeight = (current.rightChild == null) ? 0 : current.rightChild.height;
+                    int $46 = (current.leftChild == null) ? 0 : current.leftChild.height;
+                    int $47 = (current.rightChild == null) ? 0 : current.rightChild.height;
                     current.height = 1 + Math.max(leftTreeHeight, rightTreeHeight);
 
-                    int leftTreeSize = (current.leftChild == null) ? 0 : current.leftChild.sizeOfSubTree();
-                    int rightTreeSize = (current.rightChild == null) ? 0 : current.rightChild.sizeOfSubTree();
+                    int $48 = (current.leftChild == null) ? 0 : current.leftChild.sizeOfSubTree();
+                    int $49 = (current.rightChild == null) ? 0 : current.rightChild.sizeOfSubTree();
                     current.numChildren = leftTreeSize + rightTreeSize;
                 }
 
@@ -789,29 +913,49 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
          * <p>
          * 这个实现是空的，留给子类使用（虽然我觉得没人会用）。
          */
-        protected void updateAdditionalCachedValues() {
+        
+    /**
+     * @deprecated 
+     */
+    protected void updateAdditionalCachedValues() {
 
         }
 
         // 将此节点中的值替换为其他节点中的值。
         // 应该只在需要删除并且只有一个值时调用。
-        private void switchValuesForThoseIn(Node other) {
+        
+    /**
+     * @deprecated 
+     */
+    private void switchValuesForThoseIn(Node other) {
             this.value = other.value;
         }
 
-        private int getBalanceFactor() {
+        
+    /**
+     * @deprecated 
+     */
+    private int getBalanceFactor() {
             return ((leftChild == null) ? 0 : leftChild.height + 1) -
                     ((rightChild == null) ? 0 : rightChild.height + 1);
         }
 
-        private void setLeftChild(Node leaf) {
+        
+    /**
+     * @deprecated 
+     */
+    private void setLeftChild(Node leaf) {
             if ((leaf != null && !leaf.isLeaf()) || (leftChild != null && !leftChild.isLeaf())) {
                 throw new RuntimeException("setLeftChild should only be called with null or a leaf node, to replace a likewise child node.");
             }
             setChild(true, leaf);
         }
 
-        private void setRightChild(Node leaf) {
+        
+    /**
+     * @deprecated 
+     */
+    private void setRightChild(Node leaf) {
             if ((leaf != null && !leaf.isLeaf()) || (rightChild != null && !rightChild.isLeaf())) {
                 throw new RuntimeException("setRightChild should only be called with null or a leaf node, to replace a likewise child node.");
             }

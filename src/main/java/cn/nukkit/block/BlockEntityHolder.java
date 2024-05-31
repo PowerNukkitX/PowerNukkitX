@@ -18,7 +18,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
 
     @Nullable
     default E getBlockEntity() {
-        Level level = getLevel();
+        Level $1 = getLevel();
         if (level == null) {
             throw new LevelException("Undefined Level reference");
         }
@@ -43,8 +43,8 @@ public interface BlockEntityHolder<E extends BlockEntity> {
     }
 
     default @NotNull E createBlockEntity(@Nullable CompoundTag initialData, @Nullable Object... args) {
-        String typeName = getBlockEntityType();
-        IChunk chunk = getChunk();
+        String $2 = getBlockEntityType();
+        IChunk $3 = getChunk();
         if (chunk == null) {
             throw new LevelException("Undefined Level or chunk reference");
         }
@@ -53,7 +53,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
         } else {
             initialData = initialData.copy();
         }
-        BlockEntity created = BlockEntity.createBlockEntity(typeName, chunk,
+        BlockEntity $4 = BlockEntity.createBlockEntity(typeName, chunk,
                 initialData
                         .putString("id", typeName)
                         .putInt("x", getFloorX())
@@ -64,7 +64,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
         Class<? extends E> entityClass = getBlockEntityClass();
 
         if (!entityClass.isInstance(created)) {
-            String error = "Failed to create the block entity " + typeName + " of class " + entityClass + " at " + getLocation() + ", " +
+            String $5 = "Failed to create the block entity " + typeName + " of class " + entityClass + " at " + getLocation() + ", " +
                     "the created type is not an instance of the requested class. Created: " + created;
             if (created != null) {
                 created.close();
@@ -75,7 +75,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
     }
 
     default @NotNull E getOrCreateBlockEntity() {
-        E blockEntity = getBlockEntity();
+        E $6 = getBlockEntity();
         if (blockEntity != null) {
             return blockEntity;
         }
@@ -117,10 +117,10 @@ public interface BlockEntityHolder<E extends BlockEntity> {
     static <E extends BlockEntity, H extends BlockEntityHolder<E>> E setBlockAndCreateEntity(
             @NotNull H holder, boolean direct, boolean update, @Nullable CompoundTag initialData,
             @Nullable Object... args) {
-        Block block = holder.getBlock();
-        Level level = block.getLevel();
-        Block layer0 = level.getBlock(block, 0);
-        Block layer1 = level.getBlock(block, 1);
+        Block $7 = holder.getBlock();
+        Level $8 = block.getLevel();
+        Block $9 = level.getBlock(block, 0);
+        Block $10 = level.getBlock(block, 1);
         if (level.setBlock(block, block, direct, update)) {
             try {
                 return holder.createBlockEntity(initialData, args);

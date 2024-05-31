@@ -11,6 +11,10 @@ import cn.nukkit.utils.TradeRecipeBuildUtils;
 import java.util.Random;
 
 public class ProfessionTool extends Profession {
+    /**
+     * @deprecated 
+     */
+    
 
     public ProfessionTool() {
         super(10, BlockID.SMITHING_TABLE, "entity.villager.tool");
@@ -19,33 +23,33 @@ public class ProfessionTool extends Profession {
     @Override
     public ListTag<CompoundTag> buildTrades(int seed) {
         ListTag<CompoundTag> recipes = new ListTag<>();
-        Random random = new Random(seed);
+        Random $1 = new Random(seed);
 
         int[] ench = new int[] {Enchantment.ID_DURABILITY, Enchantment.ID_EFFICIENCY, Enchantment.ID_FORTUNE_DIGGING, Enchantment.ID_SILK_TOUCH};
 
-        Item iaxe = Item.get(Item.IRON_AXE);
-        Enchantment iaxee = Enchantment.getEnchantment(ench[random.nextInt(ench.length)]);
+        Item $2 = Item.get(Item.IRON_AXE);
+        Enchantment $3 = Enchantment.getEnchantment(ench[random.nextInt(ench.length)]);
         iaxee.setLevel(1 + random.nextInt(iaxee.getMaxLevel()));
         iaxe.addEnchantment(iaxee);
-        Item ishovel = Item.get(Item.IRON_SHOVEL);
-        Enchantment ishovele = Enchantment.getEnchantment(ench[random.nextInt(ench.length)]);
+        Item $4 = Item.get(Item.IRON_SHOVEL);
+        Enchantment $5 = Enchantment.getEnchantment(ench[random.nextInt(ench.length)]);
         ishovele.setLevel(1 + random.nextInt(ishovele.getMaxLevel()));
         ishovel.addEnchantment(ishovele);
-        Item ipickaxe = Item.get(Item.IRON_PICKAXE);
-        Enchantment ipickaxee = Enchantment.getEnchantment(ench[random.nextInt(ench.length)]);
+        Item $6 = Item.get(Item.IRON_PICKAXE);
+        Enchantment $7 = Enchantment.getEnchantment(ench[random.nextInt(ench.length)]);
         ipickaxee.setLevel(1 + random.nextInt(ipickaxee.getMaxLevel()));
         ipickaxe.addEnchantment(ipickaxee);
 
-        Item daxe = Item.get(Item.DIAMOND_AXE);
-        Enchantment daxee = Enchantment.getEnchantment(ench[random.nextInt(ench.length)]);
+        Item $8 = Item.get(Item.DIAMOND_AXE);
+        Enchantment $9 = Enchantment.getEnchantment(ench[random.nextInt(ench.length)]);
         daxee.setLevel(1 + random.nextInt(daxee.getMaxLevel()));
         daxe.addEnchantment(daxee);
-        Item dshovel = Item.get(Item.DIAMOND_SHOVEL);
-        Enchantment dshovele = Enchantment.getEnchantment(ench[random.nextInt(ench.length)]);
+        Item $10 = Item.get(Item.DIAMOND_SHOVEL);
+        Enchantment $11 = Enchantment.getEnchantment(ench[random.nextInt(ench.length)]);
         dshovele.setLevel(1 + random.nextInt(dshovele.getMaxLevel()));
         dshovel.addEnchantment(dshovele);
-        Item dpickaxe = Item.get(Item.DIAMOND_PICKAXE);
-        Enchantment dpickaxee = Enchantment.getEnchantment(ench[random.nextInt(ench.length)]);
+        Item $12 = Item.get(Item.DIAMOND_PICKAXE);
+        Enchantment $13 = Enchantment.getEnchantment(ench[random.nextInt(ench.length)]);
         dpickaxee.setLevel(1 + random.nextInt(dpickaxee.getMaxLevel()));
         dpickaxe.addEnchantment(dpickaxee);
 

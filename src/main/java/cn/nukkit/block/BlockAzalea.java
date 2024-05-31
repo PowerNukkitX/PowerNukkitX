@@ -20,32 +20,52 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 13/06/2021
  */
 public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-    public static final BlockProperties PROPERTIES = new BlockProperties(AZALEA);
+    public static final BlockProperties $1 = new BlockProperties(AZALEA);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockAzalea() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockAzalea(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Azalea";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal
             if (player != null && !player.isCreative()) {
@@ -62,9 +82,13 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
-        double chance = ThreadLocalRandom.current().nextDouble(1);
-        boolean aged = chance > 0.8;
+        double $2 = ThreadLocalRandom.current().nextDouble(1);
+        boolean $3 = chance > 0.8;
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!BlockFlower.isSupportValid(down())) {
                 this.getLevel().useBreakOn(this);
@@ -86,6 +110,10 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (BlockFlower.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true, true);
@@ -96,6 +124,10 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
         return false;
     }
@@ -106,15 +138,27 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSameType(Vector3 pos) {
-        Block block = this.level.getBlock(pos);
+        Block $4 = this.level.getBlock(pos);
         return block.getId().equals(this.getId()) && block.getProperties() == this.getProperties();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void grow() {
         ObjectGenerator generator;
         Vector3 vector3;
@@ -122,9 +166,9 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
         generator = new ObjectAzaleaTree();
         vector3 = this.add(0, 0, 0);
 
-        BlockManager chunkManager = new BlockManager(this.level);
-        boolean success = generator.generate(chunkManager, RandomSourceProvider.create(), vector3);
-        StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
+        BlockManager $5 = new BlockManager(this.level);
+        boolean $6 = generator.generate(chunkManager, RandomSourceProvider.create(), vector3);
+        StructureGrowEvent $7 = new StructureGrowEvent(this, chunkManager.getBlocks());
         this.level.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled() || !success) {
             return;

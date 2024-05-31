@@ -8,7 +8,7 @@ import cn.nukkit.utils.BlockColor;
 
 public class SignColorChangeEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -16,6 +16,10 @@ public class SignColorChangeEvent extends BlockEvent implements Cancellable {
 
     private final Player player;
     private final BlockColor color;
+    /**
+     * @deprecated 
+     */
+    
 
     public SignColorChangeEvent(Block block, Player player, BlockColor color) {
         super(block);

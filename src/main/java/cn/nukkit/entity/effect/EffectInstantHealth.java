@@ -7,14 +7,22 @@ import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import java.awt.*;
 
 public class EffectInstantHealth extends InstantEffect {
+    /**
+     * @deprecated 
+     */
+    
 
     public EffectInstantHealth() {
         super(EffectType.INSTANT_HEALTH, "%potion.heal", new Color(248, 36, 35));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void apply(Entity entity, double tickCount) {
-        double amount = (4 << this.getAmplifier()) * tickCount;
+        double $1 = (4 << this.getAmplifier()) * tickCount;
         if (entity.isUndead()) {
             entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.MAGIC, (float) amount));
         } else {

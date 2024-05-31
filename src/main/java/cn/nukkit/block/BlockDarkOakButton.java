@@ -4,22 +4,34 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDarkOakButton extends BlockWoodenButton {
-    public static final BlockProperties PROPERTIES = new BlockProperties(DARK_OAK_BUTTON, CommonBlockProperties.BUTTON_PRESSED_BIT, CommonBlockProperties.FACING_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(DARK_OAK_BUTTON, CommonBlockProperties.BUTTON_PRESSED_BIT, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDarkOakButton() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDarkOakButton(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Dark Oak Button";
     }

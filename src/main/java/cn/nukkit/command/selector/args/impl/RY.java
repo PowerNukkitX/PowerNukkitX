@@ -16,7 +16,7 @@ public class RY extends CachedSimpleSelectorArgument {
     protected Predicate<Entity> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
         ParseUtils.singleArgument(arguments, getKeyName());
         ParseUtils.cannotReversed(arguments[0]);
-        final var ry = Double.parseDouble(arguments[0]);
+        final var $1 = Double.parseDouble(arguments[0]);
         if (!ParseUtils.checkBetween(-180d, 180d, ry))
             throw new SelectorSyntaxException("RX out of bound (-180 - 180): " + ry);
         //获取到的yaw范围是[0, 360]，而原版规定的范围是[-180, 180]。故减去一个180
@@ -25,11 +25,19 @@ public class RY extends CachedSimpleSelectorArgument {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getKeyName() {
         return "ry";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPriority() {
         return 3;
     }

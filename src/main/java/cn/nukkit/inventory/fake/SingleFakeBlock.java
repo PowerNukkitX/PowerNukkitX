@@ -15,16 +15,28 @@ public class SingleFakeBlock implements FakeBlock {
     protected final Block block;
     protected final String tileId;
     protected HashSet<Vector3> lastPositions = new HashSet<>();
+    /**
+     * @deprecated 
+     */
+    
 
     public SingleFakeBlock(String blockId) {
         this.block = Block.get(blockId);
         this.tileId = "default";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SingleFakeBlock(String blockId, String tileId) {
         this.block = Block.get(blockId);
         this.tileId = tileId;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SingleFakeBlock(Block block, String tileId) {
         this.block = block;
@@ -32,15 +44,23 @@ public class SingleFakeBlock implements FakeBlock {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void create(Player player) {
         create(player, "default");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void create(Player player, String titleName) {
         lastPositions.addAll(this.getPlacePositions(player));
         lastPositions.forEach(position -> {
-            UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
+            UpdateBlockPacket $1 = new UpdateBlockPacket();
             updateBlockPacket.blockRuntimeId = block.getRuntimeId();
             updateBlockPacket.flags = UpdateBlockPacket.FLAG_NETWORK;
             updateBlockPacket.x = position.getFloorX();
@@ -48,7 +68,7 @@ public class SingleFakeBlock implements FakeBlock {
             updateBlockPacket.z = position.getFloorZ();
             player.dataPacket(updateBlockPacket);
 
-            BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
+            BlockEntityDataPacket $2 = new BlockEntityDataPacket();
             blockEntityDataPacket.x = position.getFloorX();
             blockEntityDataPacket.y = position.getFloorY();
             blockEntityDataPacket.z = position.getFloorZ();
@@ -59,9 +79,13 @@ public class SingleFakeBlock implements FakeBlock {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void remove(Player player) {
         this.lastPositions.forEach(position -> {
-            UpdateBlockPacket packet = new UpdateBlockPacket();
+            UpdateBlockPacket $3 = new UpdateBlockPacket();
             packet.blockRuntimeId = player.getLevel().getBlock(position).getRuntimeId();
             packet.flags = UpdateBlockPacket.FLAG_NETWORK;
             packet.x = position.getFloorX();

@@ -4,16 +4,24 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPoweredRepeater extends BlockRedstoneRepeater {
-    public static final BlockProperties PROPERTIES = new BlockProperties(POWERED_REPEATER, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.REPEATER_DELAY);
+    public static final BlockProperties $1 = new BlockProperties(POWERED_REPEATER, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.REPEATER_DELAY);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPoweredRepeater() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPoweredRepeater(BlockState blockstate) {
         super(blockstate);
@@ -21,6 +29,10 @@ public class BlockPoweredRepeater extends BlockRedstoneRepeater {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Powered Repeater";
     }
@@ -32,11 +44,15 @@ public class BlockPoweredRepeater extends BlockRedstoneRepeater {
 
     @Override
     public Block getUnpowered() {
-        BlockUnpoweredRepeater blockUnpoweredRepeater = new BlockUnpoweredRepeater();
+        BlockUnpoweredRepeater $2 = new BlockUnpoweredRepeater();
         return blockUnpoweredRepeater.setPropertyValues(blockstate.getBlockPropertyValues());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 7;
     }

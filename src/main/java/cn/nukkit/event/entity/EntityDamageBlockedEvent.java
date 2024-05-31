@@ -7,7 +7,7 @@ import cn.nukkit.event.HandlerList;
 
 public class EntityDamageBlockedEvent extends EntityEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -16,6 +16,10 @@ public class EntityDamageBlockedEvent extends EntityEvent implements Cancellable
     private final EntityDamageEvent damage;
     private boolean knockBackAttacker;
     private boolean animation;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityDamageBlockedEvent(Entity entity, EntityDamageEvent damage, boolean knockBack, boolean animation) {
         this.entity = entity;
@@ -35,10 +39,18 @@ public class EntityDamageBlockedEvent extends EntityEvent implements Cancellable
     public EntityDamageEvent getDamage() {
         return damage;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getKnockBackAttacker() {
         return knockBackAttacker;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getAnimation() {
         return animation;

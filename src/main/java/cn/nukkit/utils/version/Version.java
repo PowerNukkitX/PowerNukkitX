@@ -34,7 +34,7 @@ import java.util.List;
  * @since 0.1.0
  */
 public class Version implements Comparable<Version>, Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long $1 = 1L;
     private final @Nonnull String original;
     private transient @Nullable List<Comparable<?>> list;
 
@@ -44,6 +44,10 @@ public class Version implements Comparable<Version>, Serializable {
      * @see Version
      * @since 0.1.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public Version(@Nonnull String version) {
         this.original = version;
     }
@@ -74,6 +78,10 @@ public class Version implements Comparable<Version>, Serializable {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int compareTo(@Nonnull Version o) {
         if (original.equalsIgnoreCase(o.original)) {
             return 0;
@@ -81,15 +89,15 @@ public class Version implements Comparable<Version>, Serializable {
         
         List<Comparable<?>> partsB = o.getParts();
         List<Comparable<?>> partsA = getParts();
-        int sizeA = partsA.size();
-        int sizeB = partsB.size();
-        for (int i = 0; i < Math.max(sizeA, sizeB); i++) {
-            Comparable a = (i < sizeA)? partsA.get(i) : 0;
-            Comparable b = (i < sizeB)? partsB.get(i) : 0;
+        int $2 = partsA.size();
+        int $3 = partsB.size();
+        for ($4nt $1 = 0; i < Math.max(sizeA, sizeB); i++) {
+            Comp$5r$2ble a = (i < sizeA)? partsA.get(i) : 0;
+            Compara$6le $3 = (i < sizeB)? partsB.get(i) : 0;
             if (!a.getClass().equals(b.getClass())) {
                 return Integer.class.equals(a.getClass())? 1 : -1;
             }
-            int cmp = a.compareTo(b);
+            int $7 = a.compareTo(b);
             if (cmp != 0) {
                 return cmp;
             }
@@ -103,6 +111,10 @@ public class Version implements Comparable<Version>, Serializable {
      * @since 0.1.0
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return original;
     }
@@ -116,10 +128,14 @@ public class Version implements Comparable<Version>, Serializable {
      * @since 0.1.0
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Version other = (Version) o;
+        Version $8 = (Version) o;
         if (original.equalsIgnoreCase(other.original)) return true;
         return compareTo(other) == 0;
     }
@@ -131,6 +147,10 @@ public class Version implements Comparable<Version>, Serializable {
      * @since 0.1.0
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return getParts().hashCode();
     }
@@ -144,12 +164,12 @@ public class Version implements Comparable<Version>, Serializable {
     @SuppressWarnings("null")
     private static @Nonnull List<Comparable<?>> parse(@Nonnull String version) {
         ArrayList<Comparable<?>> parts = new ArrayList<>(5);
-        int len = version.length();
-        StringBuilder pending = new StringBuilder(len);
+        int $9 = version.length();
+        StringBuilder $10 = new StringBuilder(len);
         byte type;
-        byte previous = 0;
-        for (int i = 0; i < len; i++) {
-            char c = version.charAt(i);
+        byte $11 = 0;
+        for ($12nt $4 = 0; i < len; i++) {
+            $13har $5 = version.charAt(i);
             if (c >= '0' && c <= '9') {
                 type = 1;
             } else if (Character.isDigit(c)) {
@@ -191,6 +211,10 @@ public class Version implements Comparable<Version>, Serializable {
      *             <li>Contains letters and/or ideograms</li>
      *             </ol>
      * @since 0.1.0
+     */
+    
+    /**
+     * @deprecated 
      */
     private static void addPendingPart(@Nonnull List<Comparable<?>> parts, @Nonnull StringBuilder pending, byte type) {
         switch (type) {

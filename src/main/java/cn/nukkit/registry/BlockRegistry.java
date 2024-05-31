@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Slf4j
 public final class BlockRegistry implements BlockID, IRegistry<String, Block, Class<? extends Block>> {
-    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static final AtomicBoolean $1 = new AtomicBoolean(false);
     private static final Set<String> KEYSET = new HashSet<>();
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Block>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectOpenHashMap<String, BlockProperties> PROPERTIES = new Object2ObjectOpenHashMap<>();
@@ -255,6 +255,10 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     );
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         if (isLoad.getAndSet(true)) return;
         try {
@@ -1340,6 +1344,10 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         } catch (RegisterException ignore) {
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void trim() {
         CACHE_CONSTRUCTORS.trim();
@@ -1358,9 +1366,9 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             throw new RegisterException("you cant register a abstract block class!");
         }
         try {
-            Field properties = value.getDeclaredField("PROPERTIES");
+            Field $2 = value.getDeclaredField("PROPERTIES");
             properties.setAccessible(true);
-            int modifiers = properties.getModifiers();
+            int $3 = properties.getModifiers();
 
             try {
                 if (value.getMethod("getProperties").getDeclaringClass() != value) {
@@ -1373,7 +1381,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                         "    } in this class!");
             }
             if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers) && properties.getType() == BlockProperties.class) {
-                BlockProperties blockProperties = (BlockProperties) properties.get(value);
+                BlockProperties $4 = (BlockProperties) properties.get(value);
                 FastConstructor<? extends Block> c = FastConstructor.create(value.getConstructor(BlockState.class));
                 if (CACHE_CONSTRUCTORS.putIfAbsent(blockProperties.getIdentifier(), c) != null) {
                     throw new RegisterException("This block has already been registered with the identifier: " + blockProperties.getIdentifier());
@@ -1410,9 +1418,9 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             throw new RegisterException("you cant register a abstract block class!");
         }
         try {
-            Field properties = value.getDeclaredField("PROPERTIES");
+            Field $5 = value.getDeclaredField("PROPERTIES");
             properties.setAccessible(true);
-            int modifiers = properties.getModifiers();
+            int $6 = properties.getModifiers();
             BlockProperties blockProperties;
             if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers) && properties.getType() == BlockProperties.class) {
                 blockProperties = (BlockProperties) properties.get(value);
@@ -1429,18 +1437,18 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                         "        return PROPERTIES;\n" +
                         "    } in this class!");
             }
-            String key = blockProperties.getIdentifier();
-            FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
+            String $7 = blockProperties.getIdentifier();
+            FastMemberLoader $8 = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
             FastConstructor<? extends Block> c = FastConstructor.create(value.getConstructor(BlockState.class), memberLoader, false);
             if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
                 if (CustomBlock.class.isAssignableFrom(value)) {
-                    CustomBlock customBlock = (CustomBlock) c.invoke((Object) null);
+                    CustomBlock $9 = (CustomBlock) c.invoke((Object) null);
                     List<CustomBlockDefinition> customBlockDefinitions = CUSTOM_BLOCK_DEFINITIONS.computeIfAbsent(plugin, (p) -> new ArrayList<>());
                     customBlockDefinitions.add(customBlock.getDefinition());
-                    int rid = 255 - CustomBlockDefinition.getRuntimeId(customBlock.getId());
+                    int $10 = 255 - CustomBlockDefinition.getRuntimeId(customBlock.getId());
                     Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(customBlock.getId(), rid, false));
                     if (customBlock.shouldBeRegisteredInCreative()) {
-                        ItemBlock itemBlock = new ItemBlock(customBlock.toBlock());
+                        ItemBlock $11 = new ItemBlock(customBlock.toBlock());
                         itemBlock.setNetId(null);
                         Registries.CREATIVE.addCreativeItem(itemBlock);
                     }
@@ -1460,6 +1468,10 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void register0(String key, Class<? extends Block> value) {
         try {
             register(key, value);
@@ -1472,6 +1484,10 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     public List<CustomBlockDefinition> getCustomBlockDefinitionList() {
         return CUSTOM_BLOCK_DEFINITIONS.values().stream().flatMap(List::stream).toList();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void reload() {
         isLoad.set(false);
@@ -1483,7 +1499,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     }
 
     public BlockProperties getBlockProperties(String identifier) {
-        BlockProperties properties = PROPERTIES.get(identifier);
+        BlockProperties $12 = PROPERTIES.get(identifier);
         if (properties == null) {
             throw new IllegalArgumentException("Get the Block State from a unknown id: " + identifier);
         } else return properties;
@@ -1504,7 +1520,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return null;
         try {
-            var b = (Block) constructor.invoke((Object) null);
+            var $13 = (Block) constructor.invoke((Object) null);
             b.x = x;
             b.y = y;
             b.z = z;
@@ -1518,7 +1534,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return null;
         try {
-            var b = (Block) constructor.invoke((Object) null);
+            var $14 = (Block) constructor.invoke((Object) null);
             b.x = x;
             b.y = y;
             b.z = z;
@@ -1533,7 +1549,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return null;
         try {
-            var b = (Block) constructor.invoke((Object) null);
+            var $15 = (Block) constructor.invoke((Object) null);
             b.x = x;
             b.y = y;
             b.z = z;
@@ -1559,7 +1575,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
         if (constructor == null) return null;
         try {
-            var b = (Block) constructor.invoke(blockState);
+            var $16 = (Block) constructor.invoke(blockState);
             b.x = x;
             b.y = y;
             b.z = z;
@@ -1573,7 +1589,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
         if (constructor == null) return null;
         try {
-            var b = (Block) constructor.invoke(blockState);
+            var $17 = (Block) constructor.invoke(blockState);
             b.x = x;
             b.y = y;
             b.z = z;
@@ -1588,7 +1604,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
         if (constructor == null) return null;
         try {
-            var b = (Block) constructor.invoke(blockState);
+            var $18 = (Block) constructor.invoke(blockState);
             b.x = x;
             b.y = y;
             b.z = z;

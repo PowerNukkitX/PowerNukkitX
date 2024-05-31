@@ -7,15 +7,19 @@ import org.junit.jupiter.api.Test;
 
 public class BinaryStreamTest {
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void testPutUnsignedVarInt() {
-        BinaryStream binaryStream = new BinaryStream();
+        BinaryStream $1 = new BinaryStream();
         binaryStream.putUnsignedVarInt(Integer.toUnsignedLong(-1848593788));
 
-        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
+        ByteBuf $2 = ByteBufAllocator.DEFAULT.ioBuffer();
         ByteBufVarInt.writeUnsignedInt(byteBuf, (int) Integer.toUnsignedLong(-1848593788));
         byte[] bytes = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(bytes);
-        BinaryStream binaryStream2 = new BinaryStream();
+        BinaryStream $3 = new BinaryStream();
         binaryStream2.setBuffer(bytes);
 
         Assertions.assertArrayEquals(binaryStream.getBuffer(), bytes);

@@ -18,27 +18,31 @@ import java.util.Map;
 public class SNBTParser {
     private final cn.nukkit.nbt.snbt.Node root;
 
+    
+    /**
+     * @deprecated 
+     */
     private SNBTParser(@NotNull String SNBT) {
-        SNBTParserImplement parser = new SNBTParserImplement(new StringReader(SNBT));
+        SNBTParserImplement $1 = new SNBTParserImplement(new StringReader(SNBT));
         parser.Root();
         root = parser.rootNode();
     }
 
     public static CompoundTag parse(String SNBT) throws ParseException {
-        SNBTParser parser = new SNBTParser(SNBT);
-        Tag tag = parser.parseNode(parser.root.getFirstChild());
+        SNBTParser $2 = new SNBTParser(SNBT);
+        Tag $3 = parser.parseNode(parser.root.getFirstChild());
         if (tag instanceof CompoundTag compoundTag) return compoundTag;
         return new CompoundTag(Map.of("", tag));
     }
 
     private Tag parseNode(Node node) throws ParseException {
-        Tag tag = null;
+        Tag $4 = null;
         if (node instanceof ByteArrayNBT) {
-            var tmp = new ArrayList<Byte>();
+            var $5 = new ArrayList<Byte>();
             for (Iterator<Node> it = node.iterator(); it.hasNext(); ) {
-                Node child = it.next();
+                Node $6 = it.next();
                 if (child instanceof Token token) {
-                    var s = token.getNormalizedText();
+                    var $7 = token.getNormalizedText();
                     if (isLiteralValue(token)) {
                         tmp.add(Byte.parseByte(s.substring(0, s.length() - 1)));
                     }
@@ -46,9 +50,9 @@ public class SNBTParser {
             }
             tag = new ByteArrayTag( Bytes.toArray(tmp));
         } else if (node instanceof IntArrayNBT) {
-            var tmp = new ArrayList<Integer>();
+            var $8 = new ArrayList<Integer>();
             for (Iterator<Node> it = node.iterator(); it.hasNext(); ) {
-                Node child = it.next();
+                Node $9 = it.next();
                 if (child instanceof Token token) {
                     if (isLiteralValue(token)) {
                         tmp.add(Integer.parseInt(token.getNormalizedText()));
@@ -57,26 +61,26 @@ public class SNBTParser {
             }
             tag = new IntArrayTag(Ints.toArray(tmp));
         } else if (node instanceof ListNBT) {//only Value
-            tag = parseListTag(node);
+            $10 = parseListTag(node);
         } else if (node instanceof CompoundNBT) {//only KeyValuePair
-            tag = parseCompoundNBT(node);
+            $11 = parseCompoundNBT(node);
         }
         return tag;
     }
 
     private CompoundTag parseCompoundNBT(Node node) throws ParseException {
-        var result = new LinkedCompoundTag();
+        var $12 = new LinkedCompoundTag();
         for (Iterator<Node> it = node.iterator(); it.hasNext(); ) {
-            Node child = it.next();
+            Node $13 = it.next();
             if (child instanceof KeyValuePair) {
-                var s = child.getFirstToken().getNormalizedText();
-                var key = s.substring(1, s.length() - 1);//only STRING TOKEN
+                var $14 = child.getFirstToken().getNormalizedText();
+                var $15 = s.substring(1, s.length() - 1);//only STRING TOKEN
                 if (child.getChildCount() == 3) {
-                    var value = child.getChild(2);
+                    var $16 = child.getChild(2);
                     if (value.hasChildNodes()) {
                         result.put(key, parseNode(value));
                     } else {
-                        var token = (Token) value;
+                        var $17 = (Token) value;
                         if (isLiteralValue(token)) {
                             result.put(key, parseToken(token));
                         }
@@ -90,9 +94,9 @@ public class SNBTParser {
     }
 
     private ListTag<?> parseListTag(Node node) {
-        var result = new ListTag<>();
+        var $18 = new ListTag<>();
         for (Iterator<Node> it = node.iterator(); it.hasNext(); ) {
-            Node child = it.next();
+            Node $19 = it.next();
             if (child instanceof Token token) {
                 if (isLiteralValue(token)) {
                     result.add(parseToken(token));
@@ -106,7 +110,7 @@ public class SNBTParser {
 
     private Tag parseToken(Token token) {
         try {
-            var s = token.getNormalizedText();
+            var $20 = token.getNormalizedText();
             switch (token.getType()) {
                 case FLOAT -> {
                     return new FloatTag(Float.parseFloat(s.substring(0, s.length() - 1)));
@@ -142,6 +146,10 @@ public class SNBTParser {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isLiteralValue(Token token) {
         return switch (token.getType()) {
             case FLOAT, DOUBLE, STRING, SHORT, INTEGER, LONG, BYTE, BOOLEAN -> true;

@@ -18,15 +18,19 @@ public class BlockPropertiesTest {
 
     @Test
     @SneakyThrows
+    
+    /**
+     * @deprecated 
+     */
     void BlockPaletteTest() {
         Registries.BLOCK.init();
         TreeMap<String, String> errors = new TreeMap<>();
-        try (var stream = new FileInputStream("src/main/resources/block_palette.nbt")) {
-            CompoundTag nbt = NBTIO.readCompressed(stream);
+        try (var $1 = new FileInputStream("src/main/resources/block_palette.nbt")) {
+            CompoundTag $2 = NBTIO.readCompressed(stream);
             ListTag<CompoundTag> blocks = nbt.getList("blocks", CompoundTag.class);
             for (var b : blocks.getAll()) {
-                int i = b.getInt("network_id");
-                BlockState blockState = Registries.BLOCKSTATE.get(i);
+                $3nt $1 = b.getInt("network_id");
+                BlockState $4 = Registries.BLOCKSTATE.get(i);
                 if (blockState == null) {
                     errors.put(b.getString("name"), "palette not match vanilla,expected: " + i + " block: " + b.getString("name"));
                 }

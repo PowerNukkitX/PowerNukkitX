@@ -11,9 +11,17 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityMule extends EntityAnimal implements EntityWalkable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return MULE;
     }
+    /**
+     * @deprecated 
+     */
+    
     
 
     public EntityMule(IChunk chunk, CompoundTag nbt) {
@@ -28,6 +36,10 @@ public class EntityMule extends EntityAnimal implements EntityWalkable {
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.7f;
@@ -36,6 +48,10 @@ public class EntityMule extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.isBaby()) {
             return 0.8f;
@@ -44,12 +60,20 @@ public class EntityMule extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(15);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Mule";
     }

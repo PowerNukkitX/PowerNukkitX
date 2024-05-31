@@ -8,8 +8,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BlockStateUpdater_1_16_210 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_16_210();
+    public static final Updater $1 = new BlockStateUpdater_1_16_210();
 
+    
+    /**
+     * @deprecated 
+     */
     private static void registerUpdater(CompoundTagUpdaterContext context, String name) {
         context.addUpdater(1, 16, 210)
                 .match("name", name)
@@ -18,6 +22,10 @@ public class BlockStateUpdater_1_16_210 implements Updater {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext context) {
         registerUpdater(context, "minecraft:stripped_crimson_stem");
         registerUpdater(context, "minecraft:stripped_warped_stem");

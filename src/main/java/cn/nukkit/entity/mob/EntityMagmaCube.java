@@ -11,9 +11,17 @@ import org.jetbrains.annotations.NotNull;
 public class EntityMagmaCube extends EntityMob implements EntityWalkable {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return MAGMA_CUBE;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityMagmaCube(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -22,27 +30,47 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable {
     
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(16);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 2.04f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 2.04f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getFrostbiteInjury() {
         return 5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Magma Cube";
     }

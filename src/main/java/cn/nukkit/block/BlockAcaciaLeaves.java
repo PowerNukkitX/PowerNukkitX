@@ -6,13 +6,17 @@ import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockAcaciaLeaves extends BlockLeaves {
-    public static final BlockProperties PROPERTIES = new BlockProperties(ACACIA_LEAVES, CommonBlockProperties.PERSISTENT_BIT, CommonBlockProperties.UPDATE_BIT);
+    public static final BlockProperties $1 = new BlockProperties(ACACIA_LEAVES, CommonBlockProperties.PERSISTENT_BIT, CommonBlockProperties.UPDATE_BIT);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockAcaciaLeaves(BlockState blockstate) {
         super(blockstate);

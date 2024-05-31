@@ -16,12 +16,16 @@ import org.jetbrains.annotations.NotNull;
 
 public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBlockUpdatePacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull CommandBlockUpdatePacket pk) {
         if (playerHandle.player.isOp() && playerHandle.player.isCreative()) {
             if (pk.isBlock) {
-                BlockEntity blockEntity = playerHandle.player.level.getBlockEntity(new Vector3(pk.x, pk.y, pk.z));
+                BlockEntity $1 = playerHandle.player.level.getBlockEntity(new Vector3(pk.x, pk.y, pk.z));
                 if (blockEntity instanceof BlockEntityCommandBlock commandBlock) {
-                    Block cmdBlock = commandBlock.getLevelBlock();
+                    Block $2 = commandBlock.getLevelBlock();
 
                     //change commandblock type
                     switch (pk.commandBlockMode) {
@@ -44,7 +48,7 @@ public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBloc
                             break;
                     }
 
-                    boolean conditional = pk.isConditional;
+                    boolean $3 = pk.isConditional;
                     cmdBlock.setPropertyValue(CommonBlockProperties.CONDITIONAL_BIT, conditional);
 
                     commandBlock.setCommand(pk.command);
@@ -55,7 +59,7 @@ public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBloc
                     commandBlock.setExecutingOnFirstTick(pk.executingOnFirstTick);
 
                     //redstone mode / auto
-                    boolean isRedstoneMode = pk.isRedstoneMode;
+                    boolean $4 = pk.isRedstoneMode;
                     commandBlock.setAuto(!isRedstoneMode);
                     if (!isRedstoneMode && pk.commandBlockMode == ICommandBlock.MODE_NORMAL) {
                         commandBlock.trigger();
@@ -68,6 +72,10 @@ public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBloc
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.COMMAND_BLOCK_UPDATE_PACKET;
     }

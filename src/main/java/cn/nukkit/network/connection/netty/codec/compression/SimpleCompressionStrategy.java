@@ -15,6 +15,10 @@ public class SimpleCompressionStrategy implements CompressionStrategy {
     private final BatchCompression none;
     private final BatchCompression zlib;
     private final BatchCompression snappy;
+    /**
+     * @deprecated 
+     */
+    
 
     public SimpleCompressionStrategy(BatchCompression compression) {
         this.compression = compression;
@@ -54,6 +58,10 @@ public class SimpleCompressionStrategy implements CompressionStrategy {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "SimpleCompressionStrategy{" +
                 "compression=" + compression +

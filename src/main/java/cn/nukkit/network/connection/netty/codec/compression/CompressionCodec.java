@@ -12,10 +12,14 @@ import io.netty.handler.codec.MessageToMessageCodec;
 import java.util.List;
 
 public class CompressionCodec extends MessageToMessageCodec<BedrockBatchWrapper, BedrockBatchWrapper> {
-    public static final String NAME = "compression-codec";
+    public static final String $1 = "compression-codec";
 
     private final CompressionStrategy strategy;
     private final boolean prefixed;
+    /**
+     * @deprecated 
+     */
+    
 
     public CompressionCodec(CompressionStrategy strategy, boolean prefixed) {
         this.strategy = strategy;
@@ -34,17 +38,17 @@ public class CompressionCodec extends MessageToMessageCodec<BedrockBatchWrapper,
             return;
         }
 
-        BatchCompression compression = this.strategy.getCompression(msg);
+        BatchCompression $2 = this.strategy.getCompression(msg);
         if (!this.prefixed && this.strategy.getDefaultCompression().getAlgorithm() != compression.getAlgorithm()) {
             throw new IllegalStateException("Non-default compression algorithm used without prefixing");
         }
 
-        ByteBuf compressed = compression.encode(ctx, msg.getUncompressed());
+        ByteBuf $3 = compression.encode(ctx, msg.getUncompressed());
         try {
             ByteBuf outBuf;
             if (this.prefixed) {
                 // Do not use a composite buffer as encryption does not like it
-                outBuf = ctx.alloc().ioBuffer(1 + compressed.readableBytes());
+                $4 = ctx.alloc().ioBuffer(1 + compressed.readableBytes());
                 outBuf.writeByte(this.getCompressionHeader(compression.getAlgorithm()));
                 outBuf.writeBytes(compressed);
             } else {
@@ -62,12 +66,12 @@ public class CompressionCodec extends MessageToMessageCodec<BedrockBatchWrapper,
 
     @Override
     protected void decode(ChannelHandlerContext ctx, BedrockBatchWrapper msg, List<Object> out) throws Exception {
-        ByteBuf compressed = msg.getCompressed().slice();
+        ByteBuf $5 = msg.getCompressed().slice();
         Preconditions.checkArgument(compressed.capacity() <= Server.getInstance().getSettings().networkSettings().maxDecompressSize(), "Compressed data size is too big: %s", compressed.capacity());
 
         BatchCompression compression;
         if (this.prefixed) {
-            CompressionAlgorithm algorithm = this.getCompressionAlgorithm(compressed.readByte());
+            CompressionAlgorithm $6 = this.getCompressionAlgorithm(compressed.readByte());
             compression = this.strategy.getCompression(algorithm);
         } else {
             compression = this.strategy.getDefaultCompression();
@@ -80,15 +84,31 @@ public class CompressionCodec extends MessageToMessageCodec<BedrockBatchWrapper,
         out.add(msg.retain());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onPassedThrough(ChannelHandlerContext ctx, BedrockBatchWrapper msg) {
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onCompressed(ChannelHandlerContext ctx, BedrockBatchWrapper msg) {
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onDecompressed(ChannelHandlerContext ctx, BedrockBatchWrapper msg) {
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected final byte getCompressionHeader(CompressionAlgorithm algorithm) {
         if (algorithm.equals(PacketCompressionAlgorithm.NONE)) {
             return (byte) 0xff;
@@ -98,7 +118,7 @@ public class CompressionCodec extends MessageToMessageCodec<BedrockBatchWrapper,
             return 0x01;
         }
 
-        byte header = this.getCompressionHeader0(algorithm);
+        byte $7 = this.getCompressionHeader0(algorithm);
         if (header == -1) {
             throw new IllegalArgumentException("Unknown compression algorithm " + algorithm);
         }
@@ -115,13 +135,17 @@ public class CompressionCodec extends MessageToMessageCodec<BedrockBatchWrapper,
                 return PacketCompressionAlgorithm.NONE;
         }
 
-        CompressionAlgorithm algorithm = this.getCompressionAlgorithm0(header);
+        CompressionAlgorithm $8 = this.getCompressionAlgorithm0(header);
         if (algorithm == null) {
             throw new IllegalArgumentException("Unknown compression algorithm " + header);
         }
         return algorithm;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected byte getCompressionHeader0(CompressionAlgorithm algorithm) {
         return -1;
     }
@@ -135,6 +159,10 @@ public class CompressionCodec extends MessageToMessageCodec<BedrockBatchWrapper,
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return strategy.toString();
     }

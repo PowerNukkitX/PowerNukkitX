@@ -29,6 +29,10 @@ public class ItemStackResponse {
      * request.
      */
     List<ItemStackResponseContainer> containers;
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemStackResponse(ItemStackResponseStatus result, int requestId, List<ItemStackResponseContainer> containers) {
         this.result = result;

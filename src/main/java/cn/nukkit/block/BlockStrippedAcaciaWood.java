@@ -5,13 +5,17 @@ import cn.nukkit.block.property.enums.WoodType;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockStrippedAcaciaWood extends BlockWoodStripped {
-     public static final BlockProperties PROPERTIES = new BlockProperties(STRIPPED_ACACIA_WOOD, CommonBlockProperties.PILLAR_AXIS);
+     public static final BlockProperties $1 = new BlockProperties(STRIPPED_ACACIA_WOOD, CommonBlockProperties.PILLAR_AXIS);
 
      @Override
      @NotNull
      public BlockProperties getProperties() {
         return PROPERTIES;
      }
+    /**
+     * @deprecated 
+     */
+    
 
      public BlockStrippedAcaciaWood(BlockState blockstate) {
          super(blockstate);

@@ -11,21 +11,37 @@ public record SingletonBitArray() implements BitArray {
     private static final int[] EMPTY_ARRAY = new int[0];
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void set(int index, int value) {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int get(int index) {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void writeSizeToNetwork(ByteBuf buffer, int size) {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int size() {
         return 1;
     }

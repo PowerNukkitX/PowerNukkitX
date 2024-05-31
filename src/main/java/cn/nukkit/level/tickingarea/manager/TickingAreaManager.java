@@ -10,6 +10,10 @@ import java.util.Set;
 public abstract class TickingAreaManager {
 
     protected TickingAreaStorage storage;
+    /**
+     * @deprecated 
+     */
+    
 
     public TickingAreaManager(TickingAreaStorage storage) {
         this.storage = storage;

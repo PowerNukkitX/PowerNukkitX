@@ -9,6 +9,10 @@ import cn.nukkit.recipe.descriptor.ItemDescriptor;
  */
 public class SmithingTrimRecipe extends BaseRecipe {
     private final String tag;
+    /**
+     * @deprecated 
+     */
+    
 
     public SmithingTrimRecipe(String id, ItemDescriptor base, ItemDescriptor addition, ItemDescriptor template, String tag) {
         super(id);
@@ -18,12 +22,20 @@ public class SmithingTrimRecipe extends BaseRecipe {
         ingredients.add(addition);
         this.tag = tag;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getTag() {
         return tag;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean match(Input input) {
         return false;
     }

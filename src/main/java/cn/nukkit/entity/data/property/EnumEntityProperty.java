@@ -11,11 +11,15 @@ public class EnumEntityProperty extends EntityProperty {
 
     private final String[] enums;
     private final String defaultValue;
+    /**
+     * @deprecated 
+     */
+    
 
     public EnumEntityProperty(String identifier,String[] enums, String defaultValue) {
         super(identifier);
 
-        boolean found = false;
+        boolean $1 = false;
         for (String enumValue : enums) {
             if (enumValue.equals(defaultValue)) {
                 found = true;
@@ -33,12 +37,20 @@ public class EnumEntityProperty extends EntityProperty {
     public String[] getEnums() {
         return enums;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getDefaultValue() {
         return defaultValue;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void populateTag(CompoundTag tag) {
         tag.putInt("type", 3);
         ListTag<StringTag> enumList = new ListTag<>();
@@ -47,9 +59,13 @@ public class EnumEntityProperty extends EntityProperty {
         }
         tag.putList("enum", enumList);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int findIndex(String value) {
-        for (int i = 0; i < enums.length; i++) {
+        for ($2nt $1 = 0; i < enums.length; i++) {
             if (enums[i].equals(value)) {
                 return i;
             }

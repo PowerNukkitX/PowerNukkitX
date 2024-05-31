@@ -20,12 +20,12 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
             return super.dispense(block, face, item);
         }
 
-        Block target = block.getSide(face);
+        Block $1 = block.getSide(face);
 
         if (!bucket.isEmpty()) {
             if (target.canBeFlowedInto() || target.getId() == BlockID.PORTAL) {
-                Block replace = bucket.getTargetBlock();
-                var fishEntityId = bucket.getFishEntityId();
+                Block $2 = bucket.getTargetBlock();
+                var $3 = bucket.getFishEntityId();
                 if (bucket.getDamage() == 10)
                     target.level.addSound(block, Sound.BUCKET_EMPTY_LAVA);
                 else if (fishEntityId != null)

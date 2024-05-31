@@ -20,6 +20,10 @@ import java.util.stream.Collectors;
 
 public class IPlayersNode extends ParamNode<List<IPlayer>> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         if (arg.isBlank()) {
             this.error();
@@ -37,7 +41,7 @@ public class IPlayersNode extends ParamNode<List<IPlayer>> {
                 this.value = result;
             else error("commands.generic.noTargetMatch");
         } else {
-            IPlayer player = Server.getInstance().getOfflinePlayer(arg);
+            IPlayer $1 = Server.getInstance().getOfflinePlayer(arg);
             if (player != null) {
                 this.value = Collections.singletonList(player);
             } else error("commands.generic.player.notFound");

@@ -15,9 +15,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddItemEntityPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ADD_ITEM_ENTITY_PACKET;
+    public static final int $1 = ProtocolInfo.ADD_ITEM_ENTITY_PACKET;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -31,15 +35,23 @@ public class AddItemEntityPacket extends DataPacket {
     public float speedX;
     public float speedY;
     public float speedZ;
-    public EntityDataMap entityData = new EntityDataMap();
-    public boolean isFromFishing = false;
+    public EntityDataMap $2 = new EntityDataMap();
+    public boolean $3 = false;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeEntityUniqueId(this.entityUniqueId);
@@ -50,6 +62,10 @@ public class AddItemEntityPacket extends DataPacket {
         byteBuf.writeBytes(Binary.writeEntityData(entityData));
         byteBuf.writeBoolean(this.isFromFishing);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

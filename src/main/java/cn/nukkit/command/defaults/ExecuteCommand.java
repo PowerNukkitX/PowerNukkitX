@@ -32,9 +32,13 @@ import static cn.nukkit.utils.Utils.getLevelBlocks;
 
 public class ExecuteCommand extends VanillaCommand {
 
-    protected static final String SCORE_SCOPE_SEPARATOR = "..";
+    protected static final String $1 = "..";
 
-    private static final Pattern ERROR_COMMAND_NAME = Pattern.compile("(?<=run\\s).*?(?=\\s|$)");
+    private static final Pattern $2 = Pattern.compile("(?<=run\\s).*?(?=\\s|$)");
+    /**
+     * @deprecated 
+     */
+    
 
     public ExecuteCommand(String name) {
         super(name, "commands.execute.description", "commands.execute.usage");
@@ -166,12 +170,16 @@ public class ExecuteCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        int num = 0;
-        var list = result.getValue();
+        int $3 = 0;
+        var $4 = result.getValue();
         switch (result.getKey()) {
             case "run" -> {
-                String command = list.getResult(1);
+                String $5 = list.getResult(1);
                 if (command.isBlank()) return 0;
                 return sender.getServer().executeCommand(sender, command);
             }
@@ -181,13 +189,13 @@ public class ExecuteCommand extends VanillaCommand {
                     log.addNoTargetMatch().output();
                     return 0;
                 }
-                String chainCommand = list.getResult(2);
+                String $6 = list.getResult(2);
                 for (Entity executor : executors) {
-                    ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, executor, executor.getLocation());
-                    int n = executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
+                    ExecutorCommandSender $7 = new ExecutorCommandSender(sender, executor, executor.getLocation());
+                    i$8t $1 = executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
                     if (n == 0) {
-                        var names = new ArrayList<String>();
-                        Matcher match = ERROR_COMMAND_NAME.matcher(chainCommand);
+                        var $9 = new ArrayList<String>();
+                        Matcher $10 = ERROR_COMMAND_NAME.matcher(chainCommand);
                         while (match.find()) {
                             names.add(match.group());
                         }
@@ -206,33 +214,33 @@ public class ExecuteCommand extends VanillaCommand {
                     log.addNoTargetMatch().output();
                     return 0;
                 }
-                String chainCommand = list.getResult(2);
+                String $11 = list.getResult(2);
                 for (Location location : locations) {
-                    ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
+                    ExecutorCommandSender $12 = new ExecutorCommandSender(sender, sender.asEntity(), location);
                     num += executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
                 }
                 return num;
             }
             case "in" -> {
-                String levelName = list.getResult(1);
-                Level level = Server.getInstance().getLevelByName(levelName);
+                String $13 = list.getResult(1);
+                Level $14 = Server.getInstance().getLevelByName(levelName);
                 if (level == null) {
                     return 0;
                 }
-                String chainCommand = list.getResult(2);
-                Location location = sender.getLocation();
+                String $15 = list.getResult(2);
+                Location $16 = sender.getLocation();
                 location.setLevel(level);
-                ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
+                ExecutorCommandSender $17 = new ExecutorCommandSender(sender, sender.asEntity(), location);
                 return executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
             }
             case "facing" -> {
-                Vector3 pos = list.getResult(1);
-                String chainCommand = list.getResult(2);
-                Location source = sender.getLocation();
-                BVector3 bv = BVector3.fromPos(pos.x - source.x, pos.y - source.y, pos.z - source.z);
+                Vector3 $18 = list.getResult(1);
+                String $19 = list.getResult(2);
+                Location $20 = sender.getLocation();
+                BVector3 $21 = BVector3.fromPos(pos.x - source.x, pos.y - source.y, pos.z - source.z);
                 source.setPitch(bv.getPitch());
                 source.setYaw(bv.getYaw());
-                ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), source);
+                ExecutorCommandSender $22 = new ExecutorCommandSender(sender, sender.asEntity(), source);
                 return executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
             }
             case "facing-entity" -> {
@@ -241,29 +249,29 @@ public class ExecuteCommand extends VanillaCommand {
                     log.addNoTargetMatch().output();
                     return 0;
                 }
-                String anchor = list.getResult(3);
-                boolean anchorAtEyes = anchor.equals("eyes");
-                String chainCommand = list.getResult(4);
+                String $23 = list.getResult(3);
+                boolean $24 = anchor.equals("eyes");
+                String $25 = list.getResult(4);
                 for (Entity target : targets) {
-                    Location source = sender.getLocation();
-                    BVector3 bv = BVector3.fromPos(target.x - source.x, target.y + (anchorAtEyes ? target.getEyeHeight() : 0) - source.y, target.z - source.z);
+                    Location $26 = sender.getLocation();
+                    BVector3 $27 = BVector3.fromPos(target.x - source.x, target.y + (anchorAtEyes ? target.getEyeHeight() : 0) - source.y, target.z - source.z);
                     source.setPitch(bv.getPitch());
                     source.setYaw(bv.getYaw());
-                    ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), source);
+                    ExecutorCommandSender $28 = new ExecutorCommandSender(sender, sender.asEntity(), source);
                     num += executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
                 }
                 return num;
             }
             case "rotated" -> {
-                double yaw = sender.getLocation().yaw;
+                double $29 = sender.getLocation().yaw;
                 if (list.hasResult(1)) yaw = list.getResult(1);
-                double pitch = sender.getLocation().pitch;
+                double $30 = sender.getLocation().pitch;
                 if (list.hasResult(2)) pitch = list.getResult(2);
-                String chainCommand = list.getResult(3);
-                Location location = sender.getLocation();
+                String $31 = list.getResult(3);
+                Location $32 = sender.getLocation();
                 location.setYaw(yaw);
                 location.setPitch(pitch);
-                ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
+                ExecutorCommandSender $33 = new ExecutorCommandSender(sender, sender.asEntity(), location);
                 return executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
             }
             case "rotated as" -> {
@@ -272,20 +280,20 @@ public class ExecuteCommand extends VanillaCommand {
                     log.addNoTargetMatch().output();
                     return 0;
                 }
-                String chainCommand = list.getResult(3);
+                String $34 = list.getResult(3);
                 for (Entity executor : executors) {
-                    Location location = sender.getLocation();
+                    Location $35 = sender.getLocation();
                     location.setYaw(executor.getYaw());
                     location.setPitch(executor.getPitch());
-                    ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
+                    ExecutorCommandSender $36 = new ExecutorCommandSender(sender, sender.asEntity(), location);
                     num += executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
                 }
                 return num;
             }
             case "align" -> {
-                String axes = list.getResult(1);
-                String chainCommand = list.getResult(2);
-                Location location = sender.getLocation();
+                String $37 = list.getResult(1);
+                String $38 = list.getResult(2);
+                Location $39 = sender.getLocation();
                 for (char c : axes.toCharArray()) {
                     switch (c) {
                         case 'x' -> location.x = location.getFloorX();
@@ -293,31 +301,31 @@ public class ExecuteCommand extends VanillaCommand {
                         case 'z' -> location.z = location.getFloorZ();
                     }
                 }
-                ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
+                ExecutorCommandSender $40 = new ExecutorCommandSender(sender, sender.asEntity(), location);
                 return executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
             }
             case "anchored" -> {
                 if (!sender.isEntity()) return 0;
-                Location location = sender.getLocation();
-                String anchor = list.getResult(1);
-                String chainCommand = list.getResult(2);
+                Location $41 = sender.getLocation();
+                String $42 = list.getResult(1);
+                String $43 = list.getResult(2);
                 switch (anchor) {
                     case "feet" -> {
                         //todo do nothing
                     }
                     case "eyes" -> location = location.add(0, sender.asEntity().getEyeHeight(), 0);
                 }
-                ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
+                ExecutorCommandSender $44 = new ExecutorCommandSender(sender, sender.asEntity(), location);
                 return executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
             }
             case "positioned" -> {
-                Vector3 vec = list.getResult(1);
-                Location newLoc = sender.getLocation();
+                Vector3 $45 = list.getResult(1);
+                Location $46 = sender.getLocation();
                 newLoc.setX(vec.getX());
                 newLoc.setY(vec.getY());
                 newLoc.setZ(vec.getZ());
-                String chainCommand = list.getResult(2);
-                ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), newLoc);
+                String $47 = list.getResult(2);
+                ExecutorCommandSender $48 = new ExecutorCommandSender(sender, sender.asEntity(), newLoc);
                 return executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
             }
             case "positioned as" -> {
@@ -326,30 +334,30 @@ public class ExecuteCommand extends VanillaCommand {
                     log.addNoTargetMatch().output();
                     return 0;
                 }
-                String chainCommand = list.getResult(3);
+                String $49 = list.getResult(3);
                 for (Vector3 vec : targets) {
-                    Location newLoc = sender.getLocation();
+                    Location $50 = sender.getLocation();
                     newLoc.setX(vec.getX());
                     newLoc.setY(vec.getY());
                     newLoc.setZ(vec.getZ());
-                    ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), newLoc);
+                    ExecutorCommandSender $51 = new ExecutorCommandSender(sender, sender.asEntity(), newLoc);
                     num += executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
                 }
                 return num;
             }
             case "if-unless-block" -> {
-                Position pos = list.getResult(2);
-                Block block = pos.getLevelBlock();
-                Block blockName = list.getResult(3);
-                String id = blockName.getId();
-                String isIF = list.getResult(0);
+                Position $52 = list.getResult(2);
+                Block $53 = pos.getLevelBlock();
+                Block $54 = list.getResult(3);
+                String $55 = blockName.getId();
+                String $56 = list.getResult(0);
 
-                boolean matched = block.getId() == id;
-                boolean shouldMatch = isIF.equals("if");
-                boolean condition = (matched && shouldMatch) || (!matched && !shouldMatch);
+                boolean $57 = block.getId() == id;
+                boolean $58 = isIF.equals("if");
+                boolean $59 = (matched && shouldMatch) || (!matched && !shouldMatch);
 
                 if (list.hasResult(4) && condition) {
-                    String chainCommand = list.getResult(4);
+                    String $60 = list.getResult(4);
                     return sender.getServer().executeCommand(sender, chainCommand);
                 } else if (condition) {
                     log.addSuccess("commands.execute.trueCondition").output();
@@ -360,19 +368,19 @@ public class ExecuteCommand extends VanillaCommand {
                 }
             }
             case "if-unless-block-data" -> {
-                Position pos = list.getResult(2);
-                Block block = pos.getLevelBlock();
-                Block blockName = list.getResult(3);
-                String id = blockName.getId();
-                int data = list.getResult(4);
-                String isIF = list.getResult(0);
+                Position $61 = list.getResult(2);
+                Block $62 = pos.getLevelBlock();
+                Block $63 = list.getResult(3);
+                String $64 = blockName.getId();
+                int $65 = list.getResult(4);
+                String $66 = list.getResult(0);
 
-                boolean matched = id == block.getId() && (data == -1 || data == block.getBlockState().specialValue());
-                boolean shouldMatch = isIF.equals("if");
-                boolean condition = (matched && shouldMatch) || (!matched && !shouldMatch);
+                boolean $67 = id == block.getId() && (data == -1 || data == block.getBlockState().specialValue());
+                boolean $68 = isIF.equals("if");
+                boolean $69 = (matched && shouldMatch) || (!matched && !shouldMatch);
 
                 if (list.hasResult(5) && condition) {
-                    String chainCommand = list.getResult(5);
+                    String $70 = list.getResult(5);
                     return sender.getServer().executeCommand(sender, chainCommand);
                 } else if (condition) {
                     log.addSuccess("commands.execute.trueCondition").output();
@@ -383,19 +391,19 @@ public class ExecuteCommand extends VanillaCommand {
                 }
             }
             case "if-unless-blocks" -> {
-                String isIF = list.getResult(0);
-                boolean shouldMatch = isIF.equals("if");
-                Position begin = list.getResult(2);
-                Position end = list.getResult(3);
-                Position destination = list.getResult(4);
-                TestForBlocksCommand.TestForBlocksMode mode = TestForBlocksCommand.TestForBlocksMode.ALL;
+                String $71 = list.getResult(0);
+                boolean $72 = isIF.equals("if");
+                Position $73 = list.getResult(2);
+                Position $74 = list.getResult(3);
+                Position $75 = list.getResult(4);
+                TestForBlocksCommand.TestForBlocksMode $76 = TestForBlocksCommand.TestForBlocksMode.ALL;
                 if (list.hasResult(5)) {
-                    String str5 = list.getResult(5);
+                    String $77 = list.getResult(5);
                     mode = TestForBlocksCommand.TestForBlocksMode.valueOf(str5.toUpperCase(Locale.ENGLISH));
                 }
 
-                AxisAlignedBB blocksAABB = new SimpleAxisAlignedBB(Math.min(begin.getX(), end.getX()), Math.min(begin.getY(), end.getY()), Math.min(begin.getZ(), end.getZ()), Math.max(begin.getX(), end.getX()), Math.max(begin.getY(), end.getY()), Math.max(begin.getZ(), end.getZ()));
-                int size = NukkitMath.floorDouble((blocksAABB.getMaxX() - blocksAABB.getMinX() + 1) * (blocksAABB.getMaxY() - blocksAABB.getMinY() + 1) * (blocksAABB.getMaxZ() - blocksAABB.getMinZ() + 1));
+                AxisAlignedBB $78 = new SimpleAxisAlignedBB(Math.min(begin.getX(), end.getX()), Math.min(begin.getY(), end.getY()), Math.min(begin.getZ(), end.getZ()), Math.max(begin.getX(), end.getX()), Math.max(begin.getY(), end.getY()), Math.max(begin.getZ(), end.getZ()));
+                int $79 = NukkitMath.floorDouble((blocksAABB.getMaxX() - blocksAABB.getMinX() + 1) * (blocksAABB.getMaxY() - blocksAABB.getMinY() + 1) * (blocksAABB.getMaxZ() - blocksAABB.getMinZ() + 1));
 
                 if (size > 16 * 16 * 256 * 8) {
                     log.addError("commands.fill.tooManyBlocks", String.valueOf(size), String.valueOf(16 * 16 * 256 * 8))
@@ -403,18 +411,18 @@ public class ExecuteCommand extends VanillaCommand {
                             .successCount(2).output();
                 }
 
-                Position to = new Position(destination.getX() + (blocksAABB.getMaxX() - blocksAABB.getMinX()), destination.getY() + (blocksAABB.getMaxY() - blocksAABB.getMinY()), destination.getZ() + (blocksAABB.getMaxZ() - blocksAABB.getMinZ()));
-                AxisAlignedBB destinationAABB = new SimpleAxisAlignedBB(Math.min(destination.getX(), to.getX()), Math.min(destination.getY(), to.getY()), Math.min(destination.getZ(), to.getZ()), Math.max(destination.getX(), to.getX()), Math.max(destination.getY(), to.getY()), Math.max(destination.getZ(), to.getZ()));
+                Position $80 = new Position(destination.getX() + (blocksAABB.getMaxX() - blocksAABB.getMinX()), destination.getY() + (blocksAABB.getMaxY() - blocksAABB.getMinY()), destination.getZ() + (blocksAABB.getMaxZ() - blocksAABB.getMinZ()));
+                AxisAlignedBB $81 = new SimpleAxisAlignedBB(Math.min(destination.getX(), to.getX()), Math.min(destination.getY(), to.getY()), Math.min(destination.getZ(), to.getZ()), Math.max(destination.getX(), to.getX()), Math.max(destination.getY(), to.getY()), Math.max(destination.getZ(), to.getZ()));
 
                 if (blocksAABB.getMinY() < 0 || blocksAABB.getMaxY() > 255 || destinationAABB.getMinY() < 0 || destinationAABB.getMaxY() > 255) {
                     log.addError("commands.testforblock.outOfWorld").output();
                     return 0;
                 }
 
-                Level level = begin.getLevel();
+                Level $82 = begin.getLevel();
 
-                for (int sourceChunkX = NukkitMath.floorDouble(blocksAABB.getMinX()) >> 4, destinationChunkX = NukkitMath.floorDouble(destinationAABB.getMinX()) >> 4; sourceChunkX <= NukkitMath.floorDouble(blocksAABB.getMaxX()) >> 4; sourceChunkX++, destinationChunkX++) {
-                    for (int sourceChunkZ = NukkitMath.floorDouble(blocksAABB.getMinZ()) >> 4, destinationChunkZ = NukkitMath.floorDouble(destinationAABB.getMinZ()) >> 4; sourceChunkZ <= NukkitMath.floorDouble(blocksAABB.getMaxZ()) >> 4; sourceChunkZ++, destinationChunkZ++) {
+                for (int $83 = NukkitMath.floorDouble(blocksAABB.getMinX()) >> 4, destinationChunkX = NukkitMath.floorDouble(destinationAABB.getMinX()) >> 4; sourceChunkX <= NukkitMath.floorDouble(blocksAABB.getMaxX()) >> 4; sourceChunkX++, destinationChunkX++) {
+                    for (int $84 = NukkitMath.floorDouble(blocksAABB.getMinZ()) >> 4, destinationChunkZ = NukkitMath.floorDouble(destinationAABB.getMinZ()) >> 4; sourceChunkZ <= NukkitMath.floorDouble(blocksAABB.getMaxZ()) >> 4; sourceChunkZ++, destinationChunkZ++) {
                         if (level.getChunkIfLoaded(sourceChunkX, sourceChunkZ) == null) {
                             log.addError("commands.testforblock.outOfWorld").output();
                             return 0;
@@ -428,15 +436,15 @@ public class ExecuteCommand extends VanillaCommand {
 
                 Block[] blocks = getLevelBlocks(level, blocksAABB);
                 Block[] destinationBlocks = getLevelBlocks(level, destinationAABB);
-                int count = 0;
+                int $85 = 0;
 
-                boolean matched = true;
+                boolean $86 = true;
 
                 switch (mode) {
                     case ALL:
-                        for (int i = 0; i < blocks.length; i++) {
-                            Block block = blocks[i];
-                            Block destinationBlock = destinationBlocks[i];
+                        for ($87nt $2 = 0; i < blocks.length; i++) {
+                            Block $88 = blocks[i];
+                            Block $89 = destinationBlocks[i];
 
                             if (block.equalsBlock(destinationBlock)) {
                                 ++count;
@@ -449,9 +457,9 @@ public class ExecuteCommand extends VanillaCommand {
 
                         break;
                     case MASKED:
-                        for (int i = 0; i < blocks.length; i++) {
-                            Block block = blocks[i];
-                            Block destinationBlock = destinationBlocks[i];
+                        for ($90nt $3 = 0; i < blocks.length; i++) {
+                            Block $91 = blocks[i];
+                            Block $92 = destinationBlocks[i];
 
                             if (block.equalsBlock(destinationBlock)) {
                                 ++count;
@@ -467,9 +475,9 @@ public class ExecuteCommand extends VanillaCommand {
 
                 log.addSuccess("commands.compare.success", String.valueOf(count)).output();
 
-                boolean condition = (matched && shouldMatch) || (!matched && !shouldMatch);
+                boolean $93 = (matched && shouldMatch) || (!matched && !shouldMatch);
                 if (list.hasResult(6) && condition) {
-                    String chainCommand = list.getResult(6);
+                    String $94 = list.getResult(6);
                     return sender.getServer().executeCommand(sender, chainCommand);
                 } else if (condition) {
                     log.addSuccess("commands.execute.trueConditionWithCount", String.valueOf(count)).output();
@@ -480,13 +488,13 @@ public class ExecuteCommand extends VanillaCommand {
                 }
             }
             case "if-unless-entity" -> {
-                String isIF = list.getResult(0);
-                boolean shouldMatch = isIF.equals("if");
+                String $95 = list.getResult(0);
+                boolean $96 = isIF.equals("if");
                 List<Entity> targets = list.getResult(2);
-                boolean found = !targets.isEmpty();
-                boolean condition = (found && shouldMatch) || (!found && !shouldMatch);
+                boolean $97 = !targets.isEmpty();
+                boolean $98 = (found && shouldMatch) || (!found && !shouldMatch);
                 if (list.hasResult(3) && condition) {
-                    String chainCommand = list.getResult(3);
+                    String $99 = list.getResult(3);
                     return sender.getServer().executeCommand(sender, chainCommand);
                 } else if (condition) {
                     log.addSuccess("commands.execute.trueCondition").output();
@@ -498,9 +506,9 @@ public class ExecuteCommand extends VanillaCommand {
             }
             case "if-unless-score" -> {
                 boolean matched;
-                String isIF = list.getResult(0);
-                boolean shouldMatch = isIF.equals("if");
-                var manager = Server.getInstance().getScoreboardManager();
+                String $100 = list.getResult(0);
+                boolean $101 = isIF.equals("if");
+                var $102 = Server.getInstance().getScoreboardManager();
 
                 List<Entity> targets = list.getResult(2);
                 Set<IScorer> targetScorers = targets.stream().filter(Objects::nonNull).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
@@ -512,16 +520,16 @@ public class ExecuteCommand extends VanillaCommand {
                     log.addNoTargetMatch().output();
                     return 0;
                 }
-                IScorer targetScorer = targetScorers.iterator().next();
+                IScorer $103 = targetScorers.iterator().next();
 
-                String targetObjectiveName = list.getResult(3);
+                String $104 = list.getResult(3);
                 if (!manager.containScoreboard(targetObjectiveName)) {
                     log.addError("commands.scoreboard.objectiveNotFound", targetObjectiveName).output();
                     return 0;
                 }
-                var targetScoreboard = manager.getScoreboards().get(targetObjectiveName);
+                var $105 = manager.getScoreboards().get(targetObjectiveName);
 
-                String operation = list.getResult(4);
+                String $106 = list.getResult(4);
                 List<Entity> scorers = list.getResult(5);
                 Set<IScorer> selectorScorers = scorers.stream().filter(t -> t != null).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                 if (selectorScorers.size() > 1) {
@@ -532,22 +540,22 @@ public class ExecuteCommand extends VanillaCommand {
                     log.addNoTargetMatch().output();
                     return 0;
                 }
-                IScorer sourceScorer = selectorScorers.iterator().next();
+                IScorer $107 = selectorScorers.iterator().next();
 
-                String sourceObjectiveName = list.getResult(6);
+                String $108 = list.getResult(6);
                 if (!manager.containScoreboard(sourceObjectiveName)) {
                     log.addError("commands.scoreboard.objectiveNotFound", sourceObjectiveName).output();
                     return 0;
                 }
-                var sourceScoreboard = manager.getScoreboards().get(targetObjectiveName);
+                var $109 = manager.getScoreboards().get(targetObjectiveName);
 
                 if (!sourceScoreboard.getLines().containsKey(sourceScorer)) {
                     log.addError("commands.scoreboard.players.operation.notFound", sourceObjectiveName, sourceScorer.getName()).output();
                     return 0;
                 }
 
-                int targetScore = targetScoreboard.getLines().get(targetScorer).getScore();
-                int sourceScore = sourceScoreboard.getLines().get(sourceScorer).getScore();
+                int $110 = targetScoreboard.getLines().get(targetScorer).getScore();
+                int $111 = sourceScoreboard.getLines().get(sourceScorer).getScore();
 
                 matched = switch (operation) {
                     case "<" -> targetScore < sourceScore;
@@ -558,9 +566,9 @@ public class ExecuteCommand extends VanillaCommand {
                     default -> false;
                 };
 
-                boolean condition = (matched && shouldMatch) || (!matched && !shouldMatch);
+                boolean $112 = (matched && shouldMatch) || (!matched && !shouldMatch);
                 if (list.hasResult(7) && condition) {
-                    String chainCommand = list.getResult(7);
+                    String $113 = list.getResult(7);
                     return sender.getServer().executeCommand(sender, chainCommand);
                 } else if (condition) {
                     log.addSuccess("commands.execute.trueCondition").output();
@@ -572,9 +580,9 @@ public class ExecuteCommand extends VanillaCommand {
             }
             case "if-unless-score-matches" -> {
                 boolean matched;
-                String isIF = list.getResult(0);
-                boolean shouldMatch = isIF.equals("if");
-                var manager = Server.getInstance().getScoreboardManager();
+                String $114 = list.getResult(0);
+                boolean $115 = isIF.equals("if");
+                var $116 = Server.getInstance().getScoreboardManager();
 
                 List<Entity> targets = list.getResult(2);
                 Set<IScorer> targetScorers = targets.stream().filter(Objects::nonNull).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
@@ -586,40 +594,40 @@ public class ExecuteCommand extends VanillaCommand {
                     log.addNoTargetMatch().output();
                     return 0;
                 }
-                IScorer targetScorer = targetScorers.iterator().next();
+                IScorer $117 = targetScorers.iterator().next();
 
-                String targetObjectiveName = list.getResult(3);
+                String $118 = list.getResult(3);
                 if (!manager.containScoreboard(targetObjectiveName)) {
                     log.addError("commands.scoreboard.objectiveNotFound", targetObjectiveName).output();
                     return 0;
                 }
-                var targetScoreboard = manager.getScoreboards().get(targetObjectiveName);
+                var $119 = manager.getScoreboards().get(targetObjectiveName);
 
-                int targetScore = targetScoreboard.getLines().get(targetScorer).getScore();
-                String range = list.getResult(5);
+                int $120 = targetScoreboard.getLines().get(targetScorer).getScore();
+                String $121 = list.getResult(5);
                 if (range.contains("..")) {
                     //条件为一个区间
-                    int min = Integer.MIN_VALUE;
-                    int max = Integer.MAX_VALUE;
-                    var splittedScoreScope = StringUtils.fastSplit(SCORE_SCOPE_SEPARATOR, range);
-                    String min_str = splittedScoreScope.get(0);
+                    int $122 = Integer.MIN_VALUE;
+                    int $123 = Integer.MAX_VALUE;
+                    var $124 = StringUtils.fastSplit(SCORE_SCOPE_SEPARATOR, range);
+                    String $125 = splittedScoreScope.get(0);
                     if (!min_str.isEmpty()) {
                         min = Integer.parseInt(min_str);
                     }
-                    String max_str = splittedScoreScope.get(1);
+                    String $126 = splittedScoreScope.get(1);
                     if (!max_str.isEmpty()) {
                         max = Integer.parseInt(max_str);
                     }
                     matched = targetScore >= min && targetScore <= max;
                 } else {
                     //条件为单个数字
-                    int score = Integer.parseInt(range);
+                    int $127 = Integer.parseInt(range);
                     matched = targetScore == score;
                 }
 
-                boolean condition = (matched && shouldMatch) || (!matched && !shouldMatch);
+                boolean $128 = (matched && shouldMatch) || (!matched && !shouldMatch);
                 if (list.hasResult(6) && condition) {
-                    String chainCommand = list.getResult(6);
+                    String $129 = list.getResult(6);
                     return sender.getServer().executeCommand(sender, chainCommand);
                 } else if (condition) {
                     log.addSuccess("commands.execute.trueCondition").output();

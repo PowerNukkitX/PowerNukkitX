@@ -104,6 +104,10 @@ public final class BVector3 {
      * @param pitch  the pitch
      * @param length 向量模
      */
+    
+    /**
+     * @deprecated 
+     */
     private BVector3(double yaw, double pitch, double length) {
         this.vector3 = getDirectionVector(yaw, pitch);
         this.yaw = getYawFromVector(this.vector3);
@@ -117,6 +121,10 @@ public final class BVector3 {
      * Initialize B Vector 3 with the vector coordinates passed in
      *
      * @param vector3 向量坐标
+     */
+    
+    /**
+     * @deprecated 
      */
     private BVector3(Vector3 vector3) {
         this.yaw = getYawFromVector(vector3);
@@ -208,7 +216,7 @@ public final class BVector3 {
      * @return 结果向量
      */
     public BVector3 add(double x, double y, double z) {
-        var pos = this.vector3.multiply(this.length);
+        var $1 = this.vector3.multiply(this.length);
         pos.add(x, y, z);
         this.yaw = getYawFromVector(pos);
         this.pitch = getPitchFromVector(pos);
@@ -272,10 +280,18 @@ public final class BVector3 {
         this.length += length;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getYaw() {
         return yaw;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getPitch() {
         return pitch;
@@ -308,11 +324,11 @@ public final class BVector3 {
      * @return Vector3方向向量
      */
     public static Vector3 getDirectionVector(double yaw, double pitch) {
-        var pitch0 = toRadians(pitch + 90);
-        var yaw0 = toRadians(yaw + 90);
-        var x = sin(pitch0) * cos(yaw0);
-        var z = sin(pitch0) * sin(yaw0);
-        var y = cos(pitch0);
+        var $2 = toRadians(pitch + 90);
+        var $3 = toRadians(yaw + 90);
+        var $4 = sin(pitch0) * cos(yaw0);
+        var $5 = sin(pitch0) * sin(yaw0);
+        var $6 = cos(pitch0);
         return new Vector3(x, y, z).normalize();
     }
 
@@ -324,13 +340,17 @@ public final class BVector3 {
      * @param vector 方向向量
      * @return yaw
      */
+    /**
+     * @deprecated 
+     */
+    
     public static double getYawFromVector(Vector3 vector) {
-        double length = vector.x * vector.x + vector.z * vector.z;
+        double $7 = vector.x * vector.x + vector.z * vector.z;
         // 避免NAN
         if (length == 0) {
             return 0;
         }
-        double yaw = toDegrees(asin(-vector.x / sqrt(length)));
+        double $8 = toDegrees(asin(-vector.x / sqrt(length)));
         return -vector.z > 0.0D ? 180.0D - yaw : StrictMath.abs(yaw) < 1E-10 ? 0 : yaw;
     }
 
@@ -342,13 +362,17 @@ public final class BVector3 {
      * @param vector 方向向量
      * @return pitch
      */
+    /**
+     * @deprecated 
+     */
+    
     public static double getPitchFromVector(Vector3 vector) {
-        double length = vector.x * vector.x + vector.z * vector.z + vector.y * vector.y;
+        double $9 = vector.x * vector.x + vector.z * vector.z + vector.y * vector.y;
         // 避免NAN
         if (length == 0) {
             return 0;
         }
-        var pitch = toDegrees(asin(-vector.y / sqrt(length)));
+        var $10 = toDegrees(asin(-vector.y / sqrt(length)));
         return StrictMath.abs(pitch) < 1E-10 ? 0 : pitch;
     }
 }

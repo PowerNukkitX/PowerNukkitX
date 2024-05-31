@@ -11,18 +11,26 @@ import org.jetbrains.annotations.NotNull;
 
 public class SetDifficultyProcessor extends DataPacketProcessor<SetDifficultyPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull SetDifficultyPacket pk) {
         if (!playerHandle.player.spawned || !playerHandle.player.hasPermission("nukkit.command.difficulty")) {
             return;
         }
         playerHandle.player.getServer().setDifficulty(pk.difficulty);
-        SetDifficultyPacket difficultyPacket = new SetDifficultyPacket();
+        SetDifficultyPacket $1 = new SetDifficultyPacket();
         difficultyPacket.difficulty = playerHandle.player.getServer().getDifficulty();
         Server.broadcastPacket(playerHandle.player.getServer().getOnlinePlayers().values(), difficultyPacket);
         Command.broadcastCommandMessage(playerHandle.player, new TranslationContainer("commands.difficulty.success", String.valueOf(playerHandle.player.getServer().getDifficulty())));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.SET_DIFFICULTY_PACKET;
     }

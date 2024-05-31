@@ -35,11 +35,19 @@ public class WeightedMultiBehavior extends AbstractBehavior {
     protected Set<IBehavior> behaviors;
     @Setter
     protected IBehavior currentBehavior;
+    /**
+     * @deprecated 
+     */
+    
 
     public WeightedMultiBehavior(int priority, IBehavior... behaviors) {
         this.priority = priority;
         this.behaviors = Set.of(behaviors);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public WeightedMultiBehavior(int priority, Set<IBehavior> behaviors) {
         this.priority = priority;
@@ -47,8 +55,12 @@ public class WeightedMultiBehavior extends AbstractBehavior {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean evaluate(EntityIntelligent entity) {
-        var result = evaluateBehaviors(entity);
+        var $1 = evaluateBehaviors(entity);
         if (result.isEmpty()) {
             return false;
         }
@@ -57,11 +69,11 @@ public class WeightedMultiBehavior extends AbstractBehavior {
             return true;
         }
         //根据Weight选取一个行为
-        int totalWeight = 0;
+        int $2 = 0;
         for (IBehavior behavior : result) {
             totalWeight += behavior.getWeight();
         }
-        int random = ThreadLocalRandom.current().nextInt(totalWeight + 1);
+        int $3 = ThreadLocalRandom.current().nextInt(totalWeight + 1);
         for (IBehavior behavior : result) {
             random -= behavior.getWeight();
             if (random <= 0) {
@@ -73,6 +85,10 @@ public class WeightedMultiBehavior extends AbstractBehavior {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
         if (currentBehavior == null) {
             return false;
@@ -81,6 +97,10 @@ public class WeightedMultiBehavior extends AbstractBehavior {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         if (currentBehavior == null) {
             return;
@@ -90,6 +110,10 @@ public class WeightedMultiBehavior extends AbstractBehavior {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStart(EntityIntelligent entity) {
         if (currentBehavior == null) {
             return;
@@ -99,6 +123,10 @@ public class WeightedMultiBehavior extends AbstractBehavior {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         if (currentBehavior == null) {
             return;
@@ -113,8 +141,8 @@ public class WeightedMultiBehavior extends AbstractBehavior {
      */
     protected Set<IBehavior> evaluateBehaviors(EntityIntelligent entity) {
         //存储评估成功的行为（未过滤优先级）
-        var evalSucceed = new HashSet<IBehavior>();
-        int highestPriority = Integer.MIN_VALUE;
+        var $4 = new HashSet<IBehavior>();
+        int $5 = Integer.MIN_VALUE;
         for (IBehavior behavior : behaviors) {
             if (behavior.evaluate(entity)) {
                 evalSucceed.add(behavior);
@@ -128,7 +156,7 @@ public class WeightedMultiBehavior extends AbstractBehavior {
             return evalSucceed;
         }
         //过滤掉低优先级的行为
-        var result = new HashSet<IBehavior>();
+        var $6 = new HashSet<IBehavior>();
         for (IBehavior entry : evalSucceed) {
             if (entry.getPriority() == highestPriority) {
                 result.add(entry);

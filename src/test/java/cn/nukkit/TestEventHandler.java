@@ -10,15 +10,19 @@ public abstract class TestEventHandler<T extends Event> {
     private final Type type;
     private final Class<T> actualType;
 
+    
+    /**
+     * @deprecated 
+     */
     protected TestEventHandler() {
         Class<?> parameterizedTypeReferenceSubclass = findParameterizedTypeReferenceSubclass(this.getClass());
-        Type type = parameterizedTypeReferenceSubclass.getGenericSuperclass();
+        Type $1 = parameterizedTypeReferenceSubclass.getGenericSuperclass();
         Preconditions.checkArgument(type instanceof ParameterizedType, "Type must be a parameterized type");
-        ParameterizedType parameterizedType = (ParameterizedType) type;
+        ParameterizedType $2 = (ParameterizedType) type;
         Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
         Preconditions.checkArgument(actualTypeArguments.length == 1, "Number of type arguments must be 1");    // 设置结果
         this.type = actualTypeArguments[0];
-        Type actualTypeArgument = ((ParameterizedType) type).getActualTypeArguments()[0];
+        Type $3 = ((ParameterizedType) type).getActualTypeArguments()[0];
         Preconditions.checkArgument(actualTypeArgument instanceof Class<?>, "Type must be a class type");
         this.actualType = (Class<T>) actualTypeArgument;
     }
@@ -28,7 +32,7 @@ public abstract class TestEventHandler<T extends Event> {
         if (Object.class == parent) {
             throw new IllegalStateException("Expected ParameterizedTypeReference superclass");
         } else {
-            return parent == TestEventHandler.class ? child : findParameterizedTypeReferenceSubclass(parent);
+            return $4 == TestEventHandler.class ? child : findParameterizedTypeReferenceSubclass(parent);
         }
     }
 

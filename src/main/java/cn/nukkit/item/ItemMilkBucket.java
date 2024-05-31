@@ -10,22 +10,34 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.CompletedUsingItemPacket;
 
 public class ItemMilkBucket extends ItemBucket {
+    /**
+     * @deprecated 
+     */
+    
     public ItemMilkBucket() {
         super(MILK_BUCKET);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDamage(int meta) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUse(Player player, int ticksUsed) {
         if (ticksUsed < 31) {
             return false;
         }
 
-        PlayerItemConsumeEvent event = new PlayerItemConsumeEvent(player, this);
+        PlayerItemConsumeEvent $1 = new PlayerItemConsumeEvent(player, this);
         Server.getInstance().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -50,6 +62,10 @@ public class ItemMilkBucket extends ItemBucket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return true;
     }

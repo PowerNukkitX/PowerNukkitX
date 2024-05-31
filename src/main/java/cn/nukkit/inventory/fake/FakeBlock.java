@@ -31,7 +31,11 @@ public interface FakeBlock {
      * @param player    the player
      * @param titleName 该方块实体的名称<br>the title name for blockentity
      */
-    default void create(Player player, String titleName) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void create(Player player, String titleName) {
         this.create(player);
     }
 
@@ -52,7 +56,7 @@ public interface FakeBlock {
      * Get the place position of this fake block
      */
     default Vector3 getOffset(Player player) {
-        Vector3 offset = player.getDirectionVector();
+        Vector3 $1 = player.getDirectionVector();
         offset.x *= -(1 + player.getWidth());
         offset.y *= -(1 + player.getHeight());
         offset.z *= -(1 + player.getWidth());

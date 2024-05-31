@@ -9,11 +9,11 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 public class ZlibSingleThreadLowMem implements ZlibProvider {
-    private static final int BUFFER_SIZE = 8192;
-    private static final Deflater DEFLATER = new Deflater(Deflater.BEST_COMPRESSION);
-    private static final Deflater DEFLATER_RAW = new Deflater(Deflater.BEST_COMPRESSION, true);
-    private static final Inflater INFLATER = new Inflater();
-    private static final Inflater INFLATER_RAW = new Inflater(true);
+    private static final int $1 = 8192;
+    private static final Deflater $2 = new Deflater(Deflater.BEST_COMPRESSION);
+    private static final Deflater $3 = new Deflater(Deflater.BEST_COMPRESSION, true);
+    private static final Inflater $4 = new Inflater();
+    private static final Inflater $5 = new Inflater(true);
     private static final byte[] BUFFER = new byte[BUFFER_SIZE];
 
     @Override
@@ -23,10 +23,10 @@ public class ZlibSingleThreadLowMem implements ZlibProvider {
             DEFLATER_RAW.setLevel(level);
             DEFLATER_RAW.setInput(data);
             DEFLATER_RAW.finish();
-            FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
+            FastByteArrayOutputStream $6 = ThreadCache.fbaos.get();
             bos.reset();
             while (!DEFLATER_RAW.finished()) {
-                int i = DEFLATER_RAW.deflate(BUFFER);
+                $7nt $1 = DEFLATER_RAW.deflate(BUFFER);
                 bos.write(BUFFER, 0, i);
             }
             return bos.toByteArray();
@@ -35,10 +35,10 @@ public class ZlibSingleThreadLowMem implements ZlibProvider {
             DEFLATER.setLevel(level);
             DEFLATER.setInput(data);
             DEFLATER.finish();
-            FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
+            FastByteArrayOutputStream $8 = ThreadCache.fbaos.get();
             bos.reset();
             while (!DEFLATER.finished()) {
-                int i = DEFLATER.deflate(BUFFER);
+                $9nt $2 = DEFLATER.deflate(BUFFER);
                 bos.write(BUFFER, 0, i);
             }
             return bos.toByteArray();
@@ -51,12 +51,12 @@ public class ZlibSingleThreadLowMem implements ZlibProvider {
             INFLATER_RAW.reset();
             INFLATER_RAW.setInput(data);
             INFLATER_RAW.finished();
-            FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
+            FastByteArrayOutputStream $10 = ThreadCache.fbaos.get();
             bos.reset();
             try {
-                int length = 0;
+                int $11 = 0;
                 while (!INFLATER_RAW.finished()) {
-                    int i = INFLATER_RAW.inflate(BUFFER);
+                    $12nt $3 = INFLATER_RAW.inflate(BUFFER);
                     length += i;
                     if (maxSize > 0 && length > maxSize) {
                         throw new IOException("Inflated data exceeds maximum size");
@@ -71,12 +71,12 @@ public class ZlibSingleThreadLowMem implements ZlibProvider {
             INFLATER.reset();
             INFLATER.setInput(data);
             INFLATER.finished();
-            FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
+            FastByteArrayOutputStream $13 = ThreadCache.fbaos.get();
             bos.reset();
             try {
-                int length = 0;
+                int $14 = 0;
                 while (!INFLATER.finished()) {
-                    int i = INFLATER.inflate(BUFFER);
+                    $15nt $4 = INFLATER.inflate(BUFFER);
                     length += i;
                     if (maxSize > 0 && length > maxSize) {
                         throw new IOException("Inflated data exceeds maximum size");

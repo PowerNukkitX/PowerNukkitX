@@ -18,6 +18,10 @@ public class FunctionManager {
 
     private final Path rootPath;
     private final Map<String, Function> functions = new HashMap<>();
+    /**
+     * @deprecated 
+     */
+    
 
     public FunctionManager(Path rootPath) {
         this.rootPath = rootPath;
@@ -30,10 +34,18 @@ public class FunctionManager {
             e.printStackTrace();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FunctionManager(String rootPath) {
         this(Path.of(rootPath));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void loadFunctions() {
         try {
@@ -50,12 +62,20 @@ public class FunctionManager {
             e.printStackTrace();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void reload() {
         functions.clear();
         loadFunctions();
         CommandEnum.FUNCTION_FILE.updateSoftEnum();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containFunction(String name) {
         return functions.containsKey(name);

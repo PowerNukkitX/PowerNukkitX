@@ -13,27 +13,43 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockRedstoneOre extends BlockOre {
-    public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_ORE);
+    public static final BlockProperties $1 = new BlockProperties(REDSTONE_ORE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockRedstoneOre() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockRedstoneOre(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_IRON;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Redstone Ore";
     }
@@ -41,9 +57,9 @@ public class BlockRedstoneOre extends BlockOre {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= getToolTier()) {
-            int count = new Random().nextInt(2) + 4;
+            int $2 = new Random().nextInt(2) + 4;
 
-            Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
+            Enchantment $3 = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
             if (fortune != null && fortune.getLevel() >= 1) {
                 count += new Random().nextInt(fortune.getLevel() + 1);
             }
@@ -57,6 +73,10 @@ public class BlockRedstoneOre extends BlockOre {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_TOUCH) { //type == Level.BLOCK_UPDATE_NORMAL ||
             this.getLevel().setBlock(this, getLitBlock(), true, true);
@@ -67,7 +87,11 @@ public class BlockRedstoneOre extends BlockOre {
     }
 
     @Override
-    protected @Nullable String getRawMaterial() {
+    protected @Nullable 
+    /**
+     * @deprecated 
+     */
+    String getRawMaterial() {
         return ItemID.REDSTONE;
     }
 
@@ -80,6 +104,10 @@ public class BlockRedstoneOre extends BlockOre {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getDropExp() {
         return ThreadLocalRandom.current().nextInt(1, 6);
     }

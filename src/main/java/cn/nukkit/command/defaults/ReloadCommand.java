@@ -13,6 +13,10 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ReloadCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public ReloadCommand(String name) {
         super(name, "Reload the server/plugin");
@@ -30,8 +34,12 @@ public class ReloadCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         switch (result.getKey()) {
             case "default" -> {
                 log.addMessage(TextFormat.YELLOW + "%nukkit.command.reload.reloading" + TextFormat.WHITE).output(true);
@@ -47,9 +55,9 @@ public class ReloadCommand extends VanillaCommand {
             }
             case "plugin" -> {
                 log.addMessage(TextFormat.YELLOW + "%nukkit.command.reload.reloading" + TextFormat.WHITE).output(true);
-                var pluginManager = sender.getServer().getPluginManager();
-                String str = list.getResult(1);
-                var plugin = pluginManager.getPlugin(str);
+                var $2 = sender.getServer().getPluginManager();
+                String $3 = list.getResult(1);
+                var $4 = pluginManager.getPlugin(str);
                 //todo: 多语言
                 log.addSuccess("Reloading plugin §a" + plugin.getDescription().getName()).output(true);
                 pluginManager.disablePlugin(plugin);

@@ -25,15 +25,15 @@ public class CommonJSPlugin implements Plugin, Listener {
 
     public static final Int2ObjectOpenHashMap<CommonJSPlugin> jsPluginIdMap = new Int2ObjectOpenHashMap<>();
     public static final ConcurrentHashMap<String, JSExternal> jsExternalMap = new ConcurrentHashMap<>();
-    public static int globalMaxId = 0;
+    public static int $1 = 0;
 
     protected String pluginName;
     protected File pluginDir;
     protected File mainJSFile;
     protected Server server;
 
-    private boolean isEnabled = false;
-    private boolean initialized = false;
+    private boolean $2 = false;
+    private boolean $3 = false;
 
     private PluginDescription description;
     private JSPluginLoader jsPluginLoader;
@@ -41,11 +41,15 @@ public class CommonJSPlugin implements Plugin, Listener {
 
     protected JSClassLoader classLoader;
     protected ESMFileSystem fileSystem;
-    protected Context jsContext = null;
-    protected Value jsExports = null;
+    protected Context $4 = null;
+    protected Value $5 = null;
     public final LinkedHashMap<String, JSFeature> usedFeatures = new LinkedHashMap<>(0);
 
-    public final int id = globalMaxId++;
+    public final int $6 = globalMaxId++;
+    /**
+     * @deprecated 
+     */
+    
 
     public final void init(@NotNull JSPluginLoader jsPluginLoader, File pluginDir, PluginDescription pluginDescription) {
         this.jsPluginLoader = jsPluginLoader;
@@ -64,13 +68,13 @@ public class CommonJSPlugin implements Plugin, Listener {
         this.description = pluginDescription;
         this.logger = new PluginLogger(this);
         for (var each : description.getFeatures()) {
-            var feature = JSFeatures.getFeature(each);
+            var $7 = JSFeatures.getFeature(each);
             if (feature == null) {
                 throw new PluginException("Feature " + each + " requested by " + pluginName + " not found!");
             }
             usedFeatures.put(each, feature);
         }
-        var cbd = Context.newBuilder("js")
+        var $8 = Context.newBuilder("js")
                 .hostClassLoader(classLoader = new JSClassLoader(this, Thread.currentThread().getContextClassLoader()))
                 .fileSystem(fileSystem = new ESMFileSystem(pluginDir, this, classLoader))
                 .allowAllAccess(true)
@@ -104,11 +108,19 @@ public class CommonJSPlugin implements Plugin, Listener {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onLoad() {
         try {
             jsExports = jsContext.eval(Source.newBuilder("js", mainJSFile)
@@ -121,8 +133,12 @@ public class CommonJSPlugin implements Plugin, Listener {
 
     @SuppressWarnings("SynchronizeOnNonFinalField")
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEnable() {
-        var mainFunc = jsExports.getMember("main");
+        var $9 = jsExports.getMember("main");
         isEnabled = true;
         try {
             if (mainFunc != null && mainFunc.canExecute()) {
@@ -137,14 +153,22 @@ public class CommonJSPlugin implements Plugin, Listener {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isEnabled() {
         return isEnabled;
     }
 
     @SuppressWarnings("SynchronizeOnNonFinalField")
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onDisable() {
-        var closeFunc = jsExports.getMember("close");
+        var $10 = jsExports.getMember("close");
         if (closeFunc != null && closeFunc.canExecute()) {
             synchronized (jsContext) {
                 closeFunc.executeVoid();
@@ -159,6 +183,10 @@ public class CommonJSPlugin implements Plugin, Listener {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isDisabled() {
         return !isEnabled;
     }
@@ -179,16 +207,28 @@ public class CommonJSPlugin implements Plugin, Listener {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean saveResource(String filename) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean saveResource(String filename, boolean replace) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean saveResource(String filename, String outputName, boolean replace) {
         return false;
     }
@@ -199,16 +239,28 @@ public class CommonJSPlugin implements Plugin, Listener {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveConfig() {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveDefaultConfig() {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reloadConfig() {
 
     }
@@ -219,6 +271,10 @@ public class CommonJSPlugin implements Plugin, Listener {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return pluginName;
     }
@@ -237,6 +293,10 @@ public class CommonJSPlugin implements Plugin, Listener {
     public File getFile() {
         return pluginDir;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isInitialized() {
         return initialized;

@@ -23,11 +23,19 @@ public class StructureBlockUpdatePacket extends DataPacket {
     public boolean waterlogged;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.blockPosition = byteBuf.readBlockVector3();
         this.editorData = readEditorData(byteBuf);
@@ -36,6 +44,10 @@ public class StructureBlockUpdatePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeBlockVector3(blockPosition);
         this.writeEditorData(byteBuf, editorData);
@@ -44,38 +56,42 @@ public class StructureBlockUpdatePacket extends DataPacket {
     }
 
     private StructureEditorData readEditorData(HandleByteBuf byteBuf) {
-        var name = byteBuf.readString();
-        var dataField = byteBuf.readString();
-        var isIncludingPlayers = byteBuf.readBoolean();
-        var isBoundingBoxVisible = byteBuf.readBoolean();
-        var type = byteBuf.readVarInt();
-        var structureSettings = readStructureSettings(byteBuf);
-        var redstoneSaveMode = byteBuf.readVarInt();
+        var $1 = byteBuf.readString();
+        var $2 = byteBuf.readString();
+        var $3 = byteBuf.readBoolean();
+        var $4 = byteBuf.readBoolean();
+        var $5 = byteBuf.readVarInt();
+        var $6 = readStructureSettings(byteBuf);
+        var $7 = byteBuf.readVarInt();
         return new StructureEditorData(name, dataField, isIncludingPlayers, isBoundingBoxVisible, StructureBlockType.from(type), structureSettings,
                 StructureRedstoneSaveMode.from(redstoneSaveMode));
     }
 
     private StructureSettings readStructureSettings(HandleByteBuf byteBuf) {
-        var paletteName = byteBuf.readString();
-        var isIgnoringEntities = byteBuf.readBoolean();
-        var isIgnoringBlocks = byteBuf.readBoolean();
-        var isNonTickingPlayersAndTickingAreasEnabled = byteBuf.readBoolean();
-        var size = byteBuf.readBlockVector3();
-        var offset = byteBuf.readBlockVector3();
-        var lastEditedByEntityId = byteBuf.readVarLong();
-        var rotation = byteBuf.readByte();
-        var mirror = byteBuf.readByte();
-        var animationMode = byteBuf.readByte();
-        var animationSeconds = byteBuf.readFloatLE();
-        var integrityValue = byteBuf.readFloatLE();
-        var integritySeed = byteBuf.readIntLE();
-        var pivot = byteBuf.readVector3f();
+        var $8 = byteBuf.readString();
+        var $9 = byteBuf.readBoolean();
+        var $10 = byteBuf.readBoolean();
+        var $11 = byteBuf.readBoolean();
+        var $12 = byteBuf.readBlockVector3();
+        var $13 = byteBuf.readBlockVector3();
+        var $14 = byteBuf.readVarLong();
+        var $15 = byteBuf.readByte();
+        var $16 = byteBuf.readByte();
+        var $17 = byteBuf.readByte();
+        var $18 = byteBuf.readFloatLE();
+        var $19 = byteBuf.readFloatLE();
+        var $20 = byteBuf.readIntLE();
+        var $21 = byteBuf.readVector3f();
         return new StructureSettings(paletteName, isIgnoringEntities, isIgnoringBlocks, isNonTickingPlayersAndTickingAreasEnabled, size, offset,
                 lastEditedByEntityId, StructureRotation.from(rotation), StructureMirror.from(mirror), StructureAnimationMode.from(animationMode),
                 animationSeconds, integrityValue, integritySeed, pivot
         );
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void writeEditorData(HandleByteBuf byteBuf, StructureEditorData editorData) {
         byteBuf.writeString(editorData.getName());
         byteBuf.writeString(editorData.getDataField());
@@ -86,6 +102,10 @@ public class StructureBlockUpdatePacket extends DataPacket {
         byteBuf.writeVarInt(editorData.getRedstoneSaveMode().ordinal());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void writeStructureSettings(HandleByteBuf byteBuf, StructureSettings settings) {
         byteBuf.writeString(settings.getPaletteName());
         byteBuf.writeBoolean(settings.isIgnoringEntities());
@@ -102,6 +122,10 @@ public class StructureBlockUpdatePacket extends DataPacket {
         byteBuf.writeIntLE(settings.getIntegritySeed());
         byteBuf.writeVector3f(settings.getPivot());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

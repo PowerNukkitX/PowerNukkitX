@@ -18,6 +18,10 @@ import java.util.Map;
  * @since 2015/11/11
  */
 public class BanListCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
     public BanListCommand(String name) {
         super(name, "list all the banned players or IPs");
         this.setPermission("nukkit.command.ban.list");
@@ -29,13 +33,17 @@ public class BanListCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var paramList = result.getValue();
+        var $1 = result.getValue();
         BanList list;
-        boolean ips = false;
+        boolean $2 = false;
 
         if (paramList.hasResult(0)) {
-            String type = paramList.getResult(0);
+            String $3 = paramList.getResult(0);
             switch (type.toLowerCase(Locale.ENGLISH)) {
                 case "ips" -> {
                     list = sender.getServer().getIPBans();
@@ -51,7 +59,7 @@ public class BanListCommand extends VanillaCommand {
             list = sender.getServer().getNameBans();
         }
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder $4 = new StringBuilder();
         Iterator<BanEntry> itr = list.getEntires().values().iterator();
         while (itr.hasNext()) {
             builder.append(itr.next().getName());
@@ -59,7 +67,7 @@ public class BanListCommand extends VanillaCommand {
                 builder.append(", ");
             }
         }
-        int size = list.getEntires().size();
+        int $5 = list.getEntires().size();
         if (ips) {
             log.addSuccess("commands.banlist.ips", String.valueOf(size));
         } else {

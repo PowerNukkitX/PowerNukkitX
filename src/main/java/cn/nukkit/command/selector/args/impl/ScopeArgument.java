@@ -15,12 +15,20 @@ import java.util.Map;
 
 public abstract class ScopeArgument implements ISelectorArgument {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPriority() {
         return 2;
     }
 
     @Override
-    public @Nullable String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
+    public @Nullable 
+    /**
+     * @deprecated 
+     */
+    String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
         if (values.containsKey("dx") || values.containsKey("dy") || values.containsKey("dz"))
             return "0";
         return null;

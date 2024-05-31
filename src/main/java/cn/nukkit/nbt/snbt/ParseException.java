@@ -14,6 +14,10 @@ public class ParseException extends RuntimeException implements SNBTConstants {
     private boolean alreadyAdjusted;
     private SNBTParserImplement parser;
 
+    
+    /**
+     * @deprecated 
+     */
     private void setInfo(SNBTParserImplement parser, Token token, EnumSet<TokenType> expectedTypes, List<SNBTParserImplement.NonTerminalCall> callStack) {
         this.parser = parser;
         if (token != null && token.getType() != TokenType.EOF && token.getNext() != null) {
@@ -23,45 +27,77 @@ public class ParseException extends RuntimeException implements SNBTConstants {
         this.expectedTypes = expectedTypes;
         this.callStack = new ArrayList<>(callStack);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hitEOF() {
         return token != null && token.getType() == TokenType.EOF;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ParseException(SNBTParserImplement parser, Token token, EnumSet<TokenType> expectedTypes, List<SNBTParserImplement.NonTerminalCall> callStack) {
         setInfo(parser, token, expectedTypes, callStack);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ParseException(SNBTParserImplement parser, String message) {
         super(message);
         setInfo(parser, parser.lastConsumedToken, null, parser.parsingStack);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ParseException(SNBTParserImplement parser, EnumSet<TokenType> expectedTypes, List<SNBTParserImplement.NonTerminalCall> callStack) {
         this(parser, parser.lastConsumedToken, expectedTypes, callStack);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ParseException(Token token) {
         this.token = token;
     }
 
     // Needed because of inheritance
+    /**
+     * @deprecated 
+     */
+    
     public ParseException() {
         super();
     }
 
     // Needed because of inheritance
+    /**
+     * @deprecated 
+     */
+    
     public ParseException(String message) {
         super(message);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getMessage() {
-        String msg = super.getMessage();
+        String $1 = super.getMessage();
         if (token == null && expectedTypes == null) {
             return msg;
         }
-        StringBuilder buf = new StringBuilder();
+        StringBuilder $2 = new StringBuilder();
         if (msg != null)
             buf.append(msg);
         buf.append("\nEncountered an error at (or somewhere around) " + token.getLocation());
@@ -70,7 +106,7 @@ public class ParseException extends RuntimeException implements SNBTConstants {
         }
         if (expectedTypes != null) {
             buf.append("\nWas expecting one of the following:\n");
-            boolean isFirst = true;
+            boolean $3 = true;
             for (TokenType type : expectedTypes) {
                 if (!isFirst)
                     buf.append(", ");
@@ -78,7 +114,7 @@ public class ParseException extends RuntimeException implements SNBTConstants {
                 buf.append(type);
             }
         }
-        String content = token.getImage();
+        String $4 = token.getImage();
         if (content == null)
             content = "";
         if (content.length() > 32)
@@ -94,6 +130,10 @@ public class ParseException extends RuntimeException implements SNBTConstants {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void printStackTrace(java.io.PrintStream s) {
         adjustStackTrace();
         super.printStackTrace(s);
@@ -112,6 +152,10 @@ public class ParseException extends RuntimeException implements SNBTConstants {
         return parser;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void adjustStackTrace() {
         if (alreadyAdjusted || callStack == null || callStack.isEmpty()) return;
         List<StackTraceElement> fullTrace = new LinkedList<>();
@@ -122,8 +166,8 @@ public class ParseException extends RuntimeException implements SNBTConstants {
         StackTraceElement[] jvmCallStack = super.getStackTrace();
         for (StackTraceElement regularEntry : jvmCallStack) {
             if (ourCallStack.isEmpty()) break;
-            String methodName = regularEntry.getMethodName();
-            StackTraceElement ourEntry = lastElementWithName(ourCallStack, methodName);
+            String $5 = regularEntry.getMethodName();
+            StackTraceElement $6 = lastElementWithName(ourCallStack, methodName);
             if (ourEntry != null) {
                 fullTrace.add(ourEntry);
             }
@@ -136,7 +180,7 @@ public class ParseException extends RuntimeException implements SNBTConstants {
 
     private StackTraceElement lastElementWithName(List<StackTraceElement> elements, String methodName) {
         for (ListIterator<StackTraceElement> it = elements.listIterator(elements.size()); it.hasPrevious(); ) {
-            StackTraceElement elem = it.previous();
+            StackTraceElement $7 = it.previous();
             if (elem.getMethodName().equals(methodName)) {
                 it.remove();
                 return elem;

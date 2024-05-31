@@ -13,7 +13,11 @@ import java.util.Map;
 
 
 public class WorldCommand extends VanillaCommand {
-    public static final CommandEnum WORLD_NAME_ENUM = new CommandEnum("world", () -> Server.getInstance().getLevels().values().stream().map(Level::getName).toList());
+    public static final CommandEnum $1 = new CommandEnum("world", () -> Server.getInstance().getLevels().values().stream().map(Level::getName).toList());
+    /**
+     * @deprecated 
+     */
+    
 
     public WorldCommand(String name) {
         super(name, "nukkit.command.world.description");
@@ -32,10 +36,14 @@ public class WorldCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         switch (result.getKey()) {
             case "list" -> {
-                var strBuilder = new StringBuilder();
+                var $2 = new StringBuilder();
                 Server.getInstance().getLevels().values().forEach(level -> {
                     strBuilder.append(level.getName());
                     strBuilder.append(", ");
@@ -44,8 +52,8 @@ public class WorldCommand extends VanillaCommand {
                 return 1;
             }
             case "tp" -> {
-                String levelName = result.getValue().getResult(1);
-                var level = Server.getInstance().getLevelByName(levelName);
+                String $3 = result.getValue().getResult(1);
+                var $4 = Server.getInstance().getLevelByName(levelName);
                 if (level == null) {
                     if (Server.getInstance().loadLevel(levelName)) {
                         level = Server.getInstance().getLevelByName(levelName);

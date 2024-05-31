@@ -9,9 +9,17 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class TreeMapCompoundTag extends CompoundTag {
+    /**
+     * @deprecated 
+     */
+    
     public TreeMapCompoundTag() {
         super(new TreeMap<>());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public TreeMapCompoundTag(Map<String, Tag> tags) {
         super(new TreeMap<>(tags));
@@ -33,7 +41,7 @@ public class TreeMapCompoundTag extends CompoundTag {
 
     @Override
     public TreeMapCompoundTag copy() {
-        var nbt = new TreeMapCompoundTag();
+        var $1 = new TreeMapCompoundTag();
         this.getTags().forEach((key, value) -> nbt.put(key, value.copy()));
         return nbt;
     }

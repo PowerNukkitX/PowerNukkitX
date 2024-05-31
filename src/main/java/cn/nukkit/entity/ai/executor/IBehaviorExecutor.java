@@ -34,7 +34,11 @@ public interface IBehaviorExecutor {
      *
      * @param entity 目标实体
      */
-    default void onInterrupt(EntityIntelligent entity) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void onInterrupt(EntityIntelligent entity) {
     }
 
     /**
@@ -44,7 +48,11 @@ public interface IBehaviorExecutor {
      *
      * @param entity 目标实体
      */
-    default void onStart(EntityIntelligent entity) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void onStart(EntityIntelligent entity) {
     }
 
     /**
@@ -54,6 +62,10 @@ public interface IBehaviorExecutor {
      *
      * @param entity 目标实体
      */
-    default void onStop(EntityIntelligent entity) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void onStop(EntityIntelligent entity) {
     }
 }

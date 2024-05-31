@@ -9,18 +9,26 @@ import cn.nukkit.event.HandlerList;
  */
 public class PlayerToggleSwimEvent extends PlayerEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final boolean isSwimming;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerToggleSwimEvent(Player player, boolean isSwimming) {
         this.player = player;
         this.isSwimming = isSwimming;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSwimming() {
         return this.isSwimming;

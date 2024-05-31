@@ -8,28 +8,48 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class BlockBuddingAmethyst extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(BUDDING_AMETHYST);
-    private static final NukkitRandom RANDOM = new NukkitRandom();
+    public static final BlockProperties $1 = new BlockProperties(BUDDING_AMETHYST);
+    private static final NukkitRandom $2 = new NukkitRandom();
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBuddingAmethyst() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBuddingAmethyst(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Budding Amethyst";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 1.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 1.5;
     }
@@ -40,11 +60,19 @@ public class BlockBuddingAmethyst extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean sticksToPiston() {
         return false;
     }
@@ -55,6 +83,10 @@ public class BlockBuddingAmethyst extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (RANDOM.nextInt(5) == 1) {
@@ -64,13 +96,17 @@ public class BlockBuddingAmethyst extends BlockSolid {
         }
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void tryGrow(int time) {
         if (time > 6) {
             return;
         }
-        final BlockFace face = BlockFace.fromIndex(RANDOM.nextInt(6));
-        final Block side = this.getSide(face);
+        final BlockFace $3 = BlockFace.fromIndex(RANDOM.nextInt(6));
+        final Block $4 = this.getSide(face);
         BlockAmethystBud tmp;
         if (side.canBeReplaced()) {
             tmp = new BlockSmallAmethystBud();

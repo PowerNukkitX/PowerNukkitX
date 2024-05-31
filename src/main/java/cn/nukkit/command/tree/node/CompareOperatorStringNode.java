@@ -14,6 +14,10 @@ public class CompareOperatorStringNode extends StringNode {
     private static final HashSet<String> COMPARE_OPERATOR = Sets.newHashSet("<", "<=", "=", ">=", ">");
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         if (COMPARE_OPERATOR.contains(arg)) this.value = arg;
         else this.error();

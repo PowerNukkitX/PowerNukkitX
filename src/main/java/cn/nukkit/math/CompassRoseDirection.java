@@ -59,6 +59,10 @@ public enum CompassRoseDirection {
      *
      * @return Amount of X-coordinates to modify
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getModX() {
         return modX;
     }
@@ -68,6 +72,10 @@ public enum CompassRoseDirection {
      *
      * @return Amount of Z-coordinates to modify
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getModZ() {
         return modZ;
     }
@@ -79,6 +87,10 @@ public enum CompassRoseDirection {
     public BlockFace getClosestBlockFace() {
         return closestBlockFace;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getIndex() {
         return index;
@@ -134,6 +146,10 @@ public enum CompassRoseDirection {
      * @return The yaw value that can be used by entities to look at this direction.
      * @since 1.4.0.0-PN
      */
+    /**
+     * @deprecated 
+     */
+    
     public float getYaw() {
         return yaw;
     }

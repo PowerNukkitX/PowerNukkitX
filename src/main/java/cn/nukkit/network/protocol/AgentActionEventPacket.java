@@ -21,11 +21,19 @@ public class AgentActionEventPacket extends DataPacket {
     public String responseJson;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.AGENT_ACTION_EVENT_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.requestId = byteBuf.readString();
         this.actionType = AgentActionType.values()[byteBuf.readByte()];
@@ -33,11 +41,19 @@ public class AgentActionEventPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeString(this.requestId);
         byteBuf.writeByte((byte) actionType.ordinal());
         byteBuf.writeString(responseJson);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

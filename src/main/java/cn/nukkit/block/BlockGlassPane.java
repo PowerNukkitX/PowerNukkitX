@@ -9,37 +9,61 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockGlassPane extends BlockThin {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(GLASS_PANE);
+    public static final BlockProperties $1 = new BlockProperties(GLASS_PANE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockGlassPane() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockGlassPane(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Glass Pane";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 1.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.3;
     }
@@ -50,6 +74,10 @@ public class BlockGlassPane extends BlockThin {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }

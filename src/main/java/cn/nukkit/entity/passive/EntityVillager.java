@@ -12,15 +12,23 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityVillager extends EntityCreature implements IEntityNPC {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return VILLAGER;
     }
-    public static final int PROFESSION_FARMER = 0;
-    public static final int PROFESSION_LIBRARIAN = 1;
-    public static final int PROFESSION_PRIEST = 2;
-    public static final int PROFESSION_BLACKSMITH = 3;
-    public static final int PROFESSION_BUTCHER = 4;
-    public static final int PROFESSION_GENERIC = 5;
+    public static final int $1 = 0;
+    public static final int $2 = 1;
+    public static final int $3 = 2;
+    public static final int $4 = 3;
+    public static final int $5 = 4;
+    public static final int $6 = 5;
+    /**
+     * @deprecated 
+     */
+    
     
 
     public EntityVillager(IChunk chunk, CompoundTag nbt) {
@@ -28,6 +36,10 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.3f;
@@ -36,6 +48,10 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.isBaby()) {
             return 0.95f;
@@ -44,11 +60,19 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Villager";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();
@@ -57,10 +81,18 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
             this.setProfession(PROFESSION_GENERIC);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getProfession() {
         return this.namedTag.getInt("Profession");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setProfession(int profession) {
         this.namedTag.putInt("Profession", profession);

@@ -10,10 +10,10 @@ import lombok.ToString;
 @AllArgsConstructor
 public class SetSpawnPositionPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.SET_SPAWN_POSITION_PACKET;
+    public static final int $1 = ProtocolInfo.SET_SPAWN_POSITION_PACKET;
 
-    public static final int TYPE_PLAYER_SPAWN = 0;
-    public static final int TYPE_WORLD_SPAWN = 1;
+    public static final int $2 = 0;
+    public static final int $3 = 1;
 
     public int spawnType;
     public int y;
@@ -21,14 +21,22 @@ public class SetSpawnPositionPacket extends DataPacket {
     public int x;
 
 
-    public int dimension = 0;
+    public int $4 = 0;
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeVarInt(this.spawnType);
@@ -38,9 +46,17 @@ public class SetSpawnPositionPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

@@ -45,16 +45,28 @@ public class CachedVersionStringComparator extends VersionStringComparator {
      * @param cacheSize The max size of the cache. When the size is reached, older entries are removed.
      * @since 0.1.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public CachedVersionStringComparator(final int cacheSize) {
         cache = new LinkedHashMap<String, Version>() {
             @Override
-            protected boolean removeEldestEntry(Map.Entry<String, Version> eldest) {
+            
+    /**
+     * @deprecated 
+     */
+    protected boolean removeEldestEntry(Map.Entry<String, Version> eldest) {
                 return size() > cacheSize;
             }
         };
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int compare(@Nonnull String o1, @Nonnull String o2) {
         return cache.computeIfAbsent(o1, Version::new).compareTo(cache.computeIfAbsent(o2, Version::new));
     }
@@ -63,6 +75,10 @@ public class CachedVersionStringComparator extends VersionStringComparator {
      * Remove all the cached objects.
      * @since 0.1.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public void clearCache() {
         cache.clear();
     }

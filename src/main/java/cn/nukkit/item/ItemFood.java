@@ -13,39 +13,75 @@ import cn.nukkit.network.protocol.CompletedUsingItemPacket;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class ItemFood extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemFood(String id) {
         super(id);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemFood(String id, Integer meta) {
         super(id, meta);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemFood(String id, Integer meta, int count) {
         super(id, meta, count);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemFood(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFoodRestore() {
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getSaturationRestore() {
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isRequiresHunger() {
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getEatingTicks() {
         return 31;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onClickAir(Player player, Vector3 directionVector) {
         if (player.getFoodData().isHungry() || !this.isRequiresHunger() || player.isCreative()) {
             return true;
@@ -55,12 +91,16 @@ public abstract class ItemFood extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUse(Player player, int ticksUsed) {
         if (ticksUsed < getEatingTicks()) {
             return false;
         }
 
-        PlayerItemConsumeEvent event = new PlayerItemConsumeEvent(player, this);
+        PlayerItemConsumeEvent $1 = new PlayerItemConsumeEvent(player, this);
         Server.getInstance().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -88,6 +128,10 @@ public abstract class ItemFood extends Item {
     /*
      * Used for additional behaviour in Food like: Chorus, Suspicious Stew and etc.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean onEaten(Player player) {
         return true;
     }

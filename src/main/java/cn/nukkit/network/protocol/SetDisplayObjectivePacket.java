@@ -22,16 +22,28 @@ public class SetDisplayObjectivePacket extends DataPacket {
     public SortOrder sortOrder;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.SET_DISPLAY_OBJECTIVE_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         //only server -> client
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeString(this.displaySlot.getSlotName());
@@ -40,6 +52,10 @@ public class SetDisplayObjectivePacket extends DataPacket {
         byteBuf.writeString(this.criteriaName);
         byteBuf.writeVarInt(this.sortOrder.ordinal());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

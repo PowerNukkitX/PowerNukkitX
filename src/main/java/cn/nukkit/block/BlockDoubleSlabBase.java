@@ -3,11 +3,19 @@ package cn.nukkit.block;
 import cn.nukkit.item.Item;
 
 public abstract class BlockDoubleSlabBase extends BlockSolid {
+    /**
+     * @deprecated 
+     */
+    
     public BlockDoubleSlabBase(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Double "+getSlabName()+" Slab";
     }
@@ -21,6 +29,10 @@ public abstract class BlockDoubleSlabBase extends BlockSolid {
         return Block.get(getSingleSlabId()).toItem();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean isCorrectTool(Item item) {
         return canHarvestWithHand() || canHarvest(item);
     }
@@ -28,7 +40,7 @@ public abstract class BlockDoubleSlabBase extends BlockSolid {
     @Override
     public Item[] getDrops(Item item) {
         if (isCorrectTool(item)) {
-            Item slab = toItem();
+            Item $1 = toItem();
             slab.setCount(2);
             return new Item[]{ slab };
         } else {

@@ -10,32 +10,48 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class BlockCrimsonFungus extends BlockFungus {
-    private final LegacyCrimsonTree feature = new LegacyCrimsonTree();
+    private final LegacyCrimsonTree $1 = new LegacyCrimsonTree();
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_FUNGUS);
+    public static final BlockProperties $2 = new BlockProperties(CRIMSON_FUNGUS);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCrimsonFungus() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCrimsonFungus(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Crimson Fungus";
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected boolean canGrowOn(Block support) {
         if (support.getId().equals(CRIMSON_NYLIUM)) {
-            for (int i = 1; i <= this.feature.getTreeHeight(); i++) {
+            for ($3nt $1 = 1; i <= this.feature.getTreeHeight(); i++) {
                 if (!this.up(i).isAir()) {
                     return false;
                 }
@@ -46,11 +62,15 @@ public class BlockCrimsonFungus extends BlockFungus {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean grow(@Nullable Player cause) {
-        NukkitRandom nukkitRandom = new NukkitRandom();
-        BlockManager blockManager = new BlockManager(this.getLevel());
+        NukkitRandom $4 = new NukkitRandom();
+        BlockManager $5 = new BlockManager(this.getLevel());
         this.feature.placeObject(blockManager, this.getFloorX(), this.getFloorY(), this.getFloorZ(), nukkitRandom);
-        StructureGrowEvent ev = new StructureGrowEvent(this, blockManager.getBlocks());
+        StructureGrowEvent $6 = new StructureGrowEvent(this, blockManager.getBlocks());
         this.level.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return false;

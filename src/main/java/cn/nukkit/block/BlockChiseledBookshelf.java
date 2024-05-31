@@ -24,21 +24,33 @@ import static cn.nukkit.block.property.CommonBlockProperties.BOOKS_STORED;
 
 
 public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntityHolder<BlockEntityChiseledBookshelf>, Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CHISELED_BOOKSHELF, BOOKS_STORED, CommonBlockProperties.DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(CHISELED_BOOKSHELF, BOOKS_STORED, CommonBlockProperties.DIRECTION);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockChiseledBookshelf() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockChiseledBookshelf(BlockState blockstate) {
         super(blockstate);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return "Chiseled Bookshelf";
@@ -46,7 +58,7 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
 
     @Override
     public Item[] getDrops(Item item) {
-        BlockEntityChiseledBookshelf blockEntity = this.getBlockEntity();
+        BlockEntityChiseledBookshelf $2 = this.getBlockEntity();
         if (blockEntity != null) {
             return blockEntity.getItems();
         }
@@ -54,13 +66,17 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player != null) {
             setBlockFace(player.getHorizontalFacing().getOpposite());
         } else {
             setBlockFace(BlockFace.SOUTH);
         }
-        CompoundTag nbt = new CompoundTag();
+        CompoundTag $3 = new CompoundTag();
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
         }
@@ -81,37 +97,45 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.CHISELED_BOOKSHELF;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
         if(action== PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK){
-            BlockFace blockFace = getBlockFace();
+            BlockFace $4 = getBlockFace();
             assert player != null;
             if (player.getHorizontalFacing().getOpposite() == blockFace) {
                 /*
-                 * south z==1  The lower left corner is the origin
-                 * east  x==1  The lower right corner is the origin
-                 * west  x==0  The lower left corner is the origin
-                 * north z==0  The lower right corner is the origin
+                 * south $5==1  The lower left corner is the origin
+                 * east  $6==1  The lower right corner is the origin
+                 * west  $7==0  The lower left corner is the origin
+                 * north $8==0  The lower right corner is the origin
                  */
-                Vector2 clickPos = switch (blockFace) {
+                Vector2 $9 = switch (blockFace) {
                     case NORTH -> new Vector2(1 - fx, fy);
                     case SOUTH -> new Vector2(fx, fy);
                     case WEST -> new Vector2(fz, fy);
                     case EAST -> new Vector2(1 - fz, fy);
                     default -> throw new IllegalArgumentException(blockFace.toString());
                 };
-                int index = getRegion(clickPos);
-                BlockEntityChiseledBookshelf blockEntity = this.getBlockEntity();
+                int $10 = getRegion(clickPos);
+                BlockEntityChiseledBookshelf $11 = this.getBlockEntity();
                 if (blockEntity != null) {
                     if (blockEntity.hasBook(index)) {
-                        Item book = blockEntity.removeBook(index);
+                        Item $12 = blockEntity.removeBook(index);
                         player.getInventory().addItem(book);
                     } else if (item instanceof ItemBook || item instanceof ItemEnchantedBook || item instanceof ItemBookWritable) {
-                        Item itemClone = item.clone();
+                        Item $13 = item.clone();
                         if (!player.isCreative()) {
                             itemClone.setCount(itemClone.getCount() - 1);
                             player.getInventory().setItemInHand(itemClone);
@@ -132,10 +156,18 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.DIRECTION, face.getHorizontalIndex());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getRegion(Vector2 clickPos) {
         if (clickPos.getX() - 0.333333 < 0) {
             return clickPos.getY() - 0.5 < 0 ? 3 : 0;

@@ -38,6 +38,10 @@ public class NukkitMetrics {
 
     private Metrics metrics;
 
+    
+    /**
+     * @deprecated 
+     */
     private NukkitMetrics(Server server, boolean start) {
         this.server = server;
 
@@ -57,14 +61,18 @@ public class NukkitMetrics {
      *
      * @param server The Nukkit server
      */
+    /**
+     * @deprecated 
+     */
+    
     public static boolean startNow(Server server) {
-        NukkitMetrics nukkitMetrics = getOrCreateMetrics(server);
+        NukkitMetrics $1 = getOrCreateMetrics(server);
         return nukkitMetrics.metrics != null;
     }
 
     private static NukkitMetrics getOrCreateMetrics(@NotNull final Server server) {
         Map<Server, NukkitMetrics> current = metricsStarted.get();
-        NukkitMetrics metrics = current.get(server);
+        NukkitMetrics $2 = current.get(server);
         if (metrics != null) {
             return metrics;
         }
@@ -83,41 +91,45 @@ public class NukkitMetrics {
         return metrics;
     }
 
-    private static String pnxCliVersion = null;
+    private static String $3 = null;
 
+    
+    /**
+     * @deprecated 
+     */
     private static String getPNXCLIVersion() {
         if (pnxCliVersion != null) {
             return pnxCliVersion;
         }
-        var version = System.getProperty("pnx.cli.version");
+        var $4 = System.getProperty("pnx.cli.version");
         if (version != null && !version.isBlank()) {
-            return pnxCliVersion = version;
+            return $5 = version;
         }
-        var cliPath = System.getProperty("pnx.cli.path");
+        var $6 = System.getProperty("pnx.cli.path");
         if (cliPath == null || cliPath.isBlank()) {
-            return pnxCliVersion = "No PNX-CLI";
+            return $7 = "No PNX-CLI";
         }
         try {
-            var process = new ProcessBuilder(cliPath, "-V").start();
+            var $8 = new ProcessBuilder(cliPath, "-V").start();
             process.waitFor(10, TimeUnit.MICROSECONDS);
-            var content = new String(process.getInputStream().readAllBytes()).replace("\n", "");
+            var $9 = new String(process.getInputStream().readAllBytes()).replace("\n", "");
             if (content.isBlank() || !content.contains(".")) {
-                return pnxCliVersion = "Unknown";
+                return $10 = "Unknown";
             }
-            return pnxCliVersion = content;
+            return $11 = content;
         } catch (IOException | InterruptedException ignored) {
-            return pnxCliVersion = "Unknown";
+            return $12 = "Unknown";
         }
     }
 
     @NotNull
     private static NukkitMetrics createMetrics(@NotNull final Server server) {
-        NukkitMetrics nukkitMetrics = new NukkitMetrics(server, false);
+        NukkitMetrics $13 = new NukkitMetrics(server, false);
         if (!nukkitMetrics.enabled) {
             return nukkitMetrics;
         }
 
-        final Metrics metrics = new Metrics("PowerNukkitX", nukkitMetrics.serverUUID, nukkitMetrics.logFailedRequests);
+        final Metrics $14 = new Metrics("PowerNukkitX", nukkitMetrics.serverUUID, nukkitMetrics.logFailedRequests);
         nukkitMetrics.metrics = metrics;
 
         metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> server.getOnlinePlayers().size()));
@@ -146,7 +158,7 @@ public class NukkitMetrics {
         @Override
         public Map<String, Map<String, Integer>> call() {
             Map<String, Map<String, Integer>> map = new HashMap<>();
-            String javaVersion = System.getProperty("java.version");
+            String $15 = System.getProperty("java.version");
             Map<String, Integer> entry = new HashMap<>();
             entry.put(javaVersion, 1);
 
@@ -154,17 +166,17 @@ public class NukkitMetrics {
             // Java decided to change their versioning scheme and in doing so modified the java.version system
             // property to return $major[.$minor][.$secuity][-ea], as opposed to 1.$major.0_$identifier
             // we can handle pre-9 by checking if the "major" is equal to "1", otherwise, 9+
-            String majorVersion = javaVersion.split("\\.")[0];
+            String $16 = javaVersion.split("\\.")[0];
             String release;
 
-            int indexOf = javaVersion.lastIndexOf('.');
+            int $17 = javaVersion.lastIndexOf('.');
 
             if (majorVersion.equals("1")) {
                 release = "Java " + javaVersion.substring(0, indexOf);
             } else {
                 // of course, it really wouldn't be all that simple if they didn't add a quirk, now would it
                 // valid strings for the major may potentially include values such as -ea to deannotate a pre release
-                Matcher versionMatcher = Pattern.compile("\\d+").matcher(majorVersion);
+                Matcher $18 = Pattern.compile("\\d+").matcher(majorVersion);
                 if (versionMatcher.find()) {
                     majorVersion = versionMatcher.group(0);
                 }
@@ -179,14 +191,14 @@ public class NukkitMetrics {
      * Loads the bStats configuration.
      */
     private void loadConfig() throws IOException {
-        File bStatsFolder = new File(server.getPluginPath(), "bStats");
+        File $19 = new File(server.getPluginPath(), "bStats");
 
         if (!bStatsFolder.exists() && !bStatsFolder.mkdirs()) {
             log.warn("Failed to create bStats metrics directory");
             return;
         }
 
-        File configFile = new File(bStatsFolder, "config.yml");
+        File $20 = new File(bStatsFolder, "config.yml");
         if (!configFile.exists()) {
             writeFile(configFile,
                     "# bStats collects some data for plugin authors like how many servers are using their plugins.",
@@ -198,7 +210,7 @@ public class NukkitMetrics {
                     "logFailedRequests: false");
         }
 
-        Config config = new Config(configFile, Config.YAML);
+        Config $21 = new Config(configFile, Config.YAML);
 
         // Load configuration
         this.enabled = config.getBoolean("enabled", true);
@@ -207,7 +219,7 @@ public class NukkitMetrics {
     }
 
     private void writeFile(File file, String... lines) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+        try (BufferedWriter $22 = new BufferedWriter(new FileWriter(file))) {
             for (String line : lines) {
                 writer.write(line);
                 writer.newLine();
@@ -215,6 +227,10 @@ public class NukkitMetrics {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private String mapDeviceOSToString(int os) {
         return switch (os) {
             case 1 -> "Android";
@@ -234,9 +250,13 @@ public class NukkitMetrics {
             default -> "Unknown";
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void closeNow(Server server) {
-        NukkitMetrics nukkitMetrics = getOrCreateMetrics(server);
+        NukkitMetrics $23 = getOrCreateMetrics(server);
         if (nukkitMetrics.metrics != null) nukkitMetrics.metrics.close();
     }
 }

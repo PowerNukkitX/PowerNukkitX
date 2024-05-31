@@ -29,45 +29,73 @@ import static cn.nukkit.math.VectorMath.calculateFace;
 
 @Slf4j
 public abstract class BlockWallBase extends BlockTransparent implements BlockConnectable {
-    private static final double MIN_POST_BB = 5.0 / 16;
-    private static final double MAX_POST_BB = 11.0 / 16;
+    private static final double $1 = 5.0 / 16;
+    private static final double $2 = 11.0 / 16;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockWallBase(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 30;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean shouldBeTall(Block above, BlockFace face) {
         return switch (above.getId()) {
             case AIR, SKULL -> false;
 
             // If the bell is standing and follow the path, make it tall
             case BELL -> {
-                BlockBell bell = (BlockBell) above;
+                BlockBell $3 = (BlockBell) above;
                 yield bell.getAttachment() == Attachment.STANDING
                         && bell.getBlockFace().getAxis() != face.getAxis();
             }
@@ -84,8 +112,12 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         };
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean shouldBeTallBasedOnBoundingBox(Block above, BlockFace face) {
-        AxisAlignedBB boundingBox = above.getBoundingBox();
+        AxisAlignedBB $4 = above.getBoundingBox();
         if (boundingBox == null) {
             return false;
         }
@@ -93,7 +125,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         if (boundingBox.getMinY() > 0) {
             return false;
         }
-        int offset = face.getXOffset();
+        int $5 = face.getXOffset();
         if (offset < 0) {
             return boundingBox.getMinX() < MIN_POST_BB
                     && boundingBox.getMinZ() < MIN_POST_BB && MAX_POST_BB < boundingBox.getMaxZ();
@@ -112,16 +144,20 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean autoConfigureState() {
-        final short previousMeta = blockstate.specialValue();
+        final short $6 = blockstate.specialValue();
 
         setWallPost(true);
 
-        Block above = up(1, 0);
+        Block $7 = up(1, 0);
 
         for (BlockFace blockFace : BlockFace.Plane.HORIZONTAL) {
-            Block side = getSideAtLayer(0, blockFace);
+            Block $8 = getSideAtLayer(0, blockFace);
             if (canConnect(side)) {
                 try {
                     connect(blockFace, above, false);
@@ -140,6 +176,10 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (autoConfigureState()) {
@@ -151,18 +191,34 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         autoConfigureState();
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isWallPost() {
         return getPropertyValue(WALL_POST_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setWallPost(boolean wallPost) {
         setPropertyValue(WALL_POST_BIT, wallPost);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void clearConnections() {
         setPropertyValue(WALL_CONNECTION_TYPE_EAST, WallConnectionType.NONE);
@@ -174,7 +230,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     public Map<BlockFace, WallConnectionType> getWallConnections() {
         EnumMap<BlockFace, WallConnectionType> connections = new EnumMap<>(BlockFace.class);
         for (BlockFace blockFace : BlockFace.Plane.HORIZONTAL) {
-            WallConnectionType connectionType = getConnectionType(blockFace);
+            WallConnectionType $9 = getConnectionType(blockFace);
             if (connectionType != WallConnectionType.NONE) {
                 connections.put(blockFace, connectionType);
             }
@@ -191,6 +247,10 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
             default -> WallConnectionType.NONE;
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setConnection(BlockFace blockFace, WallConnectionType type) {
         return switch (blockFace) {
@@ -217,9 +277,17 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     /**
      * @return true if it should be a post
      */
+    /**
+     * @deprecated 
+     */
+    
     public void autoUpdatePostFlag() {
         setWallPost(recheckPostConditions(up(1, 0)));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasConnections() {
         return getPropertyValue(WALL_CONNECTION_TYPE_EAST) != WallConnectionType.NONE
@@ -228,6 +296,10 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
                 || getPropertyValue(WALL_CONNECTION_TYPE_SOUTH) != WallConnectionType.NONE;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean recheckPostConditions(Block above) {
         // If nothing is connected, it should be a post
         if (!hasConnections()) {
@@ -247,7 +319,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
             return true;
         }
 
-        BlockFace.Axis axis = entryA.getKey().getAxis();
+        BlockFace.Axis $10 = entryA.getKey().getAxis();
 
         switch (above.getId()) {
             // These special blocks forces walls to become a post
@@ -264,7 +336,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
 
             // If the bell is standing and don't follow the path, make it a post
             case BELL -> {
-                BlockBell bell = (BlockBell) above;
+                BlockBell $11 = (BlockBell) above;
                 if (bell.getAttachment() == Attachment.STANDING
                         && bell.getBlockFace().getAxis() == axis) {
                     return true;
@@ -302,7 +374,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
                 } else if (above instanceof BlockConnectable) {
                     // If the connectable block above don't share 2 equal connections, then this should be a post
 
-                    int shared = 0;
+                    int $12 = 0;
                     for (BlockFace connection : ((BlockConnectable) above).getConnections()) {
                         if (connections.containsKey(connection) && ++shared == 2) {
                             break;
@@ -320,6 +392,10 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         // Sign posts always makes the wall become a post
         return above instanceof BlockStandingSign;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSameHeightStraight() {
         Map<BlockFace, WallConnectionType> connections = getWallConnections();
@@ -332,22 +408,34 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         Map.Entry<BlockFace, WallConnectionType> b = iterator.next();
         return a.getValue() == b.getValue() && a.getKey().getOpposite() == b.getKey();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean connect(BlockFace blockFace) {
         return connect(blockFace, true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean connect(BlockFace blockFace, boolean recheckPost) {
         if (blockFace.getHorizontalIndex() < 0) {
             return false;
         }
 
-        Block above = getSideAtLayer(0, BlockFace.UP);
+        Block $13 = getSideAtLayer(0, BlockFace.UP);
         return connect(blockFace, above, recheckPost);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean connect(BlockFace blockFace, Block above, boolean recheckPost) {
-        WallConnectionType type = shouldBeTall(above, blockFace) ? WallConnectionType.TALL : WallConnectionType.SHORT;
+        WallConnectionType $14 = shouldBeTall(above, blockFace) ? WallConnectionType.TALL : WallConnectionType.SHORT;
         if (setConnection(blockFace, type)) {
             if (recheckPost) {
                 recheckPostConditions(above);
@@ -356,6 +444,10 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean disconnect(BlockFace blockFace) {
         if (blockFace.getHorizontalIndex() < 0) {
@@ -372,15 +464,15 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
 
-        boolean north = this.canConnect(this.getSide(BlockFace.NORTH));
-        boolean south = this.canConnect(this.getSide(BlockFace.SOUTH));
-        boolean west = this.canConnect(this.getSide(BlockFace.WEST));
-        boolean east = this.canConnect(this.getSide(BlockFace.EAST));
+        boolean $15 = this.canConnect(this.getSide(BlockFace.NORTH));
+        boolean $16 = this.canConnect(this.getSide(BlockFace.SOUTH));
+        boolean $17 = this.canConnect(this.getSide(BlockFace.WEST));
+        boolean $18 = this.canConnect(this.getSide(BlockFace.EAST));
 
-        double n = north ? 0 : 0.25;
-        double s = south ? 1 : 0.75;
-        double w = west ? 0 : 0.25;
-        double e = east ? 1 : 0.75;
+        double $19 = north ? 0 : 0.25;
+        double $20 = south ? 1 : 0.75;
+        double $21 = west ? 0 : 0.25;
+        doubl$22 $1 = east ? 1 : 0.75;
 
         if (north && south && !west && !east) {
             w = 0.3125;
@@ -401,6 +493,10 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canConnect(Block block) {
         switch (block.getId()) {
             case GLASS_PANE, IRON_BARS, GLASS -> {
@@ -425,16 +521,28 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isConnected(BlockFace face) {
         return getConnectionType(face) != WallConnectionType.NONE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }

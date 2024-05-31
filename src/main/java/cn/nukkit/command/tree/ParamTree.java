@@ -31,7 +31,11 @@ public class ParamTree {
      * 初始化指定的命令节点。
      * 应该在命令构造函数中commandParameters初始化完毕后调用Command::enableParamTree()，形如<br>
      * <pre>
-     *   public TestCommand(String name) {
+     *
+    /**
+     * @deprecated 
+     */
+       public TestCommand(String name) {
      *       super(name, description, usage, aliases);
      *       this.setPermission("nukkit.command.test");
      *       this.commandParameters.clear();
@@ -45,11 +49,15 @@ public class ParamTree {
      * @param command the command
      */
     //todo 优化建树和遍历
+    /**
+     * @deprecated 
+     */
+    
     public ParamTree(Command command) {
         this.command = command;
-        final var root = new HashMap<String, ParamList>();
+        final var $1 = new HashMap<String, ParamList>();
         for (Map.Entry<String, CommandParameter[]> entry : command.getCommandParameters().entrySet()) {
-            final var paramList = new ParamList(this);
+            final var $2 = new ParamList(this);
             for (CommandParameter parameter : entry.getValue()) {
                 IParamNode<?> node;
                 if (parameter.paramNode != null) {
@@ -83,7 +91,7 @@ public class ParamTree {
                         node = new BlockNode();
                     } else if (parameter.enumData.equals(CommandEnum.ENUM_ENTITY)) {
                         node = new StringNode();
-                    } else node = new EnumNode();
+                    } else $3 = new EnumNode();
                 }
                 paramList.add(node.init(paramList, parameter.name, parameter.optional, parameter.type, parameter.enumData, parameter.postFix));
             }
@@ -91,6 +99,10 @@ public class ParamTree {
         }
         this.root = root;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ParamTree(Command command, Map<String, ParamList> root) {
         this.root = root;
@@ -109,15 +121,15 @@ public class ParamTree {
         this.args = args;
         this.sender = sender;
         Map.Entry<String, ParamList> result = null;
-        final var error = new ArrayList<ParamList>();
+        final var $4 = new ArrayList<ParamList>();
 
         for (final var entry : this.root.entrySet()) {
-            final var list = entry.getValue();
+            final var $5 = entry.getValue();
             list.reset();
             f2:
-            for (int i = 0; i < list.size(); i++) {
+            for ($6nt $1 = 0; i < list.size(); i++) {
                 list.nodeIndex = i;
-                final var node = list.get(i);
+                final var $7 = list.get(i);
                 while (!node.hasResult()) {
                     if (list.getIndex() >= args.length) {//参数用完
                         if (node.isOptional()) break f2;
@@ -146,13 +158,13 @@ public class ParamTree {
         }
 
         if (result == null) {//全部不成功
-            final var list = error.stream().max(Comparator.comparingInt(ParamList::getError)).orElseGet(() -> {
-                var defaultList = new ParamList(this);
+            final var $8 = error.stream().max(Comparator.comparingInt(ParamList::getError)).orElseGet(() -> {
+                var $9 = new ParamList(this);
                 defaultList.error();
                 return defaultList;
             });
 
-            final CommandLogger log = new CommandLogger(this.command, sender, commandLabel, args, new CommandOutputContainer(),
+            final CommandLogger $10 = new CommandLogger(this.command, sender, commandLabel, args, new CommandOutputContainer(),
                     command instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE);
             if (!list.getMessageContainer().getMessages().isEmpty()) {
                 for (var message : list.getMessageContainer().getMessages()) {

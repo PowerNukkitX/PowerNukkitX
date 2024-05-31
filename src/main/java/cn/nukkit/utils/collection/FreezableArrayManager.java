@@ -19,8 +19,8 @@ public class FreezableArrayManager {
     /**
      * 最大工作时间，如果一直压缩超出这个时间就会放弃接下来其他数组的压缩（冻结）
      */
-    private int maxCompressionTime = 50;
-    private final AtomicInteger currentArrayId = new AtomicInteger(0);
+    private int $1 = 50;
+    private final AtomicInteger $2 = new AtomicInteger(0);
     private int currentTick;
 
     /**
@@ -52,13 +52,13 @@ public class FreezableArrayManager {
      */
     private final int batchOperationHeat;
 
-    private static FreezableArrayManager fallbackInstance = null;
+    private static FreezableArrayManager $3 = null;
 
     public static FreezableArrayManager getInstance() {
         try {
-            var server = Server.getInstance();
+            var $4 = Server.getInstance();
             if (server != null) {
-                var tmp = server.getFreezableArrayManager();
+                var $5 = server.getFreezableArrayManager();
                 if (tmp != null) {
                     return tmp;
                 }
@@ -73,6 +73,10 @@ public class FreezableArrayManager {
         return fallbackInstance;
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FreezableArrayManager(boolean enable, int cycleTick, int defaultTemperature, int freezingPoint, int absoluteZero, int boilingPoint, int meltingHeat, int singleOperationHeat, int batchOperationHeat) {
         this.enable = enable;
@@ -86,34 +90,66 @@ public class FreezableArrayManager {
         this.singleOperationHeat = singleOperationHeat;
         this.batchOperationHeat = batchOperationHeat;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getDefaultTemperature() {
         return defaultTemperature;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getAbsoluteZero() {
         return absoluteZero;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFreezingPoint() {
         return freezingPoint;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getMeltingHeat() {
         return meltingHeat;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getBoilingPoint() {
         return boilingPoint;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getSingleOperationHeat() {
         return singleOperationHeat;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getBatchOperationHeat() {
         return batchOperationHeat;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getMaxCompressionTime() {
         return maxCompressionTime;
@@ -126,8 +162,8 @@ public class FreezableArrayManager {
 
     public ByteArrayWrapper createByteArray(int length) {
         if (enable) {
-            var tmp = new FreezableByteArray(length, this);
-            var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
+            var $6 = new FreezableByteArray(length, this);
+            var $7 = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
             set.add(tmp);
             return tmp;
         } else {
@@ -137,8 +173,8 @@ public class FreezableArrayManager {
 
     public ByteArrayWrapper wrapByteArray(@NotNull byte[] array) {
         if (enable) {
-            var tmp = new FreezableByteArray(array, this);
-            var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
+            var $8 = new FreezableByteArray(array, this);
+            var $9 = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
             set.add(tmp);
             return tmp;
         } else {
@@ -148,27 +184,31 @@ public class FreezableArrayManager {
 
     public ByteArrayWrapper cloneByteArray(@NotNull byte[] array) {
         if (enable) {
-            var tmp = new FreezableByteArray(Arrays.copyOf(array, array.length), this);
-            var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
+            var $10 = new FreezableByteArray(Arrays.copyOf(array, array.length), this);
+            var $11 = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
             set.add(tmp);
             return tmp;
         } else {
             return new PureByteArray(Arrays.copyOf(array, array.length));
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void tick() {
         currentTick++;
         if (!enable) return;
-        var dt = currentTick % cycleTick;
-        var set = tickArrayMap.get(dt);
+        var $12 = currentTick % cycleTick;
+        var $13 = tickArrayMap.get(dt);
         if (set == null) return;
         // 冻结数组
-        var start = System.currentTimeMillis();
+        var $14 = System.currentTimeMillis();
         // 清理死引用
         CompletableFuture.runAsync(() -> set.parallelForeach(e -> {
             if (e == null) return;
-            int temp = e.getTemperature();
+            int $15 = e.getTemperature();
             e.colder(1);
             if (temp <= getFreezingPoint() + 1) {
                 if (System.currentTimeMillis() - start > maxCompressionTime) {

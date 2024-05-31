@@ -32,21 +32,21 @@ import java.util.regex.Pattern;
 @Slf4j
 public class Config {
 
-    public static final int DETECT = -1; //Detect by file extension
-    public static final int PROPERTIES = 0; // .properties
-    public static final int CNF = Config.PROPERTIES; // .cnf
-    public static final int JSON = 1; // .js, .json
-    public static final int YAML = 2; // .yml, .yaml
-    //public static final int EXPORT = 3; // .export, .xport
-    //public static final int SERIALIZED = 4; // .sl
-    public static final int ENUM = 5; // .txt, .list, .enum
-    public static final int ENUMERATION = Config.ENUM;
+    public static final int $1 = -1; //Detect by file extension
+    public static final int $2 = 0; // .properties
+    public static final int $3 = Config.PROPERTIES; // .cnf
+    public static final int $4 = 1; // .js, .json
+    public static final int $5 = 2; // .yml, .yaml
+    //public static final int $6 = 3; // .export, .xport
+    //public static final int $7 = 4; // .sl
+    public static final int $8 = 5; // .txt, .list, .enum
+    public static final int $9 = Config.ENUM;
 
     //private LinkedHashMap<String, Object> config = new LinkedHashMap<>();
-    private ConfigSection config = new ConfigSection();
+    private ConfigSection $10 = new ConfigSection();
     private File file;
-    private boolean correct = false;
-    private int type = Config.DETECT;
+    private boolean $11 = false;
+    private int $12 = Config.DETECT;
 
     public static final Map<String, Integer> format = new TreeMap<>();
 
@@ -71,6 +71,10 @@ public class Config {
      *
      * @param type - Config type
      */
+    /**
+     * @deprecated 
+     */
+    
     public Config(int type) {
         this.type = type;
         this.correct = true;
@@ -80,33 +84,65 @@ public class Config {
     /**
      * Constructor for Config (YAML) instance with undefined file object
      */
+    /**
+     * @deprecated 
+     */
+    
     public Config() {
         this(Config.YAML);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Config(String file) {
         this(file, Config.DETECT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Config(File file) {
         this(file.toString(), Config.DETECT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Config(String file, int type) {
         this(file, type, new ConfigSection());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Config(File file, int type) {
         this(file.toString(), type, new ConfigSection());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Config(String file, int type, ConfigSection defaultMap) {
         this.load(file, type, defaultMap);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Config(File file, int type, ConfigSection defaultMap) {
         this.load(file.toString(), type, defaultMap);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void reload() {
         this.config.clear();
@@ -116,14 +152,26 @@ public class Config {
         this.load(this.file.toString(), this.type);
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean load(String file) {
         return this.load(file, Config.DETECT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean load(String file, int type) {
         return this.load(file, type, new ConfigSection());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean load(String file, int type, ConfigSection defaultMap) {
         this.correct = true;
@@ -140,7 +188,7 @@ public class Config {
             this.save();
         } else {
             if (this.type == Config.DETECT) {
-                String extension = "";
+                String $13 = "";
                 if (this.file.getName().lastIndexOf(".") != -1 && this.file.getName().lastIndexOf(".") != 0) {
                     extension = this.file.getName().substring(this.file.getName().lastIndexOf(".") + 1);
                 }
@@ -151,7 +199,7 @@ public class Config {
                 }
             }
             if (this.correct) {
-                String content = "";
+                String $14 = "";
                 try {
                     content = Utils.readFile(this.file);
                 } catch (IOException e) {
@@ -168,6 +216,10 @@ public class Config {
         }
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean load(InputStream inputStream) {
         if (inputStream == null) return false;
@@ -188,6 +240,10 @@ public class Config {
         }
         return correct;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean loadAsJson(@Nullable InputStream inputStream, @NotNull Gson gson) {
         if (inputStream == null) return false;
@@ -203,10 +259,18 @@ public class Config {
         }
         return correct;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean check() {
         return this.correct;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isCorrect() {
         return correct;
@@ -219,24 +283,44 @@ public class Config {
      * @param async
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean save(File file, boolean async) {
         this.file = file;
         return save(async);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean save(File file) {
         this.file = file;
         return save();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean saveAsJson(@NotNull File file, boolean async, @NotNull Gson gson) {
         this.file = file;
         return saveAsJson(async, gson);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean save() {
         return this.save(false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean saveAsJson(boolean async, @NotNull Gson gson) {
         if (!this.correct) {
@@ -245,11 +329,15 @@ public class Config {
         save0(async, new StringBuilder(gson.toJson(this.config)).append('\n'));
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean save(Boolean async) {
         if (this.file == null) throw new IllegalStateException("Failed to save Config. File object is undefined.");
         if (this.correct) {
-            StringBuilder content = new StringBuilder();
+            StringBuilder $15 = new StringBuilder();
             switch (this.type) {
                 case Config.PROPERTIES:
                     content = new StringBuilder(this.writeProperties());
@@ -258,9 +346,9 @@ public class Config {
                     content = new StringBuilder(new GsonBuilder().setPrettyPrinting().create().toJson(this.config));
                     break;
                 case Config.YAML:
-                    DumperOptions dumperOptions = new DumperOptions();
+                    DumperOptions $16 = new DumperOptions();
                     dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-                    Yaml yaml = new Yaml(dumperOptions);
+                    Yaml $17 = new Yaml(dumperOptions);
                     content = new StringBuilder(yaml.dump(this.config));
                     break;
                 case Config.ENUM:
@@ -277,6 +365,10 @@ public class Config {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void save0(boolean async, StringBuilder content) {
         if (async) {
             Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new FileWriteTask(this.file, content.toString()));
@@ -288,6 +380,10 @@ public class Config {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void set(final String key, Object value) {
         this.config.set(key, value);
@@ -304,6 +400,10 @@ public class Config {
     public ConfigSection getSection(String key) {
         return this.correct ? this.config.getSection(key) : new ConfigSection();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSection(String key) {
         return config.isSection(key);
@@ -316,62 +416,122 @@ public class Config {
     public ConfigSection getSections() {
         return this.correct ? this.config.getSections() : new ConfigSection();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getInt(String key) {
         return this.getInt(key, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getInt(String key, int defaultValue) {
         return this.correct ? this.config.getInt(key, defaultValue) : defaultValue;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isInt(String key) {
         return config.isInt(key);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long getLong(String key) {
         return this.getLong(key, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long getLong(String key, long defaultValue) {
         return this.correct ? this.config.getLong(key, defaultValue) : defaultValue;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isLong(String key) {
         return config.isLong(key);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getDouble(String key) {
         return this.getDouble(key, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getDouble(String key, double defaultValue) {
         return this.correct ? this.config.getDouble(key, defaultValue) : defaultValue;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isDouble(String key) {
         return config.isDouble(key);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getString(String key) {
         return this.getString(key, "");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getString(String key, String defaultValue) {
         return this.correct ? this.config.getString(key, defaultValue) : defaultValue;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isString(String key) {
         return config.isString(key);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getBoolean(String key) {
         return this.getBoolean(key, false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getBoolean(String key, boolean defaultValue) {
         return this.correct ? this.config.getBoolean(key, defaultValue) : defaultValue;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isBoolean(String key) {
         return config.isBoolean(key);
@@ -384,6 +544,10 @@ public class Config {
     public List<?> getList(String key, List<?> defaultList) {
         return this.correct ? this.config.getList(key, defaultList) : defaultList;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isList(String key) {
         return config.isList(key);
@@ -428,22 +592,42 @@ public class Config {
     public List<Map<?, ?>> getMapList(String key) {
         return config.getMapList(key);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAll(LinkedHashMap<String, Object> map) {
         this.config = new ConfigSection(map);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAll(ConfigSection section) {
         this.config = section;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean exists(String key) {
         return config.exists(key);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean exists(String key, boolean ignoreCase) {
         return config.exists(key, ignoreCase);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void remove(String key) {
         config.remove(key);
@@ -461,13 +645,21 @@ public class Config {
     public ConfigSection getRootSection() {
         return config;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int setDefault(LinkedHashMap<String, Object> map) {
         return setDefault(new ConfigSection(map));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int setDefault(ConfigSection map) {
-        int size = this.config.size();
+        int $18 = this.config.size();
         this.config = this.fillDefaults(map, this.config);
         return this.config.size() - size;
     }
@@ -481,6 +673,10 @@ public class Config {
         return data;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void parseList(String content) {
         content = content.replace("\r\n", "\n");
         for (String v : content.split("\n")) {
@@ -491,12 +687,16 @@ public class Config {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private String writeProperties() {
-        StringBuilder content = new StringBuilder("#Properties Config file\r\n#" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()) + "\r\n");
+        StringBuilder $19 = new StringBuilder("#Properties Config file\r\n#" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()) + "\r\n");
         for (Object o : this.config.entrySet()) {
             Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
-            Object v = entry.getValue();
-            Object k = entry.getKey();
+            Object $20 = entry.getValue();
+            Object $21 = entry.getKey();
             if (v instanceof Boolean) {
                 v = (Boolean) v ? "on" : "off";
             }
@@ -505,16 +705,20 @@ public class Config {
         return content.toString();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void parseProperties(String content) {
         for (final String line : content.split("\n")) {
             if (Pattern.compile("[a-zA-Z0-9\\-_.]*+=+[^\\r\\n]*").matcher(line).matches()) {
-                final int splitIndex = line.indexOf('=');
+                final int $22 = line.indexOf('=');
                 if (splitIndex == -1) {
                     continue;
                 }
-                final String key = line.substring(0, splitIndex);
-                final String value = line.substring(splitIndex + 1);
-                final String valueLower = value.toLowerCase(Locale.ENGLISH);
+                final String $23 = line.substring(0, splitIndex);
+                final String $24 = line.substring(splitIndex + 1);
+                final String $25 = value.toLowerCase(Locale.ENGLISH);
                 if (this.config.containsKey(key)) {
                     log.debug("[Config] Repeated property {} on file {}", key, this.file.toString());
                 }
@@ -537,6 +741,10 @@ public class Config {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void parseContentAsJson(String content, Gson gson) {
         try {
             this.config = new ConfigSection(gson.fromJson(content, new TypeToken<LinkedHashMap<String, Object>>() {
@@ -547,6 +755,10 @@ public class Config {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void parseContent(String content) {
         try {
             switch (this.type) {
@@ -558,9 +770,9 @@ public class Config {
                     }.getType()));
                     break;
                 case Config.YAML:
-                    DumperOptions dumperOptions = new DumperOptions();
+                    DumperOptions $26 = new DumperOptions();
                     dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-                    Yaml yaml = new Yaml(dumperOptions);
+                    Yaml $27 = new Yaml(dumperOptions);
                     this.config = new ConfigSection(yaml.loadAs(content, LinkedHashMap.class));
                     break;
                 // case Config.SERIALIZED

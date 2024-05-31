@@ -18,16 +18,24 @@ import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;
 
 public class BlockMangroveLeaves extends BlockLeaves {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_LEAVES, PERSISTENT_BIT, UPDATE_BIT);
+    public static final BlockProperties $1 = new BlockProperties(MANGROVE_LEAVES, PERSISTENT_BIT, UPDATE_BIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMangroveLeaves() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMangroveLeaves(BlockState blockstate) {
         super(blockstate);
@@ -39,6 +47,10 @@ public class BlockMangroveLeaves extends BlockLeaves {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Mangrove Leaves";
     }
@@ -52,9 +64,9 @@ public class BlockMangroveLeaves extends BlockLeaves {
         }
 
         List<Item> drops = new ArrayList<>(1);
-        Enchantment fortuneEnchantment = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
+        Enchantment $2 = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
 
-        int fortune = fortuneEnchantment != null ? fortuneEnchantment.getLevel() : 0;
+        int $3 = fortuneEnchantment != null ? fortuneEnchantment.getLevel() : 0;
         int stickOdds;
         switch (fortune) {
             case 0 -> stickOdds = 50;
@@ -62,7 +74,7 @@ public class BlockMangroveLeaves extends BlockLeaves {
             case 2 -> stickOdds = 40;
             default -> stickOdds = 30;
         }
-        ThreadLocalRandom random = ThreadLocalRandom.current();
+        ThreadLocalRandom $4 = ThreadLocalRandom.current();
         if (random.nextInt(stickOdds) == 0) {
             drops.add(Item.get(ItemID.STICK));
         }
@@ -70,11 +82,19 @@ public class BlockMangroveLeaves extends BlockLeaves {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         //todo: 实现红树树叶催化
         return false;

@@ -18,10 +18,14 @@ public final class EnumPropertyType<T extends Enum<T>> extends BaseBlockProperty
     private final EnumMap<T, EnumPropertyValue> cachedValues;
     private final Class<T> enumClass;
 
+    
+    /**
+     * @deprecated 
+     */
     private EnumPropertyType(String name, Class<T> enumClass, T defaultData) {
         super(name, Arrays.asList(enumClass.getEnumConstants()), defaultData, Utils.computeRequiredBits(0, enumClass.getEnumConstants().length - 1));
         this.enumClass = enumClass;
-        var map = new HashMap<T, EnumPropertyValue>();
+        var $1 = new HashMap<T, EnumPropertyValue>();
         for (var value : validValues) {
             map.put(value, new EnumPropertyValue(value));
         }
@@ -62,16 +66,28 @@ public final class EnumPropertyType<T extends Enum<T>> extends BaseBlockProperty
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public int getIndex() {
             return value.ordinal();
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public String getSerializedValue() {
             return serializedValue;
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public String toString() {
             return "EnumPropertyValue(name=" + name + ", value=" + value + ")";
         }

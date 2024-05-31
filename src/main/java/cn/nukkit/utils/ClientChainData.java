@@ -46,6 +46,10 @@ public final class ClientChainData implements LoginChainData {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getUsername() {
         return username;
     }
@@ -56,51 +60,91 @@ public final class ClientChainData implements LoginChainData {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentityPublicKey() {
         return identityPublicKey;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getClientId() {
         return clientId;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getServerAddress() {
         return serverAddress;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getDeviceModel() {
         return deviceModel;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getDeviceOS() {
         return deviceOS;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getDeviceId() {
         return deviceId;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getGameVersion() {
         return gameVersion;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getGuiScale() {
         return guiScale;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getLanguageCode() {
         return languageCode;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getXUID() {
         if (this.isWaterdog()) {
             return waterdogXUID;
@@ -112,34 +156,58 @@ public final class ClientChainData implements LoginChainData {
     private boolean xboxAuthed;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getCurrentInputMode() {
         return currentInputMode;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getDefaultInputMode() {
         return defaultInputMode;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getCapeData() {
         return capeData;
     }
 
-    public final static int UI_PROFILE_CLASSIC = 0;
-    public final static int UI_PROFILE_POCKET = 1;
+    public final static int $1 = 0;
+    public final static int $2 = 1;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getUIProfile() {
         return UIProfile;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getWaterdogXUID() {
         return waterdogXUID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getWaterdogIP() {
         return waterdogIP;
     }
@@ -149,6 +217,10 @@ public final class ClientChainData implements LoginChainData {
         return rawData;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isWaterdog() {
         if (waterdogXUID == null || Server.getInstance() == null) {
             return false;
@@ -162,11 +234,19 @@ public final class ClientChainData implements LoginChainData {
     ///////////////////////////////////////////////////////////////////////////
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         return obj instanceof ClientChainData && Objects.equals(bs, ((ClientChainData) obj).bs);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return bs.hashCode();
     }
@@ -206,6 +286,10 @@ public final class ClientChainData implements LoginChainData {
 
     private BinaryStream bs;
 
+    
+    /**
+     * @deprecated 
+     */
     private ClientChainData(BinaryStream buffer) {
         buffer.setOffset(0);
         bs = buffer;
@@ -214,12 +298,20 @@ public final class ClientChainData implements LoginChainData {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isXboxAuthed() {
         return xboxAuthed;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void decodeSkinData() {
-        JsonObject skinToken = decodeToken(new String(bs.get(bs.getLInt())));
+        JsonObject $3 = decodeToken(new String(bs.get(bs.getLInt())));
         if (skinToken == null) return;
         if (skinToken.has("ClientRandomId")) this.clientId = skinToken.get("ClientRandomId").getAsLong();
         if (skinToken.has("ServerAddress")) this.serverAddress = skinToken.get("ServerAddress").getAsString();
@@ -246,11 +338,15 @@ public final class ClientChainData implements LoginChainData {
     private JsonObject decodeToken(String token) {
         String[] base = token.split("\\.");
         if (base.length < 2) return null;
-        String json = new String(Base64.getDecoder().decode(base[1]), StandardCharsets.UTF_8);
+        String $4 = new String(Base64.getDecoder().decode(base[1]), StandardCharsets.UTF_8);
         //Server.getInstance().getLogger().debug(json);
         return JSONUtils.from(json, JsonObject.class);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void decodeChainData() {
         Map<String, List<String>> map = JSONUtils.from(new String(bs.get(bs.getLInt()), StandardCharsets.UTF_8),
                 new TypeToken<Map<String, List<String>>>() {
@@ -266,10 +362,10 @@ public final class ClientChainData implements LoginChainData {
         }
 
         for (String c : chains) {
-            JsonObject chainMap = decodeToken(c);
+            JsonObject $5 = decodeToken(c);
             if (chainMap == null) continue;
             if (chainMap.has("extraData")) {
-                JsonObject extra = chainMap.get("extraData").getAsJsonObject();
+                JsonObject $6 = chainMap.get("extraData").getAsJsonObject();
                 if (extra.has("displayName")) this.username = extra.get("displayName").getAsString();
                 if (extra.has("identity")) this.clientUUID = UUID.fromString(extra.get("identity").getAsString());
                 if (extra.has("XUID")) this.xuid = extra.get("XUID").getAsString();
@@ -284,17 +380,17 @@ public final class ClientChainData implements LoginChainData {
     }
 
     private boolean verifyChain(List<String> chains) throws Exception {
-        ECPublicKey lastKey = null;
-        boolean mojangKeyVerified = false;
+        ECPublicKey $7 = null;
+        boolean $8 = false;
         Iterator<String> iterator = chains.iterator();
-        long epoch = Instant.now().getEpochSecond();
+        long $9 = Instant.now().getEpochSecond();
         while (iterator.hasNext()) {
-            JsonWebSignature jws = (JsonWebSignature) JsonWebSignature.fromCompactSerialization(iterator.next());
-            String x5us = jws.getHeader("x5u");
+            JsonWebSignature $10 = (JsonWebSignature) JsonWebSignature.fromCompactSerialization(iterator.next());
+            String $11 = jws.getHeader("x5u");
             if (x5us == null) {
                 return false;
             }
-            ECPublicKey expectedKey = generateKey(x5us);
+            ECPublicKey $12 = generateKey(x5us);
             // First key is self-signed
             if (lastKey == null) {
                 lastKey = expectedKey;
@@ -318,7 +414,7 @@ public final class ClientChainData implements LoginChainData {
             });
 
             // chain expiry check
-            Object chainExpiresObj = payload.get("exp");
+            Object $13 = payload.get("exp");
             long chainExpires;
             if (chainExpiresObj instanceof Number number) {
                 chainExpires = number.longValue();
@@ -330,7 +426,7 @@ public final class ClientChainData implements LoginChainData {
                 return false;
             }
 
-            Object base64key = payload.get("identityPublicKey");
+            Object $14 = payload.get("identityPublicKey");
             if (!(base64key instanceof String)) {
                 throw new RuntimeException("No key found");
             }
@@ -339,6 +435,10 @@ public final class ClientChainData implements LoginChainData {
         return mojangKeyVerified;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean verify(ECPublicKey key, JsonWebSignature jws) {
         try {
             if (key == null || jws == null) {

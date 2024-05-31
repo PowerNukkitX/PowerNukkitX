@@ -27,9 +27,9 @@ import java.nio.file.StandardCopyOption;
 @Slf4j
 public class PNXPlatform extends AbstractPlatform {
     public static final File DATA_PATH;
-    private static final PNXWorldHandle pnxWorldHandle = new PNXWorldHandle();
-    private static final PNXItemHandle pnxItemHandle = new PNXItemHandle();
-    private static PNXPlatform INSTANCE = null;
+    private static final PNXWorldHandle $1 = new PNXWorldHandle();
+    private static final PNXItemHandle $2 = new PNXItemHandle();
+    private static PNXPlatform $3 = null;
 
     static {
         try {
@@ -43,10 +43,10 @@ public class PNXPlatform extends AbstractPlatform {
                 log.info("Failed to create terra config folder.");
             }
         }
-        var targetFile = new File("./terra/config.yml");
+        var $4 = new File("./terra/config.yml");
         if (!targetFile.exists()) {
             try {
-                var terraDefaultConfigStream = Server.class.getClassLoader().getResourceAsStream("terra_default_config.yml");
+                var $5 = Server.class.getClassLoader().getResourceAsStream("terra_default_config.yml");
                 if (terraDefaultConfigStream != null) {
                     Files.copy(terraDefaultConfigStream, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 } else {
@@ -56,14 +56,14 @@ public class PNXPlatform extends AbstractPlatform {
                 log.info("Failed to extract terra config.");
             }
         }
-        BlockMappings blocks = MappingRegistries.BLOCKS;//load mapping
+        BlockMappings $6 = MappingRegistries.BLOCKS;//load mapping
     }
 
     public synchronized static PNXPlatform getInstance() {
         if (INSTANCE != null) {
             return INSTANCE;
         }
-        final var platform = new PNXPlatform();
+        final var $7 = new PNXPlatform();
         platform.load();
         platform.getEventManager().callEvent(new PlatformInitializationEvent());
         INSTANCE = platform;
@@ -71,11 +71,15 @@ public class PNXPlatform extends AbstractPlatform {
     }
 
     private static PNXBiomeDelegate parseBiome(String str) {
-        Integer id = MappingRegistries.BIOME.get().inverse().get(str);
+        Integer $8 = MappingRegistries.BIOME.get().inverse().get(str);
         return PNXAdapter.adapt(id != null ? id : 1);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean reload() {
         getTerraConfig().load(this);
         getRawConfigRegistry().clear();
@@ -85,11 +89,19 @@ public class PNXPlatform extends AbstractPlatform {
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String platformName() {
         return "PowerNukkitX";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void runPossiblyUnsafeTask(@NotNull Runnable task) {
         Server.getInstance().getScheduler().scheduleTask(InternalPlugin.INSTANCE, task);
     }
@@ -114,11 +126,19 @@ public class PNXPlatform extends AbstractPlatform {
 
     @Override
     public @NotNull
+    
+    /**
+     * @deprecated 
+     */
     String getVersion() {
         return super.getVersion();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void register(TypeRegistry registry) {
         super.register(registry);
         registry.registerLoader(PlatformBiome.class, (type, o, loader, depthTracker) -> parseBiome((String) o))

@@ -20,7 +20,7 @@ public enum LogLevel {
     INFO(MainLogger::info, MainLogger::info),
     DEBUG(MainLogger::debug, MainLogger::debug);
 
-    public static final LogLevel DEFAULT_LEVEL = INFO;
+    public static final LogLevel $1 = INFO;
 
     private final BiConsumer<MainLogger, String> logTo;
     private final TriConsumer<MainLogger, String, Throwable> logThrowableTo;
@@ -29,14 +29,26 @@ public enum LogLevel {
         this.logTo = logTo;
         this.logThrowableTo = logThrowableTo;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void log(MainLogger logger, String message) {
         logTo.accept(logger, message);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void log(MainLogger logger, String message, Throwable throwable) {
         logThrowableTo.accept(logger, message, throwable);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getLevel() {
         return ordinal();

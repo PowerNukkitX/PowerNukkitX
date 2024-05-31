@@ -6,28 +6,44 @@ import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_
 
 public class BlockBlastFurnace extends BlockLitBlastFurnace {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(BLAST_FURNACE, MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(BLAST_FURNACE, MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBlastFurnace() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBlastFurnace(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Blast Furnace";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 0;
     }

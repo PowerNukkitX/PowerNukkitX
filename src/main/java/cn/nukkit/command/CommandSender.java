@@ -96,7 +96,11 @@ public interface CommandSender extends Permissible {
      *
      * @return 发送者是否为实体<br>whether the sender is an entity
      */
-    default boolean isEntity() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isEntity() {
         return false;
     }
 

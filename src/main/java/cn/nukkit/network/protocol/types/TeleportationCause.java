@@ -10,7 +10,7 @@ public enum TeleportationCause {
     COMMAND,
     BEHAVIOR;
 
-    private static final InternalLogger log = InternalLoggerFactory.getInstance(TeleportationCause.class);
+    private static final InternalLogger $1 = InternalLoggerFactory.getInstance(TeleportationCause.class);
 
     private static final TeleportationCause[] VALUES = values();
 

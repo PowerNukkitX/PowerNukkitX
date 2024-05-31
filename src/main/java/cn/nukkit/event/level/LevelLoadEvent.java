@@ -8,11 +8,15 @@ import cn.nukkit.level.Level;
  */
 public class LevelLoadEvent extends LevelEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public LevelLoadEvent(Level level) {
         super(level);

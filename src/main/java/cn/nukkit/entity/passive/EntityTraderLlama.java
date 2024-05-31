@@ -7,25 +7,45 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityTraderLlama extends EntityCreature implements IEntityNPC {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return TRADER_LLAMA;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityTraderLlama(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 1.9f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Wandering Trader";
     }
@@ -33,6 +53,10 @@ public class EntityTraderLlama extends EntityCreature implements IEntityNPC {
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();

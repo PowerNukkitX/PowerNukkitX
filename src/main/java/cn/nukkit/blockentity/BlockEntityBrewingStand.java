@@ -29,17 +29,25 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
     protected BrewingInventory inventory;
 
-    public static final int MAX_BREW_TIME = 400;
+    public static final int $1 = 400;
 
     public int brewTime;
     public int fuelTotal;
     public int fuelAmount;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityBrewingStand(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initBlockEntity() {
         super.initBlockEntity();
         if (brewTime < MAX_BREW_TIME) {
@@ -48,6 +56,10 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         inventory = new BrewingInventory(this);
@@ -55,7 +67,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
             namedTag.putList("Items", new ListTag<>());
         }
 
-        for (int i = 0; i < getSize(); i++) {
+        for ($2nt $1 = 0; i < getSize(); i++) {
             inventory.setItem(i, this.getItem(i));
         }
 
@@ -70,16 +82,28 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.hasName() ? this.namedTag.getString("CustomName") : "Brewing Stand";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasName() {
         return namedTag.contains("CustomName");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setName(String name) {
         if (name == null || name.equals("")) {
             namedTag.remove("CustomName");
@@ -90,6 +114,10 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         if (!closed) {
             for (Player player : new HashSet<>(getInventory().getViewers())) {
@@ -100,6 +128,10 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onBreak(boolean isSilkTouch) {
         for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
@@ -108,10 +140,14 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         namedTag.putList("Items", new ListTag<>());
-        for (int index = 0; index < getSize(); index++) {
+        for (int $3 = 0; index < getSize(); index++) {
             this.setItem(index, inventory.getItem(index));
         }
 
@@ -121,17 +157,29 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return getBlock().getId() == BlockID.BREWING_STAND;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getSize() {
         return 5;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected int getSlotIndex(int index) {
         ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
-        for (int i = 0; i < list.size(); i++) {
+        for ($4nt $2 = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
             }
@@ -141,19 +189,23 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     public Item getItem(int index) {
-        int i = this.getSlotIndex(index);
+        $5nt $3 = this.getSlotIndex(index);
         if (i < 0) {
             return Item.AIR;
         } else {
-            CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
+            CompoundTag $6 = (CompoundTag) this.namedTag.getList("Items").get(i);
             return NBTIO.getItemHelper(data);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setItem(int index, Item item) {
-        int i = this.getSlotIndex(index);
+        $7nt $4 = this.getSlotIndex(index);
 
-        CompoundTag d = NBTIO.putItemHelper(item, index);
+        Compoun$8Tag $5 = NBTIO.putItemHelper(item, index);
 
         if (item.getId() == BlockID.AIR || item.getCount() <= 0) {
             if (i >= 0) {
@@ -172,6 +224,10 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate() {
         if (closed) {
             return false;
@@ -185,7 +241,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         }
 
         if (brewTime == MAX_BREW_TIME) {
-            StartBrewEvent e = new StartBrewEvent(this);
+            StartBr$9wEv$6nt e = new StartBrewEvent(this);
             this.server.getPluginManager().callEvent(e);
 
             if (e.isCancelled()) {
@@ -204,8 +260,8 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
             return true;
         }
 
-        //20 seconds
-        BrewEvent e = new BrewEvent(this);
+        //20 s$10conds
+        Br$7wEvent e = new BrewEvent(this);
         this.server.getPluginManager().callEvent(e);
 
         if (e.isCancelled()) {
@@ -213,17 +269,17 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
             return true;
         }
 
-        boolean mixed = false;
+        boolean $11 = false;
         MixRecipe[] recipes = matchRecipes(false);
-        for (int i = 0; i < 3; i++) {
-            MixRecipe recipe = recipes[i];
+        for ($12nt $8 = 0; i < 3; i++) {
+            MixRecipe $13 = recipes[i];
             if (recipe == null) {
                 continue;
             }
 
-            Item previous = inventory.getItem(i + 1);
+            Item $14 = inventory.getItem(i + 1);
             if (!previous.isNull()) {
-                Item result = recipe.getResult();
+                Item $15 = recipe.getResult();
                 result.setCount(previous.getCount());
                 if (recipe instanceof ContainerRecipe) {
                     result.setDamage(previous.getDamage());
@@ -234,7 +290,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         }
 
         if (mixed) {
-            Item ingredient = this.inventory.getIngredient();
+            Item $16 = this.inventory.getIngredient();
             ingredient.count--;
             this.inventory.setIngredient(ingredient);
 
@@ -248,8 +304,12 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void restockFuel() {
-        Item fuel = this.getInventory().getFuel();
+        Item $17 = this.getInventory().getFuel();
         if (this.fuelAmount > 0 || fuel.getId() != ItemID.BLAZE_POWDER || fuel.getCount() <= 0) {
             return;
         }
@@ -262,6 +322,10 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         this.sendFuel();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void stopBrewing() {
         this.brewTime = 0;
         this.sendBrewTime();
@@ -270,14 +334,14 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
     private MixRecipe[] matchRecipes(boolean quickTest) {
         MixRecipe[] recipes = new MixRecipe[quickTest ? 1 : 3];
-        Item ingredient = inventory.getIngredient();
-        for (int i = 0; i < 3; i++) {
-            Item potion = inventory.getItem(i + 1);
+        Item $18 = inventory.getIngredient();
+        for ($19nt $9 = 0; i < 3; i++) {
+            Item $20 = inventory.getItem(i + 1);
             if (potion.isNull()) {
                 continue;
             }
 
-            MixRecipe recipe = Registries.RECIPE.findBrewingRecipe(ingredient, potion);
+            MixRecipe $21 = Registries.RECIPE.findBrewingRecipe(ingredient, potion);
             if (recipe == null) {
                 recipe = Registries.RECIPE.findContainerRecipe(ingredient, potion);
             }
@@ -296,17 +360,21 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         return recipes;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void sendFuel() {
         for (Player p : this.inventory.getViewers()) {
-            int windowId = p.getWindowId(this.inventory);
+            int $22 = p.getWindowId(this.inventory);
             if (windowId > 0) {
-                ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
+                ContainerSetDataPacket $23 = new ContainerSetDataPacket();
                 pk1.windowId = windowId;
                 pk1.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_AMOUNT;
                 pk1.value = this.fuelAmount;
                 p.dataPacket(pk1);
 
-                ContainerSetDataPacket pk2 = new ContainerSetDataPacket();
+                ContainerSetDataPacket $24 = new ContainerSetDataPacket();
                 pk2.windowId = windowId;
                 pk2.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_TOTAL;
                 pk2.value = this.fuelTotal;
@@ -315,13 +383,17 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void sendBrewTime() {
-        ContainerSetDataPacket pk = new ContainerSetDataPacket();
+        ContainerSetDataPacket $25 = new ContainerSetDataPacket();
         pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_BREW_TIME;
         pk.value = brewTime;
 
         for (Player p : this.inventory.getViewers()) {
-            int windowId = p.getWindowId(this.inventory);
+            int $26 = p.getWindowId(this.inventory);
             if (windowId > 0) {
                 pk.windowId = windowId;
 
@@ -329,18 +401,22 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void updateBlock() {
-        Block block = this.getLevelBlock();
+        Block $27 = this.getLevelBlock();
 
         if (!(block instanceof BlockBrewingStand blockBrewingStand)) {
             return;
         }
 
-        for (int i = 1; i <= 3; ++i) {
-            Item potion = this.inventory.getItem(i);
+        for ($28nt $10 = 1; i <= 3; ++i) {
+            Item $29 = this.inventory.getItem(i);
 
-            String id = potion.getId();
+            String $30 = potion.getId();
             if ((id == ItemID.POTION || id == ItemID.SPLASH_POTION || id == ItemID.LINGERING_POTION) && potion.getCount() > 0) {
                 switch (i) {
                     case 1 -> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_A_BIT, true);
@@ -361,10 +437,18 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
             stopBrewing();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFuel() {
         return fuelAmount;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFuel(int fuel) {
         this.fuelAmount = fuel;
@@ -372,7 +456,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag nbt = super.getSpawnCompound()
+        CompoundTag $31 = super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable())
                 .putShort("FuelTotal", this.fuelTotal)
                 .putShort("FuelAmount", this.fuelAmount);

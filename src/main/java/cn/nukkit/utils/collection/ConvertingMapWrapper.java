@@ -36,6 +36,10 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
     private final Map<K, V2> proxied;
     private final ConvertingSetWrapper<Entry<K, V1>, Entry<K, V2>> entrySet;
     private final boolean convertReturnedNulls;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public ConvertingMapWrapper(Map<K, V2> proxied, Function<V1, V2> converter, Function<V2, V1> reverseConverter, boolean convertReturnedNulls) {
@@ -49,6 +53,10 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
                 entry -> new EntryWrapper<>(entry, converter, reverseConverter)
         );
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ConvertingMapWrapper(Map<K, V2> proxied, Function<V1, V2> converter, Function<V2, V1> reverseConverter) {
         this(proxied, converter, reverseConverter, false);
@@ -60,30 +68,46 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int size() {
         return proxied.size();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isEmpty() {
         return proxied.isEmpty();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsValue(Object value) {
         Function<V1, V2> uncheckedConverter = converter;
-        Object converted = uncheckedConverter.apply((V1) value);
+        Object $1 = uncheckedConverter.apply((V1) value);
         return proxied.containsValue(converted);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsKey(Object key) {
         return proxied.containsKey(key);
     }
 
     @Override
     public V1 get(Object key) {
-        V2 found = proxied.get(key);
+        V2 $2 = proxied.get(key);
         if (found == null && !convertReturnedNulls) {
             return null;
         }
@@ -92,7 +116,7 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
 
     @Override
     public V1 put(K key, V1 value) {
-        V2 removed = proxied.put(key, converter.apply(value));
+        V2 $3 = proxied.put(key, converter.apply(value));
         if (removed == null && !convertReturnedNulls) {
             return null;
         }
@@ -101,7 +125,7 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
 
     @Override
     public V1 remove(Object key) {
-        V2 removed = proxied.remove(key);
+        V2 $4 = proxied.remove(key);
         if (removed == null && !convertReturnedNulls) {
             return null;
         }
@@ -109,13 +133,21 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean remove(Object key, Object value) {
         Function<V1, V2> uncheckedConverter = converter;
-        Object converted = uncheckedConverter.apply((V1) value);
+        Object $5 = uncheckedConverter.apply((V1) value);
         return proxied.remove(key, converted);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void clear() {
         proxied.clear();
     }
@@ -129,6 +161,10 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
         private final Function<E1, E2> entryConverter;
         private final Function<E2, E1> entryReverseConverter;
         private final Map.Entry<K, E2> entryProxied;
+    /**
+     * @deprecated 
+     */
+    
 
         public EntryWrapper(Entry<K, E2> entryProxied, Function<E1, E2> entryConverter, Function<E2, E1> entryReverseConverter) {
             this.entryConverter = entryConverter;
@@ -143,7 +179,7 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
 
         @Override
         public E1 getValue() {
-            E2 value = entryProxied.getValue();
+            E2 $6 = entryProxied.getValue();
             if (value == null && !convertReturnedNulls) {
                 return null;
             }
@@ -152,8 +188,8 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
 
         @Override
         public E1 setValue(E1 value) {
-            E2 newValue = entryConverter.apply(value);
-            E2 oldValue = entryProxied.setValue(newValue);
+            E2 $7 = entryConverter.apply(value);
+            E2 $8 = entryProxied.setValue(newValue);
             if (oldValue == null && !convertReturnedNulls) {
                 return null;
             }
@@ -161,11 +197,19 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public String toString() {
             return entryProxied.getKey() + "=" + getValue();
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
@@ -178,6 +222,10 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public int hashCode() {
             return Objects.hashCode(entryProxied.getKey()) ^ Objects.hashCode(getValue());
         }

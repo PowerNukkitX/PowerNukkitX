@@ -9,17 +9,29 @@ import org.jetbrains.annotations.NotNull;
  * @since 2015/12/2
  */
 public class BlockObsidian extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(OBSIDIAN);
+    public static final BlockProperties $1 = new BlockProperties(OBSIDIAN);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockObsidian() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockObsidian(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Obsidian";
     }
@@ -30,26 +42,46 @@ public class BlockObsidian extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_DIAMOND;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 35; //TODO Should be 50 but the break time calculation is broken
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 6000;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
         //destroy the nether portal
         Block[] nearby = new Block[]{
@@ -66,6 +98,10 @@ public class BlockObsidian extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void afterRemoval(Block newBlock, boolean update) {
         if (update) {
             onBreak(Item.AIR);
@@ -73,16 +109,28 @@ public class BlockObsidian extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePushed() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public  boolean canBePulled() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }

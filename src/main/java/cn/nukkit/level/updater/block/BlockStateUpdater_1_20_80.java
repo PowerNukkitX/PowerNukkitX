@@ -6,9 +6,13 @@ import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 import java.util.function.Function;
 
 public class BlockStateUpdater_1_20_80 implements Updater {
-    public static final Updater INSTANCE = new BlockStateUpdater_1_20_80();
+    public static final Updater $1 = new BlockStateUpdater_1_20_80();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext ctx) {
         this.addTypeUpdater(ctx, "minecraft:sapling", "sapling_type", type -> "minecraft:" + type + "_sapling");
         this.addTypeUpdater(ctx, "minecraft:red_flower", "flower_type", type -> switch (type) {
@@ -46,6 +50,10 @@ public class BlockStateUpdater_1_20_80 implements Updater {
                 .remove("sapling_type");
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addTypeUpdater(CompoundTagUpdaterContext context, String identifier, String typeState, Function<String, String> rename) {
         context.addUpdater(1, 20, 80)
                 .match("name", identifier)

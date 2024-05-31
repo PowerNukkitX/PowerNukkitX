@@ -9,6 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class SimpleTickCachedBlockStore implements TickCachedBlockStore {
     private final ConcurrentHashMap<Integer, Block> tickCachedBlockStore;
     private final Level level;
+    /**
+     * @deprecated 
+     */
+    
 
     public SimpleTickCachedBlockStore(Level level) {
         this.tickCachedBlockStore = new ConcurrentHashMap<>(32, 0.75f);
@@ -16,11 +20,19 @@ public final class SimpleTickCachedBlockStore implements TickCachedBlockStore {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void clearCachedStore() {
         this.tickCachedBlockStore.clear();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveIntoCachedStore(Block block, int x, int y, int z, int layer) {
         tickCachedBlockStore.put(Level.localBlockHash(x, y, z, layer, level), block);
     }

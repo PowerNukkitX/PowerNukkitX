@@ -9,18 +9,26 @@ import cn.nukkit.event.HandlerList;
  */
 public class PlayerToggleSpinAttackEvent extends PlayerEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final boolean isSpinAttacking;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerToggleSpinAttackEvent(Player player, boolean isSpinAttacking) {
         this.player = player;
         this.isSpinAttacking = isSpinAttacking;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSpinAttacking() {
         return this.isSpinAttacking;

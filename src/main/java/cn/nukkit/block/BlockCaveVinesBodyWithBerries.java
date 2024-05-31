@@ -8,32 +8,52 @@ import static cn.nukkit.block.property.CommonBlockProperties.GROWING_PLANT_AGE;
 
 
 public class BlockCaveVinesBodyWithBerries extends BlockCaveVines {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CAVE_VINES_BODY_WITH_BERRIES, GROWING_PLANT_AGE);
+    public static final BlockProperties $1 = new BlockProperties(CAVE_VINES_BODY_WITH_BERRIES, GROWING_PLANT_AGE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCaveVinesBodyWithBerries() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCaveVinesBodyWithBerries(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Cave Vines Body With Berries";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isTransparent() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 14;
     }

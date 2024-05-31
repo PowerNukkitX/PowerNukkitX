@@ -19,7 +19,7 @@ import java.util.Set;
  * @author MagicDroidX (Nukkit Project)
  */
 public interface Inventory {
-    int MAX_STACK = 64;
+    int $1 = 64;
 
     /**
      * get the size of inventory
@@ -62,7 +62,11 @@ public interface Inventory {
     /**
      * @see #setItem(int, Item, boolean)
      */
-    default boolean setItem(int index, Item item) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean setItem(int index, Item item) {
         return setItem(index, item, true);
     }
 
@@ -76,7 +80,11 @@ public interface Inventory {
      */
     boolean setItem(int index, Item item, boolean send);
 
-    default boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
         return setItem(index, item, send);
     }
 
@@ -169,7 +177,11 @@ public interface Inventory {
     Map<Integer, Item> all(Item item);
 
 
-    default int first(Item item) {
+    default 
+    /**
+     * @deprecated 
+     */
+    int first(Item item) {
         return first(item, false);
     }
 
@@ -203,7 +215,11 @@ public interface Inventory {
     /**
      * @see #clear(int, boolean)
      */
-    default boolean clear(int index) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean clear(int index) {
         return clear(index, true);
     }
 
@@ -253,7 +269,11 @@ public interface Inventory {
     void removeListener(InventoryListener listener);
 
     @ApiStatus.Internal
-    default void init() {
+    default 
+    /**
+     * @deprecated 
+     */
+    void init() {
     }
 
     /**
@@ -273,12 +293,20 @@ public interface Inventory {
     }
 
     @ApiStatus.Internal
-    default int fromNetworkSlot(int networkSlot) {
+    default 
+    /**
+     * @deprecated 
+     */
+    int fromNetworkSlot(int networkSlot) {
         return networkSlotMap().inverse().getOrDefault(networkSlot, networkSlot);
     }
 
     @ApiStatus.Internal
-    default int toNetworkSlot(int nativeSlot) {
+    default 
+    /**
+     * @deprecated 
+     */
+    int toNetworkSlot(int nativeSlot) {
         return networkSlotMap().getOrDefault(nativeSlot, nativeSlot);
     }
 

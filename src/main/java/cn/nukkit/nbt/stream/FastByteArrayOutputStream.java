@@ -40,10 +40,10 @@ import java.util.Arrays;
 
 public class FastByteArrayOutputStream extends OutputStream {
 
-    public static final long ONEOVERPHI = 106039;
+    public static final long $1 = 106039;
 
     /** The array backing the output stream. */
-    public final static int DEFAULT_INITIAL_CAPACITY = 16;
+    public final static int $2 = 16;
 
     /** The array backing the output stream. */
     public byte[] array;
@@ -55,6 +55,10 @@ public class FastByteArrayOutputStream extends OutputStream {
     private int position;
 
     /** Creates a new array output stream with an initial capacity of {@link #DEFAULT_INITIAL_CAPACITY} bytes. */
+    /**
+     * @deprecated 
+     */
+    
     public FastByteArrayOutputStream() {
         this( DEFAULT_INITIAL_CAPACITY );
     }
@@ -63,6 +67,10 @@ public class FastByteArrayOutputStream extends OutputStream {
      *
      * @param initialCapacity the initial length of the backing array.
      */
+    /**
+     * @deprecated 
+     */
+    
     public FastByteArrayOutputStream( final int initialCapacity ) {
         array = new byte[ initialCapacity ];
     }
@@ -71,6 +79,10 @@ public class FastByteArrayOutputStream extends OutputStream {
      *
      * @param a the byte array to wrap.
      */
+    /**
+     * @deprecated 
+     */
+    
     public FastByteArrayOutputStream( final byte[] a ) {
         array = a;
     }
@@ -83,6 +95,10 @@ public class FastByteArrayOutputStream extends OutputStream {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void write(final int b ) {
         if ( position == length ) {
             length++;
@@ -90,6 +106,10 @@ public class FastByteArrayOutputStream extends OutputStream {
         }
         array[ position++ ] = (byte)b;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void ensureOffsetLength( final int arrayLength, final int offset, final int length ) {
         if ( offset < 0 ) throw new ArrayIndexOutOfBoundsException( "Offset (" + offset + ") is negative" );
@@ -99,7 +119,7 @@ public class FastByteArrayOutputStream extends OutputStream {
 
     public static byte[] grow( final byte[] array, final int length ) {
         if ( length > array.length ) {
-            final int newLength = (int)Math.min( Math.max( ( ONEOVERPHI * array.length ) >>> 16, length ), Integer.MAX_VALUE );
+            final int $3 = (int)Math.min( Math.max( ( ONEOVERPHI * array.length ) >>> 16, length ), Integer.MAX_VALUE );
             final byte[] t =
                     new byte[ newLength ];
             System.arraycopy( array, 0, t, 0, array.length );
@@ -110,7 +130,7 @@ public class FastByteArrayOutputStream extends OutputStream {
 
     public static byte[] grow( final byte[] array, final int length, final int preserve ) {
         if ( length > array.length ) {
-            final int newLength = (int)Math.min( Math.max( ( ONEOVERPHI * array.length ) >>> 16, length ), Integer.MAX_VALUE );
+            final int $4 = (int)Math.min( Math.max( ( ONEOVERPHI * array.length ) >>> 16, length ), Integer.MAX_VALUE );
             final byte[] t =
                     new byte[ newLength ];
             System.arraycopy( array, 0, t, 0, preserve );
@@ -125,11 +145,19 @@ public class FastByteArrayOutputStream extends OutputStream {
         System.arraycopy( b, off, array, position, len );
         if ( position + len > length ) length = position += len;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void position( long newPosition ) {
         if ( position > Integer.MAX_VALUE ) throw new IllegalArgumentException( "Position too large: " + newPosition );
         position = (int)newPosition;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long position() {
         return position;

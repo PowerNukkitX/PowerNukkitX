@@ -35,14 +35,26 @@ public enum BitArrayVersion {
     public BitArray createPalette(int size) {
         return this.createPalette(size, new int[this.getWordsForSize(size)]);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public byte getId() {
         return bits;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getWordsForSize(int size) {
         return (size / entriesPerWord) + (size % entriesPerWord == 0 ? 0 : 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getMaxEntryValue() {
         return maxEntryValue;

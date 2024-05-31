@@ -12,13 +12,21 @@ import org.jetbrains.annotations.NotNull;
 public class SetLocalPlayerAsInitializedPacketProcessor extends DataPacketProcessor<SetLocalPlayerAsInitializedPacket> {
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull SetLocalPlayerAsInitializedPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         log.debug("receive SetLocalPlayerAsInitializedPacket for {}", player.getPlayerInfo().getUsername());
         playerHandle.onPlayerLocallyInitialized();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET;
     }

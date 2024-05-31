@@ -14,20 +14,28 @@ import lombok.ToString;
 @AllArgsConstructor
 public class SetEntityLinkPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.SET_ENTITY_LINK_PACKET;
+    public static final int $1 = ProtocolInfo.SET_ENTITY_LINK_PACKET;
 
     public long vehicleUniqueId; //from
     public long riderUniqueId; //to
     public EntityLink.Type type;
     public byte immediate;
-    public boolean riderInitiated = false;
+    public boolean $2 = false;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeEntityUniqueId(this.vehicleUniqueId);
@@ -38,9 +46,17 @@ public class SetEntityLinkPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

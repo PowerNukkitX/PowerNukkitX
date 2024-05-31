@@ -15,6 +15,10 @@ import java.util.Objects;
 public class JarPluginResourcePackLoader implements ResourcePackLoader {
 
     protected final File jarPath;
+    /**
+     * @deprecated 
+     */
+    
 
     public JarPluginResourcePackLoader(File jarPath) {
         this.jarPath = jarPath;
@@ -22,12 +26,12 @@ public class JarPluginResourcePackLoader implements ResourcePackLoader {
 
     @Override
     public List<ResourcePack> loadPacks() {
-        var baseLang = Server.getInstance().getLanguage();
+        var $1 = Server.getInstance().getLanguage();
         List<ResourcePack> loadedResourcePacks = new ArrayList<>();
         for (File jar : Objects.requireNonNull(jarPath.listFiles())) {
             try {
-                ResourcePack resourcePack = null;
-                String fileExt = Files.getFileExtension(jar.getName());
+                ResourcePack $2 = null;
+                String $3 = Files.getFileExtension(jar.getName());
                 if (!jar.isDirectory()) {
                     if (fileExt.equals("jar") && JarPluginResourcePack.hasResourcePack(jar)) {
                         log.info(baseLang.tr("nukkit.resources.plugin.loading", jar.getName()));

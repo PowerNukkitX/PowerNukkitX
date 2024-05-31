@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PlayerChatEvent extends PlayerMessageEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -19,10 +19,18 @@ public class PlayerChatEvent extends PlayerMessageEvent implements Cancellable {
 
     protected Set<CommandSender> recipients = new HashSet<>();
     protected String format;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerChatEvent(Player player, String message) {
         this(player, message, "chat.type.text", null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerChatEvent(Player player, String message, String format, Set<CommandSender> recipients) {
         this.player = player;
@@ -47,13 +55,25 @@ public class PlayerChatEvent extends PlayerMessageEvent implements Cancellable {
      *
      * @param player messenger
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setPlayer(Player player) {
         this.player = player;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getFormat() {
         return this.format;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFormat(String format) {
         this.format = format;
@@ -62,6 +82,10 @@ public class PlayerChatEvent extends PlayerMessageEvent implements Cancellable {
     public Set<CommandSender> getRecipients() {
         return this.recipients;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRecipients(Set<CommandSender> recipients) {
         this.recipients = recipients;

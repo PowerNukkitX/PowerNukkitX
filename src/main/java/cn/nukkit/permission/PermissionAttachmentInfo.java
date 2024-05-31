@@ -12,6 +12,10 @@ public class PermissionAttachmentInfo {
     private PermissionAttachment attachment;
 
     private boolean value;
+    /**
+     * @deprecated 
+     */
+    
 
     public PermissionAttachmentInfo(Permissible permissible, String permission, PermissionAttachment attachment, boolean value) {
         if (permission == null) {
@@ -27,6 +31,10 @@ public class PermissionAttachmentInfo {
     public Permissible getPermissible() {
         return permissible;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getPermission() {
         return permission;
@@ -35,6 +43,10 @@ public class PermissionAttachmentInfo {
     public PermissionAttachment getAttachment() {
         return attachment;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getValue() {
         return value;

@@ -15,18 +15,22 @@ import org.jetbrains.annotations.NotNull;
 
 public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull NPCRequestPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         //若sceneName字段为空，则为玩家在编辑NPC，我们并不需要记录对话框，直接通过entityRuntimeId获取实体即可
         if (pk.sceneName.isEmpty() && player.level.getEntity(pk.entityRuntimeId) instanceof EntityNpc npcEntity) {
-            FormWindowDialog dialog = npcEntity.getDialog();
+            FormWindowDialog $2 = npcEntity.getDialog();
 
-            FormResponseDialog response = new FormResponseDialog(pk, dialog);
+            FormResponseDialog $3 = new FormResponseDialog(pk, dialog);
             for (FormDialogHandler handler : dialog.getHandlers()) {
                 handler.handle(player, response);
             }
 
-            PlayerDialogRespondedEvent event = new PlayerDialogRespondedEvent(player, dialog, response);
+            PlayerDialogRespondedEvent $4 = new PlayerDialogRespondedEvent(player, dialog, response);
             player.getServer().getPluginManager().callEvent(event);
             return;
         }
@@ -40,17 +44,17 @@ public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
                 dialog = playerHandle.getDialogWindows().getIfPresent(pk.sceneName);
             }
 
-            FormResponseDialog response = new FormResponseDialog(pk, dialog);
+            FormResponseDialog $5 = new FormResponseDialog(pk, dialog);
             for (FormDialogHandler handler : dialog.getHandlers()) {
                 handler.handle(player, response);
             }
 
-            PlayerDialogRespondedEvent event = new PlayerDialogRespondedEvent(player, dialog, response);
+            PlayerDialogRespondedEvent $6 = new PlayerDialogRespondedEvent(player, dialog, response);
             player.getServer().getPluginManager().callEvent(event);
 
             //close dialog after clicked button (otherwise the client will not be able to close the window)
             if (response.getClickedButton() != null && pk.requestType == NPCRequestPacket.RequestType.EXECUTE_ACTION) {
-                NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
+                NPCDialoguePacket $7 = new NPCDialoguePacket();
                 closeWindowPacket.runtimeEntityId = pk.entityRuntimeId;
                 closeWindowPacket.sceneName = response.getSceneName();
                 closeWindowPacket.action = NPCDialoguePacket.NPCDialogAction.CLOSE;
@@ -63,6 +67,10 @@ public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.NPC_REQUEST_PACKET;
     }

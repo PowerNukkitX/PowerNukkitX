@@ -15,9 +15,13 @@ import org.jetbrains.annotations.NotNull;
 @Slf4j
 public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull BookEditPacket pk) {
-        Player player = playerHandle.player;
-        Item oldBook = player.getInventory().getItem(pk.inventorySlot);
+        Player $1 = playerHandle.player;
+        Item $2 = player.getInventory().getItem(pk.inventorySlot);
         if (oldBook.getId() != Item.WRITABLE_BOOK) {
             return;
         }
@@ -28,7 +32,7 @@ public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
             }
         }
 
-        Item newBook = oldBook.clone();
+        Item $3 = oldBook.clone();
         boolean success;
         switch (pk.action) {
             case REPLACE_PAGE:
@@ -56,7 +60,7 @@ public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
         }
 
         if (success) {
-            PlayerEditBookEvent editBookEvent = new PlayerEditBookEvent(player, oldBook, newBook, pk.action);
+            PlayerEditBookEvent $4 = new PlayerEditBookEvent(player, oldBook, newBook, pk.action);
             player.getServer().getPluginManager().callEvent(editBookEvent);
             if (!editBookEvent.isCancelled()) {
                 player.getInventory().setItem(pk.inventorySlot, editBookEvent.getNewBook());
@@ -65,6 +69,10 @@ public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.BOOK_EDIT_PACKET;
     }

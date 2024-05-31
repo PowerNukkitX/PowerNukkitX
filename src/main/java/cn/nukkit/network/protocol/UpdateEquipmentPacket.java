@@ -18,16 +18,28 @@ public class UpdateEquipmentPacket extends DataPacket {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.UPDATE_EQUIPMENT_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeByte((byte) this.windowId);
@@ -36,6 +48,10 @@ public class UpdateEquipmentPacket extends DataPacket {
         byteBuf.writeEntityUniqueId(this.eid);
         byteBuf.writeBytes(this.namedtag);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

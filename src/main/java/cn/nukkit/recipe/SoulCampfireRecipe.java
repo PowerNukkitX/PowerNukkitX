@@ -7,9 +7,17 @@ import cn.nukkit.registry.RecipeRegistry;
 import java.util.List;
 
 public class SoulCampfireRecipe extends CampfireRecipe {
+    /**
+     * @deprecated 
+     */
+    
     public SoulCampfireRecipe(Item result, Item ingredient) {
         this(null, result, ingredient);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SoulCampfireRecipe(String recipeId, Item result, Item ingredient) {
         super(recipeId == null ?

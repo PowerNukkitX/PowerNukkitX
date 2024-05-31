@@ -9,11 +9,19 @@ import org.jetbrains.annotations.NotNull;
 
 public record PNXChunkDelegate(ServerWorld world, IChunk chunk) implements Chunk {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlock(int i, int i1, int i2, BlockState blockState, boolean b) {
         setBlock(i, i1, i2, blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlock(int i, int i1, int i2, @NotNull BlockState blockState) {
         chunk.setBlockState(i, i1, i2, ((PNXBlockStateDelegate) blockState).getHandle());
     }
@@ -25,11 +33,19 @@ public record PNXChunkDelegate(ServerWorld world, IChunk chunk) implements Chunk
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getX() {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getZ() {
         return 0;
     }

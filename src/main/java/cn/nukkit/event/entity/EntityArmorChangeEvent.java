@@ -9,7 +9,7 @@ import cn.nukkit.item.Item;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityArmorChangeEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -18,6 +18,10 @@ public class EntityArmorChangeEvent extends EntityEvent implements Cancellable {
     private final Item oldItem;
     private Item newItem;
     private final int slot;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityArmorChangeEvent(Entity entity, Item oldItem, Item newItem, int slot) {
         this.entity = entity;
@@ -25,6 +29,10 @@ public class EntityArmorChangeEvent extends EntityEvent implements Cancellable {
         this.newItem = newItem;
         this.slot = slot;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getSlot() {
         return slot;
@@ -33,6 +41,10 @@ public class EntityArmorChangeEvent extends EntityEvent implements Cancellable {
     public Item getNewItem() {
         return newItem;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setNewItem(Item newItem) {
         this.newItem = newItem;

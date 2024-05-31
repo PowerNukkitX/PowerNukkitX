@@ -11,6 +11,10 @@ public class EventException extends RuntimeException {
      *
      * @param throwable Exception that triggered this Exception
      */
+    /**
+     * @deprecated 
+     */
+    
     public EventException(Throwable throwable) {
         cause = throwable;
     }
@@ -18,6 +22,10 @@ public class EventException extends RuntimeException {
     /**
      * Constructs a new EventException
      */
+    /**
+     * @deprecated 
+     */
+    
     public EventException() {
         cause = null;
     }
@@ -28,6 +36,10 @@ public class EventException extends RuntimeException {
      * @param cause   The exception that caused this
      * @param message The message
      */
+    /**
+     * @deprecated 
+     */
+    
     public EventException(Throwable cause, String message) {
         super(message);
         this.cause = cause;
@@ -38,6 +50,10 @@ public class EventException extends RuntimeException {
      *
      * @param message The message
      */
+    /**
+     * @deprecated 
+     */
+    
     public EventException(String message) {
         super(message);
         cause = null;

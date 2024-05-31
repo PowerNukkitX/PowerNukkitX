@@ -10,9 +10,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GeneratorRegistry implements IRegistry<String, Class<? extends Generator>, Class<? extends Generator>> {
     private static final Object2ObjectOpenHashMap<String, Class<? extends Generator>> REGISTRY = new Object2ObjectOpenHashMap<>();
-    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static final AtomicBoolean $1 = new AtomicBoolean(false);
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         if (isLoad.getAndSet(true)) return;
         try {
@@ -22,6 +26,10 @@ public class GeneratorRegistry implements IRegistry<String, Class<? extends Gene
             throw new RuntimeException(e);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getGeneratorName(Class<? extends Generator> c) {
         for (var entry : REGISTRY.entrySet()) {
@@ -42,11 +50,19 @@ public class GeneratorRegistry implements IRegistry<String, Class<? extends Gene
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void trim() {
         REGISTRY.trim();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reload() {
         isLoad.set(false);
         REGISTRY.clear();

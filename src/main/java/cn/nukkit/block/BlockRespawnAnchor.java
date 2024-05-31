@@ -42,29 +42,45 @@ import java.util.Objects;
  */
 
 public class BlockRespawnAnchor extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties(RESPAWN_ANCHOR, CommonBlockProperties.RESPAWN_ANCHOR_CHARGE);
+    public static final BlockProperties $1 = new BlockProperties(RESPAWN_ANCHOR, CommonBlockProperties.RESPAWN_ANCHOR_CHARGE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockRespawnAnchor() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockRespawnAnchor(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Respawn Anchor";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        int charge = getCharge();
+        int $2 = getCharge();
         if (item.getBlockId().equals(BlockID.GLOWSTONE) && charge < CommonBlockProperties.RESPAWN_ANCHOR_CHARGE.getMax()) {
             if (player == null || !player.isCreative()) {
                 item.count--;
@@ -87,6 +103,10 @@ public class BlockRespawnAnchor extends Block {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean attemptToSetSpawn(@NotNull Player player) {
         if (this.level.getDimension() != Level.DIMENSION_NETHER) {
             if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
@@ -103,52 +123,84 @@ public class BlockRespawnAnchor extends Block {
         player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.respawn_anchor.respawnSet"));
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void explode(Player player) {
-        BlockExplosionPrimeEvent event = new BlockExplosionPrimeEvent(this, player, 5);
+        BlockExplosionPrimeEvent $3 = new BlockExplosionPrimeEvent(this, player, 5);
         event.setIncendiary(true);
         if (event.isCancelled()) {
             return;
         }
 
         level.setBlock(this, get(AIR));
-        Explosion explosion = new Explosion(this, event.getForce(), this);
+        Explosion $4 = new Explosion(this, event.getForce(), this);
         explosion.setFireChance(event.getFireChance());
         if (event.isBlockBreaking()) {
             explosion.explodeA();
         }
         explosion.explodeB();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getCharge() {
         return getPropertyValue(CommonBlockProperties.RESPAWN_ANCHOR_CHARGE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCharge(int charge) {
         setPropertyValue(CommonBlockProperties.RESPAWN_ANCHOR_CHARGE, charge);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_DIAMOND;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 1200;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 50;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return switch (getCharge()) {
             case 0 -> 0;
@@ -159,6 +211,10 @@ public class BlockRespawnAnchor extends Block {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             getLevel().addSound(this, Sound.RESPAWN_ANCHOR_DEPLETE);
@@ -168,26 +224,46 @@ public class BlockRespawnAnchor extends Block {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePushed() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePulled() {
         return false;
     }

@@ -18,40 +18,68 @@ import static cn.nukkit.block.property.CommonBlockProperties.GROWING_PLANT_AGE;
 
 
 public class BlockCaveVines extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CAVE_VINES, GROWING_PLANT_AGE);
+    public static final BlockProperties $1 = new BlockProperties(CAVE_VINES, GROWING_PLANT_AGE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCaveVines() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCaveVines(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Cave Vines";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isTransparent() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean isValidSupport(Block block) {
         if (block instanceof BlockLiquid) return false;
@@ -59,11 +87,19 @@ public class BlockCaveVines extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isValidSupport(this)) {
@@ -71,14 +107,14 @@ public class BlockCaveVines extends BlockTransparent {
             }
             return type;
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
-            Random random = ThreadLocalRandom.current();
+            Random $2 = ThreadLocalRandom.current();
             //random mature,The feature that I added.
             if (random.nextInt(4) == 0) {
-                int growth = getGrowth();
+                int $3 = getGrowth();
                 if (growth + 4 < getMaxGrowth()) {
-                    BlockCaveVines block = (BlockCaveVines) this.clone();
+                    BlockCaveVines $4 = (BlockCaveVines) this.clone();
                     block.setGrowth(growth + 4);
-                    BlockGrowEvent ev = new BlockGrowEvent(this, block);
+                    BlockGrowEvent $5 = new BlockGrowEvent(this, block);
                     Server.getInstance().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         this.getLevel().setBlock(this, ev.getNewState(), false, true);
@@ -89,9 +125,9 @@ public class BlockCaveVines extends BlockTransparent {
                     BlockCaveVines block;
                     if (this.up() instanceof BlockCaveVines && !(this.down() instanceof BlockCaveVines)) {
                         block = new BlockCaveVinesHeadWithBerries();
-                    } else block = new BlockCaveVinesBodyWithBerries();
+                    } else $6 = new BlockCaveVinesBodyWithBerries();
                     block.setGrowth(getMaxGrowth());
-                    BlockGrowEvent ev = new BlockGrowEvent(this, block);
+                    BlockGrowEvent $7 = new BlockGrowEvent(this, block);
                     Server.getInstance().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         this.getLevel().setBlock(this, ev.getNewState(), false, true);
@@ -105,9 +141,9 @@ public class BlockCaveVines extends BlockTransparent {
                 BlockCaveVines block;
                 if (this.up() instanceof BlockCaveVines && !(this.down() instanceof BlockCaveVines)) {
                     block = new BlockCaveVinesHeadWithBerries();
-                } else block = new BlockCaveVinesBodyWithBerries();
+                } else $8 = new BlockCaveVinesBodyWithBerries();
                 block.setGrowth(getMaxGrowth());
-                BlockGrowEvent ev = new BlockGrowEvent(this, block);
+                BlockGrowEvent $9 = new BlockGrowEvent(this, block);
                 Server.getInstance().getPluginManager().callEvent(ev);
                 if (!ev.isCancelled()) {
                     this.getLevel().setBlock(this.down(), ev.getNewState(), false, true);
@@ -115,9 +151,9 @@ public class BlockCaveVines extends BlockTransparent {
                     return type;
                 }
             } else if (down().isAir()) {
-                BlockCaveVines block = new BlockCaveVines();
+                BlockCaveVines $10 = new BlockCaveVines();
                 block.setGrowth(0);
-                BlockGrowEvent ev = new BlockGrowEvent(this, block);
+                BlockGrowEvent $11 = new BlockGrowEvent(this, block);
                 Server.getInstance().getPluginManager().callEvent(ev);
                 if (!ev.isCancelled()) {
                     this.getLevel().setBlock(this.down(), ev.getNewState(), false, true);
@@ -129,17 +165,21 @@ public class BlockCaveVines extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
             BlockCaveVines block;
             if (this.up() instanceof BlockCaveVines && !(this.down() instanceof BlockCaveVines)) {
                 block = new BlockCaveVinesHeadWithBerries();
-            } else block = new BlockCaveVinesBodyWithBerries();
-            int max = getMaxGrowth();
-            int growth = getGrowth();
+            } else $12 = new BlockCaveVinesBodyWithBerries();
+            int $13 = getMaxGrowth();
+            int $14 = getGrowth();
             if (growth < max) {
                 block.setGrowth(max);
-                BlockGrowEvent ev = new BlockGrowEvent(this, block);
+                BlockGrowEvent $15 = new BlockGrowEvent(this, block);
                 Server.getInstance().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     return false;
@@ -154,7 +194,7 @@ public class BlockCaveVines extends BlockTransparent {
         }
         if (item.isNull()) {
             if (this.getGrowth() == 25) {
-                BlockCaveVines block = new BlockCaveVines();
+                BlockCaveVines $16 = new BlockCaveVines();
                 block.setGrowth(0);
                 this.getLevel().setBlock(this, block, false, true);
                 this.getLevel().dropItem(this, Item.get(ItemID.GLOW_BERRIES));
@@ -169,14 +209,26 @@ public class BlockCaveVines extends BlockTransparent {
         return Item.EMPTY_ARRAY;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getMaxGrowth() {
         return GROWING_PLANT_AGE.getMax();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getGrowth() {
         return getPropertyValue(GROWING_PLANT_AGE);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void setGrowth(int growth) {
         setPropertyValue(GROWING_PLANT_AGE, growth);
     }

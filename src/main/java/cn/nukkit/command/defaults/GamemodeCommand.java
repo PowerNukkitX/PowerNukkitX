@@ -19,6 +19,10 @@ import java.util.Map;
  * @since 2015/11/13
  */
 public class GamemodeCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public GamemodeCommand(String name) {
         super(name, "commands.gamemode.description", "",
@@ -41,14 +45,18 @@ public class GamemodeCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
-        int gameMode = -1;
+        var $1 = result.getValue();
+        int $2 = -1;
         List<Player> players;
         switch (result.getKey()) {
             case "default" -> gameMode = list.getResult(0);
             case "byString" -> {
-                String str = list.getResult(0);
+                String $3 = list.getResult(0);
                 gameMode = Server.getGamemodeFromString(str);
             }
         }

@@ -8,27 +8,47 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class BlockDeny extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(DENY);
+    public static final BlockProperties $1 = new BlockProperties(DENY);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDeny() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDeny(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return -1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 18000000;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Deny";
     }
@@ -39,21 +59,37 @@ public class BlockDeny extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePushed() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public  boolean canBePulled() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player != null && (!player.isCreative() || !player.isOp())) {
             return false;
@@ -62,6 +98,10 @@ public class BlockDeny extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBreakable(@NotNull Vector3 vector, int layer, BlockFace face, Item item, @Nullable Player player) {
         if (player != null && (!player.isCreative() || !player.isOp())) {
             return false;

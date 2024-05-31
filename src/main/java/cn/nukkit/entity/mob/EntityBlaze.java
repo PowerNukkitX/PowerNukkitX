@@ -12,9 +12,17 @@ import org.jetbrains.annotations.NotNull;
 public class EntityBlaze extends EntityMob implements EntityFlyable {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return BLAZE;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityBlaze(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -23,32 +31,56 @@ public class EntityBlaze extends EntityMob implements EntityFlyable {
     
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.5f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 1.8f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Blaze";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPreventingSleep(Player player) {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getFrostbiteInjury() {
         return 5;
     }

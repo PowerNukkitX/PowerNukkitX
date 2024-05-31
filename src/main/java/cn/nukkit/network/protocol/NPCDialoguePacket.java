@@ -33,23 +33,31 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NPCDialoguePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
+    public static final int $1 = ProtocolInfo.NPC_DIALOGUE_PACKET;
     
     private static final NPCDialogAction[] ACTIONS = NPCDialogAction.values();
     
     public long runtimeEntityId;
-    public NPCDialogAction action = NPCDialogAction.OPEN;
-    public String dialogue = "";//content
-    public String sceneName = "";
-    public String npcName = "";
-    public String actionJson = "";
+    public NPCDialogAction $2 = NPCDialogAction.OPEN;
+    public String $3 = "";//content
+    public String $4 = "";
+    public String $5 = "";
+    public String $6 = "";
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         runtimeEntityId = byteBuf.readLongLE();
         action = ACTIONS[byteBuf.readVarInt()];
@@ -60,6 +68,10 @@ public class NPCDialoguePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeLongLE(runtimeEntityId);
         byteBuf.writeVarInt(action.ordinal());
@@ -73,6 +85,10 @@ public class NPCDialoguePacket extends DataPacket {
         OPEN,
         CLOSE
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

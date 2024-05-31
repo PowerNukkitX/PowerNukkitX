@@ -25,14 +25,22 @@ public class WolfAttackExecutor extends MeleeAttackExecutor {
      * @param clearDataWhenLose 失去目标时清空记忆
      * @param coolDown          攻击冷却时间(单位tick)
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public WolfAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
         super(memory, speed, maxSenseRange, clearDataWhenLose, coolDown);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
-        var wolf = (EntityWolf) entity;
+        var $1 = (EntityWolf) entity;
 
 //        target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
 //        if ((target != null && !target.isAlive()) || (target != null && target.equals(entity))) return false;
@@ -41,7 +49,7 @@ public class WolfAttackExecutor extends MeleeAttackExecutor {
 
         if (entity.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
             if (!entity.isEnablePitch()) entity.setEnablePitch(true);
-            var vector3 = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_FEEDING_PLAYER);
+            var $2 = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_FEEDING_PLAYER);
             if (vector3 != null) {
                 this.lookTarget = vector3.clone();
                 entity.setDataFlag(EntityFlag.INTERESTED, true);
@@ -51,19 +59,31 @@ public class WolfAttackExecutor extends MeleeAttackExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         stop(entity);
         super.onStop(entity);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         stop(entity);
         super.onInterrupt(entity);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void stop(EntityIntelligent entity) {
-        var wolf = (EntityWolf) entity;
+        var $3 = (EntityWolf) entity;
         entity.getServer().getScheduler().scheduleDelayedTask(null, () -> wolf.setAngry(false), 5);
 
         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {

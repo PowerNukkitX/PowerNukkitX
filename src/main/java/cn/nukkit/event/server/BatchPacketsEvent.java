@@ -7,7 +7,7 @@ import cn.nukkit.network.protocol.DataPacket;
 
 
 public class BatchPacketsEvent extends ServerEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -16,6 +16,10 @@ public class BatchPacketsEvent extends ServerEvent implements Cancellable {
     private Player[] players;
     private DataPacket[] packets;
     private boolean forceSync;
+    /**
+     * @deprecated 
+     */
+    
 
     public BatchPacketsEvent(Player[] players, DataPacket[] packets, boolean forceSync) {
         this.players = players;
@@ -30,6 +34,10 @@ public class BatchPacketsEvent extends ServerEvent implements Cancellable {
     public DataPacket[] getPackets() {
         return packets;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isForceSync() {
         return forceSync;

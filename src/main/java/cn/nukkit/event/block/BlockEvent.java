@@ -9,6 +9,10 @@ import cn.nukkit.event.Event;
 public abstract class BlockEvent extends Event {
 
     protected final Block block;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEvent(Block block) {
         this.block = block;

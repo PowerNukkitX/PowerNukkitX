@@ -32,6 +32,10 @@ public enum CommandParamType {
     CommandParamType(int id) {
         this.id = id;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getId() {
         return id;

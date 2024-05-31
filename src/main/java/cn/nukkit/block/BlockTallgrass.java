@@ -22,47 +22,79 @@ import static cn.nukkit.block.property.CommonBlockProperties.TALL_GRASS_TYPE;
  * @author Angelic47 (Nukkit Project)
  */
 public class BlockTallgrass extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-    public static final BlockProperties PROPERTIES = new BlockProperties(TALLGRASS, TALL_GRASS_TYPE);
+    public static final BlockProperties $1 = new BlockProperties(TALLGRASS, TALL_GRASS_TYPE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTallgrass() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTallgrass(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return getPropertyValue(TALL_GRASS_TYPE).name() + "Tallgrass";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeReplaced() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnChance() {
         return 60;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnAbility() {
         return 100;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (BlockSweetBerryBush.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true);
@@ -72,6 +104,10 @@ public class BlockTallgrass extends BlockFlowable implements BlockFlowerPot.Flow
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!BlockSweetBerryBush.isSupportValid(down(1, 0))) {
@@ -83,12 +119,16 @@ public class BlockTallgrass extends BlockFlowable implements BlockFlowerPot.Flow
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
-            Block up = this.up();
+            Block $2 = this.up();
 
             if (up.isAir()) {
-                DoublePlantType type = switch (getPropertyValue(TALL_GRASS_TYPE)) {
+                DoublePlantType $3 = switch (getPropertyValue(TALL_GRASS_TYPE)) {
                     case DEFAULT, TALL -> DoublePlantType.GRASS;
                     case FERN, SNOW -> DoublePlantType.FERN;
                 };
@@ -97,7 +137,7 @@ public class BlockTallgrass extends BlockFlowable implements BlockFlowerPot.Flow
                     item.count--;
                 }
 
-                BlockDoublePlant doublePlant = (BlockDoublePlant) Block.get(BlockID.DOUBLE_PLANT);
+                BlockDoublePlant $4 = (BlockDoublePlant) Block.get(BlockID.DOUBLE_PLANT);
                 doublePlant.setDoublePlantType(type);
                 doublePlant.setTopHalf(false);
 
@@ -123,11 +163,11 @@ public class BlockTallgrass extends BlockFlowable implements BlockFlowerPot.Flow
             drops.add(toItem());
         }
 
-        ThreadLocalRandom random = ThreadLocalRandom.current();
+        ThreadLocalRandom $5 = ThreadLocalRandom.current();
         if (random.nextInt(8) == 0) {
-            Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
-            int fortuneLevel = fortune != null ? fortune.getLevel() : 0;
-            int amount = fortuneLevel == 0 ? 1 : 1 + random.nextInt(fortuneLevel * 2);
+            Enchantment $6 = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
+            int $7 = fortune != null ? fortune.getLevel() : 0;
+            int $8 = fortuneLevel == 0 ? 1 : 1 + random.nextInt(fortuneLevel * 2);
             drops.add(Item.get(ItemID.WHEAT_SEEDS, 0, amount));
         }
 
@@ -135,16 +175,28 @@ public class BlockTallgrass extends BlockFlowable implements BlockFlowerPot.Flow
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_SHEARS;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPotBlockState() {
         return getPropertyValue(TALL_GRASS_TYPE) == TallGrassType.FERN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isFertilizable() {
         return true;
     }

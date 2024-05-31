@@ -24,7 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ClientboundMapItemDataPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.CLIENTBOUND_MAP_ITEM_DATA_PACKET;
+    public static final int $1 = ProtocolInfo.CLIENTBOUND_MAP_ITEM_DATA_PACKET;
     public static final long[] EMPTY_LONGS = new long[0];
 
     public long[] eids = EMPTY_LONGS;
@@ -39,33 +39,45 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     public int offsetZ;
 
     public byte dimensionId;
-    public BlockVector3 origin = new BlockVector3();
+    public BlockVector3 $2 = new BlockVector3();
 
     public final List<MapTrackedObject> trackedObjects = new ObjectArrayList<>();
     public MapDecorator[] decorators = MapDecorator.EMPTY_ARRAY;
     public int[] colors = EmptyArrays.EMPTY_INTS;
-    public BufferedImage image = null;
+    public BufferedImage $3 = null;
 
     //update
-    public static final int TEXTURE_UPDATE = 0x02;
-    public static final int DECORATIONS_UPDATE = 0x04;
-    public static final int ENTITIES_UPDATE = 0x08;
+    public static final int $4 = 0x02;
+    public static final int $5 = 0x04;
+    public static final int $6 = 0x08;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeEntityUniqueId(mapId);
 
-        int update = 0;
+        int $7 = 0;
         if (image != null || colors.length > 0) {
             update |= TEXTURE_UPDATE;
         }
@@ -125,8 +137,8 @@ public class ClientboundMapItemDataPacket extends DataPacket {
 
             if (image != null) {
                 byteBuf.writeUnsignedVarInt(width * height);
-                for (int y = 0; y < width; y++) {
-                    for (int x = 0; x < height; x++) {
+                for (int $8 = 0; y < width; y++) {
+                    for (int $9 = 0; x < height; x++) {
                         byteBuf.writeUnsignedVarInt((int) Utils.toABGR(this.image.getRGB(x, y)));
                     }
                 }
@@ -159,11 +171,19 @@ public class ClientboundMapItemDataPacket extends DataPacket {
         private final Type type;
         private long entityId;
         private Vector3 position;
+    /**
+     * @deprecated 
+     */
+    
 
         public MapTrackedObject(long entityId) {
             this.type = Type.ENTITY;
             this.entityId = entityId;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public MapTrackedObject(Vector3 position) {
             this.type = Type.BLOCK;
@@ -175,6 +195,10 @@ public class ClientboundMapItemDataPacket extends DataPacket {
             BLOCK
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

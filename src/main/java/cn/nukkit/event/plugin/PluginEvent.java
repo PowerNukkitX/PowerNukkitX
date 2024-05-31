@@ -9,13 +9,17 @@ import cn.nukkit.plugin.Plugin;
  */
 public class PluginEvent extends Event {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final Plugin plugin;
+    /**
+     * @deprecated 
+     */
+    
 
     public PluginEvent(Plugin plugin) {
         this.plugin = plugin;

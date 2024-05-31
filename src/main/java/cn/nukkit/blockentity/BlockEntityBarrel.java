@@ -7,6 +7,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class BlockEntityBarrel extends BlockEntitySpawnableContainer{
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BlockEntityBarrel(IChunk chunk, CompoundTag nbt) {
@@ -27,6 +31,10 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer{
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return getBlock().getId() == BlockID.BARREL;
     }
@@ -37,16 +45,28 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer{
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.hasName() ? this.namedTag.getString("CustomName") : "Barrel";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasName() {
         return this.namedTag.contains("CustomName");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setName(String name) {
         if (name == null || name.equals("")) {
             this.namedTag.remove("CustomName");

@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommandOutputPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.COMMAND_OUTPUT_PACKET;
+    public static final int $1 = ProtocolInfo.COMMAND_OUTPUT_PACKET;
 
     public final List<CommandOutputMessage> messages = new ObjectArrayList<>();
     public CommandOriginData commandOriginData;
@@ -25,16 +25,28 @@ public class CommandOutputPacket extends DataPacket {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         //non
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeUnsignedVarInt(this.commandOriginData.type.ordinal());
@@ -60,6 +72,10 @@ public class CommandOutputPacket extends DataPacket {
             byteBuf.writeString(this.data);// unknown
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

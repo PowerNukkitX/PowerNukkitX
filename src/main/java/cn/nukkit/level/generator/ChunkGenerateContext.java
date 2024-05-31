@@ -9,6 +9,10 @@ public final class ChunkGenerateContext {
     private final Level level;
     private final Generator generator;
     private final IChunk chunk;
+    /**
+     * @deprecated 
+     */
+    
 
     public ChunkGenerateContext(Generator generator, Level level, IChunk chunk) {
         this.level = level;

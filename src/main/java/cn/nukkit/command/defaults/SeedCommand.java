@@ -12,6 +12,10 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class SeedCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public SeedCommand(String name) {
         super(name, "Show the level's seed");//no translation in client
@@ -22,6 +26,10 @@ public class SeedCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         long seed;
         if (sender instanceof Player) {

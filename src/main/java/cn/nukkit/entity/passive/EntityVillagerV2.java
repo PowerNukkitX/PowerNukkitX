@@ -30,6 +30,10 @@ import java.util.Set;
 public class EntityVillagerV2 extends EntityIntelligent implements InventoryHolder, IEntityNPC {
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return VILLAGER_V2;
     }
@@ -96,6 +100,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     {
         this.tierExpRequirement = new int[]{0, 10, 70, 150, 250};
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityVillagerV2(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -118,6 +126,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     //todo 实现不同群系的村民
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.3f;
@@ -126,6 +138,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.isBaby()) {
             return 0.95f;
@@ -134,11 +150,19 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "VillagerV2";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();
@@ -146,7 +170,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         if (!this.namedTag.contains("profession")) {
             this.setProfession(0);
         } else {
-            var profession = this.namedTag.getInt("profession");
+            var $1 = this.namedTag.getInt("profession");
             this.profession = profession;
             this.setDataProperty(VARIANT, profession);
         }
@@ -173,18 +197,18 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         if (!this.namedTag.contains("maxTradeTier")) {
             this.setMaxTradeTier(5);
         } else {
-            var maxTradeTier = this.namedTag.getInt("maxTradeTier");
+            var $2 = this.namedTag.getInt("maxTradeTier");
             this.maxTradeTier = maxTradeTier;
             this.setDataProperty(MAX_TRADE_TIER, maxTradeTier);
         }
         if (!this.namedTag.contains("tradeExp")) {
             this.setTradeExp(0);
         } else {
-            var tradeExp = this.namedTag.getInt("tradeExp");
+            var $3 = this.namedTag.getInt("tradeExp");
             this.tradeExp = tradeExp;
             this.setDataProperty(TRADE_EXPERIENCE, tradeExp);
         }
-        Profession profession = Profession.getProfession(this.profession);
+        Profession $4 = Profession.getProfession(this.profession);
         if (profession != null) applyProfession(profession);
         if (canTrade) {
             inventory = new TradeInventory(this);
@@ -192,6 +216,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putByte("Profession", this.getProfession());
@@ -205,6 +233,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     /**
      * 获取村民职业id对应的displayName硬编码
+     */
+    
+    /**
+     * @deprecated 
      */
     private String getProfessionName(int profession) {
         return switch (profession) {
@@ -228,6 +260,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @return 村民的职业id
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getProfession() {
         return profession;
     }
@@ -237,6 +273,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      *
      * @param profession 请查看{@link EntityVillagerV2#profession}
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setProfession(int profession) {
         this.profession = profession;
         this.setDataProperty(VARIANT, profession);
@@ -246,6 +286,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * 这个方法插件一般不用
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setTradingPlayer(Long eid) {
         this.setDataProperty(TRADE_TARGET_EID, eid);
     }
@@ -253,6 +297,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @return 该村民是否可以交易
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean getCanTrade() {
         return canTrade;
     }
@@ -262,6 +310,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      *
      * @param canTrade true 可以交易
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setCanTrade(boolean canTrade) {
         this.canTrade = canTrade;
         this.namedTag.putBoolean("canTrade", canTrade);
@@ -270,6 +322,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @return 交易UI的显示名称
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getDisplayName() {
         return displayName;
     }
@@ -277,6 +333,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @param displayName 设置交易UI的显示名称
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
         this.namedTag.putString("displayName", displayName);
@@ -285,6 +345,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @return 该村民的交易等级
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getTradeTier() {
         return tradeTier;
     }
@@ -292,6 +356,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @param tradeTier <p>村民的交易等级(1-{@link EntityVillagerV2#maxTradeTier})</p>
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setTradeTier(int tradeTier) {
         this.tradeTier = --tradeTier;
         this.namedTag.putInt("tradeTier", this.tradeTier);
@@ -300,6 +368,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @return 村民所允许的最大交易等级
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxTradeTier() {
         return maxTradeTier;
     }
@@ -307,6 +379,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @param maxTradeTier 设置村民所允许的最大交易等级
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setMaxTradeTier(int maxTradeTier) {
         this.maxTradeTier = maxTradeTier;
         this.setDataProperty(MAX_TRADE_TIER, 5);
@@ -314,9 +390,13 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         for (var r : recipes.getAll()) {
-            int netId = r.getInt("netId");
+            int $5 = r.getInt("netId");
             TradeRecipeBuildUtils.RECIPE_MAP.remove(netId);
         }
         super.close();
@@ -325,6 +405,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @return 村民当前的经验值
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getTradeExp() {
         return tradeExp;
     }
@@ -332,6 +416,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @param tradeExp 设置村民当前的经验值
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setTradeExp(int tradeExp) {
         this.tradeExp = tradeExp;
         this.setDataProperty(TRADE_EXPERIENCE, 10);
@@ -339,6 +427,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (this.getCanTrade()) {
             player.addWindow(inventory);
@@ -350,20 +442,32 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public TradeInventory getInventory() {
         return inventory;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getTradeSeed() {
         return tradeSeed;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void setTradeSeed(int tradeSeed) {
         this.tradeSeed = tradeSeed;
         this.namedTag.putInt("tradeSeed", tradeSeed);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addExperience(int xp) {
         this.tradeExp += xp;
         this.setDataProperty(TRADE_EXPERIENCE, this.tradeExp);
-        int next = getTradeTier() + 1;
+        int $6 = getTradeTier() + 1;
         if (next < this.tierExpRequirement.length) {
             if (tradeExp >= this.tierExpRequirement[next]) {
                 setTradeTier(next + 1);
@@ -372,17 +476,21 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int tick) {
         if (tick % 100 == 0) {
             if (profession != 0) {
                 if (recipes.getAll().isEmpty()) applyProfession(Profession.getProfession(this.profession));
             }
             if (tradeExp == 0 && !this.namedTag.contains("traded")) {
-                boolean professionFound = false;
-                for (int x = -1; x <= 1; x++) {
-                    for (int z = -1; z <= 1; z++) {
-                        Block block = getLocation().add(x, 0, z).getLevelBlock();
-                        String id = block.getId();
+                boolean $7 = false;
+                for (int $8 = -1; x <= 1; x++) {
+                    for (int $9 = -1; z <= 1; z++) {
+                        Block $10 = getLocation().add(x, 0, z).getLevelBlock();
+                        String $11 = block.getId();
                         for (Profession profession : Profession.getProfessions().values()) {
                             if (id.equals(profession.getBlockID())) {
                                 professionFound = true;
@@ -401,9 +509,9 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                     }
                 }
                 if (this.profession != 0 && !this.namedTag.contains("traded")) {
-                    int x = this.namedTag.getInt("blockX");
-                    int y = this.namedTag.getInt("blockY");
-                    int z = this.namedTag.getInt("blockZ");
+                    int $12 = this.namedTag.getInt("blockX");
+                    int $13 = this.namedTag.getInt("blockY");
+                    int $14 = this.namedTag.getInt("blockZ");
                     if (!Objects.equals(level.getBlockIdAt(x, y, z), Profession.getProfession(this.profession).getBlockID())) {
                         setProfession(0);
                         setCanTrade(false);
@@ -413,6 +521,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         }
         return super.onUpdate(tick);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void applyProfession(Profession profession) {
         if (recipes == null) recipes = new ListTag<>();

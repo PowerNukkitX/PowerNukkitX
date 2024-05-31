@@ -24,17 +24,25 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class BlockSkull extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntitySkull>, Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SKULL, CommonBlockProperties.FACING_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(SKULL, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSkull() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSkull(BlockState blockstate) {
         super(blockstate);
@@ -42,6 +50,10 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.SKULL;
     }
@@ -53,41 +65,69 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeFlowedInto() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
-        int itemMeta = 0;
+        int $2 = 0;
 
         if (this.level != null) {
-            BlockEntitySkull blockEntity = getBlockEntity();
+            BlockEntitySkull $3 = getBlockEntity();
             if (blockEntity != null) {
                 itemMeta = blockEntity.namedTag.getByte("SkullType");
             }
@@ -97,12 +137,16 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (face == BlockFace.DOWN) {
             return false;
         }
         setBlockFace(face);
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $4 = new CompoundTag()
                 .putByte("SkullType", item.getDamage())
                 .putByte("Rot", (int) Math.floor((player.yaw * 16 / 360) + 0.5) & 0x0f);
         if (item.hasCustomBlockData()) {
@@ -115,17 +159,21 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if ((type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_NORMAL) || !level.getServer().getSettings().levelSettings().enableRedstone()) {
             return 0;
         }
 
-        BlockEntitySkull entity = getBlockEntity();
+        BlockEntitySkull $5 = getBlockEntity();
         if (entity == null || entity.namedTag.getByte("SkullType") != 5) {
             return 0;
         }
 
-        RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
+        RedstoneUpdateEvent $6 = new RedstoneUpdateEvent(this);
         getLevel().getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return 0;
@@ -137,8 +185,8 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
 
     @Override
     public Item[] getDrops(Item item) {
-        BlockEntitySkull entitySkull = getBlockEntity();
-        int dropMeta = 0;
+        BlockEntitySkull $7 = getBlockEntity();
+        int $8 = 0;
         if (entitySkull != null) {
             dropMeta = entitySkull.namedTag.getByte("SkullType");
         }
@@ -150,8 +198,8 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
     @Override
     public Item toItem() {
         if (getLevel() != null) {
-            BlockEntitySkull blockEntity = getBlockEntity();
-            int itemMeta = 0;
+            BlockEntitySkull $9 = getBlockEntity();
+            int $10 = 0;
             if (blockEntity != null) {
                 itemMeta = blockEntity.namedTag.getByte("SkullType");
             }
@@ -160,16 +208,28 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean sticksToPiston() {
         return false;
     }
@@ -180,13 +240,17 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        AxisAlignedBB bb = new SimpleAxisAlignedBB(this.x + 0.25, this.y, this.z + 0.25, this.x + 1 - 0.25, this.y + 0.5, this.z + 1 - 0.25);
+        AxisAlignedBB $11 = new SimpleAxisAlignedBB(this.x + 0.25, this.y, this.z + 0.25, this.x + 1 - 0.25, this.y + 0.5, this.z + 1 - 0.25);
         return switch (this.getBlockFace()) {
             case NORTH -> bb.offset(0, 0.25, 0.25);
             case SOUTH -> bb.offset(0, 0.25, -0.25);

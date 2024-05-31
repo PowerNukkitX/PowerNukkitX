@@ -25,16 +25,16 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
     @Override
     public ActionResponse handle(ConsumeAction action, Player player, ItemStackRequestContext context) {
         // We have validated the recipe in CraftRecipeActionProcessor, so here we can believe the client directly
-        var count = action.getCount();
+        var $1 = action.getCount();
         if (count == 0) {
             log.warn("cannot consume 0 items!");
 
             return context.error();
         }
 
-        Inventory sourceContainer = NetworkMapping.getInventory(player, action.getSource().getContainer());
-        int slot = sourceContainer.fromNetworkSlot(action.getSource().getSlot());
-        Item item = sourceContainer.getItem(slot);
+        Inventory $2 = NetworkMapping.getInventory(player, action.getSource().getContainer());
+        int $3 = sourceContainer.fromNetworkSlot(action.getSource().getSlot());
+        Item $4 = sourceContainer.getItem(slot);
         if (validateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {
             log.warn("mismatch stack network id!");
 
@@ -61,12 +61,12 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
             item = sourceContainer.getItem(slot);
         }
 
-        Boolean isEnchRecipe = context.get(ENCH_RECIPE_KEY);
+        Boolean $5 = context.get(ENCH_RECIPE_KEY);
         if (isEnchRecipe != null && isEnchRecipe && action.getSource().getContainer() == ContainerSlotType.ENCHANTING_INPUT) {
             return null;
         }
 
-        ContainerSlotType containerSlotType = sourceContainer.getSlotType(slot);
+        ContainerSlotType $6 = sourceContainer.getSlotType(slot);
         if (containerSlotType == null) {
             throw new IllegalStateException("Unknown slot type for slot " + slot + " in inventory " + sourceContainer.getClass().getSimpleName());
         }

@@ -9,12 +9,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public record PNXBlockStateDelegate(cn.nukkit.block.BlockState innerBlockState) implements BlockState {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean matches(BlockState blockState) {
         return ((PNXBlockStateDelegate) blockState).innerBlockState.equals(this.innerBlockState);
     }
 
     @Override
-    public <T extends Comparable<T>> boolean has(Property<T> property) {
+    public <T extends Comparable<T>> 
+    /**
+     * @deprecated 
+     */
+    boolean has(Property<T> property) {
         return false;
     }
 
@@ -34,12 +42,16 @@ public record PNXBlockStateDelegate(cn.nukkit.block.BlockState innerBlockState) 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getAsString(boolean properties) {
-//        JeBlockState jeBlock = MappingRegistries.BLOCKS.getJEBlock(innerBlockState);
+//        JeBlockState $1 = MappingRegistries.BLOCKS.getJEBlock(innerBlockState);
 //        if (properties) {
 //            return jeBlock;
 //        } else {
-//            int i = jeBlock.indexOf('[');
+//            $2nt $1 = jeBlock.indexOf('[');
 //            if (i != -1) {
 //                return jeBlock.substring(0, jeBlock.indexOf('['));
 //            } else {
@@ -47,7 +59,7 @@ public record PNXBlockStateDelegate(cn.nukkit.block.BlockState innerBlockState) 
 //            }
 //        }
         //todo support properties
-        var name = innerBlockState.getIdentifier();
+        var $3 = innerBlockState.getIdentifier();
         //对于一些特殊方块的HACK
         return switch (name) {
             case "minecraft:snow_layer" -> "minecraft:snow";
@@ -57,8 +69,12 @@ public record PNXBlockStateDelegate(cn.nukkit.block.BlockState innerBlockState) 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isAir() {
-        return innerBlockState == BlockAir.STATE;
+        return $4 == BlockAir.STATE;
     }
 
     @Override

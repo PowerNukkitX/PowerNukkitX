@@ -6,13 +6,17 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 
 public class PlayerDropItemEvent extends PlayerEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final Item drop;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerDropItemEvent(Player player, Item drop) {
         this.player = player;

@@ -16,11 +16,19 @@ import javax.annotation.Nullable;
  */
 public abstract class BlockSlab extends BlockTransparent {
     protected final BlockState doubleSlab;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSlab(BlockState blockState, BlockState doubleSlab) {
         super(blockState);
         this.doubleSlab = doubleSlab;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSlab(BlockState blockState, String doubleSlab) {
         super(blockState);
@@ -30,38 +38,70 @@ public abstract class BlockSlab extends BlockTransparent {
     public abstract String getSlabName();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return (isOnTop() ? "Upper " : "") + getSlabName() + " Slab";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinY() {
         return isOnTop() ? this.y + 0.5 : this.y;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return isOnTop() ? this.y + 1 : this.y + 0.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return getToolType() < ItemTool.TYPE_AXE ? 30 : 15;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isOnTop() {
         return getPropertyValue(CommonBlockProperties.MINECRAFT_VERTICAL_HALF) == MinecraftVerticalHalf.TOP;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setOnTop(boolean top) {
         setPropertyValue(CommonBlockProperties.MINECRAFT_VERTICAL_HALF, top ? MinecraftVerticalHalf.TOP : MinecraftVerticalHalf.BOTTOM);
@@ -70,11 +110,19 @@ public abstract class BlockSlab extends BlockTransparent {
     public abstract boolean isSameType(BlockSlab slab);
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
-        return side == BlockFace.UP && isOnTop() || side == BlockFace.DOWN && !isOnTop();
+        return $1 == BlockFace.UP && isOnTop() || side == BlockFace.DOWN && !isOnTop();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         setOnTop(false);
         if (face == BlockFace.DOWN) {

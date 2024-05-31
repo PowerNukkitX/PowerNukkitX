@@ -4,17 +4,33 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 
 public class ItemShulkerBox extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemShulkerBox() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemShulkerBox(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemShulkerBox(Integer meta, int count) {
         super(SHULKER_BOX, meta, count);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void internalAdjust() {
         switch (getDamage()) {

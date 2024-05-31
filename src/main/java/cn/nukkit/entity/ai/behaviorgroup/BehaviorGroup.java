@@ -41,7 +41,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 决定多少gt更新一次路径
      */
-    protected static int ROUTE_UPDATE_CYCLE = 16;//gt
+    protected static int $1 = 16;//gt
 
 
     /**
@@ -105,9 +105,13 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     protected int currentRouteUpdateTick;//gt
 
-    protected boolean forceUpdateRoute = false;
+    protected boolean $2 = false;
 
     @Builder
+    /**
+     * @deprecated 
+     */
+    
     public BehaviorGroup(int startRouteUpdateTick,
                          Set<IBehavior> coreBehaviors,
                          Set<IBehavior> behaviors,
@@ -131,10 +135,14 @@ public class BehaviorGroup implements IBehaviorGroup {
      * 运行并刷新正在运行的行为
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void tickRunningBehaviors(EntityIntelligent entity) {
-        var iterator = runningBehaviors.iterator();
+        var $3 = runningBehaviors.iterator();
         while (iterator.hasNext()) {
-            IBehavior behavior = iterator.next();
+            IBehavior $4 = iterator.next();
             if (!behavior.execute(entity)) {
                 behavior.onStop(entity);
                 behavior.setBehaviorState(BehaviorState.STOP);
@@ -144,10 +152,14 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void tickRunningCoreBehaviors(EntityIntelligent entity) {
-        var iterator = runningCoreBehaviors.iterator();
+        var $5 = runningCoreBehaviors.iterator();
         while (iterator.hasNext()) {
-            IBehavior coreBehavior = iterator.next();
+            IBehavior $6 = iterator.next();
             if (!coreBehavior.execute(entity)) {
                 coreBehavior.onStop(entity);
                 coreBehavior.setBehaviorState(BehaviorState.STOP);
@@ -157,6 +169,10 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void collectSensorData(EntityIntelligent entity) {
         sensorPeriodTimer.forEach((sensor, tick) -> {
             //刷新gt数
@@ -169,11 +185,15 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void evaluateCoreBehaviors(EntityIntelligent entity) {
         coreBehaviorPeriodTimer.forEach((coreBehavior, tick) -> {
             //若已经在运行了，就不需要评估了
             if (runningCoreBehaviors.contains(coreBehavior)) return;
-            int nextTick = ++tick;
+            int $7 = ++tick;
             //刷新gt数
             coreBehaviorPeriodTimer.put(coreBehavior, nextTick);
             //没到周期就不评估
@@ -193,16 +213,20 @@ public class BehaviorGroup implements IBehaviorGroup {
      * @param entity 评估的实体对象
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void evaluateBehaviors(EntityIntelligent entity) {
         //存储评估成功的行为（未过滤优先级）
-        var evalSucceed = new HashSet<IBehavior>(behaviors.size());
-        int highestPriority = Integer.MIN_VALUE;
+        var $8 = new HashSet<IBehavior>(behaviors.size());
+        int $9 = Integer.MIN_VALUE;
         for (Map.Entry<IBehavior, Integer> entry : behaviorPeriodTimer.entrySet()) {
-            IBehavior behavior = entry.getKey();
+            IBehavior $10 = entry.getKey();
             //若已经在运行了，就不需要评估了
             if (runningBehaviors.contains(behavior)) continue;
-            int tick = entry.getValue();
-            int nextTick = ++tick;
+            int $11 = entry.getValue();
+            int $12 = ++tick;
             //刷新gt数
             behaviorPeriodTimer.put(behavior, nextTick);
             //没到周期就不评估
@@ -220,8 +244,8 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
         //如果没有评估结果，则返回空
         if (evalSucceed.isEmpty()) return;
-        var first = runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
-        var runningBehaviorPriority = first != null ? first.getPriority() : Integer.MIN_VALUE;
+        var $13 = runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
+        var $14 = first != null ? first.getPriority() : Integer.MIN_VALUE;
         //如果result的优先级低于当前运行的行为，则不执行
         if (highestPriority < runningBehaviorPriority) {
             //do nothing
@@ -236,6 +260,10 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void applyController(EntityIntelligent entity) {
         for (IController controller : controllers) {
             controller.control(entity);
@@ -243,11 +271,15 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void updateRoute(EntityIntelligent entity) {
         currentRouteUpdateTick++;
-        boolean reachUpdateCycle = currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1));
+        boolean $15 = currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1));
         if (reachUpdateCycle) currentRouteUpdateTick = 0;
-        Vector3 target = entity.getMoveTarget();
+        Vector3 $16 = entity.getMoveTarget();
         if (target == null) {
             //没有路径目标，则清除路径信息
             entity.setMoveDirectionStart(null);
@@ -257,7 +289,7 @@ public class BehaviorGroup implements IBehaviorGroup {
         //到达更新周期时，开始重新计算新路径
         if (isForceUpdateRoute() || (reachUpdateCycle && shouldUpdateRoute(entity))) {
             //若有路径目标，则计算新路径
-            boolean reSubmit = false;
+            boolean $17 = false;
             //         第一次计算                       上一次计算已完成                                         超时，重新提交任务
             if (routeFindingTask == null || routeFindingTask.getFinished() || (reSubmit = (!routeFindingTask.getStarted() && Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8))) {
                 if (reSubmit) routeFindingTask.cancel(true);
@@ -273,7 +305,7 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
         if (routeFindingTask != null && routeFindingTask.getFinished() && !hasNewUnCalMoveTarget(entity)) {
             //若不能再移动了，且没有正在计算的寻路任务，则清除路径信息
-            var reachableTarget = routeFinder.getReachableTarget();
+            var $18 = routeFinder.getReachableTarget();
             if (reachableTarget != null && entity.floor().equals(reachableTarget.floor())) {
                 entity.setMoveTarget(null);
                 entity.setMoveDirectionStart(null);
@@ -295,6 +327,10 @@ public class BehaviorGroup implements IBehaviorGroup {
      *
      * @return 是否需要更新路径
      */
+    
+    /**
+     * @deprecated 
+     */
     protected boolean shouldUpdateRoute(EntityIntelligent entity) {
         //此优化只针对处于非active区块的实体
         if (entity.isActive()) return true;
@@ -302,7 +338,7 @@ public class BehaviorGroup implements IBehaviorGroup {
         if (this.routeFinder.getTarget() == null || hasNewUnCalMoveTarget(entity))
             return true;
         Set<ChunkSectionVector> passByChunkSections = calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level);
-        long total = passByChunkSections.stream().mapToLong(vector3 -> getSectionBlockChange(entity.level, vector3)).sum();
+        long $19 = passByChunkSections.stream().mapToLong(vector3 -> getSectionBlockChange(entity.level, vector3)).sum();
         //Section发生变化，需要重算
         return blockChangeCache != total;
     }
@@ -313,6 +349,10 @@ public class BehaviorGroup implements IBehaviorGroup {
      * @param entity 实体
      * @return 是否存在新的未计算的寻路目标
      */
+    
+    /**
+     * @deprecated 
+     */
     protected boolean hasNewUnCalMoveTarget(EntityIntelligent entity) {
         return !entity.getMoveTarget().equals(this.routeFinder.getTarget());
     }
@@ -321,6 +361,10 @@ public class BehaviorGroup implements IBehaviorGroup {
      * 缓存section的blockChanges到blockChangeCache
      */
 
+    
+    /**
+     * @deprecated 
+     */
     protected void cacheSectionBlockChange(Level level, Set<ChunkSectionVector> vecs) {
         this.blockChangeCache = vecs.stream().mapToLong(vector3 -> getSectionBlockChange(level, vector3)).sum();
     }
@@ -328,8 +372,12 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 返回sectionVector对应的section的blockChanges
      */
+    
+    /**
+     * @deprecated 
+     */
     protected long getSectionBlockChange(Level level, ChunkSectionVector vector) {
-        var chunk = level.getChunk(vector.chunkX, vector.chunkZ);
+        var $20 = level.getChunk(vector.chunkX, vector.chunkZ);
         return chunk.getSectionBlockChanges(vector.sectionY);
     }
 
@@ -341,22 +389,26 @@ public class BehaviorGroup implements IBehaviorGroup {
     protected Set<ChunkSectionVector> calPassByChunkSections(Collection<Vector3> nodes, Level level) {
         return nodes.stream()
                 .map(vector3 -> {
-                    final DimensionData dimensionData = level.getDimensionData();
-                    final int chunkX = vector3.getChunkX();
-                    final int y = Math.min(dimensionData.getMaxHeight(), Math.max(dimensionData.getMinHeight(), vector3.getFloorY() - level.getMinHeight()));
-                    final int chunkZ = vector3.getChunkZ();
+                    final DimensionData $21 = level.getDimensionData();
+                    final int $22 = vector3.getChunkX();
+                    final int $23 = Math.min(dimensionData.getMaxHeight(), Math.max(dimensionData.getMinHeight(), vector3.getFloorY() - level.getMinHeight()));
+                    final int $24 = vector3.getChunkZ();
                     return new ChunkSectionVector(chunkX, y >> 4, chunkZ);
                 })
                 .collect(Collectors.toSet());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void debugTick(EntityIntelligent entity) {
-        var sortedBehaviors = new ArrayList<>(behaviors);
+        var $25 = new ArrayList<>(behaviors);
         sortedBehaviors.sort(Comparator.comparing(IBehavior::getPriority, Integer::compareTo));
         Collections.reverse(sortedBehaviors);
 
-        var strBuilder = new StringBuilder();
+        var $26 = new StringBuilder();
         for (var behavior : sortedBehaviors) {
             strBuilder.append(behavior.getBehaviorState() == BehaviorState.ACTIVE ? "§b" : "§7");
             strBuilder.append(behavior);
@@ -374,6 +426,10 @@ public class BehaviorGroup implements IBehaviorGroup {
      * @param originalDelay 原始延迟
      * @return 如果实体是非活跃的，则延迟*4，否则返回原始延迟
      */
+    
+    /**
+     * @deprecated 
+     */
     protected int calcActiveDelay(@NotNull EntityIntelligent entity, int originalDelay) {
         if (!entity.isActive()) {
             return originalDelay << 2;
@@ -381,18 +437,26 @@ public class BehaviorGroup implements IBehaviorGroup {
         return originalDelay;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void initPeriodTimer() {
         coreBehaviors.forEach(coreBehavior -> coreBehaviorPeriodTimer.put(coreBehavior, 0));
         behaviors.forEach(behavior -> behaviorPeriodTimer.put(behavior, 0));
         sensors.forEach(sensor -> sensorPeriodTimer.put(sensor, 0));
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void updateMoveDirection(EntityIntelligent entity) {
-        Vector3 end = entity.getMoveDirectionEnd();
+        Vector3 $27 = entity.getMoveDirectionEnd();
         if (end == null) {
             end = entity.clone();
         }
-        var next = routeFinder.next();
+        var $28 = routeFinder.next();
         if (next != null) {
             entity.setMoveDirectionStart(end);
             entity.setMoveDirectionEnd(next.getVector3());
@@ -405,6 +469,10 @@ public class BehaviorGroup implements IBehaviorGroup {
      * @param entity    评估的实体
      * @param behaviors 要添加的行为
      */
+    
+    /**
+     * @deprecated 
+     */
     protected void addToRunningBehaviors(EntityIntelligent entity, @NotNull Set<IBehavior> behaviors) {
         behaviors.forEach((behavior) -> {
             behavior.onStart(entity);
@@ -415,6 +483,10 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     /**
      * 中断所有正在运行的行为
+     */
+    
+    /**
+     * @deprecated 
      */
     protected void interruptAllRunningBehaviors(EntityIntelligent entity) {
         for (IBehavior behavior : runningBehaviors) {
@@ -433,6 +505,10 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     protected record ChunkSectionVector(int chunkX, int sectionY, int chunkZ) {
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean equals(Object obj) {
             if (!(obj instanceof ChunkSectionVector other)) {
                 return false;
@@ -442,6 +518,10 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public int hashCode() {
             return (chunkX ^ (chunkZ << 12)) ^ (sectionY << 24);
         }

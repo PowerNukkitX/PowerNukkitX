@@ -20,16 +20,24 @@ import static cn.nukkit.block.property.CommonBlockProperties.UPPER_BLOCK_BIT;
  * @since 2015/11/23
  */
 public class BlockDoublePlant extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(DOUBLE_PLANT, DOUBLE_PLANT_TYPE, UPPER_BLOCK_BIT);
+    public static final BlockProperties $1 = new BlockProperties(DOUBLE_PLANT, DOUBLE_PLANT_TYPE, UPPER_BLOCK_BIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDoublePlant() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDoublePlant(BlockState blockstate) {
         super(blockstate);
@@ -38,14 +46,26 @@ public class BlockDoublePlant extends BlockFlowable {
     @NotNull public DoublePlantType getDoublePlantType() {
         return getPropertyValue(DOUBLE_PLANT_TYPE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDoublePlantType(@NotNull DoublePlantType type) {
         setPropertyValue(DOUBLE_PLANT_TYPE, type);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isTopHalf() {
         return getPropertyValue(UPPER_BLOCK_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTopHalf(boolean topHalf) {
         setPropertyValue(UPPER_BLOCK_BIT, topHalf);
@@ -53,21 +73,33 @@ public class BlockDoublePlant extends BlockFlowable {
 
     @Override
     public Item toItem() {
-        int aux = getDoublePlantType().ordinal();
+        int $2 = getDoublePlantType().ordinal();
         return new ItemBlock(this, aux);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeReplaced() {
         return getDoublePlantType() == DoublePlantType.GRASS || getDoublePlantType() == DoublePlantType.FERN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return getDoublePlantType().name();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (isTopHalf()) {
@@ -88,8 +120,12 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        Block up = up();
+        Block $3 = up();
 
         if (up.isAir() && isSupportValid(down())) {
             setTopHalf(false);
@@ -104,6 +140,10 @@ public class BlockDoublePlant extends BlockFlowable {
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isSupportValid(Block support) {
         return switch (support.getId()) {
             case GRASS_BLOCK, DIRT, PODZOL, FARMLAND, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
@@ -112,8 +152,12 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
-        Block down = down();
+        Block $4 = down();
 
         if (isTopHalf()) { // Top half
             this.getLevel().useBreakOn(down);
@@ -131,7 +175,7 @@ public class BlockDoublePlant extends BlockFlowable {
         }
 
         if (getDoublePlantType() == DoublePlantType.GRASS || getDoublePlantType() == DoublePlantType.FERN) {
-            boolean dropSeeds = ThreadLocalRandom.current().nextInt(10) == 0;
+            boolean $5 = ThreadLocalRandom.current().nextInt(10) == 0;
             if (item.isShears()) {
                 //todo enchantment
                 if (dropSeeds) {
@@ -158,11 +202,19 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { //Bone meal
             switch (getDoublePlantType()) {
@@ -184,6 +236,10 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isFertilizable() {
         return true;
     }

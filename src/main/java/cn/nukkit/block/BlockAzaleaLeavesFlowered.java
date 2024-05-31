@@ -6,22 +6,34 @@ import static cn.nukkit.block.property.CommonBlockProperties.PERSISTENT_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;
 
 public class BlockAzaleaLeavesFlowered extends BlockAzaleaLeaves {
-    public static final BlockProperties PROPERTIES = new BlockProperties(AZALEA_LEAVES_FLOWERED,PERSISTENT_BIT, UPDATE_BIT);
+    public static final BlockProperties $1 = new BlockProperties(AZALEA_LEAVES_FLOWERED,PERSISTENT_BIT, UPDATE_BIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockAzaleaLeavesFlowered() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockAzaleaLeavesFlowered(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Azalea Leaves Flowered";
     }

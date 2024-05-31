@@ -25,32 +25,52 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ItemPainting extends Item {
     private static final int[] DIRECTION = {2, 3, 4, 5};
     private static final int[] RIGHT = {4, 5, 3, 2};
-    private static final double OFFSET = 0.53125;
+    private static final double $1 = 0.53125;
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemPainting() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemPainting(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemPainting(Integer meta, int count) {
         super(PAINTING, 0, count, "Painting");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
             return false;
         }
 
-        IChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
+        IChunk $2 = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
 
         if (chunk == null || target.isTransparent() || face.getHorizontalIndex() == -1 || block.isSolid()) {
             return false;
@@ -62,11 +82,11 @@ public class ItemPainting extends Item {
                 validMotives.add(motive);
             }
         }
-        int direction = DIRECTION[face.getIndex() - 2];
-        EntityPainting.Motive motive = validMotives.get(ThreadLocalRandom.current().nextInt(validMotives.size()));
+        int $3 = DIRECTION[face.getIndex() - 2];
+        EntityPainting.Motive $4 = validMotives.get(ThreadLocalRandom.current().nextInt(validMotives.size()));
 
-        Vector3 position = new Vector3(target.x + 0.5, target.y + 0.5, target.z + 0.5);
-        double widthOffset = offset(motive.width);
+        Vector3 $5 = new Vector3(target.x + 0.5, target.y + 0.5, target.z + 0.5);
+        double $6 = offset(motive.width);
 
         switch (face.getHorizontalIndex()) {
             case 0:
@@ -88,7 +108,7 @@ public class ItemPainting extends Item {
         }
         position.y += offset(motive.height);
 
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $7 = new CompoundTag()
                 .putByte("Direction", direction)
                 .putString("Motive", motive.title)
                 .putList("Pos", new ListTag<DoubleTag>()
@@ -103,14 +123,14 @@ public class ItemPainting extends Item {
                         .add(new FloatTag(direction * 90))
                         .add(new FloatTag(0)));
 
-        EntityPainting entity = (EntityPainting) Entity.createEntity(Entity.PAINTING, chunk, nbt);
+        EntityPainting $8 = (EntityPainting) Entity.createEntity(Entity.PAINTING, chunk, nbt);
 
         if (entity == null) {
             return false;
         }
 
         if (player.isSurvival()) {
-            Item item = player.getInventory().getItemInHand();
+            Item $9 = player.getInventory().getItemInHand();
             item.setCount(item.getCount() - 1);
             player.getInventory().setItemInHand(item);
         }
@@ -122,6 +142,10 @@ public class ItemPainting extends Item {
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static double offset(int value) {
         return value > 1 ? 0.5 : 0;
     }

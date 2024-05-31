@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -26,10 +26,18 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
     protected @Nullable final Item item;
     protected final Vector3 touchVector;
     protected final Action action;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerInteractEvent(Player player, Item item, Vector3 block, BlockFace face) {
         this(player, item, block, face, Action.RIGHT_CLICK_BLOCK);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerInteractEvent(Player player, @Nullable Item item, Vector3 block, @Nullable BlockFace face, Action action) {
         if (block instanceof Block block1) {

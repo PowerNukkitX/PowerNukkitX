@@ -7,7 +7,11 @@ public interface Faceable {
     BlockFace getBlockFace();
 
 
-    default void setBlockFace(BlockFace face) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void setBlockFace(BlockFace face) {
         // Does nothing by default
     }
 }

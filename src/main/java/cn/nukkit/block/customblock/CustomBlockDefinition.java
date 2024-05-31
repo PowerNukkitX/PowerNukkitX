@@ -39,11 +39,19 @@ import java.util.function.Consumer;
 @Slf4j
 public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
-    private static final AtomicInteger CUSTOM_BLOCK_RUNTIMEID = new AtomicInteger(10000);
+    private static final AtomicInteger $1 = new AtomicInteger(10000);
+    /**
+     * @deprecated 
+     */
+    
 
     public int getRuntimeId() {
         return CustomBlockDefinition.INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int getRuntimeId(String identifier) {
         return CustomBlockDefinition.INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
@@ -63,14 +71,18 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         protected final String identifier;
         protected final CustomBlock customBlock;
 
-        protected CompoundTag nbt = new CompoundTag()
+        protected CompoundTag $2 = new CompoundTag()
                 .putCompound("components", new CompoundTag());
 
-        protected Builder(CustomBlock customBlock) {
+        
+    /**
+     * @deprecated 
+     */
+    protected Builder(CustomBlock customBlock) {
             this.identifier = customBlock.getId();
             this.customBlock = customBlock;
-            var b = (Block) customBlock;
-            var components = this.nbt.getCompound("components");
+            var $3 = (Block) customBlock;
+            var $4 = this.nbt.getCompound("components");
 
             //设置一些与PNX内部对应的方块属性
             components.putCompound("minecraft:friction", new CompoundTag()
@@ -105,7 +117,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             this.nbt.putInt("molangVersion", 9);
 
             //设置方块的properties
-            var propertiesNBT = getPropertiesNBT();
+            var $5 = getPropertiesNBT();
             if (propertiesNBT != null) {
                 nbt.putList("properties", propertiesNBT);
             }
@@ -181,7 +193,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Control the grouping of custom blocks in the creation inventory.
          *
-         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
+         * @see <a $6="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
          */
         public Builder creativeGroup(String creativeGroup) {
             if (creativeGroup.isBlank()) {
@@ -197,7 +209,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Control the grouping of custom blocks in the creation inventory.
          *
-         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
+         * @see <a $7="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
          */
         public Builder creativeGroup(CreativeGroup creativeGroup) {
             this.nbt.getCompound("components").getCompound("menu_category").putString("group", creativeGroup.getGroupName());
@@ -205,7 +217,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * @see <a href="https://wiki.bedrock.dev/blocks/block-components.html#crafting-table">wiki.bedrock.dev</a>
+         * @see <a $8="https://wiki.bedrock.dev/blocks/block-components.html#crafting-table">wiki.bedrock.dev</a>
          */
         public Builder craftingTable(CraftingTable craftingTable) {
             this.nbt.getCompound("components").putCompound("minecraft:crafting_table", craftingTable.toCompoundTag());
@@ -241,7 +253,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                 log.error("geometry has an invalid value!");
                 return this;
             }
-            var components = this.nbt.getCompound("components");
+            var $9 = this.nbt.getCompound("components");
             //默认单位立方体方块，如果定义几何模型需要移除
             if (components.contains("minecraft:unit_cube")) components.remove("minecraft:unit_cube");
             //设置方块对应的几何模型
@@ -258,7 +270,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          */
 
         public Builder geometry(@NotNull Geometry geometry) {
-            var components = this.nbt.getCompound("components");
+            var $10 = this.nbt.getCompound("components");
             //默认单位立方体方块，如果定义几何模型需要移除
             if (components.contains("minecraft:unit_cube")) components.remove("minecraft:unit_cube");
             //设置方块对应的几何模型
@@ -288,7 +300,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * Control custom block permutation features such as conditional rendering, partial rendering, etc.
          */
         public Builder permutations(Permutation... permutations) {
-            var per = new ListTag<CompoundTag>();
+            var $11 = new ListTag<CompoundTag>();
             for (var permutation : permutations) {
                 per.add(permutation.toCompoundTag());
             }
@@ -359,12 +371,12 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         @Nullable
         private ListTag<CompoundTag> getPropertiesNBT() {
             if (this.customBlock instanceof Block block) {
-                var properties = block.getProperties();
+                var $12 = block.getProperties();
                 Set<BlockPropertyType<?>> propertyTypeSet = properties.getPropertyTypeSet();
                 if (propertyTypeSet.isEmpty()) {
                     return null;
                 }
-                var nbtList = new ListTag<CompoundTag>();
+                var $13 = new ListTag<CompoundTag>();
                 for (var each : propertyTypeSet) {
                     if (each instanceof BooleanPropertyType booleanBlockProperty) {
                         nbtList.add(new CompoundTag().putString("name", booleanBlockProperty.getName())
@@ -372,13 +384,13 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                                         .add(new ByteTag(0))
                                         .add(new ByteTag(1))));
                     } else if (each instanceof IntPropertyType intBlockProperty) {
-                        var enumList = new ListTag<IntTag>();
-                        for (int i = intBlockProperty.getMin(); i <= intBlockProperty.getMax(); i++) {
+                        var $14 = new ListTag<IntTag>();
+                        for ($15nt $1 = intBlockProperty.getMin(); i <= intBlockProperty.getMax(); i++) {
                             enumList.add(new IntTag(i));
                         }
                         nbtList.add(new CompoundTag().putString("name", intBlockProperty.getName()).putList("enum", enumList));
                     } else if (each instanceof EnumPropertyType<?> arrayBlockProperty) {
-                        var enumList = new ListTag<StringTag>();
+                        var $16 = new ListTag<StringTag>();
                         for (var e : arrayBlockProperty.getValidValues()) {
                             enumList.add(new StringTag(e.name().toLowerCase(Locale.ENGLISH)));
                         }
@@ -396,7 +408,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * Custom processing of the block to be sent to the client ComponentNBT, which contains all definitions for custom block. You can modify them as much as you want, under the right conditions.
          */
         public CustomBlockDefinition customBuild(@NotNull Consumer<CompoundTag> nbt) {
-            var def = this.build();
+            var $17 = this.build();
             nbt.accept(def.nbt);
             return def;
         }

@@ -16,14 +16,18 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 public class BlockEntitySculkSensor extends BlockEntity implements VibrationListener {
 
-    protected int lastActiveTime = Server.getInstance().getTick();
+    protected int $1 = Server.getInstance().getTick();
     protected VibrationEvent lastVibrationEvent;
 
-    protected int power = 0;
+    protected int $2 = 0;
 
-    protected int comparatorPower = 0;
+    protected int $3 = 0;
 
-    protected boolean waitForVibration = false;
+    protected boolean $4 = false;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BlockEntitySculkSensor(IChunk chunk, CompoundTag nbt) {
@@ -31,22 +35,38 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initBlockEntity() {
         this.level.getVibrationManager().addListener(this);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onBreak(boolean isSilkTouch) {
         this.level.getVibrationManager().removeListener(this);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         this.level.getVibrationManager().removeListener(this);
         super.close();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return getLevelBlock().getId() == BlockID.SCULK_SENSOR;
     }
@@ -57,9 +77,13 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onVibrationOccur(VibrationEvent event) {
         if (this.isBlockEntityValid() && level.getServer().getSettings().levelSettings().enableRedstone() && !(this.level.getBlock(event.source()) instanceof BlockSculkSensor)) {
-            boolean canBeActive = (Server.getInstance().getTick() - lastActiveTime) > 40 && !waitForVibration;
+            boolean $5 = (Server.getInstance().getTick() - lastActiveTime) > 40 && !waitForVibration;
             if (canBeActive) waitForVibration = true;
             return canBeActive;
         } else {
@@ -68,6 +92,10 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onVibrationArrive(VibrationEvent event) {
         if (this.level != null && this.isBlockEntityValid() && level.getServer().getSettings().levelSettings().enableRedstone()) {
             this.lastVibrationEvent = event;
@@ -76,7 +104,7 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
 
             calPower();
 
-            var block = (BlockSculkSensor) this.getBlock();
+            var $6 = (BlockSculkSensor) this.getBlock();
             block.setPhase(1);
             block.updateAroundRedstone();
             level.scheduleUpdate(block, 41);
@@ -86,30 +114,54 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
     public VibrationEvent getLastVibrationEvent() {
         return this.lastVibrationEvent;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getLastActiveTime() {
         return this.lastActiveTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getPower() {
         return power;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getComparatorPower() {
         return comparatorPower;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getListenRange() {
         return 8;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void updateLastActiveTime() {
         this.lastActiveTime = Server.getInstance().getTick();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void calPower() {
-        var event = this.getLastVibrationEvent();
+        var $7 = this.getLastVibrationEvent();
         if ((this.level.getServer().getTick() - this.getLastActiveTime()) >= 40 || event == null) {
             power = 0;
             comparatorPower = 0;

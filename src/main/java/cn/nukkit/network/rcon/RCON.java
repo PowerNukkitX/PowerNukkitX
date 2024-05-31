@@ -20,6 +20,10 @@ import java.io.IOException;
 public class RCON {
     private final Server server;
     private final RCONServer serverThread;
+    /**
+     * @deprecated 
+     */
+    
 
     public RCON(Server server, String password, String address, int port) {
         if (password.isEmpty()) {
@@ -37,6 +41,10 @@ public class RCON {
 
         log.info(this.server.getLanguage().tr("nukkit.server.rcon.running", new String[]{address, String.valueOf(port)}));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void check() {
         if (this.serverThread == null) {
@@ -47,8 +55,8 @@ public class RCON {
 
         RCONCommand command;
         while ((command = serverThread.receive()) != null) {
-            RemoteConsoleCommandSender sender = new RemoteConsoleCommandSender();
-            RemoteServerCommandEvent event = new RemoteServerCommandEvent(sender, command.getCommand());
+            RemoteConsoleCommandSender $1 = new RemoteConsoleCommandSender();
+            RemoteServerCommandEvent $2 = new RemoteServerCommandEvent(sender, command.getCommand());
             this.server.getPluginManager().callEvent(event);
 
             if (!event.isCancelled()) {
@@ -58,6 +66,10 @@ public class RCON {
             this.serverThread.respond(command.getSender(), command.getId(), TextFormat.clean(sender.getMessages()));
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void close() {
         try {

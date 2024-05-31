@@ -13,7 +13,7 @@ import cn.nukkit.math.Vector3;
  */
 public class PlayerInteractEntityEvent extends PlayerEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -22,6 +22,10 @@ public class PlayerInteractEntityEvent extends PlayerEvent implements Cancellabl
     protected final Entity entity;
     protected final Item item;
     protected final Vector3 clickedPos;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerInteractEntityEvent(Player player, Entity entity, Item item, Vector3 clickedPos) {
         this.player = player;

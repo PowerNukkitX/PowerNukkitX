@@ -11,7 +11,7 @@ import cn.nukkit.item.Item;
  */
 public class EntityShootCrossbowEvent extends EntityEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -19,6 +19,10 @@ public class EntityShootCrossbowEvent extends EntityEvent implements Cancellable
 
     private final EntityProjectile[] projectiles;
     private final Item crossbow;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityShootCrossbowEvent(EntityLiving shooter, Item crossbow, EntityProjectile... projectiles) {
         this.entity = shooter;
@@ -42,10 +46,18 @@ public class EntityShootCrossbowEvent extends EntityEvent implements Cancellable
     public EntityProjectile[] getProjectiles() {
         return this.projectiles;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getProjectilesCount() {
         return this.projectiles.length;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setProjectile(EntityProjectile projectile, int array) {
         if (projectile != this.projectiles[array]) {
@@ -56,9 +68,13 @@ public class EntityShootCrossbowEvent extends EntityEvent implements Cancellable
             this.projectiles[array] = projectile;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setProjectiles(EntityProjectile[] projectiles) {
-        for (int i = 0; i < this.projectiles.length; i++) {
+        for ($2nt $1 = 0; i < this.projectiles.length; i++) {
             if (projectiles[i] != this.projectiles[i]) {
                 if (this.projectiles[i].getViewers().isEmpty()) {
                     this.projectiles[i].kill();
@@ -68,6 +84,10 @@ public class EntityShootCrossbowEvent extends EntityEvent implements Cancellable
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void killProjectiles() {
         for (EntityProjectile projectile : this.projectiles) {

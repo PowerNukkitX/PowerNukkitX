@@ -10,20 +10,32 @@ import static cn.nukkit.block.property.CommonBlockProperties.SAND_STONE_TYPE;
 
 public class BlockSandstone extends BlockSolid {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(SANDSTONE, SAND_STONE_TYPE);
+    public static final BlockProperties $1 = new BlockProperties(SANDSTONE, SAND_STONE_TYPE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSandstone() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSandstone(BlockState state) {
         super(state);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSandstoneType(SandStoneType sandStoneType) {
         setPropertyValue(SAND_STONE_TYPE, sandStoneType);
@@ -34,16 +46,28 @@ public class BlockSandstone extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return SandStoneType.SMOOTH.equals(getSandstoneType()) ? 2 : 0.8;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return SandStoneType.SMOOTH.equals(getSandstoneType()) ? 6 : 0.8;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return switch(getSandstoneType()) {
             case CUT -> "Cut Sandstone";
@@ -54,16 +78,28 @@ public class BlockSandstone extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }

@@ -18,30 +18,46 @@ import java.util.function.Supplier;
 
 public class BlockStonecutterBlock extends BlockTransparent implements Faceable, BlockInventoryHolder {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(STONECUTTER_BLOCK, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(STONECUTTER_BLOCK, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockStonecutterBlock() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockStonecutterBlock(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Stonecutter";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
-        int horizontalIndex = face.getHorizontalIndex();
+        int $2 = face.getHorizontalIndex();
         if (horizontalIndex > -1) {
             this.setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION,
                     CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(BlockFace.fromHorizontalIndex(horizontalIndex)));
@@ -54,6 +70,10 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable,
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getHorizontalIndex()) : BlockFace.SOUTH);
 
@@ -62,11 +82,19 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable,
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
             player.addWindow(getOrCreateInventory());
@@ -75,31 +103,55 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable,
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 3.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 17.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -115,6 +167,10 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable,
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return y + 9 / 16.0;
     }

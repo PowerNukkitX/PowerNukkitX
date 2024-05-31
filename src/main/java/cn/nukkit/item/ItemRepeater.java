@@ -4,6 +4,10 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 
 public class ItemRepeater extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemRepeater() {
         super(REPEATER, 0, 1, "Redstone Repeater");
         this.block = Block.get(BlockID.UNPOWERED_REPEATER);

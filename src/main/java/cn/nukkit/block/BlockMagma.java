@@ -15,17 +15,29 @@ import cn.nukkit.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockMagma extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(MAGMA);
+    public static final BlockProperties $1 = new BlockProperties(MAGMA);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMagma() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMagma(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Magma Block";
     }
@@ -37,21 +49,37 @@ public class BlockMagma extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 30;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 3;
     }
@@ -68,6 +96,10 @@ public class BlockMagma extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         if (entity.hasEffect(EffectType.FIRE_RESISTANCE)) {
             return;
@@ -84,11 +116,15 @@ public class BlockMagma extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            Block up = up();
+            Block $2 = up();
             if (up instanceof BlockFlowingWater blockFlowingWater && (blockFlowingWater.getLiquidDepth() == 0 || blockFlowingWater.getLiquidDepth() == 8)) {
-                BlockFormEvent event = new BlockFormEvent(up, new BlockBubbleColumn().setPropertyValue(CommonBlockProperties.DRAG_DOWN, true));
+                BlockFormEvent $3 = new BlockFormEvent(up, new BlockBubbleColumn().setPropertyValue(CommonBlockProperties.DRAG_DOWN, true));
                 if (!event.isCancelled()) {
                     if (event.getNewState().getWaterloggingLevel() > 0) {
                         this.getLevel().setBlock(up, 1, new BlockFlowingWater(), true, false);
@@ -101,6 +137,10 @@ public class BlockMagma extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }

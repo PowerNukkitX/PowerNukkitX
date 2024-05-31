@@ -6,12 +6,16 @@ import com.dfsek.terra.api.inventory.ItemStack;
 public record PNXItemDelegate(cn.nukkit.item.Item innerItem) implements Item {
     @Override
     public ItemStack newItemStack(int i) {
-        final var tmp = innerItem.clone();
+        final var $1 = innerItem.clone();
         tmp.setCount(i);
         return new PNXItemStack(tmp);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxDurability() {
         return innerItem.getMaxDurability();
     }

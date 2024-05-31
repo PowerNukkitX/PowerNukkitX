@@ -41,7 +41,7 @@ public abstract class AbstractMappedRegistry<K, V, M extends Map<K, V>> extends 
      * @return the mapped value from the given key if present
      */
     public <U> Optional<U> map(K key, Function<? super V, ? extends U> mapper) {
-        V value = this.get(key);
+        V $1 = this.get(key);
         if (value == null) {
             return Optional.empty();
         } else {

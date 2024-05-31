@@ -35,6 +35,10 @@ public class ConvertingSetWrapper<V1, V2> extends AbstractSet<V1> {
     private final Function<V1, V2> converter;
     private final Function<V2, V1> reverseConverter;
     private final Set<V2> proxied;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public ConvertingSetWrapper(Set<V2> proxied, Function<V1, V2> converter, Function<V2, V1> reverseConverter) {
@@ -49,35 +53,59 @@ public class ConvertingSetWrapper<V1, V2> extends AbstractSet<V1> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int size() {
         return proxied.size();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isEmpty() {
         return proxied.isEmpty();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean contains(Object o) {
         Function<V1, V2> uncheckedConverter = converter;
-        Object converted = uncheckedConverter.apply((V1) o);
+        Object $1 = uncheckedConverter.apply((V1) o);
         return proxied.contains(converted);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean add(V1 v1) {
         return proxied.add(converter.apply(v1));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean remove(Object o) {
         Function<V1, V2> uncheckedConverter = converter;
-        Object converted = uncheckedConverter.apply((V1) o);
+        Object $2 = uncheckedConverter.apply((V1) o);
         return proxied.remove(converted);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void clear() {
         proxied.clear();
     }
@@ -86,11 +114,19 @@ public class ConvertingSetWrapper<V1, V2> extends AbstractSet<V1> {
         private final Iterator<V2> proxiedIterator = proxied.iterator();
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public void remove() {
             proxiedIterator.remove();
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean hasNext() {
             return proxiedIterator.hasNext();
         }

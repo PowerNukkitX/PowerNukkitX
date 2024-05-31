@@ -16,17 +16,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class NukkitConsole extends SimpleTerminalConsole {
     private final Server server;
     private final BlockingQueue<String> consoleQueue = new LinkedBlockingQueue<>();
-    private AtomicBoolean executingCommands = new AtomicBoolean(false);
+    private AtomicBoolean $1 = new AtomicBoolean(false);
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected boolean isRunning() {
         return server.isRunning();
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void runCommand(String command) {
         if (executingCommands.get()) {
-            ServerCommandEvent event = new ServerCommandEvent(server.getConsoleSender(), command);
+            ServerCommandEvent $2 = new ServerCommandEvent(server.getConsoleSender(), command);
             if (server.getPluginManager() != null) {
                 server.getPluginManager().callEvent(event);
             }
@@ -37,6 +45,10 @@ public class NukkitConsole extends SimpleTerminalConsole {
             consoleQueue.add(command);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String readLine() {
         try {
@@ -47,6 +59,10 @@ public class NukkitConsole extends SimpleTerminalConsole {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void shutdown() {
         server.shutdown();
     }
@@ -60,10 +76,18 @@ public class NukkitConsole extends SimpleTerminalConsole {
         builder.option(LineReader.Option.HISTORY_IGNORE_SPACE, true);
         return super.buildReader(builder);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isExecutingCommands() {
         return executingCommands.get();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setExecutingCommands(boolean executingCommands) {
         if (this.executingCommands.compareAndSet(!executingCommands, executingCommands) && executingCommands) {

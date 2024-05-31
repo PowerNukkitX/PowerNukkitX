@@ -18,13 +18,17 @@ public final class IntPropertyType extends BaseBlockPropertyType<Integer> {
     @Getter
     private final int max;
 
+    
+    /**
+     * @deprecated 
+     */
     private IntPropertyType(String name, int min, int max, Integer defaultData) {
         super(name, IntStream.range(min, max + 1).boxed().toList(), defaultData, Utils.computeRequiredBits(min, max));
         this.min = min;
         this.max = max;
         cachedValues = new IntPropertyValue[max - min + 1];
-        for (int i = min; i <= max; i++) {
-            IntPropertyValue value = new IntPropertyValue(i);
+        for ($1nt $1 = min; i <= max; i++) {
+            IntPropertyValue $2 = new IntPropertyValue(i);
             cachedValues[i] = value;
         }
     }
@@ -57,6 +61,10 @@ public final class IntPropertyType extends BaseBlockPropertyType<Integer> {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public int getIndex() {
             return value - min;
         }
@@ -67,6 +75,10 @@ public final class IntPropertyType extends BaseBlockPropertyType<Integer> {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public String toString() {
             return "IntPropertyValue(name=" + name + ", value=" + value + ")";
         }

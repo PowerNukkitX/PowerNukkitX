@@ -37,6 +37,10 @@ public class JSClassLoader extends URLClassLoader {
 
     @Getter
     private final CommonJSPlugin jsPlugin;
+    /**
+     * @deprecated 
+     */
+    
 
     public JSClassLoader(CommonJSPlugin jsPlugin, ClassLoader parent) {
         super(new URL[0], parent);
@@ -52,9 +56,17 @@ public class JSClassLoader extends URLClassLoader {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void addURL(URL url) {
         super.addURL(url);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addJar(@NotNull File jarFile) {
         try {
@@ -63,6 +75,10 @@ public class JSClassLoader extends URLClassLoader {
             e.printStackTrace();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addJar(@NotNull String jarPath) {
         addJar(new File(jarPath));

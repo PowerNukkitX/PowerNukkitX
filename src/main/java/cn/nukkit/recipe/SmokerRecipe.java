@@ -9,9 +9,17 @@ import java.util.List;
 
 
 public class SmokerRecipe extends SmeltingRecipe {
+    /**
+     * @deprecated 
+     */
+    
     public SmokerRecipe(Item result, Item ingredient) {
         this(null, result, ingredient);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SmokerRecipe(@Nullable String recipeId, Item result, Item ingredient) {
         super(recipeId == null ?
@@ -23,6 +31,10 @@ public class SmokerRecipe extends SmeltingRecipe {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean match(Input input) {
         return true;
     }

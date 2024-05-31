@@ -13,22 +13,38 @@ public class NetworkChunkPublisherUpdatePacket extends DataPacket {
     public int radius;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.position = byteBuf.readSignedBlockPosition();
         this.radius = (int) byteBuf.readUnsignedVarInt();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeSignedBlockPosition(position);
         byteBuf.writeUnsignedVarInt(radius);
         byteBuf.writeInt(0); // Saved chunks
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

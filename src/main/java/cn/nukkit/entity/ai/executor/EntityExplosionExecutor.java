@@ -19,13 +19,21 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
 
     protected int explodeTime;
     protected int explodeForce;
-    protected int currentTick = 0;
+    protected int $1 = 0;
     @Nullable
     protected MemoryType<Boolean> flagMemory;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityExplosionExecutor(int explodeTime, int explodeForce) {
         this(explodeTime, explodeForce, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityExplosionExecutor(int explodeTime, int explodeForce, @Nullable MemoryType<Boolean> flagMemory) {
         this.explodeTime = explodeTime;
@@ -34,6 +42,10 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
         //check flag
         if (flagMemory != null && entity.getMemoryStorage().compareDataTo(flagMemory, false)) {
@@ -53,19 +65,31 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         entity.setDataFlag(EntityFlag.IGNITED, false);
         currentTick = 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         entity.setDataFlag(EntityFlag.IGNITED, false);
         currentTick = 0;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void explode(EntityIntelligent entity) {
-        EntityExplosionPrimeEvent ev = new EntityExplosionPrimeEvent(entity, entity instanceof EntityCreeper creeper ? creeper.isPowered() ? explodeForce * 2 : explodeForce : explodeForce);
+        EntityExplosionPrimeEvent $2 = new EntityExplosionPrimeEvent(entity, entity instanceof EntityCreeper creeper ? creeper.isPowered() ? explodeForce * 2 : explodeForce : explodeForce);
 
         if (!entity.level.gameRules.getBoolean(GameRule.MOB_GRIEFING)) {
             ev.setBlockBreaking(false);
@@ -74,7 +98,7 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
         Server.getInstance().getPluginManager().callEvent(ev);
 
         if (!ev.isCancelled()) {
-            Explosion explosion = new Explosion(entity, (float) ev.getForce(), entity);
+            Explosion $3 = new Explosion(entity, (float) ev.getForce(), entity);
 
             if (ev.isBlockBreaking() && entity.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
                 explosion.explodeA();

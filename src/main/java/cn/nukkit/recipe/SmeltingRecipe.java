@@ -4,9 +4,17 @@ import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 
 public abstract class SmeltingRecipe extends BaseRecipe {
+    
+    /**
+     * @deprecated 
+     */
     protected SmeltingRecipe(String id) {
         super(id);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setInput(ItemDescriptor item) {
         this.ingredients.set(0, item);

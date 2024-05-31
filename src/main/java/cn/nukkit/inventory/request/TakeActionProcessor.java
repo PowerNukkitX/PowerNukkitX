@@ -23,11 +23,11 @@ public class TakeActionProcessor extends TransferItemActionProcessor<TakeAction>
 
     @Override
     public ActionResponse handle(TakeAction action, Player player, ItemStackRequestContext context) {
-        ContainerSlotType sourceSlotType = action.getSource().getContainer();
+        ContainerSlotType $1 = action.getSource().getContainer();
         if (sourceSlotType == ContainerSlotType.CREATED_OUTPUT) {
-            Inventory source = NetworkMapping.getInventory(player, sourceSlotType);
-            Item sourItem = source.getUnclonedItem(0);
-            int count = action.getCount();
+            Inventory $2 = NetworkMapping.getInventory(player, sourceSlotType);
+            Item $3 = source.getUnclonedItem(0);
+            int $4 = action.getCount();
             if (sourItem.getCount() > count) {
                 sourItem.setCount(count);
             }

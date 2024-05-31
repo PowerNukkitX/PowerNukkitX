@@ -10,6 +10,10 @@ import cn.nukkit.command.selector.args.ISelectorArgument;
 public abstract class CoordinateArgument implements ISelectorArgument {
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPriority() {
         return 1;
     }

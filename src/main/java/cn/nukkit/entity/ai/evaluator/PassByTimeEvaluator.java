@@ -26,6 +26,10 @@ public class PassByTimeEvaluator implements IBehaviorEvaluator {
      * @param minPassByTimeRange the min pass by time range
      * @param maxPassByTimeRange the max pass by time range
      */
+    /**
+     * @deprecated 
+     */
+    
     public PassByTimeEvaluator(MemoryType<Integer> timedMemory, int minPassByTimeRange, int maxPassByTimeRange) {
         this.timedMemory = timedMemory;
         this.minPassByTimeRange = minPassByTimeRange;
@@ -33,9 +37,13 @@ public class PassByTimeEvaluator implements IBehaviorEvaluator {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean evaluate(EntityIntelligent entity) {
-        var time = entity.getMemoryStorage().get(timedMemory);
-        int passByTime = Server.getInstance().getTick() - time;
+        var $1 = entity.getMemoryStorage().get(timedMemory);
+        int $2 = Server.getInstance().getTick() - time;
         return passByTime >= minPassByTimeRange && passByTime <= maxPassByTimeRange;
     }
 }

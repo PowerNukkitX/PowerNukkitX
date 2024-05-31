@@ -1,543 +1,1263 @@
 package cn.nukkit.network.protocol;
 
 public interface PacketHandler {
-    default void handle(AddBehaviorTreePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(AddBehaviorTreePacket pk) {
     }
 
-    default void handle(AddEntityPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(AddEntityPacket pk) {
     }
 
-    default void handle(AddItemEntityPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(AddItemEntityPacket pk) {
     }
 
-    default void handle(AddPaintingPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(AddPaintingPacket pk) {
     }
 
-    default void handle(AddPlayerPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(AddPlayerPacket pk) {
     }
 
-    default void handle(AddVolumeEntityPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(AddVolumeEntityPacket pk) {
     }
 
-    default void handle(AdventureSettingsPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(AdventureSettingsPacket pk) {
     }
 
-    default void handle(AgentActionEventPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(AgentActionEventPacket pk) {
     }
 
-    default void handle(AgentAnimationPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(AgentAnimationPacket pk) {
     }
 
-    default void handle(AnimateEntityPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(AnimateEntityPacket pk) {
     }
 
-    default void handle(AnimatePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(AnimatePacket pk) {
     }
 
-    default void handle(AnvilDamagePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(AnvilDamagePacket pk) {
     }
 
-    default void handle(AvailableCommandsPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(AvailableCommandsPacket pk) {
     }
 
-    default void handle(AvailableEntityIdentifiersPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(AvailableEntityIdentifiersPacket pk) {
     }
 
-    default void handle(BiomeDefinitionListPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(BiomeDefinitionListPacket pk) {
     }
 
-    default void handle(BlockEntityDataPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(BlockEntityDataPacket pk) {
     }
 
-    default void handle(BlockEventPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(BlockEventPacket pk) {
     }
 
-    default void handle(BlockPickRequestPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(BlockPickRequestPacket pk) {
     }
 
-    default void handle(BookEditPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(BookEditPacket pk) {
     }
 
-    default void handle(BossEventPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(BossEventPacket pk) {
     }
 
-    default void handle(CameraInstructionPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CameraInstructionPacket pk) {
     }
 
-    default void handle(CameraPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CameraPacket pk) {
     }
 
-    default void handle(CameraPresetsPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CameraPresetsPacket pk) {
     }
 
-    default void handle(CameraShakePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CameraShakePacket pk) {
     }
 
-    default void handle(ChangeDimensionPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ChangeDimensionPacket pk) {
     }
 
-    default void handle(ChangeMobPropertyPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ChangeMobPropertyPacket pk) {
     }
 
-    default void handle(ChunkRadiusUpdatedPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ChunkRadiusUpdatedPacket pk) {
     }
 
-    default void handle(ClientCacheStatusPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ClientCacheStatusPacket pk) {
     }
 
-    default void handle(ClientToServerHandshakePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ClientToServerHandshakePacket pk) {
     }
 
-    default void handle(ClientboundMapItemDataPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ClientboundMapItemDataPacket pk) {
     }
 
-    default void handle(CodeBuilderPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CodeBuilderPacket pk) {
     }
 
-    default void handle(CodeBuilderSourcePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CodeBuilderSourcePacket pk) {
     }
 
-    default void handle(CommandBlockUpdatePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CommandBlockUpdatePacket pk) {
     }
 
-    default void handle(CommandOutputPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CommandOutputPacket pk) {
     }
 
-    default void handle(CommandRequestPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CommandRequestPacket pk) {
     }
 
-    default void handle(CompletedUsingItemPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CompletedUsingItemPacket pk) {
     }
 
-    default void handle(CompressedBiomeDefinitionListPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CompressedBiomeDefinitionListPacket pk) {
     }
 
-    default void handle(ContainerClosePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ContainerClosePacket pk) {
     }
 
-    default void handle(ContainerOpenPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ContainerOpenPacket pk) {
     }
 
-    default void handle(ContainerSetDataPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ContainerSetDataPacket pk) {
     }
 
-    default void handle(CraftingDataPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CraftingDataPacket pk) {
     }
 
-    default void handle(CraftingEventPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CraftingEventPacket pk) {
     }
 
-    default void handle(CreatePhotoPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CreatePhotoPacket pk) {
     }
 
-    default void handle(CreativeContentPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(CreativeContentPacket pk) {
     }
 
-    default void handle(DeathInfoPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(DeathInfoPacket pk) {
     }
 
-    default void handle(DebugInfoPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(DebugInfoPacket pk) {
     }
 
-    default void handle(DimensionDataPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(DimensionDataPacket pk) {
     }
 
-    default void handle(DisconnectPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(DisconnectPacket pk) {
     }
 
-    default void handle(EduUriResourcePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(EduUriResourcePacket pk) {
     }
 
-    default void handle(EmoteListPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(EmoteListPacket pk) {
     }
 
-    default void handle(EmotePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(EmotePacket pk) {
     }
 
-    default void handle(EntityEventPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(EntityEventPacket pk) {
     }
 
-    default void handle(EntityFallPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(EntityFallPacket pk) {
     }
 
-    default void handle(EntityPickRequestPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(EntityPickRequestPacket pk) {
     }
 
-    default void handle(EventPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(EventPacket pk) {
     }
 
-    default void handle(FilterTextPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(FilterTextPacket pk) {
     }
 
-    default void handle(GUIDataPickItemPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(GUIDataPickItemPacket pk) {
     }
 
-    default void handle(GameRulesChangedPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(GameRulesChangedPacket pk) {
     }
 
-    default void handle(HurtArmorPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(HurtArmorPacket pk) {
     }
 
-    default void handle(InitiateWebSocketConnectionPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(InitiateWebSocketConnectionPacket pk) {
     }
 
-    default void handle(InteractPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(InteractPacket pk) {
     }
 
-    default void handle(InventoryContentPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(InventoryContentPacket pk) {
     }
 
-    default void handle(InventorySlotPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(InventorySlotPacket pk) {
     }
 
-    default void handle(InventoryTransactionPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(InventoryTransactionPacket pk) {
     }
 
-    default void handle(ItemComponentPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ItemComponentPacket pk) {
     }
 
-    default void handle(ItemFrameDropItemPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ItemFrameDropItemPacket pk) {
     }
 
-    default void handle(ItemStackRequestPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ItemStackRequestPacket pk) {
     }
 
-    default void handle(ItemStackResponsePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ItemStackResponsePacket pk) {
     }
 
-    default void handle(LabTablePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(LabTablePacket pk) {
     }
 
-    default void handle(LecternUpdatePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(LecternUpdatePacket pk) {
     }
 
-    default void handle(LessonProgressPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(LessonProgressPacket pk) {
     }
 
-    default void handle(LevelChunkPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(LevelChunkPacket pk) {
     }
 
-    default void handle(LevelEventGenericPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(LevelEventGenericPacket pk) {
     }
 
-    default void handle(LevelEventPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(LevelEventPacket pk) {
     }
 
-    default void handle(LevelSoundEventPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(LevelSoundEventPacket pk) {
     }
 
-    default void handle(LoginPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(LoginPacket pk) {
     }
 
-    default void handle(MapCreateLockedCopyPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(MapCreateLockedCopyPacket pk) {
     }
 
-    default void handle(MapInfoRequestPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(MapInfoRequestPacket pk) {
     }
 
-    default void handle(MobArmorEquipmentPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(MobArmorEquipmentPacket pk) {
     }
 
-    default void handle(MobEffectPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(MobEffectPacket pk) {
     }
 
-    default void handle(MobEquipmentPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(MobEquipmentPacket pk) {
     }
 
-    default void handle(ModalFormRequestPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ModalFormRequestPacket pk) {
     }
 
-    default void handle(ModalFormResponsePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ModalFormResponsePacket pk) {
     }
 
-    default void handle(MoveEntityAbsolutePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(MoveEntityAbsolutePacket pk) {
     }
 
-    default void handle(MoveEntityDeltaPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(MoveEntityDeltaPacket pk) {
     }
 
-    default void handle(MovePlayerPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(MovePlayerPacket pk) {
     }
 
-    default void handle(NPCDialoguePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(NPCDialoguePacket pk) {
     }
 
-    default void handle(NPCRequestPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(NPCRequestPacket pk) {
     }
 
-    default void handle(NetworkChunkPublisherUpdatePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(NetworkChunkPublisherUpdatePacket pk) {
     }
 
-    default void handle(NetworkSettingsPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(NetworkSettingsPacket pk) {
     }
 
-    default void handle(NetworkStackLatencyPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(NetworkStackLatencyPacket pk) {
     }
 
-    default void handle(OnScreenTextureAnimationPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(OnScreenTextureAnimationPacket pk) {
     }
 
-    default void handle(OpenSignPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(OpenSignPacket pk) {
     }
 
-    default void handle(PacketViolationWarningPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PacketViolationWarningPacket pk) {
     }
 
-    default void handle(PhotoInfoRequestPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PhotoInfoRequestPacket pk) {
     }
 
-    default void handle(PlaySoundPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PlaySoundPacket pk) {
     }
 
-    default void handle(PlayStatusPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PlayStatusPacket pk) {
     }
 
-    default void handle(PlayerActionPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PlayerActionPacket pk) {
     }
 
-    default void handle(PlayerArmorDamagePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PlayerArmorDamagePacket pk) {
     }
 
-    default void handle(PlayerAuthInputPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PlayerAuthInputPacket pk) {
     }
 
-    default void handle(PlayerEnchantOptionsPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PlayerEnchantOptionsPacket pk) {
     }
 
-    default void handle(PlayerFogPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PlayerFogPacket pk) {
     }
 
-    default void handle(PlayerHotbarPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PlayerHotbarPacket pk) {
     }
 
-    default void handle(PlayerInputPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PlayerInputPacket pk) {
     }
 
-    default void handle(PlayerListPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PlayerListPacket pk) {
     }
 
-    default void handle(PlayerSkinPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PlayerSkinPacket pk) {
     }
 
-    default void handle(PlayerStartItemCoolDownPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PlayerStartItemCoolDownPacket pk) {
     }
 
-    default void handle(PositionTrackingDBClientRequestPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PositionTrackingDBClientRequestPacket pk) {
     }
 
-    default void handle(PositionTrackingDBServerBroadcastPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(PositionTrackingDBServerBroadcastPacket pk) {
     }
 
-    default void handle(RemoveEntityPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(RemoveEntityPacket pk) {
     }
 
-    default void handle(RemoveObjectivePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(RemoveObjectivePacket pk) {
     }
 
-    default void handle(RemoveVolumeEntityPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(RemoveVolumeEntityPacket pk) {
     }
 
-    default void handle(RequestAbilityPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(RequestAbilityPacket pk) {
     }
 
-    default void handle(RequestChunkRadiusPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(RequestChunkRadiusPacket pk) {
     }
 
-    default void handle(RequestNetworkSettingsPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(RequestNetworkSettingsPacket pk) {
     }
 
-    default void handle(RequestPermissionsPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(RequestPermissionsPacket pk) {
     }
 
-    default void handle(ResourcePackChunkDataPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ResourcePackChunkDataPacket pk) {
     }
 
-    default void handle(ResourcePackChunkRequestPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ResourcePackChunkRequestPacket pk) {
     }
 
-    default void handle(ResourcePackClientResponsePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ResourcePackClientResponsePacket pk) {
     }
 
-    default void handle(ResourcePackDataInfoPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ResourcePackDataInfoPacket pk) {
     }
 
-    default void handle(ResourcePackStackPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ResourcePackStackPacket pk) {
     }
 
-    default void handle(ResourcePacksInfoPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ResourcePacksInfoPacket pk) {
     }
 
-    default void handle(RespawnPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(RespawnPacket pk) {
     }
 
-    default void handle(RiderJumpPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(RiderJumpPacket pk) {
     }
 
-    default void handle(ScriptCustomEventPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ScriptCustomEventPacket pk) {
     }
 
-    default void handle(ScriptMessagePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ScriptMessagePacket pk) {
     }
 
-    default void handle(ServerPostMovePositionPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ServerPostMovePositionPacket pk) {
     }
 
-    default void handle(ServerSettingsRequestPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ServerSettingsRequestPacket pk) {
     }
 
-    default void handle(ServerSettingsResponsePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ServerSettingsResponsePacket pk) {
     }
 
-    default void handle(ServerToClientHandshakePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ServerToClientHandshakePacket pk) {
     }
 
-    default void handle(SetCommandsEnabledPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetCommandsEnabledPacket pk) {
     }
 
-    default void handle(SetDefaultGameTypePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetDefaultGameTypePacket pk) {
     }
 
-    default void handle(SetDifficultyPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetDifficultyPacket pk) {
     }
 
-    default void handle(SetDisplayObjectivePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetDisplayObjectivePacket pk) {
     }
 
-    default void handle(SetEntityDataPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetEntityDataPacket pk) {
     }
 
-    default void handle(SetEntityLinkPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetEntityLinkPacket pk) {
     }
 
-    default void handle(SetEntityMotionPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetEntityMotionPacket pk) {
     }
 
-    default void handle(SetHealthPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetHealthPacket pk) {
     }
 
-    default void handle(SetHudPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetHudPacket pk) {
     }
 
-    default void handle(SetLastHurtByPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetLastHurtByPacket pk) {
     }
 
-    default void handle(SetLocalPlayerAsInitializedPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetLocalPlayerAsInitializedPacket pk) {
     }
 
-    default void handle(SetPlayerGameTypePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetPlayerGameTypePacket pk) {
     }
 
-    default void handle(SetPlayerInventoryOptionsPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetPlayerInventoryOptionsPacket pk) {
     }
 
-    default void handle(SetScorePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetScorePacket pk) {
     }
 
-    default void handle(SetScoreboardIdentityPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetScoreboardIdentityPacket pk) {
     }
 
-    default void handle(SetSpawnPositionPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetSpawnPositionPacket pk) {
     }
 
-    default void handle(SetTimePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetTimePacket pk) {
     }
 
-    default void handle(SetTitlePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SetTitlePacket pk) {
     }
 
-    default void handle(ShowCreditsPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ShowCreditsPacket pk) {
     }
 
-    default void handle(ShowProfilePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ShowProfilePacket pk) {
     }
 
-    default void handle(SimpleEventPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SimpleEventPacket pk) {
     }
 
-    default void handle(SimulationTypePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SimulationTypePacket pk) {
     }
 
-    default void handle(SpawnExperienceOrbPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SpawnExperienceOrbPacket pk) {
     }
 
-    default void handle(SpawnParticleEffectPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SpawnParticleEffectPacket pk) {
     }
 
-    default void handle(StartGamePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(StartGamePacket pk) {
     }
 
-    default void handle(StopSoundPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(StopSoundPacket pk) {
     }
 
-    default void handle(StructureBlockUpdatePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(StructureBlockUpdatePacket pk) {
     }
 
-    default void handle(SubClientLoginPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SubClientLoginPacket pk) {
     }
 
-    default void handle(SyncEntityPropertyPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(SyncEntityPropertyPacket pk) {
     }
 
-    default void handle(TakeItemEntityPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(TakeItemEntityPacket pk) {
     }
 
-    default void handle(TextPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(TextPacket pk) {
     }
 
-    default void handle(TickSyncPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(TickSyncPacket pk) {
     }
 
-    default void handle(TickingAreasLoadStatusPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(TickingAreasLoadStatusPacket pk) {
     }
 
-    default void handle(ToastRequestPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ToastRequestPacket pk) {
     }
 
-    default void handle(ToggleCrafterSlotRequestPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(ToggleCrafterSlotRequestPacket pk) {
     }
 
-    default void handle(TransferPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(TransferPacket pk) {
     }
 
-    default void handle(TrimDataPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(TrimDataPacket pk) {
     }
 
-    default void handle(UnlockedRecipesPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(UnlockedRecipesPacket pk) {
     }
 
-    default void handle(UpdateAbilitiesPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(UpdateAbilitiesPacket pk) {
     }
 
-    default void handle(UpdateAdventureSettingsPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(UpdateAdventureSettingsPacket pk) {
     }
 
-    default void handle(UpdateAttributesPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(UpdateAttributesPacket pk) {
     }
 
-    default void handle(UpdateBlockPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(UpdateBlockPacket pk) {
     }
 
-    default void handle(UpdateBlockSyncedPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(UpdateBlockSyncedPacket pk) {
     }
 
-    default void handle(UpdateClientInputLocksPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(UpdateClientInputLocksPacket pk) {
     }
 
-    default void handle(UpdateEquipmentPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(UpdateEquipmentPacket pk) {
     }
 
-    default void handle(UpdatePlayerGameTypePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(UpdatePlayerGameTypePacket pk) {
     }
 
-    default void handle(UpdateSoftEnumPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(UpdateSoftEnumPacket pk) {
     }
 
-    default void handle(UpdateSubChunkBlocksPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(UpdateSubChunkBlocksPacket pk) {
     }
 
-    default void handle(UpdateTradePacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(UpdateTradePacket pk) {
     }
 
-    default void handle(VideoStreamConnectPacket pk) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void handle(VideoStreamConnectPacket pk) {
     }
 }

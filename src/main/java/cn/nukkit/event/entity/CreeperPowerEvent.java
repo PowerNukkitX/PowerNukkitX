@@ -9,7 +9,7 @@ import cn.nukkit.event.HandlerList;
  * @author MagicDroidX (Nukkit Project)
  */
 public class CreeperPowerEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -17,11 +17,19 @@ public class CreeperPowerEvent extends EntityEvent implements Cancellable {
 
     private final PowerCause cause;
     private EntityLightningStrike bolt;
+    /**
+     * @deprecated 
+     */
+    
 
     public CreeperPowerEvent(final EntityCreeper creeper, final EntityLightningStrike bolt, final PowerCause cause) {
         this(creeper, cause);
         this.bolt = bolt;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public CreeperPowerEvent(final EntityCreeper creeper, final PowerCause cause) {
         this.entity = creeper;

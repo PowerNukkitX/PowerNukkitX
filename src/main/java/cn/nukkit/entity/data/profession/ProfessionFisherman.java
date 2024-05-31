@@ -11,6 +11,10 @@ import cn.nukkit.utils.TradeRecipeBuildUtils;
 import java.util.Random;
 
 public class ProfessionFisherman extends Profession {
+    /**
+     * @deprecated 
+     */
+    
 
     public ProfessionFisherman() {
         super(2, BlockID.BARREL, "entity.villager.fisherman");
@@ -19,10 +23,10 @@ public class ProfessionFisherman extends Profession {
     @Override
     public ListTag<CompoundTag> buildTrades(int seed) {
         ListTag<CompoundTag> recipes = new ListTag<>();
-        Random random = new Random(seed);
+        Random $1 = new Random(seed);
 
-        Item rod = Item.get(ItemID.FISHING_ROD);
-        Enchantment rodEnchantment = Enchantment.getEnchantment(new int[]{Enchantment.ID_DURABILITY, Enchantment.ID_LURE, Enchantment.ID_FORTUNE_FISHING}[random.nextInt(2)]);
+        Item $2 = Item.get(ItemID.FISHING_ROD);
+        Enchantment $3 = Enchantment.getEnchantment(new int[]{Enchantment.ID_DURABILITY, Enchantment.ID_LURE, Enchantment.ID_FORTUNE_FISHING}[random.nextInt(2)]);
         rodEnchantment.setLevel(random.nextInt(3) + 1);
         rod.addEnchantment(rodEnchantment);
 

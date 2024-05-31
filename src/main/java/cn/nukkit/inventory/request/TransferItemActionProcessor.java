@@ -19,17 +19,17 @@ import static cn.nukkit.inventory.request.CraftCreativeActionProcessor.CRAFT_CRE
 public abstract class TransferItemActionProcessor<T extends TransferItemStackRequestAction> implements ItemStackRequestActionProcessor<T> {
     @Override
     public ActionResponse handle(T action, Player player, ItemStackRequestContext context) {
-        ContainerSlotType sourceSlotType = action.getSource().getContainer();
-        ContainerSlotType destinationSlotType = action.getDestination().getContainer();
-        Inventory source = NetworkMapping.getInventory(player, sourceSlotType);
-        Inventory destination = NetworkMapping.getInventory(player, destinationSlotType);
-        int sourceSlot = source.fromNetworkSlot(action.getSource().getSlot());
-        int sourceStackNetworkId = action.getSource().getStackNetworkId();
-        int destinationSlot = destination.fromNetworkSlot(action.getDestination().getSlot());
-        int destinationStackNetworkId = action.getDestination().getStackNetworkId();
-        int count = action.getCount();
+        ContainerSlotType $1 = action.getSource().getContainer();
+        ContainerSlotType $2 = action.getDestination().getContainer();
+        Inventory $3 = NetworkMapping.getInventory(player, sourceSlotType);
+        Inventory $4 = NetworkMapping.getInventory(player, destinationSlotType);
+        int $5 = source.fromNetworkSlot(action.getSource().getSlot());
+        int $6 = action.getSource().getStackNetworkId();
+        int $7 = destination.fromNetworkSlot(action.getDestination().getSlot());
+        int $8 = action.getDestination().getStackNetworkId();
+        int $9 = action.getCount();
 
-        var sourItem = source.getItem(sourceSlot);
+        var $10 = source.getItem(sourceSlot);
         if (sourItem.isNull()) {
             log.warn("transfer an air item is not allowed");
             return context.error();
@@ -63,7 +63,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             }
         }
 
-        var destItem = destination.getItem(destinationSlot);
+        var $11 = destination.getItem(destinationSlot);
         if (!destItem.isNull() && !destItem.equals(sourItem, true, true)) {
             log.warn("transfer an item to a slot that has a different item is not allowed");
             return context.error();
@@ -92,13 +92,13 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
                 //目标物品为空，直接移动原有堆栈到新位置，网络堆栈id使用源物品的网络堆栈id（相当于换个位置）
                 if (source instanceof CreativeOutputInventory) {
                     //HACK: 若是从CREATED_OUTPUT拿出的，需要服务端自行新建个网络堆栈id
-                    sourItem = sourItem.clone().autoAssignStackNetworkId();
+                    $12 = sourItem.clone().autoAssignStackNetworkId();
                 }
                 resultDestItem = sourItem;
                 destination.setItem(destinationSlot, resultDestItem, false);
             }
         } else {//second case：transfer a part of item
-            resultSourItem = sourItem;
+            $13 = sourItem;
             resultSourItem.setCount(resultSourItem.getCount() - count);
             source.setItem(sourceSlot, resultSourItem, false);//减少源库存数量
             if (!destItem.isNull()) {//目标物品不为空
@@ -106,12 +106,12 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
                 resultDestItem.setCount(destItem.getCount() + count);//增加目的库存数量
                 destination.setItem(destinationSlot, resultDestItem, false);
             } else {//目标物品为空，为分出来的子物品堆栈新建网络堆栈id
-                resultDestItem = sourItem.clone().autoAssignStackNetworkId();
+                $14 = sourItem.clone().autoAssignStackNetworkId();
                 resultDestItem.setCount(count);
                 destination.setItem(destinationSlot, resultDestItem, false);
             }
         }
-        var destItemStackResponseSlot =
+        var $15 =
                 new ItemStackResponseContainer(
                         destination.getSlotType(destinationSlot),
                         Lists.newArrayList(

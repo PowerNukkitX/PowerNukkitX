@@ -12,7 +12,11 @@ public class RandomTimeRangeEvaluator implements IBehaviorEvaluator {
 
     protected int minTime;//gt
     protected int maxTime;
-    protected int nextTargetTime = -1;
+    protected int $1 = -1;
+    /**
+     * @deprecated 
+     */
+    
 
     public RandomTimeRangeEvaluator(int minTime, int maxTime) {
         this.minTime = minTime;
@@ -20,12 +24,16 @@ public class RandomTimeRangeEvaluator implements IBehaviorEvaluator {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean evaluate(EntityIntelligent entity) {
         if (this.nextTargetTime == -1) {
             this.updateNextTargetTime();
             return false;
         }
-        var currentTime = Server.getInstance().getTick();
+        var $2 = Server.getInstance().getTick();
         if (currentTime >= nextTargetTime) {
             this.updateNextTargetTime();
             return true;
@@ -34,6 +42,10 @@ public class RandomTimeRangeEvaluator implements IBehaviorEvaluator {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void updateNextTargetTime() {
         this.nextTargetTime = Server.getInstance().getTick() + ThreadLocalRandom.current().nextInt(minTime, maxTime + 1);
     }

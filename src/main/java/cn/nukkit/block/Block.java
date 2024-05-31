@@ -45,18 +45,22 @@ import java.util.function.Predicate;
 @Slf4j
 public abstract class Block extends Position implements Metadatable, AxisAlignedBB, BlockID {
     public static final Block[] EMPTY_ARRAY = new Block[0];
-    public static final double DEFAULT_FRICTION_FACTOR = 0.6;
-    public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
+    public static final double $1 = 0.6;
+    public static final double $2 = 0.95;
     protected static final Long2ObjectOpenHashMap<BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
     protected BlockState blockstate;
     protected BlockColor color;
     public int layer;
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean isNotActivate(Player player) {
         if (player == null) {
             return true;
         }
-        Item itemInHand = player.getInventory().getItemInHand();
+        Item $3 = player.getInventory().getItemInHand();
         if ((player.isSneaking() || player.isFlySneaking()) && !(itemInHand.isTool() || itemInHand.isNull())) {
             return true;
         }
@@ -66,7 +70,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     @NotNull
     public static Block get(String id) {
         id = id.contains(":") ? id : "minecraft:" + id;
-        Block block = Registries.BLOCK.get(id);
+        Block $4 = Registries.BLOCK.get(id);
         if (block == null) return new BlockAir();
         return block;
     }
@@ -74,9 +78,9 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     @NotNull
     public static Block get(String id, Position pos) {
         id = id.contains(":") ? id : "minecraft:" + id;
-        Block block = Registries.BLOCK.get(id, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), pos.level);
+        Block $5 = Registries.BLOCK.get(id, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), pos.level);
         if (block == null) {
-            BlockAir blockAir = new BlockAir();
+            BlockAir $6 = new BlockAir();
             blockAir.x = pos.getFloorX();
             blockAir.y = pos.getFloorY();
             blockAir.z = pos.getFloorZ();
@@ -89,7 +93,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     @NotNull
     public static Block get(String id, Position pos, int layer) {
         id = id.contains(":") ? id : "minecraft:" + id;
-        Block block = get(id, pos);
+        Block $7 = get(id, pos);
         block.layer = layer;
         return block;
     }
@@ -97,9 +101,9 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     @NotNull
     public static Block get(String id, Level level, int x, int y, int z) {
         id = id.contains(":") ? id : "minecraft:" + id;
-        Block block = Registries.BLOCK.get(id, x, y, z, level);
+        Block $8 = Registries.BLOCK.get(id, x, y, z, level);
         if (block == null) {
-            BlockAir blockAir = new BlockAir();
+            BlockAir $9 = new BlockAir();
             blockAir.x = x;
             blockAir.y = y;
             blockAir.z = z;
@@ -112,14 +116,14 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     @NotNull
     public static Block get(String id, Level level, int x, int y, int z, int layer) {
         id = id.contains(":") ? id : "minecraft:" + id;
-        Block block = get(id, level, x, y, z);
+        Block $10 = get(id, level, x, y, z);
         block.layer = layer;
         return block;
     }
 
     @NotNull
     public static Block get(BlockState blockState) {
-        Block block = Registries.BLOCK.get(blockState);
+        Block $11 = Registries.BLOCK.get(blockState);
         if (block == null) {
             return new BlockAir();
         }
@@ -128,9 +132,9 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     @NotNull
     public static Block get(BlockState blockState, Position pos) {
-        Block block = Registries.BLOCK.get(blockState, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), pos.level);
+        Block $12 = Registries.BLOCK.get(blockState, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), pos.level);
         if (block == null) {
-            BlockAir blockAir = new BlockAir();
+            BlockAir $13 = new BlockAir();
             blockAir.x = pos.getFloorX();
             blockAir.y = pos.getFloorY();
             blockAir.z = pos.getFloorZ();
@@ -142,16 +146,16 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     @NotNull
     public static Block get(BlockState blockState, Position pos, int layer) {
-        Block block = get(blockState, pos);
+        Block $14 = get(blockState, pos);
         block.layer = layer;
         return block;
     }
 
     @NotNull
     public static Block get(BlockState blockState, Level level, int x, int y, int z) {
-        Block block = Registries.BLOCK.get(blockState, x, y, z, level);
+        Block $15 = Registries.BLOCK.get(blockState, x, y, z, level);
         if (block == null) {
-            BlockAir blockAir = new BlockAir();
+            BlockAir $16 = new BlockAir();
             blockAir.x = x;
             blockAir.y = y;
             blockAir.z = z;
@@ -163,7 +167,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     @NotNull
     public static Block get(BlockState blockState, Level level, int x, int y, int z, int layer) {
-        Block block = get(blockState, level, x, y, z);
+        Block $17 = get(blockState, level, x, y, z);
         block.layer = layer;
         return block;
     }
@@ -171,25 +175,29 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     @NotNull
     public static Block getWithState(String id, BlockState blockState) {
         id = id.contains(":") ? id : "minecraft:" + id;
-        Block block = get(id);
+        Block $18 = get(id);
         block.setPropertyValues(blockState.getBlockPropertyValues());
         return block;
     }
 
     static {
-        try (var reader = new InputStreamReader(new BufferedInputStream(Objects.requireNonNull(Block.class.getClassLoader().getResourceAsStream("block_color.json"))))) {
-            var parser = JsonParser.parseReader(reader);
+        try (var $19 = new InputStreamReader(new BufferedInputStream(Objects.requireNonNull(Block.class.getClassLoader().getResourceAsStream("block_color.json"))))) {
+            var $20 = JsonParser.parseReader(reader);
             for (var entry : parser.getAsJsonObject().entrySet()) {
-                var r = entry.getValue().getAsJsonObject().get("r").getAsInt();
-                var g = entry.getValue().getAsJsonObject().get("g").getAsInt();
-                var b = entry.getValue().getAsJsonObject().get("b").getAsInt();
-                var a = entry.getValue().getAsJsonObject().get("a").getAsInt();
+                va$21 $1 = entry.getValue().getAsJsonObject().get("r").getAsInt();
+                var $22 = entry.getValue().getAsJsonObject().get("g").getAsInt();
+                var $23 = entry.getValue().getAsJsonObject().get("b").getAsInt();
+                v$24r $2 = entry.getValue().getAsJsonObject().get("a").getAsInt();
                 VANILLA_BLOCK_COLOR_MAP.put(Long.parseLong(entry.getKey()), new BlockColor(r, g, b, a));
             }
         } catch (IOException e) {
             log.error("Failed to load block color map", e);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Block(@Nullable BlockState blockState) {
         super(0, 0, 0, null);
@@ -201,10 +209,18 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     //http://minecraft.wiki/w/Breaking
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canHarvestWithHand() {  //used for calculating breaking time
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int tickRate() {
         return 10;
@@ -224,36 +240,68 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @param player The player that is placing the block. May be null.
      * @return {@code true} if the block was properly place. The implementation is responsible for reverting any partial change.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         return this.getLevel().setBlock(this, this, true, true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean onBreak(Item item) {
         return this.getLevel().setBlock(this, layer, Block.get(AIR), true, true);
     }
 
     /**
-     * When the player break block with canSilkTouch enchantment and the canSilkTouch=true,
+     * When the player break block with $25 enchantment and the $3=true,
      * the drop will be set to the original item {@link Block#toItem()}
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSilkTouch(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int onUpdate(int type) {
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, @NotNull PlayerInteractEvent.Action action) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void onNeighborChange(@NotNull BlockFace side) {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return true;
@@ -270,12 +318,24 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @param fz        the fz at block
      * @return the boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void afterRemoval(Block newBlock, boolean update) {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSoulSpeedCompatible() {
         return false;
@@ -284,6 +344,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * Define the block hardness
      */
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 10;
     }
@@ -291,6 +355,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * Defines the block explosion resistance
      */
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 1;
     }
@@ -303,6 +371,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      *
      * @return the burn chance
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnChance() {
         return 0;
     }
@@ -312,6 +384,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * <p>
      * The higher this value, the more likely it is to be ignited by the fire next to it
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnAbility() {
         return 0;
     }
@@ -321,6 +397,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      *
      * @return 挖掘方块的工具类型
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_NONE;
     }
@@ -330,6 +410,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * <p>
      * The friction on the server side, which is used to control the speed that player drops item,entity walk and boat movement on the block.The larger the value, the faster the movement.
      */
+    /**
+     * @deprecated 
+     */
+    
     public double getFrictionFactor() {
         return DEFAULT_FRICTION_FACTOR;
     }
@@ -338,6 +422,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * 控制方块的通过阻力因素（0-1）。此值越小阻力越大<p/>
      * 对于不可穿过的方块，若未覆写，此值始终为1（无效）<p/>
      */
+    /**
+     * @deprecated 
+     */
+    
     public double getPassableBlockFrictionFactor() {
         if (!this.canPassThrough()) return 1;
         return DEFAULT_AIR_FLUID_FRICTION;
@@ -348,6 +436,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      *
      * @return 走过这个方块所需要的额外代价
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getWalkThroughExtraCost() {
         return 0;
     }
@@ -357,13 +449,25 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      *
      * @return 发光等级(0 - 15)
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canBePlaced() {
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canBeReplaced() {
         return false;
@@ -374,9 +478,17 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      *
      * @return 方块是否透明
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isTransparent() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSolid() {
         return true;
@@ -385,34 +497,66 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * Check if blocks can be attached in the given side.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
         return isSideFull(side);
     }
 
     // https://minecraft.wiki/w/Opacity#Lighting
+    /**
+     * @deprecated 
+     */
+    
     public boolean diffusesSkyLight() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canBeFlowedInto() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getWaterloggingLevel() {
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public final boolean canWaterloggingFlowInto() {
         return canBeFlowedInto() || getWaterloggingLevel() > 1;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canBeActivated() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasEntityCollision() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canPassThrough() {
         return false;
@@ -421,6 +565,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * @return 方块是否可以被活塞推动
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePushed() {
         return true;
     }
@@ -428,6 +576,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * @return 方块是否可以被活塞拉动
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePulled() {
         return true;
     }
@@ -435,6 +587,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * @return 当被活塞移动时是否会被破坏
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return false;
     }
@@ -442,6 +598,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * @return 是否可以粘在粘性活塞上
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean sticksToPiston() {
         return true;
     }
@@ -449,17 +609,33 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * @return 被活塞移动的时候是否可以粘住其他方块。eg:粘液块，蜂蜜块
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSticksBlock() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasComparatorInputOverride() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getComparatorInputOverride() {
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canHarvest(Item item) {
         return getToolTier() == 0 || getToolType() == 0 || correctTool0(getToolType(), item, this) && item.getTier() >= getToolTier();
@@ -470,9 +646,17 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      *
      * @return 挖掘方块的最低工具级别
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canBeClimbed() {
         return false;
@@ -480,7 +664,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     public BlockColor getColor() {
         if (color != null) return color;
-        else color = VANILLA_BLOCK_COLOR_MAP.get(this.blockstate.blockStateHash());
+        else $26 = VANILLA_BLOCK_COLOR_MAP.get(this.blockstate.blockStateHash());
         if (color == null) {
             log.error("Failed to get color of block " + getName());
             log.error("Current block state hash: " + this.blockstate.blockStateHash());
@@ -488,10 +672,14 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         }
         return color;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
-        var path = this.blockstate.getIdentifier().split(":")[1];
-        StringBuilder result = new StringBuilder();
+        var $27 = this.blockstate.getIdentifier().split(":")[1];
+        StringBuilder $28 = new StringBuilder();
         String[] parts = path.split("_");
         for (String part : parts) {
             if (!part.isEmpty()) {
@@ -508,11 +696,19 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public abstract BlockProperties getProperties();
 
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public final String getId() {
         return this.getProperties().getIdentifier();
     }
 
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getItemId() {
         return getId();
     }
@@ -520,6 +716,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> getPropertyValues() {
         return this.blockstate.getBlockPropertyValues();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isAir() {
         return this.blockstate == BlockAir.PROPERTIES.getDefaultState();
@@ -528,6 +728,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public BlockState getBlockState() {
         return blockstate;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean is(final String blockTag) {
         return BlockTags.getTagSet(this.getId()).contains(blockTag);
@@ -556,13 +760,25 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         this.blockstate = blockstate.setPropertyValues(getProperties(), values.toArray(BlockPropertyType.BlockPropertyValue<?, ?, ?>[]::new));
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public final int getRuntimeId() {
         return this.blockstate.blockStateHash();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addVelocityToEntity(Entity entity, Vector3 vector) {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public final void position(Position v) {
         this.x = (int) v.x;
@@ -571,12 +787,20 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         this.level = v.level;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private double toolBreakTimeBonus0(Item item) {
         if (item instanceof ItemCustomTool itemCustomTool && itemCustomTool.getSpeed() != null) {
             return customToolBreakTimeBonus(customToolType(item), itemCustomTool.getSpeed());
         } else return toolBreakTimeBonus0(toolType0(item, this), item.getTier(), getId());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private double customToolBreakTimeBonus(int toolType, @Nullable Integer speed) {
         if (speed != null) return speed;
         else if (toolType == ItemTool.TYPE_SWORD) {
@@ -595,6 +819,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return 0;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int customToolType(Item item) {
         if (this instanceof BlockLeaves && item.isHoe()) return ItemTool.TYPE_SHEARS;
         if (item.isSword()) return ItemTool.TYPE_SWORD;
@@ -606,6 +834,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return ItemTool.TYPE_NONE;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private double toolBreakTimeBonus0(int toolType, int toolTier, String blockId) {
         if (toolType == ItemTool.TYPE_SWORD) {
             if (blockId.equals(WEB)) {
@@ -641,15 +873,27 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         };
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static double speedBonusByEfficiencyLore0(int efficiencyLoreLevel) {
         if (efficiencyLoreLevel == 0) return 0;
         return efficiencyLoreLevel * efficiencyLoreLevel + 1;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static double speedRateByHasteLore0(int hasteLoreLevel) {
         return 1.0 + (0.2 * hasteLoreLevel);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static int toolType0(Item item, Block b) {
         if (b instanceof BlockLeaves && item.isHoe()) {
             return ItemTool.TYPE_SHEARS;
@@ -663,8 +907,12 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return ItemTool.TYPE_NONE;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static boolean correctTool0(int blockToolType, Item item, Block b) {
-        String block = b.getId();
+        String $29 = b.getId();
         if (b instanceof BlockLeaves && item.isHoe()) {
             return (blockToolType == ItemTool.TYPE_SHEARS && item.isHoe());
         } else if (block.equals(BAMBOO) && item.isSword()) {
@@ -678,10 +926,18 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                 blockToolType == ItemTool.TYPE_NONE ||
                 (block.equals(WEB) && item.isShears());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getBreakTime(Item item, Player player) {
         return this.calculateBreakTime(item, player);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getBreakTime(Item item) {
         return this.calculateBreakTime(item);
@@ -690,6 +946,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * @link calculateBreakTime(@ Nonnull Item item, @ Nullable Player player)
      */
+    /**
+     * @deprecated 
+     */
+    
     public double calculateBreakTime(@NotNull Item item) {
         return calculateBreakTime(item, null);
     }
@@ -701,8 +961,12 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @param player 挖掘该方块的玩家
      * @return 方块的挖掘时间
      */
+    /**
+     * @deprecated 
+     */
+    
     public double calculateBreakTime(@NotNull Item item, @Nullable Player player) {
-        double seconds = this.calculateBreakTimeNotInAir(item, player);
+        double $30 = this.calculateBreakTimeNotInAir(item, player);
 
         if (player != null) {
             //玩家距离上次在空中过去5tick之后，才认为玩家是在地上挖掘。
@@ -721,10 +985,14 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @param player 挖掘该方块的玩家
      * @return 方块的挖掘时间
      */
+    /**
+     * @deprecated 
+     */
+    
     public double calculateBreakTimeNotInAir(@NotNull Item item, @Nullable Player player) {
         double seconds;
-        double blockHardness = getHardness();
-        boolean canHarvest = canHarvest(item);
+        double $31 = getHardness();
+        boolean $32 = canHarvest(item);
 
         if (canHarvest) {
             seconds = blockHardness * 1.5;
@@ -732,11 +1000,11 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             seconds = blockHardness * 5;
         }
 
-        double speedMultiplier = 1;
-        boolean hasConduitPower = false;
-        boolean hasAquaAffinity = false;
-        int hasteEffectLevel = 0;
-        int miningFatigueLevel = 0;
+        double $33 = 1;
+        boolean $34 = false;
+        boolean $35 = false;
+        int $36 = 0;
+        int $37 = 0;
 
         if (player != null) {
             hasConduitPower = player.hasEffect(EffectType.CONDUIT_POWER);
@@ -751,7 +1019,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         if (correctTool0(getToolType(), item, this)) {
             speedMultiplier = toolBreakTimeBonus0(item);
 
-            int efficiencyLevel = Optional.ofNullable(item.getEnchantment(Enchantment.ID_EFFICIENCY))
+            int $38 = Optional.ofNullable(item.getEnchantment(Enchantment.ID_EFFICIENCY))
                     .map(Enchantment::getLevel).orElse(0);
 
             if (canHarvest && efficiencyLevel > 0) {
@@ -778,6 +1046,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         }
         return seconds;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canBeBrokenWith(Item item) {
         return this.getHardness() != -1;
@@ -806,7 +1078,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                 return this.getLevel().getTickCachedBlock((int) x + face.getXOffset() * step, (int) y + face.getYOffset() * step, (int) z + face.getZOffset() * step, layer);
             }
         }
-        Block block = Block.get(AIR);
+        Block $39 = Block.get(AIR);
         block.x = (int) x + face.getXOffset() * step;
         block.y = (int) y + face.getYOffset() * step;
         block.z = (int) z + face.getZOffset() * step;
@@ -839,7 +1111,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                 return this.getLevel().getBlock((int) x + face.getXOffset() * step, (int) y + face.getYOffset() * step, (int) z + face.getZOffset() * step, layer);
             }
         }
-        Block block = Block.get(AIR);
+        Block $40 = Block.get(AIR);
         block.x = (int) x + face.getXOffset() * step;
         block.y = (int) y + face.getYOffset() * step;
         block.z = (int) z + face.getZOffset() * step;
@@ -932,24 +1204,48 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return this.blockstate.toString() + " at " + super.toString();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean collidesWithBB(AxisAlignedBB bb) {
         return collidesWithBB(bb, false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean collidesWithBB(AxisAlignedBB bb, boolean collisionBB) {
-        AxisAlignedBB bb1 = collisionBB ? this.getCollisionBoundingBox() : this.getBoundingBox();
+        AxisAlignedBB $41 = collisionBB ? this.getCollisionBoundingBox() : this.getBoundingBox();
         return bb1 != null && bb.intersectsWith(bb1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void onEntityCollide(Entity entity) {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void onEntityFallOn(Entity entity, float fallDistance) {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean useDefaultFallDamage() {
         return true;
@@ -968,31 +1264,55 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         return this.x;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinY() {
         return this.y;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         return this.z;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         return this.x + 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return this.y + 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         return this.z + 1;
     }
@@ -1003,17 +1323,17 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     @Override
     public MovingObjectPosition calculateIntercept(Vector3 pos1, Vector3 pos2) {
-        AxisAlignedBB bb = this.getBoundingBox();
+        AxisAlignedBB $42 = this.getBoundingBox();
         if (bb == null) {
             return null;
         }
 
-        Vector3 v1 = pos1.getIntermediateWithXValue(pos2, bb.getMinX());
-        Vector3 v2 = pos1.getIntermediateWithXValue(pos2, bb.getMaxX());
-        Vector3 v3 = pos1.getIntermediateWithYValue(pos2, bb.getMinY());
-        Vector3 v4 = pos1.getIntermediateWithYValue(pos2, bb.getMaxY());
-        Vector3 v5 = pos1.getIntermediateWithZValue(pos2, bb.getMinZ());
-        Vector3 v6 = pos1.getIntermediateWithZValue(pos2, bb.getMaxZ());
+        Vector3 $43 = pos1.getIntermediateWithXValue(pos2, bb.getMinX());
+        Vector3 $44 = pos1.getIntermediateWithXValue(pos2, bb.getMaxX());
+        Vector3 $45 = pos1.getIntermediateWithYValue(pos2, bb.getMinY());
+        Vector3 $46 = pos1.getIntermediateWithYValue(pos2, bb.getMaxY());
+        Vector3 $47 = pos1.getIntermediateWithZValue(pos2, bb.getMinZ());
+        Vector3 $48 = pos1.getIntermediateWithZValue(pos2, bb.getMaxZ());
 
         if (v1 != null && !bb.isVectorInYZ(v1)) {
             v1 = null;
@@ -1039,7 +1359,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             v6 = null;
         }
 
-        Vector3 vector = v1;
+        Vector3 $49 = v1;
 
         if (v2 != null && (vector == null || pos1.distanceSquared(v2) < pos1.distanceSquared(vector))) {
             vector = v2;
@@ -1065,7 +1385,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             return null;
         }
 
-        BlockFace f = null;
+        BlockFace $50 = null;
 
         if (vector == v1) {
             f = BlockFace.WEST;
@@ -1083,13 +1403,21 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
         return MovingObjectPosition.fromBlock((int) this.x, (int) this.y, (int) this.z, f, vector.add(this.x, this.y, this.z));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getSaveId() {
-        String name = getClass().getName();
+        String $51 = getClass().getName();
         return name.substring(16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
         if (this.getLevel() != null) {
             this.getLevel().getBlockMetadata().setMetadata(this, metadataKey, newMetadataValue);
@@ -1114,16 +1442,28 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasMetadata(String metadataKey) {
         return this.getLevel() != null && this.getLevel().getBlockMetadata().hasMetadata(this, metadataKey);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasMetadata(String metadataKey, Plugin plugin) {
         return this.getLevel() != null && this.getLevel().getBlockMetadata().hasMetadata(this, metadataKey, plugin);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeMetadata(String metadataKey, Plugin owningPlugin) {
         if (this.getLevel() != null) {
             this.getLevel().getBlockMetadata().removeMetadata(this, metadataKey, owningPlugin);
@@ -1134,6 +1474,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public Block clone() {
         return (Block) super.clone();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getWeakPower(BlockFace face) {
         return 0;
@@ -1145,17 +1489,33 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @param side the side
      * @return the strong power
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getStrongPower(BlockFace side) {
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPowerSource() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getLocationHash() {
         return this.getFloorX() + ":" + this.getFloorY() + ":" + this.getFloorZ();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getDropExp() {
         return 0;
@@ -1164,6 +1524,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * Check if the block is not transparent, is solid and can't provide redstone power.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isNormalBlock() {
         return !isTransparent() && isSolid() && !isPowerSource();
     }
@@ -1171,6 +1535,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * Check if the block is not transparent, is solid and is a full cube like a stone block.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSimpleBlock() {
         return !isTransparent() && isSolid() && isFullBlock();
     }
@@ -1181,8 +1549,12 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @param face The face to be checked
      * @return If and only if the bounding box completely cover the face
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSideFull(BlockFace face) {
-        AxisAlignedBB boundingBox = getBoundingBox();
+        AxisAlignedBB $52 = getBoundingBox();
         if (boundingBox == null) {
             return false;
         }
@@ -1191,7 +1563,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             if (boundingBox.getMinY() != getY() || boundingBox.getMaxY() != getY() + 1) {
                 return false;
             }
-            int offset = face.getXOffset();
+            int $53 = face.getXOffset();
             if (offset < 0) {
                 return boundingBox.getMinX() == getX()
                         && boundingBox.getMinZ() == getZ() && boundingBox.getMaxZ() == getZ() + 1;
@@ -1221,6 +1593,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
         return boundingBox.getMaxY() == getY() + 1;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isFertilizable() {
         return false;
@@ -1229,8 +1605,12 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * Check if the block occupies the entire block space, like a stone and normal glass blocks
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isFullBlock() {
-        AxisAlignedBB boundingBox = getBoundingBox();
+        AxisAlignedBB $54 = getBoundingBox();
         if (boundingBox == null) {
             return false;
         }
@@ -1238,18 +1618,26 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                 && boundingBox.getMinY() == getY() && boundingBox.getMaxY() == getY() + 1
                 && boundingBox.getMinZ() == getZ() && boundingBox.getMaxZ() == getZ() + 1;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean equals(Block b1, Block b2) {
         return equals(b1, b2, true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean equals(Block b1, Block b2, boolean checkState) {
         if (b1 == null || b2 == null || !b1.getId().equals(b2.getId())) {
             return false;
         }
         if (checkState) {
-            boolean b1Default = b1.isDefaultState();
-            boolean b2Default = b2.isDefaultState();
+            boolean $55 = b1.isDefaultState();
+            boolean $56 = b2.isDefaultState();
             if (b1Default != b2Default) {
                 return false;
             } else if (b1Default) { // both are default
@@ -1268,19 +1656,27 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @param obj the obj
      * @return the boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean equalsBlock(Object obj) {
         if (obj instanceof Block otherBlock) {
             if (!(this instanceof BlockEntityHolder<?>) && !(otherBlock instanceof BlockEntityHolder<?>)) {
                 return this.getId().equals(otherBlock.getId()) && this.blockstate == otherBlock.blockstate;
             }
             if (this instanceof BlockEntityHolder<?> holder1 && otherBlock instanceof BlockEntityHolder<?> holder2) {
-                BlockEntity be1 = holder1.getOrCreateBlockEntity();
-                BlockEntity be2 = holder2.getOrCreateBlockEntity();
+                BlockEntity $57 = holder1.getOrCreateBlockEntity();
+                BlockEntity $58 = holder2.getOrCreateBlockEntity();
                 return this.getId().equals(otherBlock.getId()) && this.blockstate == otherBlock.blockstate && be1.getCleanedNBT().equals(be2.getCleanedNBT());
             }
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isDefaultState() {
         return this.blockstate == getProperties().getDefaultState();
@@ -1309,6 +1705,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      *
      * @since 1.4.0.0-PN
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isLavaResistant() {
         return false;
     }
@@ -1318,9 +1718,9 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public Optional<Block> firstInLayers(int startingLayer, Predicate<Block> condition) {
-        int maximumLayer = this.level.requireProvider().getMaximumLayer();
-        for (int layer = startingLayer; layer <= maximumLayer; layer++) {
-            Block block = this.getLevelBlockAtLayer(layer);
+        int $59 = this.level.requireProvider().getMaximumLayer();
+        for (int $60 = startingLayer; layer <= maximumLayer; layer++) {
+            Block $61 = this.getLevelBlockAtLayer(layer);
             if (condition.test(block)) {
                 return Optional.of(block);
             }
@@ -1328,10 +1728,18 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
         return Optional.empty();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public final boolean isBlockChangeAllowed() {
         return getChunk().isBlockChangeAllowed(getFloorX() & 0xF, getFloorY(), getFloorZ() & 0xF);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public final boolean isBlockChangeAllowed(@Nullable Player player) {
         if (isBlockChangeAllowed()) {
@@ -1345,17 +1753,33 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      *
      * @return 方块吸收的光亮
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getLightFilter() {
         return isSolid() && !isTransparent() ? 15 : 1;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public final boolean canRandomTick() {
         return Level.canRandomTick(getId());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getItemMaxStackSize() {
         return 64;
@@ -1366,11 +1790,15 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      *
      * @return if the gets powered.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isGettingPower() {
         if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) return false;
 
         for (BlockFace side : BlockFace.values()) {
-            Block b = this.getSide(side).getLevelBlock();
+            Block $62 = this.getSide(side).getLevelBlock();
 
             if (this.level.isSidePowered(b.getLocation(), side)) {
                 return true;
@@ -1378,6 +1806,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         }
         return this.level.isBlockPowered(this.getLocation());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean cloneTo(Position pos) {
         return cloneTo(pos, true);
@@ -1393,13 +1825,17 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return 是否克隆成功
      */
     @SuppressWarnings("null")
+    /**
+     * @deprecated 
+     */
+    
     public boolean cloneTo(Position pos, boolean update) {
         //清除旧方块
         level.setBlock(pos, this.layer, Block.get(Block.AIR), false, false);
         if (this instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() != null) {
-            var clonedBlock = this.clone();
+            var $63 = this.clone();
             clonedBlock.position(pos);
-            CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
+            CompoundTag $64 = holder.getBlockEntity().getCleanedNBT();
             //方块实体要求direct=true
             return BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, true, update, tag) != null;
         } else {
@@ -1408,6 +1844,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return ((int) x ^ ((int) z << 12)) ^ ((int) (y + 64) << 23);
     }

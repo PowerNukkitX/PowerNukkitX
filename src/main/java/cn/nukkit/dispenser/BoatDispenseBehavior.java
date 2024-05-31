@@ -11,6 +11,10 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 
 public class BoatDispenseBehavior extends DefaultDispenseBehavior {
+    /**
+     * @deprecated 
+     */
+    
 
     public BoatDispenseBehavior() {
         super();
@@ -18,9 +22,9 @@ public class BoatDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
-        Vector3 pos = block.getSide(face).multiply(1.125);
+        Vector3 $1 = block.getSide(face).multiply(1.125);
 
-        Block target = block.getSide(face);
+        Block $2 = block.getSide(face);
 
         if (target instanceof BlockFlowingWater) {
             pos.y += 1;
@@ -33,8 +37,12 @@ public class BoatDispenseBehavior extends DefaultDispenseBehavior {
         return null;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void spawnBoatEntity(Level level, Vector3 pos, Item item) {
-        EntityBoat boat = new EntityBoat(level.getChunk(pos.getChunkX(), pos.getChunkZ()),
+        EntityBoat $3 = new EntityBoat(level.getChunk(pos.getChunkX(), pos.getChunkZ()),
                 Entity.getDefaultNBT(pos)
                         .putInt("Variant", item.getDamage())
         );

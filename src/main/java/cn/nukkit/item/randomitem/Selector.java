@@ -9,6 +9,10 @@ import java.util.Map;
 public class Selector {
 
     private Selector parent;
+    /**
+     * @deprecated 
+     */
+    
 
     public Selector(Selector parent) {
         this.setParent(parent);
@@ -30,7 +34,7 @@ public class Selector {
     public static Selector selectRandom(Map<Selector, Float> selectorChanceMap) {
         final float[] totalChance = {0};
         selectorChanceMap.values().forEach(f -> totalChance[0] += f);
-        float resultChance = (float) (Math.random() * totalChance[0]);
+        float $1 = (float) (Math.random() * totalChance[0]);
         final float[] flag = {0};
         final boolean[] found = {false};
         final Selector[] temp = {null};

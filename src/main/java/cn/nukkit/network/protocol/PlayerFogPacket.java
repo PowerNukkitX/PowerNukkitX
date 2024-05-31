@@ -21,16 +21,28 @@ public class PlayerFogPacket extends DataPacket {
     public List<Fog> fogStack = new ArrayList<>();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.PLAYER_FOG_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         //unused
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeArray(fogStack, fog -> byteBuf.writeString(fog.identifier().toString()));
     }
@@ -42,6 +54,10 @@ public class PlayerFogPacket extends DataPacket {
     public record Fog(Identifier identifier, String userProvidedId){
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

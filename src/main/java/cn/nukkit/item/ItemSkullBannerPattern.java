@@ -3,6 +3,10 @@ package cn.nukkit.item;
 import cn.nukkit.network.protocol.types.BannerPatternType;
 
 public class ItemSkullBannerPattern extends ItemBannerPattern {
+    /**
+     * @deprecated 
+     */
+    
     public ItemSkullBannerPattern() {
         super(SKULL_BANNER_PATTERN);
     }
@@ -13,6 +17,10 @@ public class ItemSkullBannerPattern extends ItemBannerPattern {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDamage(int damage) {
     }
 }

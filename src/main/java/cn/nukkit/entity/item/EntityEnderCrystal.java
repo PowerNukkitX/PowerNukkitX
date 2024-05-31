@@ -20,6 +20,10 @@ import org.jetbrains.annotations.NotNull;
 public class EntityEnderCrystal extends Entity implements EntityExplosive {
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return ENDER_CRYSTAL;
     }
@@ -28,7 +32,11 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     /**
      * @since 1.2.1.0-PN
      */
-    protected boolean detonated = false;
+    protected boolean $1 = false;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityEnderCrystal(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -36,6 +44,10 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
 
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.initEntity();
 
@@ -48,6 +60,10 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
 
@@ -55,16 +71,28 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.98f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.98f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         if (isClosed()) {
             return false;
@@ -89,12 +117,16 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void explode() {
         if (!this.detonated) {
             this.detonated = true;
 
-            Position pos = this.getPosition();
-            Explosion explode = new Explosion(pos, 6, this);
+            Position $2 = this.getPosition();
+            Explosion $3 = new Explosion(pos, 6, this);
 
             this.close();
 
@@ -108,13 +140,25 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCollideWith(Entity entity) {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean showBase() {
         return this.getDataFlag(EntityFlag.SHOW_BOTTOM);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setShowBase(boolean value) {
         this.setDataFlag(EntityFlag.SHOW_BOTTOM, value);
@@ -123,12 +167,20 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     public BlockVector3 getBeamTarget() {
         return this.getDataProperty(BLOCK_TARGET_POS);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBeamTarget(BlockVector3 beamTarget) {
         this.setDataProperty(BLOCK_TARGET_POS, beamTarget);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Ender Crystal";
     }

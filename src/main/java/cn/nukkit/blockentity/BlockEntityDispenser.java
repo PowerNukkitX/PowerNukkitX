@@ -7,6 +7,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class BlockEntityDispenser extends BlockEntityEjectable {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BlockEntityDispenser(IChunk chunk, CompoundTag nbt) {
@@ -20,6 +24,10 @@ public class BlockEntityDispenser extends BlockEntityEjectable {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected String getBlockEntityName() {
         return BlockEntity.DISPENSER;
     }
@@ -30,6 +38,10 @@ public class BlockEntityDispenser extends BlockEntityEjectable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return this.getLevelBlock().getId() == BlockID.DISPENSER;
     }

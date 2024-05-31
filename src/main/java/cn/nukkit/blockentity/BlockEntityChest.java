@@ -15,7 +15,11 @@ import java.util.Objects;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockEntityChest extends BlockEntitySpawnableContainer {
-    protected DoubleChestInventory doubleInventory = null;
+    protected DoubleChestInventory $1 = null;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityChest(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -28,6 +32,10 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         if (!closed) {
             unpair();
@@ -46,10 +54,18 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
-        String blockID = this.getBlock().getId();
+        String $2 = this.getBlock().getId();
         return blockID.equals(Block.CHEST) || blockID.equals(Block.TRAPPED_CHEST);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getSize() {
         return this.doubleInventory != null ? this.doubleInventory.getSize() : this.inventory.getSize();
@@ -68,8 +84,12 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         return (ChestInventory) inventory;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void checkPairing() {
-        BlockEntityChest pair = this.getPair();
+        BlockEntityChest $3 = this.getPair();
 
         if (pair != null) {
             if (!pair.isPaired()) {
@@ -97,6 +117,10 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPaired() {
         return this.namedTag.contains("pairx") && this.namedTag.contains("pairz");
@@ -104,7 +128,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     public BlockEntityChest getPair() {
         if (this.isPaired()) {
-            BlockEntity blockEntity = this.getLevel().getBlockEntityIfLoaded(new Vector3(this.namedTag.getInt("pairx"), this.y, this.namedTag.getInt("pairz")));
+            BlockEntity $4 = this.getLevel().getBlockEntityIfLoaded(new Vector3(this.namedTag.getInt("pairx"), this.y, this.namedTag.getInt("pairz")));
             if (blockEntity instanceof BlockEntityChest) {
                 return (BlockEntityChest) blockEntity;
             }
@@ -112,6 +136,10 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean pairWith(BlockEntityChest chest) {
         if (this.isPaired() || chest.isPaired() || !this.getBlock().getId().equals(chest.getBlock().getId())) {
@@ -126,6 +154,10 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void createPair(BlockEntityChest chest) {
         this.namedTag.putInt("pairx", (int) chest.x);
@@ -133,13 +165,17 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         chest.namedTag.putInt("pairx", (int) this.x);
         chest.namedTag.putInt("pairz", (int) this.z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean unpair() {
         if (!this.isPaired()) {
             return false;
         }
 
-        BlockEntityChest chest = this.getPair();
+        BlockEntityChest $5 = this.getPair();
 
         this.doubleInventory = null;
         this.namedTag.remove("pairx");
@@ -161,7 +197,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag spawnCompound = super.getSpawnCompound()
+        CompoundTag $6 = super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable());
         if (this.isPaired()) {
             spawnCompound.putBoolean("pairlead", this.namedTag.getBoolean("pairlead"))
@@ -180,16 +216,28 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.hasName() ? this.namedTag.getString("CustomName") : "Chest";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasName() {
         return this.namedTag.contains("CustomName");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setName(String name) {
         if (name == null || name.isEmpty()) {
             this.namedTag.remove("CustomName");
@@ -200,6 +248,10 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onBreak(boolean isSilkTouch) {
         unpair();
         super.onBreak(isSilkTouch);

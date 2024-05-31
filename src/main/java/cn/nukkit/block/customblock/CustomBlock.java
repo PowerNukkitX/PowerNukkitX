@@ -82,12 +82,16 @@ public interface CustomBlock {
      * @param player the player
      * @return the break time
      */
-    default double breakTime(@NotNull Item item, @Nullable Player player) {
-        var block = this.toBlock();
-        double breakTime = block.calculateBreakTime(item, player);
-        var comp = this.getDefinition().nbt().getCompound("components");
+    default 
+    /**
+     * @deprecated 
+     */
+    double breakTime(@NotNull Item item, @Nullable Player player) {
+        var $1 = this.toBlock();
+        double $2 = block.calculateBreakTime(item, player);
+        var $3 = this.getDefinition().nbt().getCompound("components");
         if (comp.containsCompound("minecraft:destructible_by_mining")) {
-            var clientBreakTime = comp.getCompound("minecraft:destructible_by_mining").getFloat("value");
+            var $4 = comp.getCompound("minecraft:destructible_by_mining").getFloat("value");
             if (player != null) {
                 if (player.getServer().getTick() - player.getLastInAirTick() < 5) {
                     clientBreakTime *= 6;
@@ -102,7 +106,11 @@ public interface CustomBlock {
      * 定义这个方块是否需要被注册到创造栏中
      * 当你对这个方块有其他的物品想作为其展示时推荐关闭
      */
-     default boolean shouldBeRegisteredInCreative() {
+     default 
+    /**
+     * @deprecated 
+     */
+    boolean shouldBeRegisteredInCreative() {
         return true;
     }
 }

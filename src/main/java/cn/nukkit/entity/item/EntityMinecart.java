@@ -18,15 +18,27 @@ import org.jetbrains.annotations.NotNull;
 public class EntityMinecart extends EntityMinecartAbstract {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return MINECART;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityMinecart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return getType().getName();
     }
@@ -37,16 +49,28 @@ public class EntityMinecart extends EntityMinecartAbstract {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getInteractButtonText(Player player) {
         return "action.interact.ride.minecart";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isRideable() {
         return true;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void activate(int x, int y, int z, boolean flag) {
         if (flag && this.getHealth() > 15
                 && this.attack(new EntityDamageByBlockEvent(this.level.getBlock(x, y, z), this, DamageCause.CONTACT, 1))
@@ -56,8 +80,12 @@ public class EntityMinecart extends EntityMinecartAbstract {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
-        boolean update = super.onUpdate(currentTick);
+        boolean $1 = super.onUpdate(currentTick);
 
         if (this.passengers.isEmpty()) {
             for (Entity entity : this.level.getCollidingEntities(this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {

@@ -19,28 +19,44 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockDaylightDetector extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntityDaylightDetector> {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(DAYLIGHT_DETECTOR, CommonBlockProperties.REDSTONE_SIGNAL);
+    public static final BlockProperties $1 = new BlockProperties(DAYLIGHT_DETECTOR, CommonBlockProperties.REDSTONE_SIGNAL);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDaylightDetector() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDaylightDetector(BlockState state) {
         super(state);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Daylight Detector";
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getBlockEntityType() {
         return BlockEntity.DAYLIGHT_DETECTOR;
     }
 
@@ -50,16 +66,28 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
@@ -70,18 +98,26 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return 0;
         }
 
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
-            var be = getBlockEntity();
+            var $2 = getBlockEntity();
             if (be != null) {
                 be.scheduleUpdate();
             }
@@ -90,8 +126,12 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        BlockEntityDaylightDetector detector = BlockEntityHolder.setBlockAndCreateEntity(this);
+        BlockEntityDaylightDetector $3 = BlockEntityHolder.setBlockAndCreateEntity(this);
         if (detector == null) {
             return false;
         }
@@ -104,9 +144,13 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
-        BlockDaylightDetectorInverted block = new BlockDaylightDetectorInverted();
+        BlockDaylightDetectorInverted $4 = new BlockDaylightDetectorInverted();
         getLevel().setBlock(this, block, true, true);
         if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             block.updatePower();
@@ -115,6 +159,10 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
         if (super.onBreak(item)) {
             if (getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
@@ -126,37 +174,53 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWeakPower(BlockFace face) {
         return getLevel().getBlockStateAt(getFloorX(), getFloorY(), getFloorZ()).getPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPowerSource() {
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isInverted() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void updatePower() {
         int i;
         if (getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
             i = getLevel().getBlockSkyLightAt((int) x, (int) y, (int) z) - getLevel().calculateSkylightSubtracted(1.0F);
-            float f = getLevel().getCelestialAngle(1.0F) * 6.2831855F;
+            $5loat $1 = getLevel().getCelestialAngle(1.0F) * 6.2831855F;
 
             if (this.isInverted()) {
                 i = 15 - i;
             }
 
             if (i > 0 && !this.isInverted()) {
-                float f1 = f < (float) Math.PI ? 0.0F : ((float) Math.PI * 2F);
+                float $6 = f < (float) Math.PI ? 0.0F : ((float) Math.PI * 2F);
                 f = f + (f1 - f) * 0.2F;
                 i = Math.round((float) i * MathHelper.cos(f));
             }
 
             i = MathHelper.clamp(i, 0, 15);
-        } else i = 0;
+        } else $7 = 0;
 
         if (i != getLevel().getBlockStateAt(getFloorX(), getFloorY(), getFloorZ()).getPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL)) {
             BlockState blockState;
@@ -168,11 +232,19 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return this.y + 0.625;
     }

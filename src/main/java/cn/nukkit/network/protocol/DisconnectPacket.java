@@ -13,18 +13,26 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DisconnectPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.DISCONNECT_PACKET;
+    public static final int $1 = ProtocolInfo.DISCONNECT_PACKET;
 
-    public DisconnectFailReason reason = DisconnectFailReason.UNKNOWN;
-    public boolean hideDisconnectionScreen = false;
+    public DisconnectFailReason $2 = DisconnectFailReason.UNKNOWN;
+    public boolean $3 = false;
     public String message;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.reason = DisconnectFailReason.values()[byteBuf.readVarInt()];
         this.hideDisconnectionScreen = byteBuf.readBoolean();
@@ -32,6 +40,10 @@ public class DisconnectPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeVarInt(this.reason.ordinal());
@@ -40,6 +52,10 @@ public class DisconnectPacket extends DataPacket {
             byteBuf.writeString(this.message);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

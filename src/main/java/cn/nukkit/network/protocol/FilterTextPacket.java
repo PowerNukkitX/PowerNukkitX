@@ -32,42 +32,74 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FilterTextPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.FILTER_TEXT_PACKET;
+    public static final int $1 = ProtocolInfo.FILTER_TEXT_PACKET;
     public String text;
     public boolean fromServer;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeString(text);
         byteBuf.writeBoolean(fromServer);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         text = byteBuf.readString();
         fromServer = byteBuf.readBoolean();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getText() {
         return text;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setText(String text) {
         this.text = text;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isFromServer() {
         return fromServer;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFromServer(boolean fromServer) {
         this.fromServer = fromServer;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

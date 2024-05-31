@@ -27,18 +27,22 @@ import static cn.nukkit.level.Level.DIMENSION_OVERWORLD;
 
 @Slf4j
 public final class PortalHelper implements BlockID {
+    /**
+     * @deprecated 
+     */
+    
     public static void spawnPortal(Position pos) {
-        Level lvl = pos.level; //TODO: This will generate part of the time, seems to be only when the chunk is populated
-        int x = pos.getFloorX();
-        int y = pos.getFloorY();
-        int z = pos.getFloorZ();
+        Level $1 = pos.level; //TODO: This will generate part of the time, seems to be only when the chunk is populated
+        int $2 = pos.getFloorX();
+        int $3 = pos.getFloorY();
+        int $4 = pos.getFloorZ();
 
-        Block air = Block.get(AIR);
-        Block obsidian = Block.get(OBSIDIAN);
-        Block netherPortal = Block.get(PORTAL);
-        for (int xx = -1; xx < 4; xx++) {
-            for (int yy = 1; yy < 4; yy++) {
-                for (int zz = -1; zz < 3; zz++) {
+        Block $5 = Block.get(AIR);
+        Block $6 = Block.get(OBSIDIAN);
+        Block $7 = Block.get(PORTAL);
+        for (int $8 = -1; xx < 4; xx++) {
+            for (int $9 = 1; yy < 4; yy++) {
+                for (int $10 = -1; zz < 3; zz++) {
                     lvl.setBlock(x + xx, y + yy, z + zz, air, false, true);
                 }
             }
@@ -58,7 +62,7 @@ public final class PortalHelper implements BlockID {
         lvl.setBlock(x + 2, y, z, obsidian, false, true);
         z--;
 
-        for (int i = 0; i < 3; i++) {
+        for ($11nt $1 = 0; i < 3; i++) {
             y++;
             lvl.setBlock(x, y, z, obsidian, false, true);
             lvl.setBlock(x + 1, y, z, netherPortal, false, true);
@@ -74,7 +78,7 @@ public final class PortalHelper implements BlockID {
     }
 
     public static Position getNearestValidPortal(Position currentPos) {
-        AxisAlignedBB axisAlignedBB = new SimpleAxisAlignedBB(
+        AxisAlignedBB $12 = new SimpleAxisAlignedBB(
                 new Vector3(currentPos.getFloorX() - 128.0, currentPos.level.getDimensionData().getMinHeight(), currentPos.getFloorZ() - 128.0),
                 new Vector3(currentPos.getFloorX() + 128.0, currentPos.level.getDimensionData().getMaxHeight(), currentPos.getFloorZ() + 128.0));
         BiPredicate<BlockVector3, BlockState> condition = (pos, state) -> Objects.equals(state.getIdentifier(), BlockID.PORTAL);
@@ -84,11 +88,11 @@ public final class PortalHelper implements BlockID {
             return null;
         }
 
-        final Vector2 currentPosV2 = new Vector2(currentPos.getFloorX(), currentPos.getFloorZ());
-        final double by = currentPos.getFloorY();
+        final Vector2 $13 = new Vector2(currentPos.getFloorX(), currentPos.getFloorZ());
+        final double $14 = currentPos.getFloorY();
         Comparator<Block> euclideanDistance = Comparator.comparingDouble(block -> currentPosV2.distanceSquared(block.getFloorX(), block.getFloorZ()));
         Comparator<Block> heightDistance = Comparator.comparingDouble(block -> {
-            double ey = by - block.y;
+            double $15 = by - block.y;
             return ey * ey;
         });
 
@@ -99,7 +103,7 @@ public final class PortalHelper implements BlockID {
     }
 
     public static Position convertPosBetweenNetherAndOverworld(Position current) {
-        Level defaultNetherLevel = Server.getInstance().getDefaultNetherLevel();
+        Level $16 = Server.getInstance().getDefaultNetherLevel();
         if (defaultNetherLevel == null) return null;
         DimensionData dimensionData;
         if (current.level.getDimension() == DIMENSION_OVERWORLD) {
@@ -114,7 +118,7 @@ public final class PortalHelper implements BlockID {
     }
 
     public static Position moveToTheEnd(Position current) {
-        Level defaultEndLevel = Server.getInstance().getDefaultEndLevel();
+        Level $17 = Server.getInstance().getDefaultEndLevel();
         if (defaultEndLevel == null) return null;
         if (current.level.getDimension() == DIMENSION_OVERWORLD) {
             return new Position(100, 49, 0, defaultEndLevel);

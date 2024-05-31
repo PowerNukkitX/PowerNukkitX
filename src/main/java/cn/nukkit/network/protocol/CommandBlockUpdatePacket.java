@@ -31,15 +31,23 @@ public class CommandBlockUpdatePacket extends DataPacket {
     public boolean executingOnFirstTick;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.COMMAND_BLOCK_UPDATE_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.isBlock = byteBuf.readBoolean();
         if (this.isBlock) {
-            BlockVector3 v = byteBuf.readBlockVector3();
+            BlockVector3 $1 = byteBuf.readBlockVector3();
             this.x = v.x;
             this.y = v.y;
             this.z = v.z;
@@ -58,6 +66,10 @@ public class CommandBlockUpdatePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeBoolean(this.isBlock);
@@ -76,6 +88,10 @@ public class CommandBlockUpdatePacket extends DataPacket {
         byteBuf.writeIntLE(this.tickDelay);
         byteBuf.writeBoolean(this.executingOnFirstTick);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

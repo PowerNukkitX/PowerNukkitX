@@ -22,6 +22,10 @@ public class PlayerDiedEventData implements EventData {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void write(HandleByteBuf byteBuf) {
         byteBuf.writeVarInt(attackerEntityId);
         byteBuf.writeVarInt(attackerVariant);

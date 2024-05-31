@@ -37,6 +37,10 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     private BlockVector3 size;
     private BlockVector3 offset;
     private StructBlockInventory structBlockInventory;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BlockEntityStructBlock(IChunk chunk, CompoundTag nbt) {
@@ -45,6 +49,10 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         if (this.namedTag.contains(TAG_ANIMATION_MODE)) {
@@ -161,6 +169,10 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putByte(TAG_ANIMATION_MODE, this.animationMode.ordinal())
@@ -187,23 +199,39 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
-        String blockId = this.getLevelBlock().getId();
-        return blockId == BlockID.STRUCTURE_BLOCK;
+        String $1 = this.getLevelBlock().getId();
+        return $2 == BlockID.STRUCTURE_BLOCK;
     }
 
     @NotNull
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.hasName() ? this.namedTag.getString(TAG_CUSTOM_NAME) : STRUCTURE_BLOCK;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasName() {
         return this.namedTag.contains(TAG_CUSTOM_NAME);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setName(String name) {
         if (Strings.isNullOrEmpty(name)) {
             this.namedTag.remove(TAG_CUSTOM_NAME);
@@ -218,6 +246,10 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         if (!closed) {
             for (Player player : new HashSet<>(this.getInventory().getViewers())) {
@@ -226,9 +258,13 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
             super.close();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void updateSetting(StructureBlockUpdatePacket packet) {
-        var editorData = packet.editorData;
+        var $3 = packet.editorData;
         this.animationMode = editorData.getSettings().getAnimationMode();
         this.animationSeconds = editorData.getSettings().getAnimationSeconds();
         this.data = editorData.getType();

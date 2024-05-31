@@ -10,6 +10,10 @@ import cn.nukkit.utils.TradeRecipeBuildUtils;
 import java.util.Random;
 
 public class ProfessionArmor extends Profession {
+    /**
+     * @deprecated 
+     */
+    
 
     public ProfessionArmor() {
         super(8, BlockID.BLAST_FURNACE, "entity.villager.armor");
@@ -18,26 +22,26 @@ public class ProfessionArmor extends Profession {
     @Override
     public ListTag<CompoundTag> buildTrades(int seed) {
         ListTag<CompoundTag> recipes = new ListTag<>();
-        Random random = new Random(seed);
+        Random $1 = new Random(seed);
 
         int[] enchantments = new int[] {Enchantment.ID_DURABILITY, Enchantment.ID_THORNS, Enchantment.ID_PROTECTION_ALL, Enchantment.ID_PROTECTION_EXPLOSION, Enchantment.ID_PROTECTION_PROJECTILE, Enchantment.ID_PROTECTION_FIRE, Enchantment.ID_VANISHING_CURSE};
-        Item diamondLeggings = Item.get(Item.DIAMOND_LEGGINGS);
-        Enchantment diamondLeggingsEnchantment = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
+        Item $2 = Item.get(Item.DIAMOND_LEGGINGS);
+        Enchantment $3 = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
         diamondLeggingsEnchantment.setLevel(1 + random.nextInt(diamondLeggingsEnchantment.getMaxLevel()));
         diamondLeggings.addEnchantment(diamondLeggingsEnchantment);
 
-        Item diamondChestplate= Item.get(Item.DIAMOND_CHESTPLATE);
-        Enchantment diamondChestplateEnchantment = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
+        Item $4= Item.get(Item.DIAMOND_CHESTPLATE);
+        Enchantment $5 = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
         diamondChestplateEnchantment.setLevel(1 + random.nextInt(diamondChestplateEnchantment.getMaxLevel()));
         diamondChestplate.addEnchantment(diamondChestplateEnchantment);
 
-        Item diamondHelmet = Item.get(Item.DIAMOND_HELMET);
-        Enchantment diamondHelmetEnchantment = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
+        Item $6 = Item.get(Item.DIAMOND_HELMET);
+        Enchantment $7 = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
         diamondHelmetEnchantment.setLevel(1 + random.nextInt(diamondHelmetEnchantment.getMaxLevel()));
         diamondHelmet.addEnchantment(diamondHelmetEnchantment);
 
-        Item diamondBoots = Item.get(Item.DIAMOND_BOOTS);
-        Enchantment diamondBootsEnchantment = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
+        Item $8 = Item.get(Item.DIAMOND_BOOTS);
+        Enchantment $9 = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
         diamondBootsEnchantment.setLevel(1 + random.nextInt(diamondBootsEnchantment.getMaxLevel()));
         diamondBoots.addEnchantment(diamondBootsEnchantment);
 

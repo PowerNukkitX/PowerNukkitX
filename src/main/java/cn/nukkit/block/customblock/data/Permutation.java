@@ -10,13 +10,17 @@ import cn.nukkit.nbt.tag.StringTag;
 
 
 public record Permutation(Component component, String condition, String[] blockTags) implements NBTData {
+    /**
+     * @deprecated 
+     */
+    
     public Permutation(Component component, String condition) {
         this(component, condition, new String[]{});
     }
 
     @Override
     public CompoundTag toCompoundTag() {
-        CompoundTag result = new CompoundTag()
+        CompoundTag $1 = new CompoundTag()
                 .putCompound("components", component.toCompoundTag())
                 .putString("condition", condition);
         ListTag<StringTag> stringTagListTag = new ListTag<>();

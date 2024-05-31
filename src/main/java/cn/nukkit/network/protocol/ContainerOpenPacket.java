@@ -13,9 +13,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContainerOpenPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.CONTAINER_OPEN_PACKET;
+    public static final int $1 = ProtocolInfo.CONTAINER_OPEN_PACKET;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -25,13 +29,17 @@ public class ContainerOpenPacket extends DataPacket {
     public int x;
     public int y;
     public int z;
-    public long entityId = -1;
+    public long $2 = -1;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.windowId = byteBuf.readByte();
         this.type = byteBuf.readByte();
-        BlockVector3 v = byteBuf.readBlockVector3();
+        BlockVector3 $3 = byteBuf.readBlockVector3();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
@@ -39,6 +47,10 @@ public class ContainerOpenPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeByte((byte) this.windowId);
@@ -46,6 +58,10 @@ public class ContainerOpenPacket extends DataPacket {
         byteBuf.writeBlockVector3(this.x, this.y, this.z);
         byteBuf.writeEntityUniqueId(this.entityId);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

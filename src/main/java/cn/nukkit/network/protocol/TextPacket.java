@@ -14,34 +14,42 @@ import lombok.ToString;
 @AllArgsConstructor
 public class TextPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.TEXT_PACKET;
+    public static final int $1 = ProtocolInfo.TEXT_PACKET;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
-    public static final byte TYPE_RAW = 0;
-    public static final byte TYPE_CHAT = 1;
-    public static final byte TYPE_TRANSLATION = 2;
-    public static final byte TYPE_POPUP = 3;
-    public static final byte TYPE_JUKEBOX_POPUP = 4;
-    public static final byte TYPE_TIP = 5;
-    public static final byte TYPE_SYSTEM = 6;
-    public static final byte TYPE_WHISPER = 7;
-    public static final byte TYPE_ANNOUNCEMENT = 8;
-    public static final byte TYPE_OBJECT = 9;
-    public static final byte TYPE_OBJECT_WHISPER = 10;
+    public static final byte $2 = 0;
+    public static final byte $3 = 1;
+    public static final byte $4 = 2;
+    public static final byte $5 = 3;
+    public static final byte $6 = 4;
+    public static final byte $7 = 5;
+    public static final byte $8 = 6;
+    public static final byte $9 = 7;
+    public static final byte $10 = 8;
+    public static final byte $11 = 9;
+    public static final byte $12 = 10;
 
     public byte type;
-    public String source = "";
-    public String message = "";
+    public String $13 = "";
+    public String $14 = "";
     public String[] parameters = EmptyArrays.EMPTY_STRINGS;
-    public boolean isLocalized = false;
-    public String xboxUserId = "";
-    public String platformChatId = "";
+    public boolean $15 = false;
+    public String $16 = "";
+    public String $17 = "";
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.type = byteBuf.readByte();
         this.isLocalized = byteBuf.readBoolean() || type == TYPE_TRANSLATION;
@@ -69,6 +77,10 @@ public class TextPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeByte(this.type);
@@ -98,6 +110,10 @@ public class TextPacket extends DataPacket {
         byteBuf.writeString(this.xboxUserId);
         byteBuf.writeString(this.platformChatId);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

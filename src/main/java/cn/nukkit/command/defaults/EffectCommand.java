@@ -20,6 +20,10 @@ import java.util.Map;
  * @since 2016/1/23
  */
 public class EffectCommand extends Command {
+    /**
+     * @deprecated 
+     */
+    
     public EffectCommand(String name) {
         super(name, "commands.effect.description", "nukkit.command.effect.usage");
         this.setPermission("nukkit.command.effect");
@@ -39,8 +43,12 @@ public class EffectCommand extends Command {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         List<Entity> entities = list.getResult(0);
         entities = entities.stream().filter(e -> !(e instanceof EntityItem)).toList();
         if (entities.isEmpty()) {
@@ -50,15 +58,15 @@ public class EffectCommand extends Command {
         switch (result.getKey()) {
             case "default" -> {
                 Effect effect;
-                String str = list.getResult(1);
+                String $2 = list.getResult(1);
                 try {
                     effect = Effect.get(str);
                 } catch (RuntimeException e) {
                     log.addError("commands.effect.notFound", str).output();
                     return 0;
                 }
-                int duration = 300;
-                int amplification = 0;
+                int $3 = 300;
+                int $4 = 0;
                 if (list.hasResult(2)) {
                     duration = list.getResult(2);
                     if (!(effect instanceof InstantEffect)) {
@@ -81,11 +89,11 @@ public class EffectCommand extends Command {
                 }
 
                 if (list.hasResult(4)) {
-                    boolean v = list.getResult(4);
+                    boolean $5 = list.getResult(4);
                     effect.setVisible(!v);
                 }
 
-                int success = 0;
+                int $6 = 0;
                 for (Entity entity : entities) {
                     if (duration == 0) {
                         if (!entity.hasEffect(effect.getType())) {
@@ -105,7 +113,7 @@ public class EffectCommand extends Command {
                 return success;
             }
             case "clear" -> {
-                int success = 0;
+                int $7 = 0;
                 for (Entity entity : entities) {
                     if (entity.getEffects().isEmpty()) {
                         log.addError("commands.effect.failure.notActive.all", entity.getName());

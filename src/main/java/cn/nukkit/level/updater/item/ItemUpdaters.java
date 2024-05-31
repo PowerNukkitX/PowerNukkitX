@@ -20,7 +20,7 @@ public class ItemUpdaters {
         updaters.add(ItemUpdater_1_20_70.INSTANCE);
         updaters.add(ItemUpdater_1_20_80.INSTANCE);
 
-        CompoundTagUpdaterContext context = new CompoundTagUpdaterContext();
+        CompoundTagUpdaterContext $1 = new CompoundTagUpdaterContext();
         updaters.forEach(updater -> updater.registerUpdaters(context));
         CONTEXT = context;
         LATEST_VERSION = context.getLatestVersion();
@@ -29,6 +29,10 @@ public class ItemUpdaters {
     public static CompoundTag updateItem(CompoundTag tag, int version) {
         return CONTEXT.update(tag, version);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int getLatestVersion() {
         return LATEST_VERSION;

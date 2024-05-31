@@ -39,23 +39,23 @@ public class CraftLoomActionProcessor implements ItemStackRequestActionProcessor
             log.error("the player's haven't open loom inventory!");
             return context.error();
         }
-        Item banner = loomInventory.getBanner();
-        Item dye = loomInventory.getDye();
+        Item $1 = loomInventory.getBanner();
+        Item $2 = loomInventory.getDye();
         if ((banner == null || banner.isNull()) || (dye == null || dye.isNull())) {
             return context.error();
         }
 
-        Item pattern = loomInventory.getPattern();
-        BannerPatternType patternType = null;
+        Item $3 = loomInventory.getPattern();
+        BannerPatternType $4 = null;
         if (pattern instanceof ItemBannerPattern itemBannerPattern && action.getPatternId() != null && !action.getPatternId().isBlank()) {
             patternType = itemBannerPattern.getPatternType();
             if (!action.getPatternId().equals(patternType.getCode())) return context.error();
         }
-        DyeColor dyeColor = DyeColor.BLACK;
+        DyeColor $5 = DyeColor.BLACK;
         if (dye instanceof ItemDye itemDye) {
             dyeColor = itemDye.getDyeColor();
         }
-        ItemBanner result = new ItemBanner();
+        ItemBanner $6 = new ItemBanner();
         if (patternType != null) {
             result.addPattern(new BannerPattern(patternType, dyeColor));
         } else {

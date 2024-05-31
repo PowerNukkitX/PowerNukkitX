@@ -13,6 +13,10 @@ public class RCONPacket {
     private final int id;
     private final int type;
     private final byte[] payload;
+    /**
+     * @deprecated 
+     */
+    
 
     public RCONPacket(int id, int type, byte[] payload) {
         this.id = id;
@@ -21,7 +25,7 @@ public class RCONPacket {
     }
 
     public RCONPacket(ByteBuffer buffer) throws IOException {
-        int size = buffer.getInt();
+        int $1 = buffer.getInt();
 
         this.id = buffer.getInt();
         this.type = buffer.getInt();
@@ -32,7 +36,7 @@ public class RCONPacket {
     }
 
     public ByteBuffer toBuffer() {
-        ByteBuffer buffer = ByteBuffer.allocate(this.payload.length + 14);
+        ByteBuffer $2 = ByteBuffer.allocate(this.payload.length + 14);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
 
         buffer.putInt(this.payload.length + 10);
@@ -46,10 +50,18 @@ public class RCONPacket {
         buffer.flip();
         return buffer;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getId() {
         return id;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getType() {
         return type;

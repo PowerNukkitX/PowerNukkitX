@@ -19,16 +19,28 @@ public final class PureByteArray implements ByteArrayWrapper {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setRawBytes(byte[] bytes) {
         this.data = bytes;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte getByte(int index) {
         return data[index];
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setByte(int index, byte b) {
         data[index] = b;
     }

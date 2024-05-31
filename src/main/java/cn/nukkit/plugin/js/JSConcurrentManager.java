@@ -10,10 +10,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public final class JSConcurrentManager {
-    public static final Object PROMISE_FAILED = new Object();
-    private long lockTimeout = 30000;
+    public static final Object $1 = new Object();
+    private long $2 = 30000;
 
     private final CommonJSPlugin jsPlugin;
+    /**
+     * @deprecated 
+     */
+    
 
     public JSConcurrentManager(CommonJSPlugin jsPlugin) {
         this.jsPlugin = jsPlugin;
@@ -30,6 +34,10 @@ public final class JSConcurrentManager {
     public JSJob createJob(String sourcePath) {
         return new JSJob(jsPlugin.getJsContext(), jsPlugin.getFileSystem(), sourcePath);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long getLockTimeout() {
         return lockTimeout;
@@ -56,11 +64,19 @@ public final class JSConcurrentManager {
     public static final class JPromise implements Thenable, Executable {
         private final Context context;
         private final CompletableFuture<?> javaFuture;
+    /**
+     * @deprecated 
+     */
+    
 
         public JPromise(Context context, CompletableFuture<?> javaFuture) {
             this.context = context;
             this.javaFuture = javaFuture;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void then(Value onResolve, Value onReject) {
             javaFuture.whenComplete((result, ex) -> {
@@ -73,6 +89,10 @@ public final class JSConcurrentManager {
                 }
             });
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void then(Value onResolve) {
             javaFuture.whenComplete((result, ex) -> {
@@ -83,6 +103,10 @@ public final class JSConcurrentManager {
                 }
             });
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void onPromiseCreation(Value onResolve, Value onReject) {
             javaFuture.whenComplete((result, ex) -> {

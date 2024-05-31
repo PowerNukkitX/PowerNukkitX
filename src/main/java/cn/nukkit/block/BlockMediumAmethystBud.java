@@ -5,11 +5,19 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockMediumAmethystBud extends BlockAmethystBud {
-    public static final BlockProperties PROPERTIES = new BlockProperties(MEDIUM_AMETHYST_BUD, CommonBlockProperties.MINECRAFT_BLOCK_FACE);
+    public static final BlockProperties $1 = new BlockProperties(MEDIUM_AMETHYST_BUD, CommonBlockProperties.MINECRAFT_BLOCK_FACE);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMediumAmethystBud() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMediumAmethystBud(BlockState blockState) {
         super(blockState);
@@ -21,11 +29,19 @@ public class BlockMediumAmethystBud extends BlockAmethystBud {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected String getNamePrefix() {
         return "Medium";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 2;
     }

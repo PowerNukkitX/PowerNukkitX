@@ -15,14 +15,26 @@ import static cn.nukkit.block.property.CommonBlockProperties.CORAL_FAN_DIRECTION
 
 
 public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
+    /**
+     * @deprecated 
+     */
+    
     public BlockCoralFan(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isDead() {
         return false;
@@ -40,9 +52,13 @@ public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            Block side = getSide(getRootsFace());
+            Block $1 = getSide(getRootsFace());
             if (!side.isSolid() || side.getId().equals(MAGMA) || side.getId().equals(SOUL_SAND)) {
                 this.getLevel().useBreakOn(this);
             } else {
@@ -50,14 +66,14 @@ public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
             }
             return type;
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            Block side = getSide(getRootsFace());
+            Block $2 = getSide(getRootsFace());
             if (side.getId().equals(ICE)) {
                 this.getLevel().useBreakOn(this);
                 return type;
             }
 
             if (!isDead() && !(getLevelBlockAtLayer(1) instanceof BlockFlowingWater) && !(getLevelBlockAtLayer(1) instanceof BlockFrostedIce)) {
-                BlockFadeEvent event = new BlockFadeEvent(this, getDeadCoralFan());
+                BlockFadeEvent $3 = new BlockFadeEvent(this, getDeadCoralFan());
                 if (!event.isCancelled()) {
                     this.getLevel().setBlock(this, event.getNewState(), true, true);
                 }
@@ -76,13 +92,17 @@ public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (face == BlockFace.DOWN) {
             return false;
         }
 
-        Block layer1 = block.getLevelBlockAtLayer(1);
-        boolean hasWater = layer1 instanceof BlockFlowingWater;
+        Block $4 = block.getLevelBlockAtLayer(1);
+        boolean $5 = layer1 instanceof BlockFlowingWater;
         if (!layer1.isAir() && (!hasWater || layer1.blockstate.specialValue() != 0 && layer1.blockstate.specialValue() != 8)) {
             return false;
         }
@@ -96,15 +116,15 @@ public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
         }
 
         if (face == BlockFace.UP) {
-            double rotation = player.yaw % 360;
+            double $6 = player.yaw % 360;
             if (rotation < 0) {
                 rotation += 360.0;
             }
-            int axisBit = rotation >= 0 && rotation < 12 || (342 <= rotation && rotation < 360) ? 0 : 1;
+            int $7 = rotation >= 0 && rotation < 12 || (342 <= rotation && rotation < 360) ? 0 : 1;
             setPropertyValue(CORAL_FAN_DIRECTION, axisBit);
             this.getLevel().setBlock(this, 0, hasWater ? this.clone() : getDeadCoralFan().setPropertyValues(blockstate.getBlockPropertyValues()), true, true);
         } else {
-            Block deadBlock = getDeadCoralFan();
+            Block $8 = getDeadCoralFan();
             this.getLevel().setBlock(this, 0, deadBlock, true, true);
         }
 
@@ -112,6 +132,10 @@ public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }

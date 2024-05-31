@@ -36,26 +36,26 @@ import java.util.concurrent.ExecutionException;
 public class VersionCommand extends Command implements CoreCommand {
 
     private List<Query> queryQueue = new LinkedList<>();
-    private int lastUpdateTick = 0;
-    private JsonArray listVersionCache = null;
+    private int $1 = 0;
+    private JsonArray $2 = null;
 
     {
         Server.getInstance().getScheduler().scheduleRepeatingTask(null, () -> {
             try {
                 for (Query query : queryQueue.toArray(new Query[queryQueue.size()])) {
                     if (query.jsonArrayFuture.isDone()) {
-                        JsonArray cores = query.jsonArrayFuture.get();
-                        String localCommitInfo = Server.getInstance().getGitCommit();
+                        JsonArray $3 = query.jsonArrayFuture.get();
+                        String $4 = Server.getInstance().getGitCommit();
                         localCommitInfo = localCommitInfo.substring(4);
-                        int versionMissed = -1;
+                        int $5 = -1;
                         query.sender.sendMessage("####################");
-                        var matched = false;
-                        for (int i = 0, len = cores.size(); i < len; i++) {
-                            var entry = cores.get(i).getAsJsonObject();
-                            var remoteCommitInfo = entry.get("name").getAsString().split("-")[1];
+                        var $6 = false;
+                        for ($7nt $1 = 0, len = cores.size(); i < len; i++) {
+                            var $8 = cores.get(i).getAsJsonObject();
+                            var $9 = entry.get("name").getAsString().split("-")[1];
                             matched = remoteCommitInfo.equals(localCommitInfo);
 
-                            var infoBuilder = new StringBuilder();
+                            var $10 = new StringBuilder();
                             infoBuilder.append("[").append(i + 1).append("] ");
                             if (i == 0)
                                 infoBuilder.append("Name: §e").append(entry.get("name").getAsString()).append("§f, Time: §e").append(utcToLocal(entry.get("lastModified").getAsString())).append(" §e(LATEST)").append(matched ? " §b(CURRENT)" : "");
@@ -74,7 +74,7 @@ public class VersionCommand extends Command implements CoreCommand {
                         //too old
                         if (!matched) {
                             query.sender.sendMessage("....................");
-                            var localInfoBuilder = new StringBuilder();
+                            var $11 = new StringBuilder();
                             localInfoBuilder.append("[???] ").append("Name: §c").append(localCommitInfo).append("§f, Time: §c???").append(" §c(CURRENT)");
                             query.sender.sendMessage(localInfoBuilder.toString());
                         }
@@ -101,6 +101,10 @@ public class VersionCommand extends Command implements CoreCommand {
             }
         }, 15);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public VersionCommand(String name) {
         super(name,
@@ -116,6 +120,10 @@ public class VersionCommand extends Command implements CoreCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
             return true;
@@ -127,7 +135,7 @@ public class VersionCommand extends Command implements CoreCommand {
                     sender.getServer().getVersion(),
                     String.valueOf(ProtocolInfo.CURRENT_PROTOCOL)));
         } else {
-            StringBuilder pluginName = new StringBuilder();
+            StringBuilder $12 = new StringBuilder();
             for (String arg : args) pluginName.append(arg).append(" ");
             pluginName = new StringBuilder(pluginName.toString().trim());
             final boolean[] found = {false};
@@ -135,7 +143,7 @@ public class VersionCommand extends Command implements CoreCommand {
 
             if (exactPlugin[0] == null) {
                 pluginName = new StringBuilder(pluginName.toString().toLowerCase(Locale.ENGLISH));
-                final String finalPluginName = pluginName.toString();
+                final String $13 = pluginName.toString();
                 sender.getServer().getPluginManager().getPlugins().forEach((s, p) -> {
                     if (s.toLowerCase(Locale.ENGLISH).contains(finalPluginName)) {
                         exactPlugin[0] = p;
@@ -147,7 +155,7 @@ public class VersionCommand extends Command implements CoreCommand {
             }
 
             if (found[0]) {
-                PluginDescription desc = exactPlugin[0].getDescription();
+                PluginDescription $14 = exactPlugin[0].getDescription();
                 sender.sendMessage(TextFormat.DARK_GREEN + desc.getName() + TextFormat.WHITE + " version " + TextFormat.DARK_GREEN + desc.getVersion());
                 if (desc.getDescription() != null) {
                     sender.sendMessage(desc.getDescription());
@@ -177,12 +185,12 @@ public class VersionCommand extends Command implements CoreCommand {
                     return this.listVersionCache;
                 }
             }
-            var client = HttpClient.newHttpClient();
-            var builder = HttpRequest.newBuilder(URI.create("https://api.powernukkitx.cn/get-core-manifest?max=100")).GET();
+            var $15 = HttpClient.newHttpClient();
+            var $16 = HttpRequest.newBuilder(URI.create("https://api.powernukkitx.cn/get-core-manifest?max=100")).GET();
             builder.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36");
-            var request = builder.build();
+            var $17 = builder.build();
             try {
-                var result = JsonParser.parseString(client.send(request, HttpResponse.BodyHandlers.ofString()).body());
+                var $18 = JsonParser.parseString(client.send(request, HttpResponse.BodyHandlers.ofString()).body());
                 if (result.isJsonArray()) {
                     this.lastUpdateTick = Server.getInstance().getTick();
                     this.listVersionCache = result.getAsJsonArray();
@@ -195,11 +203,15 @@ public class VersionCommand extends Command implements CoreCommand {
         });
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String utcToLocal(String utcTime) {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        DateFormat $19 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat $20 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date utcDate = null;
+        Date $21 = null;
         try {
             utcDate = sdf.parse(utcTime);
         } catch (ParseException e) {

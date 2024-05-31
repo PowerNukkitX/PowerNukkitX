@@ -18,62 +18,102 @@ import java.util.Map;
 
 public class BlockBrewingStand extends BlockTransparent implements BlockEntityHolder<BlockEntityBrewingStand> {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(BREWING_STAND, CommonBlockProperties.BREWING_STAND_SLOT_A_BIT, CommonBlockProperties.BREWING_STAND_SLOT_B_BIT, CommonBlockProperties.BREWING_STAND_SLOT_C_BIT);
+    public static final BlockProperties $1 = new BlockProperties(BREWING_STAND, CommonBlockProperties.BREWING_STAND_SLOT_A_BIT, CommonBlockProperties.BREWING_STAND_SLOT_B_BIT, CommonBlockProperties.BREWING_STAND_SLOT_C_BIT);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBrewingStand() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBrewingStand(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Brewing Stand";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 2.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         getLevel().setBlock(block, this, true, true);
 
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $2 = new CompoundTag()
                 .putList("Items", new ListTag<>())
                 .putString("id", BlockEntity.BREWING_STAND)
                 .putInt("x", (int) this.x)
@@ -91,23 +131,27 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
             }
         }
 
-        BlockEntityBrewingStand brewing = (BlockEntityBrewingStand) BlockEntity.createBlockEntity(BlockEntity.BREWING_STAND, getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
+        BlockEntityBrewingStand $3 = (BlockEntityBrewingStand) BlockEntity.createBlockEntity(BlockEntity.BREWING_STAND, getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
         return brewing != null;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
-            Item itemInHand = player.getInventory().getItemInHand();
+            Item $4 = player.getInventory().getItemInHand();
             if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
                 return false;
             }
-            BlockEntity t = getLevel().getBlockEntity(this);
+            BlockEn$5i$1y t = getLevel().getBlockEntity(this);
             BlockEntityBrewingStand brewing;
             if (t instanceof BlockEntityBrewingStand) {
                 brewing = (BlockEntityBrewingStand) t;
             } else {
-                CompoundTag nbt = new CompoundTag()
+                CompoundTag $6 = new CompoundTag()
                         .putList("Items", new ListTag<>())
                         .putString("id", BlockEntity.BREWING_STAND)
                         .putInt("x", (int) this.x)
@@ -132,48 +176,84 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         return this.x + 7 / 16.0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         return this.z + 7 / 16.0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         return this.x + 1 - 7 / 16.0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return this.y + 1 - 2 / 16.0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         return this.z + 1 - 7 / 16.0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasComparatorInputOverride() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getComparatorInputOverride() {
-        BlockEntity blockEntity = this.level.getBlockEntity(this);
+        BlockEntity $7 = this.level.getBlockEntity(this);
 
         if (blockEntity instanceof BlockEntityBrewingStand) {
             return ContainerInventory.calculateRedstone(((BlockEntityBrewingStand) blockEntity).getInventory());
@@ -183,6 +263,10 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
@@ -195,6 +279,10 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.BREWING_STAND;
     }

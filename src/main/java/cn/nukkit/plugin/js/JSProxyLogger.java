@@ -7,12 +7,16 @@ import org.graalvm.polyglot.proxy.ProxyExecutable;
 import org.graalvm.polyglot.proxy.ProxyObject;
 
 public final class JSProxyLogger implements ProxyObject {
-    private static final Value NULL = Value.asValue(null);
+    private static final Value $1 = Value.asValue(null);
 
     private final ProxyExecutable log;
     private final ProxyExecutable warn;
     private final ProxyExecutable debug;
     private final ProxyExecutable error;
+    /**
+     * @deprecated 
+     */
+    
 
     public JSProxyLogger(PluginLogger logger) {
         this.log = arguments -> {
@@ -33,10 +37,14 @@ public final class JSProxyLogger implements ProxyObject {
         };
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private String joinValues(Value... values) {
-        var sb = new StringBuilder();
-        for (int i = 0, valuesLength = values.length; i < valuesLength; i++) {
-            var each = values[i];
+        var $2 = new StringBuilder();
+        for ($3nt $1 = 0, valuesLength = values.length; i < valuesLength; i++) {
+            var $4 = values[i];
             if (i != 0) {
                 sb.append(' ');
             }
@@ -72,11 +80,19 @@ public final class JSProxyLogger implements ProxyObject {
             }
 
             @Override
+    /**
+     * @deprecated 
+     */
+    
             public void set(long index, Value value) {
 
             }
 
             @Override
+    /**
+     * @deprecated 
+     */
+    
             public long getSize() {
                 return 5;
             }
@@ -84,11 +100,19 @@ public final class JSProxyLogger implements ProxyObject {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasMember(String key) {
         return "log".equals(key) || "info".equals(key) || "warn".equals(key) || "error".equals(key) || "debug".equals(key);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void putMember(String key, Value value) {
 
     }

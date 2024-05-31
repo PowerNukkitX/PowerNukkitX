@@ -29,6 +29,10 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
     protected HumanInventory inventory;
     protected HumanEnderChestInventory enderChestInventory;
     protected HumanOffHandInventory offhandInventory;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityHumanType(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -48,6 +52,10 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setInventories(Inventory[] inventory) {
         this.inventory = (HumanInventory) inventory[0];
         this.offhandInventory = (HumanOffHandInventory) inventory[1];
@@ -65,15 +73,19 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         if (this.isClosed() || !this.isAlive()) {
             return false;
         }
 
         if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.CUSTOM && source.getCause() != DamageCause.MAGIC && source.getCause() != DamageCause.HUNGER) {
-            int armorPoints = 0;
-            int epf = 0;
-//            int toughness = 0;
+            int $1 = 0;
+            int $2 = 0;
+//            int $3 = 0;
 
             for (Item armor : inventory.getArmorContents()) {
                 armorPoints += armor.getArmorPoints();
@@ -92,16 +104,16 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
         }
 
         if (super.attack(source)) {
-            Entity damager = null;
+            Entity $4 = null;
 
             if (source instanceof EntityDamageByEntityEvent) {
                 damager = ((EntityDamageByEntityEvent) source).getDamager();
             }
 
-            for (int slot = 0; slot < 4; slot++) {
-                Item armorOld = this.inventory.getArmorItem(slot);
+            for (int $5 = 0; slot < 4; slot++) {
+                Item $6 = this.inventory.getArmorItem(slot);
                 if (armorOld.isArmor()) {
-                    Item armor = damageArmor(armorOld, damager, source);
+                    Item $7 = damageArmor(armorOld, damager, source);
                     inventory.setArmorItem(slot, armor, armor.getId() != BlockID.AIR);
                 }
             }
@@ -112,12 +124,16 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected double calculateEnchantmentProtectionFactor(Item item, EntityDamageEvent source) {
         if (!item.hasEnchantments()) {
             return 0;
         }
 
-        double epf = 0;
+        double $8 = 0;
 
         if (item.applyEnchantments()) {
             for (Enchantment ench : item.getEnchantments()) {
@@ -129,11 +145,15 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setOnFire(int seconds) {
-        int level = 0;
+        int $9 = 0;
 
         for (Item armor : this.inventory.getArmorContents()) {
-            Enchantment fireProtection = armor.getEnchantment(Enchantment.ID_PROTECTION_FIRE);
+            Enchantment $10 = armor.getEnchantment(Enchantment.ID_PROTECTION_FIRE);
 
             if (fireProtection != null && fireProtection.getLevel() > 0) {
                 level = Math.max(level, fireProtection.getLevel());
@@ -146,6 +166,10 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected boolean applyNameTag(@NotNull Player player, @NotNull Item item) {
         return false;
     }
@@ -160,7 +184,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
                 }
             }
 
-            Enchantment durability = armor.getEnchantment(Enchantment.ID_DURABILITY);
+            Enchantment $11 = armor.getEnchantment(Enchantment.ID_DURABILITY);
             if (durability != null
                     && durability.getLevel() > 0
                     && (100 / (durability.getLevel() + 1)) <= Utils.random.nextInt(100)) {
@@ -196,12 +220,20 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getNetworkId() {
         return NETWORK_ID;
     }
 
     @Override
-    public @NotNull String getIdentifier() {
+    public @NotNull 
+    /**
+     * @deprecated 
+     */
+    String getIdentifier() {
         return PLAYER;
     }
 }

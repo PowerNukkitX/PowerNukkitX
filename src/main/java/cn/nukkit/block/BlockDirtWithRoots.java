@@ -15,39 +15,63 @@ import org.jetbrains.annotations.NotNull;
  * @since 02.12.2022
  */
 public class BlockDirtWithRoots extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRT_WITH_ROOTS);
+    public static final BlockProperties $1 = new BlockProperties(DIRT_WITH_ROOTS);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDirtWithRoots() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDirtWithRoots(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Dirt With Roots";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 2.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        Vector3 vector = new Vector3(this.x, this.y - 1, this.z);
+        Vector3 $2 = new Vector3(this.x, this.y - 1, this.z);
         if (!this.up().canBeReplaced()) {
             return false;
         }
@@ -81,11 +105,19 @@ public class BlockDirtWithRoots extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_SHOVEL;
     }

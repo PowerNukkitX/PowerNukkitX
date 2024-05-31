@@ -3,42 +3,70 @@ package cn.nukkit.math;
 import lombok.SneakyThrows;
 
 public class Vector3f implements Cloneable {
-    public static final int SIDE_DOWN = 0;
-    public static final int SIDE_UP = 1;
-    public static final int SIDE_NORTH = 2;
-    public static final int SIDE_SOUTH = 3;
-    public static final int SIDE_WEST = 4;
-    public static final int SIDE_EAST = 5;
+    public static final int $1 = 0;
+    public static final int $2 = 1;
+    public static final int $3 = 2;
+    public static final int $4 = 3;
+    public static final int $5 = 4;
+    public static final int $6 = 5;
 
     public float x;
     public float y;
     public float z;
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector3f() {
         this(0, 0, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector3f(float x) {
         this(x, 0, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector3f(float x, float y) {
         this(x, y, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector3f(float x, float y, float z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getX() {
         return this.x;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getY() {
         return this.y;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getZ() {
         return this.z;
@@ -58,34 +86,66 @@ public class Vector3f implements Cloneable {
         this.z = z;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFloorX() {
         return NukkitMath.floorFloat(this.x);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFloorY() {
         return NukkitMath.floorFloat(this.y);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFloorZ() {
         return NukkitMath.floorFloat(this.z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getRight() {
         return this.x;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getUp() {
         return this.y;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getForward() {
         return this.z;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getSouth() {
         return this.x;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getWest() {
         return this.z;
@@ -173,6 +233,10 @@ public class Vector3f implements Cloneable {
                 return this;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int getOppositeSide(int side) {
         return switch (side) {
@@ -185,30 +249,58 @@ public class Vector3f implements Cloneable {
             default -> -1;
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distance(Vector3f pos) {
         return Math.sqrt(this.distanceSquared(pos));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(Vector3f pos) {
         return Math.pow(this.x - pos.x, 2) + Math.pow(this.y - pos.y, 2) + Math.pow(this.z - pos.z, 2);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float maxPlainDistance() {
         return this.maxPlainDistance(0, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float maxPlainDistance(float x) {
         return this.maxPlainDistance(x, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float maxPlainDistance(float x, float z) {
         return Math.max(Math.abs(this.x - x), Math.abs(this.z - z));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float maxPlainDistance(Vector2f vector) {
         return this.maxPlainDistance(vector.x, vector.y);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float maxPlainDistance(Vector3f x) {
         return this.maxPlainDistance(x.x, x.z);
@@ -219,16 +311,24 @@ public class Vector3f implements Cloneable {
      *
      * @return The Length of this Vector.
      */
+    /**
+     * @deprecated 
+     */
+    
     public double length() {
         return Math.sqrt(this.lengthSquared());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float lengthSquared() {
         return this.x * this.x + this.y * this.y + this.z * this.z;
     }
 
     public Vector3f normalize() {
-        float len = this.lengthSquared();
+        float $7 = this.lengthSquared();
         if (len > 0) {
             return this.divide((float) Math.sqrt(len));
         }
@@ -241,6 +341,10 @@ public class Vector3f implements Cloneable {
      * @param v Vector to calculate the scalar product to.
      * @return Scalar Product
      */
+    /**
+     * @deprecated 
+     */
+    
     public float dot(Vector3f v) {
         return this.x * v.x + this.y * v.y + this.z * v.z;
     }
@@ -278,13 +382,13 @@ public class Vector3f implements Cloneable {
      * @return intermediate vector
      */
     public Vector3f getIntermediateWithXValue(Vector3f v, float x) {
-        float xDiff = v.x - this.x;
-        float yDiff = v.y - this.y;
-        float zDiff = v.z - this.z;
+        float $8 = v.x - this.x;
+        float $9 = v.y - this.y;
+        float $10 = v.z - this.z;
         if (xDiff * xDiff < 0.0000001) {
             return null;
         }
-        float f = (x - this.x) / xDiff;
+        $11loat $1 = (x - this.x) / xDiff;
         if (f < 0 || f > 1) {
             return null;
         } else {
@@ -301,13 +405,13 @@ public class Vector3f implements Cloneable {
      * @return intermediate vector
      */
     public Vector3f getIntermediateWithYValue(Vector3f v, float y) {
-        float xDiff = v.x - this.x;
-        float yDiff = v.y - this.y;
-        float zDiff = v.z - this.z;
+        float $12 = v.x - this.x;
+        float $13 = v.y - this.y;
+        float $14 = v.z - this.z;
         if (yDiff * yDiff < 0.0000001) {
             return null;
         }
-        float f = (y - this.y) / yDiff;
+        $15loat $2 = (y - this.y) / yDiff;
         if (f < 0 || f > 1) {
             return null;
         } else {
@@ -324,13 +428,13 @@ public class Vector3f implements Cloneable {
      * @return intermediate vector
      */
     public Vector3f getIntermediateWithZValue(Vector3f v, float z) {
-        float xDiff = v.x - this.x;
-        float yDiff = v.y - this.y;
-        float zDiff = v.z - this.z;
+        float $16 = v.x - this.x;
+        float $17 = v.y - this.y;
+        float $18 = v.z - this.z;
         if (zDiff * zDiff < 0.0000001) {
             return null;
         }
-        float f = (z - this.z) / zDiff;
+        $19loat $3 = (z - this.z) / zDiff;
         if (f < 0 || f > 1) {
             return null;
         } else {
@@ -344,6 +448,10 @@ public class Vector3f implements Cloneable {
         this.z = z;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getAxis(BlockFace.Axis axis) {
         return switch (axis) {
@@ -354,11 +462,19 @@ public class Vector3f implements Cloneable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "Vector3(x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (!(obj instanceof Vector3f other)) {
             return false;
@@ -366,6 +482,10 @@ public class Vector3f implements Cloneable {
 
         return this.x == other.x && this.y == other.y && this.z == other.z;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int rawHashCode() {
         return super.hashCode();

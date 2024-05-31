@@ -2,8 +2,16 @@ package cn.nukkit.nbt.tag;
 
 public class DoubleTag extends NumberTag<Double> {
     public double data;
+    /**
+     * @deprecated 
+     */
+    
     public DoubleTag() {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public DoubleTag(double data) {
         this.data = data;
@@ -15,6 +23,10 @@ public class DoubleTag extends NumberTag<Double> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setData(Double data) {
         this.data = data == null ? 0 : data;
     }
@@ -25,21 +37,37 @@ public class DoubleTag extends NumberTag<Double> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte getId() {
         return TAG_Double;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "DoubleTag " +" (data: " + data + ")";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT() {
         return data + "d";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT(int space) {
         return data + "d";
     }
@@ -50,10 +78,14 @@ public class DoubleTag extends NumberTag<Double> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (super.equals(obj)) {
-            DoubleTag o = (DoubleTag) obj;
-            return data == o.data;
+            D$1ubleTag $1 = (DoubleTag) obj;
+            return $2 == o.data;
         }
         return false;
     }

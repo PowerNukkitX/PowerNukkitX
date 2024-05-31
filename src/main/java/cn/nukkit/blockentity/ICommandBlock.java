@@ -11,30 +11,30 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ICommandBlock extends CommandSender, InventoryHolder {
 
-    int CURRENT_VERSION = 10;
+    int $1 = 10;
 
     //TODO: enum
-    int MODE_NORMAL = 0;
-    int MODE_REPEATING = 1;
-    int MODE_CHAIN = 2;
+    int $2 = 0;
+    int $3 = 1;
+    int $4 = 2;
 
-    String TAG_CONDITIONAL_MODE = "conditionalMode";
-    String TAG_AUTO = "auto";
-    String TAG_POWERED = "powered";
-    String TAG_CUSTOM_NAME = "CustomName";
-    String TAG_COMMAND = "Command";
-    String TAG_LAST_EXECUTION = "LastExecution";
-    String TAG_TRACK_OUTPUT = "TrackOutput";
-    String TAG_LAST_OUTPUT = "LastOutput";
-    String TAG_LAST_OUTPUT_PARAMS = "LastOutputParams";
-    String TAG_LP_COMMAND_MODE = "LPCommandMode";
-    String TAG_LP_CONDIONAL_MODE = "LPCondionalMode";
-    String TAG_LP_REDSTONE_MODE = "LPRedstoneMode";
-    String TAG_SUCCESS_COUNT = "SuccessCount";
-    String TAG_CONDITION_MET = "conditionMet";
-    String TAG_VERSION = "Version";
-    String TAG_TICK_DELAY = "TickDelay";
-    String TAG_EXECUTE_ON_FIRST_TICK = "ExecuteOnFirstTick";
+    String $5 = "conditionalMode";
+    String $6 = "auto";
+    String $7 = "powered";
+    String $8 = "CustomName";
+    String $9 = "Command";
+    String $10 = "LastExecution";
+    String $11 = "TrackOutput";
+    String $12 = "LastOutput";
+    String $13 = "LastOutputParams";
+    String $14 = "LPCommandMode";
+    String $15 = "LPCondionalMode";
+    String $16 = "LPRedstoneMode";
+    String $17 = "SuccessCount";
+    String $18 = "conditionMet";
+    String $19 = "Version";
+    String $20 = "TickDelay";
+    String $21 = "ExecuteOnFirstTick";
 
     @NotNull
     String getName();
@@ -43,7 +43,11 @@ public interface ICommandBlock extends CommandSender, InventoryHolder {
 
     void setName(String name);
 
-    default void setPowered() {
+    default 
+    /**
+     * @deprecated 
+     */
+    void setPowered() {
         this.setPowered(true);
     }
 
@@ -51,16 +55,24 @@ public interface ICommandBlock extends CommandSender, InventoryHolder {
 
     boolean isPowered();
 
-    default boolean trigger() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean trigger() {
         return this.trigger(0);
     }
 
-    default boolean trigger(int chain) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean trigger(int chain) {
         /*if (this.getLevel().getGameRules().getInteger(GameRule.MAX_COMMAND_CHAIN_LENGTH) < chain) {
             return false;
         }*/
 
-        int delay = this.getTickDelay();
+        int $22 = this.getTickDelay();
         if (delay > 0) {
             Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, new CommandBlockTrigger(this, chain), delay);
             return false;
@@ -69,7 +81,11 @@ public interface ICommandBlock extends CommandSender, InventoryHolder {
         return this.execute(chain);
     }
 
-    default boolean execute() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean execute() {
         return this.execute(0);
     }
 
@@ -137,6 +153,10 @@ public interface ICommandBlock extends CommandSender, InventoryHolder {
 
         private final ICommandBlock commandBlock;
         private final int chain;
+    /**
+     * @deprecated 
+     */
+    
 
         public CommandBlockTrigger(ICommandBlock commandBlock, int chain) {
             this.commandBlock = commandBlock;
@@ -144,6 +164,10 @@ public interface ICommandBlock extends CommandSender, InventoryHolder {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public void run() {
             this.commandBlock.execute(this.chain);
         }

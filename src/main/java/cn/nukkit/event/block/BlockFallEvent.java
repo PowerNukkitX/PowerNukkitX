@@ -7,11 +7,15 @@ import cn.nukkit.event.HandlerList;
 
 public class BlockFallEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockFallEvent(Block block) {
         super(block);

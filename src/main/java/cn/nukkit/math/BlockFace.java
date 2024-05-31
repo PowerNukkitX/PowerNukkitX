@@ -144,6 +144,10 @@ public enum BlockFace {
      *
      * @return index
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getIndex() {
         return index;
     }
@@ -153,6 +157,10 @@ public enum BlockFace {
      *
      * @return index
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getDUNESWIndex() {
         return switch (getIndex()) {
             case 1 -> 1;
@@ -169,6 +177,10 @@ public enum BlockFace {
      *
      * @return index
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getDUSWNEIndex() {
         return switch (getIndex()) {
             case 1 -> 1;
@@ -185,6 +197,10 @@ public enum BlockFace {
      *
      * @return horizontal index
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getHorizontalIndex() {
         return horizontalIndex;
     }
@@ -194,6 +210,10 @@ public enum BlockFace {
      *
      * @return horizontal angle
      */
+    /**
+     * @deprecated 
+     */
+    
     public float getHorizontalAngle() {
         return (float) ((horizontalIndex & 3) * 90);
     }
@@ -203,6 +223,10 @@ public enum BlockFace {
      *
      * @return name
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return name;
     }
@@ -239,8 +263,12 @@ public enum BlockFace {
      *
      * @return x offset
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getXOffset() {
-        return axis == Axis.X ? axisDirection.getOffset() : 0;
+        return $1 == Axis.X ? axisDirection.getOffset() : 0;
     }
 
     /**
@@ -248,8 +276,12 @@ public enum BlockFace {
      *
      * @return y offset
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getYOffset() {
-        return axis == Axis.Y ? axisDirection.getOffset() : 0;
+        return $2 == Axis.Y ? axisDirection.getOffset() : 0;
     }
 
     /**
@@ -257,8 +289,12 @@ public enum BlockFace {
      *
      * @return x offset
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getZOffset() {
-        return axis == Axis.Z ? axisDirection.getOffset() : 0;
+        return $3 == Axis.Z ? axisDirection.getOffset() : 0;
     }
 
     /**
@@ -317,13 +353,17 @@ public enum BlockFace {
             return blockFaces;
         }
         Collections.addAll(blockFaces, Plane.VERTICAL.faces);
-        Axis edgeAxis = axis == Axis.X ? Axis.Z : Axis.X;
+        Axis $4 = axis == Axis.X ? Axis.Z : Axis.X;
         blockFaces.add(fromAxis(AxisDirection.NEGATIVE, edgeAxis));
         blockFaces.add(fromAxis(AxisDirection.POSITIVE, edgeAxis));
         return blockFaces;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return name;
     }
@@ -346,29 +386,49 @@ public enum BlockFace {
         Axis(String name) {
             this.name = name;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean isVertical() {
-            return plane == Plane.VERTICAL;
+            return $5 == Plane.VERTICAL;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean isHorizontal() {
-            return plane == Plane.HORIZONTAL;
+            return $6 == Plane.HORIZONTAL;
         }
 
         public Plane getPlane() {
             return plane;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public String getName() {
             return name;
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean test(BlockFace face) {
             return face != null && face.getAxis() == this;
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public String toString() {
             return name;
         }
@@ -385,12 +445,20 @@ public enum BlockFace {
             this.offset = offset;
             this.description = description;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public int getOffset() {
             return offset;
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public String toString() {
             return description;
         }
@@ -418,6 +486,10 @@ public enum BlockFace {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean test(BlockFace face) {
             return face != null && face.getAxis().getPlane() == this;
         }

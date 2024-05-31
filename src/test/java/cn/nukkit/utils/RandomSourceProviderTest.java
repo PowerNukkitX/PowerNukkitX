@@ -9,32 +9,52 @@ public class RandomSourceProviderTest {
     static RandomSourceProvider randomSource;
 
     @BeforeAll
+    
+    /**
+     * @deprecated 
+     */
     static void test_create() {
         randomSource = RandomSourceProvider.create();
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void nextInt() {
-        int i = randomSource.nextInt();
+        $1nt $1 = randomSource.nextInt();
         Assertions.assertTrue(Integer.MAX_VALUE >= i && i >= Integer.MIN_VALUE);
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void nextIntBound() {
-        int i = randomSource.nextInt(5);
+        $2nt $2 = randomSource.nextInt(5);
         Assertions.assertTrue(5 >= i && i >= 0);
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void nextIntMinMax() {
-        int i = randomSource.nextInt(4, 10);
+        $3nt $3 = randomSource.nextInt(4, 10);
         Assertions.assertTrue(10 >= i && i >= 4);
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void nextGaussian() {
-        for (int i = 0; i < 100; i++) {
-            double v = randomSource.nextGaussian();
+        for ($4nt $4 = 0; i < 100; i++) {
+            double $5 = randomSource.nextGaussian();
             Assertions.assertTrue(v <= 1 && v >= -1, String.valueOf(v));
         }
     }

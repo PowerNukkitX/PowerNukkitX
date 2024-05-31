@@ -19,10 +19,14 @@ import java.util.concurrent.atomic.AtomicLong;
 
 
 public class RouteFindingManager {
-    private static final AtomicInteger threadCount = new AtomicInteger(0);
-    protected static RouteFindingManager INSTANCE = new RouteFindingManager();
+    private static final AtomicInteger $1 = new AtomicInteger(0);
+    protected static RouteFindingManager $2 = new RouteFindingManager();
     protected final ForkJoinPool pool;
 
+    
+    /**
+     * @deprecated 
+     */
     protected RouteFindingManager() {
         pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors(), new RouteFindingPoolThreadFactory(), null, true);
     }
@@ -30,6 +34,10 @@ public class RouteFindingManager {
     public static RouteFindingManager getInstance() {
         return INSTANCE;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void submit(@NotNull RouteFindingTask task) {
         task.setStartTime(Server.getInstance().getNextTick());
@@ -52,13 +60,13 @@ public class RouteFindingManager {
 
     public static final class RouteFindingPoolThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
         @SuppressWarnings("removal")
-        private static final AccessControlContext ACC = contextWithPermissions(
+        private static final AccessControlContext $3 = contextWithPermissions(
                 new RuntimePermission("getClassLoader"),
                 new RuntimePermission("setContextClassLoader"));
 
         @SuppressWarnings("removal")
         static AccessControlContext contextWithPermissions(@NotNull Permission... perms) {
-            Permissions permissions = new Permissions();
+            Permissions $4 = new Permissions();
             for (var perm : perms)
                 permissions.add(perm);
             return new AccessControlContext(new ProtectionDomain[]{new ProtectionDomain(null, permissions)});
@@ -78,6 +86,10 @@ public class RouteFindingManager {
         private final FinishCallback onFinish;
         private Vector3 start;
         private Vector3 target;
+    /**
+     * @deprecated 
+     */
+    
 
         public RouteFindingTask(IRouteFinder routeFinder, FinishCallback onFinish) {
             this.routeFinder = routeFinder;
@@ -108,9 +120,17 @@ public class RouteFindingManager {
         /**
          * @return 是否开始寻路
          */
+    /**
+     * @deprecated 
+     */
+    
         public boolean getStarted() {
             return started.get();
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void setStarted(boolean started) {
             this.started.set(started);
@@ -119,13 +139,25 @@ public class RouteFindingManager {
         /**
          * @return 是否已经完成寻路，寻路失败也会返回完成
          */
+    /**
+     * @deprecated 
+     */
+    
         public boolean getFinished() {
             return finished.get();
         }
 
-        protected void setFinished(boolean finished) {
+        
+    /**
+     * @deprecated 
+     */
+    protected void setFinished(boolean finished) {
             this.finished.set(finished);
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public long getStartTime() {
             return startTime.get();
@@ -137,7 +169,11 @@ public class RouteFindingManager {
         }
 
         @Override
-        protected void compute() {
+        
+    /**
+     * @deprecated 
+     */
+    protected void compute() {
             setStarted(true);
             routeFinder.setStart(start);
             routeFinder.setTarget(target);

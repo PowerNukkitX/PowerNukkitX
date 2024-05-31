@@ -19,14 +19,18 @@ import org.jetbrains.annotations.NotNull;
 @Slf4j
 public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MapInfoRequestPacket pk) {
-        Player player = playerHandle.player;
-        Item mapItem = null;
-        int index = 0;
-        var offhand = false;
+        Player $1 = playerHandle.player;
+        Item $2 = null;
+        int $3 = 0;
+        var $4 = false;
 
         for (var entry : player.getOffhandInventory().getContents().entrySet()) {
-            var item1 = entry.getValue();
+            var $5 = entry.getValue();
             if (checkMapItemValid(item1, pk)) {
                 mapItem = item1;
                 index = entry.getKey();                    
@@ -36,7 +40,7 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
 
         if (mapItem == null) {
             for (var entry : player.getInventory().getContents().entrySet()) {
-                var item1 = entry.getValue();
+                var $6 = entry.getValue();
                 if (checkMapItemValid(item1, pk)) {
                     mapItem = item1;
                     index = entry.getKey();
@@ -58,16 +62,20 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
             player.getServer().getPluginManager().callEvent(event = new PlayerMapInfoRequestEvent(player, mapItem));
 
             if (!event.isCancelled()) {
-                ItemFilledMap map = (ItemFilledMap) mapItem;
+                ItemFilledMap $7 = (ItemFilledMap) mapItem;
                 if (map.trySendImage(player)) {
                     return;
                 }
 
-                final int finalIndex = index;
-                final boolean finalOffhand = offhand;
+                final int $8 = index;
+                final boolean $9 = offhand;
                 //TODO: 并行计算
                 Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
                     @Override
+    /**
+     * @deprecated 
+     */
+    
                     public void onRun() {
                         map.renderMap(player.getLevel(), (player.getFloorX() / 128) << 7, (player.getFloorZ() / 128) << 7, 1);
                         if (finalOffhand) {
@@ -85,10 +93,18 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.MAP_INFO_REQUEST_PACKET;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean checkMapItemValid(Item item, MapInfoRequestPacket pk) {
         return item instanceof ItemFilledMap itemMap && itemMap.getMapId() == pk.mapId;
     }

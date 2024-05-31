@@ -12,6 +12,10 @@ import java.util.Map;
  * @since 2015/11/13
  */
 public class SaveOffCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public SaveOffCommand(String name) {
         super(name, "Disable auto saving");//no translation in client
@@ -22,6 +26,10 @@ public class SaveOffCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         sender.getServer().setAutoSave(false);
         log.addSuccess("commands.save.disabled").output(true);

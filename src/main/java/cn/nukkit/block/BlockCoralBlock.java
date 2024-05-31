@@ -16,31 +16,51 @@ import static cn.nukkit.block.property.CommonBlockProperties.DEAD_BIT;
 
 
 public class BlockCoralBlock extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_BLOCK, CORAL_COLOR, DEAD_BIT);
+    public static final BlockProperties $1 = new BlockProperties(CORAL_BLOCK, CORAL_COLOR, DEAD_BIT);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCoralBlock() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCoralBlock(BlockState blockstate) {
         super(blockstate);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isDead() {
         return getPropertyValue(DEAD_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDead(boolean dead) {
         setPropertyValue(DEAD_BIT, dead);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         if (isDead()) {
             return "Dead " + this.getPropertyValue(CORAL_COLOR).name() + " Coral Block";
@@ -50,26 +70,46 @@ public class BlockCoralBlock extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 7;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 6.0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isDead()) {
@@ -84,7 +124,7 @@ public class BlockCoralBlock extends BlockSolid {
                         return type;
                     }
                 }
-                BlockFadeEvent event = new BlockFadeEvent(this, new BlockCoralBlock(blockstate));
+                BlockFadeEvent $2 = new BlockFadeEvent(this, new BlockCoralBlock(blockstate));
                 if (!event.isCancelled()) {
                     setDead(true);
                     this.getLevel().setBlock(this, event.getNewState(), true, true);
@@ -110,7 +150,7 @@ public class BlockCoralBlock extends BlockSolid {
 
     @Override
     public Item toItem() {
-        int aux = this.getPropertyValue(CORAL_COLOR).ordinal();
+        int $3 = this.getPropertyValue(CORAL_COLOR).ordinal();
         return new ItemBlock(this, aux);
     }
 

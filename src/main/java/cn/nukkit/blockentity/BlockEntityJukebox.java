@@ -17,12 +17,20 @@ import java.util.Objects;
 public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     private Item recordItem;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityJukebox(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         if (namedTag.contains("RecordItem")) {
@@ -33,9 +41,17 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return this.getLevel().getBlockIdAt(getFloorX(), getFloorY(), getFloorZ()) == Block.JUKEBOX;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRecordItem(Item recordItem) {
         Objects.requireNonNull(recordItem, "Record item cannot be null");
@@ -45,11 +61,15 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     public Item getRecordItem() {
         return recordItem;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     
     public void play() {
         if (this.recordItem instanceof ItemMusicDisc itemRecord) {
-            PlaySoundPacket packet = new PlaySoundPacket();
+            PlaySoundPacket $1 = new PlaySoundPacket();
             packet.name = itemRecord.getSoundId();
             packet.volume = 1;
             packet.pitch = 1;
@@ -61,14 +81,22 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     }
 
     //TODO: Transfer the stop sound to the new sound method
+    /**
+     * @deprecated 
+     */
+    
     public void stop() {
         if (this.recordItem instanceof ItemMusicDisc itemRecord) {
-            StopSoundPacket packet = new StopSoundPacket();
+            StopSoundPacket $2 = new StopSoundPacket();
             packet.name = itemRecord.getSoundId();
             packet.stopAll = false;
             this.getLevel().addChunkPacket(this.getFloorX() >> 4, this.getFloorZ() >> 4, packet);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void dropItem() {
         if (!this.recordItem.isNull()) {
@@ -79,6 +107,10 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
@@ -91,6 +123,10 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onBreak(boolean isSilkTouch) {
         this.dropItem();
     }

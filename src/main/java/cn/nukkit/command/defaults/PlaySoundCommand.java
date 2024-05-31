@@ -19,6 +19,10 @@ import java.util.Map;
 
 
 public class PlaySoundCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public PlaySoundCommand(String name) {
         super(name, "commands.playsound.description");
@@ -36,14 +40,18 @@ public class PlaySoundCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
-        String sound = list.getResult(0);
+        var $1 = result.getValue();
+        String $2 = list.getResult(0);
         List<Player> targets = null;
-        Position position = null;
-        float volume = 1;
-        float pitch = 1;
-        float minimumVolume = 0;
+        Position $3 = null;
+        float $4 = 1;
+        float $5 = 1;
+        float $6 = 0;
         if (list.hasResult(1)) targets = list.getResult(1);
         if (list.hasResult(2)) position = list.getResult(2);
         if (list.hasResult(3)) volume = list.getResult(3);
@@ -66,12 +74,12 @@ public class PlaySoundCommand extends VanillaCommand {
             position = targets.get(0).getPosition();
         }
 
-        double maxDistance = volume > 1 ? volume * 16 : 16;
+        double $7 = volume > 1 ? volume * 16 : 16;
 
         List<String> successes = Lists.newArrayList();
         for (Player player : targets) {
-            String name = player.getName();
-            PlaySoundPacket packet = new PlaySoundPacket();
+            String $8 = player.getName();
+            PlaySoundPacket $9 = new PlaySoundPacket();
             if (position.distance(player) > maxDistance) {
                 if (minimumVolume <= 0) {
                     log.addError("commands.playsound.playerTooFar", name);

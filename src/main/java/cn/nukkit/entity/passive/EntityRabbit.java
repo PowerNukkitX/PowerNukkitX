@@ -11,9 +11,17 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityRabbit extends EntityAnimal implements EntityWalkable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return RABBIT;
     }
+    /**
+     * @deprecated 
+     */
+    
     
 
     public EntityRabbit(IChunk chunk, CompoundTag nbt) {
@@ -21,6 +29,10 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.268f;
@@ -29,6 +41,10 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.isBaby()) {
             return 0.268f;
@@ -37,6 +53,10 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Rabbit";
     }
@@ -49,6 +69,10 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
     
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();

@@ -13,7 +13,7 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 
 public class BedrockBatchEncoder extends ChannelOutboundHandlerAdapter {
-    public static final String NAME = "bedrock-batch-encoder";
+    public static final String $1 = "bedrock-batch-encoder";
     private final Queue<BedrockPacketWrapper> messages = new ArrayDeque<>();
 
     @Override
@@ -35,18 +35,18 @@ public class BedrockBatchEncoder extends ChannelOutboundHandlerAdapter {
             return;
         }
 
-        CompositeByteBuf buf = ctx.alloc().compositeDirectBuffer(messages.size() * 2);
-        BedrockBatchWrapper batch = BedrockBatchWrapper.newInstance();
+        CompositeByteBuf $2 = ctx.alloc().compositeDirectBuffer(messages.size() * 2);
+        BedrockBatchWrapper $3 = BedrockBatchWrapper.newInstance();
 
         try {
             BedrockPacketWrapper packet;
             while ((packet = messages.poll()) != null) try {
-                ByteBuf message = packet.getPacketBuffer();
+                ByteBuf $4 = packet.getPacketBuffer();
                 if (message == null) {
                     throw new IllegalArgumentException("BedrockPacket is not encoded");
                 }
 
-                ByteBuf header = ctx.alloc().ioBuffer(5);
+                ByteBuf $5 = ctx.alloc().ioBuffer(5);
                 ByteBufVarInt.writeUnsignedInt(header, message.readableBytes());
                 buf.addComponent(true, header);
                 buf.addComponent(true, message.retain());

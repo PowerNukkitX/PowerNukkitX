@@ -6,22 +6,34 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class BlockCutCopper extends BlockCopperBase {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CUT_COPPER);
+    public static final BlockProperties $1 = new BlockProperties(CUT_COPPER);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCutCopper() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCutCopper(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Cut Copper";
     }
@@ -32,6 +44,10 @@ public class BlockCutCopper extends BlockCopperBase {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected String getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel) {
         if (oxidizationLevel == null) {
             return getId();

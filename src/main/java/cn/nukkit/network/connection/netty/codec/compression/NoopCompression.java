@@ -25,10 +25,18 @@ public class NoopCompression implements BatchCompression {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setLevel(int level) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLevel() {
         return -1;
     }

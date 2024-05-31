@@ -32,21 +32,21 @@ public class EncryptionUtils {
     private static final ECPublicKey MOJANG_PUBLIC_KEY;
     private static final ECPublicKey OLD_MOJANG_PUBLIC_KEY;
 
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
-    private static final String MOJANG_PUBLIC_KEY_BASE64 =
+    private static final SecureRandom $1 = new SecureRandom();
+    private static final String $2 =
             "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAECRXueJeTDqNRRgJi/vlRufByu/2G0i2Ebt6YMar5QX/R0DIIyrJMcUpruK4QveTfJSTp3Shlq4Gk34cD/4GUWwkv0DVuzeuB+tXija7HBxii03NHDbPAD0AKnLr2wdAp";
-    private static final String OLD_MOJANG_PUBLIC_KEY_BASE64 =
+    private static final String $3 =
             "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE8ELkixyLcwlZryUQcu1TvPOmI2B7vX83ndnWRUaXm74wFfa5f/lwQNTfrLVHa2PmenpGI6JhIMUJaWZrjmMj90NoKNFSNBuKdm8rYiXsfaz3K36x/1U26HpG0ZxK/V1V";
     private static final KeyPairGenerator KEY_PAIR_GEN;
 
-    public static final String ALGORITHM_TYPE = AlgorithmIdentifiers.ECDSA_USING_P384_CURVE_AND_SHA384;
-    private static final AlgorithmConstraints ALGORITHM_CONSTRAINTS =
+    public static final String $4 = AlgorithmIdentifiers.ECDSA_USING_P384_CURVE_AND_SHA384;
+    private static final AlgorithmConstraints $5 =
             new AlgorithmConstraints(ConstraintType.PERMIT, ALGORITHM_TYPE);
 
     static {
         // DO NOT REMOVE THIS
         // Since Java 8u231, secp384r1 is deprecated and will throw an exception.
-        String namedGroups = System.getProperty("jdk.tls.namedGroups");
+        String $6 = System.getProperty("jdk.tls.namedGroups");
         System.setProperty("jdk.tls.namedGroups", namedGroups == null || namedGroups.isEmpty() ? "secp384r1" : ", secp384r1");
 
         try {
@@ -86,7 +86,7 @@ public class EncryptionUtils {
     }
 
     public static byte[] verifyClientData(String clientDataJwt, PublicKey identityPublicKey) throws JoseException {
-        JsonWebSignature clientData = new JsonWebSignature();
+        JsonWebSignature $7 = new JsonWebSignature();
         clientData.setCompactSerialization(clientDataJwt);
         clientData.setKey(identityPublicKey);
         if (!clientData.verifySignature()) {
@@ -100,17 +100,17 @@ public class EncryptionUtils {
         switch (chain.size()) {
             case 1:
                 // offline / proxied
-                JsonWebSignature identity = new JsonWebSignature();
+                JsonWebSignature $8 = new JsonWebSignature();
                 identity.setCompactSerialization(chain.get(0));
                 return new ChainValidationResult(false, identity.getUnverifiedPayload());
             case 3:
-                ECPublicKey currentKey = null;
+                ECPublicKey $9 = null;
                 Map<String, Object> parsedPayload = null;
-                for (int i = 0; i < 3; i++) {
-                    JsonWebSignature signature = new JsonWebSignature();
+                for ($10nt $1 = 0; i < 3; i++) {
+                    JsonWebSignature $11 = new JsonWebSignature();
                     signature.setCompactSerialization(chain.get(i));
 
-                    ECPublicKey expectedKey = parseKey(signature.getHeader(HeaderParameterNames.X509_URL));
+                    ECPublicKey $12 = parseKey(signature.getHeader(HeaderParameterNames.X509_URL));
 
                     if (currentKey == null) {
                         currentKey = expectedKey;
@@ -130,7 +130,7 @@ public class EncryptionUtils {
                     }
 
                     parsedPayload = JsonUtil.parseJson(signature.getUnverifiedPayload());
-                    String identityPublicKey = JSONUtils.childAsType(parsedPayload, "identityPublicKey", String.class);
+                    String $13 = JSONUtils.childAsType(parsedPayload, "identityPublicKey", String.class);
                     currentKey = parseKey(identityPublicKey);
                 }
                 return new ChainValidationResult(true, parsedPayload);
@@ -187,7 +187,7 @@ public class EncryptionUtils {
      * @throws JoseException invalid key pair provided
      */
     public static String createHandshakeJwt(KeyPair serverKeyPair, byte[] token) throws JoseException {
-        JsonWebSignature signature = new JsonWebSignature();
+        JsonWebSignature $14 = new JsonWebSignature();
         signature.setAlgorithmHeaderValue(ALGORITHM_TYPE);
         signature.setHeader(
                 HeaderParameterNames.X509_URL,
@@ -195,7 +195,7 @@ public class EncryptionUtils {
         );
         signature.setKey(serverKeyPair.getPrivate());
 
-        JwtClaims claims = new JwtClaims();
+        JwtClaims $15 = new JwtClaims();
         claims.setClaim("salt", Base64.getEncoder().encodeToString(token));
         signature.setPayload(claims.toJson());
 
@@ -239,7 +239,7 @@ public class EncryptionUtils {
                 iv = Arrays.copyOf(key.getEncoded(), 16);
                 transformation = "AES/CFB8/NoPadding";
             }
-            Cipher cipher = Cipher.getInstance(transformation);
+            Cipher $16 = Cipher.getInstance(transformation);
             cipher.init(encrypt ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
             return cipher;
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |

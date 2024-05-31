@@ -9,18 +9,34 @@ import cn.nukkit.item.Item;
 public class ConstantItemSelector extends Selector {
 
     protected final Item item;
+    /**
+     * @deprecated 
+     */
+    
 
     public ConstantItemSelector(String id, Selector parent) {
         this(id, 0, parent);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ConstantItemSelector(String id, Integer meta, Selector parent) {
         this(id, meta, 1, parent);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ConstantItemSelector(String id, Integer meta, int count, Selector parent) {
         this(Item.get(id, meta, count), parent);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ConstantItemSelector(Item item, Selector parent) {
         super(parent);

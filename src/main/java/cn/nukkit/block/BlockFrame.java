@@ -26,17 +26,25 @@ import static cn.nukkit.block.property.CommonBlockProperties.*;
 import static cn.nukkit.math.BlockFace.AxisDirection.POSITIVE;
 
 public class BlockFrame extends BlockTransparent implements BlockEntityHolder<BlockEntityItemFrame>, Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(FRAME, FACING_DIRECTION, ITEM_FRAME_MAP_BIT, ITEM_FRAME_PHOTO_BIT);
+    public static final BlockProperties $1 = new BlockProperties(FRAME, FACING_DIRECTION, ITEM_FRAME_MAP_BIT, ITEM_FRAME_PHOTO_BIT);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockFrame() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockFrame(BlockState blockstate) {
         super(blockstate);
@@ -49,21 +57,41 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(@NotNull BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isStoringMap() {
         return getPropertyValue(ITEM_FRAME_MAP_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setStoringMap(boolean map) {
         setPropertyValue(ITEM_FRAME_MAP_BIT, map);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isStoringPhoto() {
         return getPropertyValue(ITEM_FRAME_PHOTO_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setStoringPhoto(boolean hasPhoto) {
         setPropertyValue(ITEM_FRAME_PHOTO_BIT, hasPhoto);
@@ -71,6 +99,10 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.ITEM_FRAME;
     }
@@ -82,14 +114,22 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Item Frame";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            Block support = this.getSideAtLayer(0, getFacing().getOpposite());
+            Block $2 = this.getSideAtLayer(0, getFacing().getOpposite());
             if (!support.isSolid() && !support.getId().equals(COBBLESTONE_WALL)) {
                 this.level.useBreakOn(this);
                 return type;
@@ -100,20 +140,32 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @org.jetbrains.annotations.Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
         if (player != null && action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
-            BlockEntityItemFrame blockEntity = getOrCreateBlockEntity();
+            BlockEntityItemFrame $3 = getOrCreateBlockEntity();
             if (player.isCreative()) {
                 blockEntity.setItem(Item.AIR);
             } else {
@@ -123,12 +175,16 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null && player.isSneaking()) return false;
-        BlockEntityItemFrame itemFrame = getOrCreateBlockEntity();
+        BlockEntityItemFrame $4 = getOrCreateBlockEntity();
         if (itemFrame.getItem().isNull()) {
-            Item itemOnFrame = item.clone();
-            ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, itemOnFrame, ItemFrameUseEvent.Action.PUT);
+            Item $5 = item.clone();
+            ItemFrameUseEvent $6 = new ItemFrameUseEvent(player, this, itemFrame, itemOnFrame, ItemFrameUseEvent.Action.PUT);
             this.getLevel().getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) return false;
             if (player != null && !player.isCreative()) {
@@ -143,7 +199,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
             }
             this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_ADD);
         } else {
-            ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, null, ItemFrameUseEvent.Action.ROTATION);
+            ItemFrameUseEvent $7 = new ItemFrameUseEvent(player, this, itemFrame, null, ItemFrameUseEvent.Action.ROTATION);
             this.getLevel().getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) return false;
             itemFrame.setItemRotation((itemFrame.getItemRotation() + 1) % 8);
@@ -157,6 +213,10 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if ((!(target.isSolid() || target instanceof BlockWallBase) && !target.equals(block) || target instanceof BlockFrame ||  (block.isSolid() && !block.canBeReplaced()))) {
             return false;
@@ -172,7 +232,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
 
         setBlockFace(face);
         setStoringMap(Objects.equals(item.getId(), ItemID.FILLED_MAP));
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $8 = new CompoundTag()
                 .putByte("ItemRotation", 0)
                 .putFloat("ItemDropChance", 1.0f);
         if (item.hasCustomBlockData()) {
@@ -181,8 +241,8 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
             }
         }
         level.setBlock(block, this, true, true);
-        BlockFrame levelBlock = (BlockFrame) block.getLevelBlock();
-        BlockEntityItemFrame frame = levelBlock.getBlockEntity();
+        BlockFrame $9 = (BlockFrame) block.getLevelBlock();
+        BlockEntityItemFrame $10 = levelBlock.getBlockEntity();
         if (frame == null) {
             frame = levelBlock.createBlockEntity(nbt);
         }
@@ -192,6 +252,10 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
         this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
         this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_BREAK);
@@ -200,7 +264,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
 
     @Override
     public Item[] getDrops(Item item) {
-        BlockEntityItemFrame itemFrame = getBlockEntity();
+        BlockEntityItemFrame $11 = getBlockEntity();
         if (itemFrame != null && ThreadLocalRandom.current().nextFloat() <= itemFrame.getItemDropChance()) {
             return new Item[]{
                     toItem(), itemFrame.getItem().clone()
@@ -213,18 +277,30 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasComparatorInputOverride() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getComparatorInputOverride() {
-        BlockEntityItemFrame blockEntity = getBlockEntity();
+        BlockEntityItemFrame $12 = getBlockEntity();
 
         if (blockEntity != null) {
             return blockEntity.getAnalogOutput();
@@ -238,16 +314,28 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.25;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean sticksToPiston() {
         return false;
     }
@@ -260,9 +348,9 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
                 {2.0 / 16, 14.0 / 16}
         };
 
-        BlockFace facing = getFacing();
+        BlockFace $13 = getFacing();
         if (facing.getAxisDirection() == POSITIVE) {
-            int axis = facing.getAxis().ordinal();
+            int $14 = facing.getAxis().ordinal();
             aabb[axis][0] = 0;
             aabb[axis][1] = 1.0 / 16;
         }

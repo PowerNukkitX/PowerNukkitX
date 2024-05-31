@@ -9,31 +9,51 @@ import cn.nukkit.event.entity.EntityCombustByEntityEvent;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EnchantmentFireAspect extends Enchantment {
+    
+    /**
+     * @deprecated 
+     */
     protected EnchantmentFireAspect() {
         super(ID_FIRE_ASPECT, "fire", Rarity.RARE, EnchantmentType.SWORD);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMinEnchantAbility(int level) {
         return 10 + (level - 1) * 20;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxEnchantAbility(int level) {
         return super.getMinEnchantAbility(level) + 50;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxLevel() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void doAttack(Entity attacker, Entity entity) {
         if ((!(entity instanceof Player) || !((Player) entity).isCreative())) {
-            int duration = Math.max(entity.fireTicks / 20, getLevel() << 2);
+            int $1 = Math.max(entity.fireTicks / 20, getLevel() << 2);
 
-            EntityCombustByEntityEvent ev = new EntityCombustByEntityEvent(attacker, entity, duration);
+            EntityCombustByEntityEvent $2 = new EntityCombustByEntityEvent(attacker, entity, duration);
             Server.getInstance().getPluginManager().callEvent(ev);
 
             if (!ev.isCancelled()) {

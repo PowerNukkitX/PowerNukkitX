@@ -5,7 +5,7 @@ package cn.nukkit.item.customitem.data;
  * <br>可选值:1 CONSTRUCTOR 2 NATURE 3 EQUIPMENT 4 ITEMS 5 NONE
  *
  * @return 自定义物品的在创造栏的大分类
- * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-tabs">bedrock wiki</a>
+ * @see <a $1="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-tabs">bedrock wiki</a>
  */
 public enum CreativeCategory {
     CONSTRUCTOR,

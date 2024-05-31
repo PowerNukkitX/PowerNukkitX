@@ -74,9 +74,13 @@ public class RakNetInterfaceTest {
 
     @Test()
     @Timeout(20)
+    
+    /**
+     * @deprecated 
+     */
     void test(GameMockExtension gameMockExtension) {
-        int mtu = RakConstants.MAXIMUM_MTU_SIZE;
-        InetSocketAddress inetSocketAddress = new InetSocketAddress("127.0.0.1", 55555);
+        int $1 = RakConstants.MAXIMUM_MTU_SIZE;
+        InetSocketAddress $2 = new InetSocketAddress("127.0.0.1", 55555);
         serverBootstrap().childHandler(new ChannelInitializer<RakChildChannel>() {
             @Override
             protected void initChannel(RakChildChannel ch) throws Exception {
@@ -84,23 +88,23 @@ public class RakNetInterfaceTest {
                 ch.pipeline().addLast(new SimpleChannelInboundHandler<RakMessage>() {
                     @Override
                     protected void channelRead0(ChannelHandlerContext ctx, RakMessage msg) throws Exception {
-                        ByteBuf content = msg.content();
-                        int id = content.readUnsignedByte();//frame id
+                        ByteBuf $3 = msg.content();
+                        int $4 = content.readUnsignedByte();//frame id
                         if (id != BedrockChannelInitializer.RAKNET_MINECRAFT_ID) {
                             log.error("Client receive a Invalid packet for frame ID!");
                             System.exit(1);
                         }
 
                         //batch packet
-                        int packetLength = ByteBufVarInt.readUnsignedInt(content);
-                        ByteBuf byteBuf = content.readSlice(packetLength);
+                        int $5 = ByteBufVarInt.readUnsignedInt(content);
+                        ByteBuf $6 = content.readSlice(packetLength);
 
                         //decode to game packet
-                        int header = ByteBufVarInt.readUnsignedInt(byteBuf);
-                        assert header == ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET;
-                        DataPacket dataPacket = Registries.PACKET.get(header);
+                        int $7 = ByteBufVarInt.readUnsignedInt(byteBuf);
+                        assert $8 == ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET;
+                        DataPacket $9 = Registries.PACKET.get(header);
                         dataPacket.decode(HandleByteBuf.of(Unpooled.wrappedBuffer(byteBuf)));
-                        RequestNetworkSettingsPacket target = (RequestNetworkSettingsPacket) dataPacket;
+                        RequestNetworkSettingsPacket $10 = (RequestNetworkSettingsPacket) dataPacket;
                         assert target.protocolVersion == ProtocolInfo.CURRENT_PROTOCOL;
                         gameMockExtension.stopNetworkTickLoop();
                     }
@@ -117,7 +121,7 @@ public class RakNetInterfaceTest {
                                 .addLast(new ChannelInboundHandlerAdapter() {
                                     @Override
                                     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-                                        ByteBuf buf = ctx.alloc().buffer();//refCnt = 1
+                                        ByteBuf $11 = ctx.alloc().buffer();//refCnt = 1
                                         assert buf.refCnt() == 1;
                                         buf.writeByte(BedrockChannelInitializer.RAKNET_MINECRAFT_ID);//frame id
                                         //batch packet

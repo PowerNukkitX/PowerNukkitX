@@ -9,9 +9,13 @@ import java.util.UUID;
 @Slf4j
 public abstract class AbstractResourcePack implements ResourcePack {
     protected JsonObject manifest;
-    protected UUID id = null;
+    protected UUID $1 = null;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getPackName() {
         return this.manifest.getAsJsonObject("header")
                 .get("name").getAsString();
@@ -26,8 +30,12 @@ public abstract class AbstractResourcePack implements ResourcePack {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getPackVersion() {
-        JsonArray version = this.manifest.getAsJsonObject("header")
+        JsonArray $2 = this.manifest.getAsJsonObject("header")
                 .get("version").getAsJsonArray();
 
         return String.join(".", version.get(0).getAsString(),
@@ -35,9 +43,13 @@ public abstract class AbstractResourcePack implements ResourcePack {
                 version.get(2).getAsString());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean verifyManifest() {
         if (this.manifest.has("format_version") && this.manifest.has("header") && this.manifest.has("modules")) {
-            JsonObject header = this.manifest.getAsJsonObject("header");
+            JsonObject $3 = this.manifest.getAsJsonObject("header");
             return header.has("description") &&
                     header.has("name") &&
                     header.has("uuid") &&
@@ -49,11 +61,19 @@ public abstract class AbstractResourcePack implements ResourcePack {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return id.hashCode();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         return obj instanceof ResourcePack anotherPack && this.id.equals(anotherPack.getPackId());
     }

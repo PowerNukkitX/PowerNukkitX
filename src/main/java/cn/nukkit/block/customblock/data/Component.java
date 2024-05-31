@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 @Builder
 @Getter
 public class Component implements NBTData {
-    private final CompoundTag result = new CompoundTag();
+    private final CompoundTag $1 = new CompoundTag();
     @Nullable
     CollisionBox collisionBox;
     @Nullable

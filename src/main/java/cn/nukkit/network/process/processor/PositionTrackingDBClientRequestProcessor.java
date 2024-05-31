@@ -15,23 +15,31 @@ import java.io.IOException;
 @Slf4j
 public class PositionTrackingDBClientRequestProcessor extends DataPacketProcessor<PositionTrackingDBClientRequestPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PositionTrackingDBClientRequestPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         try {
-            PositionTracking positionTracking = player.getServer().getPositionTrackingService().startTracking(player, pk.trackingId, true);
+            PositionTracking $2 = player.getServer().getPositionTrackingService().startTracking(player, pk.trackingId, true);
             if (positionTracking != null) {
                 return;
             }
         } catch (IOException e) {
             log.warn("Failed to track the trackingHandler {}", pk.trackingId, e);
         }
-        PositionTrackingDBServerBroadcastPacket notFound = new PositionTrackingDBServerBroadcastPacket();
+        PositionTrackingDBServerBroadcastPacket $3 = new PositionTrackingDBServerBroadcastPacket();
         notFound.setAction(PositionTrackingDBServerBroadcastPacket.Action.NOT_FOUND);
         notFound.setTrackingId(pk.trackingId);
         player.dataPacket(notFound);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.POS_TRACKING_CLIENT_REQUEST_PACKET;
     }

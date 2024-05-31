@@ -25,36 +25,56 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockFlowingLava extends BlockLiquid {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(FLOWING_LAVA, CommonBlockProperties.LIQUID_DEPTH);
+    public static final BlockProperties $1 = new BlockProperties(FLOWING_LAVA, CommonBlockProperties.LIQUID_DEPTH);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockFlowingLava() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockFlowingLava(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 15;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Lava";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         entity.highestPosition -= (entity.highestPosition - entity.y) * 0.5;
 
-        EntityCombustByBlockEvent ev = new EntityCombustByBlockEvent(this, entity, 8);
+        EntityCombustByBlockEvent $2 = new EntityCombustByBlockEvent(this, entity, 8);
         Server.getInstance().getPluginManager().callEvent(ev);
         if (!ev.isCancelled()
                 // Making sure the entity is actually alive and not invulnerable.
@@ -71,34 +91,42 @@ public class BlockFlowingLava extends BlockLiquid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        boolean ret = this.getLevel().setBlock(this, this, true, false);
+        boolean $3 = this.getLevel().setBlock(this, this, true, false);
         this.getLevel().scheduleUpdate(this, this.tickRate());
 
         return ret;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
-        int result = super.onUpdate(type);
+        int $4 = super.onUpdate(type);
 
         if (type == Level.BLOCK_UPDATE_RANDOM && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
-            Random random = ThreadLocalRandom.current();
+            Random $5 = ThreadLocalRandom.current();
 
-            int i = random.nextInt(3);
+            $6nt $1 = random.nextInt(3);
 
             if (i > 0) {
-                for (int k = 0; k < i; ++k) {
-                    Vector3 v = this.add(random.nextInt(3) - 1, 1, random.nextInt(3) - 1);
-                    Block block = this.getLevel().getBlock(v);
+                for (int $7 = 0; k < i; ++k) {
+                    Vector3 $8 = this.add(random.nextInt(3) - 1, 1, random.nextInt(3) - 1);
+                    Block $9 = this.getLevel().getBlock(v);
 
                     if (block.isAir()) {
                         if (this.isSurroundingBlockFlammable(block)) {
-                            BlockIgniteEvent e = new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
+                            BlockIgnit$10Ev$2nt e = new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
                             this.level.getServer().getPluginManager().callEvent(e);
 
                             if (!e.isCancelled()) {
-                                Block fire = Block.get(BlockID.FIRE);
+                                Block $11 = Block.get(BlockID.FIRE);
                                 this.getLevel().setBlock(v, fire, true);
                                 this.getLevel().scheduleUpdate(fire, fire.tickRate());
                                 return Level.BLOCK_UPDATE_RANDOM;
@@ -111,16 +139,16 @@ public class BlockFlowingLava extends BlockLiquid {
                     }
                 }
             } else {
-                for (int k = 0; k < 3; ++k) {
-                    Vector3 v = this.add(random.nextInt(3) - 1, 0, random.nextInt(3) - 1);
-                    Block block = this.getLevel().getBlock(v);
+                for (int $12 = 0; k < 3; ++k) {
+                    Vector3 $13 = this.add(random.nextInt(3) - 1, 0, random.nextInt(3) - 1);
+                    Block $14 = this.getLevel().getBlock(v);
 
                     if (block.up().isAir() && block.getBurnChance() > 0) {
-                        BlockIgniteEvent e = new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
+                        BlockIgnit$15Ev$3nt e = new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
                         this.level.getServer().getPluginManager().callEvent(e);
 
                         if (!e.isCancelled()) {
-                            Block fire = Block.get(BlockID.FIRE);
+                            Block $16 = Block.get(BlockID.FIRE);
                             this.getLevel().setBlock(v, fire, true);
                             this.getLevel().scheduleUpdate(fire, fire.tickRate());
                         }
@@ -132,9 +160,13 @@ public class BlockFlowingLava extends BlockLiquid {
         return result;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean isSurroundingBlockFlammable(Block block) {
         for (final var face : BlockFace.values()) {
-            final var b = block.getSide(face);
+            final var $17 = block.getSide(face);
             if (b.getBurnChance() > 0) {
                 return true;
             }
@@ -149,6 +181,10 @@ public class BlockFlowingLava extends BlockLiquid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int tickRate() {
         if (this.level.getDimension() == Level.DIMENSION_NETHER) {
             return 10;
@@ -157,6 +193,10 @@ public class BlockFlowingLava extends BlockLiquid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getFlowDecayPerBlock() {
         if (this.level.getDimension() == Level.DIMENSION_NETHER) {
             return 1;
@@ -165,11 +205,15 @@ public class BlockFlowingLava extends BlockLiquid {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void checkForMixing() {
-        Block colliding = null;
-        Block down = this.getSide(BlockFace.DOWN);
-        for (int side = 1; side < 6; ++side) { //don't check downwards side
-            Block blockSide = this.getSide(BlockFace.fromIndex(side));
+        Block $18 = null;
+        Block $19 = this.getSide(BlockFace.DOWN);
+        for (int $20 = 1; side < 6; ++side) { //don't check downwards side
+            Block $21 = this.getSide(BlockFace.fromIndex(side));
             if (blockSide instanceof BlockFlowingWater || blockSide.getLevelBlockAtLayer(1) instanceof BlockFlowingWater) {
                 colliding = blockSide;
                 break;
@@ -191,6 +235,10 @@ public class BlockFlowingLava extends BlockLiquid {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void flowIntoBlock(Block block, int newFlowDecay) {
         if (block instanceof BlockFlowingWater) {
             ((BlockLiquid) block).liquidCollide(this, Block.get(BlockID.STONE));
@@ -200,6 +248,10 @@ public class BlockFlowingLava extends BlockLiquid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void addVelocityToEntity(Entity entity, Vector3 vector) {
         if (!(entity instanceof EntityTnt)) {
             super.addVelocityToEntity(entity, vector);
@@ -207,6 +259,10 @@ public class BlockFlowingLava extends BlockLiquid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getPassableBlockFrictionFactor() {
         return 0.3;
     }

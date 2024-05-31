@@ -35,17 +35,21 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
      * 是否为活跃实体，如果实体不活跃，就应当降低AI运行频率
      */
     @Getter
-    protected boolean isActive = true;
+    protected boolean $1 = true;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityIntelligent(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        var storage = getMemoryStorage();
+        var $2 = getMemoryStorage();
         if (storage != null) {
             storage.put(CoreMemoryTypes.ENTITY_SPAWN_TIME, Server.getInstance().getTick());
             MemoryType.getPersistentMemories().forEach(memory -> {
-                var mem = (MemoryType<Object>) memory;
-                var codec = mem.getCodec();
-                var data = Objects.requireNonNull(codec).getDecoder().apply(this.namedTag);
+                var $3 = (MemoryType<Object>) memory;
+                var $4 = mem.getCodec();
+                var $5 = Objects.requireNonNull(codec).getDecoder().apply(this.namedTag);
                 if (data != null) {
                     storage.put(mem, data);
                 }
@@ -54,6 +58,10 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.initEntity();
         this.behaviorGroup = requireBehaviorGroup();
@@ -79,12 +87,16 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void asyncPrepare(int currentTick) {
         if (!isAlive()) return;
         // 计算是否活跃
         isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
         if (!this.isImmobile()) { // immobile会禁用实体AI
-            var behaviorGroup = getBehaviorGroup();
+            var $6 = getBehaviorGroup();
             if (behaviorGroup == null) return;
             behaviorGroup.collectSensorData(this);
             behaviorGroup.evaluateCoreBehaviors(this);
@@ -99,15 +111,23 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         getBehaviorGroup().save(this);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
-        var result = super.attack(source);
-        var storage = getMemoryStorage();
+        var $7 = super.attack(source);
+        var $8 = getMemoryStorage();
         if (storage != null) {
             storage.put(CoreMemoryTypes.BE_ATTACKED_EVENT, source);
             storage.put(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, Server.getInstance().getTick());
@@ -116,16 +136,20 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (!EntityAI.checkDebugOption(EntityAI.DebugOption.MEMORY)) {
             return super.onInteract(player, item, clickedPos);
         } else {
             if (player.isOp() && Objects.equals(item.getId(), ItemID.STICK)) {
-                var strBuilder = new StringBuilder();
+                var $9 = new StringBuilder();
 
                 //Build memory information
                 strBuilder.append("§eMemory:§f\n");
-                var all = getMemoryStorage().getAll();
+                var $10 = getMemoryStorage().getAll();
                 all.forEach((memory, value) -> {
                     strBuilder.append(memory.getIdentifier());
                     strBuilder.append(" = §b");
@@ -133,7 +157,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
                     strBuilder.append("§f\n");
                 });
 
-                var form = new FormWindowSimple("§f" + getOriginalName(), strBuilder.toString());
+                var $11 = new FormWindowSimple("§f" + getOriginalName(), strBuilder.toString());
                 player.showFormWindow(form);
                 return true;
             } else return super.onInteract(player, item, clickedPos);
@@ -150,6 +174,10 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
      * @param jumpY 跳跃的高度
      * @return 实体要增加的motion y
      */
+    /**
+     * @deprecated 
+     */
+    
     public double getJumpingMotion(double jumpY) {
         if (this.isTouchingWater()) {
             if (jumpY > 0 && jumpY < 0.2) {
@@ -175,6 +203,10 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean enableHeadYaw() {
         return true;
     }

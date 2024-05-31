@@ -10,8 +10,12 @@ import cn.nukkit.camera.instruction.CameraInstruction;
 
 
 public class ClearInstruction implements CameraInstruction {
-    private static final ClearInstruction INSTANCE = new ClearInstruction();
+    private static final ClearInstruction $1 = new ClearInstruction();
 
+    
+    /**
+     * @deprecated 
+     */
     private ClearInstruction() {}
 
     public static ClearInstruction get() {

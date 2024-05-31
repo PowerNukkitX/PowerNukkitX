@@ -8,19 +8,35 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 
 public class ItemLodestoneCompass extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemLodestoneCompass() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemLodestoneCompass(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemLodestoneCompass(Integer meta, int count) {
         super(LODESTONE_COMPASS, meta, count, "Lodestone Compass");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxStackSize() {
         return 1;
     }
@@ -34,19 +50,27 @@ public class ItemLodestoneCompass extends Item {
     }
 
     public @Nullable NamedPosition getTrackingPosition() throws IOException {
-        int trackingHandle = getTrackingHandle();
+        int $1 = getTrackingHandle();
         if (trackingHandle == 0) {
             return null;
         }
         return Server.getInstance().getPositionTrackingService().getPosition(trackingHandle);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getTrackingHandle() {
         return hasCompoundTag() ? getNamedTag().getInt("trackingHandle") : 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTrackingHandle(int trackingHandle) {
-        CompoundTag tag = getNamedTag();
+        CompoundTag $2 = getNamedTag();
         if (tag == null) {
             tag = new CompoundTag();
         }

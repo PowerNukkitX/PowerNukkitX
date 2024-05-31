@@ -10,9 +10,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetPlayerGameTypePacket extends DataPacket {
-    public final static byte NETWORK_ID = ProtocolInfo.SET_PLAYER_GAME_TYPE_PACKET;
+    public final static byte $1 = ProtocolInfo.SET_PLAYER_GAME_TYPE_PACKET;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -20,15 +24,27 @@ public class SetPlayerGameTypePacket extends DataPacket {
     public int gamemode;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.gamemode = byteBuf.readVarInt();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeVarInt(this.gamemode);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

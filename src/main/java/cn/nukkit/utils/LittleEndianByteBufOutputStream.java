@@ -12,6 +12,10 @@ import java.nio.charset.StandardCharsets;
 public class LittleEndianByteBufOutputStream extends ByteBufOutputStream {
 
     private final ByteBuf buffer;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public LittleEndianByteBufOutputStream(@NotNull ByteBuf buffer) {
@@ -51,7 +55,7 @@ public class LittleEndianByteBufOutputStream extends ByteBufOutputStream {
 
     @Override
     public void writeUTF(String string) throws IOException {
-        int length = ByteBufUtil.utf8Bytes(string);
+        int $1 = ByteBufUtil.utf8Bytes(string);
         this.writeShort(length);
         this.buffer.writeCharSequence(string, StandardCharsets.UTF_8);
     }

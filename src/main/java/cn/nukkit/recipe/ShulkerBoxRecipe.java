@@ -16,17 +16,33 @@ import static cn.nukkit.recipe.RecipeType.SHULKER_BOX;
  * @since 2021-09-25
  */
 public class ShulkerBoxRecipe extends ShapelessRecipe {
+    /**
+     * @deprecated 
+     */
+    
     public ShulkerBoxRecipe(Item result, Collection<Item> ingredients) {
         this(null, 10, result, ingredients);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ShulkerBoxRecipe(String recipeId, int priority, Item result, Collection<Item> ingredients) {
         this(recipeId, priority, result, ingredients.stream().map(item -> (ItemDescriptor) new DefaultDescriptor(item)).toList());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ShulkerBoxRecipe(String recipeId, int priority, Item result, List<ItemDescriptor> ingredients) {
         this(recipeId, null, priority, result, ingredients);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ShulkerBoxRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients) {
         super(recipeId == null ? Registries.RECIPE.computeRecipeId(List.of(result), ingredients, SHULKER_BOX) : recipeId, uuid, priority, result, ingredients);

@@ -21,29 +21,45 @@ import java.util.Map;
 
 public class BlockEnchantingTable extends BlockTransparent implements BlockEntityHolder<BlockEntityEnchantTable> {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(ENCHANTING_TABLE);
+    public static final BlockProperties $1 = new BlockProperties(ENCHANTING_TABLE);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEnchantingTable() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEnchantingTable(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Enchanting Table";
     }
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.ENCHANT_TABLE;
     }
@@ -55,48 +71,84 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 6000;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 7;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return getY() + 12 / 16.0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        CompoundTag nbt = new CompoundTag();
+        CompoundTag $2 = new CompoundTag();
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -113,16 +165,20 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player == null) {
             return true;
         }
-        Item itemInHand = player.getInventory().getItemInHand();
+        Item $3 = player.getInventory().getItemInHand();
         if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
             return false;
         }
 
-        BlockEntityEnchantTable enchantTable = getOrCreateBlockEntity();
+        BlockEntityEnchantTable $4 = getOrCreateBlockEntity();
         if (enchantTable.namedTag.contains("Lock") && enchantTable.namedTag.get("Lock") instanceof StringTag
                 && !enchantTable.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
@@ -134,11 +190,19 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
         return false;
     }

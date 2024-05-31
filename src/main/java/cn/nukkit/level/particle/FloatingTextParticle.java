@@ -22,8 +22,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 2015/11/21
  */
 public class FloatingTextParticle extends Particle {
-    private static final Skin EMPTY_SKIN = new Skin();
-    private static final SerializedImage SKIN_DATA = SerializedImage.fromLegacy(new byte[8192]);
+    private static final Skin $1 = new Skin();
+    private static final SerializedImage $2 = SerializedImage.fromLegacy(new byte[8192]);
 
     static {
         EMPTY_SKIN.setSkinData(SKIN_DATA);
@@ -31,27 +31,47 @@ public class FloatingTextParticle extends Particle {
     }
 
     protected final Level level;
-    protected UUID uuid = UUID.randomUUID();
-    protected long entityId = -1;
-    protected boolean invisible = false;
-    protected EntityDataMap entityData = new EntityDataMap();
+    protected UUID $3 = UUID.randomUUID();
+    protected long $4 = -1;
+    protected boolean $5 = false;
+    protected EntityDataMap $6 = new EntityDataMap();
+    /**
+     * @deprecated 
+     */
+    
 
     public FloatingTextParticle(Location location, String title) {
         this(location, title, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FloatingTextParticle(Location location, String title, String text) {
         this(location.getLevel(), location, title, text);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FloatingTextParticle(Vector3 pos, String title) {
         this(pos, title, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FloatingTextParticle(Vector3 pos, String title, String text) {
         this(null, pos, title, text);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private FloatingTextParticle(Level level, Vector3 pos, String title, String text) {
         super(pos.x, pos.y, pos.z);
         this.level = level;
@@ -69,45 +89,81 @@ public class FloatingTextParticle extends Particle {
             entityData.put(Entity.SCORE, text);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getText() {
         return entityData.get(Entity.SCORE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setText(String text) {
         this.entityData.put(Entity.SCORE, text);
         sendentityData();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getTitle() {
         return entityData.get(Entity.NAME);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTitle(String title) {
         this.entityData.put(Entity.NAME, title);
         sendentityData();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void sendentityData() {
         if (level != null) {
-            SetEntityDataPacket packet = new SetEntityDataPacket();
+            SetEntityDataPacket $7 = new SetEntityDataPacket();
             packet.eid = entityId;
             packet.entityData = entityData;
             level.addChunkPacket(getChunkX(), getChunkZ(), packet);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isInvisible() {
         return invisible;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setInvisible(boolean invisible) {
         this.invisible = invisible;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setInvisible() {
         this.setInvisible(true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long getEntityId() {
         return entityId;
@@ -120,7 +176,7 @@ public class FloatingTextParticle extends Particle {
         if (this.entityId == -1) {
             this.entityId = 1095216660480L + ThreadLocalRandom.current().nextLong(0, 0x7fffffffL);
         } else {
-            RemoveEntityPacket pk = new RemoveEntityPacket();
+            RemoveEntityPacket $8 = new RemoveEntityPacket();
             pk.eid = this.entityId;
 
             packets.add(pk);
@@ -130,12 +186,12 @@ public class FloatingTextParticle extends Particle {
             PlayerListPacket.Entry[] entry = {
                     new PlayerListPacket.Entry(uuid, entityId, entityData.get(Entity.NAME), EMPTY_SKIN)
             };
-            PlayerListPacket playerAdd = new PlayerListPacket();
+            PlayerListPacket $9 = new PlayerListPacket();
             playerAdd.entries = entry;
             playerAdd.type = PlayerListPacket.TYPE_ADD;
             packets.add(playerAdd);
 
-            AddPlayerPacket pk = new AddPlayerPacket();
+            AddPlayerPacket $10 = new AddPlayerPacket();
             pk.uuid = uuid;
             pk.username = "";
             pk.entityUniqueId = this.entityId;
@@ -152,7 +208,7 @@ public class FloatingTextParticle extends Particle {
             pk.item = Item.AIR;
             packets.add(pk);
 
-            PlayerListPacket playerRemove = new PlayerListPacket();
+            PlayerListPacket $11 = new PlayerListPacket();
             playerRemove.entries = entry;
             playerRemove.type = PlayerListPacket.TYPE_REMOVE;
             packets.add(playerRemove);

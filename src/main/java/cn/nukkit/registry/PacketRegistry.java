@@ -10,8 +10,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? extends DataPacket>> {
     private final Int2ObjectOpenHashMap<FastConstructor<? extends DataPacket>> PACKET_POOL = new Int2ObjectOpenHashMap<>(256);
-    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static final AtomicBoolean $1 = new AtomicBoolean(false);
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         if (isLoad.getAndSet(true)) return;
         registerPackets();
@@ -45,9 +49,17 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void trim() {
         PACKET_POOL.trim();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void reload() {
         isLoad.set(false);
@@ -72,6 +84,10 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void register0(@Nonnegative int id, @NotNull Class<? extends DataPacket> clazz) {
         try {
             if (this.PACKET_POOL.putIfAbsent(id, FastConstructor.create(clazz.getConstructor())) != null) {
@@ -81,6 +97,10 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void registerPackets() {
         this.PACKET_POOL.clear();
 

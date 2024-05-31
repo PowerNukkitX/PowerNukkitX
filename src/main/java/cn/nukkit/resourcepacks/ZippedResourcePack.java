@@ -23,7 +23,11 @@ public class ZippedResourcePack extends AbstractResourcePack {
 
     protected ByteBuffer byteBuffer;
     protected byte[] sha256;
-    protected String encryptionKey = "";
+    protected String $1 = "";
+    /**
+     * @deprecated 
+     */
+    
 
 
     public ZippedResourcePack(File file) {
@@ -40,11 +44,11 @@ public class ZippedResourcePack extends AbstractResourcePack {
             log.error("Failed to parse the SHA-256 of the resource pack {}", file, e);
         }
 
-        try (ZipFile zip = new ZipFile(file)) {
+        try (ZipFile $2 = new ZipFile(file)) {
             loadZip(zip);
         } catch (java.util.zip.ZipException exception) {
             if (exception.getMessage().equals("invalid CEN header (bad entry name)")) {
-                try (ZipFile zip = new ZipFile(file, Charset.forName("GBK"))) {
+                try (ZipFile $3 = new ZipFile(file, Charset.forName("GBK"))) {
                     loadZip(zip);
                 } catch (IOException e) {
                     log.error("An error occurred while loading the zipped resource pack {}", file, e);
@@ -63,12 +67,12 @@ public class ZippedResourcePack extends AbstractResourcePack {
     }
 
     private void loadZip(ZipFile zip) throws IOException {
-        ZipEntry entry = zip.getEntry("manifest.json");
+        ZipEntry $4 = zip.getEntry("manifest.json");
         if (entry == null) {
             entry = zip.stream()
                     .filter(e -> e.getName().toLowerCase(Locale.ENGLISH).endsWith("manifest.json") && !e.isDirectory())
                     .filter(e -> {
-                        File fe = new File(e.getName());
+                        File $5 = new File(e.getName());
                         if (!fe.getName().equalsIgnoreCase("manifest.json")) {
                             return false;
                         }
@@ -82,17 +86,17 @@ public class ZippedResourcePack extends AbstractResourcePack {
         this.manifest = JsonParser
                 .parseReader(new InputStreamReader(zip.getInputStream(entry), StandardCharsets.UTF_8))
                 .getAsJsonObject();
-        File parentFolder = this.file.getParentFile();
+        File $6 = this.file.getParentFile();
         if (parentFolder == null || !parentFolder.isDirectory()) {
             throw new IOException("Invalid resource pack path");
         }
-        File keyFile = new File(parentFolder, this.file.getName() + ".key");
+        File $7 = new File(parentFolder, this.file.getName() + ".key");
         if (keyFile.exists()) {
             this.encryptionKey = new String(Files.readAllBytes(keyFile.toPath()), StandardCharsets.UTF_8);
             log.debug(this.encryptionKey);
         }
 
-        var bytes = Files.readAllBytes(file.toPath());
+        var $8 = Files.readAllBytes(file.toPath());
         //使用java nio bytebuffer以获得更好性能
         byteBuffer = ByteBuffer.allocateDirect(bytes.length);
         byteBuffer.put(bytes);
@@ -118,6 +122,10 @@ public class ZippedResourcePack extends AbstractResourcePack {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPackSize() {
         return (int) this.file.length();
     }
@@ -128,6 +136,10 @@ public class ZippedResourcePack extends AbstractResourcePack {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getEncryptionKey() {
         return encryptionKey;
     }

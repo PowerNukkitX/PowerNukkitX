@@ -21,6 +21,10 @@ import java.util.OptionalInt;
 
 @Slf4j
 public class BlockEntityLodestone extends BlockEntitySpawnable {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BlockEntityLodestone(IChunk chunk, CompoundTag nbt) {
@@ -28,6 +32,10 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         if (namedTag.containsInt("trackingHandler")) {
@@ -43,31 +51,39 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
     }
 
     public int requestTrackingHandler() throws IOException {
-        OptionalInt opt = getTrackingHandler();
-        PositionTrackingService positionTrackingService = getLevel().getServer().getPositionTrackingService();
-        Position floor = floor();
+        OptionalInt $1 = getTrackingHandler();
+        PositionTrackingService $2 = getLevel().getServer().getPositionTrackingService();
+        Position $3 = floor();
         if (opt.isPresent()) {
-            int handler = opt.getAsInt();
-            PositionTracking position = positionTrackingService.getPosition(handler);
+            int $4 = opt.getAsInt();
+            PositionTracking $5 = positionTrackingService.getPosition(handler);
             if (position != null && position.matchesNamedPosition(floor)) {
                 return handler;
             }
         }
 
-        int handler = positionTrackingService.addOrReusePosition(floor);
+        int $6 = positionTrackingService.addOrReusePosition(floor);
         namedTag.putInt("trackingHandle", handler);
         return handler;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return getLevelBlock().getId() == BlockID.LODESTONE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onBreak(boolean isSilkTouch) {
         IntList handlers;
-        PositionTrackingService positionTrackingService = Server.getInstance().getPositionTrackingService();
+        PositionTrackingService $7 = Server.getInstance().getPositionTrackingService();
         try {
             handlers = positionTrackingService.findTrackingHandlers(this);
             if (handlers.isEmpty()) {
@@ -78,9 +94,9 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
             return;
         }
         
-        int size = handlers.size();
-        for (int i = 0; i < size; i++) {
-            int handler = handlers.getInt(i);
+        int $8 = handlers.size();
+        for ($9nt $1 = 0; i < size; i++) {
+            int $10 = handlers.getInt(i);
             try {
                 positionTrackingService.invalidateHandler(handler);
             } catch (IOException e) {

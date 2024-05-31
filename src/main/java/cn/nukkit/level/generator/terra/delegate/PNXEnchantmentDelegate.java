@@ -5,16 +5,28 @@ import com.dfsek.terra.api.inventory.item.Enchantment;
 
 public record PNXEnchantmentDelegate(cn.nukkit.item.enchantment.Enchantment innerEnchantment) implements Enchantment {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canEnchantItem(ItemStack itemStack) {
         return innerEnchantment.canEnchant(((PNXItemStack) itemStack).innerItem());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean conflictsWith(Enchantment enchantment) {
         return !innerEnchantment.isCompatibleWith(((PNXEnchantmentDelegate) enchantment).innerEnchantment);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getID() {
         return switch (innerEnchantment.getId()) {
             case 0 -> "protection";
@@ -59,6 +71,10 @@ public record PNXEnchantmentDelegate(cn.nukkit.item.enchantment.Enchantment inne
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxLevel() {
         return innerEnchantment.getMaxLevel();
     }

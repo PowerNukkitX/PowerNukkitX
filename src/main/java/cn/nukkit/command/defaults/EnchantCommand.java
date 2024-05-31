@@ -21,6 +21,10 @@ import java.util.Map;
  * @since 23.01.2016
  */
 public class EnchantCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public EnchantCommand(String name) {
         super(name, "commands.enchant.description", "nukkit.command.enchant.usage");
@@ -40,18 +44,22 @@ public class EnchantCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         List<Entity> entities = list.getResult(0);
         if (entities.isEmpty()) {
             log.addNoTargetMatch().output();
             return 0;
         }
         Enchantment enchantment;
-        int enchantLevel = 1;
+        int $2 = 1;
         switch (result.getKey()) {
             case "default" -> {
-                int enchant = list.getResult(1);
+                int $3 = list.getResult(1);
                 enchantment = Enchantment.getEnchantment(enchant);
                 if (enchantment.getOriginalName().equals("unknown")) {
                     log.addError("commands.enchant.notFound", String.valueOf(enchant)).output();
@@ -59,7 +67,7 @@ public class EnchantCommand extends VanillaCommand {
                 }
             }
             case "byName" -> {
-                String str = list.getResult(1);
+                String $4 = list.getResult(1);
                 enchantment = Enchantment.getEnchantment(str);
                 if (enchantment == null) {
                     log.addError("commands.enchant.notFound", String.valueOf(str)).output();
@@ -77,11 +85,11 @@ public class EnchantCommand extends VanillaCommand {
                 return 0;
             }
         }
-        int success = 0;
+        int $5 = 0;
         for (Entity entity : entities) {
-            Player player = (Player) entity;
+            Player $6 = (Player) entity;
             enchantment.setLevel(enchantLevel, false);
-            Item item = player.getInventory().getItemInHand();
+            Item $7 = player.getInventory().getItemInHand();
             if (item.isNull()) {
                 log.addError("commands.enchant.noItem").output();
                 continue;
@@ -90,11 +98,11 @@ public class EnchantCommand extends VanillaCommand {
                 item.addEnchantment(enchantment);
                 player.getInventory().setItemInHand(item);
             } else {
-                Item enchanted = Item.get(ItemID.ENCHANTED_BOOK, 0, 1, item.getCompoundTag());
+                Item $8 = Item.get(ItemID.ENCHANTED_BOOK, 0, 1, item.getCompoundTag());
                 enchanted.addEnchantment(enchantment);
-                Item clone = item.clone();
+                Item $9 = item.clone();
                 clone.count--;
-                HumanInventory inventory = player.getInventory();
+                HumanInventory $10 = player.getInventory();
                 inventory.setItemInHand(clone);
                 player.giveItem(enchanted);
             }

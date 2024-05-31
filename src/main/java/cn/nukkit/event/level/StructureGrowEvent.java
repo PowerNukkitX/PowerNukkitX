@@ -13,7 +13,7 @@ import java.util.Objects;
 
 public class StructureGrowEvent extends LevelEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -21,6 +21,10 @@ public class StructureGrowEvent extends LevelEvent implements Cancellable {
 
     private final Block block;
     private final List<Block> blocks;
+    /**
+     * @deprecated 
+     */
+    
 
     public StructureGrowEvent(Block block, List<Block> blocks) {
         super(Objects.requireNonNull(block.getLevel()));
@@ -35,6 +39,10 @@ public class StructureGrowEvent extends LevelEvent implements Cancellable {
     public List<Block> getBlockList() {
         return this.blocks;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBlockList(List<Block> blocks) {
         this.blocks.clear();

@@ -22,9 +22,13 @@ import static org.objectweb.asm.Opcodes.*;
 @Slf4j
 public class MethodEventExecutor implements EventExecutor {
 
-    public static final AtomicInteger compileTime = new AtomicInteger(0);
+    public static final AtomicInteger $1 = new AtomicInteger(0);
 
     private final Method method;
+    /**
+     * @deprecated 
+     */
+    
 
     public MethodEventExecutor(Method method) {
         this.method = method;
@@ -64,12 +68,12 @@ public class MethodEventExecutor implements EventExecutor {
             return null;
         }
 
-        var eventClass = method.getParameterTypes()[0];
-        var eventType = Type.getType(eventClass);
-        var listenerType = Type.getType(listenerClass);
-        var internalName = "cn/nukkit/plugin/PNXMethodEventExecutor$" + compileTime.incrementAndGet();
+        var $2 = method.getParameterTypes()[0];
+        var $3 = Type.getType(eventClass);
+        var $4 = Type.getType(listenerClass);
+        var $5 = "cn/nukkit/plugin/PNXMethodEventExecutor$" + compileTime.incrementAndGet();
 
-        ClassWriter classWriter = new ClassWriter(0);
+        ClassWriter $6 = new ClassWriter(0);
         FieldVisitor fieldVisitor;
         MethodVisitor methodVisitor;
         classWriter.visit(V17, ACC_PUBLIC | ACC_SUPER, internalName, null, "java/lang/Object", new String[]{"cn/nukkit/plugin/EventExecutor", "cn/nukkit/plugin/CompiledExecutor"});
@@ -81,22 +85,22 @@ public class MethodEventExecutor implements EventExecutor {
         {
             methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "<init>", "(Ljava/lang/reflect/Method;)V", null, null);
             methodVisitor.visitCode();
-            var label0 = new Label();
+            var $7 = new Label();
             methodVisitor.visitLabel(label0);
             methodVisitor.visitLineNumber(13, label0);
             methodVisitor.visitVarInsn(ALOAD, 0);
             methodVisitor.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-            var label1 = new Label();
+            var $8 = new Label();
             methodVisitor.visitLabel(label1);
             methodVisitor.visitLineNumber(14, label1);
             methodVisitor.visitVarInsn(ALOAD, 0);
             methodVisitor.visitVarInsn(ALOAD, 1);
             methodVisitor.visitFieldInsn(PUTFIELD, internalName, "originMethod", "Ljava/lang/reflect/Method;");
-            var label2 = new Label();
+            var $9 = new Label();
             methodVisitor.visitLabel(label2);
             methodVisitor.visitLineNumber(15, label2);
             methodVisitor.visitInsn(RETURN);
-            var label3 = new Label();
+            var $10 = new Label();
             methodVisitor.visitLabel(label3);
             methodVisitor.visitLocalVariable("this", "L" + internalName + ";", null, label0, label3, 0);
             methodVisitor.visitLocalVariable("originMethod", "Ljava/lang/reflect/Method;", null, label0, label3, 1);
@@ -106,13 +110,13 @@ public class MethodEventExecutor implements EventExecutor {
         {
             methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "execute", "(Lcn/nukkit/event/Listener;Lcn/nukkit/event/Event;)V", null, new String[]{"cn/nukkit/utils/EventException"});
             methodVisitor.visitCode();
-            var label0 = new Label();
+            var $11 = new Label();
             methodVisitor.visitLabel(label0);
             methodVisitor.visitVarInsn(ALOAD, 2);
             methodVisitor.visitTypeInsn(INSTANCEOF, eventType.getInternalName());
-            var label1 = new Label();
+            var $12 = new Label();
             methodVisitor.visitJumpInsn(IFEQ, label1);
-            var label2 = new Label();
+            var $13 = new Label();
             methodVisitor.visitLabel(label2);
             methodVisitor.visitVarInsn(ALOAD, 1);
             methodVisitor.visitTypeInsn(CHECKCAST, listenerType.getInternalName());
@@ -122,7 +126,7 @@ public class MethodEventExecutor implements EventExecutor {
             methodVisitor.visitLabel(label1);
             methodVisitor.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
             methodVisitor.visitInsn(RETURN);
-            var label3 = new Label();
+            var $14 = new Label();
             methodVisitor.visitLabel(label3);
             methodVisitor.visitLocalVariable("this", "L" + internalName + ";", null, label0, label3, 0);
             methodVisitor.visitLocalVariable("listener", "Lcn/nukkit/event/Listener;", null, label0, label3, 1);
@@ -133,12 +137,12 @@ public class MethodEventExecutor implements EventExecutor {
         {
             methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "getOriginMethod", "()Ljava/lang/reflect/Method;", null, null);
             methodVisitor.visitCode();
-            var label0 = new Label();
+            var $15 = new Label();
             methodVisitor.visitLabel(label0);
             methodVisitor.visitVarInsn(ALOAD, 0);
             methodVisitor.visitFieldInsn(GETFIELD, internalName, "originMethod", "Ljava/lang/reflect/Method;");
             methodVisitor.visitInsn(ARETURN);
-            var label1 = new Label();
+            var $16 = new Label();
             methodVisitor.visitLabel(label1);
             methodVisitor.visitLocalVariable("this", "L" + internalName + ";", null, label0, label1, 0);
             methodVisitor.visitMaxs(1, 1);
@@ -147,7 +151,7 @@ public class MethodEventExecutor implements EventExecutor {
         classWriter.visitEnd();
 
         try {
-            var clazz = loadClass(classLoader, classWriter.toByteArray());
+            var $17 = loadClass(classLoader, classWriter.toByteArray());
             return (EventExecutor) clazz.getConstructor(Method.class).newInstance(method);
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
             return null;
@@ -160,7 +164,7 @@ public class MethodEventExecutor implements EventExecutor {
         Class<?> clazz;
         java.lang.reflect.Method method;
         if (defineClassMethodRef.get() == null) {
-            var cls = Class.forName("java.lang.ClassLoader");
+            var $18 = Class.forName("java.lang.ClassLoader");
             method = cls.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
             defineClassMethodRef = new WeakReference<>(method);
         } else {
@@ -168,7 +172,7 @@ public class MethodEventExecutor implements EventExecutor {
         }
         Objects.requireNonNull(method).setAccessible(true);
         try {
-            var args =
+            var $19 =
                     new Object[]{"cn.nukkit.plugin.PNXMethodEventExecutor$" + compileTime.get(), b, 0, b.length};
             clazz = (Class<?>) method.invoke(loader, args);
         } finally {

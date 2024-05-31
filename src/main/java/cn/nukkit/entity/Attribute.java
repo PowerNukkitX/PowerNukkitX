@@ -30,27 +30,27 @@ public class Attribute implements Cloneable {
      * <p>
      * ABSORPTION
      */
-    public static final int ABSORPTION = 0;
+    public static final int $1 = 0;
     /**
      * 饱食度
      * <p>
      * SATURATION
      */
-    public static final int SATURATION = 1;
-    public static final int EXHAUSTION = 2;
-    public static final int KNOCKBACK_RESISTANCE = 3;
-    public static final int MAX_HEALTH = 4;
-    public static final int MOVEMENT_SPEED = 5;
-    public static final int FOLLOW_RANGE = 6;
-    public static final int MAX_HUNGER = 7;
-    public static final int FOOD = 7;
-    public static final int ATTACK_DAMAGE = 8;
-    public static final int EXPERIENCE_LEVEL = 9;
-    public static final int EXPERIENCE = 10;
-    public static final int LUCK = 11;
-    public static final int HORSE_JUMP_STRENGTH = 12;
-    public static final int UNDER_WATER_MOVEMENT_SPEED = 13;
-    public static final int LAVA_MOVEMENT_SPEED = 14;
+    public static final int $2 = 1;
+    public static final int $3 = 2;
+    public static final int $4 = 3;
+    public static final int $5 = 4;
+    public static final int $6 = 5;
+    public static final int $7 = 6;
+    public static final int $8 = 7;
+    public static final int $9 = 7;
+    public static final int $10 = 8;
+    public static final int $11 = 9;
+    public static final int $12 = 10;
+    public static final int $13 = 11;
+    public static final int $14 = 12;
+    public static final int $15 = 13;
+    public static final int $16 = 14;
 
     protected static Map<Integer, Attribute> attributes = new HashMap<>();
     private final int id;
@@ -61,6 +61,10 @@ public class Attribute implements Cloneable {
     protected String name;
     protected boolean shouldSend;
 
+    
+    /**
+     * @deprecated 
+     */
     private Attribute(int id, String name, float minValue, float maxValue, float defaultValue, boolean shouldSend) {
         this.id = id;
         this.name = name;
@@ -70,6 +74,10 @@ public class Attribute implements Cloneable {
         this.shouldSend = shouldSend;
         this.currentValue = this.defaultValue;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void init() {
         addAttribute(ABSORPTION, "minecraft:absorption", 0.00f, 340282346638528859811704183484516925440.00f, 0.00f);
@@ -200,6 +208,10 @@ public class Attribute implements Cloneable {
         }
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getMinValue() {
         return this.minValue;
@@ -212,6 +224,10 @@ public class Attribute implements Cloneable {
         this.minValue = minValue;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getMaxValue() {
         return this.maxValue;
@@ -224,6 +240,10 @@ public class Attribute implements Cloneable {
         this.maxValue = maxValue;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getDefaultValue() {
         return this.defaultValue;
@@ -236,6 +256,10 @@ public class Attribute implements Cloneable {
         this.defaultValue = defaultValue;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getValue() {
         return this.currentValue;
@@ -255,14 +279,26 @@ public class Attribute implements Cloneable {
         this.currentValue = value;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return this.name;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getId() {
         return this.id;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSyncable() {
         return this.shouldSend;
@@ -278,6 +314,10 @@ public class Attribute implements Cloneable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return name + "{" +
                 "min=" + minValue +

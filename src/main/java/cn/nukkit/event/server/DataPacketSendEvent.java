@@ -11,7 +11,7 @@ import cn.nukkit.network.protocol.DataPacket;
  */
 public class DataPacketSendEvent extends ServerEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -19,6 +19,10 @@ public class DataPacketSendEvent extends ServerEvent implements Cancellable {
 
     private final DataPacket packet;
     private final Player player;
+    /**
+     * @deprecated 
+     */
+    
 
     public DataPacketSendEvent(Player player, DataPacket packet) {
         this.packet = packet;

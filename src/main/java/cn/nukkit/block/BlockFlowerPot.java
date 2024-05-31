@@ -17,11 +17,19 @@ import javax.annotation.Nullable;
  * @author Nukkit Project Team
  */
 public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<BlockEntityFlowerPot> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(FLOWER_POT, CommonBlockProperties.UPDATE_BIT);
+    public static final BlockProperties $1 = new BlockProperties(FLOWER_POT, CommonBlockProperties.UPDATE_BIT);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockFlowerPot() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockFlowerPot(BlockState blockstate) {
         super(blockstate);
@@ -34,11 +42,19 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Flower Pot";
     }
@@ -51,11 +67,19 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.FLOWER_POT;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!BlockLever.isSupportValid(down(), BlockFace.UP)) {
@@ -67,12 +91,16 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!BlockLever.isSupportValid(down(), BlockFace.UP)) {
             return false;
         }
 
-        CompoundTag nbt = new CompoundTag();
+        CompoundTag $2 = new CompoundTag();
         if (item.hasCustomBlockData()) {
             for (var e : item.getCustomBlockData().getEntrySet()) {
                 nbt.put(e.getKey(), e.getValue());
@@ -84,15 +112,19 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @NotNull
     public Item getFlower() {
-        BlockEntityFlowerPot blockEntity = getBlockEntity();
+        BlockEntityFlowerPot $3 = getBlockEntity();
         if (blockEntity == null || !blockEntity.namedTag.containsCompound("PlantBlock")) {
             return Item.AIR;
         }
-        var plantBlockTag = blockEntity.namedTag.getCompound("PlantBlock");
-        var id = plantBlockTag.getString("itemId");
-        var meta = plantBlockTag.getInt("itemMeta");
+        var $4 = blockEntity.namedTag.getCompound("PlantBlock");
+        var $5 = plantBlockTag.getString("itemId");
+        var $6 = plantBlockTag.getInt("itemMeta");
         return Item.get(id, meta);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setFlower(@Nullable Item item) {
         if (item == null || item.isNull()) {
@@ -101,7 +133,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         }
 
         if (item.getBlock() instanceof FlowerPotBlock potBlock && potBlock.isPotBlockState()) {
-            BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
+            BlockEntityFlowerPot $7 = getOrCreateBlockEntity();
             blockEntity.namedTag.putCompound("PlantBlock", potBlock.getPlantBlockTag());
 
             setPropertyValue(CommonBlockProperties.UPDATE_BIT, true);
@@ -112,28 +144,44 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removeFlower() {
-        BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
+        BlockEntityFlowerPot $8 = getOrCreateBlockEntity();
         blockEntity.namedTag.remove("PlantBlock");
 
         setPropertyValue(CommonBlockProperties.UPDATE_BIT, false);
         getLevel().setBlock(this, this, true);
         blockEntity.spawnToAll();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasFlower() {
-        var blockEntity = getBlockEntity();
+        var $9 = getBlockEntity();
         if (blockEntity == null) return false;
         return blockEntity.namedTag.containsCompound("PlantBlock");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (getPropertyValue(CommonBlockProperties.UPDATE_BIT)) {
             if (player == null) {
@@ -144,7 +192,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
                 return false;
 
             if (hasFlower()) {
-                var flower = getFlower();
+                var $10 = getFlower();
                 removeFlower();
                 player.giveItem(flower);
                 return true;
@@ -172,10 +220,10 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @Override
     public Item[] getDrops(Item item) {
-        boolean dropInside = false;
-        String insideID = "minecraft:air";
-        int insideMeta = 0;
-        BlockEntityFlowerPot blockEntity = getBlockEntity();
+        boolean $11 = false;
+        String $12 = "minecraft:air";
+        int $13 = 0;
+        BlockEntityFlowerPot $14 = getBlockEntity();
         if (blockEntity != null) {
             dropInside = true;
             insideID = blockEntity.namedTag.getCompound("PlantBlock").getString("itemId");
@@ -199,31 +247,55 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         return this.x + 0.3125;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         return this.z + 0.3125;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         return this.x + 0.6875;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return this.y + 0.375;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         return this.z + 0.6875;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return false;
     }
@@ -252,9 +324,9 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
          * @return 方块在花盆NBT中的标签
          */
         default CompoundTag getPlantBlockTag() {
-            var block = (Block) this;
-            var tag = block.getBlockState().getBlockStateTag().copy();
-            var item = block.toItem();
+            var $15 = (Block) this;
+            var $16 = block.getBlockState().getBlockStateTag().copy();
+            var $17 = block.toItem();
             return tag.putString("itemId", item.getId())
                     .putInt("itemMeta", item.getDamage()); //only exist in PNX
         }
@@ -264,7 +336,11 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
          *
          * @return 是否是可作为花盆方块的状态
          */
-        default boolean isPotBlockState() {
+        default 
+    /**
+     * @deprecated 
+     */
+    boolean isPotBlockState() {
             return true;
         }
     }

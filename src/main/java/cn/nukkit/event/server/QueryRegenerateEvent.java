@@ -19,13 +19,13 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class QueryRegenerateEvent extends ServerEvent {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
-    private static final String GAME_ID = "MINECRAFTPE";
+    private static final String $2 = "MINECRAFTPE";
 
     private int timeout;
     private String serverName;
@@ -44,10 +44,18 @@ public class QueryRegenerateEvent extends ServerEvent {
     private final String ip;
 
     private Map<String, String> extraData = new HashMap<>();
+    /**
+     * @deprecated 
+     */
+    
 
     public QueryRegenerateEvent(Server server) {
         this(server, 5);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public QueryRegenerateEvent(Server server, int timeout) {
         this.timeout = timeout;
@@ -65,26 +73,50 @@ public class QueryRegenerateEvent extends ServerEvent {
         this.port = server.getPort();
         this.ip = server.getIp();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getTimeout() {
         return timeout;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getServerName() {
         return serverName;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setServerName(String serverName) {
         this.serverName = serverName;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canListPlugins() {
         return this.listPlugins;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setListPlugins(boolean listPlugins) {
         this.listPlugins = listPlugins;
@@ -93,6 +125,10 @@ public class QueryRegenerateEvent extends ServerEvent {
     public Plugin[] getPlugins() {
         return plugins;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPlugins(Plugin[] plugins) {
         this.plugins = plugins;
@@ -101,38 +137,74 @@ public class QueryRegenerateEvent extends ServerEvent {
     public Player[] getPlayerList() {
         return players;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPlayerList(Player[] players) {
         this.players = players;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getVersion() {
         return this.version;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setVersion(String version) {
         this.version = version;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getPlayerCount() {
         return this.numPlayers;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPlayerCount(int count) {
         this.numPlayers = count;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getMaxPlayerCount() {
         return this.maxPlayers;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setMaxPlayerCount(int count) {
         this.maxPlayers = count;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getWorld() {
         return map;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setWorld(String world) {
         this.map = world;
@@ -141,18 +213,22 @@ public class QueryRegenerateEvent extends ServerEvent {
     public Map<String, String> getExtraData() {
         return extraData;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setExtraData(Map<String, String> extraData) {
         this.extraData = extraData;
     }
 
     public ByteBuf getLongQuery() {
-        ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer();
-        StringBuilder plist = new StringBuilder(this.server_engine);
+        ByteBuf $3 = ByteBufAllocator.DEFAULT.ioBuffer();
+        StringBuilder $4 = new StringBuilder(this.server_engine);
         if (this.plugins.length > 0 && this.listPlugins) {
             plist.append(":");
             for (Plugin p : this.plugins) {
-                PluginDescription d = p.getDescription();
+                PluginDescription $5 = p.getDescription();
                 plist.append(" ").append(d.getName().replace(";", "").replace(":", "").replace(" ", "_")).append(" ").append(d.getVersion().replace(";", "").replace(":", "").replace(" ", "_")).append(";");
             }
             plist = new StringBuilder(plist.substring(0, plist.length() - 2));
@@ -198,7 +274,7 @@ public class QueryRegenerateEvent extends ServerEvent {
     }
 
     public ByteBuf getShortQuery() {
-        ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer();
+        ByteBuf $6 = ByteBufAllocator.DEFAULT.ioBuffer();
         buf.writeBytes(this.serverName.getBytes(StandardCharsets.UTF_8));
         buf.writeByte((byte) 0x00);
         buf.writeBytes(this.gameType.getBytes(StandardCharsets.UTF_8));

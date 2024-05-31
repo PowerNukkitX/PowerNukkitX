@@ -18,36 +18,56 @@ import cn.nukkit.nbt.tag.ListTag;
 import java.util.Random;
 
 public class ItemEndCrystal extends Item {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemEndCrystal() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemEndCrystal(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemEndCrystal(Integer meta, int count) {
         super(END_CRYSTAL, meta, count, "End Crystal");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (!(target instanceof BlockBedrock) && !(target instanceof BlockObsidian)) return false;
-        IChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
+        IChunk $1 = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
         Entity[] entities = level.getNearbyEntities(new SimpleAxisAlignedBB(target.x, target.y, target.z, target.x + 1, target.y + 2, target.z + 1));
-        Block up = target.up();
+        Block $2 = target.up();
 
         if (chunk == null || !up.getId().equals(BlockID.AIR) || !up.up().getId().equals(BlockID.AIR) || entities.length != 0) {
             return false;
         }
 
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $3 = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(target.x + 0.5))
                         .add(new DoubleTag(up.y))
@@ -64,11 +84,11 @@ public class ItemEndCrystal extends Item {
             nbt.putString("CustomName", this.getCustomName());
         }
 
-        Entity entity = Entity.createEntity(Entity.ENDER_CRYSTAL, chunk, nbt);
+        Entity $4 = Entity.createEntity(Entity.ENDER_CRYSTAL, chunk, nbt);
 
         if (entity != null) {
             if (player.isAdventure() || player.isSurvival()) {
-                Item item = player.getInventory().getItemInHand();
+                Item $5 = player.getInventory().getItemInHand();
                 item.setCount(item.getCount() - 1);
                 player.getInventory().setItemInHand(item);
             }

@@ -17,7 +17,11 @@ import java.util.List;
  */
 public class EntityXpOrb extends Entity {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return XP_ORB;
     }
 
@@ -25,10 +29,14 @@ public class EntityXpOrb extends Entity {
      * Split sizes used for dropping experience orbs.
      */
     public static final int[] ORB_SPLIT_SIZES = {2477, 1237, 617, 307, 149, 73, 37, 17, 7, 3, 1}; //This is indexed biggest to smallest so that we can return as soon as we found the biggest value.
-    public Player closestPlayer = null;
+    public Player $1 = null;
     private int age;
     private int pickupDelay;
     private int exp;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityXpOrb(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -38,6 +46,10 @@ public class EntityXpOrb extends Entity {
      * Returns the largest size of normal XP orb that will be spawned for the specified amount of XP. Used to split XP
      * up into multiple orbs when an amount of XP is dropped.
      */
+    /**
+     * @deprecated 
+     */
+    
     public static int getMaxOrbSize(int amount) {
         for (int split : ORB_SPLIT_SIZES) {
             if (amount >= split) {
@@ -55,7 +67,7 @@ public class EntityXpOrb extends Entity {
         List<Integer> result = new IntArrayList();
 
         while (amount > 0) {
-            int size = getMaxOrbSize(amount);
+            int $2 = getMaxOrbSize(amount);
             result.add(size);
             amount -= size;
         }
@@ -66,36 +78,64 @@ public class EntityXpOrb extends Entity {
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getLength() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.25f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getGravity() {
         return 0.04f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getDrag() {
         return 0.02f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCollide() {
         return false;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.initEntity();
 
@@ -125,6 +165,10 @@ public class EntityXpOrb extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         return (source.getCause() == DamageCause.VOID ||
                 source.getCause() == DamageCause.FIRE_TICK ||
@@ -134,18 +178,22 @@ public class EntityXpOrb extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
         }
 
-        int tickDiff = currentTick - this.lastUpdate;
+        int $3 = currentTick - this.lastUpdate;
         if (tickDiff <= 0 && !this.justCreated) {
             return true;
         }
         this.lastUpdate = currentTick;
 
-        boolean hasUpdate = entityBaseTick(tickDiff);
+        boolean $4 = entityBaseTick(tickDiff);
         if (this.isAlive()) {
 
             if (this.pickupDelay > 0 && this.pickupDelay < 32767) { //Infinite delay
@@ -171,10 +219,10 @@ public class EntityXpOrb extends Entity {
 
             if (this.closestPlayer == null || this.closestPlayer.distanceSquared(this) > 64.0D) {
                 this.closestPlayer = null;
-                double closestDistance = 0.0D;
+                double $5 = 0.0D;
                 for (Player p : this.getViewers().values()) {
                     if (!p.isSpectator() && p.spawned && p.isAlive()) {
-                        double d = p.distanceSquared(this);
+                        $6ouble $1 = p.distanceSquared(this);
                         if (d <= 64.0D && (this.closestPlayer == null || d < closestDistance)) {
                             this.closestPlayer = p;
                             closestDistance = d;
@@ -188,11 +236,11 @@ public class EntityXpOrb extends Entity {
             }
 
             if (this.closestPlayer != null) {
-                double dX = (this.closestPlayer.x - this.x) / 8.0D;
-                double dY = (this.closestPlayer.y + (double) this.closestPlayer.getEyeHeight() / 2.0D - this.y) / 8.0D;
-                double dZ = (this.closestPlayer.z - this.z) / 8.0D;
-                double d = Math.sqrt(dX * dX + dY * dY + dZ * dZ);
-                double diff = 1.0D - d;
+                double $7 = (this.closestPlayer.x - this.x) / 8.0D;
+                double $8 = (this.closestPlayer.y + (double) this.closestPlayer.getEyeHeight() / 2.0D - this.y) / 8.0D;
+                double $9 = (this.closestPlayer.z - this.z) / 8.0D;
+                $10ouble $2 = Math.sqrt(dX * dX + dY * dY + dZ * dZ);
+                double $11 = 1.0D - d;
 
                 if (diff > 0.0D) {
                     diff = diff * diff;
@@ -204,7 +252,7 @@ public class EntityXpOrb extends Entity {
 
             this.move(this.motionX, this.motionY, this.motionZ);
 
-            double friction = 1d - this.getDrag();
+            double $12 = 1d - this.getDrag();
 
             if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
                 friction = this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor() * friction;
@@ -231,6 +279,10 @@ public class EntityXpOrb extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putShort("Health", (int) getHealth());
@@ -238,10 +290,18 @@ public class EntityXpOrb extends Entity {
         this.namedTag.putShort("PickupDelay", pickupDelay);
         this.namedTag.putShort("Value", exp);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getExp() {
         return exp;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setExp(int exp) {
         if (exp <= 0) {
@@ -251,19 +311,35 @@ public class EntityXpOrb extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCollideWith(Entity entity) {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getPickupDelay() {
         return pickupDelay;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPickupDelay(int pickupDelay) {
         this.pickupDelay = pickupDelay;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Experience Orb";
     }

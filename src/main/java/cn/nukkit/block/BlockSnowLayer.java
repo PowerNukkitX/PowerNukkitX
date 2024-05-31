@@ -34,50 +34,82 @@ import static cn.nukkit.block.property.CommonBlockProperties.HEIGHT;
  */
 
 public class BlockSnowLayer extends BlockFallable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SNOW_LAYER, COVERED_BIT, HEIGHT);
+    public static final BlockProperties $1 = new BlockProperties(SNOW_LAYER, COVERED_BIT, HEIGHT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSnowLayer() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSnowLayer(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Top Snow";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getSnowHeight() {
         return getPropertyValue(HEIGHT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSnowHeight(int snowHeight) {
         setPropertyValue(HEIGHT, snowHeight);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isCovered() {
         return getPropertyValue(COVERED_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCovered(boolean covered) {
         setPropertyValue(COVERED_BIT, covered);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return y + (Math.min(16, getSnowHeight() + 1) * 2) / 16.0;
     }
 
     @Override
     protected @Nullable AxisAlignedBB recalculateBoundingBox() {
-        int snowHeight = getSnowHeight();
+        int $2 = getSnowHeight();
         if (snowHeight < 3) {
             return null;
         }
@@ -93,26 +125,46 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0.1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_SHOVEL;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeReplaced() {
         return getSnowHeight() < HEIGHT.getMax();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         Optional<BlockSnowLayer> increment = Stream.of(target, block)
                 .filter(b -> b.getId().equals(SNOW_LAYER)).map(BlockSnowLayer.class::cast)
@@ -120,7 +172,7 @@ public class BlockSnowLayer extends BlockFallable {
                 .findFirst();
 
         if (increment.isPresent()) {
-            BlockSnowLayer other = increment.get();
+            BlockSnowLayer $3 = increment.get();
             if (Arrays.stream(level.getCollidingEntities(new SimpleAxisAlignedBB(
                     other.x, other.y, other.z,
                     other.x + 1, other.y + 1, other.z + 1
@@ -131,7 +183,7 @@ public class BlockSnowLayer extends BlockFallable {
             return level.setBlock(other, other, true);
         }
 
-        Block down = down();
+        Block $4 = down();
         if (!down.isSolid()) {
             return false;
         }
@@ -156,6 +208,10 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
         if (layer != 0) {
             return super.onBreak(item);
@@ -164,18 +220,22 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void afterRemoval(Block newBlock, boolean update) {
         if (layer != 0 || newBlock.getId().equals(getId())) {
             return;
         }
 
-        Block layer1 = getLevelBlockAtLayer(1);
+        Block $5 = getLevelBlockAtLayer(1);
         if (!layer1.getId().equals(TALLGRASS)) {
             return;
         }
 
         // Clear the layer1 block and do a small hack as workaround a vanilla client rendering bug
-        Level level = getLevel();
+        Level $6 = getLevel();
         level.setBlock(this, 0, layer1, true, false);
         level.setBlock(this, 1, get(AIR), true, false);
         level.setBlock(this, 0, newBlock, true, false);
@@ -193,16 +253,20 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         super.onUpdate(type);
         if (type == Level.BLOCK_UPDATE_RANDOM) {
-            BiomeRegistry.BiomeDefinition biomeDefinition = Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ()));
+            BiomeRegistry.BiomeDefinition $7 = Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ()));
             if (biomeDefinition.tags().contains(BiomeTags.WARM) || this.getLevel().getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) >= 10) {
                 melt();
                 return Level.BLOCK_UPDATE_RANDOM;
             }
         } else if (type == Level.BLOCK_UPDATE_NORMAL) {
-            boolean covered = down().getId().equals(GRASS_BLOCK);
+            boolean $8 = down().getId().equals(GRASS_BLOCK);
             if (isCovered() != covered) {
                 setCovered(covered);
                 level.setBlock(this, this, true);
@@ -211,16 +275,24 @@ public class BlockSnowLayer extends BlockFallable {
         }
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean melt() {
         return melt(2);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean melt(int layers) {
         Preconditions.checkArgument(layers > 0, "Layers must be positive, got {}", layers);
-        Block toMelt = this;
+        Block $9 = this;
         while (toMelt.getPropertyValue(HEIGHT) == HEIGHT.getMax()) {
-            Block up = toMelt.up();
+            Block $10 = toMelt.up();
             if (!up.getId().equals(SNOW_LAYER)) {
                 break;
             }
@@ -228,9 +300,9 @@ public class BlockSnowLayer extends BlockFallable {
             toMelt = up;
         }
 
-        int snowHeight = toMelt.getPropertyValue(HEIGHT) - layers;
-        Block newState = snowHeight < 0 ? get(AIR) : Block.get(getBlockState().setPropertyValue(PROPERTIES, HEIGHT, snowHeight));
-        BlockFadeEvent event = new BlockFadeEvent(toMelt, newState);
+        int $11 = toMelt.getPropertyValue(HEIGHT) - layers;
+        Block $12 = snowHeight < 0 ? get(AIR) : Block.get(getBlockState().setPropertyValue(PROPERTIES, HEIGHT, snowHeight));
+        BlockFadeEvent $13 = new BlockFadeEvent(toMelt, newState);
         level.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
@@ -245,7 +317,7 @@ public class BlockSnowLayer extends BlockFallable {
             return Item.EMPTY_ARRAY;
         }
 
-        int amount = switch (getSnowHeight()) {
+        int $14 = switch (getSnowHeight()) {
             case 0, 1, 2 -> 1;
             case 3, 4 -> 2;
             case 5, 6 -> 3;
@@ -255,27 +327,47 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isTransparent() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeFlowedInto() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return getSnowHeight() < 3;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
-        return side == BlockFace.UP && getSnowHeight() == HEIGHT.getMax();
+        return $15 == BlockFace.UP && getSnowHeight() == HEIGHT.getMax();
     }
 }

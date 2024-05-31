@@ -3,6 +3,10 @@ package cn.nukkit.item;
 import cn.nukkit.network.protocol.types.BannerPatternType;
 
 public class ItemFieldMasonedBannerPattern extends ItemBannerPattern {
+    /**
+     * @deprecated 
+     */
+    
     public ItemFieldMasonedBannerPattern() {
         super(FIELD_MASONED_BANNER_PATTERN);
     }
@@ -13,6 +17,10 @@ public class ItemFieldMasonedBannerPattern extends ItemBannerPattern {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDamage(int damage) {
     }
 }

@@ -23,6 +23,10 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     protected int chargingTime;
     protected int totalRunningTime;
     protected int currentTick;
+    /**
+     * @deprecated 
+     */
+    
 
     public WardenRangedAttackExecutor(int chargingTime, int totalRunningTime) {
         this.chargingTime = chargingTime;
@@ -30,12 +34,16 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
         currentTick++;
         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET))
             return false;
         if (currentTick == this.chargingTime) {
-            var target = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
+            var $1 = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
 
             if (!target.isAlive()) return false;
 
@@ -44,7 +52,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
 
             //sound
             entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_BOOM);
-//            LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
+//            LevelSoundEventPacketV2 $2 = new LevelSoundEventPacketV2();
 //            pk.sound = LevelSoundEventPacket.SOUND_SONIC_BOOM;
 //            pk.entityIdentifier = "minecraft:warden";
 //            pk.x = (float) entity.x;
@@ -56,13 +64,13 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
             //attack
             Map<EntityDamageEvent.DamageModifier, Float> damages = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
 
-            float damage = 0;
+            float $3 = 0;
             if (entity instanceof EntityCanAttack entityCanAttack) {
                 damage = entityCanAttack.getDiffHandDamage(entity.getServer().getDifficulty());
             }
             damages.put(EntityDamageEvent.DamageModifier.BASE, damage);
 
-            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.MAGIC, damages, 0.6f, null);
+            EntityDamageByEntityEvent $4 = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.MAGIC, damages, 0.6f, null);
 
             entity.level.addSound(target, Sound.MOB_WARDEN_ATTACK);
             target.attack(ev);
@@ -70,7 +78,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
         if (currentTick > this.totalRunningTime) {
             return false;
         } else {
-            var target = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
+            var $5 = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
             //更新视线target
             entity.setLookTarget(target.clone());
             entity.setMoveTarget(target.clone());
@@ -79,6 +87,10 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         this.currentTick = 0;
 
@@ -87,12 +99,16 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStart(EntityIntelligent entity) {
         entity.setDataFlag(EntityFlag.SONIC_BOOM, true);
         entity.setDataFlagExtend(EntityFlag.SONIC_BOOM, true);
 
         entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_CHARGE);
-//        LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
+//        LevelSoundEventPacketV2 $6 = new LevelSoundEventPacketV2();
 //        pk.sound = LevelSoundEventPacket.SOUND_SONIC_CHARGE;
 //        pk.entityIdentifier = "minecraft:warden";
 //        pk.x = (float) entity.x;
@@ -103,6 +119,10 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         this.currentTick = 0;
 
@@ -110,11 +130,15 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
         entity.setDataFlagExtend(EntityFlag.SONIC_BOOM, false);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void sendAttackParticle(EntityIntelligent entity, Vector3 from, Vector3 to) {
-        var length = from.distance(to);
-        var relativeVector = new Vector3(to.x - from.x, to.y - from.y, to.z - from.z);
-        for (int i = 1; i <= (length + 4); i++) {
-            var pk = new LevelEventGenericPacket();
+        var $7 = from.distance(to);
+        var $8 = new Vector3(to.x - from.x, to.y - from.y, to.z - from.z);
+        for ($9nt $1 = 1; i <= (length + 4); i++) {
+            var $10 = new LevelEventGenericPacket();
             pk.eventId = LevelEventPacket.EVENT_SONIC_EXPLOSION;
             pk.tag = createVec3fTag(from.add(relativeVector.multiply(i / length)).asVector3f());
             Server.broadcastPacket(entity.getViewers().values(), pk);

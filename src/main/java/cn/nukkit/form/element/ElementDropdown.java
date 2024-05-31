@@ -10,17 +10,21 @@ import java.util.List;
  */
 public class ElementDropdown extends Element {
     @SuppressWarnings("unused")
-    private final String type = "dropdown"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
-    private String text = "";
+    private final String $1 = "dropdown"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
+    private String $2 = "";
     private List<String> options;
     @SerializedName("default")
-    private int defaultOptionIndex = 0;
+    private int $3 = 0;
 
     /**
      * create a dropdown and options is empty.
      *
      * @param text the dropdown text
      */
+    /**
+     * @deprecated 
+     */
+    
     public ElementDropdown(String text) {
         this(text, new ArrayList<>());
     }
@@ -31,6 +35,10 @@ public class ElementDropdown extends Element {
      * @param text    the dropdown text
      * @param options the options
      */
+    /**
+     * @deprecated 
+     */
+    
     public ElementDropdown(String text, List<String> options) {
         this(text, options, 0);
     }
@@ -42,15 +50,27 @@ public class ElementDropdown extends Element {
      * @param options       the options
      * @param defaultOption the index of default option(start from 0)
      */
+    /**
+     * @deprecated 
+     */
+    
     public ElementDropdown(String text, List<String> options, int defaultOption) {
         this.text = text;
         this.options = options;
         this.defaultOptionIndex = defaultOption;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getDefaultOptionIndex() {
         return defaultOptionIndex;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDefaultOptionIndex(int index) {
         if (index >= options.size()) return;
@@ -60,18 +80,34 @@ public class ElementDropdown extends Element {
     public List<String> getOptions() {
         return options;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getText() {
         return text;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setText(String text) {
         this.text = text;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addOption(String option) {
         addOption(option, false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addOption(String option, boolean isDefault) {
         options.add(option);

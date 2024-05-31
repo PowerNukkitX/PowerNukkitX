@@ -28,9 +28,17 @@ import java.util.Set;
  */
 public class EntitySkeleton extends EntityMob implements EntityWalkable, EntitySmite {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return SKELETON;
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public EntitySkeleton(IChunk chunk, CompoundTag nbt) {
@@ -39,6 +47,10 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
 
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();
@@ -48,16 +60,28 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 1.9f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Skeleton";
     }
@@ -68,16 +92,28 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isUndead() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPreventingSleep(Player player) {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         burn(this);
         return super.onUpdate(currentTick);
@@ -94,7 +130,7 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
                                         return false;
                                     } else {
-                                        Entity e = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
+                                        Entity $1 = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
                                         if (e instanceof Player player) {
                                             return player.isSurvival() || player.isAdventure();
                                         }
@@ -106,7 +142,7 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) {
                                         return false;
                                     } else {
-                                        Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                        Player $2 = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                         return player.isSurvival() || player.isAdventure();
                                     }
                                 }, 2, 1),

@@ -9,25 +9,45 @@ import org.jetbrains.annotations.NotNull;
 
 
 public abstract class NamedPosition extends Vector3 {
+    /**
+     * @deprecated 
+     */
+    
 
     public NamedPosition() {}
+    /**
+     * @deprecated 
+     */
+    
 
     public NamedPosition(double x) {
         super(x);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public NamedPosition(double x, double y) {
         super(x, y);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public NamedPosition(double x, double y, double z) {
         super(x, y, z);
     }
 
     @NotNull public abstract String getLevelName();
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean matchesNamedPosition(NamedPosition position) {
-        return x == position.x && y == position.y && z == position.z && getLevelName().equals(position.getLevelName());
+        return $1 == position.x && y == position.y && z == position.z && getLevelName().equals(position.getLevelName());
     }
 
     @Override

@@ -8,16 +8,24 @@ import static cn.nukkit.block.property.CommonBlockProperties.DEAD_BIT;
 
 
 public class BlockCoralFanHang2 extends BlockCoralFanHang {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_HANG2, CORAL_DIRECTION, CORAL_HANG_TYPE_BIT, DEAD_BIT);
+    public static final BlockProperties $1 = new BlockProperties(CORAL_FAN_HANG2, CORAL_DIRECTION, CORAL_HANG_TYPE_BIT, DEAD_BIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCoralFanHang2() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCoralFanHang2(BlockState blockstate) {
         super(blockstate);

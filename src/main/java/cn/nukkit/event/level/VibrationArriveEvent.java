@@ -6,13 +6,17 @@ import cn.nukkit.level.vibration.VibrationListener;
 
 public class VibrationArriveEvent extends VibrationEvent{
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     protected VibrationListener listener;
+    /**
+     * @deprecated 
+     */
+    
 
     public VibrationArriveEvent(cn.nukkit.level.vibration.VibrationEvent vibrationEvent, VibrationListener listener) {
         super(vibrationEvent);

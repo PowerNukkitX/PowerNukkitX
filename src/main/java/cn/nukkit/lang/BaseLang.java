@@ -28,7 +28,7 @@ public class BaseLang {
     /**
      * 默认备选语言，对应language文件夹
      */
-    public static final String FALLBACK_LANGUAGE = "eng";
+    public static final String $1 = "eng";
 
     /**
      * The Lang name.
@@ -46,20 +46,32 @@ public class BaseLang {
     protected Map<String, String> fallbackLang = new HashMap<>();
 
     //用于提取字符串中%后带有[a-zA-Z0-9_.-]这些字符的字符串的模式
-    private final Pattern split = Pattern.compile("%[A-Za-z0-9_.-]+");
+    private final Pattern $2 = Pattern.compile("%[A-Za-z0-9_.-]+");
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BaseLang(String lang) {
         this(lang, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BaseLang(String lang, String path) {
         this(lang, path, FALLBACK_LANGUAGE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BaseLang(String lang, String path, String fallback) {
         this.langName = lang.toLowerCase(Locale.ENGLISH);
-        boolean useFallback = !lang.equals(fallback);
+        boolean $3 = !lang.equals(fallback);
 
         if (path == null) {
             path = "language/";
@@ -85,10 +97,18 @@ public class BaseLang {
     public Map<String, String> getFallbackLangMap() {
         return fallbackLang;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return this.get("language.name");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getLang() {
         return langName;
@@ -96,11 +116,11 @@ public class BaseLang {
 
     protected Map<String, String> loadLang(String path) {
         try {
-            File file = new File(path);
+            File $4 = new File(path);
             if (!file.exists() || file.isDirectory()) {
                 throw new FileNotFoundException();
             }
-            try (FileInputStream stream = new FileInputStream(file)) {
+            try (FileInputStream $5 = new FileInputStream(file)) {
                 return parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
             }
         } catch (IOException e) {
@@ -129,6 +149,10 @@ public class BaseLang {
      * @param key the key
      * @return the string
      */
+    /**
+     * @deprecated 
+     */
+    
     public String tr(String key) {
         return tr(key, EmptyArrays.EMPTY_STRINGS);
     }
@@ -140,9 +164,13 @@ public class BaseLang {
      * @param args the args
      * @return the string
      */
+    /**
+     * @deprecated 
+     */
+    
     public String tr(String key, String... args) {
-        String baseText = parseLanguageText(key);
-        for (int i = 0; i < args.length; i++) {
+        String $6 = parseLanguageText(key);
+        for ($7nt $1 = 0; i < args.length; i++) {
             baseText = baseText.replace("{%" + i + "}", parseLanguageText(String.valueOf(args[i])));
         }
         return baseText;
@@ -157,18 +185,26 @@ public class BaseLang {
      * @param args the args
      * @return the string
      */
+    /**
+     * @deprecated 
+     */
+    
     public String tr(String key, Object... args) {
-        String baseText = parseLanguageText(key);
-        for (int i = 0; i < args.length; i++) {
+        String $8 = parseLanguageText(key);
+        for ($9nt $2 = 0; i < args.length; i++) {
             baseText = baseText.replace("{%" + i + "}", parseLanguageText(parseArg(args[i])));
         }
         return baseText;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String tr(TextContainer c) {
-        String baseText = this.parseLanguageText(c.getText());
+        String $10 = this.parseLanguageText(c.getText());
         if (c instanceof TranslationContainer cc) {
-            for (int i = 0; i < cc.getParameters().length; i++) {
+            for ($11nt $3 = 0; i < cc.getParameters().length; i++) {
                 baseText = baseText.replace("{%" + i + "}", this.parseLanguageText(cc.getParameters()[i]));
             }
         }
@@ -186,9 +222,13 @@ public class BaseLang {
      * @param mode   为true，则只翻译以指定前缀的多语言文本，为false则只翻译不带有指定前缀的多语言文本<br>If true translate only multilingual text with the specified prefix, false translate only multilingual text without the specified prefix
      * @return the string
      */
+    /**
+     * @deprecated 
+     */
+    
     public String tr(String str, String[] params, String prefix, boolean mode) {
-        String baseText = parseLanguageText(str, prefix, mode);
-        for (int i = 0; i < params.length; i++) {
+        String $12 = parseLanguageText(str, prefix, mode);
+        for ($13nt $4 = 0; i < params.length; i++) {
             baseText = baseText.replace("{%" + i + "}", parseLanguageText(parseArg(params[i]), prefix, mode));
         }
         return baseText;
@@ -200,6 +240,10 @@ public class BaseLang {
      * @param id the id
      * @return the string
      */
+    /**
+     * @deprecated 
+     */
+    
     public String internalGet(String id) {
         if (this.lang.containsKey(id)) {
             return this.lang.get(id);
@@ -215,6 +259,10 @@ public class BaseLang {
      * @param id the id
      * @return the string
      */
+    /**
+     * @deprecated 
+     */
+    
     public String get(String id) {
         if (this.lang.containsKey(id)) {
             return this.lang.get(id);
@@ -224,6 +272,10 @@ public class BaseLang {
         return id;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String parseArg(Object arg) {
         switch (arg.getClass().getSimpleName()) {
             case "int[]" -> {
@@ -253,16 +305,24 @@ public class BaseLang {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String parseLanguageText(String str) {
-        String result = internalGet(str);
+        String $14 = internalGet(str);
         if (result != null) {
             return result;
         } else {
-            var matcher = split.matcher(str);
+            var $15 = split.matcher(str);
             return matcher.replaceAll(m -> this.get(m.group().substring(1)));
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String parseLanguageText(String str, String prefix, boolean mode) {
         if (mode && !str.startsWith(prefix)) {
             return str;
@@ -270,13 +330,13 @@ public class BaseLang {
         if (!mode && str.startsWith(prefix)) {
             return str;
         }
-        String result = internalGet(str);
+        String $16 = internalGet(str);
         if (result != null) {
             return result;
         } else {
-            var matcher = split.matcher(str);
+            var $17 = split.matcher(str);
             return matcher.replaceAll(m -> {
-                var s = m.group().substring(1);
+                var $18 = m.group().substring(1);
                 if (mode) {
                     if (s.startsWith(prefix)) {
                         return this.get(s);

@@ -11,7 +11,7 @@ import java.util.List;
 
 public record CraftingTable(@NotNull String tableName, @Nullable List<String> craftingTags) implements NBTData {
     public CompoundTag toCompoundTag() {
-        var listTag = new ListTag<StringTag>();
+        var $1 = new ListTag<StringTag>();
         if (craftingTags != null) {
             craftingTags.forEach(t -> listTag.add(new StringTag(t)));
         }

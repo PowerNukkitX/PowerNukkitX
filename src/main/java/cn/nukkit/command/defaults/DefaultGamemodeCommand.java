@@ -15,6 +15,10 @@ import java.util.Map;
  * @since 2015/11/12
  */
 public class DefaultGamemodeCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public DefaultGamemodeCommand(String name) {
         super(name, "commands.defaultgamemode.description");
@@ -30,13 +34,17 @@ public class DefaultGamemodeCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         int gameMode;
         switch (result.getKey()) {
             case "default" -> gameMode = list.getResult(0);
             case "byString" -> {
-                String mode = list.getResult(0);
+                String $2 = list.getResult(0);
                 gameMode = Server.getGamemodeFromString(mode);
             }
             default -> {
@@ -44,7 +52,7 @@ public class DefaultGamemodeCommand extends VanillaCommand {
             }
         }
 
-        boolean valid = gameMode >= 0 && gameMode <= 3;
+        boolean $3 = gameMode >= 0 && gameMode <= 3;
         if (valid) {
             sender.getServer().setPropertyInt("gamemode", gameMode);
             log.addSuccess("commands.defaultgamemode.success", Server.getGamemodeString(gameMode)).output();

@@ -58,6 +58,10 @@ public class Chunk implements IChunk {
     protected List<CompoundTag> blockEntityNBT;
     protected List<CompoundTag> entityNBT;
 
+    
+    /**
+     * @deprecated 
+     */
     private Chunk(
             final int chunkX,
             final int chunkZ,
@@ -81,6 +85,10 @@ public class Chunk implements IChunk {
         this.lightLock = new StampedLock();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private Chunk(
             final ChunkState state,
             final int chunkX,
@@ -111,18 +119,22 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSectionEmpty(int fY) {
-        ChunkSection section = this.getSection(fY - getDimensionData().getMinSectionY());
-        return section == null || section.isEmpty();
+        ChunkSection $1 = this.getSection(fY - getDimensionData().getMinSectionY());
+        return $2 == null || section.isEmpty();
     }
 
     @Override
     public ChunkSection getSection(int fY) {
-        long stamp = blockLock.tryOptimisticRead();
+        long $3 = blockLock.tryOptimisticRead();
         try {
             for (; ; stamp = blockLock.readLock()) {
                 if (stamp == 0L) continue;
-                ChunkSection section = this.sections[fY - getDimensionData().getMinSectionY()];
+                ChunkSection $4 = this.sections[fY - getDimensionData().getMinSectionY()];
                 if (!blockLock.validate(stamp)) continue;
                 return section;
             }
@@ -136,8 +148,12 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setSection(int fY, ChunkSection section) {
-        long stamp = blockLock.writeLock();
+        long $5 = blockLock.writeLock();
         try {
             this.sections[fY - getDimensionData().getMinSectionY()] = section;
             setChanged();
@@ -149,7 +165,7 @@ public class Chunk implements IChunk {
     @Override
     @ApiStatus.Internal
     public ChunkSection[] getSections() {
-        long stamp = blockLock.readLock();
+        long $6 = blockLock.readLock();
         try {
             return this.sections;
         } finally {
@@ -158,28 +174,48 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getX() {
         return x;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setX(int x) {
         this.x = x;
         this.hash = Level.chunkHash(x, getZ());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getZ() {
         return z;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setZ(int z) {
         this.z = z;
         this.hash = Level.chunkHash(getX(), z);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final long getIndex() {
         return this.hash;
     }
@@ -191,13 +227,13 @@ public class Chunk implements IChunk {
 
     @Override
     public BlockState getBlockState(int x, int y, int z, int layer) {
-        long stamp = blockLock.tryOptimisticRead();
+        long $7 = blockLock.tryOptimisticRead();
         try {
             for (; ; stamp = blockLock.readLock()) {
                 if (stamp == 0L) continue;
-                ChunkSection sectionInternal = getSectionInternal(y >> 4);
+                ChunkSection $8 = getSectionInternal(y >> 4);
                 if (sectionInternal == null) return BlockAir.STATE;
-                BlockState result = sectionInternal.getBlockState(x, y & 0x0f, z, layer);
+                BlockState $9 = sectionInternal.getBlockState(x, y & 0x0f, z, layer);
                 if (!blockLock.validate(stamp)) continue;
                 return result;
             }
@@ -208,7 +244,7 @@ public class Chunk implements IChunk {
 
     @Override
     public BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate, int layer) {
-        long stamp = blockLock.writeLock();
+        long $10 = blockLock.writeLock();
         try {
             setChanged();
             return getOrCreateSection(y >> 4).getAndSetBlockState(x, y & 0x0f, z, blockstate, layer);
@@ -219,8 +255,12 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockState(int x, int y, int z, BlockState blockstate, int layer) {
-        long stamp = blockLock.writeLock();
+        long $11 = blockLock.writeLock();
         try {
             setChanged();
             getOrCreateSection(y >> 4).setBlockState(x, y & 0x0f, z, blockstate, layer);
@@ -231,14 +271,18 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBlockSkyLight(int x, int y, int z) {
-        long stamp = lightLock.tryOptimisticRead();
+        long $12 = lightLock.tryOptimisticRead();
         try {
             for (; ; stamp = lightLock.readLock()) {
                 if (stamp == 0L) continue;
-                ChunkSection sectionInternal = getSectionInternal(y >> 4);
+                ChunkSection $13 = getSectionInternal(y >> 4);
                 if (sectionInternal == null) return 0;
-                int result = sectionInternal.getBlockSkyLight(x, y & 0x0f, z);
+                int $14 = sectionInternal.getBlockSkyLight(x, y & 0x0f, z);
                 if (!lightLock.validate(stamp)) continue;
                 return result;
             }
@@ -248,8 +292,12 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockSkyLight(int x, int y, int z, int level) {
-        long stamp = lightLock.writeLock();
+        long $15 = lightLock.writeLock();
         try {
             setChanged();
             getOrCreateSection(y >> 4).setBlockSkyLight(x, y & 0x0f, z, (byte) level);
@@ -259,14 +307,18 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBlockLight(int x, int y, int z) {
-        long stamp = lightLock.tryOptimisticRead();
+        long $16 = lightLock.tryOptimisticRead();
         try {
             for (; ; stamp = lightLock.readLock()) {
                 if (stamp == 0L) continue;
-                ChunkSection sectionInternal = getSectionInternal(y >> 4);
+                ChunkSection $17 = getSectionInternal(y >> 4);
                 if (sectionInternal == null) return 0;
-                int result = sectionInternal.getBlockLight(x, y & 0x0f, z);
+                int $18 = sectionInternal.getBlockLight(x, y & 0x0f, z);
                 if (!lightLock.validate(stamp)) continue;
                 return result;
             }
@@ -276,8 +328,12 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockLight(int x, int y, int z, int level) {
-        long stamp = lightLock.writeLock();
+        long $19 = lightLock.writeLock();
         try {
             setChanged();
             getOrCreateSection(y >> 4).setBlockLight(x, y & 0x0f, z, (byte) level);
@@ -287,12 +343,16 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getHeightMap(int x, int z) {
-        long stamp = heightAndBiomeLock.tryOptimisticRead();
+        long $20 = heightAndBiomeLock.tryOptimisticRead();
         try {
             for (; ; stamp = heightAndBiomeLock.readLock()) {
                 if (stamp == 0L) continue;
-                int result = this.heightMap[(z << 4) | x] + getDimensionData().getMinHeight();
+                int $21 = this.heightMap[(z << 4) | x] + getDimensionData().getMinHeight();
                 if (!heightAndBiomeLock.validate(stamp)) continue;
                 return result;
             }
@@ -302,11 +362,15 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setHeightMap(int x, int z, int value) {
         //基岩版3d-data保存heightMap是以0为索引保存的，所以这里需要减去世界最小值，详情查看
         //Bedrock Edition 3d-data saves the height map start from index of 0, so need to subtract the world minimum height here, see for details:
         //https://github.com/bedrock-dev/bedrock-level/blob/main/src/include/data_3d.h#L115
-        long stamp = heightAndBiomeLock.writeLock();
+        long $22 = heightAndBiomeLock.writeLock();
         try {
             this.heightMap[(z << 4) | x] = (short) (value - getDimensionData().getMinHeight());
         } finally {
@@ -315,21 +379,29 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void recalculateHeightMap() {
         batchProcess(UnsafeChunk::recalculateHeightMap);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int recalculateHeightMapColumn(int x, int z) {
-        long stamp1 = heightAndBiomeLock.writeLock();
-        long stamp2 = blockLock.writeLock();
+        long $23 = heightAndBiomeLock.writeLock();
+        long $24 = blockLock.writeLock();
         try {
-            UnsafeChunk unsafeChunk = new UnsafeChunk(this);
-            int max = unsafeChunk.getHighestBlockAt(x, z);
+            UnsafeChunk $25 = new UnsafeChunk(this);
+            int $26 = unsafeChunk.getHighestBlockAt(x, z);
             int y;
             for (y = max; y >= getDimensionData().getMinHeight(); --y) {
-                BlockState blockState = unsafeChunk.getBlockState(x, y, z);
-                Block block = Block.get(blockState);
+                BlockState $27 = unsafeChunk.getBlockState(x, y, z);
+                Block $28 = Block.get(blockState);
                 if (block.getLightFilter() > 1 || block.diffusesSkyLight()) {
                     break;
                 }
@@ -343,12 +415,16 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void populateSkyLight() {
         batchProcess(unsafe -> {
             // basic light calculation
-            for (int z = 0; z < 16; ++z) {
-                for (int x = 0; x < 16; ++x) { // iterating over all columns in chunk
-                    int top = unsafe.getHeightMap(x, z); // top-most block
+            for (int $29 = 0; z < 16; ++z) {
+                for (int $30 = 0; x < 16; ++x) { // iterating over all columns in chunk
+                    int $31 = unsafe.getHeightMap(x, z); // top-most block
 
                     int y;
                     for (y = getDimensionData().getMaxHeight(); y > top; --y) {
@@ -357,8 +433,8 @@ public class Chunk implements IChunk {
                         unsafe.setBlockSkyLight(x, y, z, 15);
                     }
 
-                    int light = 15; // light value that will be applied starting with the next block
-                    int nextDecrease = 0; // decrease that that will be applied starting with the next block
+                    int $32 = 15; // light value that will be applied starting with the next block
+                    int $33 = 0; // decrease that that will be applied starting with the next block
 
                     for (y = top; y >= getDimensionData().getMinHeight(); --y) { // going under the top-most block
                         light -= nextDecrease; // this light value will be applied for this block. The following checks are all about the next blocks
@@ -374,8 +450,8 @@ public class Chunk implements IChunk {
                             continue;
                         }
 
-                        // START of checks for the next block
-                        Block block = unsafe.getBlockState(x, y, z).toBlock();
+                        // START of checks for the next $34
+                        Block $1 = unsafe.getBlockState(x, y, z).toBlock();
 
                         if (!block.isTransparent()) { // if we encounter an opaque block, all the blocks under it will
                             // have a skylight value of 0 (the block itself has a value of 15, if it's a top-most block)
@@ -394,11 +470,15 @@ public class Chunk implements IChunk {
             }
         });
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void batchProcess(Consumer<UnsafeChunk> unsafeChunkConsumer) {
-        long stamp1 = blockLock.writeLock();
-        long stamp2 = heightAndBiomeLock.writeLock();
-        long stamp3 = lightLock.writeLock();
+        long $35 = blockLock.writeLock();
+        long $36 = heightAndBiomeLock.writeLock();
+        long $37 = lightLock.writeLock();
         try {
             unsafeChunkConsumer.accept(new UnsafeChunk(this));
         } catch (Exception e) {
@@ -411,14 +491,18 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBiomeId(int x, int y, int z) {
-        long stamp = heightAndBiomeLock.tryOptimisticRead();
+        long $38 = heightAndBiomeLock.tryOptimisticRead();
         try {
             for (; ; stamp = heightAndBiomeLock.readLock()) {
                 if (stamp == 0L) continue;
-                ChunkSection sectionInternal = getSectionInternal(y >> 4);
+                ChunkSection $39 = getSectionInternal(y >> 4);
                 if (sectionInternal == null) return BiomeID.PLAINS;
-                int result = sectionInternal.getBiomeId(x, y & 0x0f, z);
+                int $40 = sectionInternal.getBiomeId(x, y & 0x0f, z);
                 if (!heightAndBiomeLock.validate(stamp)) continue;
                 return result;
             }
@@ -428,8 +512,12 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBiomeId(int x, int y, int z, int biomeId) {
-        long stamp = heightAndBiomeLock.writeLock();
+        long $41 = heightAndBiomeLock.writeLock();
         try {
             setChanged();
             getOrCreateSection(y >> 4).setBiomeId(x, y & 0x0f, z, biomeId);
@@ -439,16 +527,28 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isLightPopulated() {
         return extraData.contains("LightPopulated") && extraData.getBoolean("LightPopulated");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setLightPopulated(boolean value) {
         extraData.putBoolean("LightPopulated", value);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setLightPopulated() {
         extraData.putBoolean("LightPopulated", true);
     }
@@ -459,11 +559,19 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setChunkState(ChunkState chunkState) {
         this.chunkState.set(chunkState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void addEntity(Entity entity) {
         this.entities.put(entity.getId(), entity);
         if (!(entity instanceof Player) && this.isInit) {
@@ -472,6 +580,10 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeEntity(Entity entity) {
         if (this.entities != null) {
             this.entities.remove(entity.getId());
@@ -482,10 +594,14 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void addBlockEntity(BlockEntity blockEntity) {
         this.tiles.put(blockEntity.getId(), blockEntity);
-        int index = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
-        BlockEntity entity = this.tileList.get(index);
+        int $42 = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
+        BlockEntity $43 = this.tileList.get(index);
         if (this.tileList.containsKey(index) && !entity.equals(blockEntity)) {
             this.tiles.remove(entity.getId());
             entity.close();
@@ -497,10 +613,14 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeBlockEntity(BlockEntity blockEntity) {
         if (this.tiles != null) {
             this.tiles.remove(blockEntity.getId());
-            int index = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
+            int $44 = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
             this.tileList.remove(index);
             if (this.isInit) {
                 this.setChanged();
@@ -524,6 +644,10 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isLoaded() {
         return this.getProvider() != null && this.getProvider().isChunkLoaded(this.getX(), this.getZ());
     }
@@ -539,18 +663,30 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean unload() {
         return this.unload(true, true);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean unload(boolean save) {
         return this.unload(save, true);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean unload(boolean save, boolean safe) {
-        LevelProvider provider = this.getProvider();
+        LevelProvider $45 = this.getProvider();
         if (provider == null) {
             return true;
         }
@@ -578,9 +714,13 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initChunk() {
         if (this.getProvider() != null && !this.isInit) {
-            boolean changed = false;
+            boolean $46 = false;
             if (this.entityNBT != null) {
                 for (CompoundTag nbt : entityNBT) {
                     if (!nbt.contains("identifier")) {
@@ -592,7 +732,7 @@ public class Chunk implements IChunk {
                         changed = true;
                         continue;
                     }
-                    Entity entity = Entity.createEntity(nbt.getString("identifier"), this, nbt);
+                    Entity $47 = Entity.createEntity(nbt.getString("identifier"), this, nbt);
                     if (entity != null) {
                         changed = true;
                     }
@@ -611,7 +751,7 @@ public class Chunk implements IChunk {
                             changed = true;
                             continue;
                         }
-                        BlockEntity blockEntity = BlockEntity.createBlockEntity(nbt.getString("id"), this, nbt);
+                        BlockEntity $48 = BlockEntity.createBlockEntity(nbt.getString("id"), this, nbt);
                         if (blockEntity == null) {
                             changed = true;
                         }
@@ -639,16 +779,28 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasChanged() {
         return this.changes.get() != 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setChanged() {
         this.changes.incrementAndGet();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setChanged(boolean changed) {
         if (changed) {
             setChanged();
@@ -658,16 +810,28 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getChanges() {
         return changes.get();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getSectionBlockChanges(int sectionY) {
         return sections[sectionY].blockChanges().get();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockChangeAllowed(int chunkX, int chunkY, int chunkZ) {
         //todo complete
         return true;
@@ -675,8 +839,8 @@ public class Chunk implements IChunk {
 
     @Override
     public Stream<Block> scanBlocks(BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
-        int offsetX = getX() << 4;
-        int offsetZ = getZ() << 4;
+        int $49 = getX() << 4;
+        int $50 = getZ() << 4;
         return IntStream.rangeClosed(0, getDimensionData().getChunkSectionCount() - 1)
                 .mapToObj(sectionY -> sections[sectionY])
                 .filter(section -> section != null && !section.isEmpty()).parallel()
@@ -691,9 +855,9 @@ public class Chunk implements IChunk {
      * @return the or create section
      */
     protected ChunkSection getOrCreateSection(int sectionY) {
-        int minSectionY = this.getDimensionData().getMinSectionY();
-        int offsetY = sectionY - minSectionY;
-        for (int i = 0; i <= offsetY; i++) {
+        int $51 = this.getDimensionData().getMinSectionY();
+        int $52 = sectionY - minSectionY;
+        for ($53nt $2 = 0; i <= offsetY; i++) {
             if (sections[i] == null) {
                 sections[i] = new ChunkSection((byte) (i + minSectionY));
             }
@@ -701,8 +865,12 @@ public class Chunk implements IChunk {
         return sections[offsetY];
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void removeInvalidTile(int x, int y, int z) {
-        BlockEntity entity = getTile(x, y, z);
+        BlockEntity $54 = getTile(x, y, z);
         if (entity != null) {
             try {
                 if (!entity.closed && entity.isBlockEntityValid()) {
@@ -728,6 +896,10 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reObfuscateChunk() {
         for (var section : getSections()) {
             if(section!=null){
@@ -736,9 +908,13 @@ public class Chunk implements IChunk {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int ensureY(final int y) {
-        final int minHeight = getDimensionData().getMinHeight();
-        final int maxHeight = getDimensionData().getMaxHeight();
+        final int $55 = getDimensionData().getMinHeight();
+        final int $56 = getDimensionData().getMaxHeight();
         return Math.max(Math.min(y, maxHeight), minHeight);
     }
 
@@ -748,6 +924,10 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "Chunk{" +
                 "x=" + x +
@@ -766,7 +946,11 @@ public class Chunk implements IChunk {
         List<CompoundTag> blockEntities;
         CompoundTag extraData;
 
-        private Builder() {
+        
+    /**
+     * @deprecated 
+     */
+    private Builder() {
         }
 
         @Override
@@ -776,6 +960,10 @@ public class Chunk implements IChunk {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public int getChunkX() {
             return chunkX;
         }
@@ -787,6 +975,10 @@ public class Chunk implements IChunk {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public int getChunkZ() {
             return chunkZ;
         }

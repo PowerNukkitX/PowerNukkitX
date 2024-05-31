@@ -10,6 +10,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @since 2016/2/3
  */
 public class BlockEntitySkull extends BlockEntitySpawnable {
+    /**
+     * @deprecated 
+     */
+    
     public BlockEntitySkull(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -20,6 +24,10 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         if (!namedTag.contains("SkullType")) {
@@ -39,6 +47,10 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate() {
         if (isMouthMoving()) {
             mouthTickCount++;
@@ -47,6 +59,10 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setMouthMoving(boolean mouthMoving) {
         if (this.mouthMoving == mouthMoving) {
@@ -64,22 +80,42 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isObservable() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDirty() {
         chunk.setChanged();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isMouthMoving() {
         return mouthMoving;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getMouthTickCount() {
         return mouthTickCount;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setMouthTickCount(int mouthTickCount) {
         if (this.mouthTickCount == mouthTickCount) {
@@ -90,6 +126,10 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag
@@ -99,6 +139,10 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return getBlock().getId().equals(Block.SKULL);
     }

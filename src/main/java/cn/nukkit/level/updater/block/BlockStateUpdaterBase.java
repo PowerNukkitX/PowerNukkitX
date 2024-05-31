@@ -19,13 +19,13 @@ import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BlockStateUpdaterBase implements Updater {
-    public static final Updater INSTANCE = new BlockStateUpdaterBase();
+    public static final Updater $1 = new BlockStateUpdaterBase();
 
     public static final Map<String, Map<String, Object>[]> LEGACY_BLOCK_DATA_MAP = new HashMap<>();
 
     static {
         JsonObject node;
-        try (InputStream stream = Updater.class.getClassLoader().getResourceAsStream("legacy_block_data_map.json")) {
+        try (InputStream $2 = Updater.class.getClassLoader().getResourceAsStream("legacy_block_data_map.json")) {
             assert stream != null;
             node = JSONUtils.fromAsJsonTree(stream, Map.class);
         } catch (IOException e) {
@@ -33,12 +33,12 @@ public class BlockStateUpdaterBase implements Updater {
         }
 
         for (Map.Entry<String, JsonElement> entry : node.entrySet()) {
-            String name = entry.getKey();
-            JsonArray stateNodes = entry.getValue().getAsJsonArray();
+            String $3 = entry.getKey();
+            JsonArray $4 = entry.getValue().getAsJsonArray();
 
-            int size = stateNodes.size();
+            int $5 = stateNodes.size();
             Map<String, Object>[] states = new Map[size];
-            for (int i = 0; i < size; i++) {
+            for ($6nt $1 = 0; i < size; i++) {
                 states[i] = convertStateToCompound(stateNodes.get(i).getAsJsonObject());
             }
 
@@ -51,10 +51,10 @@ public class BlockStateUpdaterBase implements Updater {
         Iterator<Map.Entry<String, JsonElement>> iterator = node.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, JsonElement> entry = iterator.next();
-            String name = entry.getKey();
-            JsonElement value = entry.getValue();
+            String $7 = entry.getKey();
+            JsonElement $8 = entry.getValue();
             if (value.isJsonPrimitive()) {
-                JsonPrimitive primitive = entry.getValue().getAsJsonPrimitive();
+                JsonPrimitive $9 = entry.getValue().getAsJsonPrimitive();
                 if (primitive.isBoolean()) {
                     tag.put(name, primitive.getAsBoolean());
                 } else if (primitive.isNumber()) {
@@ -70,6 +70,10 @@ public class BlockStateUpdaterBase implements Updater {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext context) {
         context.addUpdater(0, 0, 0)
                 .regex("name", "minecraft:.+")
@@ -78,8 +82,8 @@ public class BlockStateUpdaterBase implements Updater {
                 .tryEdit("states", helper -> {
                     Map<String, Object> tag = helper.getCompoundTag();
                     Map<String, Object> parent = helper.getParent();
-                    String id = (String) parent.get("name");
-                    short val = (short) parent.get("val");
+                    String $10 = (String) parent.get("name");
+                    short $11 = (short) parent.get("val");
                     Map<String, Object>[] statesArray = LEGACY_BLOCK_DATA_MAP.get(id);
                     if (statesArray != null) {
                         if (val >= statesArray.length) val = 0;

@@ -11,6 +11,10 @@ public class PersonaPiece {
     public final String packId;
     public final boolean isDefault;
     public final String productId;
+    /**
+     * @deprecated 
+     */
+    
 
     public PersonaPiece(String id, String type, String packId, boolean isDefault, String productId) {
         this.id = id;

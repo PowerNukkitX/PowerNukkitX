@@ -4,13 +4,25 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 
 public class ItemCoral extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemCoral() {
         super(CORAL);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemCoral(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemCoral(Integer meta, int count) {
         super(CONCRETE, meta, count);
@@ -18,6 +30,10 @@ public class ItemCoral extends Item {
         adjustBlock();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void adjustBlock() {
         switch (getDamage()) {
             case 0:
@@ -55,6 +71,10 @@ public class ItemCoral extends Item {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void adjustName() {
         switch (getDamage()) {
             case 0:

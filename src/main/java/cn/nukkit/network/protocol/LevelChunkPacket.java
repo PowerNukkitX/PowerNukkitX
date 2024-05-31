@@ -12,9 +12,13 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LevelChunkPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.FULL_CHUNK_DATA_PACKET;
+    public static final int $1 = ProtocolInfo.FULL_CHUNK_DATA_PACKET;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -33,11 +37,19 @@ public class LevelChunkPacket extends DataPacket {
     public int dimension;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeVarInt(this.chunkX);
@@ -61,6 +73,10 @@ public class LevelChunkPacket extends DataPacket {
         }
         byteBuf.writeByteArray(this.data);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

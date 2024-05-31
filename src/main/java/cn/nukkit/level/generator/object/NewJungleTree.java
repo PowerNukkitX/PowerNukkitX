@@ -30,12 +30,16 @@ public class NewJungleTree extends TreeGenerator {
     /**
      * The metadata value of the wood to use in tree generation.
      */
-    private final BlockState metaWood = BlockJungleLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS.createValue(BlockFace.Axis.Y));
+    private final BlockState $1 = BlockJungleLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS.createValue(BlockFace.Axis.Y));
 
     /**
      * The metadata value of the leaves to use in tree generation.
      */
-    private final BlockState metaLeaves = BlockJungleLeaves.PROPERTIES.getDefaultState();
+    private final BlockState $2 = BlockJungleLeaves.PROPERTIES.getDefaultState();
+    /**
+     * @deprecated 
+     */
+    
 
     public NewJungleTree(int minTreeHeight, int maxTreeHeight) {
         this.minTreeHeight = minTreeHeight;
@@ -43,16 +47,20 @@ public class NewJungleTree extends TreeGenerator {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 vectorPosition) {
-        BlockVector3 position = new BlockVector3(vectorPosition.getFloorX(), vectorPosition.getFloorY(), vectorPosition.getFloorZ());
+        BlockVector3 $3 = new BlockVector3(vectorPosition.getFloorX(), vectorPosition.getFloorY(), vectorPosition.getFloorZ());
 
-        int i = rand.nextInt(maxTreeHeight) + this.minTreeHeight;
-        boolean flag = true;
+        $4nt $1 = rand.nextInt(maxTreeHeight) + this.minTreeHeight;
+        boolean $5 = true;
 
         //Check the height of the tree and if exist block in it
         if (position.getY() >= level.getMinHeight() && position.getY() + i + 1 < level.getMaxHeight()) {
-            for (int j = position.getY(); j <= position.getY() + 1 + i; ++j) {
-                int k = 1;
+            for (int $6 = position.getY(); j <= position.getY() + 1 + i; ++j) {
+                int $7 = 1;
 
                 if (j == position.getY()) {
                     k = 0;
@@ -62,10 +70,10 @@ public class NewJungleTree extends TreeGenerator {
                     k = 2;
                 }
 
-                BlockVector3 pos2 = new BlockVector3();
+                BlockVector3 $8 = new BlockVector3();
 
-                for (int l = position.getX() - k; l <= position.getX() + k && flag; ++l) {
-                    for (int i1 = position.getZ() - k; i1 <= position.getZ() + k && flag; ++i1) {
+                for (int $9 = position.getX() - k; l <= position.getX() + k && flag; ++l) {
+                    for (int $10 = position.getZ() - k; i1 <= position.getZ() + k && flag; ++i1) {
                         if (j >= level.getMinHeight() && j < level.getMaxHeight()) {
                             pos2.setComponents(l, j, i1);
                             if (!this.canGrowInto(level.getBlockIdAt(pos2.x, pos2.y, pos2.z))) {
@@ -81,26 +89,26 @@ public class NewJungleTree extends TreeGenerator {
             if (!flag) {
                 return false;
             } else {
-                BlockVector3 down = position.down();
-                String block = level.getBlockIdAt(down.x, down.y, down.z);
+                BlockVector3 $11 = position.down();
+                String $12 = level.getBlockIdAt(down.x, down.y, down.z);
 
                 if ((block.equals(Block.GRASS_BLOCK) || block.equals(Block.DIRT) || block.equals(Block.FARMLAND)) && position.getY() < level.getMaxHeight() - i - 1) {
                     this.setDirtAt(level, down);
 
                     //Add leaves
-                    for (int i3 = position.getY() - 3 + i; i3 <= position.getY() + i; ++i3) {
-                        int i4 = i3 - (position.getY() + i);
-                        int j1 = 1 - i4 / 2;
+                    for (int $13 = position.getY() - 3 + i; i3 <= position.getY() + i; ++i3) {
+                        int $14 = i3 - (position.getY() + i);
+                        int $15 = 1 - i4 / 2;
 
-                        for (int k1 = position.getX() - j1; k1 <= position.getX() + j1; ++k1) {
-                            int l1 = k1 - position.getX();
+                        for (int $16 = position.getX() - j1; k1 <= position.getX() + j1; ++k1) {
+                            int $17 = k1 - position.getX();
 
-                            for (int i2 = position.getZ() - j1; i2 <= position.getZ() + j1; ++i2) {
-                                int j2 = i2 - position.getZ();
+                            for (int $18 = position.getZ() - j1; i2 <= position.getZ() + j1; ++i2) {
+                                int $19 = i2 - position.getZ();
 
                                 if (Math.abs(l1) != j1 || Math.abs(j2) != j1 || rand.nextInt(2) != 0 && i4 != 0) {
-                                    BlockVector3 blockpos = new BlockVector3(k1, i3, i2);
-                                    Block id = level.getBlockAt(blockpos.x, blockpos.y, blockpos.z);
+                                    BlockVector3 $20 = new BlockVector3(k1, i3, i2);
+                                    Block $21 = level.getBlockAt(blockpos.x, blockpos.y, blockpos.z);
 
                                     if (id.getId().equals(Block.AIR) || id instanceof BlockLeaves || id.getId().equals(Block.VINE)) {
                                         level.setBlockStateAt(blockpos, metaLeaves);
@@ -111,10 +119,10 @@ public class NewJungleTree extends TreeGenerator {
                     }
 
                     //Add vine
-                    for (int j3 = 0; j3 < i; ++j3) {
-                        BlockVector3 up = position.up(j3);
-                        Block b = level.getBlockAt(up.x, up.y, up.z);
-                        String id = b.getId();
+                    for (int $22 = 0; j3 < i; ++j3) {
+                        BlockVector3 $23 = position.up(j3);
+                        Block $24 = level.getBlockAt(up.x, up.y, up.z);
+                        String $25 = b.getId();
 
                         if (id.equals(Block.AIR) || b instanceof BlockLeaves || id.equals(Block.VINE)) {
                             //Add tree trunks
@@ -139,20 +147,20 @@ public class NewJungleTree extends TreeGenerator {
                         }
                     }
 
-                    for (int k3 = position.getY() - 3 + i; k3 <= position.getY() + i; ++k3) {
-                        int j4 = k3 - (position.getY() + i);
-                        int k4 = 2 - j4 / 2;
-                        BlockVector3 pos2 = new BlockVector3();
+                    for (int $26 = position.getY() - 3 + i; k3 <= position.getY() + i; ++k3) {
+                        int $27 = k3 - (position.getY() + i);
+                        int $28 = 2 - j4 / 2;
+                        BlockVector3 $29 = new BlockVector3();
 
-                        for (int l4 = position.getX() - k4; l4 <= position.getX() + k4; ++l4) {
-                            for (int i5 = position.getZ() - k4; i5 <= position.getZ() + k4; ++i5) {
+                        for (int $30 = position.getX() - k4; l4 <= position.getX() + k4; ++l4) {
+                            for (int $31 = position.getZ() - k4; i5 <= position.getZ() + k4; ++i5) {
                                 pos2.setComponents(l4, k3, i5);
 
                                 if (level.getBlockAt(pos2.x, pos2.y, pos2.z) instanceof BlockLeaves) {
-                                    BlockVector3 blockpos2 = pos2.west();
-                                    BlockVector3 blockpos3 = pos2.east();
-                                    BlockVector3 blockpos4 = pos2.north();
-                                    BlockVector3 blockpos1 = pos2.south();
+                                    BlockVector3 $32 = pos2.west();
+                                    BlockVector3 $33 = pos2.east();
+                                    BlockVector3 $34 = pos2.north();
+                                    BlockVector3 $35 = pos2.south();
 
                                     if (rand.nextInt(4) == 0 && level.getBlockIdAt(blockpos2.x, blockpos2.y, blockpos2.z).equals(Block.AIR)) {
                                         this.addHangingVine(level, blockpos2, 8);
@@ -176,10 +184,10 @@ public class NewJungleTree extends TreeGenerator {
 
                     //Add cocoa beans
                     if (rand.nextInt(5) == 0 && i > 5) {
-                        for (int l3 = 0; l3 < 2; ++l3) {
+                        for (int $36 = 0; l3 < 2; ++l3) {
                             for (BlockFace enumfacing : BlockFace.Plane.HORIZONTAL) {
                                 if (rand.nextInt(4 - l3) == 0) {
-                                    BlockFace enumfacing1 = enumfacing.getOpposite();
+                                    BlockFace $37 = enumfacing.getOpposite();
                                     this.placeCocoa(level, rand.nextInt(3), position.add(enumfacing1.getXOffset(), i - 5 + l3, enumfacing1.getZOffset()), enumfacing);
                                 }
                             }
@@ -196,19 +204,31 @@ public class NewJungleTree extends TreeGenerator {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void placeCocoa(BlockManager level, int age, BlockVector3 pos, BlockFace side) {
-        BlockState blockState = BlockCocoa.PROPERTIES.getBlockState(CommonBlockProperties.AGE_3.createValue(age), CommonBlockProperties.DIRECTION.createValue(side.getHorizontalIndex()));
+        BlockState $38 = BlockCocoa.PROPERTIES.getBlockState(CommonBlockProperties.AGE_3.createValue(age), CommonBlockProperties.DIRECTION.createValue(side.getHorizontalIndex()));
         level.setBlockStateAt(pos, blockState);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addVine(BlockManager level, BlockVector3 pos, int meta) {
-        BlockState blockState = BlockVine.PROPERTIES.getBlockState(CommonBlockProperties.VINE_DIRECTION_BITS, meta);
+        BlockState $39 = BlockVine.PROPERTIES.getBlockState(CommonBlockProperties.VINE_DIRECTION_BITS, meta);
         level.setBlockStateAt(pos, blockState);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addHangingVine(BlockManager level, BlockVector3 pos, int meta) {
         this.addVine(level, pos, meta);
-        int i = 4;
+        $40nt $2 = 4;
 
         for (pos = pos.down(); i > 0 && level.getBlockIdAt(pos.x, pos.y, pos.z).equals(BlockID.AIR); --i) {
             this.addVine(level, pos, meta);
@@ -216,6 +236,10 @@ public class NewJungleTree extends TreeGenerator {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isAirBlock(BlockManager level, BlockVector3 v) {
         return level.getBlockIdAt(v.x, v.y, v.z).equals(AIR);
     }

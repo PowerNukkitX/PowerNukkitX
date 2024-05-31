@@ -14,7 +14,7 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityDamageEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -24,19 +24,27 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
     private final Map<DamageModifier, Float> modifiers;
     private final Map<DamageModifier, Float> originals;
 
-    private boolean breakShield = false;
-    private int attackCooldown = 10;
-    private int ShieldBreakCoolDown = 100;
+    private boolean $2 = false;
+    private int $3 = 10;
+    private int $4 = 100;
 
     private static Map<DamageModifier, Float> createDamageModifierMap(float baseDamage) {
         Map<DamageModifier, Float> modifiers = new EnumMap<>(DamageModifier.class);
         modifiers.put(DamageModifier.BASE, baseDamage);
         return modifiers;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityDamageEvent(Entity entity, DamageCause cause, float damage) {
         this(entity, cause, createDamageModifierMap(damage));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityDamageEvent(Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers) {
         this.entity = entity;
@@ -57,10 +65,18 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
     public DamageCause getCause() {
         return cause;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getOriginalDamage() {
         return this.getOriginalDamage(DamageModifier.BASE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getOriginalDamage(DamageModifier type) {
         if (this.originals.containsKey(type)) {
@@ -69,10 +85,18 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
 
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getDamage() {
         return this.getDamage(DamageModifier.BASE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getDamage(DamageModifier type) {
         if (this.modifiers.containsKey(type)) {
@@ -81,21 +105,37 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
 
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDamage(float damage) {
         this.setDamage(damage, DamageModifier.BASE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDamage(float damage, DamageModifier type) {
         this.modifiers.put(type, damage);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isApplicable(DamageModifier type) {
         return this.modifiers.containsKey(type);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getFinalDamage() {
-        float damage = 0;
+        float $5 = 0;
         for (Float d : this.modifiers.values()) {
             if (d != null) {
                 damage += d;
@@ -104,14 +144,26 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
 
         return damage;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getAttackCooldown() {
         return this.attackCooldown;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAttackCooldown(int attackCooldown) {
         this.attackCooldown = attackCooldown;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canBeReducedByArmor() {
         return switch (this.cause) {
@@ -119,18 +171,34 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
             default -> true;
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isBreakShield() {
         return breakShield;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBreakShield(boolean breakShield) {
         this.breakShield = breakShield;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getShieldBreakCoolDown() {
         return ShieldBreakCoolDown;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setShieldBreakCoolDown(int shieldBreakCoolDown) {
         ShieldBreakCoolDown = shieldBreakCoolDown;

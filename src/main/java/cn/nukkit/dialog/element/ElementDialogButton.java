@@ -14,33 +14,53 @@ public class ElementDialogButton {
 
     private List<CmdLine> data;
 
-    protected transient Dialog nextDialog = null;
+    protected transient Dialog $1 = null;
 
     public static class CmdLine{
+    /**
+     * @deprecated 
+     */
+    
         public CmdLine(String cmd_line, int cmd_ver){
             this.cmd_line = cmd_line;
             this.cmd_ver = cmd_ver;
         }
         public String cmd_line;
         public int cmd_ver;
-        public static transient final int CMD_VER = 19;
+        public static transient final int $2 = 19;
     }
 
     private int mode;
 
     private int type;
+    /**
+     * @deprecated 
+     */
+    
 
     public ElementDialogButton(String name, String text) {
         this(name, text, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ElementDialogButton(String name, String text,Dialog nextDialog){
         this(name, text, nextDialog, Mode.BUTTON_MODE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ElementDialogButton(String name, String text,Dialog nextDialog, Mode mode) {
         this(name, text, nextDialog, mode, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ElementDialogButton(String name, String text,Dialog nextDialog, Mode mode, int type) {
         this.button_name = name;
@@ -59,18 +79,34 @@ public class ElementDialogButton {
         }
         return list;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return button_name;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setName(String name) {
         this.button_name = name;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getText() {
         return text;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setText(String text) {
         this.text = text;
@@ -78,8 +114,8 @@ public class ElementDialogButton {
 
     public List<CmdLine> getData() {
         //data will not be updated by the client
-        //so we should update data with text content whenever we need it
-        data = updateButtonData();
+        //so we should update $3 with text content whenever we need it
+        $1 = updateButtonData();
         return data;
     }
 
@@ -91,14 +127,26 @@ public class ElementDialogButton {
             default -> throw new IllegalStateException("Unexpected value: " + mode);
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setMode(Mode mode) {
         this.mode = mode.ordinal();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getType() {
         return type;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setType(int type) {
         this.type = type;
@@ -107,6 +155,10 @@ public class ElementDialogButton {
     public Dialog getNextDialog() {
         return nextDialog;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setNextDialog(Dialog nextDialog) {
         this.nextDialog = nextDialog;

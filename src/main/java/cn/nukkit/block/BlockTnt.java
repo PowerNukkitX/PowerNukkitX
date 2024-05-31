@@ -27,7 +27,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.EXPLODE_BIT;
 
 public class BlockTnt extends BlockSolid implements RedstoneComponent {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(TNT,
+    public static final BlockProperties $1 = new BlockProperties(TNT,
             EXPLODE_BIT, ALLOW_UNDERWATER_BIT);
 
     @Override
@@ -35,57 +35,101 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent {
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTnt() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTnt(BlockState state) {
         super(state);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "TNT";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnChance() {
         return 15;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnAbility() {
         return 100;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void prime() {
         this.prime(80);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void prime(int fuse) {
         prime(fuse, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void prime(int fuse, Entity source) {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true);
-        double mot = (new NukkitRandom()).nextFloat() * Math.PI * 2;
-        CompoundTag nbt = new CompoundTag()
+        double $2 = (new NukkitRandom()).nextFloat() * Math.PI * 2;
+        CompoundTag $3 = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(this.x + 0.5))
                         .add(new DoubleTag(this.y))
@@ -98,7 +142,7 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent {
                         .add(new FloatTag(0))
                         .add(new FloatTag(0)))
                 .putShort("Fuse", fuse);
-        Entity tnt = Entity.createEntity(Entity.TNT,
+        Entity $4 = Entity.createEntity(Entity.TNT,
                 this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4),
                 nbt, source
         );
@@ -111,6 +155,10 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return 0;
@@ -124,6 +172,10 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         switch (item.getId()) {
             case Item.FLINT_AND_STEEL -> {
@@ -148,6 +200,10 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         //TODO: Wither skull, ghast fireball
         if (projectile instanceof EntitySmallFireball ||

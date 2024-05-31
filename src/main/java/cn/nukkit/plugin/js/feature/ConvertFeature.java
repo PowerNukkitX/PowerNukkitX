@@ -9,6 +9,10 @@ import java.util.*;
 
 public class ConvertFeature implements JSFeature {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Convert";
     }
@@ -21,7 +25,7 @@ public class ConvertFeature implements JSFeature {
     @Override
     public Map<String, ?> generateModule(String moduleName, Context context) {
         if ("Convertor".equals(moduleName) || "Convert".equals(moduleName)) {
-            var map = new HashMap<String, Proxy>(1, 1);
+            var $1 = new HashMap<String, Proxy>(1, 1);
             map.put("convertToJava", (ProxyExecutable) arguments -> {
                 if (arguments.length == 2) {
                     //noinspection unchecked

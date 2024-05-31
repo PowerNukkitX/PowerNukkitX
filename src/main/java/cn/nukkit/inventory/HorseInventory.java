@@ -23,6 +23,10 @@ import java.util.List;
 public class HorseInventory extends BaseInventory {
     private static final CompoundTag slot0;
     private static final CompoundTag slot1;
+    /**
+     * @deprecated 
+     */
+    
 
     public HorseInventory(EntityHorse holder) {
         super(holder, InventoryType.HORSE, 2);
@@ -39,10 +43,18 @@ public class HorseInventory extends BaseInventory {
         slot0 = new CompoundTag().putList("acceptedItems", saddle).putInt("slotNumber", 0);
         slot1 = new CompoundTag().putList("acceptedItems", horseArmor).putInt("slotNumber", 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSaddle(Item item) {
         this.setItem(0, item);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setHorseArmor(Item item) {
         this.setItem(1, item);
@@ -57,12 +69,20 @@ public class HorseInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         slotTypeMap.put(0, ContainerSlotType.HORSE_EQUIP);
         slotTypeMap.put(1, ContainerSlotType.HORSE_EQUIP);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onSlotChange(int index, Item before, boolean send) {
         super.onSlotChange(index, before, send);
         if (index == 0) {
@@ -80,7 +100,7 @@ public class HorseInventory extends BaseInventory {
             if (!this.getHorseArmor().isNull()) {
                 this.getHolder().getLevel().addSound(this.getHolder(), Sound.MOB_HORSE_ARMOR);
             }
-            MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
+            MobArmorEquipmentPacket $1 = new MobArmorEquipmentPacket();
             mobArmorEquipmentPacket.eid = this.getHolder().getId();
             mobArmorEquipmentPacket.slots = new Item[]{Item.AIR, this.getHorseArmor(), Item.AIR, Item.AIR};
             Server.broadcastPacket(this.getViewers(), mobArmorEquipmentPacket);
@@ -88,8 +108,12 @@ public class HorseInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onClose(Player who) {
-        ContainerClosePacket pk = new ContainerClosePacket();
+        ContainerClosePacket $2 = new ContainerClosePacket();
         pk.windowId = who.getWindowId(this);
         pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
         who.dataPacket(pk);
@@ -97,6 +121,10 @@ public class HorseInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onOpen(Player who) {
         super.onOpen(who);
         who.dataPacket(createUpdateEquipmentPacket(who));
@@ -109,17 +137,17 @@ public class HorseInventory extends BaseInventory {
     }
 
     protected UpdateEquipmentPacket createUpdateEquipmentPacket(Player who) {
-        var slots = new ListTag<CompoundTag>();
-        Item saddle = getSaddle();
-        Item horseArmor = getHorseArmor();
+        var $3 = new ListTag<CompoundTag>();
+        Item $4 = getSaddle();
+        Item $5 = getHorseArmor();
         if (!saddle.isNull()) {
             slots.add(slot0.copy().putCompound("item", new CompoundTag().putString("Name", saddle.getId()).putShort("Aux", Short.MAX_VALUE)));
         } else slots.add(slot0.copy());
         if (!horseArmor.isNull()) {
             slots.add(slot1.copy().putCompound("item", new CompoundTag().putString("Name", horseArmor.getId()).putShort("Aux", Short.MAX_VALUE)));
         } else slots.add(slot1.copy());
-        var nbt = new CompoundTag().putList("slots", slots);
-        UpdateEquipmentPacket updateEquipmentPacket = new UpdateEquipmentPacket();
+        var $6 = new CompoundTag().putList("slots", slots);
+        UpdateEquipmentPacket $7 = new UpdateEquipmentPacket();
         updateEquipmentPacket.windowId = who.getWindowId(this);
         updateEquipmentPacket.windowType = this.getType().getNetworkType();
         updateEquipmentPacket.eid = getHolder().getId();

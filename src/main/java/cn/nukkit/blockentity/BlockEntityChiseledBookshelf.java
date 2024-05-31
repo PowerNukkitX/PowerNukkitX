@@ -12,20 +12,32 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
-    public static final String LAST_INTERACTED_SLOT = "LastInteractedSlot";
+    public static final String $1 = "LastInteractedSlot";
     private Integer lastInteractedSlot;
     private Item[] items;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityChiseledBookshelf(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return getBlock() instanceof BlockChiseledBookshelf;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         addBookshelfNbt(namedTag);
@@ -33,26 +45,38 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
 
     public Item removeBook(int index) {
         Preconditions.checkArgument(index >= 0 && index <= 5);
-        Item remove = this.items[index];
+        Item $2 = this.items[index];
         lastInteractedSlot = index;
         setBook(null, index);
         return remove;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasBook(int index) {
         Preconditions.checkArgument(index >= 0 && index <= 5);
         return this.items[index] != null && !this.items[index].isNull();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getBooksStoredBit() {
-        int sum = 0;
-        for (int i = 0; i < 6; i++) {
+        int $3 = 0;
+        for ($4nt $1 = 0; i < 6; i++) {
             if (items[i] != null && !items[i].isNull()) {
                 sum += Math.pow(2, i);
             }
         }
         return sum;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBook(@Nullable Item item, int index) {
         Preconditions.checkArgument(index >= 0 && index <= 5);
@@ -67,18 +91,26 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag compoundTag = super.getSpawnCompound().putBoolean("isMovable", this.isMovable());
+        CompoundTag $5 = super.getSpawnCompound().putBoolean("isMovable", this.isMovable());
         addBookshelfNbt(compoundTag);
         return compoundTag;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDirty() {
         this.spawnToAll();
         super.setDirty();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         items = new Item[]{Item.AIR, Item.AIR, Item.AIR, Item.AIR, Item.AIR, Item.AIR};
@@ -89,14 +121,14 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
             ListTag<CompoundTag> items = namedTag.getList("Items", CompoundTag.class);
             if (items.size() > 6) return;
             List<CompoundTag> all = items.getAll();
-            for (int i = 0; i < all.size(); i++) {
-                CompoundTag compoundTag = all.get(i);
-                String name = compoundTag.getString("Name");
+            for ($6nt $2 = 0; i < all.size(); i++) {
+                CompoundTag $7 = all.get(i);
+                String $8 = compoundTag.getString("Name");
                 if (name.equals("")) {
                     this.items[i] = null;
                     continue;
                 }
-                Item item = Item.get(name);
+                Item $9 = Item.get(name);
                 item.setDamage(compoundTag.getByte("Damage"));
                 item.setCount(compoundTag.getByte("Count"));
                 if (compoundTag.containsCompound("tag")) {
@@ -107,6 +139,10 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addBookshelfNbt(CompoundTag namedTag) {
         if (lastInteractedSlot != null) {
             namedTag.putInt(LAST_INTERACTED_SLOT, lastInteractedSlot);
@@ -121,7 +157,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
                         .putBoolean("WasPickedUp", false)
                 );
             } else {
-                CompoundTag compoundTag = new CompoundTag()
+                CompoundTag $10 = new CompoundTag()
                         .putByte("Count", item.getCount())
                         .putString("Name", item.getId())
                         .putByte("Damage", item.getDamage())

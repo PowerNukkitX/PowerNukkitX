@@ -6,13 +6,17 @@ import cn.nukkit.event.HandlerList;
 
 public class EntityVehicleEnterEvent extends EntityEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final Entity vehicle;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityVehicleEnterEvent(Entity entity, Entity vehicle) {
         this.entity = entity;

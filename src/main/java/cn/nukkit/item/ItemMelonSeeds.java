@@ -4,13 +4,25 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 
 public class ItemMelonSeeds extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemMelonSeeds() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemMelonSeeds(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemMelonSeeds(Integer meta, int count) {
         super(MELON_SEEDS, 0, count, "Melon Seeds");

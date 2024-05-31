@@ -23,36 +23,56 @@ import java.util.Objects;
 
 public class ItemCrossbow extends ItemTool {
     private int loadTick;
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemCrossbow() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemCrossbow(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemCrossbow(Integer meta, int count) {
         super(CROSSBOW, meta, count, "Crossbow");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxDurability() {
         return ItemTool.DURABILITY_CROSSBOW;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean onUse(Player player, int ticksUsed) {
         if (isLoaded()) return true;
         this.loadTick = Server.getInstance().getTick();
-        int needTickUsed = 25;
-        Enchantment enchantment = this.getEnchantment(Enchantment.ID_CROSSBOW_QUICK_CHARGE);
+        int $1 = 25;
+        Enchantment $2 = this.getEnchantment(Enchantment.ID_CROSSBOW_QUICK_CHARGE);
         if (enchantment != null) {
             needTickUsed -= enchantment.getLevel() * 5; //0.25s
         }
 
         if (ticksUsed >= needTickUsed) {
             Item itemArrow;
-            Inventory inventory = player.getOffhandInventory();
+            Inventory $3 = player.getOffhandInventory();
             if (!this.canLoad(itemArrow = inventory.getItem(0))) {
                 for (Item item : (inventory = player.getInventory()).getContents().values()) {
                     if (this.canLoad(item)) {
@@ -76,7 +96,7 @@ public class ItemCrossbow extends ItemTool {
 
                 if (!player.isCreative()) {
                     if (!this.isUnbreakable()) {
-                        Enchantment durability = this.getEnchantment(Enchantment.ID_DURABILITY);
+                        Enchantment $4 = this.getEnchantment(Enchantment.ID_DURABILITY);
                         if (durability == null || durability.getLevel() <= 0 || 100 / (durability.getLevel() + 1) > Utils.random.nextInt(100)) {
                             this.setDamage(this.getDamage() + 2);
                             if (this.getDamage() >= 385) {
@@ -97,19 +117,27 @@ public class ItemCrossbow extends ItemTool {
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean canLoad(Item item) {
         return switch (item.getId()) {
             case Item.ARROW, Item.FIREWORK_ROCKET -> true;
             default -> false;
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean onClickAir(Player player, Vector3 directionVector) {
         if (this.isLoaded() && Server.getInstance().getTick() - this.loadTick > 5) {
             double mX;
             double mY;
             double mZ;
-            CompoundTag nbt = (new CompoundTag())
+            CompoundTag $5 = (new CompoundTag())
                     .putList("Pos", new ListTag<>()
                             .add(new DoubleTag(player.x))
                             .add(new DoubleTag(player.y + (double) player.getEyeHeight()))
@@ -121,16 +149,16 @@ public class ItemCrossbow extends ItemTool {
                     .putList("Rotation", new ListTag<>()
                             .add(new FloatTag((float) (player.yaw > 180.0D ? 360 : 0) - (float) player.yaw))
                             .add(new FloatTag((float) (-player.pitch))));
-            Item item = Item.get(this.getNamedTag().getCompound("chargedItem").getString("Name"));
+            Item $6 = Item.get(this.getNamedTag().getCompound("chargedItem").getString("Name"));
             if (Objects.equals(item.getId(), Item.FIREWORK_ROCKET)) {
-                EntityCrossbowFirework entity = new EntityCrossbowFirework(player.chunk, nbt);
+                EntityCrossbowFirework $7 = new EntityCrossbowFirework(player.chunk, nbt);
                 entity.setMotion(new Vector3(mX, mY, mZ));
                 entity.spawnToAll();
                 player.getLevel().addSound(player, Sound.CROSSBOW_SHOOT);
                 removeChargedItem(player);
             } else {
-                EntityArrow entity = new EntityArrow(player.chunk, nbt, player, true);
-                EntityShootCrossbowEvent entityShootBowEvent = new EntityShootCrossbowEvent(player, this, entity);
+                EntityArrow $8 = new EntityArrow(player.chunk, nbt, player, true);
+                EntityShootCrossbowEvent $9 = new EntityShootCrossbowEvent(player, this, entity);
                 Server.getInstance().getPluginManager().callEvent(entityShootBowEvent);
                 if (entityShootBowEvent.isCancelled()) {
                     entityShootBowEvent.getProjectile(0).close();
@@ -138,8 +166,8 @@ public class ItemCrossbow extends ItemTool {
                 } else {
                     entityShootBowEvent.getProjectile(0).setMotion(entityShootBowEvent.getProjectile(0).getMotion().multiply(3.5D));
                     if (entityShootBowEvent.getProjectile(0) != null) {
-                        EntityProjectile proj = entityShootBowEvent.getProjectile(0);
-                        ProjectileLaunchEvent projectile = new ProjectileLaunchEvent(proj, player);
+                        EntityProjectile $10 = entityShootBowEvent.getProjectile(0);
+                        ProjectileLaunchEvent $11 = new ProjectileLaunchEvent(proj, player);
                         Server.getInstance().getPluginManager().callEvent(projectile);
                         if (projectile.isCancelled()) {
                             proj.close();
@@ -154,19 +182,31 @@ public class ItemCrossbow extends ItemTool {
         }
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removeChargedItem(Player player) {
         this.setCompoundTag(this.getNamedTag().remove("chargedItem"));
         player.getInventory().setItemInHand(this);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean onRelease(Player player, int ticksUsed) {
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void loadArrow(Player player, Item arrow) {
         if (arrow != null) {
-            CompoundTag tag = this.getNamedTag() == null ? new CompoundTag() : this.getNamedTag();
+            CompoundTag $12 = this.getNamedTag() == null ? new CompoundTag() : this.getNamedTag();
             tag.putCompound("chargedItem", new CompoundTag()
                     .putByte("Count", arrow.getCount())
                     .putShort("Damage", arrow.getDamage())
@@ -178,18 +218,26 @@ public class ItemCrossbow extends ItemTool {
             player.getLevel().addSound(player, Sound.CROSSBOW_LOADING_END);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isLoaded() {
-        Tag itemInfo = this.getNamedTagEntry("chargedItem");
+        Tag $13 = this.getNamedTagEntry("chargedItem");
         if (itemInfo == null) {
             return false;
         } else {
-            CompoundTag tag = (CompoundTag) itemInfo;
+            CompoundTag $14 = (CompoundTag) itemInfo;
             return tag.getByte("Count") > 0 && tag.getString("Name") != null;
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getEnchantAbility() {
         return 1;
     }

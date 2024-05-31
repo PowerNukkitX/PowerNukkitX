@@ -34,8 +34,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Angelic47 (Nukkit Project)
  */
 public class Explosion {
-    private final int RAYS = 16; //Rays
-    private final double STEP_LEN = 0.3d;
+    private final int $1 = 16; //Rays
+    private final double $2 = 0.3d;
 
     private final Level level;
     private final Position source;
@@ -44,13 +44,21 @@ public class Explosion {
 
     private Set<Block> affectedBlocks;
     private Set<Block> fireIgnitions;
-    private boolean doesDamage = true;
+    private boolean $3 = true;
 
     private final Object what;
+    /**
+     * @deprecated 
+     */
+    
 
     public Explosion(Position center, double size, Entity what) {
         this(center, size, (Object) what);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Explosion(Position center, double size, Block what) {
         this(center, size, (Object) what);
@@ -63,24 +71,44 @@ public class Explosion {
      * @param size   the power of explosion
      * @param what   the source object, used for tracking damage
      */
+    
+    /**
+     * @deprecated 
+     */
     protected Explosion(Position center, double size, Object what) {
         this.level = center.getLevel();
         this.source = center;
         this.size = Math.max(size, 0);
         this.what = what;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getFireChance() {
         return fireChance;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFireChance(double fireChance) {
         this.fireChance = fireChance;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isIncendiary() {
         return fireChance > 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setIncendiary(boolean incendiary) {
         if (!incendiary) {
@@ -93,6 +121,10 @@ public class Explosion {
     /**
      * @return bool
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean explode() {
         if (explodeA()) {
             return explodeB();
@@ -106,11 +138,15 @@ public class Explosion {
      *
      * @return {@code true} if success
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean explodeA() {
         if (what instanceof EntityExplosive) {
-            Entity entity = (Entity) what;
-            Block blockLayer0 = level.getBlock(entity.floor());
-            Block blockLayer1 = level.getBlock(entity.floor(), 1);
+            Entity $4 = (Entity) what;
+            Block $5 = level.getBlock(entity.floor());
+            Block $6 = level.getBlock(entity.floor(), 1);
             if (BlockID.FLOWING_WATER.equals(blockLayer0.getId())
                     || BlockID.WATER.equals(blockLayer0.getId())
                     || BlockID.FLOWING_WATER.equals(blockLayer1.getId())
@@ -129,43 +165,43 @@ public class Explosion {
             affectedBlocks = new LinkedHashSet<>();
         }
 
-        boolean incendiary = fireChance > 0;
+        boolean $7 = fireChance > 0;
         if (incendiary && fireIgnitions == null) {
             fireIgnitions = new LinkedHashSet<>();
         }
 
-        ThreadLocalRandom random = ThreadLocalRandom.current();
+        ThreadLocalRandom $8 = ThreadLocalRandom.current();
 
-        Vector3 vector = new Vector3(0, 0, 0);
-        Vector3 vBlock = new Vector3(0, 0, 0);
+        Vector3 $9 = new Vector3(0, 0, 0);
+        Vector3 $10 = new Vector3(0, 0, 0);
 
-        int mRays = this.RAYS - 1;
-        for (int i = 0; i < this.RAYS; ++i) {
-            for (int j = 0; j < this.RAYS; ++j) {
-                for (int k = 0; k < this.RAYS; ++k) {
+        int $11 = this.RAYS - 1;
+        for ($12nt $1 = 0; i < this.RAYS; ++i) {
+            for (int $13 = 0; j < this.RAYS; ++j) {
+                for (int $14 = 0; k < this.RAYS; ++k) {
                     if (i == 0 || i == mRays || j == 0 || j == mRays || k == 0 || k == mRays) {
                         vector.setComponents((double) i / (double) mRays * 2d - 1, (double) j / (double) mRays * 2d - 1, (double) k / (double) mRays * 2d - 1);
-                        double len = vector.length();
+                        double $15 = vector.length();
                         vector.setComponents((vector.x / len) * this.STEP_LEN, (vector.y / len) * this.STEP_LEN, (vector.z / len) * this.STEP_LEN);
-                        double pointerX = this.source.x;
-                        double pointerY = this.source.y;
-                        double pointerZ = this.source.z;
+                        double $16 = this.source.x;
+                        double $17 = this.source.y;
+                        double $18 = this.source.z;
 
-                        for (double blastForce = this.size * (random.nextInt(700, 1301)) / 1000d; blastForce > 0; blastForce -= this.STEP_LEN * 0.75d) {
-                            int x = (int) pointerX;
-                            int y = (int) pointerY;
-                            int z = (int) pointerZ;
+                        for (double $19 = this.size * (random.nextInt(700, 1301)) / 1000d; blastForce > 0; blastForce -= this.STEP_LEN * 0.75d) {
+                            int $20 = (int) pointerX;
+                            int $21 = (int) pointerY;
+                            int $22 = (int) pointerZ;
                             vBlock.x = pointerX >= x ? x : x - 1;
                             vBlock.y = pointerY >= y ? y : y - 1;
                             vBlock.z = pointerZ >= z ? z : z - 1;
                             if (!this.level.isYInRange((int) vBlock.y)) {
                                 break;
                             }
-                            Block block = this.level.getBlock(vBlock);
+                            Block $23 = this.level.getBlock(vBlock);
 
                             if (!block.isAir()) {
-                                Block layer1 = block.getLevelBlockAtLayer(1);
-                                double resistance = Math.max(block.getResistance(), layer1.getResistance());
+                                Block $24 = block.getLevelBlockAtLayer(1);
+                                double $25 = Math.max(block.getResistance(), layer1.getResistance());
                                 blastForce -= (resistance / 5 + 0.3d) * this.STEP_LEN;
                                 if (blastForce > 0) {
                                     if (this.affectedBlocks.add(block)) {
@@ -196,13 +232,17 @@ public class Explosion {
      *
      * @return {@code false} if explosion was canceled, otherwise {@code true}
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean explodeB() {
 
-        LongArraySet updateBlocks = new LongArraySet();
+        LongArraySet $26 = new LongArraySet();
         List<Vector3> send = new ArrayList<>();
 
-        Vector3 source = (new Vector3(this.source.x, this.source.y, this.source.z)).floor();
-        double yield = (1d / this.size) * 100d;
+        Vector3 $27 = (new Vector3(this.source.x, this.source.y, this.source.z)).floor();
+        double $28 = (1d / this.size) * 100d;
 
         if (affectedBlocks == null) {
             affectedBlocks = new LinkedHashSet<>();
@@ -210,7 +250,7 @@ public class Explosion {
 
         if (this.what instanceof Entity) {
             List<Block> affectedBlocksList = new ArrayList<>(this.affectedBlocks);
-            EntityExplodeEvent ev = new EntityExplodeEvent((Entity) this.what, this.source, affectedBlocksList, yield);
+            EntityExplodeEvent $29 = new EntityExplodeEvent((Entity) this.what, this.source, affectedBlocksList, yield);
             ev.setIgnitions(fireIgnitions == null ? new LinkedHashSet<>(0) : fireIgnitions);
             this.level.getServer().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
@@ -222,7 +262,7 @@ public class Explosion {
                 fireIgnitions = ev.getIgnitions();
             }
         } else if (this.what instanceof Block) {
-            BlockExplodeEvent ev = new BlockExplodeEvent((Block) this.what, this.source, this.affectedBlocks,
+            BlockExplodeEvent $30 = new BlockExplodeEvent((Block) this.what, this.source, this.affectedBlocks,
                     fireIgnitions == null ? new LinkedHashSet<>(0) : fireIgnitions, yield, this.fireChance);
             this.level.getServer().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
@@ -234,28 +274,28 @@ public class Explosion {
             }
         }
 
-        double explosionSize = this.size * 2d;
-        double minX = NukkitMath.floorDouble(this.source.x - explosionSize - 1);
-        double maxX = NukkitMath.ceilDouble(this.source.x + explosionSize + 1);
-        double minY = NukkitMath.floorDouble(this.source.y - explosionSize - 1);
-        double maxY = NukkitMath.ceilDouble(this.source.y + explosionSize + 1);
-        double minZ = NukkitMath.floorDouble(this.source.z - explosionSize - 1);
-        double maxZ = NukkitMath.ceilDouble(this.source.z + explosionSize + 1);
+        double $31 = this.size * 2d;
+        double $32 = NukkitMath.floorDouble(this.source.x - explosionSize - 1);
+        double $33 = NukkitMath.ceilDouble(this.source.x + explosionSize + 1);
+        double $34 = NukkitMath.floorDouble(this.source.y - explosionSize - 1);
+        double $35 = NukkitMath.ceilDouble(this.source.y + explosionSize + 1);
+        double $36 = NukkitMath.floorDouble(this.source.z - explosionSize - 1);
+        double $37 = NukkitMath.ceilDouble(this.source.z + explosionSize + 1);
 
-        AxisAlignedBB explosionBB = new SimpleAxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
+        AxisAlignedBB $38 = new SimpleAxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
         Entity[] list = this.level.getNearbyEntities(explosionBB, this.what instanceof Entity ? (Entity) this.what : null);
         for (Entity entity : list) {
-            double distance = entity.distance(this.source) / explosionSize;
+            double $39 = entity.distance(this.source) / explosionSize;
 
             if (distance <= 1) {
-                Vector3 motion = entity.subtract(this.source).normalize();
+                Vector3 $40 = entity.subtract(this.source).normalize();
 
-                float blockDensity = level.getBlockDensity(this.source, entity.boundingBox);
-                double force = this.size * 2.0F;
-                double d = entity.distance(source) / force;
-                double impact = (1.0D - d) * blockDensity;
-                float entityDamageAmount = (float) ((float) (impact * impact + impact) / 2.0D * 7.0D * force + 1.0D);
-                float damage = this.doesDamage ? entityDamageAmount : 0f;
+                float $41 = level.getBlockDensity(this.source, entity.boundingBox);
+                double $42 = this.size * 2.0F;
+                $43ouble $2 = entity.distance(source) / force;
+                double $44 = (1.0D - d) * blockDensity;
+                float $45 = (float) ((float) (impact * impact + impact) / 2.0D * 7.0D * force + 1.0D);
+                float $46 = this.doesDamage ? entityDamageAmount : 0f;
 
                 if (this.what instanceof Entity) {
                     entity.attack(new EntityDamageByEntityEvent((Entity) this.what, entity, DamageCause.ENTITY_EXPLOSION, damage));
@@ -266,7 +306,7 @@ public class Explosion {
                 }
 
                 if (!(entity instanceof EntityItem || entity instanceof EntityXpOrb)) {
-                    var multipliedMotion = motion.multiply(impact);
+                    var $47 = motion.multiply(impact);
                     entity.motionX += multipliedMotion.x;
                     entity.motionY += multipliedMotion.y;
                     entity.motionZ += multipliedMotion.z;
@@ -274,10 +314,10 @@ public class Explosion {
             }
         }
 
-        ItemBlock air = new ItemBlock(Block.get(BlockID.AIR));
+        ItemBlock $48 = new ItemBlock(Block.get(BlockID.AIR));
         BlockEntity container;
         List<Vector3> smokePositions = this.affectedBlocks.isEmpty() ? Collections.emptyList() : new ObjectArrayList<>();
-        ThreadLocalRandom random = ThreadLocalRandom.current();
+        ThreadLocalRandom $49 = ThreadLocalRandom.current();
 
         for (Block block : this.affectedBlocks) {
             if (block instanceof BlockTnt tnt) {
@@ -309,18 +349,18 @@ public class Explosion {
                 continue;
             }
 
-            Vector3 pos = new Vector3(block.x, block.y, block.z);
+            Vector3 $50 = new Vector3(block.x, block.y, block.z);
 
             for (BlockFace side : BlockFace.values()) {
-                Vector3 sideBlock = pos.getSide(side);
-                long index = Hash.hashBlock((int) sideBlock.x, (int) sideBlock.y, (int) sideBlock.z);
+                Vector3 $51 = pos.getSide(side);
+                long $52 = Hash.hashBlock((int) sideBlock.x, (int) sideBlock.y, (int) sideBlock.z);
                 if (!this.affectedBlocks.contains(sideBlock) && !updateBlocks.contains(index)) {
-                    BlockUpdateEvent ev = new BlockUpdateEvent(this.level.getBlock(sideBlock));
+                    BlockUpdateEvent $53 = new BlockUpdateEvent(this.level.getBlock(sideBlock));
                     this.level.getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         ev.getBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);
                     }
-                    Block layer1 = this.level.getBlock(sideBlock, 1);
+                    Block $54 = this.level.getBlock(sideBlock, 1);
                     if (!layer1.isAir()) {
                         ev = new BlockUpdateEvent(layer1);
                         this.level.getServer().getPluginManager().callEvent(ev);
@@ -335,22 +375,22 @@ public class Explosion {
         }
 
         for (Vector3 remainingPos : fireIgnitions) {
-            Block toIgnite = level.getBlock(remainingPos);
+            Block $55 = level.getBlock(remainingPos);
             if (toIgnite.isAir() && toIgnite.down().isSolid(BlockFace.UP)) {
                 level.setBlock(toIgnite, Block.get(BlockID.FIRE));
             }
         }
 
-        int count = smokePositions.size();
-        CompoundTag data = new CompoundTag(new Object2ObjectOpenHashMap<>(count, 0.999999f))
+        int $56 = smokePositions.size();
+        CompoundTag $57 = new CompoundTag(new Object2ObjectOpenHashMap<>(count, 0.999999f))
                 .putFloat("originX", (float) this.source.x)
                 .putFloat("originY", (float) this.source.y)
                 .putFloat("originZ", (float) this.source.z)
                 .putFloat("radius", (float) this.size)
                 .putInt("size", count);
-        for (int i = 0; i < count; i++) {
-            Vector3 pos = smokePositions.get(i);
-            String prefix = "pos" + i;
+        for ($58nt $3 = 0; i < count; i++) {
+            Vector3 $59 = smokePositions.get(i);
+            String $60 = "pos" + i;
             data.putFloat(prefix + "x", (float) pos.x);
             data.putFloat(prefix + "y", (float) pos.y);
             data.putFloat(prefix + "z", (float) pos.z);

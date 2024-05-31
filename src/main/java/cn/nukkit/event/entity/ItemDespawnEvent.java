@@ -8,11 +8,15 @@ import cn.nukkit.event.HandlerList;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemDespawnEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemDespawnEvent(EntityItem item) {
         this.entity = item;

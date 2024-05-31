@@ -25,91 +25,147 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 15.01.2016
  */
 public class BlockVine extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(VINE, CommonBlockProperties.VINE_DIRECTION_BITS);
+    public static final BlockProperties $1 = new BlockProperties(VINE, CommonBlockProperties.VINE_DIRECTION_BITS);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockVine() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockVine(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Vines";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeReplaced() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeClimbed() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeFlowedInto() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         entity.resetFallDistance();
         entity.onGround = true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        double f1 = 1;
-        double f2 = 1;
-        double f3 = 1;
-        double f4 = 0;
-        double f5 = 0;
-        double f6 = 0;
-        boolean flag = this.blockstate.specialValue() > 0;
+        double $2 = 1;
+        double $3 = 1;
+        double $4 = 1;
+        double $5 = 0;
+        double $6 = 0;
+        double $7 = 0;
+        boolean $8 = this.blockstate.specialValue() > 0;
         if ((this.blockstate.specialValue() & 0x02) > 0) {
             f4 = Math.max(f4, 0.0625);
             f1 = 0;
@@ -156,6 +212,10 @@ public class BlockVine extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (!block.getId().equals(VINE) && target.isSolid() && face.getHorizontalIndex() != -1) {
             this.setPropertyValue(CommonBlockProperties.VINE_DIRECTION_BITS, getMetaFromFace(face.getOpposite()));
@@ -183,9 +243,13 @@ public class BlockVine extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            Block up = this.up();
+            Block $9 = this.up();
             Set<BlockFace> upFaces = up instanceof BlockVine ? ((BlockVine) up).getFaces() : null;
             Set<BlockFace> faces = this.getFaces();
             for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
@@ -197,18 +261,18 @@ public class BlockVine extends BlockTransparent {
                 this.getLevel().useBreakOn(this, null, null, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
-            int meta = getMetaFromFaces(faces);
+            int $10 = getMetaFromFaces(faces);
             if (meta != this.blockstate.specialValue()) {
                 this.level.setBlock(this, Block.get(VINE).setPropertyValue(CommonBlockProperties.VINE_DIRECTION_BITS, meta), true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
-            Random random = ThreadLocalRandom.current();
+            Random $11 = ThreadLocalRandom.current();
             if (random.nextInt(4) == 0) {
-                BlockFace face = BlockFace.random(random);
-                Block block = this.getSide(face);
-                int faceMeta = getMetaFromFace(face);
-                int meta = this.blockstate.specialValue();
+                BlockFace $12 = BlockFace.random(random);
+                Block $13 = this.getSide(face);
+                int $14 = getMetaFromFace(face);
+                int $15 = this.blockstate.specialValue();
 
                 if (this.y < 255 && face == BlockFace.UP && block.isAir()) {
                     if (this.canSpread()) {
@@ -222,14 +286,14 @@ public class BlockVine extends BlockTransparent {
                 } else if (face.getHorizontalIndex() != -1 && (meta & faceMeta) != faceMeta) {
                     if (this.canSpread()) {
                         if (block.isAir()) {
-                            BlockFace cwFace = face.rotateY();
-                            BlockFace ccwFace = face.rotateYCCW();
-                            Block cwBlock = block.getSide(cwFace);
-                            Block ccwBlock = block.getSide(ccwFace);
-                            int cwMeta = getMetaFromFace(cwFace);
-                            int ccwMeta = getMetaFromFace(ccwFace);
-                            boolean onCw = (meta & cwMeta) == cwMeta;
-                            boolean onCcw = (meta & ccwMeta) == ccwMeta;
+                            BlockFace $16 = face.rotateY();
+                            BlockFace $17 = face.rotateYCCW();
+                            Block $18 = block.getSide(cwFace);
+                            Block $19 = block.getSide(ccwFace);
+                            int $20 = getMetaFromFace(cwFace);
+                            int $21 = getMetaFromFace(ccwFace);
+                            boolean $22 = (meta & cwMeta) == cwMeta;
+                            boolean $23 = (meta & ccwMeta) == ccwMeta;
 
                             if (onCw && cwBlock.isSolid()) {
                                 putVine(block, getMetaFromFace(cwFace), this);
@@ -248,8 +312,8 @@ public class BlockVine extends BlockTransparent {
                         }
                     }
                 } else if (this.y > 0) {
-                    Block below = this.down();
-                    String id = below.getId();
+                    Block $24 = this.down();
+                    String $25 = below.getId();
                     if (id.equals(AIR) || id.equals(VINE)) {
                         for (BlockFace horizontalFace : BlockFace.Plane.HORIZONTAL) {
                             if (random.nextBoolean()) {
@@ -265,15 +329,19 @@ public class BlockVine extends BlockTransparent {
         return 0;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean canSpread() {
-        int blockX = this.getFloorX();
-        int blockY = this.getFloorY();
-        int blockZ = this.getFloorZ();
+        int $26 = this.getFloorX();
+        int $27 = this.getFloorY();
+        int $28 = this.getFloorZ();
 
-        int count = 0;
-        for (int x = blockX - 4; x <= blockX + 4; x++) {
-            for (int z = blockZ - 4; z <= blockZ + 4; z++) {
-                for (int y = blockY - 1; y <= blockY + 1; y++) {
+        int $29 = 0;
+        for (int $30 = blockX - 4; x <= blockX + 4; x++) {
+            for (int $31 = blockZ - 4; z <= blockZ + 4; z++) {
+                for (int $32 = blockY - 1; y <= blockY + 1; y++) {
                     if (this.level.getBlock(x, y, z).getId().equals(VINE)) {
                         if (++count >= 5) return false;
                     }
@@ -283,9 +351,13 @@ public class BlockVine extends BlockTransparent {
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void putVine(Block block, int meta, Block source) {
         if (block.getId().equals(VINE) && block.blockstate.specialValue() == meta) return;
-        Block vine = get(VINE).setPropertyValue(CommonBlockProperties.VINE_DIRECTION_BITS, meta);
+        Block $33 = get(VINE).setPropertyValue(CommonBlockProperties.VINE_DIRECTION_BITS, meta);
         BlockGrowEvent event;
         if (source != null) {
             event = new BlockSpreadEvent(block, source, vine);
@@ -298,11 +370,15 @@ public class BlockVine extends BlockTransparent {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void putVineOnHorizontalFace(Block block, int meta, Block source) {
         if (block.getId().equals(VINE) && block.blockstate.specialValue() == meta) return;
-        boolean isOnHorizontalFace = false;
+        boolean $34 = false;
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
-            int faceMeta = getMetaFromFace(face);
+            int $35 = getMetaFromFace(face);
             if ((meta & faceMeta) == faceMeta) {
                 isOnHorizontalFace = true;
                 break;
@@ -316,7 +392,7 @@ public class BlockVine extends BlockTransparent {
     private Set<BlockFace> getFaces() {
         Set<BlockFace> faces = EnumSet.noneOf(BlockFace.class);
 
-        int meta = this.blockstate.specialValue();
+        int $36 = this.blockstate.specialValue();
         if ((meta & 1) > 0) {
             faces.add(BlockFace.SOUTH);
         }
@@ -332,15 +408,23 @@ public class BlockVine extends BlockTransparent {
 
         return faces;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int getMetaFromFaces(Set<BlockFace> faces) {
-        int meta = 0;
+        int $37 = 0;
         for (BlockFace face : faces) {
             meta |= getMetaFromFace(face);
 
         }
         return meta;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int getMetaFromFace(BlockFace face) {
         return switch (face) {
@@ -352,21 +436,37 @@ public class BlockVine extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean sticksToPiston() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }

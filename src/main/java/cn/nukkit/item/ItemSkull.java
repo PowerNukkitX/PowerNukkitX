@@ -9,24 +9,40 @@ import cn.nukkit.block.property.CommonBlockProperties;
  * @since 2016/2/3
  */
 public class ItemSkull extends Item {
-    public static final int SKELETON_SKULL = 0;
-    public static final int WITHER_SKELETON_SKULL = 1;
-    public static final int ZOMBIE_HEAD = 2;
-    public static final int HEAD = 3;
-    public static final int CREEPER_HEAD = 4;
-    public static final int DRAGON_HEAD = 5;
+    public static final int $1 = 0;
+    public static final int $2 = 1;
+    public static final int $3 = 2;
+    public static final int $4 = 3;
+    public static final int $5 = 4;
+    public static final int $6 = 5;
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemSkull() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemSkull(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemSkull(Integer meta, int count) {
         super(BlockID.SKULL, meta, count);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void internalAdjust() {
         switch (getDamage()) {
@@ -57,6 +73,10 @@ public class ItemSkull extends Item {
             default -> throw new IllegalArgumentException("Invalid damage: " + getDamage());
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static String getItemSkullName(int meta) {
         return switch (meta) {

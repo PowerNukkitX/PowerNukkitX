@@ -40,6 +40,10 @@ public enum EventPriority {
     EventPriority(int slot) {
         this.slot = slot;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getSlot() {
         return slot;

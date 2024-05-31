@@ -11,6 +11,10 @@ import java.util.Map;
 
 
 public class SetMaxPlayersCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public SetMaxPlayersCommand(String name) {
         super(name, "commands.setmaxplayers.description");
@@ -23,9 +27,13 @@ public class SetMaxPlayersCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        int maxPlayers = result.getValue().getResult(0);
-        boolean lowerBound = false;
+        int $1 = result.getValue().getResult(0);
+        boolean $2 = false;
 
         if (maxPlayers < Server.getInstance().getOnlinePlayers().size()) {
             maxPlayers = Server.getInstance().getOnlinePlayers().size();

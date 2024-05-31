@@ -22,6 +22,10 @@ import java.util.function.Predicate;
 public abstract class CachedSimpleSelectorArgument implements ISelectorArgument {
 
     Cache<Set<String>, Predicate<Entity>> cache;
+    /**
+     * @deprecated 
+     */
+    
 
     public CachedSimpleSelectorArgument() {
         this.cache = provideCacheService();
@@ -29,7 +33,7 @@ public abstract class CachedSimpleSelectorArgument implements ISelectorArgument 
 
     @Override
     public Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
-        var value = cache.getIfPresent(Sets.newHashSet(arguments));
+        var $1 = cache.getIfPresent(Sets.newHashSet(arguments));
         if (value == null) {
             value = cache(selectorType, sender, basePos, arguments);
             cache.put(Sets.newHashSet(arguments), value);

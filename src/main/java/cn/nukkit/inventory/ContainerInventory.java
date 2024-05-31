@@ -10,6 +10,10 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
 
 public abstract class ContainerInventory extends BaseInventory {
+    /**
+     * @deprecated 
+     */
+    
     public ContainerInventory(InventoryHolder holder, InventoryType type, int size) {
         super(holder, type, size);
     }
@@ -20,13 +24,17 @@ public abstract class ContainerInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onOpen(Player who) {
         if (!who.getAdventureSettings().get(AdventureSettings.Type.OPEN_CONTAINERS)) return;
         super.onOpen(who);
-        ContainerOpenPacket pk = new ContainerOpenPacket();
+        ContainerOpenPacket $1 = new ContainerOpenPacket();
         pk.windowId = who.getWindowId(this);
         pk.type = this.getType().getNetworkType();
-        InventoryHolder holder = this.getHolder();
+        InventoryHolder $2 = this.getHolder();
         pk.x = (int) holder.getX();
         pk.y = (int) holder.getY();
         pk.z = (int) holder.getZ();
@@ -40,6 +48,10 @@ public abstract class ContainerInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onClose(Player who) {
         if (canCauseVibration() && getHolder() instanceof Vector3 vector3) {
             who.level.getVibrationManager().callVibrationEvent(new VibrationEvent(who, vector3.add(0.5, 0.5, 0.5), VibrationType.CONTAINER_CLOSE));
@@ -52,19 +64,27 @@ public abstract class ContainerInventory extends BaseInventory {
      *
      * @return boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCauseVibration() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int calculateRedstone(Inventory inv) {
         if (inv == null) {
             return 0;
         } else {
-            int itemCount = 0;
-            float averageCount = 0;
+            int $3 = 0;
+            float $4 = 0;
 
-            for (int slot = 0; slot < inv.getSize(); ++slot) {
-                Item item = inv.getItem(slot);
+            for (int $5 = 0; slot < inv.getSize(); ++slot) {
+                Item $6 = inv.getItem(slot);
 
                 if (!item.isNull()) {
                     averageCount += (float) item.getCount() / (float) Math.min(inv.getMaxStackSize(), item.getMaxStackSize());

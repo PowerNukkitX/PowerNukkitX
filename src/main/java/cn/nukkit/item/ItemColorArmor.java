@@ -9,18 +9,34 @@ import cn.nukkit.utils.DyeColor;
  * @since 27.03.2016
  */
 abstract public class ItemColorArmor extends ItemArmor {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemColorArmor(String id) {
         super(id);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemColorArmor(String id, Integer meta) {
         super(id, meta);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemColorArmor(String id, Integer meta, int count) {
         super(id, meta, count);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemColorArmor(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
@@ -33,7 +49,7 @@ abstract public class ItemColorArmor extends ItemArmor {
      * @return - Return colored item
      */
     public ItemColorArmor setColor(DyeColor dyeColor) {
-        BlockColor blockColor = dyeColor.getColor();
+        BlockColor $1 = dyeColor.getColor();
         return setColor(blockColor.getRed(), blockColor.getGreen(), blockColor.getBlue());
     }
 
@@ -56,8 +72,8 @@ abstract public class ItemColorArmor extends ItemArmor {
      * @return - Return colored item
      */
     public ItemColorArmor setColor(int r, int g, int b) {
-        int rgb = r << 16 | g << 8 | b;
-        CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
+        int $2 = r << 16 | g << 8 | b;
+        CompoundTag $3 = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         tag.putInt("customColor", rgb);
         this.setNamedTag(tag);
         return this;
@@ -70,9 +86,9 @@ abstract public class ItemColorArmor extends ItemArmor {
      */
     public BlockColor getColor() {
         if (!this.hasCompoundTag()) return null;
-        CompoundTag tag = this.getNamedTag();
+        CompoundTag $4 = this.getNamedTag();
         if (!tag.exist("customColor")) return null;
-        int rgb = tag.getInt("customColor");
+        int $5 = tag.getInt("customColor");
         return new BlockColor(rgb);
     }
 }

@@ -24,6 +24,10 @@ class SNBTNfaData implements SNBTConstants {
     static private NfaFunction[] nfaFunctions;
 
     // This data holder class is never instantiated
+    
+    /**
+     * @deprecated 
+     */
     private SNBTNfaData() {
     }
 
@@ -47,7 +51,7 @@ class SNBTNfaData implements SNBTConstants {
     private static class SNBT {
 
         static private TokenType NFA_SNBT_0(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $1 = null;
             if (ch == '"') {
                 nextStates.set(12);
             } else if (ch == '\'') {
@@ -131,7 +135,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_1(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $2 = null;
             if ((ch >= 0x0 && ch <= '&') || (ch >= '(')) {
                 nextStates.set(1);
             }
@@ -145,7 +149,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_2(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $3 = null;
             if (ch >= '1' && ch <= '9') {
                 nextStates.set(39);
             }
@@ -153,7 +157,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_3(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $4 = null;
             if (ch >= '0' && ch <= '9') {
                 nextStates.set(3);
             } else if (ch == 'L') {
@@ -167,7 +171,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_4(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $5 = null;
             if (ch >= '0' && ch <= '9') {
                 nextStates.set(29);
             }
@@ -175,7 +179,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_5(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $6 = null;
             if (ch >= '0' && ch <= '9') {
                 nextStates.set(5);
                 if (validTypes.contains(INTEGER))
@@ -185,7 +189,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_6(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $7 = null;
             if (ch == 'r') {
                 nextStates.set(14);
             }
@@ -193,7 +197,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_7(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $8 = null;
             if ((ch == '+') || (ch == '-')) {
                 nextStates.set(18);
             } else if (ch >= '1' && ch <= '9') {
@@ -203,7 +207,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_8(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $9 = null;
             if (ch >= '0' && ch <= '9') {
                 nextStates.set(27);
             }
@@ -211,7 +215,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_9(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $10 = null;
             if (ch == '\t') {
                 nextStates.set(9);
                 if (validTypes.contains(WHITESPACE))
@@ -233,7 +237,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_10(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $11 = null;
             if (ch == '.') {
                 nextStates.set(8);
             } else if (ch >= '0' && ch <= '9') {
@@ -251,7 +255,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_11(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $12 = null;
             if (ch == 'B') {
                 if (validTypes.contains(BYTE))
                     type = BYTE;
@@ -263,7 +267,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_12(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $13 = null;
             if ((ch >= 0x0 && ch <= '!') || (ch >= '#')) {
                 nextStates.set(12);
             }
@@ -277,7 +281,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_13(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $14 = null;
             if (ch == '"') {
                 nextStates.set(12);
             }
@@ -285,7 +289,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_14(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $15 = null;
             if (ch == 'u') {
                 nextStates.set(22);
             }
@@ -293,7 +297,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_15(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $16 = null;
             if (ch == 's') {
                 nextStates.set(35);
             }
@@ -301,7 +305,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_16(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $17 = null;
             if (ch == '0') {
                 nextStates.set(11);
             } else if (ch >= '1' && ch <= '9') {
@@ -311,7 +315,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_17(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $18 = null;
             if (ch == 'S') {
                 if (validTypes.contains(SHORT))
                     type = SHORT;
@@ -323,7 +327,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_18(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $19 = null;
             if (ch >= '1' && ch <= '9') {
                 nextStates.set(24);
             }
@@ -331,7 +335,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_19(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $20 = null;
             if (ch == '0') {
                 if (validTypes.contains(INTEGER))
                     type = INTEGER;
@@ -344,7 +348,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_20(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $21 = null;
             if (ch == 'a') {
                 nextStates.set(25);
             }
@@ -352,7 +356,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_21(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $22 = null;
             if (ch == '0') {
                 nextStates.set(33);
             } else if (ch >= '1' && ch <= '9') {
@@ -362,7 +366,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_22(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $23 = null;
             if (ch == 'e') {
                 if (validTypes.contains(BOOLEAN))
                     type = BOOLEAN;
@@ -371,7 +375,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_23(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $24 = null;
             if (ch >= '0' && ch <= '9') {
                 nextStates.set(23);
             } else if (ch == 'S') {
@@ -385,7 +389,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_24(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $25 = null;
             if (ch >= '1' && ch <= '9') {
                 nextStates.set(24);
             } else if (ch == 'D') {
@@ -399,7 +403,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_25(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $26 = null;
             if (ch == 'l') {
                 nextStates.set(15);
             }
@@ -407,7 +411,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_26(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $27 = null;
             if (ch == '.') {
                 nextStates.set(4);
             } else if ((ch == 'E') || (ch == 'e')) {
@@ -423,7 +427,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_27(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $28 = null;
             if (ch >= '0' && ch <= '9') {
                 nextStates.set(27);
             } else if ((ch == 'E') || (ch == 'e')) {
@@ -439,7 +443,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_28(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $29 = null;
             if (ch == '0') {
                 nextStates.set(17);
             } else if (ch >= '1' && ch <= '9') {
@@ -449,7 +453,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_29(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $30 = null;
             if (ch >= '0' && ch <= '9') {
                 nextStates.set(29);
             } else if ((ch == 'E') || (ch == 'e')) {
@@ -465,7 +469,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_30(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $31 = null;
             if ((ch == '+') || (ch == '-')) {
                 nextStates.set(2);
             } else if (ch >= '1' && ch <= '9') {
@@ -475,7 +479,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_31(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $32 = null;
             if (ch == '0') {
                 nextStates.set(32);
             } else if (ch >= '1' && ch <= '9') {
@@ -485,7 +489,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_32(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $33 = null;
             if (ch == '.') {
                 nextStates.set(8);
             } else if ((ch == 'E') || (ch == 'e')) {
@@ -501,7 +505,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_33(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $34 = null;
             if (ch == 'L') {
                 if (validTypes.contains(LONG))
                     type = LONG;
@@ -513,7 +517,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_34(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $35 = null;
             if (ch == '.') {
                 nextStates.set(4);
             } else if (ch >= '0' && ch <= '9') {
@@ -531,7 +535,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_35(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $36 = null;
             if (ch == 'e') {
                 if (validTypes.contains(BOOLEAN))
                     type = BOOLEAN;
@@ -540,7 +544,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_36(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $37 = null;
             if (ch == '\'') {
                 nextStates.set(1);
             }
@@ -548,7 +552,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_37(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $38 = null;
             if (ch >= '0' && ch <= '9') {
                 nextStates.set(37);
             } else if (ch == 'B') {
@@ -562,7 +566,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_38(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $39 = null;
             if (ch == '0') {
                 nextStates.set(26);
             } else if (ch >= '1' && ch <= '9') {
@@ -572,7 +576,7 @@ class SNBTNfaData implements SNBTConstants {
         }
 
         static private TokenType NFA_SNBT_39(int ch, BitSet nextStates, EnumSet<TokenType> validTypes) {
-            TokenType type = null;
+            TokenType $40 = null;
             if (ch >= '1' && ch <= '9') {
                 nextStates.set(39);
             } else if (ch == 'F') {
@@ -585,7 +589,11 @@ class SNBTNfaData implements SNBTConstants {
             return type;
         }
 
-        static private void NFA_FUNCTIONS_init() {
+        
+    /**
+     * @deprecated 
+     */
+    static private void NFA_FUNCTIONS_init() {
             nfaFunctions = new NfaFunction[]{SNBT::NFA_SNBT_0, SNBT::NFA_SNBT_1, SNBT::NFA_SNBT_2, SNBT::NFA_SNBT_3, SNBT::NFA_SNBT_4, SNBT::NFA_SNBT_5, SNBT::NFA_SNBT_6, SNBT::NFA_SNBT_7, SNBT::NFA_SNBT_8, SNBT::NFA_SNBT_9, SNBT::NFA_SNBT_10, SNBT::NFA_SNBT_11, SNBT::NFA_SNBT_12, SNBT::NFA_SNBT_13, SNBT::NFA_SNBT_14, SNBT::NFA_SNBT_15, SNBT::NFA_SNBT_16, SNBT::NFA_SNBT_17, SNBT::NFA_SNBT_18, SNBT::NFA_SNBT_19, SNBT::NFA_SNBT_20, SNBT::NFA_SNBT_21, SNBT::NFA_SNBT_22, SNBT::NFA_SNBT_23, SNBT::NFA_SNBT_24, SNBT::NFA_SNBT_25, SNBT::NFA_SNBT_26, SNBT::NFA_SNBT_27, SNBT::NFA_SNBT_28, SNBT::NFA_SNBT_29, SNBT::NFA_SNBT_30, SNBT::NFA_SNBT_31, SNBT::NFA_SNBT_32, SNBT::NFA_SNBT_33, SNBT::NFA_SNBT_34, SNBT::NFA_SNBT_35, SNBT::NFA_SNBT_36, SNBT::NFA_SNBT_37, SNBT::NFA_SNBT_38, SNBT::NFA_SNBT_39};
         }
 

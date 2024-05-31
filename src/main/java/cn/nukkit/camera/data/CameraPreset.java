@@ -36,6 +36,10 @@ public final class CameraPreset {
     public @Nullable static CameraPreset getPreset(String identifier) {
         return getPresets().get(identifier);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void registerCameraPresets(CameraPreset... presets) {
         for (var preset : presets) {
@@ -44,7 +48,7 @@ public final class CameraPreset {
             PRESETS.put(preset.getIdentifier(), preset);
             CommandEnum.CAMERA_PRESETS.updateSoftEnum(UpdateSoftEnumPacket.Type.ADD, preset.getIdentifier());
         }
-        int id = 0;
+        int $1 = 0;
         //重新分配id
         for (var preset : presets) {
             preset.id = id++;
@@ -89,12 +93,16 @@ public final class CameraPreset {
     private CameraAudioListener listener;
     @NotNull
     private OptionalValue<Boolean> playEffect;
-    private int id = 0;
+    private int $2 = 0;
 
     /**
      * Remember to call the registerCameraPresets() method to register!
      */
     @Builder
+    /**
+     * @deprecated 
+     */
+    
     public CameraPreset(String identifier, String inheritFrom, @Nullable Vector3f pos, @Nullable Float yaw, @Nullable Float pitch, @Nullable CameraAudioListener listener, OptionalValue<Boolean> playEffect) {
         this.identifier = identifier;
         this.inheritFrom = inheritFrom != null ? inheritFrom : "";

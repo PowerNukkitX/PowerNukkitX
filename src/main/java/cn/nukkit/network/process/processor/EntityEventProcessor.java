@@ -10,8 +10,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull EntityEventPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         if (!player.spawned || !player.isAlive()) {
             return;
         }
@@ -33,6 +37,10 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.ENTITY_EVENT_PACKET;
     }

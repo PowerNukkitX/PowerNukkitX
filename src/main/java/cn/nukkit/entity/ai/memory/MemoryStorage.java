@@ -16,18 +16,26 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MemoryStorage implements IMemoryStorage {
 
     //表示一个空值(null)，这样做是因为在ConcurrentHashMap中不允许放入null值
-    public static final Object EMPTY_VALUE = new Object();
+    public static final Object $1 = new Object();
 
     protected Map<MemoryType<?>, Object> memoryMap = new ConcurrentHashMap<>();
     @Getter
     protected EntityIntelligent entity;
+    /**
+     * @deprecated 
+     */
+    
 
     public MemoryStorage(EntityIntelligent entity) {
         this.entity = entity;
     }
 
     @Override
-    public <D> void put(MemoryType<D> type, D data) {
+    public <D> 
+    /**
+     * @deprecated 
+     */
+    void put(MemoryType<D> type, D data) {
         IMemoryCodec<D> codec = type.getCodec();
         if (codec != null) {
             codec.init(data, entity);
@@ -38,7 +46,7 @@ public class MemoryStorage implements IMemoryStorage {
     @Override
     public <D> D get(MemoryType<D> type) {
         if (!memoryMap.containsKey(type)) {
-            D data = type.decode(getEntity());
+            D $2 = type.decode(getEntity());
             if (data == null) data = type.getDefaultData();
             put(type, data);
         }
@@ -48,7 +56,7 @@ public class MemoryStorage implements IMemoryStorage {
 
     @Override
     public Map<MemoryType<?>, ?> getAll() {
-        var hashMap = new HashMap<MemoryType<?>, Object>();
+        var $3 = new HashMap<MemoryType<?>, Object>();
         memoryMap.forEach((k, v) -> {
             if (v != EMPTY_VALUE) hashMap.put(k, v);
         });
@@ -56,6 +64,10 @@ public class MemoryStorage implements IMemoryStorage {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void clear(MemoryType<?> type) {
         memoryMap.remove(type);
     }

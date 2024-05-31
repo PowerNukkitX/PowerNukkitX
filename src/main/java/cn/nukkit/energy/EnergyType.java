@@ -22,14 +22,22 @@ public interface EnergyType {
      *
      * @return The ratio used when convent this type of energy to another type of energy.
      */
-    default double getBaseRatio() {
+    default 
+    /**
+     * @deprecated 
+     */
+    double getBaseRatio() {
         return Double.NaN;
     }
 
     /**
      * @return Whether this energy type use base ratio.
      */
-    default boolean canConvertToBase() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean canConvertToBase() {
         return !Double.isNaN(getBaseRatio());
     }
 
@@ -37,7 +45,11 @@ public interface EnergyType {
      * @param type The energy type to convert to.
      * @return If this energy type can convert to the target energy type.
      */
-    default boolean canConvertTo(@NotNull EnergyType type) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean canConvertTo(@NotNull EnergyType type) {
         return canConvertToBase() && type.canConvertToBase();
     }
 
@@ -48,7 +60,11 @@ public interface EnergyType {
      * @param amount The amount of energy to convert.
      * @return The amount of energy converted to the target energy type.
      */
-    default double convertTo(@NotNull EnergyType type, double amount) {
+    default 
+    /**
+     * @deprecated 
+     */
+    double convertTo(@NotNull EnergyType type, double amount) {
         if (canConvertTo(type)) {
             return amount * this.getBaseRatio() / type.getBaseRatio();
         } else {

@@ -14,9 +14,17 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return ELDER_GUARDIAN;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityElderGuardian(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -24,6 +32,10 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
 
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(80);
         super.initEntity();
@@ -31,21 +43,37 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 1.99f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 1.99f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Elder Guardian";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPreventingSleep(Player player) {
         return true;
     }

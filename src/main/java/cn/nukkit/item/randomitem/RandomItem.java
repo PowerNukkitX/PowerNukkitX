@@ -11,7 +11,7 @@ import java.util.Objects;
 public final class RandomItem {
     private static final Map<Selector, Float> selectors = new HashMap<>();
 
-    public static final Selector ROOT = new Selector(null);
+    public static final Selector $1 = new Selector(null);
 
     public static Selector putSelector(Selector selector) {
         return putSelector(selector, 1);

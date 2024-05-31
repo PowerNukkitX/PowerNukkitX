@@ -16,6 +16,10 @@ import java.io.OutputStream;
 
 public final class VarInt {
 
+    
+    /**
+     * @deprecated 
+     */
     private VarInt() {
         //no instance
     }
@@ -24,6 +28,10 @@ public final class VarInt {
      * @param v Signed int
      * @return Unsigned encoded int
      */
+    /**
+     * @deprecated 
+     */
+    
     public static long encodeZigZag32(int v) {
         // Note:  the right-shift must be arithmetic
         return ((v << 1) ^ (v >> 31)) & 0xFFFFFFFFL;
@@ -33,6 +41,10 @@ public final class VarInt {
      * @param v Unsigned encoded int
      * @return Signed decoded int
      */
+    /**
+     * @deprecated 
+     */
+    
     public static int decodeZigZag32(long v) {
         return (int) (v >> 1) ^ -(int) (v & 1);
     }
@@ -41,6 +53,10 @@ public final class VarInt {
      * @param v Signed long
      * @return Unsigned encoded long
      */
+    /**
+     * @deprecated 
+     */
+    
     public static long encodeZigZag64(long v) {
         return (v << 1) ^ (v >> 63);
     }
@@ -49,13 +65,21 @@ public final class VarInt {
      * @param v Signed encoded long
      * @return Unsigned decoded long
      */
+    /**
+     * @deprecated 
+     */
+    
     public static long decodeZigZag64(long v) {
         return (v >>> 1) ^ -(v & 1);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static long read(BinaryStream stream, int maxSize) {
-        long value = 0;
-        int size = 0;
+        long $1 = 0;
+        int $2 = 0;
         int b;
         while (((b = stream.getByte()) & 0x80) == 0x80) {
             value |= (long) (b & 0x7F) << (size++ * 7);
@@ -68,8 +92,8 @@ public final class VarInt {
     }
 
     private static long read(InputStream stream, int maxSize) throws IOException {
-        long value = 0;
-        int size = 0;
+        long $3 = 0;
+        int $4 = 0;
         int b;
         while (((b = stream.read()) & 0x80) == 0x80) {
             value |= (long) (b & 0x7F) << (size++ * 7);
@@ -85,6 +109,10 @@ public final class VarInt {
      * @param stream BinaryStream
      * @return Signed int
      */
+    /**
+     * @deprecated 
+     */
+    
     public static int readVarInt(BinaryStream stream) {
         return decodeZigZag32(readUnsignedVarInt(stream));
     }
@@ -101,6 +129,10 @@ public final class VarInt {
      * @param stream BinaryStream
      * @return Unsigned int
      */
+    /**
+     * @deprecated 
+     */
+    
     public static long readUnsignedVarInt(BinaryStream stream) {
         return read(stream, 5);
     }
@@ -117,6 +149,10 @@ public final class VarInt {
      * @param stream BinaryStream
      * @return Signed long
      */
+    /**
+     * @deprecated 
+     */
+    
     public static long readVarLong(BinaryStream stream) {
         return decodeZigZag64(readUnsignedVarLong(stream));
     }
@@ -133,6 +169,10 @@ public final class VarInt {
      * @param stream BinaryStream
      * @return Unsigned long
      */
+    /**
+     * @deprecated 
+     */
+    
     public static long readUnsignedVarLong(BinaryStream stream) {
         return read(stream, 10);
     }
@@ -145,9 +185,13 @@ public final class VarInt {
         return read(stream, 10);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void write(BinaryStream stream, long value) {
         do {
-            byte temp = (byte) (value & 0b01111111);
+            byte $5 = (byte) (value & 0b01111111);
             // Note: >>> means that the sign bit is shifted with the rest of the number rather than being left alone
             value >>>= 7;
             if (value != 0) {
@@ -159,7 +203,7 @@ public final class VarInt {
 
     private static void write(OutputStream stream, long value) throws IOException {
         do {
-            byte temp = (byte) (value & 0b01111111);
+            byte $6 = (byte) (value & 0b01111111);
             // Note: >>> means that the sign bit is shifted with the rest of the number rather than being left alone
             value >>>= 7;
             if (value != 0) {
@@ -173,6 +217,10 @@ public final class VarInt {
      * @param stream BinaryStream
      * @param value  Signed int
      */
+    /**
+     * @deprecated 
+     */
+    
     public static void writeVarInt(BinaryStream stream, int value) {
         writeUnsignedVarInt(stream, encodeZigZag32(value));
     }
@@ -189,6 +237,10 @@ public final class VarInt {
      * @param stream BinaryStream
      * @param value  Unsigned int
      */
+    /**
+     * @deprecated 
+     */
+    
     public static void writeUnsignedVarInt(BinaryStream stream, long value) {
         write(stream, value);
     }
@@ -205,6 +257,10 @@ public final class VarInt {
      * @param stream BinaryStream
      * @param value  Signed long
      */
+    /**
+     * @deprecated 
+     */
+    
     public static void writeVarLong(BinaryStream stream, long value) {
         writeUnsignedVarLong(stream, encodeZigZag64(value));
     }
@@ -221,6 +277,10 @@ public final class VarInt {
      * @param stream BinaryStream
      * @param value  Unsigned long
      */
+    /**
+     * @deprecated 
+     */
+    
     public static void writeUnsignedVarLong(BinaryStream stream, long value) {
         write(stream, value);
     }

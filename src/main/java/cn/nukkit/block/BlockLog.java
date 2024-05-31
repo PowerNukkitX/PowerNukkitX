@@ -10,6 +10,10 @@ import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 
 public abstract class BlockLog extends BlockSolid implements IBlockWood {
+    /**
+     * @deprecated 
+     */
+    
     public BlockLog(BlockState blockState) {
         super(blockState);
     }
@@ -19,12 +23,20 @@ public abstract class BlockLog extends BlockSolid implements IBlockWood {
     public BlockFace.Axis getPillarAxis() {
         return getPropertyValue(PILLAR_AXIS);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPillarAxis(BlockFace.Axis axis) {
         setPropertyValue(PILLAR_AXIS, axis);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         setPillarAxis(face.getAxis());
         getLevel().setBlock(block, this, true, true);
@@ -32,14 +44,22 @@ public abstract class BlockLog extends BlockSolid implements IBlockWood {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isAxe()) {
-            Block strippedBlock = Block.get(getStrippedState());
+            Block $1 = Block.get(getStrippedState());
             item.useOn(this);
             this.level.setBlock(this, strippedBlock, true, true);
             return true;
@@ -48,26 +68,46 @@ public abstract class BlockLog extends BlockSolid implements IBlockWood {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnChance() {
         return 5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnAbility() {
         return 10;
     }

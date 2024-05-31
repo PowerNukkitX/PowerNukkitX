@@ -28,17 +28,25 @@ import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_
  * @since 27.12.2015
  */
 public class BlockAnvil extends BlockFallable implements Faceable, BlockInventoryHolder {
-    public static final BlockProperties PROPERTIES = new BlockProperties(ANVIL, DAMAGE, MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(ANVIL, DAMAGE, MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockAnvil() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockAnvil(BlockState blockstate) {
         super(blockstate);
@@ -47,47 +55,83 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
     public Damage getAnvilDamage() {
         return getPropertyValue(DAMAGE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAnvilDamage(Damage anvilDamage) {
         setPropertyValue(DAMAGE, anvilDamage);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isTransparent() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 6000;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return getAnvilDamage().name();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         setBlockFace(player != null ? player.getDirection().rotateYCCW() : BlockFace.SOUTH);
         this.getLevel().setBlock(this, this, true);
@@ -104,6 +148,10 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (isNotActivate(player)) return false;
         player.addWindow(getOrCreateInventory());
@@ -116,16 +164,28 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         this.setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }
@@ -137,9 +197,9 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        BlockFace face = getBlockFace().rotateY();
-        double xOffset = Math.abs(face.getXOffset()) * (2 / 16.0);
-        double zOffset = Math.abs(face.getZOffset()) * (2 / 16.0);
+        BlockFace $2 = getBlockFace().rotateY();
+        double $3 = Math.abs(face.getXOffset()) * (2 / 16.0);
+        double $4 = Math.abs(face.getZOffset()) * (2 / 16.0);
         return new SimpleAxisAlignedBB(x + xOffset, y, z + zOffset, x + 1 - xOffset, y + 1, z + 1 - zOffset);
     }
 

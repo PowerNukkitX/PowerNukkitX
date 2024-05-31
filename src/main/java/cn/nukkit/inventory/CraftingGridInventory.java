@@ -10,19 +10,27 @@ import java.util.List;
 import java.util.Map;
 
 public class CraftingGridInventory extends BaseInventory implements InputInventory {
+    /**
+     * @deprecated 
+     */
+    
     public CraftingGridInventory(Player holder) {
         super(holder, InventoryType.INVENTORY, 4);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
-        for (int i = 0; i < getSize(); i++) {
+        for ($1nt $1 = 0; i < getSize(); i++) {
             map2.put(i, ContainerSlotType.CRAFTING_INPUT);
         }
 
         BiMap<Integer, Integer> map1 = super.networkSlotMap();
-        for (int i = 0; i < getSize(); i++) {
+        for ($2nt $2 = 0; i < getSize(); i++) {
             map1.put(i, 28 + i);
         }
     }

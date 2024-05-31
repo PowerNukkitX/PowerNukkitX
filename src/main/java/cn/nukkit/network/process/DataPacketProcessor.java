@@ -16,6 +16,10 @@ public abstract class DataPacketProcessor<T extends DataPacket> {
     public abstract void handle(@NotNull PlayerHandle playerHandle, @NotNull T pk);
 
     public abstract int getPacketId();
+    /**
+     * @deprecated 
+     */
+    
 
     public int getProtocol() {
         return ProtocolInfo.CURRENT_PROTOCOL;

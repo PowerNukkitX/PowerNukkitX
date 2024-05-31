@@ -41,44 +41,72 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 public class BlockDispenser extends BlockSolid implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityEjectable> {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(DISPENSER, FACING_DIRECTION, CommonBlockProperties.TRIGGERED_BIT);
+    public static final BlockProperties $1 = new BlockProperties(DISPENSER, FACING_DIRECTION, CommonBlockProperties.TRIGGERED_BIT);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDispenser() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDispenser(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasComparatorInputOverride() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Dispenser";
     }
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.DISPENSER;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 3.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 3.5;
     }
@@ -95,8 +123,12 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getComparatorInputOverride() {
-        InventoryHolder blockEntity = getBlockEntity();
+        InventoryHolder $2 = getBlockEntity();
 
         if (blockEntity != null) {
             return ContainerInventory.calculateRedstone(blockEntity.getInventory());
@@ -104,25 +136,41 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
 
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isTriggered() {
         return getPropertyValue(CommonBlockProperties.TRIGGERED_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTriggered(boolean value) {
         setPropertyValue(CommonBlockProperties.TRIGGERED_BIT, value);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
 
-        InventoryHolder blockEntity = getBlockEntity();
+        InventoryHolder $3 = getBlockEntity();
 
         if (blockEntity == null) {
             return false;
@@ -133,10 +181,14 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (player != null) {
             if (Math.abs(player.x - this.x) < 2 && Math.abs(player.z - this.z) < 2) {
-                double y = player.y + player.getEyeHeight();
+                double $4 = player.y + player.getEyeHeight();
 
                 if (y - this.y > 2) {
                     setBlockFace(BlockFace.UP);
@@ -150,7 +202,7 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
             }
         }
 
-        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
+        CompoundTag $5 = new CompoundTag().putList("Items", new ListTag<>());
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -167,6 +219,10 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return 0;
@@ -177,7 +233,7 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
 
             return type;
         } else if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_NORMAL) {
-            boolean triggered = this.isTriggered();
+            boolean $6 = this.isTriggered();
 
             if (this.isGettingPower() && !triggered) {
                 this.setTriggered(true);
@@ -193,22 +249,26 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
 
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void dispense() {
-        InventoryHolder blockEntity = getBlockEntity();
+        InventoryHolder $7 = getBlockEntity();
 
         if (blockEntity == null) {
             return;
         }
 
-        Random rand = ThreadLocalRandom.current();
-        int r = 1;
-        int slot = -1;
-        Item target = null;
+        Random $8 = ThreadLocalRandom.current();
+        int $9 = 1;
+        int $10 = -1;
+        Item $11 = null;
 
-        Inventory inv = blockEntity.getInventory();
+        Inventory $12 = blockEntity.getInventory();
         for (Entry<Integer, Item> entry : inv.getContents().entrySet()) {
-            Item item = entry.getValue();
+            Item $13 = entry.getValue();
 
             if (!item.isNull() && rand.nextInt(r++) == 0) {
                 target = item;
@@ -216,9 +276,9 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
             }
         }
 
-        LevelEventPacket pk = new LevelEventPacket();
+        LevelEventPacket $14 = new LevelEventPacket();
 
-        BlockFace facing = getBlockFace();
+        BlockFace $15 = getBlockFace();
 
         pk.x = 0.5f + facing.getXOffset() * 0.7f;
         pk.y = 0.5f + facing.getYOffset() * 0.7f;
@@ -238,11 +298,11 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
         pk.data = 7;
         this.level.addChunkPacket(getChunkX(), getChunkZ(), pk);
 
-        Item origin = target;
+        Item $16 = target;
         target = target.clone();
 
-        DispenseBehavior behavior = getDispenseBehavior(target);
-        Item result = behavior.dispense(this, facing, target);
+        DispenseBehavior $17 = getDispenseBehavior(target);
+        Item $18 = behavior.dispense(this, facing, target);
 
         target.count--;
         inv.setItem(slot, target);
@@ -267,22 +327,34 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
     public Vector3 getDispensePosition() {
-        BlockFace facing = getBlockFace();
+        BlockFace $19 = getBlockFace();
         return this.add(
                 0.5 + 0.7 * facing.getXOffset(),
                 0.5 + 0.7 * facing.getYOffset(),
@@ -296,6 +368,10 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face.getIndex());
     }

@@ -15,6 +15,10 @@ public class Offset {
     private Vector3f rotation;
     private Vector3f scale;
 
+    
+    /**
+     * @deprecated 
+     */
     private Offset() {
     }
 

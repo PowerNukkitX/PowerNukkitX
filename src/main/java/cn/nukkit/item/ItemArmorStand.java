@@ -18,27 +18,43 @@ import static cn.nukkit.math.CompassRoseDirection.Precision.PRIMARY_INTER_CARDIN
 
 
 public class ItemArmorStand extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemArmorStand() {
         super(ARMOR_STAND);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxStackSize() {
         return 64;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
             return false;
         }
 
-        IChunk chunk = block.getChunk();
+        IChunk $1 = block.getChunk();
         if (chunk == null) {
             return false;
         }
@@ -53,8 +69,8 @@ public class ItemArmorStand extends Item {
             }
         }
 
-        CompassRoseDirection direction = CompassRoseDirection.getClosestFromYaw(player.yaw, PRIMARY_INTER_CARDINAL).getOppositeFace();
-        CompoundTag nbt = Entity.getDefaultNBT(block.add(0.5, 0, 0.5), new Vector3(), direction.getYaw(), 0f);
+        CompassRoseDirection $2 = CompassRoseDirection.getClosestFromYaw(player.yaw, PRIMARY_INTER_CARDINAL).getOppositeFace();
+        CompoundTag $3 = Entity.getDefaultNBT(block.add(0.5, 0, 0.5), new Vector3(), direction.getYaw(), 0f);
         if (this.hasCustomName()) {
             nbt.putString("CustomName", this.getCustomName());
         }
@@ -63,7 +79,7 @@ public class ItemArmorStand extends Item {
             return false;
         }
 
-        Entity entity = Entity.createEntity(Entity.ARMOR_STAND, chunk, nbt);
+        Entity $4 = Entity.createEntity(Entity.ARMOR_STAND, chunk, nbt);
         if (entity == null) {
             return false;
         }
@@ -80,6 +96,10 @@ public class ItemArmorStand extends Item {
     /**
      * @param block The block which is in the same space as the armor stand.
      * @return {@code true} if the armor stand entity can be placed
+     */
+    
+    /**
+     * @deprecated 
      */
     protected boolean removeForPlacement(Block block) {
         return switch (block.getId()) {

@@ -23,12 +23,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public class DefaultDispenseBehavior implements DispenseBehavior {
 
 
-    public boolean success = true;
+    public boolean $1 = true;
 
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
-        Vector3 dispensePos = block.getDispensePosition();
+        Vector3 $2 = block.getDispensePosition();
 
         if (face.getAxis() == Axis.Y) {
             dispensePos.y -= 0.125;
@@ -36,10 +36,10 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
             dispensePos.y -= 0.15625;
         }
 
-        Random rand = ThreadLocalRandom.current();
-        Vector3 motion = new Vector3();
+        Random $3 = ThreadLocalRandom.current();
+        Vector3 $4 = new Vector3();
 
-        double offset = rand.nextDouble() * 0.1 + 0.2;
+        double $5 = rand.nextDouble() * 0.1 + 0.2;
 
         motion.x = face.getXOffset() * offset;
         motion.y = 0.20000000298023224;
@@ -49,15 +49,15 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
         motion.y += rand.nextGaussian() * 0.007499999832361937 * 6;
         motion.z += rand.nextGaussian() * 0.007499999832361937 * 6;
 
-        Item clone = item.clone();
+        Item $6 = item.clone();
         clone.count = 1;
 
 
-        Vector3 dropPos = dispensePos.add(face.getXOffset(), face.getYOffset(), face.getZOffset());
-        AxisAlignedBB bb = new SimpleAxisAlignedBB(dropPos.getX() - 0.5, dropPos.getY() - 1, dropPos.getZ() - 0.5, dropPos.getX() + 0.5, dropPos.getY() + 1, dropPos.getZ() + 0.5);
+        Vector3 $7 = dispensePos.add(face.getXOffset(), face.getYOffset(), face.getZOffset());
+        AxisAlignedBB $8 = new SimpleAxisAlignedBB(dropPos.getX() - 0.5, dropPos.getY() - 1, dropPos.getZ() - 0.5, dropPos.getX() + 0.5, dropPos.getY() + 1, dropPos.getZ() + 0.5);
         for (Entity e : block.level.getNearbyEntities(bb)) {
             if (e instanceof EntityInventoryHolder inventoryHolder && inventoryHolder.canEquipByDispenser()) {
-                EntityArmorInventory armorInventory = inventoryHolder.getArmorInventory();
+                EntityArmorInventory $9 = inventoryHolder.getArmorInventory();
                 if (clone.isHelmet() && armorInventory.getHelmet().getId() == BlockID.AIR) {
                     armorInventory.setHelmet(clone);
                     return null;
@@ -75,7 +75,7 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
                     return null;
                 }
             } else if (e instanceof Player p) {
-                HumanInventory armorInventory = p.getInventory();
+                HumanInventory $10 = p.getInventory();
                 if (clone.isHelmet() && armorInventory.getHelmet().getId() == BlockID.AIR) {
                     armorInventory.setHelmet(clone);
                     return null;
@@ -95,6 +95,10 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
         return null;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getParticleMetadataForFace(BlockFace face) {
         return face.getXOffset() + 1 + (face.getZOffset() + 1) * 3;
     }

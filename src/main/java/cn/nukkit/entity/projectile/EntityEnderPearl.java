@@ -16,13 +16,25 @@ import org.jetbrains.annotations.NotNull;
 public class EntityEnderPearl extends EntityProjectile {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return ENDER_PEARL;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityEnderPearl(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityEnderPearl(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
@@ -31,39 +43,63 @@ public class EntityEnderPearl extends EntityProjectile {
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getLength() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.25f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getGravity() {
         return 0.03f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getDrag() {
         return 0.01f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
         }
-        boolean hasUpdate = super.onUpdate(currentTick);
+        boolean $1 = super.onUpdate(currentTick);
 
         if (this.isCollided && this.shootingEntity instanceof Player) {
-            boolean portal = false;
+            boolean $2 = false;
             for (Block collided : this.getCollisionBlocks()) {
                 if (collided.getId() == Block.PORTAL) {
                     portal = true;
@@ -83,6 +119,10 @@ public class EntityEnderPearl extends EntityProjectile {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onCollideWithEntity(Entity entity) {
         if (this.shootingEntity instanceof Player) {
             teleport();
@@ -90,6 +130,10 @@ public class EntityEnderPearl extends EntityProjectile {
         super.onCollideWithEntity(entity);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void teleport() {
         if (!this.level.equals(this.shootingEntity.getLevel())) {
             return;
@@ -105,6 +149,10 @@ public class EntityEnderPearl extends EntityProjectile {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Ender Pearl";
     }

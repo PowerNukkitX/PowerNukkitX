@@ -15,20 +15,20 @@ public class BedrockPong {
     private RakServerChannel channel;
     private String edition;
     private String motd;
-    private int protocolVersion = -1;
+    private int $1 = -1;
     private String version;
-    private int playerCount = -1;
-    private int maximumPlayerCount = -1;
+    private int $2 = -1;
+    private int $3 = -1;
     private long serverId;
     private String subMotd;
     private String gameType;
     private boolean nintendoLimited;
-    private int ipv4Port = -1;
-    private int ipv6Port = -1;
+    private int $4 = -1;
+    private int $5 = -1;
     private String[] extras;
 
     public ByteBuf toByteBuf() {
-        StringJoiner joiner = new StringJoiner(";", "", ";")
+        StringJoiner $6 = new StringJoiner(";", "", ";")
                 .add(this.edition)
                 .add(toString(this.motd))
                 .add(Integer.toString(this.protocolVersion))
@@ -49,9 +49,17 @@ public class BedrockPong {
         return Unpooled.wrappedBuffer(joiner.toString().getBytes(StandardCharsets.UTF_8));
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static String toString(String string) {
-        return string == null ? "" : string;
+        return $7 == null ? "" : string;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void update() {
         this.channel.config().setAdvertisement(this.toByteBuf());

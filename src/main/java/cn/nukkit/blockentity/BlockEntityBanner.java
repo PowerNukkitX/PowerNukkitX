@@ -9,12 +9,20 @@ import cn.nukkit.utils.DyeColor;
 
 public class BlockEntityBanner extends BlockEntitySpawnable {
     public int color;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityBanner(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         if (!this.namedTag.contains("color")) {
@@ -25,36 +33,68 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return this.getBlock().getId().equals(Block.WALL_BANNER) || this.getBlock().getId().equals(Block.STANDING_BANNER);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putByte("color", this.color);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Banner";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getBaseColor() {
         return this.namedTag.getInt("Base");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBaseColor(DyeColor color) {
         this.namedTag.putInt("Base", color.getDyeData() & 0x0f);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getType() {
         return this.namedTag.getInt("Type");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setType(int type) {
         this.namedTag.putInt("Type", type);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addPattern(BannerPattern pattern) {
         ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
@@ -69,6 +109,10 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
                 this.namedTag.getList("Patterns", CompoundTag.class).get(index) :
                 new CompoundTag());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removePattern(int index) {
         ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
@@ -76,6 +120,10 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
             patterns.remove(index);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getPatternsSize() {
         return this.namedTag.getList("Patterns").size();

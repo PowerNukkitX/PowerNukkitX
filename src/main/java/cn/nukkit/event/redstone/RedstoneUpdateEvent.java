@@ -9,11 +9,15 @@ import cn.nukkit.event.block.BlockUpdateEvent;
  */
 public class RedstoneUpdateEvent extends BlockUpdateEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public RedstoneUpdateEvent(Block source) {
         super(source);

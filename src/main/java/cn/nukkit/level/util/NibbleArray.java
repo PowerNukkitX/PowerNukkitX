@@ -9,39 +9,59 @@ import java.util.Arrays;
 public class NibbleArray implements Cloneable {
     private final int length;
     private final ByteArrayWrapper byteArrayWrapper;
+    /**
+     * @deprecated 
+     */
+    
 
     public NibbleArray(int length) {
         byteArrayWrapper = FreezableArrayManager.getInstance().createByteArray(length / 2);
         this.length = length / 2;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public NibbleArray(byte[] array) {
         byteArrayWrapper = FreezableArrayManager.getInstance().wrapByteArray(array);
         this.length = array.length;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public byte get(int index) {
         Preconditions.checkElementIndex(index, length * 2);
-        byte val = byteArrayWrapper.getByte(index / 2);
+        byte $1 = byteArrayWrapper.getByte(index / 2);
         if ((index & 1) == 0) {
             return (byte) (val & 0x0f);
         } else {
             return (byte) ((val & 0xf0) >>> 4);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void set(int index, byte value) {
         Preconditions.checkArgument(value >= 0 && value < 16, "Nibbles must have a value between 0 and 15.");
         Preconditions.checkElementIndex(index, length * 2);
         value &= 0xf;
-        int half = index / 2;
-        byte previous = byteArrayWrapper.getByte(half);
+        int $2 = index / 2;
+        byte $3 = byteArrayWrapper.getByte(half);
         if ((index & 1) == 0) {
             byteArrayWrapper.setByte(half, (byte) (previous & 0xf0 | value));
         } else {
             byteArrayWrapper.setByte(half, (byte) (previous & 0x0f | value << 4));
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void fill(byte value) {
         Preconditions.checkArgument(value >= 0 && value < 16, "Nibbles must have a value between 0 and 15.");
@@ -50,6 +70,10 @@ public class NibbleArray implements Cloneable {
         Arrays.fill(rawBytes, (byte) ((value << 4) | value));
         byteArrayWrapper.setRawBytes(rawBytes);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void copyFrom(byte[] bytes) {
         final byte[] rawBytes = getData();
@@ -59,6 +83,10 @@ public class NibbleArray implements Cloneable {
         System.arraycopy(bytes, 0, rawBytes, 0, rawBytes.length);
         byteArrayWrapper.setRawBytes(rawBytes);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void copyFrom(NibbleArray array) {
         Preconditions.checkNotNull(array, "array");
@@ -76,7 +104,7 @@ public class NibbleArray implements Cloneable {
     @Override
     public NibbleArray clone() {
         try {
-            NibbleArray clone = (NibbleArray) super.clone();
+            NibbleArray $4 = (NibbleArray) super.clone();
             clone.copyFrom(this);
             return clone;
         } catch (CloneNotSupportedException e) {

@@ -13,22 +13,34 @@ import javax.annotation.Nullable;
  * @since 2015/11/22
  */
 public class BlockPodzol extends BlockDirt {
-    public static final BlockProperties PROPERTIES = new BlockProperties(PODZOL);
+    public static final BlockProperties $1 = new BlockProperties(PODZOL);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPodzol() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPodzol(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Podzol";
     }
@@ -46,11 +58,19 @@ public class BlockPodzol extends BlockDirt {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!this.up().canBeReplaced()) {
             return false;

@@ -18,10 +18,18 @@ public class CommandParameter {
     public final String postFix;
     public final IParamNode<?> paramNode;
 
+    
+    /**
+     * @deprecated 
+     */
     private CommandParameter(String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
         this(name, optional, type, enumData, postFix, null);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private CommandParameter(String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix, IParamNode<?> paramNode) {
         this.name = name;
         this.optional = optional;
@@ -78,7 +86,7 @@ public class CommandParameter {
      * @return the command parameter
      */
     public static CommandParameter newType(String name, boolean optional, CommandParamType type, IParamNode<?> paramNode, CommandParamOption... options) {
-        var result = new CommandParameter(name, optional, type, null, null, paramNode);
+        var $1 = new CommandParameter(name, optional, type, null, null, paramNode);
         if (options.length != 0) {
             result.paramOptions = Lists.newArrayList(options);
         }
@@ -176,7 +184,7 @@ public class CommandParameter {
      * @return the command parameter
      */
     public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, IParamNode<?> paramNode, CommandParamOption... options) {
-        var result = new CommandParameter(name, optional, null, data, null, paramNode);
+        var $2 = new CommandParameter(name, optional, null, data, null, paramNode);
         if (options.length != 0) {
             result.paramOptions = Lists.newArrayList(options);
         }

@@ -21,16 +21,24 @@ import static cn.nukkit.block.property.CommonBlockProperties.AGE_BIT;
 
 public class BlockCherrySapling extends BlockSapling implements BlockFlowerPot.FlowerPotBlock {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_SAPLING, AGE_BIT);
+    public static final BlockProperties $1 = new BlockProperties(CHERRY_SAPLING, AGE_BIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCherrySapling() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCherrySapling(BlockState blockstate) {
         super(blockstate);
@@ -42,11 +50,19 @@ public class BlockCherrySapling extends BlockSapling implements BlockFlowerPot.F
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Cherry Sapling";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (isSupportInvalid()) {
@@ -69,13 +85,17 @@ public class BlockCherrySapling extends BlockSapling implements BlockFlowerPot.F
         return Level.BLOCK_UPDATE_NORMAL;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void grow() {
-        BlockManager blockManager = new BlockManager(this.level);
-        Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
-        var objectCherryTree = new ObjectCherryTree();
-        boolean generate = objectCherryTree.generate(blockManager, RandomSourceProvider.create(), this);
+        BlockManager $2 = new BlockManager(this.level);
+        Vector3 $3 = new Vector3(this.x, this.y - 1, this.z);
+        var $4 = new ObjectCherryTree();
+        boolean $5 = objectCherryTree.generate(blockManager, RandomSourceProvider.create(), this);
         if (generate) {
-            StructureGrowEvent ev = new StructureGrowEvent(this, blockManager.getBlocks());
+            StructureGrowEvent $6 = new StructureGrowEvent(this, blockManager.getBlocks());
             this.level.getServer().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 return;
@@ -88,6 +108,10 @@ public class BlockCherrySapling extends BlockSapling implements BlockFlowerPot.F
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (isSupportInvalid()) {
             return false;
@@ -102,11 +126,19 @@ public class BlockCherrySapling extends BlockSapling implements BlockFlowerPot.F
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal and so on
             if (player != null && !player.isCreative()) {
@@ -125,14 +157,26 @@ public class BlockCherrySapling extends BlockSapling implements BlockFlowerPot.F
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isSupportInvalid() {
-        String downId = down().getId();
+        String $7 = down().getId();
         return !(downId.equals(DIRT) || downId.equals(GRASS_BLOCK) || downId.equals(SAND) || downId.equals(GRAVEL) || downId.equals(PODZOL));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isAge() {
         return this.getPropertyValue(AGE_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAge(boolean age) {
         this.setPropertyValue(AGE_BIT, age);
@@ -144,6 +188,10 @@ public class BlockCherrySapling extends BlockSapling implements BlockFlowerPot.F
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isFertilizable() {
         return true;
     }

@@ -21,13 +21,17 @@ import org.jetbrains.annotations.NotNull;
 @Slf4j
 public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InteractPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         if (!player.spawned || !player.isAlive()) {
             return;
         }
 
-        Entity targetEntity = player.level.getEntity(pk.target);
+        Entity $2 = player.level.getEntity(pk.target);
 
         if (targetEntity == null || !player.isAlive() || !targetEntity.isAlive()) {
             return;
@@ -78,6 +82,10 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.INTERACT_PACKET;
     }

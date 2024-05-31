@@ -10,6 +10,10 @@ import java.util.Locale;
 public class PlayerMetadataStore extends MetadataStore {
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected String disambiguate(Metadatable player, String metadataKey) {
         if (!(player instanceof IPlayer)) {
             throw new IllegalArgumentException("Argument must be an IPlayer instance");

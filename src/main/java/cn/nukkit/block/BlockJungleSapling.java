@@ -5,17 +5,25 @@ import cn.nukkit.block.property.enums.WoodType;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockJungleSapling extends BlockSapling {
-     public static final BlockProperties PROPERTIES = new BlockProperties(JUNGLE_SAPLING, CommonBlockProperties.AGE_BIT);
+     public static final BlockProperties $1 = new BlockProperties(JUNGLE_SAPLING, CommonBlockProperties.AGE_BIT);
 
      @Override
      @NotNull
      public BlockProperties getProperties() {
         return PROPERTIES;
      }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockJungleSapling() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
      public BlockJungleSapling(BlockState blockstate) {
          super(blockstate);

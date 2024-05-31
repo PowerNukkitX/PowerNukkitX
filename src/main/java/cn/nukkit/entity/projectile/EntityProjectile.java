@@ -33,9 +33,9 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EntityProjectile extends Entity {
-    public static final int PICKUP_NONE = 0;
-    public static final int PICKUP_ANY = 1;
-    public static final int PICKUP_CREATIVE = 2;
+    public static final int $1 = 0;
+    public static final int $2 = 1;
+    public static final int $3 = 2;
 
     public Entity shootingEntity;
     public boolean hadCollision;
@@ -46,10 +46,18 @@ public abstract class EntityProjectile extends Entity {
      * the initialization of the child classes.
      */
     private boolean noAge;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityProjectile(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityProjectile(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt);
@@ -59,29 +67,53 @@ public abstract class EntityProjectile extends Entity {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected double getDamage() {
         return namedTag.contains("damage") ? namedTag.getDouble("damage") : getBaseDamage();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected double getBaseDamage() {
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getResultDamage(@Nullable Entity entity) {
         return getResultDamage();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getResultDamage() {
         return NukkitMath.ceilDouble(Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ) * getDamage());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         return source.getCause() == DamageCause.VOID && super.attack(source);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void onCollideWithEntity(Entity entity) {
-        ProjectileHitEvent projectileHitEvent = new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity));
+        ProjectileHitEvent $4 = new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity));
         this.server.getPluginManager().callEvent(projectileHitEvent);
 
         if (projectileHitEvent.isCancelled()) {
@@ -90,7 +122,7 @@ public abstract class EntityProjectile extends Entity {
 
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
 
-        float damage = this.getResultDamage(entity);
+        float $5 = this.getResultDamage(entity);
 
         EntityDamageEvent ev;
         if (this.shootingEntity == null) {
@@ -103,7 +135,7 @@ public abstract class EntityProjectile extends Entity {
             this.hadCollision = true;
 
             if (this.fireTicks > 0) {
-                EntityCombustByEntityEvent event = new EntityCombustByEntityEvent(this, entity, 5);
+                EntityCombustByEntityEvent $6 = new EntityCombustByEntityEvent(this, entity, 5);
                 this.server.getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
                     entity.setOnFire(event.getDuration());
@@ -116,11 +148,19 @@ public abstract class EntityProjectile extends Entity {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void afterCollisionWithEntity(Entity entity) {
 
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.closeOnCollide = true;
         super.initEntity();
@@ -133,11 +173,19 @@ public abstract class EntityProjectile extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCollideWith(Entity entity) {
         return (entity instanceof EntityLiving || entity instanceof EntityEnderCrystal || entity instanceof EntityMinecartAbstract || entity instanceof EntityBoat) && !this.onGround;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         if (!this.noAge) {
@@ -145,6 +193,10 @@ public abstract class EntityProjectile extends Entity {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void updateMotion() {
         this.motionY -= this.getGravity();
         this.motionX *= 1 - this.getDrag();
@@ -157,6 +209,10 @@ public abstract class EntityProjectile extends Entity {
      * @param entity the collide entity
      * @return the boolean
      */
+    
+    /**
+     * @deprecated 
+     */
     protected boolean collideEntityFilter(Entity entity) {
         if ((entity == this.shootingEntity && this.ticksLived < 5) ||
                 (entity instanceof Player player && player.getGamemode() == Player.SPECTATOR)
@@ -166,47 +222,51 @@ public abstract class EntityProjectile extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
         }
 
-        int tickDiff = currentTick - this.lastUpdate;
+        int $7 = currentTick - this.lastUpdate;
         if (tickDiff <= 0 && !this.justCreated) {
             return true;
         }
         this.lastUpdate = currentTick;
 
-        boolean hasUpdate = this.entityBaseTick(tickDiff);
+        boolean $8 = this.entityBaseTick(tickDiff);
 
         if (this.isAlive()) {
 
-            MovingObjectPosition movingObjectPosition = null;
+            MovingObjectPosition $9 = null;
 
             if (!this.isCollided) {
                 updateMotion();
             }
 
-            Vector3 moveVector = new Vector3(this.x + this.motionX, this.y + this.motionY, this.z + this.motionZ);
+            Vector3 $10 = new Vector3(this.x + this.motionX, this.y + this.motionY, this.z + this.motionZ);
 
             Entity[] list = this.getLevel().getCollidingEntities(this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expand(1, 1, 1), this);
 
-            double nearDistance = Integer.MAX_VALUE;
-            Entity nearEntity = null;
+            double $11 = Integer.MAX_VALUE;
+            Entity $12 = null;
 
             for (Entity entity : list) {
                 if (!collideEntityFilter(entity)) {
                     continue;
                 }
 
-                AxisAlignedBB axisalignedbb = entity.boundingBox.grow(0.3, 0.3, 0.3);
-                MovingObjectPosition ob = axisalignedbb.calculateIntercept(this, moveVector);
+                AxisAlignedBB $13 = entity.boundingBox.grow(0.3, 0.3, 0.3);
+                MovingObjectPosition $14 = axisalignedbb.calculateIntercept(this, moveVector);
 
                 if (ob == null) {
                     continue;
                 }
 
-                double distance = this.distanceSquared(ob.hitVector);
+                double $15 = this.distanceSquared(ob.hitVector);
 
                 if (distance < nearDistance) {
                     nearDistance = distance;
@@ -228,8 +288,8 @@ public abstract class EntityProjectile extends Entity {
                 }
             }
 
-            Position position = getPosition();
-            Vector3 motion = getMotion();
+            Position $16 = getPosition();
+            Vector3 $17 = getMotion();
             this.move(this.motionX, this.motionY, this.motionZ);
 
             if (this.isCollided && !this.hadCollision) { //collide with block
@@ -257,21 +317,33 @@ public abstract class EntityProjectile extends Entity {
 
         return hasUpdate;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void updateRotation() {
-        double f = Math.sqrt((this.motionX * this.motionX) + (this.motionZ * this.motionZ));
+        double $18 = Math.sqrt((this.motionX * this.motionX) + (this.motionZ * this.motionZ));
         this.yaw = Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI;
         this.pitch = Math.atan2(this.motionY, f) * 180 / Math.PI;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void inaccurate(float modifier) {
-        Random rand = ThreadLocalRandom.current();
+        Random $19 = ThreadLocalRandom.current();
 
         this.motionX += rand.nextGaussian() * 0.007499999832361937 * modifier;
         this.motionY += rand.nextGaussian() * 0.007499999832361937 * modifier;
         this.motionZ += rand.nextGaussian() * 0.007499999832361937 * modifier;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onCollideWithBlock(Position position, Vector3 motion) {
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
         for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
@@ -279,23 +351,43 @@ public abstract class EntityProjectile extends Entity {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean onCollideWithBlock(Position position, Vector3 motion, Block collisionBlock) {
         return collisionBlock.onProjectileHit(this, position, motion);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void addHitEffect() {
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getHasAge() {
         return !this.noAge;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setHasAge(boolean hasAge) {
         this.noAge = !hasAge;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void spawnToAll() {
         super.spawnToAll();
         //vibration: minecraft:projectile_shoot

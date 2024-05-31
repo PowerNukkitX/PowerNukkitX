@@ -6,22 +6,34 @@ import cn.nukkit.item.ItemCherrySign;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCrimsonStandingSign extends BlockStandingSign {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(CRIMSON_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCrimsonStandingSign() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCrimsonStandingSign(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getWallSignId() {
         return BlockCrimsonWallSign.PROPERTIES.getIdentifier();
     }

@@ -6,6 +6,10 @@ import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.proxy.ProxyArray;
 
 public final class ExternalArray extends JSExternal implements ProxyArray {
+    /**
+     * @deprecated 
+     */
+    
     public ExternalArray(Context sourceContext, Value value) {
         super(sourceContext, value);
     }
@@ -19,6 +23,10 @@ public final class ExternalArray extends JSExternal implements ProxyArray {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void set(long index, Value value) {
         synchronized (sourceContext) {
             checkAlive();
@@ -27,6 +35,10 @@ public final class ExternalArray extends JSExternal implements ProxyArray {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean remove(long index) {
         synchronized (sourceContext) {
             checkAlive();
@@ -35,6 +47,10 @@ public final class ExternalArray extends JSExternal implements ProxyArray {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getSize() {
         synchronized (sourceContext) {
             checkAlive();

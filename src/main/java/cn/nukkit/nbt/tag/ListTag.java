@@ -12,13 +12,25 @@ public class ListTag<T extends Tag> extends Tag {
     private List<T> list = new ArrayList<>();
 
     public byte type;
+    /**
+     * @deprecated 
+     */
+    
 
     public ListTag() {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ListTag(int type) {
         this.type = (byte) type;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ListTag(Collection<T> tags) {
         Optional<T> first = tags.stream().findFirst();
@@ -26,6 +38,10 @@ public class ListTag<T extends Tag> extends Tag {
         type = tags.stream().findFirst().get().getId();
         this.list.addAll(tags);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ListTag(int type, Collection<T> tags) {
         this.type = (byte) type;
@@ -33,18 +49,30 @@ public class ListTag<T extends Tag> extends Tag {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte getId() {
         return TAG_List;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
-        StringJoiner joiner = new StringJoiner(",\n\t");
+        StringJoiner $1 = new StringJoiner(",\n\t");
         list.forEach(tag -> joiner.add(tag.toString().replace("\n", "\n\t")));
         return "ListTag (" + list.size() + " entries of type " + Tag.getTagName(type) + ") {\n\t" + joiner + "\n}";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT() {
         return "[" + list.stream()
                 .map(Tag::toSNBT)
@@ -52,17 +80,21 @@ public class ListTag<T extends Tag> extends Tag {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT(int space) {
-        StringBuilder addSpace = new StringBuilder();
+        StringBuilder $2 = new StringBuilder();
         addSpace.append(" ".repeat(Math.max(0, space)));
         if (list.isEmpty()) {
             return "[]";
         } else if (list.get(0) instanceof StringTag || list.get(0) instanceof CompoundTag || list.get(0) instanceof ListTag<?>) {
-            StringJoiner joiner1 = new StringJoiner(",\n" + addSpace);
+            StringJoiner $3 = new StringJoiner(",\n" + addSpace);
             list.forEach(tag -> joiner1.add(tag.toSNBT(space).replace("\n", "\n" + addSpace)));
             return "[\n" + addSpace + joiner1 + "\n]";
         } else {
-            StringJoiner joiner2 = new StringJoiner(", ");
+            StringJoiner $4 = new StringJoiner(", ");
             list.forEach(tag -> joiner2.add(tag.toSNBT(space)));
             return "[" + joiner2 + "]";
         }
@@ -103,22 +135,42 @@ public class ListTag<T extends Tag> extends Tag {
     public List<T> getAll() {
         return new ArrayList<>(list);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAll(List<T> tags) {
         this.list = new ArrayList<>(tags);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void remove(T tag) {
         list.remove(tag);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void remove(int index) {
         list.remove(index);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removeAll(Collection<T> tags) {
         list.removeAll(tags);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int size() {
         return list.size();
@@ -130,7 +182,7 @@ public class ListTag<T extends Tag> extends Tag {
         res.type = type;
         for (T t : list) {
             @SuppressWarnings("unchecked")
-            T copy = (T) t.copy();
+            T $5 = (T) t.copy();
             res.list.add(copy);
         }
         return res;
@@ -138,9 +190,13 @@ public class ListTag<T extends Tag> extends Tag {
 
     @SuppressWarnings("rawtypes")
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (super.equals(obj)) {
-            ListTag o = (ListTag) obj;
+            ListTag $6 = (ListTag) obj;
             if (type == o.type) {
                 return list.equals(o.list);
             }
@@ -149,6 +205,10 @@ public class ListTag<T extends Tag> extends Tag {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return Objects.hash(super.hashCode(), type, list);
     }

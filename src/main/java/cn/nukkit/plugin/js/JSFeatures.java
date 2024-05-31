@@ -13,10 +13,18 @@ public final class JSFeatures {
     public static final Map<String, JSFeature> JS_FEATURE_MAP = new HashMap<>();
     public static final Map<String, JSFeature> FEATURE_MODULE_MAP = new HashMap<>();
     public static final Int2ObjectOpenHashMap<Object> FEATURE_GENERATED_TMP_MAP = new Int2ObjectOpenHashMap<>();
-    public static final AtomicInteger FEATURE_GENERATED_TMP_ID = new AtomicInteger(0);
+    public static final AtomicInteger $1 = new AtomicInteger(0);
 
+    
+    /**
+     * @deprecated 
+     */
     private JSFeatures() {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void registerFeature(JSFeature feature) {
         JS_FEATURE_MAP.put(feature.getName(), feature);
@@ -32,14 +40,26 @@ public final class JSFeatures {
     public static JSFeature getFeatureByModule(String moduleName) {
         return FEATURE_MODULE_MAP.get(moduleName);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean hasFeature(String name) {
         return JS_FEATURE_MAP.containsKey(name);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean hasFeatureByModule(String moduleName) {
         return FEATURE_MODULE_MAP.containsKey(moduleName);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void unregisterFeature(String name) {
         JS_FEATURE_MAP.remove(name);
@@ -47,10 +67,18 @@ public final class JSFeatures {
             FEATURE_MODULE_MAP.remove(moduleName);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void clearFeatures() {
         JS_FEATURE_MAP.clear();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void initInternalFeatures() {
         registerFeature(new TestFeature());

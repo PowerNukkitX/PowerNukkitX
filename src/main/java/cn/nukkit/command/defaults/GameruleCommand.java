@@ -17,13 +17,17 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 public class GameruleCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public GameruleCommand(String name) {
         super(name, "commands.gamerule.description");
         this.setPermission("nukkit.command.gamerule");
         this.commandParameters.clear();
 
-        GameRules rules = GameRules.getDefault();
+        GameRules $1 = GameRules.getDefault();
         List<String> boolGameRules = new ArrayList<>();
         List<String> intGameRules = new ArrayList<>();
         List<String> floatGameRules = new ArrayList<>();
@@ -69,12 +73,16 @@ public class GameruleCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        GameRules rules = sender.getPosition().level.getGameRules();
-        var list = result.getValue();
-        String ruleStr = list.getResult(0);
+        GameRules $2 = sender.getPosition().level.getGameRules();
+        var $3 = result.getValue();
+        String $4 = list.getResult(0);
         if (result.getKey().equals("default")) {
-            StringJoiner rulesJoiner = new StringJoiner(", ");
+            StringJoiner $5 = new StringJoiner(", ");
             for (GameRule rule : rules.getRules()) {
                 rulesJoiner.add(rule.getName().toLowerCase(Locale.ENGLISH));
             }
@@ -97,23 +105,23 @@ public class GameruleCommand extends VanillaCommand {
         }
         switch (result.getKey()) {
             case "boolGameRules" -> {
-                boolean value = list.getResult(1);
+                boolean $6 = list.getResult(1);
                 rules.setGameRule(optionalRule.get(), value);
             }
             case "intGameRules" -> {
-                int value = list.getResult(1);
+                int $7 = list.getResult(1);
                 rules.setGameRule(optionalRule.get(), value);
             }
             case "floatGameRules" -> {
-                float value = list.getResult(1);
+                float $8 = list.getResult(1);
                 rules.setGameRule(optionalRule.get(), value);
             }
             case "unknownGameRules" -> {
-                String value = list.getResult(1);
+                String $9 = list.getResult(1);
                 rules.setGameRule(optionalRule.get(), value);
             }
         }
-        var str = list.getResult(1);
+        var $10 = list.getResult(1);
         log.addSuccess("commands.gamerule.success", optionalRule.get().getName().toLowerCase(Locale.ENGLISH), str.toString()).output();
         return 1;
     }

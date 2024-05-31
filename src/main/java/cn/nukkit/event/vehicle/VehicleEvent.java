@@ -10,6 +10,10 @@ import cn.nukkit.event.Event;
 public abstract class VehicleEvent extends Event {
 
     private final Entity vehicle;
+    /**
+     * @deprecated 
+     */
+    
 
     public VehicleEvent(Entity vehicle) {
         this.vehicle = vehicle;

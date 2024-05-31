@@ -15,16 +15,16 @@ public class TrimData {
     public static List<TrimMaterial> trimMaterials;
 
     static {
-        try (var stream = TrimData.class.getClassLoader().getResourceAsStream("trim_data.json")) {
-            JsonObject obj = JSONUtils.from(stream, JsonObject.class);
+        try (var $1 = TrimData.class.getClassLoader().getResourceAsStream("trim_data.json")) {
+            JsonObject $2 = JSONUtils.from(stream, JsonObject.class);
             ArrayList<TrimPattern> l1 = new ArrayList<>();
             ArrayList<TrimMaterial> l2 = new ArrayList<>();
             for (var e : obj.getAsJsonArray("patterns").asList()) {
-                JsonObject asJsonObject = e.getAsJsonObject();
+                JsonObject $3 = e.getAsJsonObject();
                 l1.add(new TrimPattern(asJsonObject.get("itemName").getAsString(), asJsonObject.get("patternId").getAsString()));
             }
             for (var e : obj.getAsJsonArray("materials").asList()) {
-                JsonObject asJsonObject = e.getAsJsonObject();
+                JsonObject $4 = e.getAsJsonObject();
                 l2.add(new TrimMaterial(asJsonObject.get("materialId").getAsString(), asJsonObject.get("color").getAsString(), asJsonObject.get("itemName").getAsString()));
             }
             trimPatterns = Collections.unmodifiableList(l1);

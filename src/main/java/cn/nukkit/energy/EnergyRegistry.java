@@ -13,6 +13,10 @@ public final class EnergyRegistry {
      * @param energyType The energy type to register.
      * @return If the energy type was registered successfully.
      */
+    /**
+     * @deprecated 
+     */
+    
     public static boolean registerEnergyType(@NotNull EnergyType energyType) {
         if (!registeredEnergyTypes.containsKey(energyType.getName())) {
             registeredEnergyTypes.put(energyType.getName(), energyType);

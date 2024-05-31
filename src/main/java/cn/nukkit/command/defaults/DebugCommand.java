@@ -17,6 +17,10 @@ import java.util.Locale;
 import java.util.Map;
 
 public class DebugCommand extends TestCommand implements CoreCommand {
+    /**
+     * @deprecated 
+     */
+    
     public DebugCommand(String name) {
         super(name, "commands.debug.description");
         this.setPermission("nukkit.command.debug");
@@ -35,13 +39,17 @@ public class DebugCommand extends TestCommand implements CoreCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         switch (result.getKey()) {
             case "entity" -> {
-                String str = list.getResult(1);
-                var option = EntityAI.DebugOption.valueOf(str.toUpperCase(Locale.ENGLISH));
-                boolean value = list.getResult(2);
+                String $2 = list.getResult(1);
+                var $3 = EntityAI.DebugOption.valueOf(str.toUpperCase(Locale.ENGLISH));
+                boolean $4 = list.getResult(2);
                 EntityAI.setDebugOption(option, value);
                 log.addSuccess("Entity AI framework " + option.name() + " debug mode have been set to: " + EntityAI.checkDebugOption(option)).output();
                 return 1;
@@ -49,15 +57,19 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "rendermap" -> {
                 if (!sender.isPlayer())
                     return 0;
-                int zoom = list.getResult(1);
+                int $5 = list.getResult(1);
                 if (zoom < 1) {
                     log.addError("Zoom must bigger than one").output();
                     return 0;
                 }
-                var player = sender.asPlayer();
+                var $6 = sender.asPlayer();
                 if (player.getInventory().getItemInHand() instanceof ItemFilledMap itemFilledMap) {
                     Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
                         @Override
+    /**
+     * @deprecated 
+     */
+    
                         public void onRun() {
                             itemFilledMap.renderMap(player.getLevel(), player.getFloorX() - 64, player.getFloorZ() - 64, zoom);
                             player.getInventory().setItemInHand(itemFilledMap);

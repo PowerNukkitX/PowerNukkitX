@@ -13,34 +13,38 @@ import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class ObjectAzaleaTree extends TreeGenerator {
 
-    private static final BlockState OAK_LOG = BlockOakLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS.createValue(BlockFace.Axis.Y));
-    private static final BlockState DIRT_WITH_ROOTS = BlockDirtWithRoots.PROPERTIES.getDefaultState();
-    private static final BlockState AZALEA_LEAVES_FLOWERED = BlockAzaleaLeavesFlowered.PROPERTIES.getDefaultState();
-    private static final BlockState AZALEA_LEAVES = BlockAzaleaLeaves.PROPERTIES.getDefaultState();
+    private static final BlockState $1 = BlockOakLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS.createValue(BlockFace.Axis.Y));
+    private static final BlockState $2 = BlockDirtWithRoots.PROPERTIES.getDefaultState();
+    private static final BlockState $3 = BlockAzaleaLeavesFlowered.PROPERTIES.getDefaultState();
+    private static final BlockState $4 = BlockAzaleaLeaves.PROPERTIES.getDefaultState();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
-        int i = rand.nextInt(2) + 2;
-        int j = position.getFloorX();
-        int k = position.getFloorY();
-        int l = position.getFloorZ();
+        $5nt $1 = rand.nextInt(2) + 2;
+        int $6 = position.getFloorX();
+        int $7 = position.getFloorY();
+        int $8 = position.getFloorZ();
 
-        int i2 = k + i;
+        int $9 = k + i;
 
         if (k >= -63 && k + i + 2 < 320) {
-            Vector3 blockPosition = position.down();
-            for (int il = 0; il < i + 1; il++) {
+            Vector3 $10 = position.down();
+            for (int $11 = 0; il < i + 1; il++) {
                 placeLogAt(level, j, il + k, l);
             }
             this.setDirtAt(level, blockPosition);
 
 
-            for (int i3 = -2; i3 <= 1; ++i3) {
-                for (int l3 = -2; l3 <= 1; ++l3) {
-                    int k4 = 1;
-                    int offsetX = rand.nextInt(0, 1);
-                    int offsetY = rand.nextInt(0, 1);
-                    int offsetZ = rand.nextInt(0, 1);
+            for (int $12 = -2; i3 <= 1; ++i3) {
+                for (int $13 = -2; l3 <= 1; ++l3) {
+                    int $14 = 1;
+                    int $15 = rand.nextInt(0, 1);
+                    int $16 = rand.nextInt(0, 1);
+                    int $17 = rand.nextInt(0, 1);
                     this.placeLeafAt(level, j + i3 + offsetX, i2 + k4 + offsetY, l + l3 + offsetZ, rand);
                     this.placeLeafAt(level, j - i3 + offsetX, i2 + k4 + offsetY, l + l3 + offsetZ, rand);
                     this.placeLeafAt(level, j + i3 + offsetX, i2 + k4 + offsetY, l - l3 + offsetZ, rand);
@@ -77,22 +81,34 @@ public class ObjectAzaleaTree extends TreeGenerator {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void setDirtAt(BlockManager level, Vector3 pos) {
         level.setBlockStateAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), DIRT_WITH_ROOTS);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void placeLogAt(BlockManager worldIn, int x, int y, int z) {
-        Vector3 blockpos = new Vector3(x, y, z);
-        String material = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
+        Vector3 $18 = new Vector3(x, y, z);
+        String $19 = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
 
         if (material.equals(BlockID.AIR) || material.equals(BlockID.AZALEA_LEAVES) || material.equals(BlockID.AZALEA_LEAVES_FLOWERED)) {
             worldIn.setBlockStateAt(blockpos, OAK_LOG);
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void placeLeafAt(BlockManager worldIn, int x, int y, int z, RandomSourceProvider random) {
-        Vector3 blockpos = new Vector3(x, y, z);
-        String material = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
+        Vector3 $20 = new Vector3(x, y, z);
+        String $21 = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
 
         if (material.equals(BlockID.AIR)) {
             if (random.nextInt(3) == 1) {

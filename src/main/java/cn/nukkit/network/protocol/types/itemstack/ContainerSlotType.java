@@ -78,6 +78,10 @@ public enum ContainerSlotType {
     ContainerSlotType(int id) {
         this.id = id;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getId() {
         return id;

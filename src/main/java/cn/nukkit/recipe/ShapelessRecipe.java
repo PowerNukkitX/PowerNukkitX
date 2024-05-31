@@ -11,17 +11,33 @@ import java.util.List;
 import java.util.UUID;
 
 public class ShapelessRecipe extends CraftingRecipe {
+    /**
+     * @deprecated 
+     */
+    
     public ShapelessRecipe(Item result, Collection<Item> ingredients) {
         this(null, 10, result, ingredients);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ShapelessRecipe(String recipeId, int priority, Item result, Collection<Item> ingredients) {
         this(recipeId, priority, result, ingredients.stream().map(item -> (ItemDescriptor) new DefaultDescriptor(item)).toList());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ShapelessRecipe(String recipeId, int priority, Item result, List<ItemDescriptor> ingredients) {
         this(recipeId, null, priority, result, ingredients);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ShapelessRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients) {
         super(recipeId == null ? RecipeRegistry.computeRecipeId(List.of(result), ingredients, RecipeType.SHAPELESS) : recipeId, priority);
@@ -43,11 +59,15 @@ public class ShapelessRecipe extends CraftingRecipe {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean match(Input input) {
         Item[][] data = input.getData();
         List<Item> flatInputItem = new ArrayList<>();
-        for (int i = 0; i < input.getRow(); i++) {
-            for (int j = 0; j < input.getCol(); j++) {
+        for ($1nt $1 = 0; i < input.getRow(); i++) {
+            for (int $2 = 0; j < input.getCol(); j++) {
                 if (!data[j][i].isNull()) {
                     flatInputItem.add(data[j][i]);
                 }

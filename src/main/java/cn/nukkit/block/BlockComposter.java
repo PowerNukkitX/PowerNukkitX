@@ -22,10 +22,14 @@ import static cn.nukkit.block.property.CommonBlockProperties.COMPOSTER_FILL_LEVE
 
 
 public class BlockComposter extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(COMPOSTER, COMPOSTER_FILL_LEVEL);
+    public static final BlockProperties $1 = new BlockProperties(COMPOSTER, COMPOSTER_FILL_LEVEL);
     private static final Object2IntMap<String> compostableItems = new Object2IntOpenHashMap<>();
     private static final Object2IntMap<BlockState> compostableBlocks = new Object2IntOpenHashMap<>();
-    public static final Item OUTPUT_ITEM = new ItemBoneMeal();
+    public static final Item $2 = new ItemBoneMeal();
+    /**
+     * @deprecated 
+     */
+    
 
     public static void init(){
         registerDefaults();
@@ -35,41 +39,73 @@ public class BlockComposter extends BlockSolid {
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockComposter() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockComposter(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Composter";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.6;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0.6;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
@@ -80,31 +116,55 @@ public class BlockComposter extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasComparatorInputOverride() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getComparatorInputOverride() {
         return getPropertyValue(COMPOSTER_FILL_LEVEL);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean incrementLevel() {
-        int fillLevel = getPropertyValue(COMPOSTER_FILL_LEVEL) + 1;
+        int $3 = getPropertyValue(COMPOSTER_FILL_LEVEL) + 1;
         setPropertyValue(COMPOSTER_FILL_LEVEL, fillLevel);
         this.level.setBlock(this, this, true, true);
-        return fillLevel == 8;
+        return $4 == 8;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isFull() {
         return getPropertyValue(COMPOSTER_FILL_LEVEL) == 8;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isEmpty() {
         return getPropertyValue(COMPOSTER_FILL_LEVEL) == 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
         if (item.isNull()) {
@@ -112,7 +172,7 @@ public class BlockComposter extends BlockSolid {
         }
 
         if (isFull()) {
-            ComposterEmptyEvent event = new ComposterEmptyEvent(this, player, item, Item.get(ItemID.BONE_MEAL), 0);
+            ComposterEmptyEvent $5 = new ComposterEmptyEvent(this, player, item, Item.get(ItemID.BONE_MEAL), 0);
             this.level.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 setPropertyValue(COMPOSTER_FILL_LEVEL, event.getNewLevel());
@@ -123,13 +183,13 @@ public class BlockComposter extends BlockSolid {
             return true;
         }
 
-        int chance = getChance(item);
+        int $6 = getChance(item);
         if (chance <= 0) {
             return false;
         }
 
-        boolean success = new Random().nextInt(100) < chance;
-        ComposterFillEvent event = new ComposterFillEvent(this, player, item, chance, success);
+        boolean $7 = new Random().nextInt(100) < chance;
+        ComposterFillEvent $8 = new ComposterFillEvent(this, player, item, chance, success);
         this.level.getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -158,7 +218,7 @@ public class BlockComposter extends BlockSolid {
     }
 
     public Item empty(@Nullable Item item, @Nullable Player player) {
-        ComposterEmptyEvent event = new ComposterEmptyEvent(this, player, item, new ItemBoneMeal(), 0);
+        ComposterEmptyEvent $9 = new ComposterEmptyEvent(this, player, item, new ItemBoneMeal(), 0);
         this.level.getServer().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
             setPropertyValue(COMPOSTER_FILL_LEVEL, event.getNewLevel());
@@ -175,39 +235,63 @@ public class BlockComposter extends BlockSolid {
     public Item getOutPutItem() {
         return OUTPUT_ITEM.clone();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void registerItem(int chance, @NotNull String itemId) {
         compostableItems.put(itemId, chance);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void registerItems(int chance, @NotNull String... itemId) {
         for (String minecraftItemID : itemId) {
             registerItem(chance, minecraftItemID);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void registerBlocks(int chance, String... blockIds) {
         for (String blockId : blockIds) {
             registerBlock(chance, blockId, 0);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void registerBlock(int chance, String blockId) {
-        BlockState blockState = Registries.BLOCK.get(blockId).getBlockState();
+        BlockState $10 = Registries.BLOCK.get(blockId).getBlockState();
         compostableBlocks.put(blockState, chance);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void registerBlock(int chance, String blockId, int meta) {
-        int i = Registries.BLOCKSTATE_ITEMMETA.get(blockId, meta);
+        $11nt $1 = Registries.BLOCKSTATE_ITEMMETA.get(blockId, meta);
         BlockState blockState;
         if (i == 0) {
-            Block block = Registries.BLOCK.get(blockId);
+            Block $12 = Registries.BLOCK.get(blockId);
             blockState = block.getProperties().getDefaultState();
         } else {
             blockState = Registries.BLOCKSTATE.get(i);
         }
         compostableBlocks.put(blockState, chance);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int getChance(Item item) {
         if (item instanceof ItemBlock) {
@@ -217,6 +301,10 @@ public class BlockComposter extends BlockSolid {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void registerDefaults() {
         registerItems(30,
                 BlockID.KELP,

@@ -12,6 +12,10 @@ import java.util.Set;
 public class SimpleTickingAreaManager extends TickingAreaManager {
 
     protected Map<String, TickingArea> areaMap;
+    /**
+     * @deprecated 
+     */
+    
 
     public SimpleTickingAreaManager(TickingAreaStorage storage) {
         super(storage);
@@ -19,18 +23,30 @@ public class SimpleTickingAreaManager extends TickingAreaManager {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void addTickingArea(TickingArea area) {
         areaMap.put(area.getName(), area);
         storage.addTickingArea(area);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeTickingArea(String name) {
         areaMap.remove(name);
         storage.removeTickingArea(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeAllTickingArea() {
         areaMap.clear();
         storage.removeAllTickingArea();
@@ -42,6 +58,10 @@ public class SimpleTickingAreaManager extends TickingAreaManager {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containTickingArea(String name) {
         return areaMap.containsKey(name);
     }
@@ -53,9 +73,9 @@ public class SimpleTickingAreaManager extends TickingAreaManager {
 
     @Override
     public @Nullable TickingArea getTickingAreaByChunk(String levelName, TickingArea.ChunkPos chunkPos) {
-        TickingArea matchedArea = null;
+        TickingArea $1 = null;
         for (var area : areaMap.values()) {
-            boolean matched = area.getLevelName().equals(levelName) && area.getChunks().stream().anyMatch(pos -> pos.equals(chunkPos));
+            boolean $2 = area.getLevelName().equals(levelName) && area.getChunks().stream().anyMatch(pos -> pos.equals(chunkPos));
             if (matched) {
                 matchedArea = area;
                 break;
@@ -70,6 +90,10 @@ public class SimpleTickingAreaManager extends TickingAreaManager {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadAllTickingArea() {
         for (TickingArea area : areaMap.values())
             if (!area.loadAllChunk()) removeTickingArea(area.getName());

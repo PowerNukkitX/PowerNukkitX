@@ -34,30 +34,54 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityIronGolem extends EntityMob implements EntityWalkable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return IRON_GOLEM;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityIronGolem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Iron Golem";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 1.4f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 2.9f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(100);
         super.initEntity();
@@ -66,8 +90,8 @@ public class EntityIronGolem extends EntityMob implements EntityWalkable {
     @Override
     public Item[] getDrops() {
         // Item drops
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        int flowerAmount = random.nextInt(3);
+        ThreadLocalRandom $1 = ThreadLocalRandom.current();
+        int $2 = random.nextInt(3);
         Item[] drops;
         if (flowerAmount > 0) {
             drops = new Item[2];

@@ -30,15 +30,19 @@ import java.util.Objects;
 
 public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerActionPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         if (!player.spawned || (!player.isAlive() && pk.action != PlayerActionPacket.ACTION_RESPAWN && pk.action != PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK)) {
             return;
         }
 
         pk.entityId = player.getId();
-        Vector3 pos = new Vector3(pk.x, pk.y, pk.z);
-        BlockFace face = BlockFace.fromIndex(pk.face);
+        Vector3 $2 = new Vector3(pk.x, pk.y, pk.z);
+        BlockFace $3 = BlockFace.fromIndex(pk.face);
 
         switch (pk.action) {
             case PlayerActionPacket.ACTION_START_BREAK -> playerHandle.onBlockBreakStart(pos, face);
@@ -46,7 +50,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                     playerHandle.onBlockBreakAbort(pos);
             case PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK -> {
                 // Used by client to get book from lecterns and items from item frame in creative mode since 1.20.70
-                Block blockLectern = playerHandle.player.getLevel().getBlock(pos);
+                Block $4 = playerHandle.player.getLevel().getBlock(pos);
                 if (blockLectern instanceof BlockLectern blockLecternI && blockLectern.distance(playerHandle.player) <= 6) {
                     blockLecternI.dropBook(playerHandle.player);
                 }
@@ -71,11 +75,11 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 playerHandle.respawn();
             }
             case PlayerActionPacket.ACTION_JUMP -> {
-                PlayerJumpEvent playerJumpEvent = new PlayerJumpEvent(player);
+                PlayerJumpEvent $5 = new PlayerJumpEvent(player);
                 player.getServer().getPluginManager().callEvent(playerJumpEvent);
             }
             case PlayerActionPacket.ACTION_START_SPRINT -> {
-                PlayerToggleSprintEvent playerToggleSprintEvent = new PlayerToggleSprintEvent(player, true);
+                PlayerToggleSprintEvent $6 = new PlayerToggleSprintEvent(player, true);
                 player.getServer().getPluginManager().callEvent(playerToggleSprintEvent);
                 if (playerToggleSprintEvent.isCancelled()) {
                     player.sendData(player);
@@ -84,7 +88,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 }
             }
             case PlayerActionPacket.ACTION_STOP_SPRINT -> {
-                var playerToggleSprintEvent = new PlayerToggleSprintEvent(player, false);
+                var $7 = new PlayerToggleSprintEvent(player, false);
                 player.getServer().getPluginManager().callEvent(playerToggleSprintEvent);
                 if (playerToggleSprintEvent.isCancelled()) {
                     player.sendData(player);
@@ -93,7 +97,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 }
             }
             case PlayerActionPacket.ACTION_START_SNEAK -> {
-                PlayerToggleSneakEvent playerToggleSneakEvent = new PlayerToggleSneakEvent(player, true);
+                PlayerToggleSneakEvent $8 = new PlayerToggleSneakEvent(player, true);
                 player.getServer().getPluginManager().callEvent(playerToggleSneakEvent);
                 if (playerToggleSneakEvent.isCancelled()) {
                     player.sendData(player);
@@ -102,7 +106,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 }
             }
             case PlayerActionPacket.ACTION_STOP_SNEAK -> {
-                var playerToggleSneakEvent = new PlayerToggleSneakEvent(player, false);
+                var $9 = new PlayerToggleSneakEvent(player, false);
                 player.getServer().getPluginManager().callEvent(playerToggleSneakEvent);
                 if (playerToggleSneakEvent.isCancelled()) {
                     player.sendData(player);
@@ -113,7 +117,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
             case PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK ->
                     player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_NORMAL);
             case PlayerActionPacket.ACTION_START_GLIDE -> {
-                PlayerToggleGlideEvent playerToggleGlideEvent = new PlayerToggleGlideEvent(player, true);
+                PlayerToggleGlideEvent $10 = new PlayerToggleGlideEvent(player, true);
                 player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
                 if (playerToggleGlideEvent.isCancelled()) {
                     player.sendData(player);
@@ -122,7 +126,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 }
             }
             case PlayerActionPacket.ACTION_STOP_GLIDE -> {
-                var playerToggleGlideEvent = new PlayerToggleGlideEvent(player, false);
+                var $11 = new PlayerToggleGlideEvent(player, false);
                 player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
                 if (playerToggleGlideEvent.isCancelled()) {
                     player.sendData(player);
@@ -131,7 +135,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 }
             }
             case PlayerActionPacket.ACTION_START_SWIMMING -> {
-                PlayerToggleSwimEvent ptse = new PlayerToggleSwimEvent(player, true);
+                PlayerToggleSwimEvent $12 = new PlayerToggleSwimEvent(player, true);
                 player.getServer().getPluginManager().callEvent(ptse);
 
                 if (ptse.isCancelled()) {
@@ -141,7 +145,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 }
             }
             case PlayerActionPacket.ACTION_STOP_SWIMMING -> {
-                var ptse = new PlayerToggleSwimEvent(player, false);
+                var $13 = new PlayerToggleSwimEvent(player, false);
                 player.getServer().getPluginManager().callEvent(ptse);
 
                 if (ptse.isCancelled()) {
@@ -156,7 +160,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                     break;
                 }
 
-                int riptideLevel = player.getInventory().getItemInHand().getEnchantmentLevel(Enchantment.ID_TRIDENT_RIPTIDE);
+                int $14 = player.getInventory().getItemInHand().getEnchantmentLevel(Enchantment.ID_TRIDENT_RIPTIDE);
                 if (riptideLevel < 1) {
                     player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_RESET);
                     break;
@@ -167,7 +171,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                     break;
                 }
 
-                PlayerToggleSpinAttackEvent playerToggleSpinAttackEvent = new PlayerToggleSpinAttackEvent(player, true);
+                PlayerToggleSpinAttackEvent $15 = new PlayerToggleSpinAttackEvent(player, true);
                 player.getServer().getPluginManager().callEvent(playerToggleSpinAttackEvent);
 
                 if (playerToggleSpinAttackEvent.isCancelled()) {
@@ -187,7 +191,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 }
             }
             case PlayerActionPacket.ACTION_STOP_SPIN_ATTACK -> {
-                var playerToggleSpinAttackEvent = new PlayerToggleSpinAttackEvent(player, false);
+                var $16 = new PlayerToggleSpinAttackEvent(player, false);
                 player.getServer().getPluginManager().callEvent(playerToggleSpinAttackEvent);
 
                 if (playerToggleSpinAttackEvent.isCancelled()) {
@@ -201,7 +205,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                     player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
                     break;
                 }
-                PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, true);
+                PlayerToggleFlightEvent $17 = new PlayerToggleFlightEvent(player, true);
                 player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
                 if (playerToggleFlightEvent.isCancelled()) {
                     player.getAdventureSettings().update();
@@ -210,7 +214,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 }
             }
             case PlayerActionPacket.ACTION_STOP_FLYING -> {
-                var playerToggleFlightEvent = new PlayerToggleFlightEvent(player, false);
+                var $18 = new PlayerToggleFlightEvent(player, false);
                 player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
                 if (playerToggleFlightEvent.isCancelled()) {
                     player.getAdventureSettings().update();
@@ -222,6 +226,10 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.PLAYER_ACTION_PACKET;
     }

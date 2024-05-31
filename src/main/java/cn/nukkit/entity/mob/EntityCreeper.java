@@ -37,9 +37,17 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityCreeper extends EntityMob implements EntityWalkable, EntityInteractable {
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return CREEPER;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityCreeper(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -62,15 +70,15 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 entity -> {
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) return true;
-                                    Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                    Player $1 = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                     return player.isSurvival();
                                 }
                         ), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
                 Set.of(new NearestPlayerSensor(16, 0, 20), entity -> {
-                    var memoryStorage = entity.getMemoryStorage();
-                    Entity attacker = memoryStorage.get(CoreMemoryTypes.ATTACK_TARGET);
+                    var $2 = entity.getMemoryStorage();
+                    Entity $3 = memoryStorage.get(CoreMemoryTypes.ATTACK_TARGET);
                     if (attacker == null)
                         attacker = memoryStorage.get(CoreMemoryTypes.NEAREST_PLAYER);
                     if (attacker != null && (!(attacker instanceof Player player) || player.isSurvival()) && attacker.distanceSquared(entity) <= 3 * 3 && (memoryStorage.isEmpty(CoreMemoryTypes.SHOULD_EXPLODE) || memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, false))) {
@@ -89,26 +97,46 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 1.8f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getFloatingHeight() {
         return 0.6f;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPowered() {
         return getDataProperty(HORSE_TYPE) > 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPowered(EntityLightningStrike bolt) {
-        CreeperPowerEvent ev = new CreeperPowerEvent(this, bolt, CreeperPowerEvent.PowerCause.LIGHTNING);
+        CreeperPowerEvent $4 = new CreeperPowerEvent(this, bolt, CreeperPowerEvent.PowerCause.LIGHTNING);
         this.getServer().getPluginManager().callEvent(ev);
 
         if (!ev.isCancelled()) {
@@ -116,9 +144,13 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
             this.namedTag.putBoolean("powered", true);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPowered(boolean powered) {
-        CreeperPowerEvent ev = new CreeperPowerEvent(this, powered ? CreeperPowerEvent.PowerCause.SET_ON : CreeperPowerEvent.PowerCause.SET_OFF);
+        CreeperPowerEvent $5 = new CreeperPowerEvent(this, powered ? CreeperPowerEvent.PowerCause.SET_ON : CreeperPowerEvent.PowerCause.SET_OFF);
         this.getServer().getPluginManager().callEvent(ev);
 
         if (!ev.isCancelled()) {
@@ -128,11 +160,19 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStruckByLightning(Entity entity) {
         this.setPowered(true);
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();
@@ -143,6 +183,10 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Creeper";
     }
@@ -156,13 +200,21 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPreventingSleep(Player player) {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        var memoryStorage = this.getMemoryStorage();
+        var $6 = this.getMemoryStorage();
         if (item.getId() == Item.FLINT_AND_STEEL && (memoryStorage.isEmpty(CoreMemoryTypes.SHOULD_EXPLODE) || memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, false))) {
             memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, true);
             memoryStorage.put(CoreMemoryTypes.EXPLODE_CANCELLABLE, false);
@@ -173,11 +225,19 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getInteractButtonText(Player player) {
         return "action.interact.creeper";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canDoInteraction() {
         return true;
     }

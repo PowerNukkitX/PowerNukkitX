@@ -26,7 +26,7 @@ public class PaddedBitArray implements BitArray {
         this.size = size;
         this.version = version;
         this.words = words;
-        int expectedWordsLength = MathHelper.ceil((float) size / version.entriesPerWord);
+        int $1 = MathHelper.ceil((float) size / version.entriesPerWord);
         if (words.length != expectedWordsLength) {
             throw new IllegalArgumentException("Invalid length given for storage, got: " + words.length +
                     " but expected: " + expectedWordsLength);
@@ -34,26 +34,38 @@ public class PaddedBitArray implements BitArray {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void set(int index, int value) {
         Preconditions.checkElementIndex(index, this.size);
         Preconditions.checkArgument(value >= 0 && value <= this.version.maxEntryValue,
                 "Max value: %s. Received value", this.version.maxEntryValue, value);
-        int arrayIndex = index / this.version.entriesPerWord;
-        int offset = (index % this.version.entriesPerWord) * this.version.bits;
+        int $2 = index / this.version.entriesPerWord;
+        int $3 = (index % this.version.entriesPerWord) * this.version.bits;
 
         this.words[arrayIndex] = this.words[arrayIndex] & ~(this.version.maxEntryValue << offset) | (value & this.version.maxEntryValue) << offset;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int get(int index) {
         Preconditions.checkElementIndex(index, this.size);
-        int arrayIndex = index / this.version.entriesPerWord;
-        int offset = (index % this.version.entriesPerWord) * this.version.bits;
+        int $4 = index / this.version.entriesPerWord;
+        int $5 = (index % this.version.entriesPerWord) * this.version.bits;
 
         return (this.words[arrayIndex] >>> offset) & this.version.maxEntryValue;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int size() {
         return this.size;
     }

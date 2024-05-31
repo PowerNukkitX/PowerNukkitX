@@ -12,11 +12,19 @@ public interface JSFeature {
 
     Map<String, ?> generateModule(String moduleName, Context context);
 
-    default boolean needsInject() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean needsInject() {
         return false;
     }
 
-    default void injectIntoContext(Context context) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void injectIntoContext(Context context) {
 
     }
 }

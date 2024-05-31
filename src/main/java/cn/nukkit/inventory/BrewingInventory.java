@@ -9,11 +9,19 @@ import org.jetbrains.annotations.Range;
 import java.util.Map;
 
 public class BrewingInventory extends ContainerInventory implements BlockEntityInventoryNameable {
+    /**
+     * @deprecated 
+     */
+    
     public BrewingInventory(BlockEntityBrewingStand brewingStand) {
         super(brewingStand, InventoryType.BREWING_STAND, 5);//1 INPUT, 3 POTION, 1 fuel
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         Map<Integer, ContainerSlotType> map = super.slotTypeMap();
         map.put(0, ContainerSlotType.BREWING_INPUT);
@@ -31,6 +39,10 @@ public class BrewingInventory extends ContainerInventory implements BlockEntityI
     public Item getIngredient() {
         return getItem(0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setIngredient(Item item) {
         setItem(0, item);
@@ -43,6 +55,10 @@ public class BrewingInventory extends ContainerInventory implements BlockEntityI
     public Item getResult(@Range(from = 1, to = 3) int index) {
         return getItem(index);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFuel(Item fuel) {
         setItem(4, fuel);
@@ -53,6 +69,10 @@ public class BrewingInventory extends ContainerInventory implements BlockEntityI
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onSlotChange(int index, Item before, boolean send) {
         super.onSlotChange(index, before, send);
 

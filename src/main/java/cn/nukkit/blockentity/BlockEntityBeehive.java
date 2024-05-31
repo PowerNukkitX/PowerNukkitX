@@ -23,9 +23,13 @@ import static cn.nukkit.block.property.CommonBlockProperties.HONEY_LEVEL;
 
 public class BlockEntityBeehive extends BlockEntity {
 
-    private static final Random RANDOM = new Random();
+    private static final Random $1 = new Random();
 
     private List<Occupant> occupants;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BlockEntityBeehive(IChunk chunk, CompoundTag nbt) {
@@ -33,6 +37,10 @@ public class BlockEntityBeehive extends BlockEntity {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initBlockEntity() {
         super.initBlockEntity();
         if (!isEmpty()) {
@@ -41,6 +49,10 @@ public class BlockEntityBeehive extends BlockEntity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         this.occupants = new ArrayList<>(4);
@@ -52,16 +64,16 @@ public class BlockEntityBeehive extends BlockEntity {
             this.namedTag.putList("Occupants", new ListTag<>());
         } else {
             ListTag<CompoundTag> occupantsTag = namedTag.getList("Occupants", CompoundTag.class);
-            for (int i = 0; i < occupantsTag.size(); i++) {
+            for ($2nt $1 = 0; i < occupantsTag.size(); i++) {
                 this.occupants.add(new Occupant(occupantsTag.get(i)));
             }
         }
 
         // Backward compatibility
         if (this.namedTag.contains("HoneyLevel")) {
-            Block block = getBlock();
+            Block $3 = getBlock();
             if (block instanceof BlockBeehive beehive) {
-                int honeyLevel = this.namedTag.getByte("HoneyLevel");
+                int $4 = this.namedTag.getByte("HoneyLevel");
                 beehive.setBlockFace(beehive.getBlockFace());
                 beehive.setHoneyLevel(honeyLevel);
                 beehive.getLevel().setBlock(beehive, beehive, true, true);
@@ -71,6 +83,10 @@ public class BlockEntityBeehive extends BlockEntity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         ListTag<CompoundTag> occupantsTag = new ListTag<>();
@@ -81,9 +97,9 @@ public class BlockEntityBeehive extends BlockEntity {
 
         // Backward compatibility
         if (this.namedTag.contains("HoneyLevel")) {
-            Block block = getBlock();
+            Block $5 = getBlock();
             if (block instanceof BlockBeehive beehive) {
-                int honeyLevel = this.namedTag.getByte("HoneyLevel");
+                int $6 = this.namedTag.getByte("HoneyLevel");
                 beehive.setBlockFace(beehive.getBlockFace());
                 beehive.setHoneyLevel(honeyLevel);
                 beehive.getLevel().setBlock(beehive, beehive, true, true);
@@ -91,23 +107,35 @@ public class BlockEntityBeehive extends BlockEntity {
             this.namedTag.remove("HoneyLevel");
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getHoneyLevel() {
-        Block block = getBlock();
+        Block $7 = getBlock();
         if (block instanceof BlockBeehive) {
             return ((BlockBeehive) block).getHoneyLevel();
         } else {
             return 0;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setHoneyLevel(int honeyLevel) {
-        Block block = getBlock();
+        Block $8 = getBlock();
         if (block instanceof BlockBeehive) {
             ((BlockBeehive) block).setHoneyLevel(honeyLevel);
             block.getLevel().setBlock(block, block, true, true);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean addOccupant(Occupant occupant) {
         occupants.add(occupant);
@@ -120,8 +148,8 @@ public class BlockEntityBeehive extends BlockEntity {
 
     public Occupant addOccupant(Entity entity) {
         if (entity instanceof EntityBee) {
-            EntityBee bee = (EntityBee) entity;
-            boolean hasNectar = bee.getHasNectar();
+            EntityBee $9 = (EntityBee) entity;
+            boolean $10 = bee.getHasNectar();
             return addOccupant(bee, hasNectar ? 2400 : 600, hasNectar, true);
         } else {
             return addOccupant(entity, 600, false, true);
@@ -138,7 +166,7 @@ public class BlockEntityBeehive extends BlockEntity {
 
     public Occupant addOccupant(Entity entity, int ticksLeftToStay, boolean hasNectar, boolean playSound) {
         entity.saveNBT();
-        Occupant occupant = new Occupant(ticksLeftToStay, entity.getIdentifier(), entity.namedTag.copy());
+        Occupant $11 = new Occupant(ticksLeftToStay, entity.getIdentifier(), entity.namedTag.copy());
         if (!addOccupant(occupant)) {
             return null;
         }
@@ -156,29 +184,53 @@ public class BlockEntityBeehive extends BlockEntity {
     public Occupant[] getOccupants() {
         return occupants.toArray(Occupant.EMPTY_ARRAY);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean removeOccupant(Occupant occupant) {
         return occupants.remove(occupant);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isHoneyEmpty() {
         return getHoneyLevel() == HONEY_LEVEL.getMin();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isHoneyFull() {
         return getHoneyLevel() == HONEY_LEVEL.getMax();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isEmpty() {
         return occupants.isEmpty();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getOccupantsCount() {
         return occupants.size();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSpawnFaceValid(BlockFace face) {
-        Block side = getSide(face).getLevelBlock();
+        Block $12 = getSide(face).getLevelBlock();
         return side.canPassThrough() && !(side instanceof BlockLiquid);
     }
 
@@ -188,9 +240,9 @@ public class BlockEntityBeehive extends BlockEntity {
 
     public List<BlockFace> scanValidSpawnFaces(boolean preferFront) {
         if (preferFront) {
-            Block block = getBlock();
+            Block $13 = getBlock();
             if (block instanceof BlockBeehive) {
-                BlockFace beehiveFace = ((BlockBeehive) block).getBlockFace();
+                BlockFace $14 = ((BlockBeehive) block).getBlockFace();
                 if (isSpawnFaceValid(beehiveFace)) {
                     return Collections.singletonList(beehiveFace);
                 }
@@ -198,8 +250,8 @@ public class BlockEntityBeehive extends BlockEntity {
         }
 
         List<BlockFace> validFaces = new ArrayList<>(4);
-        for (int faceIndex = 0; faceIndex < 4; faceIndex++) {
-            BlockFace face = BlockFace.fromHorizontalIndex(faceIndex);
+        for (int $15 = 0; faceIndex < 4; faceIndex++) {
+            BlockFace $16 = BlockFace.fromHorizontalIndex(faceIndex);
             if (isSpawnFaceValid(face)) {
                 validFaces.add(face);
             }
@@ -213,12 +265,12 @@ public class BlockEntityBeehive extends BlockEntity {
             return null;
         }
 
-        CompoundTag saveData = occupant.saveData.copy();
+        CompoundTag $17 = occupant.saveData.copy();
 
         Position lookAt;
         Position spawnPosition;
         if (validFaces != null) {
-            BlockFace face = validFaces.get(RANDOM.nextInt(validFaces.size()));
+            BlockFace $18 = validFaces.get(RANDOM.nextInt(validFaces.size()));
             spawnPosition = add(
                     face.getXOffset() * 0.25 - face.getZOffset() * 0.5,
                     face.getYOffset() + (face.getYOffset() < 0 ? -0.4 : 0.2),
@@ -243,9 +295,9 @@ public class BlockEntityBeehive extends BlockEntity {
             lookAt = spawnPosition.add(RANDOM.nextDouble(), 0, RANDOM.nextDouble());
         }
 
-        double dx = lookAt.getX() - spawnPosition.getX();
-        double dz = lookAt.getZ() - spawnPosition.getZ();
-        float yaw = 0;
+        double $19 = lookAt.getX() - spawnPosition.getX();
+        double $20 = lookAt.getZ() - spawnPosition.getZ();
+        float $21 = 0;
 
         if (dx != 0) {
             if (dx < 0) {
@@ -265,13 +317,13 @@ public class BlockEntityBeehive extends BlockEntity {
                 .add(new FloatTag(0))
         );
 
-        Entity entity = Entity.createEntity(occupant.actorIdentifier, spawnPosition.getChunk(), saveData);
+        Entity $22 = Entity.createEntity(occupant.actorIdentifier, spawnPosition.getChunk(), saveData);
         if (entity != null) {
             removeOccupant(occupant);
             level.addSound(this, Sound.BLOCK_BEEHIVE_EXIT);
         }
 
-        EntityBee bee = entity instanceof EntityBee ? (EntityBee) entity : null;
+        EntityBee $23 = entity instanceof EntityBee ? (EntityBee) entity : null;
 
         if (occupant.getHasNectar() && occupant.getTicksLeftToStay() <= 0) {
             if (!isHoneyFull()) {
@@ -294,11 +346,15 @@ public class BlockEntityBeehive extends BlockEntity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onBreak(boolean isSilkTouch) {
         if (!isSilkTouch) {
             if (!isEmpty()) {
                 for (BlockEntityBeehive.Occupant occupant : getOccupants()) {
-                    Entity entity = spawnOccupant(occupant, null);
+                    Entity $24 = spawnOccupant(occupant, null);
                     if (level == null || level.getBlock(down()).getId() != BlockID.CAMPFIRE) {
                         if (entity instanceof EntityBee) {
                             ((EntityBee) entity).setAngry(true);
@@ -310,6 +366,10 @@ public class BlockEntityBeehive extends BlockEntity {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void angerBees(Player player) {
         if (!isEmpty()) {
@@ -321,9 +381,9 @@ public class BlockEntityBeehive extends BlockEntity {
                 validFaces.add(BlockFace.DOWN);
             }
             for (BlockEntityBeehive.Occupant occupant : getOccupants()) {
-                Entity entity = spawnOccupant(occupant, validFaces);
+                Entity $25 = spawnOccupant(occupant, validFaces);
                 if (entity instanceof EntityBee) {
-                    EntityBee bee = (EntityBee) entity;
+                    EntityBee $26 = (EntityBee) entity;
                     if (player != null) {
                         bee.setAngry(player);
                     } else {
@@ -337,6 +397,10 @@ public class BlockEntityBeehive extends BlockEntity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate() {
         if (this.closed || isEmpty()) {
             return false;
@@ -363,9 +427,13 @@ public class BlockEntityBeehive extends BlockEntity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
-        String id = this.getBlock().getId();
-        return id == Block.BEEHIVE || id == Block.BEE_NEST;
+        String $27 = this.getBlock().getId();
+        return $28 == Block.BEEHIVE || id == Block.BEE_NEST;
     }
 
     public static final class Occupant implements Cloneable {
@@ -376,10 +444,14 @@ public class BlockEntityBeehive extends BlockEntity {
         private int ticksLeftToStay;
         private String actorIdentifier;
         private CompoundTag saveData;
-        private Sound workSound = Sound.BLOCK_BEEHIVE_WORK;
-        private float workSoundPitch = 1;
+        private Sound $29 = Sound.BLOCK_BEEHIVE_WORK;
+        private float $30 = 1;
         private boolean hasNectar;
         private boolean muted;
+    /**
+     * @deprecated 
+     */
+    
 
 
         public Occupant(int ticksLeftToStay, String actorIdentifier, CompoundTag saveData) {
@@ -388,7 +460,11 @@ public class BlockEntityBeehive extends BlockEntity {
             this.saveData = saveData;
         }
 
-        private Occupant(CompoundTag saved) {
+        
+    /**
+     * @deprecated 
+     */
+    private Occupant(CompoundTag saved) {
             this.ticksLeftToStay = saved.getInt("TicksLeftToStay");
             this.actorIdentifier = saved.getString("ActorIdentifier");
             this.saveData = saved.getCompound("SaveData").copy();
@@ -407,7 +483,7 @@ public class BlockEntityBeehive extends BlockEntity {
         }
 
         public CompoundTag saveNBT() {
-            CompoundTag compoundTag = new CompoundTag();
+            CompoundTag $31 = new CompoundTag();
             compoundTag.putString("ActorIdentifier", actorIdentifier)
                     .putInt("TicksLeftToStay", ticksLeftToStay)
                     .putCompound("SaveData", saveData)
@@ -417,26 +493,50 @@ public class BlockEntityBeehive extends BlockEntity {
                     .putBoolean("Muted", muted);
             return compoundTag;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean getHasNectar() {
             return hasNectar;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void setHasNectar(boolean hasNectar) {
             this.hasNectar = hasNectar;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public int getTicksLeftToStay() {
             return ticksLeftToStay;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void setTicksLeftToStay(int ticksLeftToStay) {
             this.ticksLeftToStay = ticksLeftToStay;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public String getActorIdentifier() {
             return actorIdentifier;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void setActorIdentifier(String actorIdentifier) {
             this.actorIdentifier = actorIdentifier;
@@ -445,6 +545,10 @@ public class BlockEntityBeehive extends BlockEntity {
         public CompoundTag getSaveData() {
             return saveData.copy();
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void setSaveData(CompoundTag saveData) {
             this.saveData = saveData.copy();
@@ -453,28 +557,52 @@ public class BlockEntityBeehive extends BlockEntity {
         public Sound getWorkSound() {
             return workSound;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void setWorkSound(Sound workSound) {
             this.workSound = workSound;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public float getWorkSoundPitch() {
             return workSoundPitch;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void setWorkSoundPitch(float workSoundPitch) {
             this.workSoundPitch = workSoundPitch;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean isMuted() {
             return muted;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void setMuted(boolean muted) {
             this.muted = muted;
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public String toString() {
             return "Occupant{" +
                     "ticksLeftToStay=" + ticksLeftToStay +
@@ -483,16 +611,24 @@ public class BlockEntityBeehive extends BlockEntity {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            Occupant occupant = (Occupant) o;
-            return ticksLeftToStay == occupant.ticksLeftToStay &&
+            Occupant $32 = (Occupant) o;
+            return $33 == occupant.ticksLeftToStay &&
                     Objects.equals(actorIdentifier, occupant.actorIdentifier) &&
                     Objects.equals(saveData, occupant.saveData);
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public int hashCode() {
             return Objects.hash(ticksLeftToStay, actorIdentifier, saveData);
         }
@@ -500,7 +636,7 @@ public class BlockEntityBeehive extends BlockEntity {
         @Override
         protected Occupant clone() {
             try {
-                Occupant occupant = (Occupant) super.clone();
+                Occupant $34 = (Occupant) super.clone();
                 occupant.saveData = this.saveData.copy();
                 return occupant;
             } catch (CloneNotSupportedException e) {

@@ -16,22 +16,34 @@ import javax.annotation.Nullable;
 
 public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<BlockEntityEndPortal> {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(END_PORTAL);
+    public static final BlockProperties $1 = new BlockProperties(END_PORTAL);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEndPortal() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEndPortal(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "End Portal Block";
     }
@@ -42,41 +54,73 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getBlockEntityType() {
         return BlockEntity.END_PORTAL;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return -1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 18000000;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 15;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
@@ -87,11 +131,19 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeFlowedInto() {
         return false;
     }
@@ -102,30 +154,46 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePushed() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePulled() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return getY() + (12.0 / 16.0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void spawnObsidianPlatform(Position position) {
-        Level level = position.getLevel();
-        int x = position.getFloorX();
-        int y = position.getFloorY();
-        int z = position.getFloorZ();
+        Level $2 = position.getLevel();
+        int $3 = position.getFloorX();
+        int $4 = position.getFloorY();
+        int $5 = position.getFloorZ();
 
-        for (int blockX = x - 2; blockX <= x + 2; blockX++) {
-            for (int blockZ = z - 2; blockZ <= z + 2; blockZ++) {
+        for (int $6 = x - 2; blockX <= x + 2; blockX++) {
+            for (int $7 = z - 2; blockZ <= z + 2; blockZ++) {
                 level.setBlockStateAt(blockX, y - 1, blockZ, PROPERTIES.getDefaultState());
-                for (int blockY = y; blockY <= y + 3; blockY++) {
+                for (int $8 = y; blockY <= y + 3; blockY++) {
                     level.setBlockStateAt(blockX, blockY, blockZ, BlockAir.PROPERTIES.getDefaultState());
                 }
             }

@@ -15,11 +15,19 @@ public class CodeBuilderSourcePacket extends DataPacket {
     public String value;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.CODE_BUILDER_SOURCE_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.operation = CodeBuilderOperationType.values()[byteBuf.readByte()];
         this.category = CodeBuilderCategoryType.values()[byteBuf.readByte()];
@@ -27,11 +35,19 @@ public class CodeBuilderSourcePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeByte((byte) operation.ordinal());
         byteBuf.writeByte((byte) category.ordinal());
         byteBuf.writeString(value);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

@@ -12,25 +12,45 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntitySquid extends EntityAnimal implements EntitySwimmable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return SQUID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntitySquid(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.95f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.95f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
@@ -42,6 +62,10 @@ public class EntitySquid extends EntityAnimal implements EntitySwimmable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Squid";
     }

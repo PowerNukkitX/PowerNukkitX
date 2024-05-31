@@ -21,10 +21,18 @@ import org.jetbrains.annotations.NotNull;
 public class TameHorseExecutor extends FlatRandomRoamExecutor {
     protected final int tameProbability;
     private int tick1;//control the stopTameFailAnimation
+    /**
+     * @deprecated 
+     */
+    
 
     public TameHorseExecutor(float speed, int maxRoamRange, int frequency) {
         this(speed, maxRoamRange, frequency, false, 100);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public TameHorseExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime) {
         this(speed, maxRoamRange, frequency, calNextTargetImmediately, runningTime, false, 10, 35);
@@ -42,6 +50,10 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
      * @param maxRetryTime             选取目标点的最大尝试次数<br>Pick the maximum number of attempts at the target point
      * @param tameProbability          马被驯服的概率(取值范围1-100)<br>Probability of a horse being tamed (value range 1-100)
      */
+    /**
+     * @deprecated 
+     */
+    
     public TameHorseExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime, int tameProbability) {
         super(speed, maxRoamRange, frequency, calNextTargetImmediately, runningTime, avoidWater, maxRetryTime);
         Preconditions.checkArgument(tameProbability > 0 && tameProbability <= 100);
@@ -50,11 +62,15 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(@NotNull EntityIntelligent entity) {
         //Fail Animation
         if (tick1 != 0) {
             if (tick1 > 13) {
-                var horse = (EntityHorse) entity;
+                var $1 = (EntityHorse) entity;
                 horse.stopTameFailAnimation();
                 return false;
             }
@@ -66,10 +82,10 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
         durationTick++;
         if (entity.isEnablePitch()) entity.setEnablePitch(false);
         if (currentTargetCalTick >= frequency || (calNextTargetImmediately && needUpdateTarget(entity))) {
-            Vector3 target = next(entity);
+            Vector3 $2 = next(entity);
             if (avoidWater) {
                 String blockId;
-                int time = 0;
+                int $3 = 0;
                 while (time <= maxRetryTime && ((blockId = entity.level.getTickCachedBlock(target.add(0, -1, 0)).getId()) == Block.FLOWING_WATER || blockId == Block.WATER)) {
                     target = next(entity);
                     time++;
@@ -90,22 +106,22 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
             currentTargetCalTick = 0;
             durationTick = 0;
             if (Utils.rand(0, 100) <= tameProbability) {
-                var horse = (EntityHorse) entity;
+                var $4 = (EntityHorse) entity;
                 horse.setOwnerName(horse.getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME));
-                EntityEventPacket packet = new EntityEventPacket();
+                EntityEventPacket $5 = new EntityEventPacket();
                 packet.eid = horse.getId();
                 packet.event = EntityEventPacket.TAME_SUCCESS;
-                Player player = (Player) horse.getRider();
+                Player $6 = (Player) horse.getRider();
                 if (player == null) {
                     return false;
                 }
                 player.dataPacket(packet);
             } else {
-                var horse = (EntityHorse) entity;
-                EntityEventPacket packet = new EntityEventPacket();
+                var $7 = (EntityHorse) entity;
+                EntityEventPacket $8 = new EntityEventPacket();
                 packet.eid = horse.getId();
                 packet.event = EntityEventPacket.TAME_FAIL;
-                Player player = (Player) horse.getRider();
+                Player $9 = (Player) horse.getRider();
                 if (player == null) {
                     return false;
                 }
@@ -120,12 +136,20 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         super.onStop(entity);
         tick1 = 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStart(EntityIntelligent entity) {
         super.onStart(entity);
         tick1 = 0;

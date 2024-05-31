@@ -12,31 +12,47 @@ import javax.annotation.Nullable;
  */
 public interface EntityOwnable extends EntityComponent {
     @Nullable
-    default String getOwnerName() {
+    default 
+    /**
+     * @deprecated 
+     */
+    String getOwnerName() {
         return getMemoryStorage().get(CoreMemoryTypes.OWNER_NAME);
     }
 
-    default void setOwnerName(@Nullable String playerName) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void setOwnerName(@Nullable String playerName) {
         getMemoryStorage().put(CoreMemoryTypes.OWNER_NAME, playerName);
     }
 
     @Nullable
     default Player getOwner() {
-        var owner = getMemoryStorage().get(CoreMemoryTypes.OWNER);
+        var $1 = getMemoryStorage().get(CoreMemoryTypes.OWNER);
         if (owner != null && owner.isOnline()) return owner;
         else {
-            var ownerName = getOwnerName();
+            var $2 = getOwnerName();
             if (ownerName == null) return null;
             owner = asEntity().getServer().getPlayerExact(ownerName);
         }
         return owner;
     }
 
-    default boolean hasOwner() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean hasOwner() {
         return hasOwner(true);
     }
 
-    default boolean hasOwner(boolean checkOnline) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean hasOwner(boolean checkOnline) {
         if (checkOnline) {
             return getOwner() != null;
         } else {

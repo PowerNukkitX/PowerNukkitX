@@ -19,6 +19,10 @@ import java.util.Map;
  * @since 2016/1/22
  */
 public class XpCommand extends Command {
+    /**
+     * @deprecated 
+     */
+    
     public XpCommand(String name) {
         super(name, "commands.xp.description");
         this.setPermission("nukkit.command.xp");
@@ -35,14 +39,18 @@ public class XpCommand extends Command {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         //  "/xp <amount> [player]"  for adding exp
         //  "/xp <amount>L [player]" for adding exp level
-        var list = result.getValue();
+        var $1 = result.getValue();
         List<Player> players = sender.isPlayer() ? Collections.singletonList(sender.asPlayer()) : null;
         switch (result.getKey()) {
             case "default" -> {
-                int amount = list.getResult(0);
+                int $2 = list.getResult(0);
                 if (amount < 0) {
                     log.addError("commands.xp.failure.widthdrawXp").output();
                     return 0;
@@ -62,7 +70,7 @@ public class XpCommand extends Command {
                 return players.size();
             }
             case "level" -> {
-                int level = list.getResult(0);
+                int $3 = list.getResult(0);
                 if (list.hasResult(1)) {
                     players = list.getResult(1);
                 }
@@ -71,7 +79,7 @@ public class XpCommand extends Command {
                     return 0;
                 }
                 for (Player player : players) {
-                    int newLevel = player.getExperienceLevel();
+                    int $4 = player.getExperienceLevel();
                     newLevel += level;
                     if (newLevel > 24791) newLevel = 24791;
                     if (newLevel < 0) {

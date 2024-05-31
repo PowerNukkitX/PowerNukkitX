@@ -36,55 +36,67 @@ import static com.google.common.base.Preconditions.checkArgument;
 @AllArgsConstructor
 public class AvailableCommandsPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.AVAILABLE_COMMANDS_PACKET;
+    public static final int $1 = ProtocolInfo.AVAILABLE_COMMANDS_PACKET;
 
     private static final ObjIntConsumer<HandleByteBuf> WRITE_BYTE = (s, v) -> s.writeByte((byte) v);
     private static final ObjIntConsumer<HandleByteBuf> WRITE_SHORT = HandleByteBuf::writeShortLE;
     private static final ObjIntConsumer<HandleByteBuf> WRITE_INT = HandleByteBuf::writeIntLE;
 
-    public static final int ARG_FLAG_VALID = 0x100000;
-    public static final int ARG_FLAG_ENUM = 0x200000;
-    public static final int ARG_FLAG_POSTFIX = 0x1000000;
-    public static final int ARG_FLAG_SOFT_ENUM = 0x4000000;
+    public static final int $2 = 0x100000;
+    public static final int $3 = 0x200000;
+    public static final int $4 = 0x1000000;
+    public static final int $5 = 0x4000000;
 
-    public static final int ARG_TYPE_INT = dynamic(1);
-    public static final int ARG_TYPE_FLOAT = dynamic(3);
-    public static final int ARG_TYPE_VALUE = dynamic(4);
-    public static final int ARG_TYPE_WILDCARD_INT = dynamic(5);
-    public static final int ARG_TYPE_OPERATOR = dynamic(6);
-    public static final int ARG_TYPE_COMPARE_OPERATOR = dynamic(7);
-    public static final int ARG_TYPE_TARGET = dynamic(8);
-    public static final int ARG_TYPE_WILDCARD_TARGET = dynamic(10);
+    public static final int $6 = dynamic(1);
+    public static final int $7 = dynamic(3);
+    public static final int $8 = dynamic(4);
+    public static final int $9 = dynamic(5);
+    public static final int $10 = dynamic(6);
+    public static final int $11 = dynamic(7);
+    public static final int $12 = dynamic(8);
+    public static final int $13 = dynamic(10);
 
-    public static final int ARG_TYPE_FILE_PATH = dynamic(17);
+    public static final int $14 = dynamic(17);
 
-    public static final int ARG_TYPE_FULL_INTEGER_RANGE = dynamic(23);
+    public static final int $15 = dynamic(23);
 
-    public static final int ARG_TYPE_EQUIPMENT_SLOT = dynamic(47);
-    public static final int ARG_TYPE_STRING = dynamic(56);
-    public static final int ARG_TYPE_BLOCK_POSITION = dynamic(64);
-    public static final int ARG_TYPE_POSITION = dynamic(65);
+    public static final int $16 = dynamic(47);
+    public static final int $17 = dynamic(56);
+    public static final int $18 = dynamic(64);
+    public static final int $19 = dynamic(65);
 
-    public static final int ARG_TYPE_MESSAGE = dynamic(68);
-    public static final int ARG_TYPE_RAWTEXT = dynamic(70);
-    public static final int ARG_TYPE_JSON = dynamic(74);
-    public static final int ARG_TYPE_BLOCK_STATES = dynamic(84);
-    public static final int ARG_TYPE_COMMAND = dynamic(87);
+    public static final int $20 = dynamic(68);
+    public static final int $21 = dynamic(70);
+    public static final int $22 = dynamic(74);
+    public static final int $23 = dynamic(84);
+    public static final int $24 = dynamic(87);
 
     public Map<String, CommandDataVersions> commands;
     public final List<CommandEnumConstraintData> constraints = new ObjectArrayList<>();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         //non
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         Set<String> enumValuesSet = new ObjectOpenHashSet<>();
@@ -96,7 +108,7 @@ public class AvailableCommandsPacket extends DataPacket {
 
         // Get all enum values
         for (var entry : commands.entrySet()) {
-            var data = entry.getValue().versions.get(0);
+            var $25 = entry.getValue().versions.get(0);
             if (data.aliases != null) {
                 enumValuesSet.addAll(data.aliases.getValues());
                 enumsSet.add(data.aliases);
@@ -121,7 +133,7 @@ public class AvailableCommandsPacket extends DataPacket {
 
             for (CommandParameter[] overload : data.overloads.values().stream().map(o -> o.input.parameters).toList()) {
                 for (CommandParameter parameter : overload) {
-                    CommandEnum commandEnumData = parameter.enumData;
+                    CommandEnum $26 = parameter.enumData;
                     if (commandEnumData != null) {
                         if (commandEnumData.isSoft()) {
                             softEnumsSet.add(commandEnumData);
@@ -131,7 +143,7 @@ public class AvailableCommandsPacket extends DataPacket {
                         }
                     }
 
-                    String postfix = parameter.postFix;
+                    String $27 = parameter.postFix;
                     if (postfix != null) {
                         postfixSet.add(postfix);
                     }
@@ -177,10 +189,10 @@ public class AvailableCommandsPacket extends DataPacket {
             byteBuf.writeString(chainedSubCommandData.getName());
             byteBuf.writeUnsignedVarInt(chainedSubCommandData.getValues().size());
             for (ChainedSubCommandData.Value value : chainedSubCommandData.getValues()) {
-                int first = subCommandValues.indexOf(value.getFirst());
+                int $28 = subCommandValues.indexOf(value.getFirst());
                 checkArgument(first > -1, "Invalid enum value detected: " + value.getFirst());
 
-                int second = subCommandValues.indexOf(value.getSecond());
+                int $29 = subCommandValues.indexOf(value.getSecond());
                 checkArgument(second > -1, "Invalid enum value detected: " + value.getSecond());
 
                 byteBuf.writeShortLE(first);
@@ -207,14 +219,18 @@ public class AvailableCommandsPacket extends DataPacket {
         byteBuf.writeUnsignedVarInt(0);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void writeEnums(HandleByteBuf byteBuf, List<String> values, List<CommandEnum> enums) {
         // Determine width of enum index
         ObjIntConsumer<HandleByteBuf> indexWriter;
-        int valuesSize = values.size();
+        int $30 = values.size();
         if (valuesSize < 0x100) {//256
-            indexWriter = WRITE_BYTE;
+            $31 = WRITE_BYTE;
         } else if (valuesSize < 0x10000) {//65536
-            indexWriter = WRITE_SHORT;
+            $32 = WRITE_SHORT;
         } else {
             indexWriter = WRITE_INT;
         }
@@ -225,18 +241,22 @@ public class AvailableCommandsPacket extends DataPacket {
 
             byteBuf.writeUnsignedVarInt(commandEnum.getValues().size());
             for (String value : commandEnum.getValues()) {
-                int index = values.indexOf(value);
+                int $33 = values.indexOf(value);
                 Preconditions.checkArgument(index > -1, "Invalid enum value detected: " + value);
                 indexWriter.accept(byteBuf, index);
             }
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void writeCommand(HandleByteBuf byteBuf, Map.Entry<String, CommandDataVersions> commandEntry, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes, List<ChainedSubCommandData> subCommands) {
-        var commandData = commandEntry.getValue().versions.get(0);
+        var $34 = commandEntry.getValue().versions.get(0);
         byteBuf.writeString(commandEntry.getKey());
         byteBuf.writeString(commandData.description);
-        int flags = 0;
+        int $35 = 0;
         for (CommandData.Flag flag : commandData.flags) {
             flags |= flag.bit;
         }
@@ -247,7 +267,7 @@ public class AvailableCommandsPacket extends DataPacket {
 
         byteBuf.writeUnsignedVarInt(subCommands.size());
         for (ChainedSubCommandData subcommand : subCommands) {
-            int index = subCommands.indexOf(subcommand);
+            int $36 = subCommands.indexOf(subcommand);
             checkArgument(index > -1, "Invalid subcommand index: " + subcommand);
             byteBuf.writeShortLE(index);
         }
@@ -263,6 +283,10 @@ public class AvailableCommandsPacket extends DataPacket {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void writeParameter(HandleByteBuf byteBuf, CommandParameter param, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes) {
         byteBuf.writeString(param.name);
 
@@ -284,7 +308,7 @@ public class AvailableCommandsPacket extends DataPacket {
         byteBuf.writeIntLE(index);
         byteBuf.writeBoolean(param.optional);
 
-        byte options = 0;
+        byte $37 = 0;
         if (param.paramOptions != null) {
             for (CommandParamOption option : param.paramOptions) {
                 options |= 1 << option.ordinal();
@@ -293,6 +317,10 @@ public class AvailableCommandsPacket extends DataPacket {
         byteBuf.writeByte(options);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void writeCommandEnum(HandleByteBuf byteBuf, CommandEnum enumData) {
         Preconditions.checkNotNull(enumData, "enumData");
 
@@ -304,6 +332,10 @@ public class AvailableCommandsPacket extends DataPacket {
             byteBuf.writeString(value);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

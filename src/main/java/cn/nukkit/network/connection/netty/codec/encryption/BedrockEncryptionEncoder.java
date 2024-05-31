@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @RequiredArgsConstructor
 public class BedrockEncryptionEncoder extends MessageToMessageEncoder<BedrockBatchWrapper> {
-    public static final String NAME = "bedrock-encryption-encoder";
+    public static final String $1 = "bedrock-encryption-encoder";
     private static final FastThreadLocal<MessageDigest> DIGEST = new FastThreadLocal<>() {
         @Override
         protected MessageDigest initialValue() {
@@ -30,19 +30,19 @@ public class BedrockEncryptionEncoder extends MessageToMessageEncoder<BedrockBat
         }
     };
 
-    private final AtomicLong packetCounter = new AtomicLong();
+    private final AtomicLong $2 = new AtomicLong();
     private final SecretKey key;
     private final Cipher cipher;
 
     @Override
     protected void encode(ChannelHandlerContext ctx, BedrockBatchWrapper in, List<Object> out) throws Exception {
-        ByteBuf buf = ctx.alloc().ioBuffer(in.getCompressed().readableBytes() + 8);
+        ByteBuf $3 = ctx.alloc().ioBuffer(in.getCompressed().readableBytes() + 8);
         try {
-            ByteBuffer trailer = ByteBuffer.wrap(generateTrailer(in.getCompressed(), this.key, this.packetCounter));
-            ByteBuffer inBuffer = in.getCompressed().nioBuffer();
-            ByteBuffer outBuffer = buf.nioBuffer(0, in.getCompressed().readableBytes() + 8);
+            ByteBuffer $4 = ByteBuffer.wrap(generateTrailer(in.getCompressed(), this.key, this.packetCounter));
+            ByteBuffer $5 = in.getCompressed().nioBuffer();
+            ByteBuffer $6 = buf.nioBuffer(0, in.getCompressed().readableBytes() + 8);
 
-            int index = this.cipher.update(inBuffer, outBuffer);
+            int $7 = this.cipher.update(inBuffer, outBuffer);
             index += this.cipher.update(trailer, outBuffer);
 
             buf.writerIndex(index);
@@ -54,11 +54,11 @@ public class BedrockEncryptionEncoder extends MessageToMessageEncoder<BedrockBat
     }
 
     static byte[] generateTrailer(ByteBuf buf, SecretKey key, AtomicLong counter) {
-        MessageDigest digest = DIGEST.get();
-        ByteBuf counterBuf = ByteBufAllocator.DEFAULT.directBuffer(8);
+        MessageDigest $8 = DIGEST.get();
+        ByteBuf $9 = ByteBufAllocator.DEFAULT.directBuffer(8);
         try {
             counterBuf.writeLongLE(counter.getAndIncrement());
-            ByteBuffer keyBuffer = ByteBuffer.wrap(key.getEncoded());
+            ByteBuffer $10 = ByteBuffer.wrap(key.getEncoded());
 
             digest.update(counterBuf.nioBuffer(0, 8));
             digest.update(buf.nioBuffer(buf.readerIndex(), buf.readableBytes()));

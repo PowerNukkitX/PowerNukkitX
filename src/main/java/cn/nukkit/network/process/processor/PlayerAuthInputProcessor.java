@@ -29,18 +29,22 @@ import org.jetbrains.annotations.NotNull;
 
 public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInputPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerAuthInputPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         if (!pk.blockActionData.isEmpty()) {
             for (PlayerBlockActionData action : pk.blockActionData.values()) {
                 //hack 自从1.19.70开始，创造模式剑客户端不会发送PREDICT_DESTROY_BLOCK，但仍然发送START_DESTROY_BLOCK，过滤掉
                 if (player.getInventory().getItemInHand().isSword() && player.isCreative() && action.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
                     continue;
                 }
-                BlockVector3 blockPos = action.getPosition();
-                BlockFace blockFace = BlockFace.fromIndex(action.getFacing());
+                BlockVector3 $2 = action.getPosition();
+                BlockFace $3 = BlockFace.fromIndex(action.getFacing());
 
-                BlockVector3 lastBreakPos = playerHandle.getLastBlockAction() == null ? null : playerHandle.getLastBlockAction().getPosition();
+                BlockVector3 $4 = playerHandle.getLastBlockAction() == null ? null : playerHandle.getLastBlockAction().getPosition();
                 if (lastBreakPos != null && (lastBreakPos.getX() != blockPos.getX() || lastBreakPos.getY() != blockPos.getY() || lastBreakPos.getZ() != blockPos.getZ())) {
                     playerHandle.onBlockBreakAbort(lastBreakPos.asVector3());
                     playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
@@ -61,16 +65,16 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
 
         // As of 1.18 this is now used for sending item stack requests such as when mining a block.
         if (pk.itemStackRequest != null) {
-            DataPacketManager dataPacketManager = player.getSession().getDataPacketManager();
+            DataPacketManager $5 = player.getSession().getDataPacketManager();
             if (dataPacketManager != null) {
-                ItemStackRequestPacket itemStackRequestPacket = new ItemStackRequestPacket();
+                ItemStackRequestPacket $6 = new ItemStackRequestPacket();
                 itemStackRequestPacket.requests.add(pk.itemStackRequest);
                 dataPacketManager.processPacket(playerHandle, itemStackRequestPacket);
             }
         }
 
         if (pk.inputData.contains(AuthInputAction.START_SPRINTING)) {
-            PlayerToggleSprintEvent event = new PlayerToggleSprintEvent(player, true);
+            PlayerToggleSprintEvent $7 = new PlayerToggleSprintEvent(player, true);
             player.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 player.sendData(player);
@@ -79,7 +83,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             }
         }
         if (pk.inputData.contains(AuthInputAction.STOP_SPRINTING)) {
-            PlayerToggleSprintEvent event = new PlayerToggleSprintEvent(player, false);
+            PlayerToggleSprintEvent $8 = new PlayerToggleSprintEvent(player, false);
             player.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 player.sendData(player);
@@ -88,7 +92,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             }
         }
         if (pk.inputData.contains(AuthInputAction.START_SNEAKING)) {
-            PlayerToggleSneakEvent event = new PlayerToggleSneakEvent(player, true);
+            PlayerToggleSneakEvent $9 = new PlayerToggleSneakEvent(player, true);
             player.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 player.sendData(player);
@@ -97,7 +101,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             }
         }
         if (pk.inputData.contains(AuthInputAction.STOP_SNEAKING)) {
-            PlayerToggleSneakEvent event = new PlayerToggleSneakEvent(player, false);
+            PlayerToggleSneakEvent $10 = new PlayerToggleSneakEvent(player, false);
             player.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 player.sendData(player);
@@ -111,11 +115,11 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             } else player.setFlySneaking(false);
         }
         if (pk.inputData.contains(AuthInputAction.START_JUMPING)) {
-            PlayerJumpEvent playerJumpEvent = new PlayerJumpEvent(player);
+            PlayerJumpEvent $11 = new PlayerJumpEvent(player);
             player.getServer().getPluginManager().callEvent(playerJumpEvent);
         }
         if (pk.inputData.contains(AuthInputAction.START_SWIMMING)) {
-            var playerSwimmingEvent = new PlayerToggleSwimEvent(player, true);
+            var $12 = new PlayerToggleSwimEvent(player, true);
             player.getServer().getPluginManager().callEvent(playerSwimmingEvent);
             if (playerSwimmingEvent.isCancelled()) {
                 player.sendData(player);
@@ -124,7 +128,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             }
         }
         if (pk.inputData.contains(AuthInputAction.STOP_SWIMMING)) {
-            var playerSwimmingEvent = new PlayerToggleSwimEvent(player, false);
+            var $13 = new PlayerToggleSwimEvent(player, false);
             player.getServer().getPluginManager().callEvent(playerSwimmingEvent);
             if (playerSwimmingEvent.isCancelled()) {
                 player.sendData(player);
@@ -133,7 +137,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             }
         }
         if (pk.inputData.contains(AuthInputAction.START_GLIDING)) {
-            var playerToggleGlideEvent = new PlayerToggleGlideEvent(player, true);
+            var $14 = new PlayerToggleGlideEvent(player, true);
             player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
             if (playerToggleGlideEvent.isCancelled()) {
                 player.sendData(player);
@@ -142,7 +146,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             }
         }
         if (pk.inputData.contains(AuthInputAction.STOP_GLIDING)) {
-            var playerToggleGlideEvent = new PlayerToggleGlideEvent(player, false);
+            var $15 = new PlayerToggleGlideEvent(player, false);
             player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
             if (playerToggleGlideEvent.isCancelled()) {
                 player.sendData(player);
@@ -155,7 +159,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
                 return;
             }
-            PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, true);
+            PlayerToggleFlightEvent $16 = new PlayerToggleFlightEvent(player, true);
             player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
             if (playerToggleFlightEvent.isCancelled()) {
                 player.getAdventureSettings().update();
@@ -164,7 +168,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             }
         }
         if (pk.inputData.contains(AuthInputAction.STOP_FLYING)) {
-            PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, false);
+            PlayerToggleFlightEvent $17 = new PlayerToggleFlightEvent(player, false);
             player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
             if (playerToggleFlightEvent.isCancelled()) {
                 player.getAdventureSettings().update();
@@ -172,27 +176,27 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
             }
         }
-        Vector3 clientPosition = pk.position.asVector3().subtract(0, playerHandle.getBaseOffset(), 0);
-        float yaw = pk.yaw % 360;
-        float pitch = pk.pitch % 360;
-        float headYaw = pk.headYaw % 360;
+        Vector3 $18 = pk.position.asVector3().subtract(0, playerHandle.getBaseOffset(), 0);
+        float $19 = pk.yaw % 360;
+        float $20 = pk.pitch % 360;
+        float $21 = pk.headYaw % 360;
         if (headYaw < 0) {
             headYaw += 360;
         }
         if (yaw < 0) {
             yaw += 360;
         }
-        Location clientLoc = Location.fromObject(clientPosition, player.level, yaw, pitch, headYaw);
+        Location $22 = Location.fromObject(clientPosition, player.level, yaw, pitch, headYaw);
         // Proper player.isPassenger() check may be needed
         if (player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {
-            double inputY = pk.motion.getY();
+            double $23 = pk.motion.getY();
             if (inputY >= -1.001 && inputY <= 1.001) {
                 entityMinecartAbstract.setCurrentSpeed(inputY);
             }
         } else if (player.riding instanceof EntityBoat boat && pk.inputData.contains(AuthInputAction.IN_CLIENT_PREDICTED_IN_VEHICLE)) {
             if (player.riding.getId() == pk.predictedVehicle && player.riding.isControlling(player)) {
                 if (check(clientLoc, player)) {
-                    Location offsetLoc = clientLoc.add(0, playerHandle.getBaseOffset(), 0);
+                    Location $24 = clientLoc.add(0, playerHandle.getBaseOffset(), 0);
                     boat.onInput(offsetLoc);
                     playerHandle.handleMovement(offsetLoc);
                 }
@@ -214,16 +218,24 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         playerHandle.offerMovementTask(clientLoc);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static boolean check(Location clientLoc, Player player) {
-        var distance = clientLoc.distanceSquared(player);
-        var updatePosition = (float) Math.sqrt(distance) > 0.1f;
-        var updateRotation = (float) Math.abs(player.getPitch() - clientLoc.pitch) > 1
+        var $25 = clientLoc.distanceSquared(player);
+        var $26 = (float) Math.sqrt(distance) > 0.1f;
+        var $27 = (float) Math.abs(player.getPitch() - clientLoc.pitch) > 1
                 || (float) Math.abs(player.getYaw() - clientLoc.yaw) > 1
                 || (float) Math.abs(player.getHeadYaw() - clientLoc.headYaw) > 1;
         return updatePosition || updateRotation;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.PLAYER_AUTH_INPUT_PACKET;
     }

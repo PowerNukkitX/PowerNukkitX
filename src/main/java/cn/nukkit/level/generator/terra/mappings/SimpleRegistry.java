@@ -81,6 +81,10 @@ public class SimpleRegistry<CONTENT> implements Registry<CONTENT> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setContent(CONTENT content) {
         this.content = content;
     }

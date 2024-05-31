@@ -42,12 +42,20 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityShearable {
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return SHEEP;
     }
 
-    public boolean sheared = false;
-    public int color = 0;
+    public boolean $1 = false;
+    public int $2 = 0;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntitySheep(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -99,6 +107,10 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.45f;
@@ -107,6 +119,10 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (isBaby()) {
             return 0.65f;
@@ -115,12 +131,20 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Sheep";
     }
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(8);
         super.initEntity();
@@ -141,6 +165,10 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
 
@@ -149,6 +177,10 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (super.onInteract(player, item, clickedPos)) {
             return true;
@@ -161,6 +193,10 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
 
         return item.isShears() && shear();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean shear() {
         if (sheared || this.isBaby()) {
@@ -170,7 +206,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         this.sheared = true;
         this.setDataFlag(EntityFlag.SHEARED, true);
 
-        Item woolItem = this.getWoolItem();
+        Item $3 = this.getWoolItem();
         woolItem.setCount(ThreadLocalRandom.current().nextInt(2) + 1);
         this.level.dropItem(this, woolItem);
 
@@ -178,6 +214,10 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SHEAR));
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void growWool() {
         this.setDataFlag(EntityFlag.SHEARED, false);
@@ -186,13 +226,21 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
 
     @Override
     public Item[] getDrops() {
-        Item woolItem = sheared ? Item.AIR : this.getWoolItem();
+        Item $4 = sheared ? Item.AIR : this.getWoolItem();
         return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_MUTTON : Item.MUTTON)), woolItem};
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getColor() {
         return namedTag.getByte("Color");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setColor(int color) {
         this.color = color;
@@ -222,9 +270,13 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         };
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int randomColor() {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        double rand = random.nextDouble(1, 100);
+        ThreadLocalRandom $5 = ThreadLocalRandom.current();
+        double $6 = random.nextDouble(1, 100);
 
         if (rand <= 0.164) {
             return DyeColor.PINK.getWoolData();

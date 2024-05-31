@@ -21,28 +21,28 @@ import java.util.List;
 @AllArgsConstructor
 public class InventoryTransactionPacket extends DataPacket {
     //InventoryTransactionType 0-5
-    public static final int TYPE_NORMAL = 0;
-    public static final int TYPE_MISMATCH = 1;
-    public static final int TYPE_USE_ITEM = 2;
-    public static final int TYPE_USE_ITEM_ON_ENTITY = 3;
-    public static final int TYPE_RELEASE_ITEM = 4;
+    public static final int $1 = 0;
+    public static final int $2 = 1;
+    public static final int $3 = 2;
+    public static final int $4 = 3;
+    public static final int $5 = 4;
 
-    public static final int USE_ITEM_ACTION_CLICK_BLOCK = 0;
-    public static final int USE_ITEM_ACTION_CLICK_AIR = 1;
-    public static final int USE_ITEM_ACTION_BREAK_BLOCK = 2;
+    public static final int $6 = 0;
+    public static final int $7 = 1;
+    public static final int $8 = 2;
 
-    public static final int RELEASE_ITEM_ACTION_RELEASE = 0; //bow shoot
-    public static final int RELEASE_ITEM_ACTION_CONSUME = 1; //eat food, drink potion
+    public static final int $9 = 0; //bow shoot
+    public static final int $10 = 1; //eat food, drink potion
 
-    public static final int USE_ITEM_ON_ENTITY_ACTION_INTERACT = 0;
-    public static final int USE_ITEM_ON_ENTITY_ACTION_ATTACK = 1;
+    public static final int $11 = 0;
+    public static final int $12 = 1;
 
 
-    public static final int ACTION_MAGIC_SLOT_DROP_ITEM = 0;
-    public static final int ACTION_MAGIC_SLOT_PICKUP_ITEM = 1;
+    public static final int $13 = 0;
+    public static final int $14 = 1;
 
-    public static final int ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM = 0;
-    public static final int ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM = 1;
+    public static final int $15 = 0;
+    public static final int $16 = 1;
 
     public int transactionType;
     public NetworkInventoryAction[] actions;
@@ -55,17 +55,25 @@ public class InventoryTransactionPacket extends DataPacket {
      * NOTE: THESE FIELDS DO NOT EXIST IN THE PROTOCOL, it's merely used for convenience for us to easily
      * determine whether we're doing a crafting or enchanting transaction.
      */
-    public boolean isCraftingPart = false;
-    public boolean isEnchantingPart = false;
-    public boolean isRepairItemPart = false;
-    public boolean isTradeItemPart = false;
+    public boolean $17 = false;
+    public boolean $18 = false;
+    public boolean $19 = false;
+    public boolean $20 = false;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.INVENTORY_TRANSACTION_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeVarInt(this.legacyRequestId);
@@ -90,7 +98,7 @@ public class InventoryTransactionPacket extends DataPacket {
             case TYPE_MISMATCH:
                 break;
             case TYPE_USE_ITEM:
-                UseItemData useItemData = (UseItemData) this.transactionData;
+                UseItemData $21 = (UseItemData) this.transactionData;
                 byteBuf.writeUnsignedVarInt(useItemData.actionType);
                 byteBuf.writeBlockVector3(useItemData.blockPos);
                 byteBuf.writeBlockFace(useItemData.face);
@@ -101,7 +109,7 @@ public class InventoryTransactionPacket extends DataPacket {
                 byteBuf.writeUnsignedVarInt(useItemData.blockRuntimeId);
                 break;
             case TYPE_USE_ITEM_ON_ENTITY:
-                UseItemOnEntityData useItemOnEntityData = (UseItemOnEntityData) this.transactionData;
+                UseItemOnEntityData $22 = (UseItemOnEntityData) this.transactionData;
 
                 byteBuf.writeEntityRuntimeId(useItemOnEntityData.entityRuntimeId);
                 byteBuf.writeUnsignedVarInt(useItemOnEntityData.actionType);
@@ -111,7 +119,7 @@ public class InventoryTransactionPacket extends DataPacket {
                 byteBuf.writeVector3f(useItemOnEntityData.clickPos.asVector3f());
                 break;
             case TYPE_RELEASE_ITEM:
-                ReleaseItemData releaseItemData = (ReleaseItemData) this.transactionData;
+                ReleaseItemData $23 = (ReleaseItemData) this.transactionData;
 
                 byteBuf.writeUnsignedVarInt(releaseItemData.actionType);
                 byteBuf.writeVarInt(releaseItemData.hotbarSlot);
@@ -124,12 +132,16 @@ public class InventoryTransactionPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.legacyRequestId = byteBuf.readVarInt();
         if (legacyRequestId != 0) {
-            int length = byteBuf.readUnsignedVarInt();
-            for (int i = 0; i < length; i++) {
-                byte containerId = byteBuf.readByte();
+            int $24 = byteBuf.readUnsignedVarInt();
+            for ($25nt $1 = 0; i < length; i++) {
+                byte $26 = byteBuf.readByte();
                 byte[] slots = byteBuf.readByteArray();
                 this.legacySlots.add(new LegacySetItemSlotData(containerId, slots));
             }
@@ -137,9 +149,9 @@ public class InventoryTransactionPacket extends DataPacket {
         //InventoryTransactionType
         this.transactionType = byteBuf.readUnsignedVarInt();
 
-        int length = byteBuf.readUnsignedVarInt();
+        int $27 = byteBuf.readUnsignedVarInt();
         Collection<NetworkInventoryAction> actions = new ArrayDeque<>();
-        for (int i = 0; i < length; i++) {
+        for ($28nt $2 = 0; i < length; i++) {
             actions.add(new NetworkInventoryAction().read(this, byteBuf));
         }
         this.actions = actions.toArray(NetworkInventoryAction.EMPTY_ARRAY);
@@ -150,7 +162,7 @@ public class InventoryTransactionPacket extends DataPacket {
                 //Regular ComplexInventoryTransaction doesn't read any extra data
                 break;
             case TYPE_USE_ITEM:
-                UseItemData itemData = new UseItemData();
+                UseItemData $29 = new UseItemData();
 
                 itemData.actionType = byteBuf.readUnsignedVarInt();
                 itemData.blockPos = byteBuf.readBlockVector3();
@@ -164,7 +176,7 @@ public class InventoryTransactionPacket extends DataPacket {
                 this.transactionData = itemData;
                 break;
             case TYPE_USE_ITEM_ON_ENTITY:
-                UseItemOnEntityData useItemOnEntityData = new UseItemOnEntityData();
+                UseItemOnEntityData $30 = new UseItemOnEntityData();
 
                 useItemOnEntityData.entityRuntimeId = byteBuf.readEntityRuntimeId();
                 useItemOnEntityData.actionType = byteBuf.readUnsignedVarInt();
@@ -176,7 +188,7 @@ public class InventoryTransactionPacket extends DataPacket {
                 this.transactionData = useItemOnEntityData;
                 break;
             case TYPE_RELEASE_ITEM:
-                ReleaseItemData releaseItemData = new ReleaseItemData();
+                ReleaseItemData $31 = new ReleaseItemData();
 
                 releaseItemData.actionType = byteBuf.readUnsignedVarInt();
                 releaseItemData.hotbarSlot = byteBuf.readVarInt();
@@ -189,6 +201,10 @@ public class InventoryTransactionPacket extends DataPacket {
                 throw new RuntimeException("Unknown transaction type " + this.transactionType);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

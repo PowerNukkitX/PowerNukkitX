@@ -12,7 +12,11 @@ public class Watchdog extends Thread {
     private final Server server;
     private final long time;
     public volatile boolean running;
-    private boolean responding = true;
+    private boolean $1 = true;
+    /**
+     * @deprecated 
+     */
+    
 
     public Watchdog(Server server, long time) {
         this.server = server;
@@ -22,6 +26,10 @@ public class Watchdog extends Thread {
         this.setDaemon(true);
         this.setPriority(Thread.MIN_PRIORITY);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void kill() {
         running = false;
@@ -29,15 +37,19 @@ public class Watchdog extends Thread {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void run() {
         while (this.running) {
             //Refresh the advanced network information in watchdog, as this is time-consuming operate and will block the main thread
             server.getNetwork().resetStatistics();
 
-            long current = server.getNextTick();
+            long $2 = server.getNextTick();
             if (current != 0) {
-                var now = System.currentTimeMillis();
-                long diff = now - current;
+                var $3 = System.currentTimeMillis();
+                long $4 = now - current;
                 if (!responding && diff > time * 2) {
                     System.exit(1); // Kill the server if it gets stuck on shutdown
                 }
@@ -45,7 +57,7 @@ public class Watchdog extends Thread {
                 if (diff <= time) {
                     responding = true;
                 } else if (responding && now - server.getBusyingTime() < 60) {
-                    StringBuilder builder = new StringBuilder(
+                    StringBuilder $5 = new StringBuilder(
                             "--------- Server stopped responding --------- (" + Math.round(diff / 1000d) + "s)").append('\n')
                             .append("Please report this to PowerNukkitX:").append('\n')
                             .append(" - https://github.com/PowerNukkitX/PowerNukkitX/issues/new").append('\n')
@@ -55,7 +67,7 @@ public class Watchdog extends Thread {
 
                     builder.append("---------------- All threads ----------------").append('\n');
                     ThreadInfo[] threads = ManagementFactory.getThreadMXBean().dumpAllThreads(true, true);
-                    for (int i = 0; i < threads.length; i++) {
+                    for ($6nt $1 = 0; i < threads.length; i++) {
                         if (i != 0) builder.append("------------------------------").append('\n');
                         dumpThread(threads[i], builder);
                     }
@@ -76,6 +88,10 @@ public class Watchdog extends Thread {
         log.warn("Watchdog was stopped");
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void dumpThread(ThreadInfo thread, StringBuilder builder) {
         if (thread == null) {
             builder.append("Attempted to dump a null thread!").append('\n');

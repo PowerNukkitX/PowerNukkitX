@@ -19,6 +19,10 @@ public abstract class EnchantmentProtection extends Enchantment {
     }
     protected final TYPE protectionType;
 
+    
+    /**
+     * @deprecated 
+     */
     protected EnchantmentProtection(int id, String name, Rarity rarity, EnchantmentProtection.TYPE type) {
         super(id, name, rarity, EnchantmentType.ARMOR);
         this.protectionType = type;
@@ -28,11 +32,19 @@ public abstract class EnchantmentProtection extends Enchantment {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canEnchant(@NotNull Item item) {
         return !(item instanceof ItemElytra) && super.canEnchant(item);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean checkCompatibility(Enchantment enchantment) {
         if (enchantment instanceof EnchantmentProtection) {
             if (((EnchantmentProtection) enchantment).protectionType == this.protectionType) {
@@ -44,20 +56,36 @@ public abstract class EnchantmentProtection extends Enchantment {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxLevel() {
         return 4;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "%enchantment.protect." + this.name;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getTypeModifier() {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isMajor() {
         return true;
     }

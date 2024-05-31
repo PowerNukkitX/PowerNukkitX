@@ -11,52 +11,88 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class BlockBorderBlock extends BlockWallBase {
-    public static final BlockProperties PROPERTIES = new BlockProperties(BORDER_BLOCK, CommonBlockProperties.WALL_CONNECTION_TYPE_EAST, CommonBlockProperties.WALL_CONNECTION_TYPE_NORTH, CommonBlockProperties.WALL_CONNECTION_TYPE_SOUTH, CommonBlockProperties.WALL_CONNECTION_TYPE_WEST, CommonBlockProperties.WALL_POST_BIT);
+    public static final BlockProperties $1 = new BlockProperties(BORDER_BLOCK, CommonBlockProperties.WALL_CONNECTION_TYPE_EAST, CommonBlockProperties.WALL_CONNECTION_TYPE_NORTH, CommonBlockProperties.WALL_CONNECTION_TYPE_SOUTH, CommonBlockProperties.WALL_CONNECTION_TYPE_WEST, CommonBlockProperties.WALL_POST_BIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBorderBlock() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBorderBlock(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return -1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 18000000;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Border Block";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePushed() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public  boolean canBePulled() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player != null && (!player.isCreative() || !player.isOp())) {
             return false;
@@ -65,6 +101,10 @@ public class BlockBorderBlock extends BlockWallBase {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBreakable(@NotNull Vector3 vector, int layer, BlockFace face, Item item, @Nullable Player player) {
         if (player != null && (!player.isCreative() || !player.isOp())) {
             return false;
@@ -79,7 +119,7 @@ public class BlockBorderBlock extends BlockWallBase {
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        AxisAlignedBB aabb = super.recalculateBoundingBox();
+        AxisAlignedBB $2 = super.recalculateBoundingBox();
         aabb.setMinY(Double.MIN_VALUE);
         aabb.setMaxY(Double.MAX_VALUE);
         return aabb;

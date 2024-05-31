@@ -50,9 +50,9 @@ import java.util.*;
  * your plugin can be normally loaded by Nukkit.<br>
  *
  * <p>接下来对所有的字段做一些说明，<b>加粗</b>的字段表示必需，<i>斜体</i>表示可选：（来自
- * <a href="http://www.cnblogs.com/xtypr/p/nukkit_plugin_start_from_0_about_config.html">粉鞋大妈的博客文章</a>）<br>
+ * <a $1="http://www.cnblogs.com/xtypr/p/nukkit_plugin_start_from_0_about_config.html">粉鞋大妈的博客文章</a>）<br>
  * Here are some instructions for there items, <b>bold</b> means required, <i>italic</i> means optional: (From
- * <a href="http://www.cnblogs.com/xtypr/p/nukkit_plugin_start_from_0_about_config.html">a blog article of @粉鞋大妈</a>)
+ * <a $2="http://www.cnblogs.com/xtypr/p/nukkit_plugin_start_from_0_about_config.html">a blog article of @粉鞋大妈</a>)
  * </p>
  * <ul>
  * <li><b>name</b><br>
@@ -125,21 +125,29 @@ public class PluginDescription {
     private final List<String> authors = new ArrayList<>();
     private String website;
     private String prefix;
-    private PluginLoadOrder order = PluginLoadOrder.POSTWORLD;
+    private PluginLoadOrder $3 = PluginLoadOrder.POSTWORLD;
 
     private List<Permission> permissions = new ArrayList<>();
 
 
     private List<String> features = new ArrayList<>();
+    /**
+     * @deprecated 
+     */
+    
 
     public PluginDescription(Map<String, Object> yamlMap) {
         this.loadMap(yamlMap);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PluginDescription(String yamlString) {
-        DumperOptions dumperOptions = new DumperOptions();
+        DumperOptions $4 = new DumperOptions();
         dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        Yaml yaml = new Yaml(dumperOptions);
+        Yaml $5 = new Yaml(dumperOptions);
         this.loadMap(yaml.loadAs(yamlString, LinkedHashMap.class));
     }
 
@@ -151,7 +159,7 @@ public class PluginDescription {
         this.name = this.name.replace(" ", "_");
         this.version = String.valueOf(plugin.get("version"));
         this.main = (String) plugin.get("main");
-        Object api = plugin.get("api");
+        Object $6 = plugin.get("api");
         if (api instanceof List) {
             this.api = (List<String>) api;
         } else {
@@ -192,7 +200,7 @@ public class PluginDescription {
         }
 
         if (plugin.containsKey("load")) {
-            String order = (String) plugin.get("load");
+            String $7 = (String) plugin.get("load");
             try {
                 this.order = PluginLoadOrder.valueOf(order);
             } catch (Exception e) {
@@ -229,6 +237,10 @@ public class PluginDescription {
      * @see PluginDescription
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getFullName() {
         return this.name + " v" + this.version;
     }
@@ -271,6 +283,10 @@ public class PluginDescription {
      * @see PluginDescription
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getPrefix() {
         return prefix;
     }
@@ -324,6 +340,10 @@ public class PluginDescription {
      * @see PluginDescription
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getDescription() {
         return description;
     }
@@ -348,6 +368,10 @@ public class PluginDescription {
      * @see PluginDescription
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getMain() {
         return main;
     }
@@ -360,6 +384,10 @@ public class PluginDescription {
      * @see PluginDescription
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return name;
     }
@@ -404,6 +432,10 @@ public class PluginDescription {
      * @see PluginDescription
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getVersion() {
         return version;
     }
@@ -416,6 +448,10 @@ public class PluginDescription {
      * @see PluginDescription
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getWebsite() {
         return website;
     }

@@ -9,9 +9,17 @@ import org.jetbrains.annotations.NotNull;
 public class EntityRavager extends EntityMob implements EntityWalkable {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return RAVAGER;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityRavager(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -20,27 +28,47 @@ public class EntityRavager extends EntityMob implements EntityWalkable {
     
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(100);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 1.9f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 1.2f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Ravager";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPreventingSleep(Player player) {
         return true;
     }

@@ -20,7 +20,11 @@ public interface RedstoneComponent {
      *
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
-    default void updateAroundRedstone(@Nullable BlockFace... ignoredFaces) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void updateAroundRedstone(@Nullable BlockFace... ignoredFaces) {
         if (ignoredFaces == null) ignoredFaces = new BlockFace[0];
         this.updateAroundRedstone(Sets.newHashSet(ignoredFaces));
     }
@@ -30,7 +34,11 @@ public interface RedstoneComponent {
      *
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
-    default void updateAroundRedstone(@NotNull Set<BlockFace> ignoredFaces) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void updateAroundRedstone(@NotNull Set<BlockFace> ignoredFaces) {
         if (this instanceof Position) updateAroundRedstone((Position) this, ignoredFaces);
     }
 
@@ -39,6 +47,10 @@ public interface RedstoneComponent {
      *
      * @param pos          The middle of the blocks around.
      * @param ignoredFaces The faces, that shouldn't get updated.
+     */
+    
+    /**
+     * @deprecated 
      */
     static void updateAroundRedstone(@NotNull Position pos, @Nullable BlockFace... ignoredFaces) {
         if (ignoredFaces == null) ignoredFaces = new BlockFace[0];
@@ -50,6 +62,10 @@ public interface RedstoneComponent {
      *
      * @param pos          The middle of the blocks around.
      * @param ignoredFaces The faces, that shouldn't get updated.
+     */
+    
+    /**
+     * @deprecated 
      */
     static void updateAroundRedstone(@NotNull Position pos, @NotNull Set<BlockFace> ignoredFaces) {
         for (BlockFace face : BlockFace.values()) {
@@ -63,7 +79,11 @@ public interface RedstoneComponent {
      *
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
-    default void updateAllAroundRedstone(@Nullable BlockFace... ignoredFaces) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void updateAllAroundRedstone(@Nullable BlockFace... ignoredFaces) {
         if (ignoredFaces == null) ignoredFaces = new BlockFace[0];
         this.updateAllAroundRedstone(Sets.newHashSet(ignoredFaces));
     }
@@ -73,7 +93,11 @@ public interface RedstoneComponent {
      *
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
-    default void updateAllAroundRedstone(@NotNull Set<BlockFace> ignoredFaces) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void updateAllAroundRedstone(@NotNull Set<BlockFace> ignoredFaces) {
         if (this instanceof Position pos) updateAllAroundRedstone(pos, ignoredFaces);
     }
 
@@ -82,6 +106,10 @@ public interface RedstoneComponent {
      *
      * @param pos          The middle of the blocks around.
      * @param ignoredFaces The faces, that shouldn't get updated.
+     */
+    
+    /**
+     * @deprecated 
      */
     static void updateAllAroundRedstone(@NotNull Position pos, @Nullable BlockFace... ignoredFaces) {
         if (ignoredFaces == null) ignoredFaces = new BlockFace[0];
@@ -93,6 +121,10 @@ public interface RedstoneComponent {
      *
      * @param pos          The middle of the blocks around.
      * @param ignoredFaces The faces, that shouldn't get updated.
+     */
+    
+    /**
+     * @deprecated 
      */
     static void updateAllAroundRedstone(@NotNull Position pos, @NotNull Set<BlockFace> ignoredFaces) {
         updateAroundRedstone(pos, ignoredFaces);

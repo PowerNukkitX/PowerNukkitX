@@ -33,6 +33,10 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
     //               row     column
     //            LevelName AreaName
     protected Table<String, String, TickingArea> areaMap = HashBasedTable.create();
+    /**
+     * @deprecated 
+     */
+    
 
     public JSONTickingAreaStorage(String path) {
         this.filePath = Paths.get(path);
@@ -46,12 +50,20 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void addTickingArea(TickingArea area) {
         areaMap.put(area.getLevelName(), area.getName(), area);
         save();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void addTickingArea(@NotNull TickingArea... areas) {
         for (var each : areas) {
             areaMap.put(each.getLevelName(), each.getName(), each);
@@ -61,12 +73,12 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
 
     @Override
     public Map<String, TickingArea> readTickingArea() {
-        var rootDir = new File(filePath.toString());
-        var aMap = new HashMap<String, TickingArea>();
+        var $1 = new File(filePath.toString());
+        var $2 = new HashMap<String, TickingArea>();
         for (var each : Objects.requireNonNull(rootDir.listFiles())) {
-            var jsonFile = new File(each, "tickingarea.json");
+            var $3 = new File(each, "tickingarea.json");
             if (jsonFile.exists()) {
-                try (var fr = new FileReader(jsonFile)) {
+                try (var $4 = new FileReader(jsonFile)) {
                     Set<TickingArea> areas = JSONUtils.from(fr, type);
                     for (var area : areas) {
                         areaMap.put(area.getLevelName(), area.getName(), area);
@@ -81,22 +93,38 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeTickingArea(String name) {
         areaMap.columnMap().remove(name);
         save();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeAllTickingArea() {
         areaMap.clear();
         save();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containTickingArea(String name) {
         return areaMap.containsColumn(name);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void save() {
         try {
             for (Level level : Server.getInstance().getLevels().values()) {

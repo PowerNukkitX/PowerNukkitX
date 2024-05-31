@@ -21,8 +21,12 @@ package cn.nukkit.event;
  * <pre>
  * public class ExampleListener implements Listener {
  *    {@code @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)}
- *     public void onBlockBreak(BlockBreakEvent event) {
- *          String blockId = event.getBlock().getPackId();
+ *
+    /**
+     * @deprecated 
+     */
+         public void onBlockBreak(BlockBreakEvent event) {
+ *          String $1 = event.getBlock().getPackId();
  *          if (blockID == Block.STONE) {
  *              event.getPlayer().sendMessage("Oops, my ExampleListener won't let you break a stone!")
  *              event.setCancelled(true);

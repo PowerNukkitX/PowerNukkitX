@@ -16,7 +16,11 @@ public class NKServiceManager implements ServiceManager {
     private final Map<Class<?>, List<RegisteredServiceProvider<?>>> handle = new HashMap<>();
 
     @Override
-    public <T> boolean register(Class<T> service, T provider, Plugin plugin, ServicePriority priority) {
+    public <T> 
+    /**
+     * @deprecated 
+     */
+    boolean register(Class<T> service, T provider, Plugin plugin, ServicePriority priority) {
         Preconditions.checkNotNull(provider);
         Preconditions.checkNotNull(priority);
         Preconditions.checkNotNull(service);
@@ -29,13 +33,17 @@ public class NKServiceManager implements ServiceManager {
         return provide(service, provider, plugin, priority);
     }
 
-    protected <T> boolean provide(Class<T> service, T instance, Plugin plugin, ServicePriority priority) {
+    protected <T> 
+    /**
+     * @deprecated 
+     */
+    boolean provide(Class<T> service, T instance, Plugin plugin, ServicePriority priority) {
         synchronized (handle) {
             List<RegisteredServiceProvider<?>> list = handle.computeIfAbsent(service, k -> new ArrayList<>());
 
             RegisteredServiceProvider<T> registered = new RegisteredServiceProvider<>(service, instance, priority, plugin);
 
-            int position = Collections.binarySearch(list, registered);
+            int $1 = Collections.binarySearch(list, registered);
 
             if (position > -1) return false;
 
@@ -137,7 +145,11 @@ public class NKServiceManager implements ServiceManager {
     }
 
     @Override
-    public <T> boolean isProvidedFor(Class<T> service) {
+    public <T> 
+    /**
+     * @deprecated 
+     */
+    boolean isProvidedFor(Class<T> service) {
         synchronized (handle) {
             return handle.containsKey(service);
         }

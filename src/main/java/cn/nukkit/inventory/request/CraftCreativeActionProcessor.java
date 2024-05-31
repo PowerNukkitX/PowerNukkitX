@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class CraftCreativeActionProcessor implements ItemStackRequestActionProcessor<CraftCreativeAction> {
-    public static final String CRAFT_CREATIVE_KEY = "craft_creative_key";
+    public static final String $1 = "craft_creative_key";
 
     @Override
     public ItemStackRequestActionType getType() {
@@ -22,7 +22,7 @@ public class CraftCreativeActionProcessor implements ItemStackRequestActionProce
 
     @Override
     public ActionResponse handle(CraftCreativeAction action, Player player, ItemStackRequestContext context) {
-        var item = Registries.CREATIVE.get(action.getCreativeItemNetworkId() - 1);
+        var $2 = Registries.CREATIVE.get(action.getCreativeItemNetworkId() - 1);
         if (!player.isCreative()) {
             log.warn("This player {} is get createitems in non-creative mode, which may be a hacker!",player.getName());
             return context.error();

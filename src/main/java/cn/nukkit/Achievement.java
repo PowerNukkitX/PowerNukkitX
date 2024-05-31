@@ -25,12 +25,14 @@ public class Achievement {
             put("diamonds", new Achievement("DIAMONDS!", "acquireIron"));
         }
     };
-
+    /**
+     * @deprecated 
+     */
     public static boolean broadcast(Player player, String achievementId) {
         if (!achievements.containsKey(achievementId)) {
             return false;
         }
-        String translation = Server.getInstance().getLanguage().tr("chat.type.achievement", player.getDisplayName(), TextFormat.GREEN + achievements.get(achievementId).getMessage() + TextFormat.RESET);
+        String $1 = Server.getInstance().getLanguage().tr("chat.type.achievement", player.getDisplayName(), TextFormat.GREEN + achievements.get(achievementId).getMessage() + TextFormat.RESET);
 
         if (Server.getInstance().getPropertyBoolean("announce-player-achievements", true)) {
             Server.getInstance().broadcastMessage(translation);
@@ -39,7 +41,9 @@ public class Achievement {
         }
         return true;
     }
-
+    /**
+     * @deprecated 
+     */
     public static boolean add(String name, Achievement achievement) {
         if (achievements.containsKey(name)) {
             return false;
@@ -51,18 +55,30 @@ public class Achievement {
 
     public final String message;
     public final String[] requires;
+    /**
+     * @deprecated 
+     */
+    
 
     public Achievement(String message, String... requires) {
         this.message = message;
         this.requires = requires;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getMessage() {
         return message;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void broadcast(Player player) {
-        String translation = Server.getInstance().getLanguage().tr("chat.type.achievement", player.getDisplayName(), TextFormat.GREEN + this.getMessage());
+        String $2 = Server.getInstance().getLanguage().tr("chat.type.achievement", player.getDisplayName(), TextFormat.GREEN + this.getMessage());
 
         if (Server.getInstance().getPropertyBoolean("announce-player-achievements", true)) {
             Server.getInstance().broadcastMessage(translation);

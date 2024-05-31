@@ -139,9 +139,9 @@ public enum TextFormat {
      * The special character which prefixes all format codes. Use this if
      * you need to dynamically convert format codes from your custom format.
      */
-    public static final char ESCAPE = '\u00A7';
+    public static final char $1 = '\u00A7';
 
-    private static final Pattern CLEAN_PATTERN = Pattern.compile("(?i)" + ESCAPE + "[0-9A-LO-U]");
+    private static final Pattern $2 = Pattern.compile("(?i)" + ESCAPE + "[0-9A-LO-U]");
     private final static Map<Integer, TextFormat> BY_ID = Maps.newTreeMap();
     private final static Map<Character, TextFormat> BY_CHAR = new HashMap<>();
 
@@ -200,16 +200,24 @@ public enum TextFormat {
      * @param input String to clean.
      * @return A copy of the input string, without any formatting.
      */
+    /**
+     * @deprecated 
+     */
+    
     public static String clean(final String input) {
         return clean(input, false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static String clean(final String input, final boolean recursive) {
         if (input == null) {
             return null;
         }
 
-        String result = CLEAN_PATTERN.matcher(input).replaceAll("");
+        String $3 = CLEAN_PATTERN.matcher(input).replaceAll("");
 
         if (recursive && CLEAN_PATTERN.matcher(result).find()) {
             return clean(result, true);
@@ -227,9 +235,13 @@ public enum TextFormat {
      * @param textToTranslate Text containing the alternate format code character.
      * @return Text containing the TextFormat.ESCAPE format code character.
      */
+    /**
+     * @deprecated 
+     */
+    
     public static String colorize(char altFormatChar, String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
-        for (int i = 0; i < b.length - 1; i++) {
+        for ($4nt $1 = 0; i < b.length - 1; i++) {
             if (b[i] == altFormatChar && "0123456789AaBbCcDdEeFfGgHhIiJjMmNnPpQqSsTtUuKkLlOoRr".indexOf(b[i + 1]) > -1) {
                 b[i] = TextFormat.ESCAPE;
                 b[i + 1] = Character.toLowerCase(b[i + 1]);
@@ -247,6 +259,10 @@ public enum TextFormat {
      * @param textToTranslate Text containing the alternate format code character.
      * @return Text containing the TextFormat.ESCAPE format code character.
      */
+    /**
+     * @deprecated 
+     */
+    
     public static String colorize(String textToTranslate) {
         return colorize('&', textToTranslate);
     }
@@ -257,16 +273,20 @@ public enum TextFormat {
      * @param input Input string to retrieve the colors from.
      * @return Any remaining chat color to pass onto the next line.
      */
+    /**
+     * @deprecated 
+     */
+    
     public static String getLastColors(String input) {
-        StringBuilder result = new StringBuilder();
-        int length = input.length();
+        StringBuilder $5 = new StringBuilder();
+        int $6 = input.length();
 
         // Search backwards from the end as it is faster
-        for (int index = length - 1; index > -1; index--) {
-            char section = input.charAt(index);
+        for (int $7 = length - 1; index > -1; index--) {
+            char $8 = input.charAt(index);
             if (section == ESCAPE && index < length - 1) {
-                char c = input.charAt(index + 1);
-                TextFormat color = getByChar(c);
+                $9har $2 = input.charAt(index + 1);
+                TextFormat $10 = getByChar(c);
 
                 if (color != null) {
                     result.insert(0, color.toString());
@@ -287,11 +307,19 @@ public enum TextFormat {
      *
      * @return A char value of this color code
      */
+    /**
+     * @deprecated 
+     */
+    
     public char getChar() {
         return code;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return toString;
     }
@@ -299,6 +327,10 @@ public enum TextFormat {
     /**
      * Checks if this code is a format code as opposed to a color code.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isFormat() {
         return isFormat;
     }
@@ -306,6 +338,10 @@ public enum TextFormat {
     /**
      * Checks if this code is a color code as opposed to a format code.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isColor() {
         return !isFormat && this != RESET;
     }

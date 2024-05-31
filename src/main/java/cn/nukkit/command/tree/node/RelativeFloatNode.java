@@ -7,6 +7,10 @@ package cn.nukkit.command.tree.node;
  */
 public class RelativeFloatNode extends RelativeNumberNode<Float> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         if (arg.startsWith("~")) {
             if (arg.length() == 1) {

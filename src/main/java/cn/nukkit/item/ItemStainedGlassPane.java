@@ -4,17 +4,33 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 
 public class ItemStainedGlassPane extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemStainedGlassPane() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemStainedGlassPane(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemStainedGlassPane(Integer meta, int count) {
         super(STAINED_GLASS_PANE, meta, count);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void internalAdjust() {
         switch (getDamage()) {

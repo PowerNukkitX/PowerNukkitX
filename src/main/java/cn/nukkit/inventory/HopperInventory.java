@@ -10,15 +10,23 @@ import java.util.Map;
  * @since 8.5.2017
  */
 public class HopperInventory extends ContainerInventory {
+    /**
+     * @deprecated 
+     */
+    
 
     public HopperInventory(BlockEntityHopper hopper) {
         super(hopper, InventoryType.HOPPER, 5);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-        for (int i = 0; i < getSize(); i++) {
+        for ($1nt $1 = 0; i < getSize(); i++) {
             map.put(i, ContainerSlotType.LEVEL_ENTITY);
         }
     }
@@ -29,6 +37,10 @@ public class HopperInventory extends ContainerInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCauseVibration() {
         return true;
     }

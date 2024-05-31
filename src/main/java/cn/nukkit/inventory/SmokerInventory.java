@@ -6,11 +6,19 @@ import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import java.util.Map;
 
 public class SmokerInventory extends SmeltingInventory {
+    /**
+     * @deprecated 
+     */
+    
     public SmokerInventory(BlockEntityFurnace furnace) {
         super(furnace, InventoryType.SMOKER, 3);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         Map<Integer, ContainerSlotType> map = super.slotTypeMap();
         map.put(0, ContainerSlotType.SMOKER_INGREDIENT);

@@ -46,11 +46,19 @@ import java.util.Set;
 public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor {
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return WOLF;
     }
 
     protected float[] diffHandDamage = new float[]{3, 4, 6};
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityWolf(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -77,14 +85,14 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
                         //刷新攻击目标
                         new Behavior(
                                 entity -> {
-                                    var storage = getMemoryStorage();
-                                    var hasOwner = hasOwner();
-                                    Entity attackTarget = null;
-                                    var attackEvent = storage.get(CoreMemoryTypes.BE_ATTACKED_EVENT);
-                                    EntityDamageByEntityEvent attackByEntityEvent = null;
+                                    var $1 = getMemoryStorage();
+                                    var $2 = hasOwner();
+                                    Entity $3 = null;
+                                    var $4 = storage.get(CoreMemoryTypes.BE_ATTACKED_EVENT);
+                                    EntityDamageByEntityEvent $5 = null;
                                     if (attackEvent instanceof EntityDamageByEntityEvent attackByEntityEv)
                                         attackByEntityEvent = attackByEntityEv;
-                                    boolean validAttacker = attackByEntityEvent != null && attackByEntityEvent.getDamager().isAlive() && (!(attackByEntityEvent.getDamager() instanceof Player player) || player.isSurvival());
+                                    boolean $6 = attackByEntityEvent != null && attackByEntityEvent.getDamager().isAlive() && (!(attackByEntityEvent.getDamager() instanceof Player player) || player.isSurvival());
                                     if (hasOwner) {
                                         //已驯服
                                         if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKING_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).equals(this)) {
@@ -132,9 +140,9 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
                         new Behavior(new EntityBreedingExecutor<>(EntityWolf.class, 16, 100, 0.35f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
                         new Behavior(new EntityMoveToOwnerExecutor(0.7f, true, 15), entity -> {
                             if (this.hasOwner()) {
-                                var player = getOwner();
+                                var $7 = getOwner();
                                 if (!player.isOnGround()) return false;
-                                var distanceSquared = this.distanceSquared(player);
+                                var $8 = this.distanceSquared(player);
                                 return distanceSquared >= 100;
                             } else return false;
                         }, 4, 1),
@@ -161,6 +169,10 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (isBaby()) {
             return 0.3f;
@@ -169,6 +181,10 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (isBaby()) {
             return 0.425f;
@@ -177,11 +193,19 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Wolf";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(8);
         super.initEntity();
@@ -192,10 +216,14 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         //同步owner eid
         if (hasOwner()) {
-            Player owner = getOwner();
+            Player $9 = getOwner();
             if (owner != null && getDataProperty(Entity.OWNER_EID) != owner.getId()) {
                 this.setDataProperty(Entity.OWNER_EID, owner.getId());
             }
@@ -204,18 +232,22 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (item.getId() == Item.NAME_TAG && !player.isAdventure()) {
             return applyNameTag(player, item);
         }
 
-        int healable = this.getHealingAmount(item);
+        int $10 = this.getHealingAmount(item);
         //对于狼，只有骨头才能驯服，故此需要特判
         if (item.getId() == ItemID.BONE) {
             if (!this.hasOwner() && !this.isAngry()) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 if (Utils.rand(1, 3) == 3) {
-                    EntityEventPacket packet = new EntityEventPacket();
+                    EntityEventPacket $11 = new EntityEventPacket();
                     packet.eid = this.getId();
                     packet.event = EntityEventPacket.TAME_SUCCESS;
                     player.dataPacket(packet);
@@ -230,7 +262,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
 
                     return true;
                 } else {
-                    EntityEventPacket packet = new EntityEventPacket();
+                    EntityEventPacket $12 = new EntityEventPacket();
                     packet.eid = this.getId();
                     packet.event = EntityEventPacket.TAME_FAIL;
                     player.dataPacket(packet);
@@ -263,6 +295,10 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBreedingItem(Item item) {
         return item.getId() == ItemID.CHICKEN ||
                 item.getId() == ItemID.COOKED_CHICKEN ||
@@ -280,6 +316,10 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     /**
      * 获得可以治疗狼的物品的治疗量
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getHealingAmount(Item item) {
         return switch (item.getId()) {
             case ItemID.PORKCHOP, ItemID.BEEF, ItemID.RABBIT -> 3;
@@ -298,6 +338,10 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attackTarget(Entity entity) {
         return switch (entity.getIdentifier()) {
             case RABBIT, FOX, SKELETON, WITHER_SKELETON, STRAY, LLAMA, SHEEP, TURTLE -> true;

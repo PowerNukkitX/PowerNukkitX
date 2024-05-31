@@ -19,7 +19,7 @@ public class C extends CachedFilterSelectorArgument {
     public Function<List<Entity>, List<Entity>> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
         ParseUtils.singleArgument(arguments, getKeyName());
         ParseUtils.cannotReversed(arguments[0]);
-        final var c = Integer.parseInt(arguments[0]);
+        final var $1 = Integer.parseInt(arguments[0]);
         if (c == 0) throw new SelectorSyntaxException("C cannot be zero!");
         return entities -> {
             entities.sort(Comparator.comparingDouble(e -> e.distanceSquared(basePos)));
@@ -30,11 +30,19 @@ public class C extends CachedFilterSelectorArgument {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getKeyName() {
         return "c";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPriority() {
         return 3;
     }

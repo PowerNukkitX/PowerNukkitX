@@ -15,6 +15,10 @@ import java.util.stream.Collectors;
 
 
 public class TagCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
     public TagCommand(String name) {
         super(name, "commands.tag.description");
         this.setPermission("nukkit.command.tag");
@@ -37,8 +41,12 @@ public class TagCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         List<Entity> entities = list.getResult(0);
         if (entities.isEmpty()) {
             log.addNoTargetMatch().output();
@@ -46,8 +54,8 @@ public class TagCommand extends VanillaCommand {
         }
         switch (result.getKey()) {
             case "add" -> {
-                String tag = list.getResult(2);
-                int success_count = 0;
+                String $2 = list.getResult(2);
+                int $3 = 0;
                 for (Entity entity : entities) {
                     if (entity.containTag(tag))
                         continue;
@@ -67,8 +75,8 @@ public class TagCommand extends VanillaCommand {
                 return 1;
             }
             case "remove" -> {
-                String tag = list.getResult(2);
-                int success_count = 0;
+                String $4 = list.getResult(2);
+                int $5 = 0;
                 for (Entity entity : entities) {
                     if (!entity.containTag(tag))
                         continue;
@@ -92,8 +100,8 @@ public class TagCommand extends VanillaCommand {
                 for (Entity entity : entities) {
                     tagSet.addAll(entity.getAllTags().stream().map(t -> t.data).collect(Collectors.toSet()));
                 }
-                int tagCount = tagSet.size();
-                String tagStr = tagSet.stream().collect(Collectors.joining(" "));
+                int $6 = tagSet.size();
+                String $7 = tagSet.stream().collect(Collectors.joining(" "));
 
                 if (tagStr.isEmpty()) {
                     if (entities.size() == 1) {

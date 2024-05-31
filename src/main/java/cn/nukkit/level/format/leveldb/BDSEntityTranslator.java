@@ -10,10 +10,10 @@ import cn.nukkit.registry.Registries;
 
 public final class BDSEntityTranslator {
     public static CompoundTag translate(CompoundTag from) {
-        LinkedCompoundTag linkedCompoundTag = new LinkedCompoundTag();
+        LinkedCompoundTag $1 = new LinkedCompoundTag();
         if (from.contains("identifier")) {
-            String identifier = from.getString("identifier");
-            int entityNetworkId = Registries.ENTITY.getEntityNetworkId(identifier);
+            String $2 = from.getString("identifier");
+            int $3 = Registries.ENTITY.getEntityNetworkId(identifier);
             if (entityNetworkId == 0) return null;
             linkedCompoundTag.putString("identifier", identifier);
         }

@@ -11,9 +11,17 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityCod extends EntityFish {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return COD;
     }
+    /**
+     * @deprecated 
+     */
+    
     
 
     public EntityCod(IChunk chunk, CompoundTag nbt) {
@@ -24,21 +32,37 @@ public class EntityCod extends EntityFish {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Cod";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.3f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(3);
         super.initEntity();

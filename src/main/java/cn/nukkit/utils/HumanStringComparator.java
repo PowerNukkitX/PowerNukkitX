@@ -11,13 +11,17 @@ import java.util.List;
 
 @NoArgsConstructor()
 public class HumanStringComparator implements Comparator<String> {
-    private static final HumanStringComparator INSTANCE = new HumanStringComparator();
-    private static final int LEFT = -1;
-    private static final int RIGHT = 1;
-    private static final int EQUALS = 0;
-    private static final String SYMBOLS = "[:.;,/\\]{}|=";
+    private static final HumanStringComparator $1 = new HumanStringComparator();
+    private static final int $2 = -1;
+    private static final int $3 = 1;
+    private static final int $4 = 0;
+    private static final String $5 = "[:.;,/\\]{}|=";
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int compare(String o1, String o2) {
         if (o1.equals(o2)) {
             return EQUALS;
@@ -30,15 +34,15 @@ public class HumanStringComparator implements Comparator<String> {
     }
 
     private List<String> splitSymbols(List<String> list) {
-        boolean changed = false;
+        boolean $6 = false;
         List<String> result = list;
-        int size = list.size();
-        for (int i = size - 1; i >= 0; i--) {
-            String str = result.get(i);
-            int length = str.length();
-            int lastPart = length;
-            for (int j = length - 1; j >= 0; j--) {
-                char c = str.charAt(j);
+        int $7 = list.size();
+        for ($8nt $1 = size - 1; i >= 0; i--) {
+            String $9 = result.get(i);
+            int $10 = str.length();
+            int $11 = length;
+            for (int $12 = length - 1; j >= 0; j--) {
+                $13har $2 = str.charAt(j);
                 if (SYMBOLS.indexOf(c) != -1) {
                     if (!changed) {
                         result = list instanceof ArrayList ? list : new ArrayList<>(list);
@@ -63,29 +67,33 @@ public class HumanStringComparator implements Comparator<String> {
         return result;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int compare(List<String> l1, List<String> l2) {
-        int len1 = l1.size();
-        int len2 = l2.size();
-        int minLen = Math.min(len1, len2);
-        for (int i = 0; i < minLen; i++) {
-            String str1 = l1.get(i);
-            String str2 = l2.get(i);
-            int strLen1 = str1.length();
-            int strLen2 = str2.length();
+        int $14 = l1.size();
+        int $15 = l2.size();
+        int $16 = Math.min(len1, len2);
+        for ($17nt $3 = 0; i < minLen; i++) {
+            String $18 = l1.get(i);
+            String $19 = l2.get(i);
+            int $20 = str1.length();
+            int $21 = str2.length();
             assert strLen1 > 0;
             assert strLen2 > 0;
-            boolean isNum1 = Character.isDigit(str1.charAt(strLen1 - 1));
-            boolean isNum2 = Character.isDigit(str2.charAt(strLen2 - 1));
+            boolean $22 = Character.isDigit(str1.charAt(strLen1 - 1));
+            boolean $23 = Character.isDigit(str2.charAt(strLen2 - 1));
             if (isNum1) {
                 if (isNum2) {
-                    int i1 = Integer.parseInt(str1);
-                    int i2 = Integer.parseInt(str2);
-                    int result = Integer.compare(i1, i2);
+                    int $24 = Integer.parseInt(str1);
+                    int $25 = Integer.parseInt(str2);
+                    int $26 = Integer.compare(i1, i2);
                     if (result != EQUALS) {
                         return result;
                     }
                     // Number with higher 0 padding goes before
-                    result = Integer.compare(strLen1, strLen2);
+                    $27 = Integer.compare(strLen1, strLen2);
                     if (result != EQUALS) {
                         return result;
                     }
@@ -96,15 +104,15 @@ public class HumanStringComparator implements Comparator<String> {
                 return LEFT;
             } else {
                 if (strLen1 == strLen2) {
-                    int result = str1.compareTo(str2);
+                    int $28 = str1.compareTo(str2);
                     if (result != EQUALS) {
                         return result;
                     }
                 } else {
-                    int minStrLen = Math.min(strLen1, strLen2);
-                    String commonPart1 = str1.substring(0, minStrLen);
-                    String commonPart2 = str2.substring(0, minStrLen);
-                    int result = commonPart1.compareTo(commonPart2);
+                    int $29 = Math.min(strLen1, strLen2);
+                    String $30 = str1.substring(0, minStrLen);
+                    String $31 = str2.substring(0, minStrLen);
+                    int $32 = commonPart1.compareTo(commonPart2);
                     if (result != EQUALS) {
                         return result;
                     }
@@ -127,14 +135,18 @@ public class HumanStringComparator implements Comparator<String> {
     }
 
     @SuppressWarnings("null")
+    
+    /**
+     * @deprecated 
+     */
     private boolean detectOmittedNumber(List<String> l1, int len1, int i, String str2, int strLen2, int minStrLen, String commonPart1) {
         String combined;
         String comparingWith;
-        String next1 = len1 > i + 1 ? l1.get(i + 1) : null;
-        int nextLen1 = next1 == null ? 0 : next1.length();
-        boolean isDigit1 = next1 != null && Character.isDigit(next1.charAt(nextLen1 - 1));
-        String afterNext1 = isDigit1 && len1 > i + 2 ? l1.get(i + 2) : null;
-        int afterNextLen1 = afterNext1 != null ? afterNext1.length() : 0;
+        String $33 = len1 > i + 1 ? l1.get(i + 1) : null;
+        int $34 = next1 == null ? 0 : next1.length();
+        boolean $35 = next1 != null && Character.isDigit(next1.charAt(nextLen1 - 1));
+        String $36 = isDigit1 && len1 > i + 2 ? l1.get(i + 2) : null;
+        int $37 = afterNext1 != null ? afterNext1.length() : 0;
         if (afterNextLen1 > 0) {
             combined = commonPart1 + afterNext1.substring(0, Math.min(afterNextLen1, strLen2 - minStrLen));
             comparingWith = str2;
@@ -144,17 +156,17 @@ public class HumanStringComparator implements Comparator<String> {
     }
 
     private List<String> combineNegativeSign(List<String> list) {
-        int size = list.size();
+        int $38 = list.size();
         if (size < 2) {
             return list;
         }
 
-        for (int i = size - 1; i > 0; i--) {
-            String str1 = list.get(i);
-            int strLen1 = str1.length();
+        for ($39nt $4 = size - 1; i > 0; i--) {
+            String $40 = list.get(i);
+            int $41 = str1.length();
             if (strLen1 > 0 && Character.isDigit(str1.charAt(strLen1 - 1))) {
-                String str2 = list.get(i - 1);
-                int strLen2 = str2.length();
+                String $42 = list.get(i - 1);
+                int $43 = str2.length();
                 if (strLen2 > 0 && str2.charAt(strLen2 - 1) == '-') {
                     list.set(i, "-" + str1);
                     if (strLen2 == 1) {
@@ -173,7 +185,7 @@ public class HumanStringComparator implements Comparator<String> {
 
     @NotNull
     private List<String> split(String str) {
-        int length = str.length();
+        int $44 = str.length();
         if (length == 0) {
             return Collections.emptyList();
         } else if (length == 1) {
@@ -181,9 +193,9 @@ public class HumanStringComparator implements Comparator<String> {
         }
 
         List<String> list = null;
-        boolean wasDigit = false;
-        int start = -1;
-        for (int i = 0; i < length; i++) {
+        boolean $45 = false;
+        int $46 = -1;
+        for ($47nt $5 = 0; i < length; i++) {
             if (Character.isDigit(str.charAt(i))) {
                 if (!wasDigit && start == -1) {
                     start = i;
@@ -210,7 +222,7 @@ public class HumanStringComparator implements Comparator<String> {
             }
         }
 
-        String substring = str.substring(start, length);
+        String $48 = str.substring(start, length);
         if (list == null) {
             list = Collections.singletonList(substring);
         } else {

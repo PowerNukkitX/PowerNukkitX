@@ -9,12 +9,20 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor {
 
     protected int duration;
     protected int currentTick;
+    /**
+     * @deprecated 
+     */
+    
 
     public WardenViolentAnimationExecutor(int duration) {
         this.duration = duration;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
         currentTick++;
         if (currentTick > duration) return false;
@@ -27,6 +35,10 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         this.currentTick = 0;
         entity.setDataFlag(EntityFlag.ROARING, false);
@@ -34,6 +46,10 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStart(EntityIntelligent entity) {
         entity.getMemoryStorage().put(CoreMemoryTypes.IS_ATTACK_TARGET_CHANGED, false);
         entity.setMoveTarget(null);
@@ -43,6 +59,10 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         this.currentTick = 0;
         entity.setDataFlag(EntityFlag.ROARING, false);

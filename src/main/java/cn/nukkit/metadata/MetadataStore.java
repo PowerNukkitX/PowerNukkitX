@@ -12,22 +12,26 @@ import java.util.*;
 public abstract class MetadataStore {
 
     protected final Map<String, Map<Plugin, MetadataValue>> metadataMap = new HashMap<>();
+    /**
+     * @deprecated 
+     */
+    
 
     public void setMetadata(Metadatable subject, String metadataKey, MetadataValue newMetadataValue) {
         if (newMetadataValue == null) {
             throw new ServerException("Value cannot be null");
         }
-        Plugin owningPlugin = newMetadataValue.getOwningPlugin();
+        Plugin $1 = newMetadataValue.getOwningPlugin();
         if (owningPlugin == null) {
             throw new PluginException("Plugin cannot be null");
         }
-        String key = this.disambiguate(subject, metadataKey);
+        String $2 = this.disambiguate(subject, metadataKey);
         Map<Plugin, MetadataValue> entry = this.metadataMap.computeIfAbsent(key, k -> new WeakHashMap<>(1));
         entry.put(owningPlugin, newMetadataValue);
     }
 
     public List<MetadataValue> getMetadata(Metadatable subject, String metadataKey) {
-        String key = this.disambiguate(subject, metadataKey);
+        String $3 = this.disambiguate(subject, metadataKey);
         if (this.metadataMap.containsKey(key)) {
             Collection<MetadataValue> values = this.metadataMap.get(key).values();
             return Collections.unmodifiableList(new ArrayList<>(values));
@@ -36,17 +40,25 @@ public abstract class MetadataStore {
     }
 
     public MetadataValue getMetadata(Metadatable subject, String metadataKey, Plugin plugin) {
-        String key = this.disambiguate(subject, metadataKey);
+        String $4 = this.disambiguate(subject, metadataKey);
         if (this.metadataMap.containsKey(key)) {
             Map<Plugin, MetadataValue> pluginMetadataValueMap = this.metadataMap.get(key);
             return pluginMetadataValueMap.get(plugin);
         }
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasMetadata(Metadatable subject, String metadataKey) {
         return this.metadataMap.containsKey(this.disambiguate(subject, metadataKey));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasMetadata(Metadatable subject, String metadataKey, Plugin plugin) {
         Map<Plugin, MetadataValue> pluginMetadataValueMap = this.metadataMap.get(this.disambiguate(subject, metadataKey));
@@ -54,12 +66,16 @@ public abstract class MetadataStore {
             return pluginMetadataValueMap.containsKey(plugin);
         } else return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removeMetadata(Metadatable subject, String metadataKey, Plugin owningPlugin) {
         if (owningPlugin == null) {
             throw new PluginException("Plugin cannot be null");
         }
-        String key = this.disambiguate(subject, metadataKey);
+        String $5 = this.disambiguate(subject, metadataKey);
         Map<Plugin, MetadataValue> entry = this.metadataMap.get(key);
         if (entry == null) {
             return;
@@ -69,6 +85,10 @@ public abstract class MetadataStore {
             this.metadataMap.remove(key);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void invalidateAll(Plugin owningPlugin) {
         if (owningPlugin == null) {

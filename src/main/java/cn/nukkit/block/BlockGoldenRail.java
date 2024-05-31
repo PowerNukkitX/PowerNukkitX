@@ -12,17 +12,25 @@ import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DATA_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DIRECTION_6;
 
 public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(GOLDEN_RAIL, RAIL_DATA_BIT, RAIL_DIRECTION_6);
+    public static final BlockProperties $1 = new BlockProperties(GOLDEN_RAIL, RAIL_DATA_BIT, RAIL_DIRECTION_6);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockGoldenRail() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockGoldenRail(BlockState blockstate) {
         super(blockstate);
@@ -30,11 +38,19 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Powered Rail";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         // Warning: I didn't recommend this on slow networks server or slow client
         //          Network below 86Kb/s. This will became unresponsive to clients
@@ -48,8 +64,8 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
             if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
                 return 0;
             }
-            boolean wasPowered = isActive();
-            boolean isPowered = this.isGettingPower()
+            boolean $2 = isActive();
+            boolean $3 = this.isGettingPower()
                     || checkSurrounding(this, true, 0)
                     || checkSurrounding(this, false, 0);
 
@@ -67,6 +83,10 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void afterRemoval(Block newBlock, boolean update) {
         RedstoneComponent.updateAroundRedstone(down());
         if (getOrientation().isAscending()) {
@@ -83,18 +103,22 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
      * @param power    The count of the rail that had been counted
      * @return Boolean of the surrounding area. Where the powered rail on!
      */
+    
+    /**
+     * @deprecated 
+     */
     private boolean checkSurrounding(Vector3 pos, boolean relative, int power) {
         // The powered rail can power up to 8 blocks only
         if (power >= 8) {
             return false;
         }
         // The position of the floor numbers
-        int dx = pos.getFloorX();
-        int dy = pos.getFloorY();
-        int dz = pos.getFloorZ();
+        int $4 = pos.getFloorX();
+        int $5 = pos.getFloorY();
+        int $6 = pos.getFloorZ();
         // First: get the base block
         BlockRail block;
-        Block block2 = level.getBlock(new Vector3(dx, dy, dz));
+        Block $7 = level.getBlock(new Vector3(dx, dy, dz));
 
         // Second: check if the rail is Powered rail
         if (Rail.isRailBlock(block2)) {
@@ -104,8 +128,8 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
         }
 
         // Used to check if the next ascending rail should be what
-        Rail.Orientation base = block.getOrientation();
-        boolean onStraight = true;
+        Rail.Orientation $8 = block.getOrientation();
+        boolean $9 = true;
         // Third: Recalculate the base position
         switch (base) {
             case STRAIGHT_NORTH_SOUTH -> {
@@ -169,18 +193,22 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
                 || onStraight && canPowered(new Vector3(dx, dy - 1.0D, dz), base, power, relative);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean canPowered(Vector3 pos, Rail.Orientation state, int power, boolean relative) {
-        Block block = level.getBlock(pos);
+        Block $10 = level.getBlock(pos);
         // What! My block is air??!! Impossible! XD
         if (!(block instanceof BlockGoldenRail)) {
             return false;
         }
 
         // Sometimes the rails are diffrent orientation
-        Rail.Orientation base = ((BlockGoldenRail) block).getOrientation();
+        Rail.Orientation $11 = ((BlockGoldenRail) block).getOrientation();
 
         // Possible way how to know when the rail is activated is rail were directly powered
-        // OR recheck the surrounding... Which will returns here =w=
+        // OR recheck the surrounding... Which will returns $12 =w=
         return (state != Rail.Orientation.STRAIGHT_EAST_WEST
                 || base != Rail.Orientation.STRAIGHT_NORTH_SOUTH
                 && base != Rail.Orientation.ASCENDING_NORTH
@@ -194,6 +222,10 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setRailDirection(Rail.Orientation orientation) {
         setPropertyValue(RAIL_DIRECTION_6, orientation.metadata());
     }
@@ -203,12 +235,20 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setActive(boolean active) {
         setRailActive(active);
         level.setBlock(this, this, true, true);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isActive() {
         return getPropertyValue(RAIL_DATA_BIT);
     }
@@ -219,6 +259,10 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setRailActive(boolean active) {
         setPropertyValue(RAIL_DATA_BIT, active);
     }

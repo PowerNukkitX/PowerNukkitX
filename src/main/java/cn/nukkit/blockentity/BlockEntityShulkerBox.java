@@ -19,6 +19,10 @@ import java.util.HashSet;
 public class BlockEntityShulkerBox extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
 
     protected ShulkerBoxInventory inventory;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityShulkerBox(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -26,6 +30,10 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         this.inventory = new ShulkerBoxInventory(this);
@@ -36,7 +44,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
 
         ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
         for (CompoundTag compound : list.getAll()) {
-            Item item = NBTIO.getItemHelper(compound);
+            Item $1 = NBTIO.getItemHelper(compound);
             this.inventory.setItemInternal(compound.getByte("Slot"), item);
         }
 
@@ -46,6 +54,10 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         if (!closed) {
             for (Player player : new HashSet<>(this.getInventory().getViewers())) {
@@ -56,27 +68,43 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putList("Items", new ListTag<CompoundTag>());
-        for (int index = 0; index < this.getSize(); index++) {
+        for (int $2 = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
-        Block block = this.getBlock();
+        Block $3 = this.getBlock();
         return block instanceof BlockUndyedShulkerBox;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getSize() {
         return 27;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected int getSlotIndex(int index) {
         ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
-        for (int i = 0; i < list.size(); i++) {
+        for ($4nt $1 = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
             }
@@ -86,19 +114,23 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
     }
 
     public Item getItem(int index) {
-        int i = this.getSlotIndex(index);
+        $5nt $2 = this.getSlotIndex(index);
         if (i < 0) {
             return Item.AIR;
         } else {
-            CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
+            CompoundTag $6 = (CompoundTag) this.namedTag.getList("Items").get(i);
             return NBTIO.getItemHelper(data);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setItem(int index, Item item) {
-        int i = this.getSlotIndex(index);
+        $7nt $3 = this.getSlotIndex(index);
 
-        CompoundTag d = NBTIO.putItemHelper(item, index);
+        Compoun$8Tag $4 = NBTIO.putItemHelper(item, index);
 
         if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
@@ -121,16 +153,28 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.hasName() ? this.namedTag.getString("CustomName") : "Shulker Box";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasName() {
         return this.namedTag.contains("CustomName");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setName(String name) {
         if (name == null || name.isEmpty()) {
             this.namedTag.remove("CustomName");
@@ -142,7 +186,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = getDefaultCompound(this, SHULKER_BOX)
+        CompoundTag $9 = getDefaultCompound(this, SHULKER_BOX)
                 .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Findable", false)
                 .putList("Items", this.namedTag.getList("Items", CompoundTag.class))

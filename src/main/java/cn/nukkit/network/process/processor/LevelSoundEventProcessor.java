@@ -9,14 +9,22 @@ import org.jetbrains.annotations.NotNull;
 
 public class LevelSoundEventProcessor extends DataPacketProcessor<LevelSoundEventPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull LevelSoundEventPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         if (!player.isSpectator()) {
             player.level.addChunkPacket(player.getChunkX(), player.getChunkZ(), pk);
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
     }

@@ -20,16 +20,28 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityTnt extends Entity implements EntityExplosive {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return TNT;
     }
 
     protected int fuse;
     protected Entity source;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityTnt(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityTnt(IChunk chunk, CompoundTag nbt, Entity source) {
         super(chunk, nbt);
@@ -37,36 +49,64 @@ public class EntityTnt extends Entity implements EntityExplosive {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.98f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getLength() {
         return 0.98f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.98f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getGravity() {
         return 0.04f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getDrag() {
         return 0.02f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getBaseOffset() {
         return 0.49f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCollide() {
         return false;
     }
@@ -74,12 +114,20 @@ public class EntityTnt extends Entity implements EntityExplosive {
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         return source.getCause() == DamageCause.VOID && super.attack(source);
     }
 
     @Override
     
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.initEntity();
 
@@ -96,23 +144,35 @@ public class EntityTnt extends Entity implements EntityExplosive {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCollideWith(Entity entity) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         namedTag.putByte("Fuse", fuse);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (closed) {
             return false;
         }
 
-        int tickDiff = currentTick - lastUpdate;
+        int $1 = currentTick - lastUpdate;
 
         if (tickDiff <= 0 && !justCreated) {
             return true;
@@ -124,7 +184,7 @@ public class EntityTnt extends Entity implements EntityExplosive {
 
         lastUpdate = currentTick;
 
-        boolean hasUpdate = entityBaseTick(tickDiff);
+        boolean $2 = entityBaseTick(tickDiff);
 
         if (isAlive()) {
 
@@ -132,7 +192,7 @@ public class EntityTnt extends Entity implements EntityExplosive {
 
             move(motionX, motionY, motionZ);
 
-            float friction = 1 - getDrag();
+            float $3 = 1 - getDrag();
 
             motionX *= friction;
             motionY *= friction;
@@ -161,13 +221,17 @@ public class EntityTnt extends Entity implements EntityExplosive {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void explode() {
-        EntityExplosionPrimeEvent event = new EntityExplosionPrimeEvent(this, 4);
+        EntityExplosionPrimeEvent $4 = new EntityExplosionPrimeEvent(this, 4);
         server.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
         }
-        Explosion explosion = new Explosion(this, event.getForce(), this);
+        Explosion $5 = new Explosion(this, event.getForce(), this);
         explosion.setFireChance(event.getFireChance());
         if (event.isBlockBreaking()) {
             explosion.explodeA();
@@ -181,6 +245,10 @@ public class EntityTnt extends Entity implements EntityExplosive {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Block of TNT";
     }

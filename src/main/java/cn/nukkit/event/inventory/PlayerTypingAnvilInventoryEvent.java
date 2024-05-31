@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
 
 @ToString
 public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -45,6 +45,10 @@ public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
     private final Player player;
     private final String previousName;
     private final String typedName;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerTypingAnvilInventoryEvent(@NotNull Player player, @NotNull AnvilInventory inventory, @Nullable String previousName, @NotNull String typedName) {
         super(inventory);
@@ -62,11 +66,19 @@ public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
         return player;
     }
 
-    @NotNull public String getTypedName() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getTypedName() {
         return typedName;
     }
 
-    public @Nullable String getPreviousName() {
+    public @Nullable 
+    /**
+     * @deprecated 
+     */
+    String getPreviousName() {
         return previousName;
     }
 }

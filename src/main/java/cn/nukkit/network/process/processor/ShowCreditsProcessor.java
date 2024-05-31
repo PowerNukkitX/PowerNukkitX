@@ -9,6 +9,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class ShowCreditsProcessor extends DataPacketProcessor<ShowCreditsPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ShowCreditsPacket pk) {
         if (pk.status == ShowCreditsPacket.STATUS_END_CREDITS) {
             if (playerHandle.getShowingCredits()) {
@@ -19,6 +23,10 @@ public class ShowCreditsProcessor extends DataPacketProcessor<ShowCreditsPacket>
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.SHOW_CREDITS_PACKET;
     }

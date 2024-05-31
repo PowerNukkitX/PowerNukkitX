@@ -6,31 +6,59 @@ package cn.nukkit.math;
 public class Vector2 {
     public final double x;
     public final double y;
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector2() {
         this(0, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector2(double x) {
         this(x, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector2(double x, double y) {
         this.x = x;
         this.y = y;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getX() {
         return this.x;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getY() {
         return this.y;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFloorX() {
         return (int) Math.floor(this.x);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFloorY() {
         return (int) Math.floor(this.y);
@@ -83,54 +111,94 @@ public class Vector2 {
     public Vector2 divide(double number) {
         return new Vector2(this.x / number, this.y / number);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distance(double x) {
         return this.distance(x, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distance(double x, double y) {
         return Math.sqrt(this.distanceSquared(x, y));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distance(Vector2 vector) {
         return distance(vector.x, vector.y);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(double x) {
         return this.distanceSquared(x, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(double x, double y) {
-        double ex = this.x - x;
-        double ey = this.y - y;
+        double $1 = this.x - x;
+        double $2 = this.y - y;
         return ey * ey + ex * ex;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(Vector2 vector) {
         return this.distanceSquared(vector.x, vector.y);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double length() {
         return Math.sqrt(this.lengthSquared());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double lengthSquared() {
         return this.x * this.x + this.y * this.y;
     }
 
     public Vector2 normalize() {
-        double len = this.lengthSquared();
+        double $3 = this.lengthSquared();
         if (len != 0) {
             return this.divide(Math.sqrt(len));
         }
         return new Vector2(0, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double dot(Vector2 v) {
         return this.x * v.x + this.y * v.y;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "Vector2(x=" + this.x + ",y=" + this.y + ")";
     }

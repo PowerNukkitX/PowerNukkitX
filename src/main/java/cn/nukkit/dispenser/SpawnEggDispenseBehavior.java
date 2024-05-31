@@ -12,6 +12,10 @@ import cn.nukkit.math.Vector3;
 
 
 public class SpawnEggDispenseBehavior extends DefaultDispenseBehavior {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public SpawnEggDispenseBehavior() {
@@ -20,9 +24,9 @@ public class SpawnEggDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
-        Vector3 pos = block.getSide(face).add(0.5, 0.7, 0.5);
+        Vector3 $1 = block.getSide(face).add(0.5, 0.7, 0.5);
 
-        Entity entity = Entity.createEntity(((ItemSpawnEgg)item).getEntityNetworkId(), block.level.getChunk(pos.getChunkX(), pos.getChunkZ()),
+        Entity $2 = Entity.createEntity(((ItemSpawnEgg)item).getEntityNetworkId(), block.level.getChunk(pos.getChunkX(), pos.getChunkZ()),
                 Entity.getDefaultNBT(pos));
 
         this.success = entity != null;

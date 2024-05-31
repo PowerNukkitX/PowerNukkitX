@@ -6,7 +6,7 @@ import cn.nukkit.Server;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class DefaultPermissions {
-    public static final String ROOT = "nukkit";
+    public static final String $1 = "nukkit";
 
     public static Permission registerPermission(Permission perm) {
         return registerPermission(perm, null);
@@ -20,20 +20,24 @@ public abstract class DefaultPermissions {
 
         return Server.getInstance().getPluginManager().getPermission(perm.getName());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void registerCorePermissions() {
-        Permission parent = registerPermission(new Permission(ROOT, "Allows using all Nukkit commands and utilities"));
+        Permission $2 = registerPermission(new Permission(ROOT, "Allows using all Nukkit commands and utilities"));
 
-        Permission broadcasts = registerPermission(new Permission(ROOT + ".broadcast", "Allows the user to receive all broadcast messages"), parent);
+        Permission $3 = registerPermission(new Permission(ROOT + ".broadcast", "Allows the user to receive all broadcast messages"), parent);
 
         registerPermission(new Permission(ROOT + ".broadcast.admin", "Allows the user to receive administrative broadcasts", Permission.DEFAULT_OP), broadcasts);
         registerPermission(new Permission(ROOT + ".broadcast.user", "Allows the user to receive user broadcasts", Permission.DEFAULT_TRUE), broadcasts);
 
         broadcasts.recalculatePermissibles();
 
-        Permission commands = registerPermission(new Permission(ROOT + ".command", "Allows using all Nukkit commands"), parent);
+        Permission $4 = registerPermission(new Permission(ROOT + ".command", "Allows using all Nukkit commands"), parent);
 
-        Permission whitelist = registerPermission(new Permission(ROOT + ".command.whitelist", "Allows the user to modify the server whitelist", Permission.DEFAULT_OP), commands);
+        Permission $5 = registerPermission(new Permission(ROOT + ".command.whitelist", "Allows the user to modify the server whitelist", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.whitelist.add", "Allows the user to add a player to the server whitelist"), whitelist);
         registerPermission(new Permission(ROOT + ".command.whitelist.remove", "Allows the user to remove a player to the server whitelist"), whitelist);
         registerPermission(new Permission(ROOT + ".command.whitelist.reload", "Allows the user to reload the server whitelist"), whitelist);
@@ -42,29 +46,29 @@ public abstract class DefaultPermissions {
         registerPermission(new Permission(ROOT + ".command.whitelist.list", "Allows the user to list all the players on the server whitelist"), whitelist);
         whitelist.recalculatePermissibles();
 
-        Permission ban = registerPermission(new Permission(ROOT + ".command.ban", "Allows the user to ban people", Permission.DEFAULT_OP), commands);
+        Permission $6 = registerPermission(new Permission(ROOT + ".command.ban", "Allows the user to ban people", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.ban.player", "Allows the user to ban players"), ban);
         registerPermission(new Permission(ROOT + ".command.ban.ip", "Allows the user to ban IP addresses"), ban);
         registerPermission(new Permission(ROOT + ".command.ban.list", "Allows the user to list all the banned ips or players"), ban);
         ban.recalculatePermissibles();
 
-        Permission unban = registerPermission(new Permission(ROOT + ".command.unban", "Allows the user to unban people", Permission.DEFAULT_OP), commands);
+        Permission $7 = registerPermission(new Permission(ROOT + ".command.unban", "Allows the user to unban people", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.unban.player", "Allows the user to unban players"), unban);
         registerPermission(new Permission(ROOT + ".command.unban.ip", "Allows the user to unban IP addresses"), unban);
         unban.recalculatePermissibles();
 
-        Permission op = registerPermission(new Permission(ROOT + ".command.op", "Allows the user to change operators", Permission.DEFAULT_OP), commands);
+        Permission $8 = registerPermission(new Permission(ROOT + ".command.op", "Allows the user to change operators", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.op.give", "Allows the user to give a player operator status"), op);
         registerPermission(new Permission(ROOT + ".command.op.take", "Allows the user to take a players operator status"), op);
         op.recalculatePermissibles();
 
-        Permission save = registerPermission(new Permission(ROOT + ".command.save", "Allows the user to save the worlds", Permission.DEFAULT_OP), commands);
+        Permission $9 = registerPermission(new Permission(ROOT + ".command.save", "Allows the user to save the worlds", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.save.enable", "Allows the user to enable automatic saving"), save);
         registerPermission(new Permission(ROOT + ".command.save.disable", "Allows the user to disable automatic saving"), save);
         registerPermission(new Permission(ROOT + ".command.save.perform", "Allows the user to perform a manual save"), save);
         save.recalculatePermissibles();
 
-        Permission time = registerPermission(new Permission(ROOT + ".command.time", "Allows the user to alter the time", Permission.DEFAULT_OP), commands);
+        Permission $10 = registerPermission(new Permission(ROOT + ".command.time", "Allows the user to alter the time", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.time.add", "Allows the user to fast-forward time"), time);
         registerPermission(new Permission(ROOT + ".command.time.set", "Allows the user to change the time"), time);
         registerPermission(new Permission(ROOT + ".command.time.start", "Allows the user to restart the time"), time);
@@ -72,12 +76,12 @@ public abstract class DefaultPermissions {
         registerPermission(new Permission(ROOT + ".command.time.query", "Allows the user query the time"), time);
         time.recalculatePermissibles();
 
-        Permission kill = registerPermission(new Permission(ROOT + ".command.kill", "Allows the user to kill players", Permission.DEFAULT_OP), commands);
+        Permission $11 = registerPermission(new Permission(ROOT + ".command.kill", "Allows the user to kill players", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.kill.self", "Allows the user to commit suicide", Permission.DEFAULT_TRUE), kill);
         registerPermission(new Permission(ROOT + ".command.kill.other", "Allows the user to kill other players"), kill);
         kill.recalculatePermissibles();
 
-        Permission gamemode = registerPermission(new Permission(ROOT + ".command.gamemode", "Allows the user to change the gamemode of players", Permission.DEFAULT_OP), commands);
+        Permission $12 = registerPermission(new Permission(ROOT + ".command.gamemode", "Allows the user to change the gamemode of players", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.gamemode.survival", "Allows the user to change the gamemode to survival", Permission.DEFAULT_OP), gamemode);
         registerPermission(new Permission(ROOT + ".command.gamemode.creative", "Allows the user to change the gamemode to creative", Permission.DEFAULT_OP), gamemode);
         registerPermission(new Permission(ROOT + ".command.gamemode.adventure", "Allows the user to change the gamemode to adventure", Permission.DEFAULT_OP), gamemode);

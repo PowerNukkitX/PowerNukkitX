@@ -6,7 +6,7 @@ import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.event.HandlerList;
 
 public class PlayerDialogRespondedEvent extends PlayerEvent {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -15,6 +15,10 @@ public class PlayerDialogRespondedEvent extends PlayerEvent {
     protected FormWindowDialog dialog;
 
     protected FormResponseDialog response;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerDialogRespondedEvent(Player player, FormWindowDialog dialog,FormResponseDialog response) {
         this.dialog = dialog;

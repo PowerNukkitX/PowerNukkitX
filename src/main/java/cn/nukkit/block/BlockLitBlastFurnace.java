@@ -8,28 +8,44 @@ import cn.nukkit.item.ItemBlock;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockLitBlastFurnace extends BlockLitFurnace {
-    public static final BlockProperties PROPERTIES = new BlockProperties(LIT_BLAST_FURNACE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(LIT_BLAST_FURNACE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockLitBlastFurnace() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockLitBlastFurnace(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Burning Blast Furnace";
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getBlockEntityType() {
         return BlockEntity.BLAST_FURNACE;
     }
 

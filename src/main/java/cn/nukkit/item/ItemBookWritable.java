@@ -8,18 +8,34 @@ import java.util.List;
 
 public abstract class ItemBookWritable extends Item {
 
+    
+    /**
+     * @deprecated 
+     */
     protected ItemBookWritable(String id) {
         super(id);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected ItemBookWritable(String id, Integer meta) {
         super(id, meta);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected ItemBookWritable(String id, Integer meta, int count) {
         super(id, meta, count);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected ItemBookWritable(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
@@ -27,10 +43,14 @@ public abstract class ItemBookWritable extends Item {
     /**
      * Returns whether the given page exists in this book.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean pageExists(int pageId) {
         Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
         if (this.hasCompoundTag()) {
-            CompoundTag tag = this.getNamedTag();
+            CompoundTag $1 = this.getNamedTag();
             if (tag.contains("pages") && tag.get("pages") instanceof ListTag) {
                 return tag.getList("pages", CompoundTag.class).size() > pageId;
             }
@@ -41,10 +61,14 @@ public abstract class ItemBookWritable extends Item {
     /**
      * Returns a string containing the content of a page (which could be empty), or null if the page doesn't exist.
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getPageText(int pageId) {
         Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
         if (this.hasCompoundTag()) {
-            CompoundTag tag = this.getNamedTag();
+            CompoundTag $2 = this.getNamedTag();
             if (tag.contains("pages") && tag.get("pages") instanceof ListTag) {
                 ListTag<CompoundTag> pages = tag.getList("pages", CompoundTag.class);
                 if (pages.size() > pageId) {
@@ -59,6 +83,10 @@ public abstract class ItemBookWritable extends Item {
      * Sets the text of a page in the book. Adds the page if the page does not yet exist.
      * @return boolean indicating success
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean setPageText(int pageId, String pageText) {
         Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
         Preconditions.checkArgument(pageText.length() <= 256, "Text length " + pageText.length() + " is out of range");
@@ -78,7 +106,7 @@ public abstract class ItemBookWritable extends Item {
             pages = tag.getList("pages", CompoundTag.class);
         }
         if (pages.size() <= pageId) {
-            for (int current = pages.size(); current <= pageId; current++) {
+            for (int $3 = pages.size(); current <= pageId; current++) {
                 pages.add(createPageTag());
             }
         }
@@ -93,9 +121,13 @@ public abstract class ItemBookWritable extends Item {
      * Creates a new page for every page between the given ID and existing pages that doesn't yet exist.
      * @return boolean indicating success
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean addPage(int pageId) {
         Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
-        CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
+        CompoundTag $4 = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> pages;
         if (!tag.contains("pages") || !(tag.get("pages") instanceof ListTag)) {
             pages = new ListTag<>();
@@ -104,7 +136,7 @@ public abstract class ItemBookWritable extends Item {
             pages = tag.getList("pages", CompoundTag.class);
         }
 
-        for (int current = pages.size(); current <= pageId; current++) {
+        for (int $5 = pages.size(); current <= pageId; current++) {
             pages.add(createPageTag());
         }
         this.setCompoundTag(tag);
@@ -115,10 +147,14 @@ public abstract class ItemBookWritable extends Item {
      * Deletes an existing page with the given page ID.
      * @return boolean indicating success
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean deletePage(int pageId) {
         Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
         if (this.hasCompoundTag()) {
-            CompoundTag tag = this.getNamedTag();
+            CompoundTag $6 = this.getNamedTag();
             if (tag.contains("pages") && tag.get("pages") instanceof ListTag) {
                 ListTag<CompoundTag> pages = tag.getList("pages", CompoundTag.class);
                 if (pages.size() > pageId) {
@@ -134,6 +170,10 @@ public abstract class ItemBookWritable extends Item {
      * Inserts a new page with the given text and moves other pages upwards.
      * @return boolean indicating success
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean insertPage(int pageId) {
         return this.insertPage(pageId, "");
     }
@@ -142,10 +182,14 @@ public abstract class ItemBookWritable extends Item {
      * Inserts a new page with the given text and moves other pages upwards.
      * @return boolean indicating success
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean insertPage(int pageId, String pageText) {
         Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
         Preconditions.checkArgument(pageText.length() <= 256, "Text length " + pageText.length() + " is out of range");
-        CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
+        CompoundTag $7 = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> pages;
         if (!tag.contains("pages") || !(tag.get("pages") instanceof ListTag)) {
             pages = new ListTag<>();
@@ -155,7 +199,7 @@ public abstract class ItemBookWritable extends Item {
         }
 
         if (pages.size() <= pageId) {
-            for (int current = pages.size(); current <= pageId; current++) {
+            for (int $8 = pages.size(); current <= pageId; current++) {
                 pages.add(createPageTag());
             }
             pages.get(pageId).putString("text", pageText);
@@ -170,16 +214,20 @@ public abstract class ItemBookWritable extends Item {
      * Switches the text of two pages with each other.
      * @return boolean indicating success
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean swapPages(int pageId1, int pageId2) {
         Preconditions.checkArgument(pageId1 >= 0 && pageId1 < 50, "Page number " + pageId1 + " is out of range");
         Preconditions.checkArgument(pageId2 >= 0 && pageId2 < 50, "Page number " + pageId2 + " is out of range");
         if (this.hasCompoundTag()) {
-            CompoundTag tag = this.getNamedTag();
+            CompoundTag $9 = this.getNamedTag();
             if (tag.contains("pages") && tag.get("pages") instanceof ListTag) {
                 ListTag<CompoundTag> pages = tag.getList("pages", CompoundTag.class);
                 if (pages.size() > pageId1 && pages.size() > pageId2) {
-                    String pageContents1 = pages.get(pageId1).getString("text");
-                    String pageContents2 = pages.get(pageId2).getString("text");
+                    String $10 = pages.get(pageId1).getString("text");
+                    String $11 = pages.get(pageId2).getString("text");
                     pages.get(pageId1).putString("text", pageContents2);
                     pages.get(pageId2).putString("text", pageContents1);
                     return true;
@@ -193,7 +241,7 @@ public abstract class ItemBookWritable extends Item {
      * Returns an list containing all pages of this book.
      */
     public List<Object> getPages() {
-        CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
+        CompoundTag $12 = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> pages;
         if (!tag.contains("pages") || !(tag.get("pages") instanceof ListTag)) {
             pages = new ListTag<>();

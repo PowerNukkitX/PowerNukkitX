@@ -18,5 +18,5 @@ public class MappingRegistries {
      * A versioned registry which holds {@link BlockMappings} for each version. These block mappings contain
      * primarily Bedrock version-specific data.
      */
-    public static final BlockMappings BLOCKS = BlockRegistryPopulator.initMapping();
+    public static final BlockMappings $1 = BlockRegistryPopulator.initMapping();
 }

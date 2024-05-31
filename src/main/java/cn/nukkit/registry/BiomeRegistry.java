@@ -30,13 +30,17 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
     private static final Int2ObjectOpenHashMap<BiomeDefinition> DEFINITIONS = new Int2ObjectOpenHashMap<>(0xFF);
     private static final Object2IntOpenHashMap<String> NAME2ID = new Object2IntOpenHashMap<>(0xFF);
     private static final List<CompoundTag> REGISTRY = new ArrayList<>(0xFF);
-    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static final AtomicBoolean $1 = new AtomicBoolean(false);
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         if (isLoad.getAndSet(true)) return;
-        try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_id_and_type.json")) {
-            Gson gson = new GsonBuilder().setObjectToNumberStrategy(JsonReader::nextInt).create();
+        try (var $2 = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_id_and_type.json")) {
+            Gson $3 = new GsonBuilder().setObjectToNumberStrategy(JsonReader::nextInt).create();
             Map<String, ?> map = gson.fromJson(new InputStreamReader(stream), Map.class);
             for (var e : map.entrySet()) {
                 NAME2ID.put(e.getKey(), Integer.parseInt(((Map<String, ?>) e.getValue()).get("id").toString()));
@@ -45,15 +49,15 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
             throw new RuntimeException(e);
         }
 
-        try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_definitions.nbt")) {
-            TreeMapCompoundTag compoundTag = NBTIO.readTreeMapCompoundTag(stream, ByteOrder.BIG_ENDIAN, true);
+        try (var $4 = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_definitions.nbt")) {
+            TreeMapCompoundTag $5 = NBTIO.readTreeMapCompoundTag(stream, ByteOrder.BIG_ENDIAN, true);
             Map<String, Tag> tags = compoundTag.getTags();
             for (var e : tags.entrySet()) {
-                int id = NAME2ID.getInt(e.getKey());
-                CompoundTag value = (CompoundTag) e.getValue();
+                int $6 = NAME2ID.getInt(e.getKey());
+                CompoundTag $7 = (CompoundTag) e.getValue();
                 ListTag<StringTag> tags1 = value.getList("tags", StringTag.class);
                 Set<String> list = tags1.getAll().stream().map(StringTag::parseValue).collect(Collectors.toSet());
-                BiomeDefinition biomeDefinition = new BiomeDefinition(
+                BiomeDefinition $8 = new BiomeDefinition(
                         value.getFloat("ash"),
                         value.getFloat("blue_spores"),
                         value.getFloat("depth"),
@@ -88,6 +92,10 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
     public BiomeDefinition get(String biomeName) {
         return get(NAME2ID.getInt(biomeName));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getBiomeId(String biomeName) {
         return NAME2ID.getInt(biomeName);
@@ -95,7 +103,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
 
     public byte[] getBiomeDefinitionListPacketData() {
         //todo Figure out the mapping of custom biomes
-        try (InputStream resourceAsStream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_definitions.nbt")) {
+        try (InputStream $9 = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_definitions.nbt")) {
             assert resourceAsStream != null;
             return resourceAsStream.readAllBytes();
         } catch (IOException e) {
@@ -109,12 +117,20 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void trim() {
         DEFINITIONS.trim();
         NAME2ID.trim();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reload() {
         isLoad.set(false);
         DEFINITIONS.clear();

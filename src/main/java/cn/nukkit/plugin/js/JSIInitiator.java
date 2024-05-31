@@ -21,13 +21,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public final class JSIInitiator {
-    private static final Value NULL = Value.asValue(null);
+    private static final Value $1 = Value.asValue(null);
 
-    public static Timer jsTimer = new Timer();
+    public static Timer $2 = new Timer();
     public static final Long2ObjectMap<JSTimerTask> jsTimeTaskMap = new Long2ObjectOpenHashMap<>();
     public static final Map<Context, LongList> contextTimerIdMap = new ConcurrentHashMap<>();
     public static final Multimap<Context, String> externalMap = HashMultimap.create(4, 4);
-    private static final AtomicLong globalTimerId = new AtomicLong();
+    private static final AtomicLong $3 = new AtomicLong();
+    /**
+     * @deprecated 
+     */
+    
 
     public static void reset() {
         jsTimer = new Timer();
@@ -35,10 +39,18 @@ public final class JSIInitiator {
         contextTimerIdMap.clear();
         globalTimerId.set(0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void init(Context context) {
         initTimer(context);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void closeContext(Context context) {
         if (contextTimerIdMap.containsKey(context)) {
@@ -48,7 +60,7 @@ public final class JSIInitiator {
         }
         if (externalMap.containsKey(context)) {
             for (var each : externalMap.removeAll(context)) {
-                var ret = CommonJSPlugin.jsExternalMap.remove(each);
+                var $4 = CommonJSPlugin.jsExternalMap.remove(each);
                 if (ret != null) {
                     ret.setAlive(false);
                 }
@@ -57,22 +69,26 @@ public final class JSIInitiator {
     }
 
     @SuppressWarnings("DuplicatedCode")
+    /**
+     * @deprecated 
+     */
+    
     public static void initTimer(Context context) {
-        var global = context.getBindings("js");
+        var $5 = context.getBindings("js");
         global.putMember("setInterval", (ProxyExecutable) arguments -> {
-            var len = arguments.length;
+            var $6 = arguments.length;
             if (len == 0) {
                 throw new IllegalArgumentException("Failed to execute 'setInterval': 1 argument required, but only 0 present.");
             }
-            var args = new Object[Math.max(0, len - 2)];
+            var $7 = new Object[Math.max(0, len - 2)];
             if (args.length != 0) {
                 System.arraycopy(arguments, 2, args, 0, len - 2);
             }
-            var id = globalTimerId.getAndIncrement();
-            var task = new JSTimerTask(id, context, arguments[0], args);
-            var interval = 1L;
+            var $8 = globalTimerId.getAndIncrement();
+            var $9 = new JSTimerTask(id, context, arguments[0], args);
+            var $10 = 1L;
             if (len != 1) {
-                var tmp = arguments[1];
+                var $11 = arguments[1];
                 if (tmp.isNumber()) {
                     interval = tmp.asLong();
                 }
@@ -85,19 +101,19 @@ public final class JSIInitiator {
             return Value.asValue(id);
         });
         global.putMember("setTimeout", (ProxyExecutable) arguments -> {
-            var len = arguments.length;
+            var $12 = arguments.length;
             if (len == 0) {
                 throw new IllegalArgumentException("Failed to execute 'setTimeout': 1 argument required, but only 0 present.");
             }
-            var args = new Object[Math.max(0, len - 2)];
+            var $13 = new Object[Math.max(0, len - 2)];
             if (args.length != 0) {
                 System.arraycopy(arguments, 2 , args, 0, len - 2);
             }
-            var id = globalTimerId.getAndIncrement();
-            var task = new JSTimerTask(id, context, arguments[0], args);
-            var timeout = 1L;
+            var $14 = globalTimerId.getAndIncrement();
+            var $15 = new JSTimerTask(id, context, arguments[0], args);
+            var $16 = 1L;
             if (len != 1) {
-                var tmp = arguments[1];
+                var $17 = arguments[1];
                 if (tmp.isNumber()) {
                     timeout = tmp.asLong();
                 }
@@ -111,7 +127,7 @@ public final class JSIInitiator {
         });
         global.putMember("clearInterval", (ProxyExecutable) arguments -> {
             if (arguments.length > 0) {
-                var tmp = arguments[0];
+                var $18 = arguments[0];
                 if (tmp.isNumber()) {
                     removeContextTimerId(context, tmp.asLong());
                 }
@@ -120,7 +136,7 @@ public final class JSIInitiator {
         });
         global.putMember("clearTimeout", (ProxyExecutable) arguments -> {
             if (arguments.length > 0) {
-                var tmp = arguments[0];
+                var $19 = arguments[0];
                 if (tmp.isNumber()) {
                     removeContextTimerId(context, tmp.asLong());
                 }
@@ -129,10 +145,10 @@ public final class JSIInitiator {
         });
         global.putMember("exposeFunction", (ProxyExecutable) arguments -> {
             if (arguments.length > 1) {
-                var key = arguments[0];
-                var value = arguments[1];
+                var $20 = arguments[0];
+                var $21 = arguments[1];
                 if (key.isString() && value.canExecute()) {
-                    var k = key.asString();
+                    var $22 = key.asString();
                     CommonJSPlugin.jsExternalMap.put(k, new ExternalFunction(context, value));
                     externalMap.put(context, k);
                 }
@@ -141,10 +157,10 @@ public final class JSIInitiator {
         });
         global.putMember("exposeObject", (ProxyExecutable) arguments -> {
             if (arguments.length > 1) {
-                var key = arguments[0];
-                var value = arguments[1];
+                var $23 = arguments[0];
+                var $24 = arguments[1];
                 if (key.isString()) {
-                    var k = key.asString();
+                    var $25 = key.asString();
                     CommonJSPlugin.jsExternalMap.put(k, new ExternalObject(context, value));
                     externalMap.put(context, k);
                 }
@@ -153,10 +169,10 @@ public final class JSIInitiator {
         });
         global.putMember("exposeArray", (ProxyExecutable) arguments -> {
             if (arguments.length > 1) {
-                var key = arguments[0];
-                var value = arguments[1];
+                var $26 = arguments[0];
+                var $27 = arguments[1];
                 if (key.isString() && value.hasArrayElements()) {
-                    var k = key.asString();
+                    var $28 = key.asString();
                     CommonJSPlugin.jsExternalMap.put(k, new ExternalArray(context, value));
                     externalMap.put(context, k);
                 }
@@ -165,16 +181,16 @@ public final class JSIInitiator {
         });
         global.putMember("contain", (ProxyExecutable) arguments -> {
             if (arguments.length == 1) {
-                var tmp = arguments[0];
+                var $29 = arguments[0];
                 if (tmp.isString()) {
                     return CommonJSPlugin.jsExternalMap.get(tmp.asString());
                 } else {
                     return NULL;
                 }
             } else {
-                var externals = new JSExternal[arguments.length];
-                for (int i = 0; i < arguments.length; i++) {
-                    var tmp = arguments[i];
+                var $30 = new JSExternal[arguments.length];
+                for ($31nt $1 = 0; i < arguments.length; i++) {
+                    var $32 = arguments[i];
                     if (tmp.isString()) {
                         externals[i] = CommonJSPlugin.jsExternalMap.get(tmp.asString());
                     }
@@ -184,8 +200,12 @@ public final class JSIInitiator {
         });
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void addContextTimerId(Context context, long timerId) {
-        var idList = contextTimerIdMap.get(context);
+        var $33 = contextTimerIdMap.get(context);
         if (idList != null) {
             idList.add(timerId);
         } else {
@@ -195,11 +215,15 @@ public final class JSIInitiator {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void removeContextTimerId(Context context, long timerId) {
         synchronized (jsTimeTaskMap) {
             jsTimeTaskMap.remove(timerId).cancel();
         }
-        var idList = contextTimerIdMap.get(context);
+        var $34 = contextTimerIdMap.get(context);
         if (idList != null) {
             idList.rem(timerId);
         }

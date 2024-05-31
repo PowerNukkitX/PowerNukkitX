@@ -23,54 +23,82 @@ import static cn.nukkit.block.property.CommonBlockProperties.AGE_6;
 
 public class BlockChorusFlower extends BlockTransparent {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(CHORUS_FLOWER, AGE_6);
+    public static final BlockProperties $1 = new BlockProperties(CHORUS_FLOWER, AGE_6);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockChorusFlower() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockChorusFlower(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Chorus Flower";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.4;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0.4;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isPositionValid() {
         // Chorus flowers must be above end stone or chorus plant, or be above air and horizontally adjacent to exactly one chorus plant.
         // If these conditions are not met, the block breaks without dropping anything.
-        Block down = down();
+        Block $2 = down();
         if (down.getId().equals(CHORUS_PLANT) || down.getId().equals(END_STONE)) {
             return true;
         }
         if (!down.isAir()) {
             return false;
         }
-        boolean foundPlant = false;
+        boolean $3 = false;
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
-            Block side = getSide(face);
+            Block $4 = getSide(face);
             if (side.getId().equals(CHORUS_PLANT)) {
                 if (foundPlant) {
                     return false;
@@ -83,6 +111,10 @@ public class BlockChorusFlower extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isPositionValid()) {
@@ -96,13 +128,13 @@ public class BlockChorusFlower extends BlockTransparent {
             // Check limit
             if (this.up().isAir() && this.up().getY() <= level.getMaxHeight()) {
                 if (!isFullyAged()) {
-                    boolean growUp = false; // Grow upward?
-                    boolean ground = false; // Is on the ground directly?
+                    boolean $5 = false; // Grow upward?
+                    boolean $6 = false; // Is on the ground directly?
                     if (this.down().isAir() || this.down().getId().equals(END_STONE)) {
                         growUp = true;
                     } else if (this.down().getId().equals(CHORUS_PLANT)) {
-                        int height = 1;
-                        for (int y = 2; y < 6; y++) {
+                        int $7 = 1;
+                        for (int $8 = 2; y < 6; y++) {
                             if (this.down(y).getId().equals(CHORUS_PLANT)) {
                                 height++;
                             } else {
@@ -120,9 +152,9 @@ public class BlockChorusFlower extends BlockTransparent {
                     
                     // Grow Upward
                     if (growUp && this.up(2).isAir() && isHorizontalAir(this.up())) {
-                        BlockChorusFlower block = (BlockChorusFlower) this.clone();
+                        BlockChorusFlower $9 = (BlockChorusFlower) this.clone();
                         block.y = this.y + 1;
-                        BlockGrowEvent ev = new BlockGrowEvent(this, block);
+                        BlockGrowEvent $10 = new BlockGrowEvent(this, block);
                         Server.getInstance().getPluginManager().callEvent(ev);
                         
                         if (!ev.isCancelled()) {
@@ -134,16 +166,16 @@ public class BlockChorusFlower extends BlockTransparent {
                         }
                     // Grow Horizontally
                     } else if (!isFullyAged()) {
-                        for (int i = 0; i < ThreadLocalRandom.current().nextInt(ground ? 5 : 4); i++) {
-                            BlockFace face = BlockFace.Plane.HORIZONTAL.random();
-                            Block check = this.getSide(face);
+                        for ($11nt $1 = 0; i < ThreadLocalRandom.current().nextInt(ground ? 5 : 4); i++) {
+                            BlockFace $12 = BlockFace.Plane.HORIZONTAL.random();
+                            Block $13 = this.getSide(face);
                             if (check.isAir() && check.down().isAir() && isHorizontalAirExcept(check, face.getOpposite())) {
-                                BlockChorusFlower block = (BlockChorusFlower) this.clone();
+                                BlockChorusFlower $14 = (BlockChorusFlower) this.clone();
                                 block.x = check.x;
                                 block.y = check.y;
                                 block.z = check.z;
                                 block.setAge(getAge() + 1);
-                                BlockGrowEvent ev = new BlockGrowEvent(this, block);
+                                BlockGrowEvent $15 = new BlockGrowEvent(this, block);
                                 Server.getInstance().getPluginManager().callEvent(ev);
                                 
                                 if (!ev.isCancelled()) {
@@ -157,9 +189,9 @@ public class BlockChorusFlower extends BlockTransparent {
                         }
                     // Death
                     } else {
-                        BlockChorusFlower block = (BlockChorusFlower) this.clone();
+                        BlockChorusFlower $16 = (BlockChorusFlower) this.clone();
                         block.setAge(getMaxAge());
-                        BlockGrowEvent ev = new BlockGrowEvent(this, block);
+                        BlockGrowEvent $17 = new BlockGrowEvent(this, block);
                         Server.getInstance().getPluginManager().callEvent(ev);
                         
                         if (!ev.isCancelled()) {
@@ -179,6 +211,10 @@ public class BlockChorusFlower extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (!isPositionValid()) {
             return false;
@@ -192,16 +228,28 @@ public class BlockChorusFlower extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public  boolean sticksToPiston() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         if (projectile instanceof EntityArrow || projectile instanceof EntitySnowball || projectile instanceof EntitySmallFireball) {
             this.getLevel().useBreakOn(this);
@@ -209,23 +257,43 @@ public class BlockChorusFlower extends BlockTransparent {
         }
         return super.onProjectileHit(projectile, position, motion);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getMaxAge() {
         return AGE_6.getMax();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getAge() {
         return getPropertyValue(AGE_6);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAge(int age) {
         setPropertyValue(AGE_6, age);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isFullyAged() {
         return getAge() >= getMaxAge();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isHorizontalAir(Block block) {
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
             if (!block.getSide(face).isAir()) {
@@ -235,6 +303,10 @@ public class BlockChorusFlower extends BlockTransparent {
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isHorizontalAirExcept(Block block, BlockFace except) {
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
             if (face != except) {

@@ -3,18 +3,26 @@ package cn.nukkit.utils;
 import java.lang.ref.Cleaner;
 
 public final class CleanerHandle<RESOURCE extends AutoCloseable> {
-    private static final Cleaner CLEANER = Cleaner.create();
+    private static final Cleaner $1 = Cleaner.create();
     private final Cleaner.Cleanable cleanable;
     private final RESOURCE resource;
 
     private static final class CleanerTask<RESOURCE extends AutoCloseable> implements Runnable {
         private final RESOURCE resource;
 
-        private CleanerTask(RESOURCE resource) {
+        
+    /**
+     * @deprecated 
+     */
+    private CleanerTask(RESOURCE resource) {
             this.resource = resource;
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public void run() {
             try {
                 this.resource.close();
@@ -23,6 +31,10 @@ public final class CleanerHandle<RESOURCE extends AutoCloseable> {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public CleanerHandle(RESOURCE resource) {
         this.resource = resource;

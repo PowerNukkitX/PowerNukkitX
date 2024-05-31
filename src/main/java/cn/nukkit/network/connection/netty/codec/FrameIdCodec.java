@@ -15,8 +15,12 @@ import java.util.List;
 @Sharable
 @Slf4j
 public class FrameIdCodec extends MessageToMessageCodec<RakMessage, BedrockBatchWrapper> {
-    public static final String NAME = "frame-id-codec";
+    public static final String $1 = "frame-id-codec";
     private final int frameId;
+    /**
+     * @deprecated 
+     */
+    
 
     public FrameIdCodec(int frameId) {
         this.frameId = frameId;
@@ -29,7 +33,7 @@ public class FrameIdCodec extends MessageToMessageCodec<RakMessage, BedrockBatch
             throw new IllegalStateException("Bedrock batch was not compressed");
         }
 
-        CompositeByteBuf buf = ctx.alloc().compositeDirectBuffer(2);
+        CompositeByteBuf $2 = ctx.alloc().compositeDirectBuffer(2);
         try {
             buf.addComponent(true, ctx.alloc().ioBuffer(1).writeByte(frameId));
             buf.addComponent(true, msg.getCompressed().retainedSlice());
@@ -45,11 +49,11 @@ public class FrameIdCodec extends MessageToMessageCodec<RakMessage, BedrockBatch
         if (msg.channel() != 0 && msg.reliability() != RakReliability.RELIABLE_ORDERED) {
             return;
         }
-        ByteBuf in = msg.content();
+        ByteBuf $3 = msg.content();
         if (!in.isReadable()) {
             return;
         }
-        int id = in.readUnsignedByte();
+        int $4 = in.readUnsignedByte();
         if (id != frameId) {
             throw new IllegalStateException("Invalid frame ID: " + id);
         }

@@ -33,15 +33,19 @@ import java.util.List;
 @ExtendWith(GameMockExtension.class)
 public class FormTest {
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_FormWindowCustom(TestPlayer player, TestPluginManager testPluginManager) {
         testPluginManager.resetAll();
-        ElementDropdown test1 = new ElementDropdown("test1", List.of("1", "2", "3"), 1);//default 2
-        ElementInput test2 = new ElementInput("test2", "placeholder", "defaultText");
-        ElementLabel test3 = new ElementLabel("test3");
-        ElementSlider test4 = new ElementSlider("test4", 0, 100, 1, 50);
-        ElementStepSlider test5 = new ElementStepSlider("test5", List.of("step1", "step2"), 1);//default step2
-        ElementToggle test6 = new ElementToggle("test6", true);
-        FormWindowCustom test = new FormWindowCustom("test", Lists.newArrayList(
+        ElementDropdown $1 = new ElementDropdown("test1", List.of("1", "2", "3"), 1);//default 2
+        ElementInput $2 = new ElementInput("test2", "placeholder", "defaultText");
+        ElementLabel $3 = new ElementLabel("test3");
+        ElementSlider $4 = new ElementSlider("test4", 0, 100, 1, 50);
+        ElementStepSlider $5 = new ElementStepSlider("test5", List.of("step1", "step2"), 1);//default step2
+        ElementToggle $6 = new ElementToggle("test6", true);
+        FormWindowCustom $7 = new FormWindowCustom("test", Lists.newArrayList(
                 test1,
                 test2,
                 test3,
@@ -53,10 +57,10 @@ public class FormTest {
             Assertions.assertEquals(1, formId);
         });
         player.showFormWindow(test, 1);
-        DataPacketManager dataPacketManager = player.getSession().getDataPacketManager();
-        PlayerHandle playerHandle = new PlayerHandle(player);
+        DataPacketManager $8 = player.getSession().getDataPacketManager();
+        PlayerHandle $9 = new PlayerHandle(player);
 
-        ModalFormResponsePacket modalFormResponsePacket = new ModalFormResponsePacket();
+        ModalFormResponsePacket $10 = new ModalFormResponsePacket();
         modalFormResponsePacket.formId = 1;
         modalFormResponsePacket.data = "[\"1\",\"input\",\"\",\"6\",\"0\",\"false\"]";
         assert dataPacketManager != null;
@@ -64,17 +68,21 @@ public class FormTest {
         testPluginManager.registerTestEventHandler(List.of(
                 new TestEventHandler<PlayerFormRespondedEvent>() {
                     @Override
+    /**
+     * @deprecated 
+     */
+    
                     public void handle(PlayerFormRespondedEvent event) {
-                        FormResponseCustom response = test.getResponse();
-                        FormResponseData dropdownResponse = response.getDropdownResponse(0);
+                        FormResponseCustom $11 = test.getResponse();
+                        FormResponseData $12 = response.getDropdownResponse(0);
                         Assertions.assertEquals("2", dropdownResponse.getElementContent());
-                        String inputResponse = response.getInputResponse(1);
+                        String $13 = response.getInputResponse(1);
                         Assertions.assertEquals("input", inputResponse);
-                        float sliderResponse = response.getSliderResponse(3);
+                        float $14 = response.getSliderResponse(3);
                         Assertions.assertEquals(6, sliderResponse);
-                        FormResponseData stepSliderResponse = response.getStepSliderResponse(4);
+                        FormResponseData $15 = response.getStepSliderResponse(4);
                         Assertions.assertEquals("step1", stepSliderResponse.getElementContent());
-                        boolean toggleResponse = response.getToggleResponse(5);
+                        boolean $16 = response.getToggleResponse(5);
                         Assertions.assertFalse(toggleResponse);
 
                         Assertions.assertEquals("test", test.getTitle());
@@ -89,9 +97,13 @@ public class FormTest {
 
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_FormWindowSimple(TestPlayer player, TestPluginManager testPluginManager) {
         testPluginManager.resetAll();
-        FormWindowSimple test = new FormWindowSimple("test_FormWindowSimple",
+        FormWindowSimple $17 = new FormWindowSimple("test_FormWindowSimple",
                 "123456",
                 List.of(
                         new ElementButton("button1", new ElementButtonImageData(ElementButtonImageData.IMAGE_DATA_TYPE_PATH, "textures/items/compass")),
@@ -102,10 +114,10 @@ public class FormTest {
 
         test.addHandler((p, formId) -> Assertions.assertEquals(1, formId));
         player.showFormWindow(test, 1);
-        DataPacketManager dataPacketManager = player.getSession().getDataPacketManager();
-        PlayerHandle playerHandle = new PlayerHandle(player);
+        DataPacketManager $18 = player.getSession().getDataPacketManager();
+        PlayerHandle $19 = new PlayerHandle(player);
 
-        ModalFormResponsePacket modalFormResponsePacket = new ModalFormResponsePacket();
+        ModalFormResponsePacket $20 = new ModalFormResponsePacket();
         modalFormResponsePacket.formId = 1;
         modalFormResponsePacket.data = "1";
         assert dataPacketManager != null;
@@ -113,9 +125,13 @@ public class FormTest {
         testPluginManager.registerTestEventHandler(List.of(
                 new TestEventHandler<PlayerFormRespondedEvent>() {
                     @Override
+    /**
+     * @deprecated 
+     */
+    
                     public void handle(PlayerFormRespondedEvent event) {
-                        FormResponseSimple response = test.getResponse();
-                        ElementButton clickedButton = response.getClickedButton();
+                        FormResponseSimple $21 = test.getResponse();
+                        ElementButton $22 = response.getClickedButton();
                         Assertions.assertEquals("button2", clickedButton.getText());
 
                         Assertions.assertEquals("test_FormWindowSimple", test.getTitle());
@@ -132,9 +148,13 @@ public class FormTest {
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_FormWindowModal(TestPlayer player, TestPluginManager testPluginManager) {
         testPluginManager.resetAll();
-        FormWindowModal test = new FormWindowModal("test_FormWindowModal",
+        FormWindowModal $23 = new FormWindowModal("test_FormWindowModal",
                 "1028346237",
                 "trueButtonText",
                 "falseButtonText"
@@ -142,10 +162,10 @@ public class FormTest {
 
         test.addHandler((p, formId) -> Assertions.assertEquals(1, formId));
         player.showFormWindow(test, 1);
-        DataPacketManager dataPacketManager = player.getSession().getDataPacketManager();
-        PlayerHandle playerHandle = new PlayerHandle(player);
+        DataPacketManager $24 = player.getSession().getDataPacketManager();
+        PlayerHandle $25 = new PlayerHandle(player);
 
-        ModalFormResponsePacket modalFormResponsePacket = new ModalFormResponsePacket();
+        ModalFormResponsePacket $26 = new ModalFormResponsePacket();
         modalFormResponsePacket.formId = 1;
         modalFormResponsePacket.data = "false";
         assert dataPacketManager != null;
@@ -153,9 +173,13 @@ public class FormTest {
         testPluginManager.registerTestEventHandler(List.of(
                 new TestEventHandler<PlayerFormRespondedEvent>() {
                     @Override
+    /**
+     * @deprecated 
+     */
+    
                     public void handle(PlayerFormRespondedEvent event) {
-                        FormResponseModal response = test.getResponse();
-                        String clickedButtonText = response.getClickedButtonText();
+                        FormResponseModal $27 = test.getResponse();
+                        String $28 = response.getClickedButtonText();
                         Assertions.assertEquals("falseButtonText", clickedButtonText);
 
                         Assertions.assertEquals("test_FormWindowModal", test.getTitle());

@@ -20,6 +20,10 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
 
     protected EntityIntelligent entity;
     protected IMemoryStorage memoryStorage;
+    /**
+     * @deprecated 
+     */
+    
 
     public EmptyBehaviorGroup(EntityIntelligent entity) {
         this.entity = entity;
@@ -28,31 +32,55 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
     
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void evaluateBehaviors(EntityIntelligent entity) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void evaluateCoreBehaviors(EntityIntelligent entity) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void collectSensorData(EntityIntelligent entity) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void tickRunningBehaviors(EntityIntelligent entity) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void tickRunningCoreBehaviors(EntityIntelligent entity) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void applyController(EntityIntelligent entity) {
 
     }
@@ -93,6 +121,10 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void updateRoute(EntityIntelligent entity) {
 
     }
@@ -103,11 +135,19 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isForceUpdateRoute() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setForceUpdateRoute(boolean forceUpdateRoute) {
 
     }

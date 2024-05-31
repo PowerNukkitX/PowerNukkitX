@@ -16,12 +16,20 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class BlockMushroom extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMushroom(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!canStay()) {
@@ -34,6 +42,10 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (canStay()) {
             getLevel().setBlock(block, this, true, true);
@@ -43,11 +55,19 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
             if (player != null && (player.gamemode & 0x01) == 0) {
@@ -63,15 +83,19 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean grow() {
         this.level.setBlock(this, Block.get(BlockID.AIR), true, false);
 
-        ObjectBigMushroom generator = new ObjectBigMushroom(getType());
+        ObjectBigMushroom $1 = new ObjectBigMushroom(getType());
 
-        BlockManager chunkManager = new BlockManager(this.level);
+        BlockManager $2 = new BlockManager(this.level);
         if (generator.generate(chunkManager, RandomSourceProvider.create(), this)) {
-            StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
+            StructureGrowEvent $3 = new StructureGrowEvent(this, chunkManager.getBlocks());
             this.level.getServer().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 return false;
@@ -85,23 +109,39 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
             return false;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canStay() {
-        Block block = this.down();
+        Block $4 = this.down();
         return block.getId().equals(MYCELIUM) || block.getId().equals(PODZOL) || block instanceof BlockNylium || (!block.isTransparent() && this.level.getFullLight(this) < 13);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -109,6 +149,10 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
     protected abstract ObjectBigMushroom.MushroomType getType();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isFertilizable() {
         return true;
     }

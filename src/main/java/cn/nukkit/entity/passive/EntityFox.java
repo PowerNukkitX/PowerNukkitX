@@ -13,9 +13,17 @@ import org.jetbrains.annotations.NotNull;
 public class EntityFox extends EntityAnimal implements EntityWalkable {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return FOX;
     }
+    /**
+     * @deprecated 
+     */
+    
     
 
 
@@ -26,22 +34,38 @@ public class EntityFox extends EntityAnimal implements EntityWalkable {
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.7f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Fox";
     }

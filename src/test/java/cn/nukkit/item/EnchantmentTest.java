@@ -14,6 +14,10 @@ import java.util.List;
 @ExtendWith(GameMockExtension.class)
 public class EnchantmentTest {
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void testEnchantmentHelper(Level level) {
         List<PlayerEnchantOptionsPacket.EnchantOptionData> enchantOptions1 = EnchantmentHelper.getEnchantOptions(new Position(0, 0, 0, level), Item.get(ItemID.DIAMOND_SWORD), 114514);
         List<PlayerEnchantOptionsPacket.EnchantOptionData> enchantOptions2 = EnchantmentHelper.getEnchantOptions(new Position(0, 0, 0, level), Item.get(ItemID.DIAMOND_SWORD), 114514);

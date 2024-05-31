@@ -5,6 +5,10 @@ import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.enchantment.Enchantment;
 
 public abstract class ItemCustomBookEnchanted extends ItemEnchantedBook implements CustomItem {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemCustomBookEnchanted(String id) {
         super(id);

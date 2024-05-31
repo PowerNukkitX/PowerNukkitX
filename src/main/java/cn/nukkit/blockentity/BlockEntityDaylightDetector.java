@@ -8,6 +8,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class BlockEntityDaylightDetector extends BlockEntity {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BlockEntityDaylightDetector(IChunk chunk, CompoundTag nbt) {
@@ -15,17 +19,29 @@ public class BlockEntityDaylightDetector extends BlockEntity {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initBlockEntity() {
         scheduleUpdate();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
-        var id = getLevelBlock().getId();
-        return id == BlockID.DAYLIGHT_DETECTOR || id == BlockID.DAYLIGHT_DETECTOR_INVERTED;
+        var $1 = getLevelBlock().getId();
+        return $2 == BlockID.DAYLIGHT_DETECTOR || id == BlockID.DAYLIGHT_DETECTOR_INVERTED;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate() {
         if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return false;
@@ -34,7 +50,7 @@ public class BlockEntityDaylightDetector extends BlockEntity {
             //阳光传感器每20gt更新一次
             return true;
         }
-        Block block = getLevelBlock();
+        Block $3 = getLevelBlock();
         if (block instanceof BlockDaylightDetector b) {
             b.updatePower();
             return true;

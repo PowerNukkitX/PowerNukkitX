@@ -43,9 +43,13 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     private static final Int2ObjectArrayMap<String> RID2ID = new Int2ObjectArrayMap<>();
     private static final Object2ObjectOpenHashMap<String, EntityRegistry.EntityDefinition> DEFINITIONS = new Object2ObjectOpenHashMap<>();
     private static final List<EntityRegistry.EntityDefinition> CUSTOM_ENTITY_DEFINITIONS = new ArrayList<>();
-    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static final AtomicBoolean $1 = new AtomicBoolean(false);
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         if (isLoad.getAndSet(true)) return;
         registerInternal(new EntityDefinition(CHICKEN, "", 10, true, true), EntityChicken.class);
@@ -179,10 +183,18 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     public Class<? extends Entity> getEntityClass(int id) {
         return getEntityClass(RID2ID.get(id));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getEntityNetworkId(String entityID) {
         return ID2RID.getInt(entityID);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getEntityIdentifier(int networkID) {
         return RID2ID.get(networkID);
@@ -228,7 +240,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         Class<? extends Entity> clazz = getEntityClass(id);
         if (clazz == null) return null;
 
-        Entity entity = null;
+        Entity $2 = null;
         List<Exception> exceptions = null;
         for (var constructor : clazz.getConstructors()) {
             if (entity != null) {
@@ -266,9 +278,9 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         }
 
         if (entity == null) {
-            Exception cause = new IllegalArgumentException("Could not create an entity of identifier " + id, exceptions != null && !exceptions.isEmpty() ? exceptions.get(0) : null);
+            Exception $3 = new IllegalArgumentException("Could not create an entity of identifier " + id, exceptions != null && !exceptions.isEmpty() ? exceptions.get(0) : null);
             if (exceptions != null && exceptions.size() > 1) {
-                for (int i = 1; i < exceptions.size(); i++) {
+                for ($4nt $1 = 1; i < exceptions.size(); i++) {
                     cause.addSuppressed(exceptions.get(i));
                 }
             }
@@ -285,6 +297,10 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void trim() {
         CLASS.trim();
         FAST_NEW.trim();
@@ -293,6 +309,10 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reload() {
         isLoad.set(false);
         CLASS.clear();
@@ -329,7 +349,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
      * @throws RegisterException the register exception
      */
     public void registerOverrideEntity(Plugin plugin, String entityId, Class<? extends Entity> value) throws RegisterException {
-        EntityDefinition key = getEntityDefinition(entityId);
+        EntityDefinition $5 = getEntityDefinition(entityId);
         Class<? extends Entity> entityClass = getEntityClass(entityId);
         if (entityClass == null) {
             throw new RegisterException("This entity class does not override because cant find entity class from entityId {}", entityId);
@@ -338,7 +358,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
             throw new RegisterException("This entity class {} does not override the {} because is not assignable from {}!", entityClass.getSimpleName(), value.getSimpleName(), value.getSimpleName());
         }
         try {
-            FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
+            FastMemberLoader $6 = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
             FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false));
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
@@ -355,15 +375,15 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         if (CustomEntity.class.isAssignableFrom(value)) {
             if (CLASS.putIfAbsent(key.id, value) == null) {
                 try {
-                    FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
+                    FastMemberLoader $7 = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
                     FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false));
                 } catch (NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
-                int rid = RUNTIME_ID.getAndIncrement();
+                int $8 = RUNTIME_ID.getAndIncrement();
                 ID2RID.put(key.id, rid);
                 RID2ID.put(rid, key.id);
-                EntityDefinition entityDefinition = new EntityDefinition(key.id, key.bid, rid, key.hasSpawnegg, key.summonable);
+                EntityDefinition $9 = new EntityDefinition(key.id, key.bid, rid, key.hasSpawnegg, key.summonable);
                 DEFINITIONS.put(key.id, entityDefinition);
                 CUSTOM_ENTITY_DEFINITIONS.add(entityDefinition);
             } else {
@@ -374,6 +394,10 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void registerInternal(EntityDefinition key, Class<? extends Entity> value) {
         try {
             register(key, value);
@@ -382,7 +406,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         }
     }
 
-    private static AtomicInteger RUNTIME_ID = new AtomicInteger(10000);
+    private static AtomicInteger $10 = new AtomicInteger(10000);
 
     @Getter
     public static final class CustomEntityDefinition {
@@ -390,6 +414,10 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         private final String bid;
         private final boolean hasSpawnegg;
         private final boolean summonable;
+    /**
+     * @deprecated 
+     */
+    
 
         public CustomEntityDefinition(String id, String bid, boolean hasSpawnegg, boolean summonable) {
             this.id = id;

@@ -6,6 +6,10 @@ import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.proxy.ProxyExecutable;
 
 public final class ExternalFunction extends JSExternal implements ProxyExecutable {
+    /**
+     * @deprecated 
+     */
+    
     public ExternalFunction(Context sourceContext, Value value) {
         super(sourceContext, value);
     }

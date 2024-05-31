@@ -43,6 +43,10 @@ public enum LangCode {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return this.string;
     }

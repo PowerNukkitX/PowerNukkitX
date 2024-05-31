@@ -17,6 +17,10 @@ abstract class PlayerBucketEvent extends PlayerEvent implements Cancellable {
     private final Item bucket;
 
     private Item item;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public PlayerBucketEvent(Player who, Block blockClicked, BlockFace blockFace, Block liquid, Item bucket, Item itemInHand) {
@@ -43,6 +47,10 @@ abstract class PlayerBucketEvent extends PlayerEvent implements Cancellable {
     public Item getItem() {
         return this.item;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setItem(Item item) {
         this.item = item;

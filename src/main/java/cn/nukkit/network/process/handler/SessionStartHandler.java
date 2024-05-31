@@ -10,28 +10,36 @@ import cn.nukkit.network.protocol.RequestNetworkSettingsPacket;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 
 public class SessionStartHandler extends BedrockSessionPacketHandler {
+    /**
+     * @deprecated 
+     */
+    
     public SessionStartHandler(BedrockSession session) {
         super(session);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(RequestNetworkSettingsPacket pk) {
-        int protocol = pk.protocolVersion;
+        int $1 = pk.protocolVersion;
         if (protocol != ProtocolInfo.CURRENT_PROTOCOL) {
             session.sendPlayStatus(protocol < ProtocolInfo.CURRENT_PROTOCOL ? PlayStatusPacket.LOGIN_FAILED_CLIENT : PlayStatusPacket.LOGIN_FAILED_SERVER, true);
-            var message = protocol < ProtocolInfo.CURRENT_PROTOCOL ? "disconnectionScreen.outdatedClient" : "disconnectionScreen.outdatedServer";
+            var $2 = protocol < ProtocolInfo.CURRENT_PROTOCOL ? "disconnectionScreen.outdatedClient" : "disconnectionScreen.outdatedServer";
             session.close(message);
             return;
         }
 
-        var server = session.getServer();
+        var $3 = session.getServer();
         if (server.getIPBans().isBanned(session.getAddressString())) {
-            String reason = server.getIPBans().getEntires().get(session.getAddressString()).getReason();
+            String $4 = server.getIPBans().getEntires().get(session.getAddressString()).getReason();
             session.close(!reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
             return;
         }
 
-        var settingsPacket = new NetworkSettingsPacket();
+        var $5 = new NetworkSettingsPacket();
         //FIXME there is no way out there to disable compression
         PacketCompressionAlgorithm algorithm;
         if (Server.getInstance().getSettings().networkSettings().snappy()) {

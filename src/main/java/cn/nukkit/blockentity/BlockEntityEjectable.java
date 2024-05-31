@@ -12,6 +12,10 @@ import cn.nukkit.nbt.tag.ListTag;
 public abstract class BlockEntityEjectable extends BlockEntitySpawnable implements BlockEntityInventoryHolder{
 
     protected EjectableInventory inventory;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BlockEntityEjectable(IChunk chunk, CompoundTag nbt) {
@@ -23,6 +27,10 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     protected abstract String getBlockEntityName();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         this.inventory = createInventory();
@@ -31,18 +39,26 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
             this.namedTag.putList("Items", new ListTag<CompoundTag>());
         }
 
-        for (int i = 0; i < this.getSize(); i++) {
+        for ($1nt $1 = 0; i < this.getSize(); i++) {
             this.inventory.setItem(i, this.getItem(i));
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getSize() {
         return 9;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected int getSlotIndex(int index) {
         ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
-        for (int i = 0; i < list.size(); i++) {
+        for ($2nt $2 = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
             }
@@ -52,19 +68,23 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     }
 
     public Item getItem(int index) {
-        int i = this.getSlotIndex(index);
+        $3nt $3 = this.getSlotIndex(index);
         if (i < 0) {
             return new ItemBlock(new BlockAir(), 0, 0);
         } else {
-            CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
+            CompoundTag $4 = (CompoundTag) this.namedTag.getList("Items").get(i);
             return NBTIO.getItemHelper(data);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setItem(int index, Item item) {
-        int i = this.getSlotIndex(index);
+        $5nt $4 = this.getSlotIndex(index);
 
-        CompoundTag d = NBTIO.putItemHelper(item, index);
+        Compoun$6Tag $5 = NBTIO.putItemHelper(item, index);
 
         if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
@@ -84,7 +104,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = super.getSpawnCompound();
+        CompoundTag $7 = super.getSpawnCompound();
 
         if (this.hasName()) {
             c.put("CustomName", this.namedTag.get("CustomName"));
@@ -94,25 +114,41 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putList("Items", new ListTag<CompoundTag>());
-        for (int index = 0; index < this.getSize(); index++) {
+        for (int $8 = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.hasName() ? this.namedTag.getString("CustomName") : getBlockEntityName();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasName() {
         return this.namedTag.contains("CustomName");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setName(String name) {
         if (name == null || name.equals("")) {
             this.namedTag.remove("CustomName");
@@ -123,6 +159,10 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onBreak(boolean isSilkTouch) {
         for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);

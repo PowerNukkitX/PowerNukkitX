@@ -11,6 +11,10 @@ import java.util.List;
 
 public class LittleEndianByteBufInputStreamNBTInputStream implements DataInput, AutoCloseable {
     private LittleEndianByteBufInputStream stream;
+    /**
+     * @deprecated 
+     */
+    
 
     public LittleEndianByteBufInputStreamNBTInputStream(LittleEndianByteBufInputStream stream) {
         this.stream = stream;
@@ -104,7 +108,7 @@ public class LittleEndianByteBufInputStreamNBTInputStream implements DataInput, 
         if (stream.available() <= 0) {
             throw new IllegalStateException("Trying to read from a closed reader!");
         } else {
-            int typeId = this.readUnsignedByte();
+            int $1 = this.readUnsignedByte();
             this.readUTF();
             return this.deserialize(typeId, maxDepth);
         }
@@ -141,16 +145,16 @@ public class LittleEndianByteBufInputStreamNBTInputStream implements DataInput, 
                     LinkedHashMap<String, Tag> map = new LinkedHashMap<>();
                     int nbtType;
                     while ((nbtType = this.readUnsignedByte()) != Tag.TAG_End) {
-                        String name = this.readUTF();
+                        String $2 = this.readUTF();
                         map.put(name, deserialize(nbtType, maxDepth - 1));
                     }
                     return new CompoundTag(map);
                 case Tag.TAG_List:
-                    int typeId = this.readUnsignedByte();
-                    int listLength = this.readInt();
+                    int $3 = this.readUnsignedByte();
+                    int $4 = this.readInt();
                     List<Tag> list = new ArrayList<>(listLength);
 
-                    for (int i = 0; i < listLength; ++i) {
+                    for ($5nt $1 = 0; i < listLength; ++i) {
                         list.add(this.deserialize(typeId, maxDepth - 1));
                     }
                     return new ListTag<>(typeId, list);
@@ -158,7 +162,7 @@ public class LittleEndianByteBufInputStreamNBTInputStream implements DataInput, 
                     arraySize = this.readInt();
                     int[] ints = new int[arraySize];
 
-                    for (int i = 0; i < arraySize; ++i) {
+                    for ($6nt $2 = 0; i < arraySize; ++i) {
                         ints[i] = this.readInt();
                     }
                     return new IntArrayTag(ints);

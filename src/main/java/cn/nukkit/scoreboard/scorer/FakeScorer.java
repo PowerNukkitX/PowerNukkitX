@@ -11,6 +11,10 @@ import lombok.Getter;
 public class FakeScorer implements IScorer {
 
     private String fakeName;
+    /**
+     * @deprecated 
+     */
+    
 
     public FakeScorer(String fakeName) {
         this.fakeName = fakeName;
@@ -22,11 +26,19 @@ public class FakeScorer implements IScorer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return fakeName.hashCode();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (obj instanceof FakeScorer fakeScorer) {
             return fakeScorer.fakeName.equals(fakeName);
@@ -35,6 +47,10 @@ public class FakeScorer implements IScorer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return fakeName;
     }

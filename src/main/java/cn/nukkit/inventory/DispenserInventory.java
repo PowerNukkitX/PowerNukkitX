@@ -6,6 +6,10 @@ import cn.nukkit.blockentity.BlockEntityNameable;
 
 
 public class DispenserInventory extends EjectableInventory {
+    /**
+     * @deprecated 
+     */
+    
     public DispenserInventory(BlockEntityDispenser blockEntity) {
         super(blockEntity, InventoryType.DISPENSER, 9);
     }

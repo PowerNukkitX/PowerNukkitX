@@ -8,11 +8,15 @@ import cn.nukkit.level.generator.GenerateStage;
 import java.util.concurrent.Executor;
 
 public class FinishedStage extends GenerateStage {
-    public static final String NAME = "finished";
+    public static final String $1 = "finished";
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void apply(ChunkGenerateContext context) {
-        IChunk chunk = context.getChunk();
+        IChunk $2 = context.getChunk();
         chunk.setChunkState(ChunkState.FINISHED);
     }
 
@@ -22,6 +26,10 @@ public class FinishedStage extends GenerateStage {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String name() {
         return NAME;
     }

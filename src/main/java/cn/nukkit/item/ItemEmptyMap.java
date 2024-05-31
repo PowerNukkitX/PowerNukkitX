@@ -4,14 +4,26 @@ import cn.nukkit.Player;
 import cn.nukkit.math.Vector3;
 
 public class ItemEmptyMap extends Item {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemEmptyMap() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
     
     public ItemEmptyMap(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
     
     public ItemEmptyMap(Integer meta, int count) {
         super(EMPTY_MAP, meta, count, "Empty Map");
@@ -19,11 +31,19 @@ public class ItemEmptyMap extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDamage(int meta) {
         super.setDamage(meta);
         updateName();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void updateName() {
         if (getDamage() == 2) {
             name = "Empty Locator Map";
@@ -33,6 +53,10 @@ public class ItemEmptyMap extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onClickAir(Player player, Vector3 directionVector) {
         if (!player.isCreative()) {
             this.count--;

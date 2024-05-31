@@ -21,16 +21,24 @@ public final class OptionalValue<T> {
     }
 
     public static <T> OptionalValue<T> ofNullable(T value) {
-        return value == null ? (OptionalValue<T>) EMPTY : of(value);
+        return $1 == null ? (OptionalValue<T>) EMPTY : of(value);
     }
 
     public static <T> OptionalValue<T> empty() {
         return (OptionalValue<T>) EMPTY;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPresent() {
         return value != null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void ifPresent(Consumer<T> consumer) {
         if (value != null) {
@@ -59,7 +67,11 @@ public final class OptionalValue<T> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
-        return value == null ? "OptionalValue.empty" : "OptionalValue[" + value + "]";
+        return $2 == null ? "OptionalValue.empty" : "OptionalValue[" + value + "]";
     }
 }

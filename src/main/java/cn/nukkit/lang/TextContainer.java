@@ -11,14 +11,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TextContainer implements Cloneable {
     protected String text;
+    /**
+     * @deprecated 
+     */
+    
 
     public TextContainer(String text) {
         this.text = text;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setText(String text) {
         this.text = text;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getText() {
         return text;
@@ -30,6 +42,10 @@ public class TextContainer implements Cloneable {
      * equal {@link #getText()}
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return this.getText();
     }

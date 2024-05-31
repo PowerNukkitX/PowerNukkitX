@@ -14,22 +14,34 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 2015/11/22
  */
 public class BlockBeetroot extends BlockCrops {
-    public static final BlockProperties PROPERTIES = new BlockProperties(BEETROOT, CommonBlockProperties.GROWTH);
+    public static final BlockProperties $1 = new BlockProperties(BEETROOT, CommonBlockProperties.GROWTH);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBeetroot() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBeetroot(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Beetroot Block";
     }
@@ -45,10 +57,10 @@ public class BlockBeetroot extends BlockCrops {
             return new Item[]{Item.get(ItemID.BEETROOT_SEEDS)};
         }
         
-        int seeds = 1;
-        int attempts = 3 + Math.min(0, item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING));
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        for (int i = 0; i < attempts; i++) {
+        int $2 = 1;
+        int $3 = 3 + Math.min(0, item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING));
+        ThreadLocalRandom $4 = ThreadLocalRandom.current();
+        for ($5nt $1 = 0; i < attempts; i++) {
             if (random.nextInt(7) < 4) { // 4/7, 0.57142857142857142857142857142857
                 seeds++;
             }

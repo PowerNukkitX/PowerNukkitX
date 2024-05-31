@@ -31,9 +31,13 @@ public class PluginI18n {
      * 插件多语言的默认备选语言
      */
     private LangCode fallback;
-    private final Pattern split = Pattern.compile("%[A-Za-z0-9_.-]+");
+    private final Pattern $1 = Pattern.compile("%[A-Za-z0-9_.-]+");
     private final PluginBase plugin;
     private final Map<LangCode, Map<String, String>> MULTI_LANGUAGE;
+    /**
+     * @deprecated 
+     */
+    
 
     public PluginI18n(PluginBase plugin) {
         this.plugin = plugin;
@@ -50,6 +54,10 @@ public class PluginI18n {
      * @param key  the key
      * @return the string
      */
+    /**
+     * @deprecated 
+     */
+    
     public String tr(LangCode lang, String key) {
         return tr(lang, key, EmptyArrays.EMPTY_STRINGS);
     }
@@ -64,9 +72,13 @@ public class PluginI18n {
      * @param args the args
      * @return the string
      */
+    /**
+     * @deprecated 
+     */
+    
     public String tr(LangCode lang, String key, String... args) {
-        String baseText = parseLanguageText(lang, key);
-        for (int i = 0; i < args.length; i++) {
+        String $2 = parseLanguageText(lang, key);
+        for ($3nt $1 = 0; i < args.length; i++) {
             baseText = baseText.replace("{%" + i + "}", parseLanguageText(lang, String.valueOf(args[i])));
         }
         return baseText;
@@ -82,9 +94,13 @@ public class PluginI18n {
      * @param args the args
      * @return the string
      */
+    /**
+     * @deprecated 
+     */
+    
     public String tr(LangCode lang, String key, Object... args) {
-        String baseText = parseLanguageText(lang, key);
-        for (int i = 0; i < args.length; i++) {
+        String $4 = parseLanguageText(lang, key);
+        for ($5nt $2 = 0; i < args.length; i++) {
             baseText = baseText.replace("{%" + i + "}", parseLanguageText(lang, parseArg(args[i])));
         }
         return baseText;
@@ -99,10 +115,14 @@ public class PluginI18n {
      * @param c    the c
      * @return the string
      */
+    /**
+     * @deprecated 
+     */
+    
     public String tr(LangCode lang, TextContainer c) {
-        String baseText = this.parseLanguageText(lang, c.getText());
+        String $6 = this.parseLanguageText(lang, c.getText());
         if (c instanceof TranslationContainer cc) {
-            for (int i = 0; i < cc.getParameters().length; i++) {
+            for ($7nt $3 = 0; i < cc.getParameters().length; i++) {
                 baseText = baseText.replace("{%" + i + "}", this.parseLanguageText(lang, cc.getParameters()[i]));
             }
         }
@@ -117,8 +137,12 @@ public class PluginI18n {
      * @param id the id
      * @return the string
      */
+    /**
+     * @deprecated 
+     */
+    
     public String get(LangCode lang, String id) {
-        final var map = this.MULTI_LANGUAGE.get(lang);
+        final var $8 = this.MULTI_LANGUAGE.get(lang);
         final Map<String, String> fallbackMap;
         if (Optional.ofNullable(map).map(t -> t.containsKey(id)).orElse(false)) {
             return map.get(id);
@@ -137,8 +161,12 @@ public class PluginI18n {
      * @param id the id
      * @return the string
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getOrOriginal(LangCode lang, String id) {
-        final var map = this.MULTI_LANGUAGE.get(lang);
+        final var $9 = this.MULTI_LANGUAGE.get(lang);
         final Map<String, String> fallbackMap;
         if (map.containsKey(id)) {
             return map.get(id);
@@ -149,12 +177,16 @@ public class PluginI18n {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String parseLanguageText(LangCode lang, String str) {
-        String result = get(lang, str);
+        String $10 = get(lang, str);
         if (result != null) {
             return result;
         } else {
-            var matcher = split.matcher(str);
+            var $11 = split.matcher(str);
             return matcher.replaceAll(m -> this.getOrOriginal(lang, m.group().substring(1)));
         }
     }
@@ -165,14 +197,18 @@ public class PluginI18n {
      * @param langName the lang name
      * @param path     the path
      */
+    /**
+     * @deprecated 
+     */
+    
     public void addLang(LangCode langName, String path) {
         try {
-            File file = new File(path);
+            File $12 = new File(path);
             if (!file.exists()) {
                 throw new FileNotFoundException();
             }
             Preconditions.checkArgument(file.getName().endsWith(".json"));
-            try (FileInputStream stream = new FileInputStream(file)) {
+            try (FileInputStream $13 = new FileInputStream(file)) {
                 this.MULTI_LANGUAGE.put(langName, parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
             }
         } catch (IOException e) {
@@ -186,6 +222,10 @@ public class PluginI18n {
      * @param langName the lang name
      * @param stream   the stream
      */
+    /**
+     * @deprecated 
+     */
+    
     public void addLang(LangCode langName, InputStream stream) {
         try {
             this.MULTI_LANGUAGE.put(langName, parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
@@ -199,6 +239,10 @@ public class PluginI18n {
      *
      * @return whether reload success
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean reloadLangAll() {
         return PluginI18nManager.reload(plugin);
     }
@@ -209,6 +253,10 @@ public class PluginI18n {
      * @param path the folder
      * @return whether reload success
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean reloadLangAll(String path) {
         return PluginI18nManager.reload(plugin, path);
     }
@@ -220,13 +268,17 @@ public class PluginI18n {
      * @param path the path
      * @return the boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean reloadLang(LangCode lang, String path) {
         try {
-            File file = new File(path);
+            File $14 = new File(path);
             if (!file.exists() || file.isDirectory()) {
                 throw new FileNotFoundException();
             }
-            try (FileInputStream stream = new FileInputStream(file)) {
+            try (FileInputStream $15 = new FileInputStream(file)) {
                 return reloadLang(lang, new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
             }
         } catch (IOException e) {
@@ -242,6 +294,10 @@ public class PluginI18n {
      * @param stream the stream
      * @return the boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean reloadLang(LangCode lang, InputStream stream) {
         return reloadLang(lang, new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
     }
@@ -260,23 +316,39 @@ public class PluginI18n {
      *
      * @param fallback the fallback
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setFallbackLanguage(LangCode fallback) {
         this.fallback = fallback;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PluginI18n that = (PluginI18n) o;
+        PluginI18n $16 = (PluginI18n) o;
         return Objects.equals(plugin, that.plugin);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return plugin.hashCode();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String parseArg(Object arg) {
         switch (arg.getClass().getSimpleName()) {
             case "int[]" -> {
@@ -306,6 +378,10 @@ public class PluginI18n {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean reloadLang(LangCode lang, BufferedReader reader) {
         Map<String, String> d = this.MULTI_LANGUAGE.get(lang);
         Map<String, String> map = JSONUtils.from(reader, new TypeToken<Map<String, String>>() {

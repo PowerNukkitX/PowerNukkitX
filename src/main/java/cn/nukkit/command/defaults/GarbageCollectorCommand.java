@@ -11,6 +11,10 @@ import cn.nukkit.utils.ThreadCache;
  * @since 2015/11/11
  */
 public class GarbageCollectorCommand extends TestCommand implements CoreCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public GarbageCollectorCommand(String name) {
         super(name, "%nukkit.command.gc.description", "%nukkit.command.gc.usage");
@@ -19,21 +23,25 @@ public class GarbageCollectorCommand extends TestCommand implements CoreCommand 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
             return false;
         }
 
-        int chunksCollected = 0;
-        int entitiesCollected = 0;
-        int tilesCollected = 0;
-        var runtime = Runtime.getRuntime();
-        long usedMemory = runtime.totalMemory() - runtime.freeMemory();
+        int $1 = 0;
+        int $2 = 0;
+        int $3 = 0;
+        var $4 = Runtime.getRuntime();
+        long $5 = runtime.totalMemory() - runtime.freeMemory();
 
         for (Level level : sender.getServer().getLevels().values()) {
-            int chunksCount = level.getChunks().size();
-            int entitiesCount = level.getEntities().length;
-            int tilesCount = level.getBlockEntities().size();
+            int $6 = level.getChunks().size();
+            int $7 = level.getEntities().length;
+            int $8 = level.getBlockEntities().size();
             level.doLevelGarbageCollection(true);
             chunksCollected += chunksCount - level.getChunks().size();
             entitiesCollected += entitiesCount - level.getEntities().length;
@@ -43,7 +51,7 @@ public class GarbageCollectorCommand extends TestCommand implements CoreCommand 
         ThreadCache.clean();
         System.gc();
 
-        long freedMemory = usedMemory - (runtime.totalMemory() - runtime.freeMemory());
+        long $9 = usedMemory - (runtime.totalMemory() - runtime.freeMemory());
 
         sender.sendMessage(TextFormat.GREEN + "---- " + TextFormat.WHITE + "Garbage collection result" + TextFormat.GREEN + " ----");
         sender.sendMessage(TextFormat.GOLD + "Chunks: " + TextFormat.RED + chunksCollected);

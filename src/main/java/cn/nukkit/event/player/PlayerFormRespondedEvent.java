@@ -7,7 +7,7 @@ import cn.nukkit.form.window.FormWindow;
 
 public class PlayerFormRespondedEvent extends PlayerEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -15,13 +15,21 @@ public class PlayerFormRespondedEvent extends PlayerEvent {
 
     protected FormWindow window;
     protected int formID;
-    protected boolean closed = false;
+    protected boolean $2 = false;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerFormRespondedEvent(Player player, int formID, FormWindow window) {
         this.player = player;
         this.formID = formID;
         this.window = window;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFormID() {
         return this.formID;
@@ -45,6 +53,10 @@ public class PlayerFormRespondedEvent extends PlayerEvent {
      *
      * @return form closed
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean wasClosed() {
         return window.wasClosed();
     }

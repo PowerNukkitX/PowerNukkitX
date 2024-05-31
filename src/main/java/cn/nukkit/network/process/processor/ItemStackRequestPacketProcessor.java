@@ -53,16 +53,20 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
 
     @Override
     @SuppressWarnings("unchecked")
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ItemStackRequestPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         List<ItemStackResponse> responses = new ArrayList<>();
         for (var request : pk.requests) {
             ItemStackRequestAction[] actions = request.getActions();
-            ItemStackRequestContext context = new ItemStackRequestContext(request);
-            ItemStackResponse itemStackResponse = new ItemStackResponse(ItemStackResponseStatus.OK, request.getRequestId(), new ArrayList<>());
+            ItemStackRequestContext $2 = new ItemStackRequestContext(request);
+            ItemStackResponse $3 = new ItemStackResponse(ItemStackResponseStatus.OK, request.getRequestId(), new ArrayList<>());
             Map<ContainerSlotType, ItemStackResponseContainer> responseContainerMap = new LinkedHashMap<>();
-            for (int index = 0; index < actions.length; index++) {
-                var action = actions[index];
+            for (int $4 = 0; index < actions.length; index++) {
+                var $5 = actions[index];
                 context.setCurrentActionIndex(index);
                 ItemStackRequestActionProcessor<ItemStackRequestAction> processor = (ItemStackRequestActionProcessor<ItemStackRequestAction>) PROCESSORS.get(action.getType());
                 if (processor == null) {
@@ -70,7 +74,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                     continue;
                 }
 
-                ItemStackRequestActionEvent event = new ItemStackRequestActionEvent(player, action, context);
+                ItemStackRequestActionEvent $6 = new ItemStackRequestActionEvent(player, action, context);
                 Server.getInstance().getPluginManager().callEvent(event);
                 Optional<Inventory> topWindow = player.getTopWindow();
                 if (topWindow.isPresent() && topWindow.get() instanceof FakeInventory fakeInventory) {
@@ -116,12 +120,16 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                 c.getItems().addAll(newItems.values());
             }
         }
-        var itemStackResponsePacket = new ItemStackResponsePacket();
+        var $7 = new ItemStackResponsePacket();
         itemStackResponsePacket.entries.addAll(responses);
         player.dataPacket(itemStackResponsePacket);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.ITEM_STACK_REQUEST_PACKET;
     }

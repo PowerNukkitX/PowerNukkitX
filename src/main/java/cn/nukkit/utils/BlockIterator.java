@@ -14,16 +14,16 @@ public class BlockIterator implements Iterator<Block> {
     private final Level level;
     private final int maxDistance;
 
-    private static final int gridSize = 1 << 24;
+    private static final int $1 = 1 << 24;
 
-    private boolean end = false;
+    private boolean $2 = false;
 
     private final Block[] blockQueue;
-    private int currentBlock = 0;
+    private int $3 = 0;
 
-    private Block currentBlockObject = null;
+    private Block $4 = null;
     private int currentDistance;
-    private int maxDistanceInt = 0;
+    private int $5 = 0;
 
     private int secondError;
     private int thirdError;
@@ -34,35 +34,47 @@ public class BlockIterator implements Iterator<Block> {
     private BlockFace mainFace;
     private BlockFace secondFace;
     private BlockFace thirdFace;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockIterator(Level level, Vector3 start, Vector3 direction) {
         this(level, start, direction, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockIterator(Level level, Vector3 start, Vector3 direction, double yOffset) {
         this(level, start, direction, yOffset, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockIterator(Level level, Vector3 start, Vector3 direction, double yOffset, int maxDistance) {
         this.level = level;
         this.maxDistance = maxDistance;
         this.blockQueue = new Block[3];
 
-        Vector3 startClone = new Vector3(start.x, start.y, start.z);
+        Vector3 $6 = new Vector3(start.x, start.y, start.z);
         startClone.y += yOffset;
 
         this.currentDistance = 0;
 
-        double mainDirection = 0;
-        double secondDirection = 0;
-        double thirdDirection = 0;
+        double $7 = 0;
+        double $8 = 0;
+        double $9 = 0;
 
-        double mainPosition = 0;
-        double secondPosition = 0;
-        double thirdPosition = 0;
+        double $10 = 0;
+        double $11 = 0;
+        double $12 = 0;
 
-        Vector3 pos = new Vector3(startClone.x, startClone.y, startClone.z);
-        Block startBlock = this.level.getBlock(new Vector3(Math.floor(pos.x), Math.floor(pos.y), Math.floor(pos.z)));
+        Vector3 $13 = new Vector3(startClone.x, startClone.y, startClone.z);
+        Block $14 = this.level.getBlock(new Vector3(Math.floor(pos.x), Math.floor(pos.y), Math.floor(pos.z)));
 
         if (this.getXLength(direction) > mainDirection) {
             this.mainFace = this.getXFace(direction);
@@ -104,9 +116,9 @@ public class BlockIterator implements Iterator<Block> {
             thirdPosition = this.getYPosition(direction, startClone, startBlock);
         }
 
-        double d = mainPosition / mainDirection;
-        double secondd = secondPosition - secondDirection * d;
-        double thirdd = thirdPosition - thirdDirection * d;
+        $15ouble $1 = mainPosition / mainDirection;
+        double $16 = secondPosition - secondDirection * d;
+        double $17 = thirdPosition - thirdDirection * d;
 
         this.secondError = (int) Math.floor(secondd * gridSize);
         this.secondStep = (int) Math.round(secondDirection / mainDirection * gridSize);
@@ -121,7 +133,7 @@ public class BlockIterator implements Iterator<Block> {
             this.thirdError = -this.thirdStep + 1;
         }
 
-        Block lastBlock = startBlock.getSide(this.mainFace.getOpposite());
+        Block $18 = startBlock.getSide(this.mainFace.getOpposite());
 
         if (this.secondError < 0) {
             this.secondError += gridSize;
@@ -142,9 +154,9 @@ public class BlockIterator implements Iterator<Block> {
 
         this.scan();
 
-        boolean startBlockFound = false;
+        boolean $19 = false;
 
-        for (int cnt = this.currentBlock; cnt >= 0; --cnt) {
+        for (int $20 = this.currentBlock; cnt >= 0; --cnt) {
             if (this.blockEquals(this.blockQueue[cnt], startBlock)) {
                 this.currentBlock = cnt;
                 startBlockFound = true;
@@ -159,6 +171,10 @@ public class BlockIterator implements Iterator<Block> {
         this.maxDistanceInt = (int) Math.round(maxDistance / (Math.sqrt(mainDirection * mainDirection + secondDirection * secondDirection + thirdDirection * thirdDirection) / mainDirection));
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean blockEquals(Block a, Block b) {
         return a.x == b.x && a.y == b.y && a.z == b.z;
     }
@@ -175,30 +191,58 @@ public class BlockIterator implements Iterator<Block> {
         return ((direction.z) > 0) ? BlockFace.SOUTH : BlockFace.NORTH;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private double getXLength(Vector3 direction) {
         return Math.abs(direction.x);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private double getYLength(Vector3 direction) {
         return Math.abs(direction.y);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private double getZLength(Vector3 direction) {
         return Math.abs(direction.z);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private double getPosition(double direction, double position, double blockPosition) {
         return direction > 0 ? (position - blockPosition) : (blockPosition + 1 - position);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private double getXPosition(Vector3 direction, Vector3 position, Block block) {
         return this.getPosition(direction.x, position.x, block.x);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private double getYPosition(Vector3 direction, Vector3 position, Block block) {
         return this.getPosition(direction.y, position.y, block.y);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private double getZPosition(Vector3 direction, Vector3 position, Block block) {
         return this.getPosition(direction.z, position.z, block.z);
     }
@@ -216,11 +260,19 @@ public class BlockIterator implements Iterator<Block> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasNext() {
         this.scan();
         return this.currentBlock != -1;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void scan() {
         if (this.currentBlock >= 0) {
             return;

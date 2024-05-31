@@ -7,6 +7,10 @@ package cn.nukkit.command.tree.node;
  */
 public class IntNode extends ParamNode<Integer> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         try {
             this.value = Integer.parseInt(arg);

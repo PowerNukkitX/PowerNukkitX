@@ -7,6 +7,10 @@ import cn.nukkit.math.Vector3;
  * @since 2015/11/21
  */
 public class WaterParticle extends GenericParticle {
+    /**
+     * @deprecated 
+     */
+    
     public WaterParticle(Vector3 pos) {
         super(pos, Particle.TYPE_WATER_WAKE);
     }

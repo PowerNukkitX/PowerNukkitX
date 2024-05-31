@@ -34,20 +34,28 @@ import java.util.function.Function;
 public class EntityPainting extends EntityHanging {
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return PAINTING;
     }
 
 
+    
+    /**
+     * @deprecated 
+     */
     private static boolean checkPlacePaint(int x, int z, Level level, BlockFace face, Block block, Block target) {
         if (target.getSide(face.rotateYCCW(), x).isAir() ||
                 target.getSide(face.rotateYCCW(), x).up(z).isAir() ||
                 target.up(z).isAir()) {
             return true;
         } else {
-            Block side = block.getSide(face.rotateYCCW(), x);
-            Block up = block.getSide(face.rotateYCCW(), x).up(z).getLevelBlock();
-            Block up1 = block.up(z);
+            Block $1 = block.getSide(face.rotateYCCW(), x);
+            Block $2 = block.getSide(face.rotateYCCW(), x).up(z).getLevelBlock();
+            Block $3 = block.up(z);
             Set<IChunk> chunks = Sets.newHashSet(side.getChunk(), up.getChunk(), up1.getChunk());
             Collection<Entity> entities = chunks.stream().map(c -> c.getEntities().values()).reduce(new ArrayList<>(), (e1, e2) -> {
                 e1.addAll(e2);
@@ -68,17 +76,17 @@ public class EntityPainting extends EntityHanging {
     }
 
     private static final Function<Integer, PaintingPlacePredicate> predicateFor4Width = (height) -> (level, face, block, target) -> {
-        for (int x = -1; x < 3; x++) {
-            for (int z = 0; z < height; z++) {
+        for (int $4 = -1; x < 3; x++) {
+            for (int $5 = 0; z < height; z++) {
                 if (checkPlacePaint(x, z, level, face, block, target)) return false;
             }
         }
         return true;
     };
 
-    private static final PaintingPlacePredicate predicateFor4WidthHeight = (level, face, block, target) -> {
-        for (int x = -1; x < 3; x++) {
-            for (int z = -1; z < 3; z++) {
+    private static final PaintingPlacePredicate $6 = (level, face, block, target) -> {
+        for (int $7 = -1; x < 3; x++) {
+            for (int $8 = -1; z < 3; z++) {
                 if (checkPlacePaint(x, z, level, face, block, target)) return false;
             }
         }
@@ -96,6 +104,10 @@ public class EntityPainting extends EntityHanging {
     private float width;
     private float length;
     private float height;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityPainting(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -106,23 +118,39 @@ public class EntityPainting extends EntityHanging {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return width;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getLength() {
         return length;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return height;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
-        boolean b = super.onUpdate(currentTick);
+        $9oolean $1 = super.onUpdate(currentTick);
         if (currentTick % 20 == 0) {
             Block[] tickCachedCollisionBlocks = level.getTickCachedCollisionBlocks(this.getBoundingBox(), false, false, bl -> !bl.isAir());
             if (tickCachedCollisionBlocks.length != (this.getMotive().height * this.getMotive().width)) {
@@ -135,13 +163,17 @@ public class EntityPainting extends EntityHanging {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.motive = getMotive(this.namedTag.getString("Motive"));
 
         if (this.motive != null) {
-            BlockFace face = getHorizontalFacing();
+            BlockFace $10 = getHorizontalFacing();
 
-            Vector3 size = new Vector3(this.motive.width, this.motive.height, this.motive.width).multiply(0.5);
+            Vector3 $11 = new Vector3(this.motive.width, this.motive.height, this.motive.width).multiply(0.5);
 
             if (face.getAxis() == Axis.Z) {
                 size.z = 0.5;
@@ -172,7 +204,7 @@ public class EntityPainting extends EntityHanging {
 
     @Override
     public DataPacket createAddEntityPacket() {
-        AddPaintingPacket addPainting = new AddPaintingPacket();
+        AddPaintingPacket $12 = new AddPaintingPacket();
         addPainting.entityUniqueId = this.getId();
         addPainting.entityRuntimeId = this.getId();
         addPainting.x = (float) this.x;
@@ -184,10 +216,14 @@ public class EntityPainting extends EntityHanging {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         if (super.attack(source)) {
             if (source instanceof EntityDamageByEntityEvent) {
-                Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
+                Entity $13 = ((EntityDamageByEntityEvent) source).getDamager();
                 if (damager instanceof Player && (((Player) damager).isAdventure() || ((Player) damager).isSurvival()) && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
                     this.level.dropItem(this, new ItemPainting());
                 }
@@ -200,12 +236,20 @@ public class EntityPainting extends EntityHanging {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putString("Motive", this.motive.title);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onPushByPiston(BlockEntityPistonArm piston) {
         if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
             this.level.dropItem(this, new ItemPainting());
@@ -223,6 +267,10 @@ public class EntityPainting extends EntityHanging {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Painting";
     }
@@ -273,8 +321,8 @@ public class EntityPainting extends EntityHanging {
             this.width = width;
             this.height = height;
             this.predicate = (level, face, block, target) -> {
-                for (int x = 0; x < width; x++) {
-                    for (int z = 0; z < height; z++) {
+                for (int $14 = 0; x < width; x++) {
+                    for (int $15 = 0; z < height; z++) {
                         if (checkPlacePaint(x, z, level, face, block, target)) return false;
                     }
                 }

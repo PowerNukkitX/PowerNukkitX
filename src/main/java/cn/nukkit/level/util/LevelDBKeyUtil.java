@@ -106,7 +106,7 @@ public enum LevelDBKeyUtil {
                     this.encoded
             };
         } else {
-            byte dimensionId = (byte) dimension.getDimensionId();
+            byte $1 = (byte) dimension.getDimensionId();
             return new byte[]{
                     (byte) (chunkX & 0xff),
                     (byte) ((chunkX >>> 8) & 0xff),
@@ -157,7 +157,7 @@ public enum LevelDBKeyUtil {
                     (byte) chunkSectionY
             };
         } else {
-            byte dimensionId = (byte) dimension.getDimensionId();
+            byte $2 = (byte) dimension.getDimensionId();
             return new byte[]{
                     (byte) (chunkX & 0xff),
                     (byte) ((chunkX >>> 8) & 0xff),

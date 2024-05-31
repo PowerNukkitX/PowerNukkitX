@@ -7,13 +7,17 @@ import cn.nukkit.entity.effect.Effect;
 
 
 public class EntityEffectRemoveEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private Effect removeEffect;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityEffectRemoveEvent(Entity entity, Effect effect) {
         this.entity = entity;

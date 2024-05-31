@@ -29,8 +29,12 @@ public interface DoubleKeyMappedRegistry<K1, K2, VALUE> extends Registry<DoubleK
         return getContent().m2.getOrDefault(k2, defaultValue);
     }
 
-    default void register(K1 k1, K2 k2, VALUE value) {
-        var content = getContent();
+    default 
+    /**
+     * @deprecated 
+     */
+    void register(K1 k1, K2 k2, VALUE value) {
+        var $1 = getContent();
         content.m1.put(k1, value);
         content.m2.put(k2, value);
     }

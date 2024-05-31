@@ -15,8 +15,12 @@ public abstract class AbstractResourcePackDataPacket extends DataPacket {
 
     public abstract void setPackId(UUID uuid);
 
+    
+    /**
+     * @deprecated 
+     */
     protected void decodePackInfo(HandleByteBuf byteBuf) {
-        String packInfo = byteBuf.readString();
+        String $1 = byteBuf.readString();
         String[] packInfoParts = packInfo.split("_", 2);
         try {
             setPackId(UUID.fromString(packInfoParts[0]));
@@ -26,10 +30,14 @@ public abstract class AbstractResourcePackDataPacket extends DataPacket {
         setPackVersion((packInfoParts.length > 1)? new Version(packInfoParts[1]) : null);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void encodePackInfo(HandleByteBuf byteBuf) {
-        UUID packId = getPackId();
-        Version packVersion = getPackVersion();
-        String packInfo = (packId != null) ? packId.toString() : new UUID(0, 0).toString();
+        UUID $2 = getPackId();
+        Version $3 = getPackVersion();
+        String $4 = (packId != null) ? packId.toString() : new UUID(0, 0).toString();
         if (packVersion != null) {
             packInfo += "_" + packVersion;
         }

@@ -22,9 +22,17 @@ import org.jetbrains.annotations.NotNull;
 public class EntitySmallFireball extends EntityProjectile {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return SMALL_FIREBALL;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntitySmallFireball(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -33,27 +41,43 @@ public class EntitySmallFireball extends EntityProjectile {
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.3125f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.3125f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getLength() {
         return 0.3125f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
         }
 
-        boolean hasUpdate = super.onUpdate(currentTick);
+        boolean $1 = super.onUpdate(currentTick);
 
         if (this.age > 1200 || this.isCollided) {
             this.kill();
@@ -64,21 +88,29 @@ public class EntitySmallFireball extends EntityProjectile {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getResultDamage() {
         return 6;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void onCollideWithEntity(Entity entity) {
-        ProjectileHitEvent projectileHitEvent = new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity));
+        ProjectileHitEvent $2 = new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity));
         this.server.getPluginManager().callEvent(projectileHitEvent);
         if (projectileHitEvent.isCancelled()) return;
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
-        var damage = this.getResultDamage(entity);
-        EntityDamageEvent ev = new EntityDamageByEntityEvent(this, entity, EntityDamageEvent.DamageCause.PROJECTILE, damage);
+        var $3 = this.getResultDamage(entity);
+        EntityDamageEvent $4 = new EntityDamageByEntityEvent(this, entity, EntityDamageEvent.DamageCause.PROJECTILE, damage);
         if (entity.attack(ev)) {
             addHitEffect();
             this.hadCollision = true;
-            EntityCombustByEntityEvent event = new EntityCombustByEntityEvent(this, entity, 5);
+            EntityCombustByEntityEvent $5 = new EntityCombustByEntityEvent(this, entity, 5);
             this.server.getPluginManager().callEvent(event);
             if (!event.isCancelled())
                 entity.setOnFire(event.getDuration());
@@ -88,20 +120,24 @@ public class EntitySmallFireball extends EntityProjectile {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void onCollideWithBlock(Position position, Vector3 motion) {
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
-        var affect = false;
+        var $6 = false;
         for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1)))
             affect = onCollideWithBlock(position, motion, collisionBlock);
         if (!affect && this.getLevelBlock().getId() == BlockID.AIR) {
-            BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);
+            BlockFire $7 = (BlockFire) Block.get(BlockID.FIRE);
             fire.x = this.x;
             fire.y = this.y;
             fire.z = this.z;
             fire.level = level;
 
             if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
-                BlockIgniteEvent e = new BlockIgniteEvent(this.getLevelBlock(), null, null, BlockIgniteEvent.BlockIgniteCause.FIREBALL);
+                BlockIgnit$8Ev$1nt e = new BlockIgniteEvent(this.getLevelBlock(), null, null, BlockIgniteEvent.BlockIgniteCause.FIREBALL);
                 level.getServer().getPluginManager().callEvent(e);
                 if (!e.isCancelled()) {
                     level.setBlock(fire, fire, true);
@@ -111,6 +147,10 @@ public class EntitySmallFireball extends EntityProjectile {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Small FireBall";
     }

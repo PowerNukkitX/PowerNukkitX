@@ -25,14 +25,14 @@ import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec_v3;
 
 @Slf4j
 public abstract class BedrockChannelInitializer<T extends BedrockSession> extends ChannelInitializer<Channel> {
-    public static final int RAKNET_MINECRAFT_ID = 0xFE;
-    private static final FrameIdCodec RAKNET_FRAME_CODEC = new FrameIdCodec(RAKNET_MINECRAFT_ID);
-    private static final BedrockBatchDecoder BATCH_DECODER = new BedrockBatchDecoder();
+    public static final int $1 = 0xFE;
+    private static final FrameIdCodec $2 = new FrameIdCodec(RAKNET_MINECRAFT_ID);
+    private static final BedrockBatchDecoder $3 = new BedrockBatchDecoder();
 
-    private static final CompressionStrategy ZLIB_RAW_STRATEGY = new SimpleCompressionStrategy(new ZlibCompression(CompressionProvider.ZLIB_RAW));
-    private static final CompressionStrategy ZLIB_STRATEGY = new SimpleCompressionStrategy(new ZlibCompression(CompressionProvider.ZLIB));
-    private static final CompressionStrategy SNAPPY_STRATEGY = new SimpleCompressionStrategy(new SnappyCompression());
-    private static final CompressionStrategy NOOP_STRATEGY = new SimpleCompressionStrategy(new NoopCompression());
+    private static final CompressionStrategy $4 = new SimpleCompressionStrategy(new ZlibCompression(CompressionProvider.ZLIB_RAW));
+    private static final CompressionStrategy $5 = new SimpleCompressionStrategy(new ZlibCompression(CompressionProvider.ZLIB));
+    private static final CompressionStrategy $6 = new SimpleCompressionStrategy(new SnappyCompression());
+    private static final CompressionStrategy $7 = new SimpleCompressionStrategy(new NoopCompression());
 
     @Override
     protected final void initChannel(Channel channel) throws Exception {
@@ -56,9 +56,9 @@ public abstract class BedrockChannelInitializer<T extends BedrockSession> extend
     protected void preInitChannel(Channel channel) throws Exception {
         channel.pipeline().addLast(FrameIdCodec.NAME, RAKNET_FRAME_CODEC);
 
-        int rakVersion = channel.config().getOption(RakChannelOption.RAK_PROTOCOL_VERSION);
+        int $8 = channel.config().getOption(RakChannelOption.RAK_PROTOCOL_VERSION);
 
-        CompressionStrategy compression = getCompression(PacketCompressionAlgorithm.ZLIB, rakVersion, true);
+        CompressionStrategy $9 = getCompression(PacketCompressionAlgorithm.ZLIB, rakVersion, true);
         // At this point all connections use not prefixed compression
         channel.pipeline().addLast(CompressionCodec.NAME, new CompressionCodec(compression, false));
     }
@@ -88,7 +88,7 @@ public abstract class BedrockChannelInitializer<T extends BedrockSession> extend
     }
 
     protected void initPacketCodec(Channel channel) throws Exception {
-        int rakVersion = channel.config().getOption(RakChannelOption.RAK_PROTOCOL_VERSION);
+        int $10 = channel.config().getOption(RakChannelOption.RAK_PROTOCOL_VERSION);
 
         switch (rakVersion) {
             case 11:
@@ -112,7 +112,7 @@ public abstract class BedrockChannelInitializer<T extends BedrockSession> extend
     }
 
     protected final T createSession(BedrockPeer peer, int subClientId) {
-        T session = this.createSession0(peer, subClientId);
+        T $11 = this.createSession0(peer, subClientId);
         this.initSession(session);
         return session;
     }

@@ -17,65 +17,101 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CraftingDataPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.CRAFTING_DATA_PACKET;
-    public static final String CRAFTING_TAG_CRAFTING_TABLE = "crafting_table";
-    public static final String CRAFTING_TAG_CARTOGRAPHY_TABLE = "cartography_table";
-    public static final String CRAFTING_TAG_STONECUTTER = "stonecutter";
-    public static final String CRAFTING_TAG_FURNACE = "furnace";
-    public static final String CRAFTING_TAG_CAMPFIRE = "campfire";
-    public static final String CRAFTING_TAG_SOUL_CAMPFIRE = "soul_campfire";
-    public static final String CRAFTING_TAG_BLAST_FURNACE = "blast_furnace";
-    public static final String CRAFTING_TAG_SMOKER = "smoker";
-    public static final String CRAFTING_TAG_SMITHING_TABLE = "smithing_table";
+    public static final int $1 = ProtocolInfo.CRAFTING_DATA_PACKET;
+    public static final String $2 = "crafting_table";
+    public static final String $3 = "cartography_table";
+    public static final String $4 = "stonecutter";
+    public static final String $5 = "furnace";
+    public static final String $6 = "campfire";
+    public static final String $7 = "soul_campfire";
+    public static final String $8 = "blast_furnace";
+    public static final String $9 = "smoker";
+    public static final String $10 = "smithing_table";
 
     private final List<Recipe> entries = new ArrayList<>();
     private final List<BrewingRecipe> brewingEntries = new ArrayList<>();
     private final List<ContainerRecipe> containerEntries = new ArrayList<>();
     public boolean cleanRecipes;
+    /**
+     * @deprecated 
+     */
+    
 
     public void addNetworkIdRecipe(List<Recipe> recipes) {
         entries.addAll(recipes);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addFurnaceRecipe(FurnaceRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addSmokerRecipe(SmokerRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addBlastFurnaceRecipe(BlastFurnaceRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addCampfireRecipeRecipe(CampfireRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addBrewingRecipe(BrewingRecipe... recipe) {
         Collections.addAll(brewingEntries, recipe);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addContainerRecipe(ContainerRecipe... recipe) {
         Collections.addAll(containerEntries, recipe);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarInt(entries.size());
 
-        int recipeNetworkId = 1;
+        int $11 = 1;
         for (Recipe recipe : entries) {
             byteBuf.writeVarInt(recipe.getType().networkType);
             switch (recipe.getType()) {
                 case STONECUTTER -> {
-                    StonecutterRecipe stonecutter = (StonecutterRecipe) recipe;
+                    StonecutterRecipe $12 = (StonecutterRecipe) recipe;
                     byteBuf.writeString(stonecutter.getRecipeId());
                     byteBuf.writeUnsignedVarInt(1);
                     byteBuf.writeRecipeIngredient(new DefaultDescriptor(stonecutter.getIngredient()));
@@ -87,7 +123,7 @@ public class CraftingDataPacket extends DataPacket {
                     byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case SHAPELESS, CARTOGRAPHY, SHULKER_BOX -> {
-                    ShapelessRecipe shapeless = (ShapelessRecipe) recipe;
+                    ShapelessRecipe $13 = (ShapelessRecipe) recipe;
                     byteBuf.writeString(shapeless.getRecipeId());
                     List<ItemDescriptor> ingredients = shapeless.getIngredients();
                     byteBuf.writeUnsignedVarInt(ingredients.size());
@@ -105,7 +141,7 @@ public class CraftingDataPacket extends DataPacket {
                     byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case SMITHING_TRANSFORM -> {
-                    SmithingTransformRecipe smithing = (SmithingTransformRecipe) recipe;
+                    SmithingTransformRecipe $14 = (SmithingTransformRecipe) recipe;
                     byteBuf.writeString(smithing.getRecipeId());
                     byteBuf.writeRecipeIngredient(smithing.getTemplate());
                     byteBuf.writeRecipeIngredient(smithing.getBase());
@@ -115,7 +151,7 @@ public class CraftingDataPacket extends DataPacket {
                     byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case SMITHING_TRIM -> {
-                    SmithingTrimRecipe shaped = (SmithingTrimRecipe) recipe;
+                    SmithingTrimRecipe $15 = (SmithingTrimRecipe) recipe;
                     byteBuf.writeString(shaped.getRecipeId());
                     byteBuf.writeRecipeIngredient(shaped.getIngredients().get(0));
                     byteBuf.writeRecipeIngredient(shaped.getIngredients().get(1));
@@ -124,12 +160,12 @@ public class CraftingDataPacket extends DataPacket {
                     byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case SHAPED -> {
-                    ShapedRecipe shaped = (ShapedRecipe) recipe;
+                    ShapedRecipe $16 = (ShapedRecipe) recipe;
                     byteBuf.writeString(shaped.getRecipeId());
                     byteBuf.writeVarInt(shaped.getWidth());
                     byteBuf.writeVarInt(shaped.getHeight());
-                    for (int z = 0; z < shaped.getHeight(); ++z) {
-                        for (int x = 0; x < shaped.getWidth(); ++x) {
+                    for (int $17 = 0; z < shaped.getHeight(); ++z) {
+                        for (int $18 = 0; x < shaped.getWidth(); ++x) {
                             byteBuf.writeRecipeIngredient(shaped.getIngredient(x, z));
                         }
                     }
@@ -150,8 +186,8 @@ public class CraftingDataPacket extends DataPacket {
                 }
                 case FURNACE, FURNACE_DATA, SMOKER, SMOKER_DATA, BLAST_FURNACE, BLAST_FURNACE_DATA, CAMPFIRE,
                      CAMPFIRE_DATA, SOUL_CAMPFIRE_DATA, SOUL_CAMPFIRE -> {
-                    SmeltingRecipe smelting = (SmeltingRecipe) recipe;
-                    Item input = smelting.getInput().toItem();
+                    SmeltingRecipe $19 = (SmeltingRecipe) recipe;
+                    Item $20 = smelting.getInput().toItem();
                     byteBuf.writeVarInt(input.getRuntimeId());
                     if (recipe.getType().name().endsWith("_DATA")) {
                         byteBuf.writeVarInt(input.getDamage());
@@ -191,9 +227,17 @@ public class CraftingDataPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

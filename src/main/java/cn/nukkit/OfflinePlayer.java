@@ -31,13 +31,25 @@ public class OfflinePlayer implements IPlayer {
      *               UUID of this player.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public OfflinePlayer(Server server, UUID uuid) {
         this(server, uuid, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public OfflinePlayer(Server server, String name) {
         this(server, null, name);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public OfflinePlayer(Server server, UUID uuid, String name) {
         this.server = server;
@@ -64,11 +76,19 @@ public class OfflinePlayer implements IPlayer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isOnline() {
         return this.getPlayer() != null;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         if (namedTag != null && namedTag.contains("NameTag")) {
             return namedTag.getString("NameTag");
@@ -79,8 +99,8 @@ public class OfflinePlayer implements IPlayer {
     @Override
     public UUID getUniqueId() {
         if (namedTag != null) {
-            long least = namedTag.getLong("UUIDLeast");
-            long most = namedTag.getLong("UUIDMost");
+            long $1 = namedTag.getLong("UUIDLeast");
+            long $2 = namedTag.getLong("UUIDMost");
 
             if (least != 0 && most != 0) {
                 return new UUID(most, least);
@@ -95,11 +115,19 @@ public class OfflinePlayer implements IPlayer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isOp() {
         return this.server.isOp(this.getName().toLowerCase(Locale.ENGLISH));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setOp(boolean value) {
         if (value == this.isOp()) {
             return;
@@ -113,11 +141,19 @@ public class OfflinePlayer implements IPlayer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBanned() {
         return this.server.getNameBans().isBanned(this.getName());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBanned(boolean value) {
         if (value) {
             this.server.getNameBans().addBan(this.getName(), null, null, null);
@@ -127,11 +163,19 @@ public class OfflinePlayer implements IPlayer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isWhitelisted() {
         return this.server.isWhitelisted(this.getName().toLowerCase(Locale.ENGLISH));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setWhitelisted(boolean value) {
         if (value) {
             this.server.addWhitelist(this.getName().toLowerCase(Locale.ENGLISH));
@@ -156,11 +200,19 @@ public class OfflinePlayer implements IPlayer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasPlayedBefore() {
         return this.namedTag != null;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
         this.server.getPlayerMetadata().setMetadata(this, metadataKey, newMetadataValue);
     }
@@ -176,16 +228,28 @@ public class OfflinePlayer implements IPlayer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasMetadata(String metadataKey) {
         return this.server.getPlayerMetadata().hasMetadata(this, metadataKey);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasMetadata(String metadataKey, Plugin plugin) {
         return this.server.getPlayerMetadata().hasMetadata(this, metadataKey, plugin);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeMetadata(String metadataKey, Plugin owningPlugin) {
         this.server.getPlayerMetadata().removeMetadata(this, metadataKey, owningPlugin);
     }

@@ -17,33 +17,53 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 //special thanks to wode
 public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityCommandBlock> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(COMMAND_BLOCK, CONDITIONAL_BIT, FACING_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(COMMAND_BLOCK, CONDITIONAL_BIT, FACING_DIRECTION);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCommandBlock() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCommandBlock(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Impulse Command Block";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 6000000;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePushed() {
         return false;
     }
@@ -54,11 +74,19 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();
     }
@@ -69,17 +97,25 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (player != null) {
             if (!player.isCreative())
                 return false;
             if (Math.abs(player.getFloorX() - this.x) < 2 && Math.abs(player.getFloorZ() - this.z) < 2) {
-                double y = player.y + player.getEyeHeight();
+                double $2 = player.y + player.getEyeHeight();
                 if (y - this.y > 2) {
                     this.setBlockFace(BlockFace.UP);
                 } else if (this.y - y > 0) {
@@ -97,18 +133,26 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
-            Item itemInHand = player.getInventory().getItemInHand();
+            Item $3 = player.getInventory().getItemInHand();
             if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
                 return false;
             }
-            BlockEntityCommandBlock tile = this.getOrCreateBlockEntity();
+            BlockEntityCommandBlock $4 = this.getOrCreateBlockEntity();
             tile.spawnTo(player);
             player.addWindow(tile.getInventory());
         }
@@ -116,9 +160,13 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
-            BlockEntityCommandBlock tile = this.getBlockEntity();
+            BlockEntityCommandBlock $5 = this.getBlockEntity();
             if (tile == null)
                 return super.onUpdate(type);
             if (this.isGettingPower()) {
@@ -134,11 +182,19 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasComparatorInputOverride() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getComparatorInputOverride() {
         return Math.min(this.getOrCreateBlockEntity().getSuccessCount(), 0xf);
     }
@@ -151,6 +207,10 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.COMMAND_BLOCK;
     }

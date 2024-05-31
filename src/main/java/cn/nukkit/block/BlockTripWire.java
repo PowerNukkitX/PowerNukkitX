@@ -22,48 +22,80 @@ import static cn.nukkit.block.property.CommonBlockProperties.POWERED_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.SUSPENDED_BIT;
 
 public class BlockTripWire extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(TRIP_WIRE,
+    public static final BlockProperties $1 = new BlockProperties(TRIP_WIRE,
             POWERED_BIT, SUSPENDED_BIT, ATTACHED_BIT, DISARMED_BIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTripWire() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTripWire(BlockState state) {
         super(state);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Tripwire";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeFlowedInto() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0;
     }
@@ -79,25 +111,49 @@ public class BlockTripWire extends BlockTransparent {
     }
 
     @Override
-    @NotNull public String getItemId() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getItemId() {
         return ItemID.STRING;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPowered() {
         return this.getPropertyValue(POWERED_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isAttached() {
         return this.getPropertyValue(ATTACHED_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSuspended() {
         return this.getPropertyValue(SUSPENDED_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isDisarmed() {
         return this.getPropertyValue(DISARMED_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPowered(boolean isPowered) {
         if (this.isPowered() == isPowered) {
@@ -105,6 +161,10 @@ public class BlockTripWire extends BlockTransparent {
         }
         this.setPropertyValue(POWERED_BIT, isPowered);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAttached(boolean isAttached) {
         if (this.isAttached() == isAttached) {
@@ -112,6 +172,10 @@ public class BlockTripWire extends BlockTransparent {
         }
         this.setPropertyValue(ATTACHED_BIT, isAttached);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDisarmed(boolean isDisarmed) {
         if (this.isDisarmed() == isDisarmed) {
@@ -119,6 +183,10 @@ public class BlockTripWire extends BlockTransparent {
         }
         this.setPropertyValue(DISARMED_BIT, isDisarmed);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSuspended(boolean isSuspended) {
         if (this.isSuspended() == isSuspended) {
@@ -128,6 +196,10 @@ public class BlockTripWire extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return;
@@ -147,14 +219,18 @@ public class BlockTripWire extends BlockTransparent {
         this.level.updateComparatorOutputLevelSelective(this, true);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void updateHook(boolean scheduleUpdate) {
         if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return;
         }
 
         for (BlockFace side : new BlockFace[]{BlockFace.SOUTH, BlockFace.WEST}) {
-            for (int i = 1; i < MAX_TRIPWIRE_CIRCUIT_LENGTH; ++i) {
-                Block block = this.getSide(side, i);
+            for ($2nt $1 = 1; i < MAX_TRIPWIRE_CIRCUIT_LENGTH; ++i) {
+                Block $3 = this.getSide(side, i);
 
                 if (block instanceof BlockTripwireHook hook) {
                     if (hook.getFacing() == side.getOpposite()) {
@@ -175,6 +251,10 @@ public class BlockTripWire extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return 0;
@@ -206,6 +286,10 @@ public class BlockTripWire extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         this.getLevel().setBlock(this, this, true, true);
         this.updateHook(false);
@@ -214,6 +298,10 @@ public class BlockTripWire extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
         if (item instanceof ItemShears) {
             this.setDisarmed(true);
@@ -234,6 +322,10 @@ public class BlockTripWire extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return this.y + 0.5;
     }

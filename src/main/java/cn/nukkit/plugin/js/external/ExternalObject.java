@@ -6,6 +6,10 @@ import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.proxy.ProxyObject;
 
 public final class ExternalObject extends JSExternal implements ProxyObject {
+    /**
+     * @deprecated 
+     */
+    
     public ExternalObject(Context sourceContext, Value value) {
         super(sourceContext, value);
     }
@@ -28,6 +32,10 @@ public final class ExternalObject extends JSExternal implements ProxyObject {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasMember(String key) {
         synchronized (sourceContext) {
             checkAlive();
@@ -37,6 +45,10 @@ public final class ExternalObject extends JSExternal implements ProxyObject {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void putMember(String key, Value value) {
         synchronized (sourceContext) {
             checkAlive();
@@ -45,6 +57,10 @@ public final class ExternalObject extends JSExternal implements ProxyObject {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean removeMember(String key) {
         synchronized (sourceContext) {
             checkAlive();

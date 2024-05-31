@@ -3,6 +3,10 @@ package cn.nukkit.item;
 import cn.nukkit.network.protocol.types.BannerPatternType;
 
 public class ItemMojangBannerPattern extends ItemBannerPattern {
+    /**
+     * @deprecated 
+     */
+    
     public ItemMojangBannerPattern() {
         super(MOJANG_BANNER_PATTERN);
     }
@@ -13,6 +17,10 @@ public class ItemMojangBannerPattern extends ItemBannerPattern {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDamage(int damage) {
     }
 }

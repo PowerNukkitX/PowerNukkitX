@@ -19,7 +19,7 @@ public class PaletteUtils {
     public static Pair<Integer, SemVersion> fastReadBlockHash(NBTInputStream input, ByteBuf byteBuf) {
         try {
             byteBuf.markReaderIndex();
-            int typeId = input.readUnsignedByte();
+            int $1 = input.readUnsignedByte();
             input.skipBytes(input.readUnsignedShort()); //Skip Root tag name
             return deserialize(input, byteBuf, typeId, 16);
         } catch (IOException e) {
@@ -48,10 +48,10 @@ public class PaletteUtils {
                 int nbtType;
                 while ((nbtType = input.readUnsignedByte()) != Tag.TAG_End) {
                     String name;
-                    int end = byteBuf.readerIndex();
+                    int $2 = byteBuf.readerIndex();
                     name = input.readUTF();
                     if (name.equals("version")) {
-                        int version = input.readInt();
+                        int $3 = input.readInt();
                         byteBuf.resetReaderIndex();
                         if (version != ProtocolInfo.BLOCK_STATE_VERSION_NO_REVISION) {
                             return Pair.of(null, getSemVersion(version));
@@ -63,7 +63,7 @@ public class PaletteUtils {
                         input.skipBytes(input.readUnsignedShort());//UTF
                         deserialize(input, byteBuf, nbtType, maxDepth - 1);//Value
                         input.skipBytes(1);//end tag
-                        int i = HashUtils.fnv1a_32(result);
+                        $4nt $1 = HashUtils.fnv1a_32(result);
                         if (i == 147887818) i = -2;//minecraft:unknown
                         return Pair.of(i, null);
                     }
@@ -71,9 +71,9 @@ public class PaletteUtils {
                 }
             }
             case Tag.TAG_List -> {
-                int typeId = input.readUnsignedByte();
-                int listLength = input.readInt();
-                for (int i = 0; i < listLength; i++) {
+                int $5 = input.readUnsignedByte();
+                int $6 = input.readInt();
+                for ($7nt $2 = 0; i < listLength; i++) {
                     deserialize(input, byteBuf, typeId, maxDepth - 1);
                 }
             }
@@ -83,10 +83,10 @@ public class PaletteUtils {
     }
 
     public static SemVersion getSemVersion(int version) {
-        int major = (version >> 24) & 0xFF;
-        int minor = (version >> 16) & 0xFF;
-        int patch = (version >> 8) & 0xFF;
-        int revision = version & 0xFF;
+        int $8 = (version >> 24) & 0xFF;
+        int $9 = (version >> 16) & 0xFF;
+        int $10 = (version >> 8) & 0xFF;
+        int $11 = version & 0xFF;
         return new SemVersion(major, minor, patch, revision, 0);
     }
 }

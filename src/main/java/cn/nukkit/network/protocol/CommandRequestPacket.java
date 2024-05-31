@@ -16,19 +16,19 @@ import lombok.*;
 @AllArgsConstructor
 public class CommandRequestPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.COMMAND_REQUEST_PACKET;
+    public static final int $1 = ProtocolInfo.COMMAND_REQUEST_PACKET;
 
-    public static final int TYPE_PLAYER = 0;
-    public static final int TYPE_COMMAND_BLOCK = 1;
-    public static final int TYPE_MINECART_COMMAND_BLOCK = 2;
-    public static final int TYPE_DEV_CONSOLE = 3;
-    public static final int TYPE_AUTOMATION_PLAYER = 4;
-    public static final int TYPE_CLIENT_AUTOMATION = 5;
-    public static final int TYPE_DEDICATED_SERVER = 6;
-    public static final int TYPE_ENTITY = 7;
-    public static final int TYPE_VIRTUAL = 8;
-    public static final int TYPE_GAME_ARGUMENT = 9;
-    public static final int TYPE_INTERNAL = 10;
+    public static final int $2 = 0;
+    public static final int $3 = 1;
+    public static final int $4 = 2;
+    public static final int $5 = 3;
+    public static final int $6 = 4;
+    public static final int $7 = 5;
+    public static final int $8 = 6;
+    public static final int $9 = 7;
+    public static final int $10 = 8;
+    public static final int $11 = 9;
+    public static final int $12 = 10;
 
     public String command;
     public CommandOriginData data;
@@ -39,18 +39,26 @@ public class CommandRequestPacket extends DataPacket {
     public int version;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.command = byteBuf.readString();
 
-        CommandOriginData.Origin type = CommandOriginData.Origin.values()[byteBuf.readVarInt()];
-        UUID uuid = byteBuf.readUUID();
-        String requestId = byteBuf.readString();
-        Long varLong = null;
+        CommandOriginData.Origin $13 = CommandOriginData.Origin.values()[byteBuf.readVarInt()];
+        UUID $14 = byteBuf.readUUID();
+        String $15 = byteBuf.readString();
+        Long $16 = null;
         if (type == CommandOriginData.Origin.DEV_CONSOLE || type == CommandOriginData.Origin.TEST) {
             varLong = byteBuf.readVarLong();
         }
@@ -58,8 +66,16 @@ public class CommandRequestPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

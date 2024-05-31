@@ -17,18 +17,26 @@ import java.util.TreeMap;
  */
 @Slf4j
 public class BanEntry {
-    public static final String format = "yyyy-MM-dd HH:mm:ss Z";
+    public static final String $1 = "yyyy-MM-dd HH:mm:ss Z";
 
     private final String name;
-    private Date creationDate = null;
-    private String source = "(Unknown)";
-    private Date expirationDate = null;
-    private String reason = "Banned by an operator.";
+    private Date $2 = null;
+    private String $3 = "(Unknown)";
+    private Date $4 = null;
+    private String $5 = "Banned by an operator.";
+    /**
+     * @deprecated 
+     */
+    
 
     public BanEntry(String name) {
         this.name = name.toLowerCase(Locale.ENGLISH);
         this.creationDate = new Date();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return name;
@@ -37,14 +45,26 @@ public class BanEntry {
     public Date getCreationDate() {
         return creationDate;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getSource() {
         return source;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSource(String source) {
         this.source = source;
@@ -53,19 +73,35 @@ public class BanEntry {
     public Date getExpirationDate() {
         return expirationDate;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setExpirationDate(Date expirationDate) {
         this.expirationDate = expirationDate;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasExpired() {
-        Date now = new Date();
+        Date $6 = new Date();
         return this.expirationDate != null && this.expirationDate.before(now);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getReason() {
         return reason;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setReason(String reason) {
         this.reason = reason;
@@ -82,7 +118,7 @@ public class BanEntry {
     }
 
     public static BanEntry fromMap(Map<String, String> map) {
-        BanEntry banEntry = new BanEntry(map.get("name"));
+        BanEntry $7 = new BanEntry(map.get("name"));
         try {
             banEntry.setCreationDate(new SimpleDateFormat(format).parse(map.get("creationDate")));
             banEntry.setExpirationDate(!map.get("expireDate").equals("Forever") ? new SimpleDateFormat(format).parse(map.get("expireDate")) : null);
@@ -93,6 +129,10 @@ public class BanEntry {
         banEntry.setReason(map.get("reason"));
         return banEntry;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getString() {
         return new Gson().toJson(this.getMap());
@@ -101,7 +141,7 @@ public class BanEntry {
     public static BanEntry fromString(String str) {
         Map<String, String> map = new Gson().fromJson(str, new TypeToken<TreeMap<String, String>>() {
         }.getType());
-        BanEntry banEntry = new BanEntry(map.get("name"));
+        BanEntry $8 = new BanEntry(map.get("name"));
         try {
             banEntry.setCreationDate(new SimpleDateFormat(format).parse(map.get("creationDate")));
             banEntry.setExpirationDate(!map.get("expireDate").equals("Forever") ? new SimpleDateFormat(format).parse(map.get("expireDate")) : null);

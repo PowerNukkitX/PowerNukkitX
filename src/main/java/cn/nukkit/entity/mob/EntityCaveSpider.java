@@ -13,9 +13,17 @@ import org.jetbrains.annotations.NotNull;
 public class EntityCaveSpider extends EntityMob implements EntityWalkable, EntityArthropod {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return CAVE_SPIDER;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityCaveSpider(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -24,27 +32,47 @@ public class EntityCaveSpider extends EntityMob implements EntityWalkable, Entit
     
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(12);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.7f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.5f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Cave Spider";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPreventingSleep(Player player) {
         return true;
     }

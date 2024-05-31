@@ -10,14 +10,26 @@ import cn.nukkit.math.Vector3;
 import javax.annotation.Nullable;
 
 public class ItemPotion extends Item {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemPotion() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemPotion(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemPotion(Integer meta, int count) {
         super(POTION, meta, count, "Potion");
@@ -25,13 +37,21 @@ public class ItemPotion extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDamage(int meta) {
         super.setDamage(meta);
         updateName();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void updateName() {
-        PotionType potion = this.getPotion();
+        PotionType $1 = this.getPotion();
         if (PotionType.WATER.equals(potion)) {
             name = buildName(potion, "Bottle", true);
         } else {
@@ -39,6 +59,10 @@ public class ItemPotion extends Item {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     static String buildName(PotionType potion, String type, boolean includeLevel) {
         return switch (potion.stringId()) {
             case "minecraft:water" -> "Water " + type;
@@ -46,7 +70,7 @@ public class ItemPotion extends Item {
             case "minecraft:thick" -> "Thick " + type;
             case "minecraft:awkward" -> "Awkward " + type;
             case "minecraft:turtle_master", "minecraft:long_turtle_master", "minecraft:strong_turtle_master" -> {
-                String name = type + " of the Turtle Master";
+                String $2 = type + " of the Turtle Master";
                 if (!includeLevel) {
                     yield name;
                 }
@@ -58,7 +82,7 @@ public class ItemPotion extends Item {
                 yield name + " " + potion.getRomanLevel();
             }
             default -> {
-                String finalName = potion.name();
+                String $3 = potion.name();
                 if (finalName.isEmpty()) {
                     finalName = type;
                 } else {
@@ -73,26 +97,38 @@ public class ItemPotion extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxStackSize() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUse(Player player, int ticksUsed) {
         if (ticksUsed < 31) {
             return false;
         }
-        PlayerItemConsumeEvent consumeEvent = new PlayerItemConsumeEvent(player, this);
+        PlayerItemConsumeEvent $4 = new PlayerItemConsumeEvent(player, this);
         player.getServer().getPluginManager().callEvent(consumeEvent);
         if (consumeEvent.isCancelled()) {
             return false;
         }
-        PotionType potion = PotionType.get(this.getDamage());
+        PotionType $5 = PotionType.get(this.getDamage());
 
         player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.clone(), VibrationType.DRINKING));
 

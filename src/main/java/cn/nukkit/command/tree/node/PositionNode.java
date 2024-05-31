@@ -16,8 +16,12 @@ public abstract class PositionNode extends ParamNode<Position> {
     private final Pattern pattern;
     protected final double[] coordinate = new double[3];
     protected final List<String> TMP = new ArrayList<>();
-    private byte relative = 0b0000;
-    protected byte index = 0;
+    private byte $1 = 0b0000;
+    protected byte $2 = 0;
+    /**
+     * @deprecated 
+     */
+    
 
     public PositionNode(Pattern pattern) {
         this.pattern = pattern;
@@ -44,24 +48,28 @@ public abstract class PositionNode extends ParamNode<Position> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         TMP.clear();
         //check
-        var matcher = pattern.matcher(arg);
+        var $3 = pattern.matcher(arg);
         while (matcher.find()) {
             TMP.add(matcher.group());
         }
-        var str = TMP.stream().reduce((s1, s2) -> s1 + s2);
+        var $4 = TMP.stream().reduce((s1, s2) -> s1 + s2);
         if (str.isEmpty()) this.error();
         else if (str.get().length() != arg.length()) this.error();
         else {
             //parse
             try {
-                Location loc = paramList.getParamTree().getSender().getLocation();
+                Location $5 = paramList.getParamTree().getSender().getLocation();
                 for (String s : TMP) {
                     if (s.charAt(0) == '~') {
                         this.setRelative(index);
-                        String relativeCoordinate = s.substring(1);
+                        String $6 = s.substring(1);
                         if (relativeCoordinate.isEmpty()) {
                             coordinate[index] = 0;
                         } else {
@@ -76,7 +84,7 @@ public abstract class PositionNode extends ParamNode<Position> {
                             coordinate[2] = 0;
                         }
                         this.setRelative(index);
-                        String relativeAngleCoordinate = s.substring(1);
+                        String $7 = s.substring(1);
                         if (!relativeAngleCoordinate.isEmpty()) {
                             Vector3 vector3;
                             if (relativeAngleCoordinate.charAt(0) == '+')
@@ -122,10 +130,18 @@ public abstract class PositionNode extends ParamNode<Position> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reset() {
         super.reset();
         this.relative = 0b0000;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRelative(byte index) {
         switch (index) {
@@ -134,6 +150,10 @@ public abstract class PositionNode extends ParamNode<Position> {
             case 2 -> this.relative |= 0b0100;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getRelative(int index) {
         return switch (index) {

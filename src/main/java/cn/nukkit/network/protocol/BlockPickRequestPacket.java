@@ -11,7 +11,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class BlockPickRequestPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.BLOCK_PICK_REQUEST_PACKET;
+    public static final int $1 = ProtocolInfo.BLOCK_PICK_REQUEST_PACKET;
 
     public int x;
     public int y;
@@ -20,13 +20,21 @@ public class BlockPickRequestPacket extends DataPacket {
     public int selectedSlot;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
-        BlockVector3 v = byteBuf.readSignedBlockPosition();
+        BlockVector3 $2 = byteBuf.readSignedBlockPosition();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
@@ -35,9 +43,17 @@ public class BlockPickRequestPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

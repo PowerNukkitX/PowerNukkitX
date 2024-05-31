@@ -17,21 +17,25 @@ import java.util.Objects;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockEntitySign extends BlockEntitySpawnable {
-    public static final String TAG_TEXT_BLOB = "Text";
-    public static final String TAG_TEXT_LINE = "Text%d";
-    public static final String TAG_HIDE_GLOW_OUTLINE = "HideGlowOutline";
-    public static final String TAG_TEXT_OWNER = "TextOwner";
-    public static final String TAG_TEXT_COLOR = "SignTextColor";
-    public static final String TAG_GLOWING_TEXT = "IgnoreLighting";
-    public static final String TAG_PERSIST_FORMATTING = "PersistFormatting";
-    public static final String TAG_LEGACY_BUG_RESOLVE = "TextIgnoreLegacyBugResolved";
-    public static final String TAG_FRONT_TEXT = "FrontText";
-    public static final String TAG_BACK_TEXT = "BackText";
-    public static final String TAG_WAXED = "IsWaxed";
-    public static final String TAG_LOCKED_FOR_EDITING_BY = "LockedForEditingBy";
+    public static final String $1 = "Text";
+    public static final String $2 = "Text%d";
+    public static final String $3 = "HideGlowOutline";
+    public static final String $4 = "TextOwner";
+    public static final String $5 = "SignTextColor";
+    public static final String $6 = "IgnoreLighting";
+    public static final String $7 = "PersistFormatting";
+    public static final String $8 = "TextIgnoreLegacyBugResolved";
+    public static final String $9 = "FrontText";
+    public static final String $10 = "BackText";
+    public static final String $11 = "IsWaxed";
+    public static final String $12 = "LockedForEditingBy";
 
     private String[] frontText;
     private String[] backText;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntitySign(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -39,6 +43,10 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         frontText = new String[4];
@@ -80,6 +88,10 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.getCompound(TAG_FRONT_TEXT)
@@ -96,6 +108,10 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     /**
      * @return If the sign is waxed, once a sign is waxed it cannot be modified
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isWaxed() {
         return this.namedTag.getByte(TAG_WAXED) == 1;
     }
@@ -103,15 +119,27 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     /**
      * @param waxed If the sign is waxed, once a sign is waxed it cannot be modified
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setWaxed(boolean waxed) {
         this.namedTag.putByte(TAG_WAXED, waxed ? (byte) 1 : (byte) 0);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
-        Block block = getBlock();
+        Block $13 = getBlock();
         return block instanceof BlockStandingSign;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setText(String... lines) {
         return setText(true, lines);
@@ -124,9 +152,13 @@ public class BlockEntitySign extends BlockEntitySpawnable {
      * @param lines the lines
      * @return the text
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean setText(boolean front, String... lines) {
         if (front) {
-            for (int i = 0; i < 4; i++) {
+            for ($14nt $1 = 0; i < 4; i++) {
                 if (i < lines.length)
                     frontText[i] = lines[i];
                 else
@@ -134,7 +166,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             }
             this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, StringUtils.joinNotNull("\n", lines));
         } else {
-            for (int i = 0; i < 4; i++) {
+            for ($15nt $2 = 0; i < 4; i++) {
                 if (i < lines.length)
                     backText[i] = lines[i];
                 else
@@ -156,10 +188,18 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     public String[] getText(boolean front) {
         return front ? frontText : backText;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isEmpty() {
         return isEmpty(true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isEmpty(boolean front) {
         if (front) {
@@ -176,9 +216,17 @@ public class BlockEntitySign extends BlockEntitySpawnable {
      * This is used to prevent multiple players from editing the same sign at the same time, and to prevent players
      * from editing signs they didn't place.
      */
+    /**
+     * @deprecated 
+     */
+    
     public long getEditorEntityRuntimeId() {
         return this.namedTag.getLong(TAG_LOCKED_FOR_EDITING_BY);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setEditorEntityRuntimeId(Long editorEntityRuntimeId) {
         this.namedTag.putLong(TAG_LOCKED_FOR_EDITING_BY, editorEntityRuntimeId == null ? -1L : editorEntityRuntimeId);
@@ -195,10 +243,18 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             return new BlockColor(this.namedTag.getCompound(TAG_BACK_TEXT).getInt(TAG_TEXT_COLOR), true);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setColor(BlockColor color) {
         setColor(true, color);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setColor(boolean front, BlockColor color) {
         if (front) {
@@ -207,10 +263,18 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             this.namedTag.getCompound(TAG_BACK_TEXT).putInt(TAG_TEXT_COLOR, color.getARGB());
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isGlowing() {
         return isGlowing(true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isGlowing(boolean front) {
         if (front) {
@@ -219,10 +283,18 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             return this.namedTag.getCompound(TAG_BACK_TEXT).getBoolean(TAG_GLOWING_TEXT);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setGlowing(boolean glowing) {
         setGlowing(true, glowing);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setGlowing(boolean front, boolean glowing) {
         if (front) {
@@ -233,6 +305,10 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean updateCompoundTag(CompoundTag nbt, Player player) {
         if (!nbt.getString("id").equals(BlockEntity.SIGN) && !nbt.getString("id").equals(BlockEntity.HANGING_SIGN)) {
             return false;
@@ -245,14 +321,14 @@ public class BlockEntitySign extends BlockEntitySpawnable {
 
         sanitizeText(lines);
 
-        SignChangeEvent signChangeEvent = new SignChangeEvent(this.getBlock(), player, lines);
+        SignChangeEvent $16 = new SignChangeEvent(this.getBlock(), player, lines);
 
         if (!this.namedTag.contains(TAG_LOCKED_FOR_EDITING_BY) || !Objects.equals(player.getId(), this.getEditorEntityRuntimeId())) {
             signChangeEvent.setCancelled();
         }
 
         if (player.getRemoveFormat()) {
-            for (int i = 0; i < lines.length; i++) {
+            for ($17nt $3 = 0; i < lines.length; i++) {
                 lines[i] = TextFormat.clean(lines[i]);
             }
         }
@@ -295,10 +371,14 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     }
 
     //读取指定面的NBT到Sign对象字段
+    
+    /**
+     * @deprecated 
+     */
     private void getLines(boolean front) {
         if (front) {
             String[] lines = this.namedTag.getCompound(TAG_FRONT_TEXT).getString(TAG_TEXT_BLOB).split("\n", 4);
-            for (int i = 0; i < frontText.length; i++) {
+            for ($18nt $4 = 0; i < frontText.length; i++) {
                 if (i < lines.length)
                     frontText[i] = lines[i];
                 else
@@ -306,7 +386,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             }
         } else {
             String[] lines = this.namedTag.getCompound(TAG_BACK_TEXT).getString(TAG_TEXT_BLOB).split("\n", 4);
-            for (int i = 0; i < backText.length; i++) {
+            for ($19nt $5 = 0; i < backText.length; i++) {
                 if (i < lines.length)
                     backText[i] = lines[i];
                 else
@@ -316,10 +396,14 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     }
 
     //在1.19.80以后,sign变成了双面显示，NBT结构也有所改变，这个方法将1.19.70以前的NBT更新至最新NBT结构
+    
+    /**
+     * @deprecated 
+     */
     private void updateLegacyCompoundTag() {
         if (this.namedTag.contains(TAG_TEXT_BLOB)) {
             String[] lines = namedTag.getString(TAG_TEXT_BLOB).split("\n", 4);
-            for (int i = 0; i < frontText.length; i++) {
+            for ($20nt $6 = 0; i < frontText.length; i++) {
                 if (i < lines.length)
                     frontText[i] = lines[i];
                 else
@@ -328,11 +412,11 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, StringUtils.joinNotNull("\n", frontText));
             this.namedTag.remove(TAG_TEXT_BLOB);
         } else {
-            int count = 0;
-            for (int i = 1; i <= 4; i++) {
-                String key = TAG_TEXT_BLOB + i;
+            int $21 = 0;
+            for ($22nt $7 = 1; i <= 4; i++) {
+                String $23 = TAG_TEXT_BLOB + i;
                 if (namedTag.contains(key)) {
-                    String line = namedTag.getString(key);
+                    String $24 = namedTag.getString(key);
                     this.frontText[i - 1] = line;
                     this.namedTag.remove(key);
                     count++;
@@ -354,8 +438,12 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     }
 
     //验证Line Text是否符合要求
+    
+    /**
+     * @deprecated 
+     */
     private static void sanitizeText(String[] lines) {
-        for (int i = 0; i < lines.length; i++) {
+        for ($25nt $8 = 0; i < lines.length; i++) {
             // Don't allow excessive text per line.
             if (lines[i] != null) {
                 lines[i] = lines[i].substring(0, Math.min(255, lines[i].length()));

@@ -21,6 +21,10 @@ public final class JSJob implements AutoCloseable {
     private Path sourcePath;
 
     private Value jobMainFunc;
+    /**
+     * @deprecated 
+     */
+    
 
     public JSJob(Context sourceContext, ESMFileSystem fileSystem, String jobSourcePath) {
         this.sourceContext = sourceContext;
@@ -47,10 +51,14 @@ public final class JSJob implements AutoCloseable {
         this.sourcePath = fileSystem.parsePath(jobSourcePath);
         this.sourceReader = fileSystem.newReader(sourcePath);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void start() {
         try {
-            var exports = jobContext.eval(Source.newBuilder("js", sourceReader,
+            var $1 = jobContext.eval(Source.newBuilder("js", sourceReader,
                             fileSystem.baseDir.getName() + "/job-" + sourcePath.getFileName())
                     .mimeType("application/javascript+module").build());
             this.jobMainFunc = exports.getMember("main");

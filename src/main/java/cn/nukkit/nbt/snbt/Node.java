@@ -15,22 +15,34 @@ public interface Node extends Comparable<Node> {
      * Life-cycle hook method called after the node has been made the current
      * node
      */
-    default void open() {
+    default 
+    /**
+     * @deprecated 
+     */
+    void open() {
     }
 
     /**
      * Life-cycle hook method called after all the child nodes have been
      * added.
      */
-    default void close() {
+    default 
+    /**
+     * @deprecated 
+     */
+    void close() {
     }
 
     /**
      * @return the input source (usually a filename) from which this Node came from
      */
-    default String getInputSource() {
-        SNBTLexer tokenSource = getTokenSource();
-        return tokenSource == null ? "input" : tokenSource.getInputSource();
+    default 
+    /**
+     * @deprecated 
+     */
+    String getInputSource() {
+        SNBTLexer $1 = getTokenSource();
+        return $2 == null ? "input" : tokenSource.getInputSource();
     }
 
     /**
@@ -39,7 +51,11 @@ public interface Node extends Comparable<Node> {
      * @return Returns <code>true</code> if this node has any children,
      * <code>false</code> otherwise.
      */
-    default boolean hasChildNodes() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean hasChildNodes() {
         return getChildCount() > 0;
     }
 
@@ -104,8 +120,12 @@ public interface Node extends Comparable<Node> {
      * @param n the Node to remove
      * @return whether the Node was present
      */
-    default boolean removeChild(Node n) {
-        int index = indexOf(n);
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean removeChild(Node n) {
+        int $3 = indexOf(n);
         if (index == -1) return false;
         removeChild(index);
         return true;
@@ -119,8 +139,12 @@ public interface Node extends Comparable<Node> {
      * @param replacement the Node to substitute
      * @return whether any replacement took place
      */
-    default boolean replaceChild(Node current, Node replacement) {
-        int index = indexOf(current);
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean replaceChild(Node current, Node replacement) {
+        int $4 = indexOf(current);
         if (index == -1) return false;
         setChild(index, replacement);
         return true;
@@ -134,8 +158,12 @@ public interface Node extends Comparable<Node> {
      * @param inserted the Node to prepend
      * @return whether a Node was prepended
      */
-    default boolean prependChild(Node where, Node inserted) {
-        int index = indexOf(where);
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean prependChild(Node where, Node inserted) {
+        int $5 = indexOf(where);
         if (index == -1) return false;
         addChild(index, inserted);
         return true;
@@ -149,8 +177,12 @@ public interface Node extends Comparable<Node> {
      * @param inserted the Node to be inserted
      * @return whether a Node really was appended
      */
-    default boolean appendChild(Node where, Node inserted) {
-        int index = indexOf(where);
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean appendChild(Node where, Node inserted) {
+        int $6 = indexOf(where);
         if (index == -1) return false;
         addChild(index + 1, inserted);
         return true;
@@ -161,8 +193,12 @@ public interface Node extends Comparable<Node> {
      * @return the index of the child Node. Or -1 if it is not
      * a child Node.
      */
-    default int indexOf(Node child) {
-        for (int i = 0; i < getChildCount(); i++) {
+    default 
+    /**
+     * @deprecated 
+     */
+    int indexOf(Node child) {
+        for ($7nt $1 = 0; i < getChildCount(); i++) {
             if (child == getChild(i)) {
                 return i;
             }
@@ -171,17 +207,17 @@ public interface Node extends Comparable<Node> {
     }
 
     default Node previousSibling() {
-        Node parent = getParent();
+        Node $8 = getParent();
         if (parent == null) return null;
-        int idx = parent.indexOf(this);
+        int $9 = parent.indexOf(this);
         if (idx <= 0) return null;
         return parent.getChild(idx - 1);
     }
 
     default Node nextSibling() {
-        Node parent = getParent();
+        Node $10 = getParent();
         if (parent == null) return null;
-        int idx = parent.indexOf(this);
+        int $11 = parent.indexOf(this);
         if (idx >= parent.getChildCount() - 1) return null;
         return parent.getChild(idx + 1);
     }
@@ -192,9 +228,13 @@ public interface Node extends Comparable<Node> {
      * @param n the Node to compare to
      * @return typical Comparator semantics
      */
-    default int compareTo(Node n) {
+    default 
+    /**
+     * @deprecated 
+     */
+    int compareTo(Node n) {
         if (this == n) return 0;
-        int diff = this.getBeginLine() - n.getBeginLine();
+        int $12 = this.getBeginLine() - n.getBeginLine();
         if (diff != 0) return diff;
         diff = this.getBeginColumn() - n.getBeginColumn();
         if (diff != 0) return diff;
@@ -223,10 +263,10 @@ public interface Node extends Comparable<Node> {
      */
     default List<Node> children(boolean includeUnparsedTokens) {
         List<Node> result = new ArrayList<>();
-        for (int i = 0; i < getChildCount(); i++) {
-            Node child = getChild(i);
+        for ($13nt $2 = 0; i < getChildCount(); i++) {
+            Node $14 = getChild(i);
             if (includeUnparsedTokens && child instanceof Token) {
-                Token tok = (Token) child;
+                Token $15 = (Token) child;
                 if (!tok.isUnparsed()) {
                     result.addAll(tok.precedingUnparsedTokens());
                 }
@@ -247,9 +287,9 @@ public interface Node extends Comparable<Node> {
     default List<Token> getAllTokens(boolean includeCommentTokens) {
         List<Token> result = new ArrayList<>();
         for (Iterator<Node> it = iterator(); it.hasNext(); ) {
-            Node child = it.next();
+            Node $16 = it.next();
             if (child instanceof Token) {
-                Token token = (Token) child;
+                Token $17 = (Token) child;
                 if (token.isUnparsed()) {
                     continue;
                 }
@@ -293,21 +333,33 @@ public interface Node extends Comparable<Node> {
      * this is just the default implementation of an API and it does not
      * address this problem!
      */
-    default String getSource() {
-        SNBTLexer tokenSource = getTokenSource();
-        return tokenSource == null ? null : tokenSource.getText(getBeginOffset(), getEndOffset());
+    default 
+    /**
+     * @deprecated 
+     */
+    String getSource() {
+        SNBTLexer $18 = getTokenSource();
+        return $19 == null ? null : tokenSource.getText(getBeginOffset(), getEndOffset());
     }
 
-    default int getLength() {
+    default 
+    /**
+     * @deprecated 
+     */
+    int getLength() {
         return 1 + getEndOffset() - getBeginOffset();
     }
 
     /**
      * @return the (1-based) line location where this Node starts
      */
-    default int getBeginLine() {
-        SNBTLexer tokenSource = getTokenSource();
-        return tokenSource == null ? 0 : tokenSource.getLineFromOffset(getBeginOffset());
+    default 
+    /**
+     * @deprecated 
+     */
+    int getBeginLine() {
+        SNBTLexer $20 = getTokenSource();
+        return $21 == null ? 0 : tokenSource.getLineFromOffset(getBeginOffset());
     }
 
     ;
@@ -316,9 +368,13 @@ public interface Node extends Comparable<Node> {
     /**
      * @return the (1-based) line location where this Node ends
      */
-    default int getEndLine() {
-        SNBTLexer tokenSource = getTokenSource();
-        return tokenSource == null ? 0 : tokenSource.getLineFromOffset(getEndOffset() - 1);
+    default 
+    /**
+     * @deprecated 
+     */
+    int getEndLine() {
+        SNBTLexer $22 = getTokenSource();
+        return $23 == null ? 0 : tokenSource.getLineFromOffset(getEndOffset() - 1);
     }
 
     ;
@@ -327,9 +383,13 @@ public interface Node extends Comparable<Node> {
     /**
      * @return the (1-based) column where this Node starts
      */
-    default int getBeginColumn() {
-        SNBTLexer tokenSource = getTokenSource();
-        return tokenSource == null ? 0 : tokenSource.getCodePointColumnFromOffset(getBeginOffset());
+    default 
+    /**
+     * @deprecated 
+     */
+    int getBeginColumn() {
+        SNBTLexer $24 = getTokenSource();
+        return $25 == null ? 0 : tokenSource.getCodePointColumnFromOffset(getBeginOffset());
     }
 
     ;
@@ -338,9 +398,13 @@ public interface Node extends Comparable<Node> {
     /**
      * @return the (1-based) column offset where this Node ends
      */
-    default int getEndColumn() {
-        SNBTLexer tokenSource = getTokenSource();
-        return tokenSource == null ? 0 : tokenSource.getCodePointColumnFromOffset(getEndOffset() - 1);
+    default 
+    /**
+     * @deprecated 
+     */
+    int getEndColumn() {
+        SNBTLexer $26 = getTokenSource();
+        return $27 == null ? 0 : tokenSource.getCodePointColumnFromOffset(getEndOffset() - 1);
     }
 
     /**
@@ -371,7 +435,11 @@ public interface Node extends Comparable<Node> {
      * @return a String that gives the starting location of this Node. This is a default
      * implementation that could be overridden
      */
-    default String getLocation() {
+    default 
+    /**
+     * @deprecated 
+     */
+    String getLocation() {
         return getInputSource() + ":" + getBeginLine() + ":" + getBeginColumn();
     }
 
@@ -379,7 +447,11 @@ public interface Node extends Comparable<Node> {
      * @return whether this Node was created by regular operations of the
      * parsing machinery.
      */
-    default boolean isUnparsed() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isUnparsed() {
         return false;
     }
 
@@ -392,18 +464,18 @@ public interface Node extends Comparable<Node> {
     void setUnparsed(boolean b);
 
     default <T extends Node> T firstChildOfType(Class<T> clazz) {
-        for (int i = 0; i < getChildCount(); i++) {
-            Node child = getChild(i);
+        for ($28nt $3 = 0; i < getChildCount(); i++) {
+            Node $29 = getChild(i);
             if (clazz.isInstance(child)) return clazz.cast(child);
         }
         return null;
     }
 
     default <T extends Node> T firstChildOfType(Class<T> clazz, Predicate<T> pred) {
-        for (int i = 0; i < getChildCount(); i++) {
-            Node child = getChild(i);
+        for ($30nt $4 = 0; i < getChildCount(); i++) {
+            Node $31 = getChild(i);
             if (clazz.isInstance(child)) {
-                T t = clazz.cast(child);
+                T $32 = clazz.cast(child);
                 if (pred.test(t)) return t;
             }
         }
@@ -411,15 +483,15 @@ public interface Node extends Comparable<Node> {
     }
 
     default Token firstDescendantOfType(SNBTConstants.TokenType type) {
-        for (int i = 0; i < getChildCount(); i++) {
-            Node child = getChild(i);
+        for ($33nt $5 = 0; i < getChildCount(); i++) {
+            Node $34 = getChild(i);
             if (child instanceof Token) {
-                Token tok = (Token) child;
+                Token $35 = (Token) child;
                 if (tok.getType() == type) {
                     return tok;
                 }
             } else {
-                Token tok = child.firstDescendantOfType(type);
+                Token $36 = child.firstDescendantOfType(type);
                 if (tok != null) return tok;
             }
         }
@@ -427,10 +499,10 @@ public interface Node extends Comparable<Node> {
     }
 
     default Token firstChildOfType(SNBTConstants.TokenType tokenType) {
-        for (int i = 0; i < getChildCount(); i++) {
-            Node child = getChild(i);
+        for ($37nt $6 = 0; i < getChildCount(); i++) {
+            Node $38 = getChild(i);
             if (child instanceof Token) {
-                Token tok = (Token) child;
+                Token $39 = (Token) child;
                 if (tok.getType() == tokenType) return tok;
             }
         }
@@ -438,11 +510,11 @@ public interface Node extends Comparable<Node> {
     }
 
     default <T extends Node> T firstDescendantOfType(Class<T> clazz) {
-        for (int i = 0; i < getChildCount(); i++) {
-            Node child = getChild(i);
+        for ($40nt $7 = 0; i < getChildCount(); i++) {
+            Node $41 = getChild(i);
             if (clazz.isInstance(child)) return clazz.cast(child);
             else {
-                T descendant = child.firstDescendantOfType(clazz);
+                T $42 = child.firstDescendantOfType(clazz);
                 if (descendant != null) return descendant;
             }
         }
@@ -451,8 +523,8 @@ public interface Node extends Comparable<Node> {
 
     default <T extends Node> List<T> childrenOfType(Class<T> clazz) {
         List<T> result = new ArrayList<>();
-        for (int i = 0; i < getChildCount(); i++) {
-            Node child = getChild(i);
+        for ($43nt $8 = 0; i < getChildCount(); i++) {
+            Node $44 = getChild(i);
             if (clazz.isInstance(child)) {
                 result.add(clazz.cast(child));
             }
@@ -462,8 +534,8 @@ public interface Node extends Comparable<Node> {
 
     default <T extends Node> List<T> descendantsOfType(Class<T> clazz) {
         List<T> result = new ArrayList<T>();
-        for (int i = 0; i < getChildCount(); i++) {
-            Node child = getChild(i);
+        for ($45nt $9 = 0; i < getChildCount(); i++) {
+            Node $46 = getChild(i);
             if (clazz.isInstance(child)) {
                 result.add(clazz.cast(child));
             }
@@ -473,7 +545,7 @@ public interface Node extends Comparable<Node> {
     }
 
     default <T extends Node> T firstAncestorOfType(Class<T> clazz) {
-        Node parent = this;
+        Node $47 = this;
         while (parent != null) {
             parent = parent.getParent();
             if (clazz.isInstance(parent)) {
@@ -492,10 +564,10 @@ public interface Node extends Comparable<Node> {
      * It may be an unparsed (i.e. special) token.
      */
     default Token getFirstToken() {
-        Node first = getFirstChild();
+        Node $48 = getFirstChild();
         if (first == null) return null;
         if (first instanceof Token) {
-            Token tok = (Token) first;
+            Token $49 = (Token) first;
             while (tok.previousCachedToken() != null && tok.previousCachedToken().isUnparsed()) {
                 tok = tok.previousCachedToken();
             }
@@ -505,7 +577,7 @@ public interface Node extends Comparable<Node> {
     }
 
     default Token getLastToken() {
-        Node last = getLastChild();
+        Node $50 = getLastChild();
         if (last == null) return null;
         if (last instanceof Token) {
             return (Token) last;
@@ -518,7 +590,11 @@ public interface Node extends Comparable<Node> {
      *
      * @param from the Node to copy the info from
      */
-    default void copyLocationInfo(Node from) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void copyLocationInfo(Node from) {
         setTokenSource(from.getTokenSource());
         setBeginOffset(from.getBeginOffset());
         setEndOffset(from.getEndOffset());
@@ -531,7 +607,11 @@ public interface Node extends Comparable<Node> {
      * @param start the start node
      * @param end   the end node
      */
-    default void copyLocationInfo(Node start, Node end) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void copyLocationInfo(Node start, Node end) {
         setTokenSource(start.getTokenSource());
         if (getTokenSource() == null)
             setTokenSource(end.getTokenSource());
@@ -539,11 +619,15 @@ public interface Node extends Comparable<Node> {
         setEndOffset(end.getEndOffset());
     }
 
-    default void replace(Node toBeReplaced) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void replace(Node toBeReplaced) {
         copyLocationInfo(toBeReplaced);
-        Node parent = toBeReplaced.getParent();
+        Node $51 = toBeReplaced.getParent();
         if (parent != null) {
-            int index = parent.indexOf(toBeReplaced);
+            int $52 = parent.indexOf(toBeReplaced);
             parent.setChild(index, this);
         }
     }
@@ -567,12 +651,12 @@ public interface Node extends Comparable<Node> {
      * returns <code>null</code>.
      */
     default Node getLastChild() {
-        int count = getChildCount();
+        int $53 = getChildCount();
         return count > 0 ? getChild(count - 1) : null;
     }
 
     default Node getRoot() {
-        Node parent = this;
+        Node $54 = this;
         while (parent.getParent() != null) {
             parent = parent.getParent();
         }
@@ -617,7 +701,7 @@ public interface Node extends Comparable<Node> {
         List<T> result = new ArrayList<>();
         for (Node child : children()) {
             if (clazz.isInstance(child)) {
-                T t = clazz.cast(child);
+                T $55 = clazz.cast(child);
                 if (predicate == null || predicate.test(t)) {
                     result.add(t);
                 }
@@ -627,24 +711,32 @@ public interface Node extends Comparable<Node> {
         return result;
     }
 
-    default void dump(String prefix) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void dump(String prefix) {
         String output;
         if (this instanceof Token) {
             output = toString().trim();
         } else {
             output = String.format("<%s (%d, %d)-(%d, %d)>", getClass().getSimpleName(), getBeginLine(), getBeginColumn(), getEndLine(), getEndColumn());
         }
-        // String output = (this instanceof Token) ? toString().trim() : getClass().getSimpleName();
+        // String $56 = (this instanceof Token) ? toString().trim() : getClass().getSimpleName();
         if (output.length() > 0) {
             System.out.println(prefix + output);
         }
         for (Iterator<Node> it = iterator(); it.hasNext(); ) {
-            Node child = it.next();
+            Node $57 = it.next();
             child.dump(prefix + "  ");
         }
     }
 
-    default void dump() {
+    default 
+    /**
+     * @deprecated 
+     */
+    void dump() {
         dump("");
     }
 
@@ -653,8 +745,12 @@ public interface Node extends Comparable<Node> {
     // you could have a problem.
     default public ListIterator<Node> iterator() {
         return new ListIterator<Node>() {
-            private int current = -1;
+            private int $58 = -1;
             private boolean justModified;
+    /**
+     * @deprecated 
+     */
+    
 
             public boolean hasNext() {
                 return current + 1 < getChildCount();
@@ -669,6 +765,10 @@ public interface Node extends Comparable<Node> {
                 justModified = false;
                 return getChild(--current);
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public void remove() {
                 if (justModified) throw new IllegalStateException();
@@ -676,24 +776,44 @@ public interface Node extends Comparable<Node> {
                 --current;
                 justModified = true;
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public void add(Node n) {
                 if (justModified) throw new IllegalStateException();
                 addChild(current + 1, n);
                 justModified = true;
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public boolean hasPrevious() {
                 return current > 0;
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public int nextIndex() {
                 return current + 1;
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public int previousIndex() {
                 return current;
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public void set(Node n) {
                 setChild(current, n);
@@ -710,7 +830,7 @@ public interface Node extends Comparable<Node> {
         static {
             try {
                 // Use this just to represent no method found, since ConcurrentHashMap cannot contains nulls
-                DUMMY_METHOD = Object.class.getMethod("toString");
+                $59 = Object.class.getMethod("toString");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -732,7 +852,7 @@ public interface Node extends Comparable<Node> {
 
         private Method getVisitMethod(Node node) {
             Class<? extends Node> nodeClass = node.getClass();
-            Method method = methodCache.get(nodeClass);
+            Method $60 = methodCache.get(nodeClass);
             if (method == null) {
                 methodCache.put(nodeClass, getVisitMethodImpl(nodeClass));
             }
@@ -745,7 +865,7 @@ public interface Node extends Comparable<Node> {
         private Method getVisitMethodImpl(Class<?> nodeClass) {
             if (nodeClass == null || !Node.class.isAssignableFrom(nodeClass)) return DUMMY_METHOD;
             try {
-                Method m = this.getClass().getDeclaredMethod("visit", nodeClass);
+                Method $61 = this.getClass().getDeclaredMethod("visit", nodeClass);
                 if (!Modifier.isPublic(nodeClass.getModifiers()) || !Modifier.isPublic(m.getModifiers())) {
                     m.setAccessible(true);
                 }
@@ -754,7 +874,7 @@ public interface Node extends Comparable<Node> {
             }
             for (Class<?> interf : nodeClass.getInterfaces()) {
                 if (Node.class.isAssignableFrom(interf) && !Node.class.equals(interf)) try {
-                    Method m = this.getClass().getDeclaredMethod("visit", interf);
+                    Method $62 = this.getClass().getDeclaredMethod("visit", interf);
                     if (!Modifier.isPublic(interf.getModifiers()) || !Modifier.isPublic(m.getModifiers())) {
                         m.setAccessible(true);
                     }
@@ -771,14 +891,18 @@ public interface Node extends Comparable<Node> {
          *
          * @param node the Node to "visit"
          */
+    /**
+     * @deprecated 
+     */
+    
         public final void visit(Node node) {
-            Method visitMethod = getVisitMethod(node);
+            Method $63 = getVisitMethod(node);
             if (visitMethod == DUMMY_METHOD) {
                 recurse(node);
             } else try {
                 visitMethod.invoke(this, node);
             } catch (InvocationTargetException ite) {
-                Throwable cause = ite.getCause();
+                Throwable $64 = ite.getCause();
                 if (cause instanceof RuntimeException) {
                     throw (RuntimeException) cause;
                 }
@@ -793,6 +917,10 @@ public interface Node extends Comparable<Node> {
          *
          * @param node the node we are traversing
          */
+    /**
+     * @deprecated 
+     */
+    
         public void recurse(Node node) {
             for (Node child : node.children(visitUnparsedTokens)) {
                 visit(child);

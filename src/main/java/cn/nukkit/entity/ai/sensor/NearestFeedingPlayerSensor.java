@@ -13,10 +13,18 @@ public class NearestFeedingPlayerSensor implements ISensor {
     protected double minRange;
 
     protected int period;
+    /**
+     * @deprecated 
+     */
+    
 
     public NearestFeedingPlayerSensor(double range, double minRange) {
         this(range, minRange, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public NearestFeedingPlayerSensor(double range, double minRange, int period) {
         this.range = range;
@@ -25,11 +33,15 @@ public class NearestFeedingPlayerSensor implements ISensor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sense(EntityIntelligent entity) {
         if (entity instanceof EntityAnimal entityAnimal) {
-            Player player = null;
-            double rangeSquared = this.range * this.range;
-            double minRangeSquared = this.minRange * this.minRange;
+            Player $1 = null;
+            double $2 = this.range * this.range;
+            double $3 = this.minRange * this.minRange;
             //寻找范围内最近满足乞食要求的玩家
             for (Player p : entity.getLevel().getPlayers().values()) {
                 if (entity.distanceSquared(p) <= rangeSquared && entity.distanceSquared(p) >= minRangeSquared && entityAnimal.isBreedingItem(p.getInventory().getItemInHand())) {
@@ -49,6 +61,10 @@ public class NearestFeedingPlayerSensor implements ISensor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPeriod() {
         return period;
     }

@@ -14,33 +14,53 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Rail;
 
 public class ItemTntMinecart extends Item {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemTntMinecart() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemTntMinecart(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemTntMinecart(Integer meta, int count) {
         super(TNT_MINECART, meta, count, "Minecart with TNT");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (Rail.isRailBlock(target)) {
-            Rail.Orientation type = ((BlockRail) target).getOrientation();
-            double adjacent = 0.0D;
+            Rail.Orientation $1 = ((BlockRail) target).getOrientation();
+            double $2 = 0.0D;
             if (type.isAscending()) {
                 adjacent = 0.5D;
             }
-            EntityTntMinecart minecart = (EntityTntMinecart) Entity.createEntity(Entity.TNT_MINECART,
+            EntityTntMinecart $3 = (EntityTntMinecart) Entity.createEntity(Entity.TNT_MINECART,
                     level.getChunk(target.getFloorX() >> 4, target.getFloorZ() >> 4), new CompoundTag()
                             .putList("Pos", new ListTag<>()
                                     .add(new DoubleTag(target.getX() + 0.5))
@@ -60,7 +80,7 @@ public class ItemTntMinecart extends Item {
             }
 
             if (player.isAdventure() || player.isSurvival()) {
-                Item item = player.getInventory().getItemInHand();
+                Item $4 = player.getInventory().getItemInHand();
                 item.setCount(item.getCount() - 1);
                 player.getInventory().setItemInHand(item);
             }
@@ -72,6 +92,10 @@ public class ItemTntMinecart extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxStackSize() {
         return 1;
     }

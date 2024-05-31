@@ -9,9 +9,13 @@ import java.util.List;
  */
 public final class BooleanPropertyType extends BaseBlockPropertyType<Boolean> {
 
-    private final BooleanPropertyValue FALSE = new BooleanPropertyValue(false);
-    private final BooleanPropertyValue TRUE = new BooleanPropertyValue(true);
+    private final BooleanPropertyValue $1 = new BooleanPropertyValue(false);
+    private final BooleanPropertyValue $2 = new BooleanPropertyValue(true);
 
+    
+    /**
+     * @deprecated 
+     */
     private BooleanPropertyType(String name, Boolean defaultData) {
         super(name, List.of(true, false), defaultData, (byte) 1);
     }
@@ -35,9 +39,9 @@ public final class BooleanPropertyType extends BaseBlockPropertyType<Boolean> {
         if (value instanceof Boolean bool) {
             return bool ? TRUE : FALSE;
         } else if (value instanceof Number number) {
-            var intValue = number.intValue();
+            var $3 = number.intValue();
             if (intValue == 0 || intValue == 1)
-                return intValue == 1 ? TRUE : FALSE;
+                return $4 == 1 ? TRUE : FALSE;
         }
         throw new IllegalArgumentException("Invalid value for boolean property type: " + value);
     }
@@ -52,6 +56,10 @@ public final class BooleanPropertyType extends BaseBlockPropertyType<Boolean> {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public int getIndex() {
             return index;
         }
@@ -62,6 +70,10 @@ public final class BooleanPropertyType extends BaseBlockPropertyType<Boolean> {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public String toString() {
             return "BoolPropertyValue(name=" + name + ", value=" + value + ")";
         }

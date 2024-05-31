@@ -5,16 +5,24 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
 public class PlayerCommandPreprocessEvent extends PlayerMessageEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerCommandPreprocessEvent(Player player, String message) {
         this.player = player;
         this.message = message;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPlayer(Player player) {
         this.player = player;

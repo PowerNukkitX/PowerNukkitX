@@ -24,16 +24,24 @@ import java.util.Map;
 
 public final class JSEventManager {
     private final CommonJSPlugin jsPlugin;
+    /**
+     * @deprecated 
+     */
+    
 
     public JSEventManager(CommonJSPlugin jsPlugin) {
         this.jsPlugin = jsPlugin;
     }
 
     @SuppressWarnings("unchecked")
+    /**
+     * @deprecated 
+     */
+    
     public boolean register(@NotNull String fullEventName, EventPriority priority, @NotNull Value callback) {
         if (callback.canExecute()) {
             try {
-                var clazz = Class.forName(fullEventName);
+                var $1 = Class.forName(fullEventName);
                 if (!Event.class.isAssignableFrom(clazz)) {
                     return false;
                 }
@@ -67,10 +75,18 @@ public final class JSEventManager {
         private String currentCommandPatternId;
         private final List<CommandParameter> currentCommandParameterList = new ArrayList<>(3);
         private final Map<String, CommandParameter[]> commandParameters = new HashMap<>(2);
+    /**
+     * @deprecated 
+     */
+    
 
         public CommandBuilder(CommonJSPlugin jsPlugin) {
             this.jsPlugin = jsPlugin;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public String getCommandName() {
             return commandName;
@@ -80,6 +96,10 @@ public final class JSEventManager {
             this.commandName = commandName;
             return this;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public String getDescription() {
             return description;
@@ -89,6 +109,10 @@ public final class JSEventManager {
             this.description = description;
             return this;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public String getUsageMessage() {
             return usageMessage;
@@ -112,7 +136,7 @@ public final class JSEventManager {
             if (alias == null) {
                 return this;
             }
-            var oldAlias = this.alias;
+            var $2 = this.alias;
             if (oldAlias == null) {
                 return setAlias(alias);
             }
@@ -121,6 +145,10 @@ public final class JSEventManager {
             System.arraycopy(alias, 0, this.alias, oldAlias.length, alias.length);
             return this;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public String getPermission() {
             return permission;
@@ -130,6 +158,10 @@ public final class JSEventManager {
             this.permission = permission;
             return this;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public String getPermissionMessage() {
             return permissionMessage;
@@ -274,6 +306,10 @@ public final class JSEventManager {
             currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.ENUM_GAMEMODE));
             return this;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean registerOld() {
             if (currentCommandPatternId != null && currentCommandParameterList.size() != 0) {
@@ -292,9 +328,13 @@ public final class JSEventManager {
                 command = new Command(commandName, description,
                         usageMessage, alias) {
                     @Override
+    /**
+     * @deprecated 
+     */
+    
                     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
                         synchronized (jsPlugin.getJsContext()) {
-                            var result = callback.execute(sender, args);
+                            var $3 = callback.execute(sender, args);
                             if (result.isBoolean()) {
                                 return result.asBoolean();
                             } else return !result.isNull();
@@ -315,6 +355,10 @@ public final class JSEventManager {
             }
             return false;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean register() {
             if (currentCommandPatternId != null && currentCommandParameterList.size() != 0) {
@@ -334,9 +378,13 @@ public final class JSEventManager {
                 command = new Command(commandName, description, usageMessage, alias) {
 
                     @Override
+    /**
+     * @deprecated 
+     */
+    
                     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
                         synchronized (jsPlugin.getJsContext()) {
-                            var r = callback.execute(sender, result, log);
+                            va$4 $1 = callback.execute(sender, result, log);
                             if (r.isBoolean()) {
                                 return r.asBoolean() ? 1 : 0;
                             } else if (r.isNumber()) {

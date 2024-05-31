@@ -5,13 +5,25 @@ import org.jetbrains.annotations.NotNull;
 
 @Value
 public class CommandOutputMessage {
+    /**
+     * @deprecated 
+     */
+    
     public CommandOutputMessage(@NotNull String messageId) {
         this(false, messageId, new String[]{});
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public CommandOutputMessage(@NotNull String messageId, @NotNull String... parameters) {
         this(false, messageId, parameters);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public CommandOutputMessage(boolean internal, @NotNull String messageId, @NotNull String[] parameters) {
         this.internal = internal;

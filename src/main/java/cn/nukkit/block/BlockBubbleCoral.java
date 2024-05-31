@@ -8,22 +8,34 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockBubbleCoral extends BlockCoral {
-    public static final BlockProperties PROPERTIES = new BlockProperties(BUBBLE_CORAL);
+    public static final BlockProperties $1 = new BlockProperties(BUBBLE_CORAL);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBubbleCoral() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBubbleCoral(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isDead() {
         return false;
     }
@@ -34,6 +46,10 @@ public class BlockBubbleCoral extends BlockCoral {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.getId().equals(BUBBLE_CORAL)) {
@@ -48,7 +64,7 @@ public class BlockBubbleCoral extends BlockCoral {
                     return type;
                 }
             }
-            BlockFadeEvent event = new BlockFadeEvent(this, getDeadCoral());
+            BlockFadeEvent $2 = new BlockFadeEvent(this, getDeadCoral());
             if (!event.isCancelled()) {
                 this.getLevel().setBlock(this, event.getNewState(), true, true);
             }

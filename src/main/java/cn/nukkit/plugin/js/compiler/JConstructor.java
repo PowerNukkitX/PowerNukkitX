@@ -7,6 +7,10 @@ import java.util.Arrays;
 
 public record JConstructor(JClassBuilder builder, String superDelegateName, String constructorDelegateName,
                            JType[] superTypes, JType... argTypes) {
+    /**
+     * @deprecated 
+     */
+    
 
     public JConstructor(JClassBuilder builder, JType[] superTypes, JType... argTypes) {
         this(builder, "new", "constructor", superTypes, argTypes);

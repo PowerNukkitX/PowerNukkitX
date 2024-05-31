@@ -5,22 +5,38 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityArmadillo extends EntityAnimal {
+    /**
+     * @deprecated 
+     */
+    
     public EntityArmadillo(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
-    public @NotNull String getIdentifier() {
+    public @NotNull 
+    /**
+     * @deprecated 
+     */
+    String getIdentifier() {
         return ARMADILLO;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(12);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (isBaby()) {
             return 0.42F;
@@ -29,6 +45,10 @@ public class EntityArmadillo extends EntityAnimal {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (isBaby()) {
             return 0.39f;

@@ -14,11 +14,19 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(DAYLIGHT_DETECTOR_INVERTED, CommonBlockProperties.REDSTONE_SIGNAL);
+    public static final BlockProperties $1 = new BlockProperties(DAYLIGHT_DETECTOR_INVERTED, CommonBlockProperties.REDSTONE_SIGNAL);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDaylightDetectorInverted() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDaylightDetectorInverted(BlockState blockState) {
         super(blockState);
@@ -30,6 +38,10 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Daylight Detector Inverted";
     }
@@ -40,9 +52,13 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
-        BlockDaylightDetector block = new BlockDaylightDetector();
+        BlockDaylightDetector $2 = new BlockDaylightDetector();
         getLevel().setBlock(this, block, true, true);
         if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             block.updatePower();
@@ -51,6 +67,10 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isInverted() {
         return true;
     }

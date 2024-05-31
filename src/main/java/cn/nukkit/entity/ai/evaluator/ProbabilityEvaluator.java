@@ -9,6 +9,10 @@ public class ProbabilityEvaluator implements IBehaviorEvaluator {
 
     protected int probability;
     protected int total;
+    /**
+     * @deprecated 
+     */
+    
 
     public ProbabilityEvaluator(int probability, int total) {
         this.probability = probability;
@@ -16,6 +20,10 @@ public class ProbabilityEvaluator implements IBehaviorEvaluator {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean evaluate(EntityIntelligent entity) {
         return ThreadLocalRandom.current().nextInt(total) < probability;
     }

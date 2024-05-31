@@ -9,6 +9,10 @@ import cn.nukkit.utils.random.RandomSourceProvider;
 public class LegacyTallBirchTree extends LegacyBirchTree {
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void placeObject(BlockManager level, int x, int y, int z, RandomSourceProvider random) {
         this.treeHeight = random.nextInt(3) + 10;
         super.placeObject(level, x, y, z, random);

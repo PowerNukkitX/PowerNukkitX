@@ -15,6 +15,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
 
     private final String entityType;
+    /**
+     * @deprecated 
+     */
+    
 
     public ProjectileDispenseBehavior(String entity) {
         this.entityType = entity;
@@ -22,18 +26,18 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     public Item dispense(BlockDispenser source, BlockFace face, Item item) {
-        Vector3 dispensePos = source.getDispensePosition();
+        Vector3 $1 = source.getDispensePosition();
 
-        CompoundTag nbt = Entity.getDefaultNBT(dispensePos);
+        CompoundTag $2 = Entity.getDefaultNBT(dispensePos);
         this.correctNBT(nbt, item);
 
-        Entity projectile = Entity.createEntity(getEntityType(), source.level.getChunk(dispensePos.getChunkX(), dispensePos.getChunkZ()), nbt);
+        Entity $3 = Entity.createEntity(getEntityType(), source.level.getChunk(dispensePos.getChunkX(), dispensePos.getChunkZ()), nbt);
 
         if (!(projectile instanceof EntityProjectile)) {
             return super.dispense(source, face, item);
         }
 
-        Vector3 motion = initMotion(face);
+        Vector3 $4 = initMotion(face);
 
         projectile.setMotion(motion);
         ((EntityProjectile) projectile).inaccurate(getAccuracy());
@@ -57,14 +61,26 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
                 .normalize();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected double getMotion() {
         return 1.1;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected float getAccuracy() {
         return 6;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String getEntityType() {
         return this.entityType;
     }
@@ -74,10 +90,18 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
      *
      * @param nbt tag
      */
+    
+    /**
+     * @deprecated 
+     */
     protected void correctNBT(CompoundTag nbt) {
         this.correctNBT(nbt, null);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void correctNBT(CompoundTag nbt, Item item) {
         if (item != null) {
             if (item.getId() == Item.SPLASH_POTION || item.getId() == Item.LINGERING_POTION) {

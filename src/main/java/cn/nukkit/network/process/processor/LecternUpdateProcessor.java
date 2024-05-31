@@ -14,17 +14,21 @@ import org.jetbrains.annotations.NotNull;
 
 public class LecternUpdateProcessor extends DataPacketProcessor<LecternUpdatePacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull LecternUpdatePacket pk) {
-        BlockVector3 blockPosition = pk.blockPosition;
+        BlockVector3 $1 = pk.blockPosition;
         playerHandle.player.temporalVector.setComponents(blockPosition.x, blockPosition.y, blockPosition.z);
-        BlockEntity blockEntityLectern = playerHandle.player.level.getBlockEntity(playerHandle.player.temporalVector);
+        BlockEntity $2 = playerHandle.player.level.getBlockEntity(playerHandle.player.temporalVector);
         if (blockEntityLectern instanceof BlockEntityLectern lectern) {
-            LecternPageChangeEvent lecternPageChangeEvent = new LecternPageChangeEvent(playerHandle.player, lectern, pk.page);
+            LecternPageChangeEvent $3 = new LecternPageChangeEvent(playerHandle.player, lectern, pk.page);
             playerHandle.player.getServer().getPluginManager().callEvent(lecternPageChangeEvent);
             if (!lecternPageChangeEvent.isCancelled()) {
                 lectern.setRawPage(lecternPageChangeEvent.getNewRawPage());
                 lectern.spawnToAll();
-                Block blockLectern = lectern.getBlock();
+                Block $4 = lectern.getBlock();
                 if (blockLectern instanceof BlockLectern) {
                     ((BlockLectern) blockLectern).executeRedstonePulse();
                 }
@@ -33,6 +37,10 @@ public class LecternUpdateProcessor extends DataPacketProcessor<LecternUpdatePac
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.LECTERN_UPDATE_PACKET;
     }

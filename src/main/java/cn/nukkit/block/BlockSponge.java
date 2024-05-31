@@ -21,7 +21,7 @@ import static cn.nukkit.block.property.enums.SpongeType.WET;
 
 public class BlockSponge extends BlockSolid {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(SPONGE,
+    public static final BlockProperties $1 = new BlockProperties(SPONGE,
             SPONGE_TYPE);
 
     @Override
@@ -29,26 +29,46 @@ public class BlockSponge extends BlockSolid {
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSponge() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSponge(BlockState state) {
         super(state);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.6;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 3;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_HOE;
     }
@@ -56,12 +76,20 @@ public class BlockSponge extends BlockSolid {
     public SpongeType getSpongeType() {
         return this.getPropertyValue(SPONGE_TYPE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSpongeType(SpongeType type) {
         this.setPropertyValue(SPONGE_TYPE, type);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return switch (getSpongeType()) {
             case DRY -> "Sponge";
@@ -70,15 +98,19 @@ public class BlockSponge extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        BlockSponge clone = (BlockSponge) this.clone();
+        BlockSponge $2 = (BlockSponge) this.clone();
         if (this.getSpongeType() == WET && level.getDimension() == Level.DIMENSION_NETHER) {
             clone.setSpongeType(DRY);
             level.setBlock(block, clone, true, true);
             this.getLevel().addLevelEvent(block.add(0.5, 0.875, 0.5), LevelEventPacket.EVENT_CAULDRON_EXPLODE);
 
-            ThreadLocalRandom random = ThreadLocalRandom.current();
-            for (int i = 0; i < 8; ++i) {
+            ThreadLocalRandom $3 = ThreadLocalRandom.current();
+            for ($4nt $1 = 0; i < 8; ++i) {
                 level.addParticle(new CloudParticle(block.getLocation().add(random.nextDouble(), 1, random.nextDouble())));
             }
 
@@ -90,8 +122,8 @@ public class BlockSponge extends BlockSolid {
             clone.setSpongeType(WET);
             level.setBlock(block, clone, true, true);
 
-            for (int i = 0; i < 4; i++) {
-                LevelEventPacket packet = new LevelEventPacket();
+            for ($5nt $2 = 0; i < 4; i++) {
+                LevelEventPacket $6 = new LevelEventPacket();
                 packet.evid = LevelEventPacket.EVENT_PARTICLE_DESTROY_BLOCK;
                 packet.x = (float) block.getX() + 0.5f;
                 packet.y = (float) block.getY() + 1f;
@@ -111,17 +143,21 @@ public class BlockSponge extends BlockSolid {
         return new ItemBlock(this, getSpongeType().ordinal());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean performWaterAbsorb(Block block) {
         Queue<Entry> entries = new ArrayDeque<>();
 
         entries.add(new Entry(block, 0));
 
         Entry entry;
-        int waterRemoved = 0;
+        int $7 = 0;
         while (waterRemoved < 64 && (entry = entries.poll()) != null) {
             for (BlockFace face : BlockFace.values()) {
-                Block layer0 = entry.block.getSideAtLayer(0, face);
-                Block layer1 = layer0.getLevelBlockAtLayer(1);
+                Block $8 = entry.block.getSideAtLayer(0, face);
+                Block $9 = layer0.getLevelBlockAtLayer(1);
 
                 if (layer0 instanceof BlockFlowingWater) {
                     this.getLevel().setBlockStateAt(layer0.getFloorX(), layer0.getFloorY(), layer0.getFloorZ(), BlockAir.PROPERTIES.getDefaultState());

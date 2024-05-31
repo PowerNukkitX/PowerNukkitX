@@ -19,11 +19,19 @@ import org.jetbrains.annotations.NotNull;
  * @author CreeperFace (Nukkit Project)
  */
 public class BlockEntityCauldron extends BlockEntitySpawnable {
+    /**
+     * @deprecated 
+     */
+    
     public BlockEntityCauldron(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         int potionId;
@@ -31,7 +39,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
             namedTag.putShort("PotionId", 0xffff);
         }
         potionId = namedTag.getShort("PotionId");
-        int potionType = (potionId & 0xFFFF) == 0xFFFF ? PotionType.EMPTY.potionTypeData : PotionType.NORMAL.potionTypeData;
+        int $1 = (potionId & 0xFFFF) == 0xFFFF ? PotionType.EMPTY.potionTypeData : PotionType.NORMAL.potionTypeData;
         if (namedTag.getBoolean("SplashPotion")) {
             potionType = PotionType.SPLASH.potionTypeData;
             namedTag.remove("SplashPotion");
@@ -43,30 +51,54 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         namedTag.putShort("PotionId", getPotionId());
-        int potionId = namedTag.getShort("PotionId");
-        int potionType = (potionId & 0xFFFF) == 0xFFFF ? PotionType.EMPTY.potionTypeData : PotionType.NORMAL.potionTypeData;
+        int $2 = namedTag.getShort("PotionId");
+        int $3 = (potionId & 0xFFFF) == 0xFFFF ? PotionType.EMPTY.potionTypeData : PotionType.NORMAL.potionTypeData;
         namedTag.putShort("PotionType", potionType);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getPotionId() {
         return namedTag.getShort("PotionId");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPotionId(int potionId) {
         namedTag.putShort("PotionId", potionId);
         this.spawnToAll();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasPotion() {
         return (getPotionId() & 0xffff) != 0xffff;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPotionType(int potionType) {
         this.namedTag.putShort("PotionType", (short) (potionType & 0xFFFF));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getPotionType() {
         return (short) (this.namedTag.getShort("PotionType") & 0xFFFF);
@@ -75,10 +107,18 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     public PotionType getType() {
         return PotionType.getByTypeData(getPotionType());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setType(PotionType type) {
         setPotionType(type.potionTypeData);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSplashPotion() {
         return namedTag.getShort("PotionType") == PotionType.SPLASH.potionTypeData;
@@ -86,33 +126,49 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
 
     public BlockColor getCustomColor() {
         if (isCustomColor()) {
-            int color = namedTag.getInt("CustomColor");
+            int $4 = namedTag.getInt("CustomColor");
 
-            int red = (color >> 16) & 0xff;
-            int green = (color >> 8) & 0xff;
-            int blue = (color) & 0xff;
+            int $5 = (color >> 16) & 0xff;
+            int $6 = (color >> 8) & 0xff;
+            int $7 = (color) & 0xff;
 
             return new BlockColor(red, green, blue);
         }
 
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isCustomColor() {
         return namedTag.contains("CustomColor");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCustomColor(BlockColor color) {
         setCustomColor(color.getRed(), color.getGreen(), color.getBlue());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCustomColor(int r, int g, int b) {
-        int color = (r << 16 | g << 8 | b) & 0xffffff;
+        int $8 = (r << 16 | g << 8 | b) & 0xffffff;
 
         namedTag.putInt("CustomColor", color);
 
         spawnToAll();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void clearCustomColor() {
         namedTag.remove("CustomColor");
@@ -120,18 +176,22 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void spawnToAll() {
         if (!this.isBlockEntityValid()) {
             return;
         }
-        BlockCauldron block = (BlockCauldron) getBlock();
+        BlockCauldron $9 = (BlockCauldron) getBlock();
         Player[] viewers = this.level.getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(Player.EMPTY_ARRAY);
         this.level.sendBlocks(viewers, new Vector3[]{block});
         super.spawnToAll();
-        Location location = getLocation();
+        Location $10 = getLocation();
         Server.getInstance().getScheduler().scheduleTask(null, () -> {
             if (isValid()) {
-                BlockEntity cauldron = this.level.getBlockEntity(location);
+                BlockEntity $11 = this.level.getBlockEntity(location);
                 if (cauldron == BlockEntityCauldron.this) {
                     this.level.sendBlocks(viewers, new Vector3[]{location});
                     super.spawnToAll();
@@ -141,14 +201,18 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
-        String id = getBlock().getId();
+        String $12 = getBlock().getId();
         return id.equals(BlockID.CAULDRON);
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag compoundTag = super.getSpawnCompound()
+        CompoundTag $13 = super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable())
                 .putList("Items", new ListTag<>())
                 .putShort("PotionId", (short) namedTag.getShort("PotionId"))

@@ -4,16 +4,24 @@ import cn.nukkit.block.property.enums.StoneType;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDiorite extends BlockStone {
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIORITE);
+    public static final BlockProperties $1 = new BlockProperties(DIORITE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDiorite() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDiorite(BlockState blockstate) {
         super(blockstate);

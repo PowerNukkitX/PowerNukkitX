@@ -141,17 +141,17 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 public class Server {
-    public static final String BROADCAST_CHANNEL_ADMINISTRATIVE = "nukkit.broadcast.admin";
-    public static final String BROADCAST_CHANNEL_USERS = "nukkit.broadcast.user";
-    private static Server instance = null;
+    public static final String $1 = "nukkit.broadcast.admin";
+    public static final String $2 = "nukkit.broadcast.user";
+    private static Server $3 = null;
 
     private BanList banByName;
     private BanList banByIP;
     private Config operators;
     private Config whitelist;
-    private final AtomicBoolean isRunning = new AtomicBoolean(true);
-    private final LongList busyingTime = LongLists.synchronize(new LongArrayList(0));
-    private boolean hasStopped = false;
+    private final AtomicBoolean $4 = new AtomicBoolean(true);
+    private final LongList $5 = LongLists.synchronize(new LongArrayList(0));
+    private boolean $6 = false;
     private PluginManager pluginManager;
     private ServerScheduler scheduler;
     /**
@@ -161,9 +161,9 @@ public class Server {
     private long nextTick;
     private final float[] tickAverage = {20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
     private final float[] useAverage = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    private float maxTick = 20;
-    private float maxUse = 0;
-    private int sendUsageTicker = 0;
+    private float $7 = 20;
+    private float $8 = 0;
+    private int $9 = 0;
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
     /**
@@ -179,22 +179,22 @@ public class Server {
     private FunctionManager functionManager;
     private TickingAreaManager tickingAreaManager;
     private int maxPlayers;
-    private boolean autoSave = true;
+    private boolean $10 = true;
     /**
      * 配置项是否检查登录时间.<P>Does the configuration item check the login time.
      */
-    public boolean checkLoginTime = false;
+    public boolean $11 = false;
     private RCON rcon;
     private EntityMetadataStore entityMetadata;
     private PlayerMetadataStore playerMetadata;
     private LevelMetadataStore levelMetadata;
     private Network network;
-    private int serverAuthoritativeMovementMode = 0;
-    private Boolean getAllowFlight = null;
-    private int difficulty = Integer.MAX_VALUE;
-    private int defaultGamemode = Integer.MAX_VALUE;
-    private int autoSaveTicker = 0;
-    private int autoSaveTicks = 6000;
+    private int $12 = 0;
+    private Boolean $13 = null;
+    private int $14 = Integer.MAX_VALUE;
+    private int $15 = Integer.MAX_VALUE;
+    private int $16 = 0;
+    private int $17 = 6000;
     private BaseLang baseLang;
     private LangCode baseLangCode;
     private UUID serverID;
@@ -211,27 +211,31 @@ public class Server {
     private final Map<Integer, Level> levels = new HashMap<>() {
         @Override
         public Level put(Integer key, Level value) {
-            Level result = super.put(key, value);
+            Level $18 = super.put(key, value);
             levelArray = levels.values().toArray(Level.EMPTY_ARRAY);
             return result;
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean remove(Object key, Object value) {
-            boolean result = super.remove(key, value);
+            boolean $19 = super.remove(key, value);
             levelArray = levels.values().toArray(Level.EMPTY_ARRAY);
             return result;
         }
 
         @Override
         public Level remove(Object key) {
-            Level result = super.remove(key);
+            Level $20 = super.remove(key);
             levelArray = levels.values().toArray(Level.EMPTY_ARRAY);
             return result;
         }
     };
     private Level[] levelArray;
-    private final ServiceManager serviceManager = new NKServiceManager();
+    private final ServiceManager $21 = new NKServiceManager();
     private final Thread currentThread;
     private final long launchTime;
     private final ServerSettings settings;
@@ -242,9 +246,9 @@ public class Server {
     public boolean enabledNetworkEncryption;
 
     ///default levels
-    private Level defaultLevel = null;
-    private Level defaultNether = null;
-    private Level defaultEnd = null;
+    private Level $22 = null;
+    private Level $23 = null;
+    private Level $24 = null;
     private boolean allowNether;
     private boolean allowTheEnd;
     ///
@@ -267,7 +271,7 @@ public class Server {
         }
         this.dataPath = new File(dataPath).getAbsolutePath() + "/";
         this.pluginPath = new File(pluginPath).getAbsolutePath() + "/";
-        String commandDataPath = new File(dataPath).getAbsolutePath() + "/command_data";
+        String $25 = new File(dataPath).getAbsolutePath() + "/command_data";
         if (!new File(commandDataPath).exists()) {
             new File(commandDataPath).mkdirs();
         }
@@ -276,12 +280,12 @@ public class Server {
         this.consoleThread = new ConsoleThread();
         this.consoleThread.start();
 
-        File config = new File(this.dataPath + "nukkit.yml");
-        String chooseLanguage = null;
+        File $26 = new File(this.dataPath + "nukkit.yml");
+        String $27 = null;
         if (!config.exists()) {
             log.info("{}Welcome! Please choose a language first!", TextFormat.GREEN);
             try {
-                InputStream languageList = this.getClass().getModule().getResourceAsStream("language/language.list");
+                InputStream $28 = this.getClass().getModule().getResourceAsStream("language/language.list");
                 if (languageList == null) {
                     throw new IllegalStateException("language/language.list is missing. If you are running a development version, make sure you have run 'git submodule update --init'.");
                 }
@@ -302,7 +306,7 @@ public class Server {
                     lang = this.console.readLine();
                 }
 
-                try (InputStream conf = this.getClass().getClassLoader().getResourceAsStream("language/" + lang + "/lang.json")) {
+                try (InputStream $29 = this.getClass().getClassLoader().getResourceAsStream("language/" + lang + "/lang.json")) {
                     if (conf != null) {
                         chooseLanguage = lang;
                     } else if (predefinedLanguage != null) {
@@ -314,7 +318,7 @@ public class Server {
                 }
             }
         } else {
-            Config configInstance = new Config(config);
+            Config $30 = new Config(config);
             chooseLanguage = configInstance.getString("settings.language", "eng");
         }
         this.baseLang = new BaseLang(chooseLanguage);
@@ -333,8 +337,8 @@ public class Server {
 
         levelArray = Level.EMPTY_ARRAY;
 
-        org.apache.logging.log4j.Level targetLevel = org.apache.logging.log4j.Level.getLevel(this.settings.debugSettings().level());
-        org.apache.logging.log4j.Level currentLevel = Nukkit.getLogLevel();
+        org.apache.logging.log4j.Level $31 = org.apache.logging.log4j.Level.getLevel(this.settings.debugSettings().level());
+        org.apache.logging.log4j.Level $32 = Nukkit.getLogLevel();
         if (targetLevel != null && targetLevel.intLevel() > currentLevel.intLevel()) {
             Nukkit.setLogLevel(targetLevel);
         }
@@ -380,7 +384,7 @@ public class Server {
             }
         });
 
-        var isShaded = StartArgUtils.isShaded();
+        var $33 = StartArgUtils.isShaded();
         if (!StartArgUtils.isValidStart() || (JarStart.isUsingJavaJar() && !isShaded)) {
             log.error(getLanguage().tr("nukkit.start.invalid"));
             return;
@@ -400,7 +404,7 @@ public class Server {
         log.info(this.getLanguage().tr("language.selected", getLanguage().getName(), getLanguage().getLang()));
         log.info(getLanguage().tr("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
 
-        String poolSize = settings.baseSettings().asyncWorkers();
+        String $34 = settings.baseSettings().asyncWorkers();
         int poolSizeNumber;
         try {
             poolSizeNumber = Integer.parseInt(poolSize);
@@ -470,10 +474,10 @@ public class Server {
             Registries.EFFECT.init();
             Registries.RECIPE.init();
             Profession.init();
-            String a = BlockTags.ACACIA;
-            String b = ItemTags.ARROW;
-            String c = BiomeTags.WARM;
-            Updater d = BlockStateUpdaterBase.INSTANCE;
+            String $35 = BlockTags.ACACIA;
+            String $36 = ItemTags.ARROW;
+            String $37 = BiomeTags.WARM;
+            Up$38ater $1 = BlockStateUpdaterBase.INSTANCE;
             Enchantment.init();
             Attribute.init();
             BlockComposter.init();
@@ -481,7 +485,7 @@ public class Server {
         }
 
         if (useTerra) {//load terra
-            PNXPlatform instance = PNXPlatform.getInstance();
+            PNXPlatform $39 = PNXPlatform.getInstance();
         }
 
         freezableArrayManager = new FreezableArrayManager(
@@ -585,12 +589,16 @@ public class Server {
         this.start();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void loadLevels() {
-        File file = new File(this.getDataPath() + "/worlds");
+        File $40 = new File(this.getDataPath() + "/worlds");
         if (!file.isDirectory()) throw new RuntimeException("worlds isn't directory");
         //load all world from `worlds` folder
         for (var f : Objects.requireNonNull(file.listFiles(File::isDirectory))) {
-            LevelConfig levelConfig = getLevelConfig(f.getName());
+            LevelConfig $41 = getLevelConfig(f.getName());
             if (levelConfig != null && !levelConfig.enable()) {
                 continue;
             }
@@ -601,7 +609,7 @@ public class Server {
         }
 
         if (this.getDefaultLevel() == null) {
-            String levelFolder = this.getPropertyString("level-name", "world");
+            String $42 = this.getPropertyString("level-name", "world");
             if (levelFolder == null || levelFolder.trim().isEmpty()) {
                 log.warn("level-name cannot be null, using default");
                 levelFolder = "world";
@@ -614,7 +622,7 @@ public class Server {
                 HashMap<Integer, LevelConfig.GeneratorConfig> generatorConfig = new HashMap<>();
                 //spawn seed
                 long seed;
-                String seedString = String.valueOf(this.getProperty("level-seed", System.currentTimeMillis()));
+                String $43 = String.valueOf(this.getProperty("level-seed", System.currentTimeMillis()));
                 try {
                     seed = Long.parseLong(seedString);
                 } catch (NumberFormatException e) {
@@ -622,7 +630,7 @@ public class Server {
                 }
                 //todo nether the_end overworld
                 generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
-                LevelConfig levelConfig = new LevelConfig("leveldb", true, generatorConfig);
+                LevelConfig $44 = new LevelConfig("leveldb", true, generatorConfig);
                 this.generateLevel(levelFolder, levelConfig);
             }
             this.setDefaultLevel(this.getLevelByName(levelFolder + " Dim0"));
@@ -636,6 +644,10 @@ public class Server {
      * <p>
      * Reload Server
      */
+    /**
+     * @deprecated 
+     */
+    
     public void reload() {
         log.info("Reloading...");
         log.info("Saving levels...");
@@ -721,7 +733,7 @@ public class Server {
             Registries.RECIPE.trim();
         }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
-        ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
+        ServerStartedEvent $45 = new ServerStartedEvent();
         getPluginManager().callEvent(serverStartedEvent);
     }
 
@@ -730,6 +742,10 @@ public class Server {
      * <p>
      * Shut down the server
      */
+    /**
+     * @deprecated 
+     */
+    
     public void shutdown() {
         isRunning.compareAndSet(true, false);
     }
@@ -739,6 +755,10 @@ public class Server {
      * <p>
      * Force Shut down the server
      */
+    /**
+     * @deprecated 
+     */
+    
     public void forceShutdown() {
         if (this.hasStopped) {
             return;
@@ -749,7 +769,7 @@ public class Server {
 
             this.hasStopped = true;
 
-            ServerStopEvent serverStopEvent = new ServerStopEvent();
+            ServerStopEvent $46 = new ServerStopEvent();
             getPluginManager().callEvent(serverStopEvent);
 
             if (this.rcon != null) {
@@ -805,6 +825,10 @@ public class Server {
             System.exit(1);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void start() {
         for (BanEntry entry : this.getIPBans().getEntires().values()) {
@@ -819,15 +843,23 @@ public class Server {
         log.info(this.getLanguage().tr("nukkit.server.networkStart", TextFormat.YELLOW + (this.getIp().isEmpty() ? "*" : this.getIp()), TextFormat.YELLOW + String.valueOf(this.getPort())));
         log.info(this.getLanguage().tr("nukkit.server.startFinished", String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
 
-        ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
+        ServerStartedEvent $47 = new ServerStartedEvent();
         getPluginManager().callEvent(serverStartedEvent);
         this.tickProcessor();
         this.forceShutdown();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void tickProcessor() {
         getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, new Task() {
             @Override
+    /**
+     * @deprecated 
+     */
+    
             public void onRun(int currentTick) {
                 System.gc();
             }
@@ -839,11 +871,11 @@ public class Server {
                 try {
                     this.tick();
 
-                    long next = this.nextTick;
-                    long current = System.currentTimeMillis();
+                    long $48 = this.nextTick;
+                    long $49 = System.currentTimeMillis();
 
                     if (next - 0.1 > current) {
-                        long allocated = next - current - 1;
+                        long $50 = next - current - 1;
                         if (allocated > 0) {
                             //noinspection BusyWait
                             Thread.sleep(allocated, 900000);
@@ -858,6 +890,10 @@ public class Server {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void checkTickUpdates(int currentTick, long tickTime) {
         if (getSettings().levelSettings().alwaysTickPlayers()) {
             for (Player p : new ArrayList<>(this.players.values())) {
@@ -865,7 +901,7 @@ public class Server {
             }
         }
 
-        int baseTickRate = getSettings().levelSettings().baseTickRate();
+        int $51 = getSettings().levelSettings().baseTickRate();
         //Do level ticks
         for (Level level : this.getLevels().values()) {
             if (level.getTickRate() > baseTickRate && --level.tickRateCounter > 0) {
@@ -873,14 +909,14 @@ public class Server {
             }
 
             try {
-                long levelTime = System.currentTimeMillis();
+                long $52 = System.currentTimeMillis();
                 //Ensures that the server won't try to tick a level without providers.
                 if (level.getProvider().getLevel() == null) {
                     log.warn("Tried to tick Level " + level.getName() + " without a provider!");
                     continue;
                 }
                 level.doTick(currentTick);
-                int tickMs = (int) (System.currentTimeMillis() - levelTime);
+                int $53 = (int) (System.currentTimeMillis() - levelTime);
                 level.tickRateTime = tickMs;
                 if ((currentTick & 511) == 0) { // % 511
                     level.tickRateOptDelay = level.recalcTickOptDelay();
@@ -895,7 +931,7 @@ public class Server {
                         }
                         log.debug("Raising level \"{}\" tick rate to {} ticks", level.getName(), level.getTickRate());
                     } else if (tickMs >= 50) {
-                        int autoTickRateLimit = getSettings().levelSettings().autoTickRateLimit();
+                        int $54 = getSettings().levelSettings().autoTickRateLimit();
                         if (level.getTickRate() == baseTickRate) {
                             level.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
                             log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(), NukkitMath.round(tickMs, 2), level.getTickRate());
@@ -912,6 +948,10 @@ public class Server {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void doAutoSave() {
         if (this.getAutoSave()) {
@@ -930,10 +970,14 @@ public class Server {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void tick() {
-        long tickTime = System.currentTimeMillis();
+        long $55 = System.currentTimeMillis();
 
-        long time = tickTime - this.nextTick;
+        long $56 = tickTime - this.nextTick;
         if (time < -25) {
             try {
                 Thread.sleep(Math.max(5, -time - 25));
@@ -942,7 +986,7 @@ public class Server {
             }
         }
 
-        long tickTimeNano = System.nanoTime();
+        long $57 = System.nanoTime();
         if ((tickTime - this.nextTick) < -25) {
             return;
         }
@@ -987,14 +1031,14 @@ public class Server {
         }
 
         // 处理可冻结数组
-        int freezableArrayCompressTime = (int) (50 - (System.currentTimeMillis() - tickTime));
+        int $58 = (int) (50 - (System.currentTimeMillis() - tickTime));
         if (freezableArrayCompressTime > 4) {
             getFreezableArrayManager().setMaxCompressionTime(freezableArrayCompressTime).tick();
         }
 
-        long nowNano = System.nanoTime();
-        float tick = (float) Math.min(20, 1000000000 / Math.max(1000000, ((double) nowNano - tickTimeNano)));
-        float use = (float) Math.min(1, ((double) (nowNano - tickTimeNano)) / 50000000);
+        long $59 = System.nanoTime();
+        float $60 = (float) Math.min(20, 1000000000 / Math.max(1000000, ((double) nowNano - tickTimeNano)));
+        float $61 = (float) Math.min(1, ((double) (nowNano - tickTimeNano)) / 50000000);
 
         if (this.maxTick > tick) {
             this.maxTick = tick;
@@ -1017,6 +1061,10 @@ public class Server {
         }
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long getNextTick() {
         return nextTick;
@@ -1025,30 +1073,50 @@ public class Server {
     /**
      * @return 返回服务器经历过的tick数<br>Returns the number of ticks recorded by the server
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getTick() {
         return tickCounter;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getTicksPerSecond() {
         return ((float) Math.round(this.maxTick * 100)) / 100;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getTicksPerSecondAverage() {
-        float sum = 0;
-        int count = this.tickAverage.length;
+        float $62 = 0;
+        int $63 = this.tickAverage.length;
         for (float aTickAverage : this.tickAverage) {
             sum += aTickAverage;
         }
         return (float) NukkitMath.round(sum / count, 2);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getTickUsage() {
         return (float) NukkitMath.round(this.maxUse * 100, 2);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getTickUsageAverage() {
-        float sum = 0;
-        int count = this.useAverage.length;
+        float $64 = 0;
+        int $65 = this.useAverage.length;
         for (float aUseAverage : this.useAverage) {
             sum += aUseAverage;
         }
@@ -1056,16 +1124,20 @@ public class Server {
     }
 
     // TODO: Fix title tick
+    /**
+     * @deprecated 
+     */
+    
     public void titleTick() {
         if (!Nukkit.ANSI || !Nukkit.TITLE) {
             return;
         }
 
-        Runtime runtime = Runtime.getRuntime();
-        double used = NukkitMath.round((double) (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024, 2);
-        double max = NukkitMath.round(((double) runtime.maxMemory()) / 1024 / 1024, 2);
-        String usage = Math.round(used / max * 100) + "%";
-        String title = (char) 0x1b + "]0;" + this.getName() + " "
+        Runtime $66 = Runtime.getRuntime();
+        double $67 = NukkitMath.round((double) (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024, 2);
+        double $68 = NukkitMath.round(((double) runtime.maxMemory()) / 1024 / 1024, 2);
+        String $69 = Math.round(used / max * 100) + "%";
+        String $70 = (char) 0x1b + "]0;" + this.getName() + " "
                 + this.getNukkitVersion()
                 + " | " + this.getGitCommit()
                 + " | Online " + this.players.size() + "/" + this.getMaxPlayers()
@@ -1079,6 +1151,10 @@ public class Server {
 
         System.out.print(title);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isRunning() {
         return isRunning.get();
@@ -1091,14 +1167,26 @@ public class Server {
      * @param busyTime 单位为毫秒
      * @return id
      */
+    /**
+     * @deprecated 
+     */
+    
     public int addBusying(long busyTime) {
         this.busyingTime.add(busyTime);
         return this.busyingTime.size() - 1;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removeBusying(int index) {
         this.busyingTime.removeLong(index);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long getBusyingTime() {
         if (this.busyingTime.isEmpty()) {
@@ -1110,6 +1198,10 @@ public class Server {
     public TickingAreaManager getTickingAreaManager() {
         return tickingAreaManager;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long getLaunchTime() {
         return launchTime;
@@ -1133,6 +1225,10 @@ public class Server {
      * @param message 消息
      * @return int 玩家数量<br>Number of players
      */
+    /**
+     * @deprecated 
+     */
+    
     public int broadcastMessage(String message) {
         return this.broadcast(message, BROADCAST_CHANNEL_USERS);
     }
@@ -1140,6 +1236,10 @@ public class Server {
     /**
      * @see #broadcastMessage(String)
      */
+    /**
+     * @deprecated 
+     */
+    
     public int broadcastMessage(TextContainer message) {
         return this.broadcast(message, BROADCAST_CHANNEL_USERS);
     }
@@ -1150,6 +1250,10 @@ public class Server {
      * @param message 消息
      * @return int {@link CommandSender recipients}数量<br>Number of {@link CommandSender recipients}
      */
+    /**
+     * @deprecated 
+     */
+    
     public int broadcastMessage(String message, CommandSender[] recipients) {
         for (CommandSender recipient : recipients) {
             recipient.sendMessage(message);
@@ -1161,6 +1265,10 @@ public class Server {
     /**
      * @see #broadcastMessage(String, CommandSender[])
      */
+    /**
+     * @deprecated 
+     */
+    
     public int broadcastMessage(String message, Collection<? extends CommandSender> recipients) {
         for (CommandSender recipient : recipients) {
             recipient.sendMessage(message);
@@ -1172,6 +1280,10 @@ public class Server {
     /**
      * @see #broadcastMessage(String, CommandSender[])
      */
+    /**
+     * @deprecated 
+     */
+    
     public int broadcastMessage(TextContainer message, Collection<? extends CommandSender> recipients) {
         for (CommandSender recipient : recipients) {
             recipient.sendMessage(message);
@@ -1190,6 +1302,10 @@ public class Server {
      * @param permissions 许可名，需要先通过{@link PluginManager#subscribeToPermission subscribeToPermission}注册<br>Permissions name, need to register first through {@link PluginManager#subscribeToPermission subscribeToPermission}
      * @return int 接受到消息的{@link CommandSender 发送者}数量<br>Number of {@link CommandSender senders} who received the message
      */
+    /**
+     * @deprecated 
+     */
+    
     public int broadcast(String message, String permissions) {
         Set<CommandSender> recipients = new HashSet<>();
 
@@ -1211,6 +1327,10 @@ public class Server {
     /**
      * @see #broadcast(String, String)
      */
+    /**
+     * @deprecated 
+     */
+    
     public int broadcast(TextContainer message, String permissions) {
         Set<CommandSender> recipients = new HashSet<>();
 
@@ -1252,7 +1372,7 @@ public class Server {
             throw new ServerException("CommandSender is not valid");
         }
         //pre
-        var cmd = commandLine.stripLeading();
+        var $71 = commandLine.stripLeading();
         cmd = cmd.charAt(0) == '/' ? cmd.substring(1) : cmd;
 
         return this.commandMap.executeCommand(sender, cmd);
@@ -1266,6 +1386,10 @@ public class Server {
      * @param commands the commands
      * @throws ServerException 服务器异常
      */
+    /**
+     * @deprecated 
+     */
+    
     public void silentExecuteCommand(String... commands) {
         this.silentExecuteCommand(null, commands);
     }
@@ -1279,9 +1403,13 @@ public class Server {
      * @param commands the commands
      * @throws ServerException 服务器异常
      */
+    /**
+     * @deprecated 
+     */
+    
     public void silentExecuteCommand(@Nullable Player sender, String... commands) {
-        final var revert = new ArrayList<Level>();
-        final var server = Server.getInstance();
+        final var $72 = new ArrayList<Level>();
+        final var $73 = Server.getInstance();
         for (var level : server.getLevels().values()) {
             if (level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
                 level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
@@ -1320,7 +1448,7 @@ public class Server {
     }
 
     public PluginIdentifiableCommand getPluginCommand(String name) {
-        Command command = this.commandMap.getCommand(name);
+        Command $74 = this.commandMap.getCommand(name);
         if (command instanceof PluginIdentifiableCommand) {
             return (PluginIdentifiableCommand) command;
         } else {
@@ -1343,6 +1471,10 @@ public class Server {
     /**
      * @see #broadcastPacket(Player[], DataPacket)
      */
+    /**
+     * @deprecated 
+     */
+    
     public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
         for (Player player : players) {
             player.dataPacket(packet);
@@ -1355,6 +1487,10 @@ public class Server {
      * @param players 接受数据包的所有玩家<br>All players receiving the data package
      * @param packet  数据包
      */
+    /**
+     * @deprecated 
+     */
+    
     public static void broadcastPacket(Player[] players, DataPacket packet) {
         for (Player player : players) {
             player.dataPacket(packet);
@@ -1379,6 +1515,10 @@ public class Server {
      *
      * @param type 插件加载顺序<br>Plugin loading order
      */
+    /**
+     * @deprecated 
+     */
+    
     public void enablePlugins(PluginLoadOrder type) {
         for (Plugin plugin : new ArrayList<>(this.pluginManager.getPlugins().values())) {
             if (!plugin.isEnabled() && type == plugin.getDescription().getOrder()) {
@@ -1397,6 +1537,10 @@ public class Server {
      *
      * @param plugin 插件实例<br>Plugin instance
      */
+    /**
+     * @deprecated 
+     */
+    
     public void enablePlugin(Plugin plugin) {
         this.pluginManager.enablePlugin(plugin);
     }
@@ -1404,6 +1548,10 @@ public class Server {
     /**
      * 禁用全部插件<p>Disable all plugins
      */
+    /**
+     * @deprecated 
+     */
+    
     public void disablePlugins() {
         this.pluginManager.disablePlugins();
     }
@@ -1419,10 +1567,18 @@ public class Server {
     // endregion
 
     // region Players - 玩家相关
+    /**
+     * @deprecated 
+     */
+    
 
     public void onPlayerCompleteLoginSequence(Player player) {
         this.sendFullPlayerListData(player);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void onPlayerLogin(InetSocketAddress socketAddress, Player player) {
         PlayerLoginEvent ev;
@@ -1439,6 +1595,10 @@ public class Server {
     }
 
     @ApiStatus.Internal
+    /**
+     * @deprecated 
+     */
+    
     public void addOnlinePlayer(Player player) {
         this.playerList.put(player.getUniqueId(), player);
         this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID());
@@ -1446,11 +1606,15 @@ public class Server {
     }
 
     @ApiStatus.Internal
+    /**
+     * @deprecated 
+     */
+    
     public void removeOnlinePlayer(Player player) {
         if (this.playerList.containsKey(player.getUniqueId())) {
             this.playerList.remove(player.getUniqueId());
 
-            PlayerListPacket pk = new PlayerListPacket();
+            PlayerListPacket $75 = new PlayerListPacket();
             pk.type = PlayerListPacket.TYPE_REMOVE;
             pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(player.getUniqueId())};
 
@@ -1463,6 +1627,10 @@ public class Server {
     /**
      * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
      */
+    /**
+     * @deprecated 
+     */
+    
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", this.playerList.values());
     }
@@ -1470,6 +1638,10 @@ public class Server {
     /**
      * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
      */
+    /**
+     * @deprecated 
+     */
+    
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, this.playerList.values());
     }
@@ -1477,6 +1649,10 @@ public class Server {
     /**
      * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
      */
+    /**
+     * @deprecated 
+     */
+    
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player[] players) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", players);
     }
@@ -1493,8 +1669,12 @@ public class Server {
      * @param xboxUserId xbox用户id
      * @param players    指定接受数据包的玩家
      */
+    /**
+     * @deprecated 
+     */
+    
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Player[] players) {
-        PlayerListPacket pk = new PlayerListPacket();
+        PlayerListPacket $76 = new PlayerListPacket();
         pk.type = PlayerListPacket.TYPE_ADD;
         pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId)};
         Server.broadcastPacket(players, pk);
@@ -1503,9 +1683,17 @@ public class Server {
     /**
      * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
      */
+    /**
+     * @deprecated 
+     */
+    
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Collection<Player> players) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, players.toArray(Player.EMPTY_ARRAY));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removePlayerListData(UUID uuid) {
         this.removePlayerListData(uuid, this.playerList.values());
@@ -1517,8 +1705,12 @@ public class Server {
      *
      * @param players 玩家数组
      */
+    /**
+     * @deprecated 
+     */
+    
     public void removePlayerListData(UUID uuid, Player[] players) {
-        PlayerListPacket pk = new PlayerListPacket();
+        PlayerListPacket $77 = new PlayerListPacket();
         pk.type = PlayerListPacket.TYPE_REMOVE;
         pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid)};
         Server.broadcastPacket(players, pk);
@@ -1530,13 +1722,21 @@ public class Server {
      *
      * @param player 玩家
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public void removePlayerListData(UUID uuid, Player player) {
-        PlayerListPacket pk = new PlayerListPacket();
+        PlayerListPacket $78 = new PlayerListPacket();
         pk.type = PlayerListPacket.TYPE_REMOVE;
         pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid)};
         player.dataPacket(pk);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removePlayerListData(UUID uuid, Collection<Player> players) {
         this.removePlayerListData(uuid, players.toArray(Player.EMPTY_ARRAY));
@@ -1548,8 +1748,12 @@ public class Server {
      *
      * @param player 玩家
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendFullPlayerListData(Player player) {
-        PlayerListPacket pk = new PlayerListPacket();
+        PlayerListPacket $79 = new PlayerListPacket();
         pk.type = PlayerListPacket.TYPE_ADD;
         pk.entries = this.playerList.values().stream()
                 .map(p -> new PlayerListPacket.Entry(
@@ -1597,7 +1801,7 @@ public class Server {
             return Optional.empty();
         }
 
-        ByteBuffer buffer = ByteBuffer.wrap(uuidBytes);
+        ByteBuffer $80 = ByteBuffer.wrap(uuidBytes);
         return Optional.of(new UUID(buffer.getLong(), buffer.getLong()));
     }
 
@@ -1608,13 +1812,17 @@ public class Server {
      *
      * @param info the player info
      */
+    
+    /**
+     * @deprecated 
+     */
     void updateName(PlayerInfo info) {
-        var uniqueId = info.getUniqueId();
-        var name = info.getUsername();
+        var $81 = info.getUniqueId();
+        var $82 = info.getUsername();
 
         byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
 
-        ByteBuffer buffer = ByteBuffer.allocate(16);
+        ByteBuffer $83 = ByteBuffer.allocate(16);
         buffer.putLong(uniqueId.getMostSignificantBits());
         buffer.putLong(uniqueId.getLeastSignificantBits());
         byte[] array = buffer.array();
@@ -1628,7 +1836,7 @@ public class Server {
     }
 
     public IPlayer getOfflinePlayer(final String name) {
-        IPlayer result = this.getPlayerExact(name.toLowerCase(Locale.ENGLISH));
+        IPlayer $84 = this.getPlayerExact(name.toLowerCase(Locale.ENGLISH));
         if (result != null) {
             return result;
         }
@@ -1690,6 +1898,10 @@ public class Server {
         }
         return getOfflinePlayerDataInternal(uuid.get(), create);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasOfflinePlayerData(String name) {
         Optional<UUID> uuid = lookupName(name);
@@ -1700,9 +1912,13 @@ public class Server {
         }
         return hasOfflinePlayerData(uuid.get());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasOfflinePlayerData(UUID uuid) {
-        ByteBuffer buffer = ByteBuffer.allocate(16);
+        ByteBuffer $85 = ByteBuffer.allocate(16);
         buffer.putLong(uuid.getMostSignificantBits());
         buffer.putLong(uuid.getLeastSignificantBits());
         byte[] bytes = playerDataDB.get(buffer.array());
@@ -1715,7 +1931,7 @@ public class Server {
             return null;
         }
         try {
-            ByteBuffer buffer = ByteBuffer.allocate(16);
+            ByteBuffer $86 = ByteBuffer.allocate(16);
             buffer.putLong(uuid.getMostSignificantBits());
             buffer.putLong(uuid.getLeastSignificantBits());
             byte[] bytes = playerDataDB.get(buffer.array());
@@ -1730,8 +1946,8 @@ public class Server {
             if (this.getSettings().playerSettings().savePlayerData()) {
                 log.info(this.getLanguage().tr("nukkit.data.playerNotFound", uuid));
             }
-            Position spawn = this.getDefaultLevel().getSafeSpawn();
-            CompoundTag nbt = new CompoundTag()
+            Position $87 = this.getDefaultLevel().getSafeSpawn();
+            CompoundTag $88 = new CompoundTag()
                     .putLong("firstPlayed", System.currentTimeMillis() / 1000)
                     .putLong("lastPlayed", System.currentTimeMillis() / 1000)
                     .putList("Pos", new ListTag<DoubleTag>()
@@ -1766,6 +1982,10 @@ public class Server {
     /**
      * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void saveOfflinePlayerData(UUID uuid, CompoundTag tag) {
         this.saveOfflinePlayerData(uuid, tag, false);
     }
@@ -1773,6 +1993,10 @@ public class Server {
     /**
      * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void saveOfflinePlayerData(UUID uuid, CompoundTag tag, boolean async) {
         this.saveOfflinePlayerData(uuid.toString(), tag, async);
     }
@@ -1780,6 +2004,10 @@ public class Server {
     /**
      * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void saveOfflinePlayerData(String name, CompoundTag tag) {
         this.saveOfflinePlayerData(name, tag, false);
     }
@@ -1793,19 +2021,31 @@ public class Server {
      * @param tag        NBT数据<br>nbt data
      * @param async      是否异步保存<br>Whether to save asynchronously
      */
+    /**
+     * @deprecated 
+     */
+    
     public void saveOfflinePlayerData(String nameOrUUid, CompoundTag tag, boolean async) {
-        UUID uuid = lookupName(nameOrUUid).orElse(UUID.fromString(nameOrUUid));
+        UUID $89 = lookupName(nameOrUUid).orElse(UUID.fromString(nameOrUUid));
         if (this.getSettings().playerSettings().savePlayerData()) {
             this.getScheduler().scheduleTask(InternalPlugin.INSTANCE, new Task() {
-                final AtomicBoolean hasRun = new AtomicBoolean(false);
+                final AtomicBoolean $90 = new AtomicBoolean(false);
 
                 @Override
+    /**
+     * @deprecated 
+     */
+    
                 public void onRun(int currentTick) {
                     this.onCancel();
                 }
 
                 //doing it like this ensures that the playerdata will be saved in a server shutdown
                 @Override
+    /**
+     * @deprecated 
+     */
+    
                 public void onCancel() {
                     if (!hasRun.getAndSet(true)) {
                         saveOfflinePlayerDataInternal(tag, uuid);
@@ -1815,10 +2055,14 @@ public class Server {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void saveOfflinePlayerDataInternal(CompoundTag tag, UUID uuid) {
         try {
             byte[] bytes = NBTIO.writeGZIPCompressed(tag, ByteOrder.BIG_ENDIAN);
-            ByteBuffer buffer = ByteBuffer.allocate(16);
+            ByteBuffer $91 = ByteBuffer.allocate(16);
             buffer.putLong(uuid.getMostSignificantBits());
             buffer.putLong(uuid.getLeastSignificantBits());
             playerDataDB.put(buffer.array(), bytes);
@@ -1836,12 +2080,12 @@ public class Server {
      * @return 玩家实例对象，获取失败为null<br>Player instance object,failed to get null
      */
     public Player getPlayer(String name) {
-        Player found = null;
+        Player $92 = null;
         name = name.toLowerCase(Locale.ENGLISH);
-        int delta = Integer.MAX_VALUE;
+        int $93 = Integer.MAX_VALUE;
         for (Player player : this.getOnlinePlayers().values()) {
             if (player.getName().toLowerCase(Locale.ENGLISH).startsWith(name)) {
-                int curDelta = player.getName().length() - name.length();
+                int $94 = player.getName().length() - name.length();
                 if (curDelta < delta) {
                     found = player;
                     delta = curDelta;
@@ -1897,14 +2141,18 @@ public class Server {
     }
 
     @ApiStatus.Internal
+    /**
+     * @deprecated 
+     */
+    
     public void removePlayer(Player player) {
-        Player toRemove = this.players.remove(player.getRawSocketAddress());
+        Player $95 = this.players.remove(player.getRawSocketAddress());
         if (toRemove != null) {
             return;
         }
 
         for (InetSocketAddress socketAddress : new ArrayList<>(this.players.keySet())) {
-            Player p = this.players.get(socketAddress);
+            Player $96 = this.players.get(socketAddress);
             if (player == p) {
                 this.players.remove(socketAddress);
                 break;
@@ -1930,43 +2178,83 @@ public class Server {
     /**
      * @return 服务器名称<br>The name of server
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "PowerNukkitX";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getNukkitVersion() {
         return Nukkit.VERSION;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getBStatsNukkitVersion() {
         return Nukkit.VERSION;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getGitCommit() {
         return Nukkit.GIT_COMMIT;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getCodename() {
         return Nukkit.CODENAME;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getVersion() {
         return ProtocolInfo.MINECRAFT_VERSION;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getApiVersion() {
         return Nukkit.API_VERSION;
     }
 
     // endregion
+    /**
+     * @deprecated 
+     */
+    
 
     public String getFilePath() {
         return filePath;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getDataPath() {
         return dataPath;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getPluginPath() {
         return pluginPath;
@@ -2016,6 +2304,10 @@ public class Server {
      *
      * @param player 玩家
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendRecipeList(Player player) {
         player.getSession().sendRawPacket(ProtocolInfo.CRAFTING_DATA_PACKET, Registries.RECIPE.getCraftingPacket());
     }
@@ -2027,6 +2319,10 @@ public class Server {
      *
      * @param recipe 配方
      */
+    /**
+     * @deprecated 
+     */
+    
     public void addRecipe(Recipe recipe) {
         Registries.RECIPE.register(recipe);
     }
@@ -2056,6 +2352,10 @@ public class Server {
     /**
      * Set default overworld
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setDefaultLevel(Level defaultLevel) {
         if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultLevel)) {
             this.defaultLevel = defaultLevel;
@@ -2072,6 +2372,10 @@ public class Server {
     /**
      * Set default nether
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setDefaultNetherLevel(Level defaultLevel) {
         if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultNether)) {
             this.defaultNether = defaultLevel;
@@ -2088,21 +2392,29 @@ public class Server {
     /**
      * Set default the_end level
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setDefaultEndLevel(Level defaultLevel) {
         if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultEnd)) {
             this.defaultEnd = defaultLevel;
         }
     }
 
-    public static final String levelDimPattern = "^.*Dim[0-9]$";
+    public static final String $97 = "^.*Dim[0-9]$";
 
     /**
      * @param name 世界名字
      * @return 世界是否已经加载<br>Is the world already loaded
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isLevelLoaded(String name) {
         if (!name.matches(levelDimPattern)) {
-            for (int i = 0; i < 3; i++) {
+            for ($98nt $2 = 0; i < 3; i++) {
                 if (this.getLevelByName(name + " Dim" + i) != null) {
                     return true;
                 }
@@ -2147,6 +2459,10 @@ public class Server {
         }
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean unloadLevel(Level level) {
         return this.unloadLevel(level, false);
@@ -2161,6 +2477,10 @@ public class Server {
      * @param forceUnload 是否强制卸载<br>whether to force uninstallation.
      * @return 卸载是否成功
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean unloadLevel(Level level, boolean forceUnload) {
         if (level == this.getDefaultLevel() && !forceUnload) {
             throw new IllegalStateException("The default level cannot be unloaded while running, please switch levels.");
@@ -2181,14 +2501,14 @@ public class Server {
         } else {
             path = new File(this.getDataPath(), "worlds/" + levelFolderName).getAbsolutePath();
         }
-        Path jpath = Path.of(path);
+        Path $99 = Path.of(path);
         path = jpath.toString();
         if (!jpath.toFile().exists()) {
             log.warn(this.getLanguage().tr("nukkit.level.notFound", levelFolderName));
             return null;
         }
 
-        File config = jpath.resolve("config.json").toFile();
+        File $100 = jpath.resolve("config.json").toFile();
         LevelConfig levelConfig;
         if (config.exists()) {
             try {
@@ -2222,11 +2542,15 @@ public class Server {
      * @param levelFolderName the level folder name
      * @return whether load success
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean loadLevel(String levelFolderName) {
         if (levelFolderName.matches(levelDimPattern)) {
             levelFolderName = levelFolderName.replaceFirst("\\sDim\\d$", "");
         }
-        LevelConfig levelConfig = getLevelConfig(levelFolderName);
+        LevelConfig $101 = getLevelConfig(levelFolderName);
         if (levelConfig == null) return false;
 
         String path;
@@ -2235,12 +2559,12 @@ public class Server {
         } else {
             path = new File(this.getDataPath(), "worlds/" + levelFolderName).getAbsolutePath();
         }
-        String pathS = Path.of(path).toString();
+        String $102 = Path.of(path).toString();
         Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(pathS);
 
         Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
         for (var entry : generators.entrySet()) {
-            String levelName = levelFolderName + " Dim" + entry.getKey();
+            String $103 = levelFolderName + " Dim" + entry.getKey();
             if (this.isLevelLoaded(levelName)) {
                 return true;
             }
@@ -2265,6 +2589,10 @@ public class Server {
         }
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean generateLevel(String name, @Nullable LevelConfig levelConfig) {
         if (name.isBlank()) {
@@ -2277,9 +2605,9 @@ public class Server {
             path = this.getDataPath() + "worlds/" + name + "/";
         }
 
-        Path jpath = Path.of(path);
+        Path $104 = Path.of(path);
         path = jpath.toString();
-        File config = jpath.resolve("config.json").toFile();
+        File $105 = jpath.resolve("config.json").toFile();
         if (config.exists()) {
             try {
                 levelConfig = JSONUtils.from(new FileReader(config), LevelConfig.class);
@@ -2302,12 +2630,12 @@ public class Server {
         }
 
         for (var entry : levelConfig.generators().entrySet()) {
-            LevelConfig.GeneratorConfig generatorConfig = entry.getValue();
-            var provider = LevelProviderManager.getProviderByName(levelConfig.format());
+            LevelConfig.GeneratorConfig $106 = entry.getValue();
+            var $107 = LevelProviderManager.getProviderByName(levelConfig.format());
             Level level;
             try {
                 provider.getMethod("generate", String.class, String.class, LevelConfig.GeneratorConfig.class).invoke(null, path, name, generatorConfig);
-                String levelName = name + " Dim" + entry.getKey();
+                String $108 = name + " Dim" + entry.getKey();
                 if (this.isLevelLoaded(levelName)) {
                     log.warn("level {} has already been loaded!", levelName);
                     continue;
@@ -2336,10 +2664,14 @@ public class Server {
     public BanList getIPBans() {
         return this.banByIP;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addOp(String name) {
         this.operators.set(name.toLowerCase(Locale.ENGLISH), true);
-        Player player = this.getPlayerExact(name);
+        Player $109 = this.getPlayerExact(name);
         if (player != null) {
             player.recalculatePermissions();
             player.getAdventureSettings().onOpChange(true);
@@ -2348,10 +2680,14 @@ public class Server {
         }
         this.operators.save(true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removeOp(String name) {
         this.operators.remove(name.toLowerCase(Locale.ENGLISH));
-        Player player = this.getPlayerExact(name);
+        Player $110 = this.getPlayerExact(name);
         if (player != null) {
             player.recalculatePermissions();
             player.getAdventureSettings().onOpChange(false);
@@ -2360,20 +2696,36 @@ public class Server {
         }
         this.operators.save();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addWhitelist(String name) {
         this.whitelist.set(name.toLowerCase(Locale.ENGLISH), true);
         this.whitelist.save(true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removeWhitelist(String name) {
         this.whitelist.remove(name.toLowerCase(Locale.ENGLISH));
         this.whitelist.save(true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isWhitelisted(String name) {
         return !this.hasWhitelist() || this.operators.exists(name, true) || this.whitelist.exists(name, true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isOp(String name) {
         return name != null && this.operators.exists(name, true);
@@ -2386,6 +2738,10 @@ public class Server {
     public Config getOps() {
         return operators;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void reloadWhitelist() {
         this.whitelist.reload();
@@ -2394,6 +2750,10 @@ public class Server {
     // endregion
 
     // region configs - 配置相关
+    /**
+     * @deprecated 
+     */
+    
 
     public int getMaxPlayers() {
         return maxPlayers;
@@ -2404,6 +2764,10 @@ public class Server {
      *
      * @param maxPlayers the max players
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
         this.getNetwork().getPong().maximumPlayerCount(maxPlayers).update();
@@ -2412,6 +2776,10 @@ public class Server {
     /**
      * @return 服务器端口<br>server port
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getPort() {
         return this.getPropertyInt("server-port", 19132);
     }
@@ -2419,6 +2787,10 @@ public class Server {
     /**
      * @return 可视距离<br>server view distance
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getViewDistance() {
         return this.getPropertyInt("view-distance", 10);
     }
@@ -2426,6 +2798,10 @@ public class Server {
     /**
      * @return 服务器网络地址<br>server ip
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getIp() {
         return this.getPropertyString("server-ip", "0.0.0.0");
     }
@@ -2433,6 +2809,10 @@ public class Server {
     /**
      * @return 服务器是否会自动保存<br>Does the server automatically save
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean getAutoSave() {
         return this.autoSave;
     }
@@ -2444,6 +2824,10 @@ public class Server {
      *
      * @param autoSave 是否自动保存<br>Whether to save automatically
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setAutoSave(boolean autoSave) {
         this.autoSave = autoSave;
         for (Level level : this.levelArray) {
@@ -2454,6 +2838,10 @@ public class Server {
     /**
      * @return 服务器是否生成结构<br>Whether the server generate the structure.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean getGenerateStructures() {
         return this.getPropertyBoolean("generate-structures", true);
     }
@@ -2465,6 +2853,10 @@ public class Server {
      *
      * @return gamemode id
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getGamemode() {
         try {
             return this.getPropertyInt("gamemode", 0) & 0b11;
@@ -2472,16 +2864,24 @@ public class Server {
             return getGamemodeFromString(this.getPropertyString("gamemode")) & 0b11;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getForceGamemode() {
         return this.getPropertyBoolean("force-gamemode", false);
     }
 
     /**
-     * 默认{@code direct=false}
+     * 默认{@code $111=false}
      *
      * @see #getGamemodeString(int, boolean)
      */
+    /**
+     * @deprecated 
+     */
+    
     public static String getGamemodeString(int mode) {
         return getGamemodeString(mode, false);
     }
@@ -2495,6 +2895,10 @@ public class Server {
      * @param direct 如果为true就直接返回字符串,为false返回代表游戏模式的硬编码字符串.<br>If true, the string is returned directly, and if false, the hard-coded string representing the game mode is returned.
      * @return 游戏模式字符串<br>Game Mode String
      */
+    /**
+     * @deprecated 
+     */
+    
     public static String getGamemodeString(int mode, boolean direct) {
         return switch (mode) {
             case Player.SURVIVAL -> direct ? "Survival" : "%gameMode.survival";
@@ -2513,6 +2917,10 @@ public class Server {
      * @param str 代表游戏模式的字符串，例如0,survival...<br>A string representing the game mode, e.g. 0,survival...
      * @return 游戏模式id<br>gamemode id
      */
+    /**
+     * @deprecated 
+     */
+    
     public static int getGamemodeFromString(String str) {
         return switch (str.trim().toLowerCase(Locale.ENGLISH)) {
             case "0", "survival", "s" -> Player.SURVIVAL;
@@ -2531,6 +2939,10 @@ public class Server {
      * @param str 代表游戏难度的字符串，例如0,peaceful...<br>A string representing the game difficulty, e.g. 0,peaceful...
      * @return 游戏难度id<br>game difficulty id
      */
+    /**
+     * @deprecated 
+     */
+    
     public static int getDifficultyFromString(String str) {
         switch (str.trim().toLowerCase(Locale.ENGLISH)) {
             case "0":
@@ -2563,6 +2975,10 @@ public class Server {
      *
      * @return 游戏难度id<br>game difficulty id
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getDifficulty() {
         if (this.difficulty == Integer.MAX_VALUE) {
             this.difficulty = getDifficultyFromString(this.getPropertyString("difficulty", "1"));
@@ -2577,8 +2993,12 @@ public class Server {
      *
      * @param difficulty 游戏难度id<br>game difficulty id
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setDifficulty(int difficulty) {
-        int value = difficulty;
+        int $112 = difficulty;
         if (value < 0) value = 0;
         if (value > 3) value = 3;
         this.difficulty = value;
@@ -2588,6 +3008,10 @@ public class Server {
     /**
      * @return 是否开启白名单<br>Whether to start server whitelist
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasWhitelist() {
         return this.getPropertyBoolean("white-list", false);
     }
@@ -2595,6 +3019,10 @@ public class Server {
     /**
      * @return 得到服务器出生点保护半径<br>Get server birth point protection radius
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getSpawnRadius() {
         return this.getPropertyInt("spawn-protection", 16);
     }
@@ -2602,6 +3030,10 @@ public class Server {
     /**
      * @return 服务器是否允许飞行<br>Whether the server allows flying
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean getAllowFlight() {
         if (getAllowFlight == null) {
             getAllowFlight = this.getPropertyBoolean("allow-flight", false);
@@ -2612,6 +3044,10 @@ public class Server {
     /**
      * @return 服务器是否为硬核模式<br>Whether the server is in hardcore mode
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isHardcore() {
         return this.getPropertyBoolean("hardcore", false);
     }
@@ -2619,6 +3055,10 @@ public class Server {
     /**
      * @return 获取默认gamemode<br>Get default gamemode
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getDefaultGamemode() {
         if (this.defaultGamemode == Integer.MAX_VALUE) {
             this.defaultGamemode = this.getGamemode();
@@ -2631,6 +3071,10 @@ public class Server {
      *
      * @param defaultGamemode the default gamemode
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setDefaultGamemode(int defaultGamemode) {
         this.defaultGamemode = defaultGamemode;
         this.getNetwork().getPong().gameType(Server.getGamemodeString(defaultGamemode, true)).update();
@@ -2639,6 +3083,10 @@ public class Server {
     /**
      * @return 得到服务器标题<br>Get server motd
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getMotd() {
         return this.getPropertyString("motd", "PowerNukkitX Server");
     }
@@ -2648,6 +3096,10 @@ public class Server {
      *
      * @param motd the motd content
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setMotd(String motd) {
         this.setPropertyString("motd", motd);
         this.getNetwork().getPong().motd(motd).update();
@@ -2656,8 +3108,12 @@ public class Server {
     /**
      * @return 得到服务器子标题<br>Get the server subheading
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getSubMotd() {
-        String subMotd = this.getPropertyString("sub-motd", "https://powernukkitx.cn");
+        String $113 = this.getPropertyString("sub-motd", "https://powernukkitx.cn");
         if (subMotd.isEmpty()) {
             subMotd = "https://powernukkitx.cn"; // The client doesn't allow empty sub-motd in 1.16.210
         }
@@ -2669,6 +3125,10 @@ public class Server {
      *
      * @param subMotd the sub motd
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setSubMotd(String subMotd) {
         this.setPropertyString("sub-motd", subMotd);
         this.getNetwork().getPong().subMotd(subMotd).update();
@@ -2677,6 +3137,10 @@ public class Server {
     /**
      * @return 是否强制使用服务器资源包<br>Whether to force the use of server resourcepack
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean getForceResources() {
         return this.getPropertyBoolean("force-resources", false);
     }
@@ -2684,6 +3148,10 @@ public class Server {
     /**
      * @return 是否强制使用服务器资源包的同时允许加载客户端资源包<br>Whether to force the use of server resourcepack while allowing the loading of client resourcepack
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean getForceResourcesAllowOwnPacks() {
         return this.getPropertyBoolean("force-resources-allow-client-packs", false);
     }
@@ -2735,39 +3203,71 @@ public class Server {
     public Object getProperty(String variable, Object defaultValue) {
         return this.properties.exists(variable) ? this.properties.get(variable) : defaultValue;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPropertyString(String variable, String value) {
         this.properties.set(variable, value);
         this.properties.save();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getPropertyString(String variable) {
         return this.getPropertyString(variable, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getPropertyString(String variable, String defaultValue) {
         return this.properties.exists(variable) ? this.properties.get(variable).toString() : defaultValue;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getPropertyInt(String variable) {
         return this.getPropertyInt(variable, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getPropertyInt(String variable, Integer defaultValue) {
         return this.properties.exists(variable) ? (!this.properties.get(variable).equals("") ? Integer.parseInt(String.valueOf(this.properties.get(variable))) : defaultValue) : defaultValue;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPropertyInt(String variable, int value) {
         this.properties.set(variable, value);
         this.properties.save();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getPropertyBoolean(String variable) {
         return this.getPropertyBoolean(variable, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getPropertyBoolean(String variable, Object defaultValue) {
-        Object value = this.properties.exists(variable) ? this.properties.get(variable) : defaultValue;
+        Object $114 = this.properties.exists(variable) ? this.properties.get(variable) : defaultValue;
         if (value instanceof Boolean) {
             return (Boolean) value;
         }
@@ -2776,23 +3276,43 @@ public class Server {
             default -> false;
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPropertyBoolean(String variable, boolean value) {
         this.properties.set(variable, value ? "1" : "0");
         this.properties.save();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isNetherAllowed() {
         return this.allowNether;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isTheEndAllowed() {
         return this.allowTheEnd;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isIgnoredPacket(Class<? extends DataPacket> clazz) {
         return this.getSettings().debugSettings().ignoredPackets().contains(clazz.getSimpleName());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getServerAuthoritativeMovement() {
         return serverAuthoritativeMovementMode;
@@ -2813,6 +3333,10 @@ public class Server {
      * @return true if the current thread matches the expected primary thread,
      * false otherwise
      */
+    /**
+     * @deprecated 
+     */
+    
     public final boolean isPrimaryThread() {
         return (Thread.currentThread() == currentThread);
     }
@@ -2831,11 +3355,19 @@ public class Server {
 
     //todo NukkitConsole 会阻塞关不掉
     private class ConsoleThread extends Thread implements InterruptibleThread {
+    /**
+     * @deprecated 
+     */
+    
         public ConsoleThread() {
             super("Console Thread");
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public void run() {
             console.start();
         }
@@ -2855,15 +3387,15 @@ public class Server {
     }
 
     private static class ComputeThreadPoolThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
-        private static final AtomicInteger threadCount = new AtomicInteger(0);
+        private static final AtomicInteger $115 = new AtomicInteger(0);
         @SuppressWarnings("removal")
-        private static final AccessControlContext ACC = contextWithPermissions(
+        private static final AccessControlContext $116 = contextWithPermissions(
                 new RuntimePermission("getClassLoader"),
                 new RuntimePermission("setContextClassLoader"));
 
         @SuppressWarnings("removal")
         static AccessControlContext contextWithPermissions(@NotNull Permission... perms) {
-            Permissions permissions = new Permissions();
+            Permissions $117 = new Permissions();
             for (var perm : perms)
                 permissions.add(perm);
             return new AccessControlContext(new ProtectionDomain[]{new ProtectionDomain(null, permissions)});

@@ -16,11 +16,19 @@ import javax.annotation.Nullable;
  * @author MagicDroidX (Nukkit Project), kvetinac97
  */
 public class BlockDirt extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRT, CommonBlockProperties.DIRT_TYPE);
+    public static final BlockProperties $1 = new BlockProperties(DIRT, CommonBlockProperties.DIRT_TYPE);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDirt() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDirt(BlockState blockState) {
         super(blockState);
@@ -42,32 +50,56 @@ public class BlockDirt extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 2.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         //Although the hardness on the wiki is 0.5, after testing, a hardness of 0.6 is more suitable for the vanilla
         return 0.6;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_SHOVEL;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.getDirtType() == DirtType.NORMAL ? "Dirt" : "Coarse Dirt";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!this.up().canBeReplaced()) {
             return false;

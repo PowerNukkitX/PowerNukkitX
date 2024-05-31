@@ -4,6 +4,10 @@ import cn.nukkit.item.enchantment.Enchantment;
 
 
 public class EnchantmentCrossbowMultishot extends EnchantmentCrossbow {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public EnchantmentCrossbowMultishot() {
@@ -11,16 +15,28 @@ public class EnchantmentCrossbowMultishot extends EnchantmentCrossbow {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMinEnchantAbility(int level) {
         return 20;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean checkCompatibility(Enchantment enchantment) {
         return super.checkCompatibility(enchantment) && enchantment.id != ID_CROSSBOW_PIERCING;
     }

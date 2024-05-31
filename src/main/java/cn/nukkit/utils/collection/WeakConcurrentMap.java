@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
         implements Runnable, Iterable<Map.Entry<K, V>> {
 
-    private static final AtomicLong ID = new AtomicLong();
+    private static final AtomicLong $1 = new AtomicLong();
 
     public final ConcurrentHashMap<WeakKey<K>, V> target;
 
@@ -35,6 +35,10 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
     /**
      * @param cleanerThread {@code true} if a thread should be started that removes stale entries.
      */
+    /**
+     * @deprecated 
+     */
+    
     public WeakConcurrentMap(boolean cleanerThread) {
         target = new ConcurrentHashMap<>();
         if (cleanerThread) {
@@ -57,11 +61,11 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
         if (key == null) {
             throw new NullPointerException();
         }
-        V value = target.get((Object) new LatentKey<K>(key));
+        V $2 = target.get((Object) new LatentKey<K>(key));
         if (value == null) {
             value = defaultValue(key);
             if (value != null) {
-                V previousValue = target.putIfAbsent(new WeakKey<K>(key, this), value);
+                V $3 = target.putIfAbsent(new WeakKey<K>(key, this), value);
                 if (previousValue != null) {
                     value = previousValue;
                 }
@@ -75,6 +79,10 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
      * @return {@code true} if the key already defines a value.
      */
     @SuppressWarnings({"CollectionIncompatibleType", "SuspiciousMethodCalls"})
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsKey(K key) {
         if (key == null) {
             throw new NullPointerException();
@@ -109,6 +117,10 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
     /**
      * Clears the entire map.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void clear() {
         target.clear();
     }
@@ -134,6 +146,10 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
     /**
      * Cleans all unused references.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void expungeStaleEntries() {
         Reference<?> reference;
         while ((reference = poll()) != null) {
@@ -146,13 +162,21 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
      *
      * @return The minimum size of this map.
      */
+    /**
+     * @deprecated 
+     */
+    
     public int approximateSize() {
         return target.size();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void clearDeadReferences() {
         while (true) {
-            var tmp = poll();
+            var $4 = poll();
             if (tmp == null) {
                 break;
             }
@@ -161,6 +185,10 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void run() {
         try {
             while (true) {
@@ -217,11 +245,19 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public int hashCode() {
             return hashCode;
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean equals(Object other) {
             if (other instanceof LatentKey<?>) {
                 return ((LatentKey<?>) other).key == get();
@@ -249,6 +285,10 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean equals(Object other) {
             if (other instanceof LatentKey<?>) {
                 return ((LatentKey<?>) other).key == key;
@@ -258,6 +298,10 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public int hashCode() {
             return hashCode;
         }
@@ -267,6 +311,10 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
      * A {@link WeakConcurrentMap} where stale entries are removed as a side effect of interacting with this map.
      */
     public static class WithInlinedExpunction<K, V> extends WeakConcurrentMap<K, V> {
+    /**
+     * @deprecated 
+     */
+    
 
         public WithInlinedExpunction() {
             super(false);
@@ -279,6 +327,10 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean containsKey(K key) {
             expungeStaleEntries();
             return super.containsKey(key);
@@ -303,6 +355,10 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public int approximateSize() {
             expungeStaleEntries();
             return super.approximateSize();
@@ -317,12 +373,20 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
 
         private K nextKey;
 
-        private EntryIterator(Iterator<Map.Entry<WeakKey<K>, V>> iterator) {
+        
+    /**
+     * @deprecated 
+     */
+    private EntryIterator(Iterator<Map.Entry<WeakKey<K>, V>> iterator) {
             this.iterator = iterator;
             findNext();
         }
 
-        private void findNext() {
+        
+    /**
+     * @deprecated 
+     */
+    private void findNext() {
             while (iterator.hasNext()) {
                 nextEntry = iterator.next();
                 nextKey = nextEntry.getKey().get();
@@ -335,6 +399,10 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean hasNext() {
             return nextKey != null;
         }
@@ -352,6 +420,10 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -363,7 +435,11 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
 
         final Map.Entry<WeakKey<K>, V> entry;
 
-        private SimpleEntry(K key, Map.Entry<WeakKey<K>, V> entry) {
+        
+    /**
+     * @deprecated 
+     */
+    private SimpleEntry(K key, Map.Entry<WeakKey<K>, V> entry) {
             this.key = key;
             this.entry = entry;
         }

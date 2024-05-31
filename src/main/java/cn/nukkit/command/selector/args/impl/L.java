@@ -17,16 +17,24 @@ public class L extends CachedSimpleSelectorArgument {
     protected Predicate<Entity> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
         ParseUtils.singleArgument(arguments, getKeyName());
         ParseUtils.cannotReversed(arguments[0]);
-        final var l = Integer.parseInt(arguments[0]);
+        fina$1 var $1 = Integer.parseInt(arguments[0]);
         return entity -> entity instanceof Player player && player.getExperienceLevel() <= l;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getKeyName() {
         return "l";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPriority() {
         return 3;
     }

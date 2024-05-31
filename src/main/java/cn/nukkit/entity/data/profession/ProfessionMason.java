@@ -10,6 +10,10 @@ import cn.nukkit.utils.TradeRecipeBuildUtils;
 import java.util.Random;
 
 public class ProfessionMason extends Profession {
+    /**
+     * @deprecated 
+     */
+    
 
     public ProfessionMason() {
         super(13, BlockID.STONECUTTER_BLOCK, "entity.villager.mason");
@@ -18,7 +22,7 @@ public class ProfessionMason extends Profession {
     @Override
     public ListTag<CompoundTag> buildTrades(int seed) {
         ListTag<CompoundTag> recipes = new ListTag<>();
-        Random random = new Random(seed);
+        Random $1 = new Random(seed);
 
         recipes.add(TradeRecipeBuildUtils.of(Item.get(BlockID.CLAY, 0, 10), Item.get(Item.EMERALD))
                         .setMaxUses(16)

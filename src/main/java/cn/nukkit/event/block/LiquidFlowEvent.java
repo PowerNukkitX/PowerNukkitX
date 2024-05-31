@@ -7,7 +7,7 @@ import cn.nukkit.event.HandlerList;
 
 public class LiquidFlowEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -16,6 +16,10 @@ public class LiquidFlowEvent extends BlockEvent implements Cancellable {
     private final Block to;
     private final BlockLiquid source;
     private final int newFlowDecay;
+    /**
+     * @deprecated 
+     */
+    
 
     public LiquidFlowEvent(Block to, BlockLiquid source, int newFlowDecay) {
         super(to);
@@ -23,6 +27,10 @@ public class LiquidFlowEvent extends BlockEvent implements Cancellable {
         this.source = source;
         this.newFlowDecay = newFlowDecay;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getNewFlowDecay() {
         return this.newFlowDecay;

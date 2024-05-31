@@ -10,7 +10,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class RequestChunkRadiusPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET;
+    public static final int $1 = ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET;
 
     public int radius;
 
@@ -20,20 +20,36 @@ public class RequestChunkRadiusPacket extends DataPacket {
     private int maxRadius;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.radius = byteBuf.readVarInt();
         this.maxRadius = byteBuf.readByte();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

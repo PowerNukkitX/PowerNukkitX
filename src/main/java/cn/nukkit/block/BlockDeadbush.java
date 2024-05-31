@@ -14,16 +14,24 @@ import java.util.Random;
  * @since 2015/12/2
  */
 public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-    public static final BlockProperties PROPERTIES = new BlockProperties(DEADBUSH);
+    public static final BlockProperties $1 = new BlockProperties(DEADBUSH);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDeadbush() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDeadbush(BlockState blockState) {
         // Dead bushes can't have meta. Also stops the server from throwing an exception with the block palette.
@@ -31,22 +39,38 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Dead Bush";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeReplaced() {
         return true;
     }
 
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (isSupportValid()) {
             this.getLevel().setBlock(block, this, true, true);
@@ -55,8 +79,12 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
         return false;
     }
     
+    
+    /**
+     * @deprecated 
+     */
     private boolean isSupportValid() {
-        Block down = down();
+        Block $2 = down();
         if(down instanceof BlockHardenedClay)  return true;
         return switch (down.getId()) {
             case SAND, DIRT, PODZOL, GRASS_BLOCK, MOSS_BLOCK, MYCELIUM -> true;
@@ -65,6 +93,10 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isSupportValid()) {

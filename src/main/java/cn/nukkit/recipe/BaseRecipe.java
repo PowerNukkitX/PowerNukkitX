@@ -14,13 +14,21 @@ public abstract class BaseRecipe implements Recipe {
     protected final List<Item> results = new ArrayList<>();
     protected final List<ItemDescriptor> ingredients = new ArrayList<>();
 
+    
+    /**
+     * @deprecated 
+     */
     protected BaseRecipe(String id) {
         Preconditions.checkNotNull(id);
         this.id = id;
     }
 
     @Override
-    public @NotNull String getRecipeId() {
+    public @NotNull 
+    /**
+     * @deprecated 
+     */
+    String getRecipeId() {
         return id;
     }
 
@@ -35,6 +43,10 @@ public abstract class BaseRecipe implements Recipe {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof BaseRecipe that)) return false;
@@ -42,11 +54,19 @@ public abstract class BaseRecipe implements Recipe {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return Objects.hashCode(id);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return this.getClass().getSimpleName() + "{" +
                 "id='" + id + '\'' +

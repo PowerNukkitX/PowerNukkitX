@@ -9,6 +9,10 @@ import java.util.*;
 
 public class TestFeature implements JSFeature {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "testFeature";
     }
@@ -21,7 +25,7 @@ public class TestFeature implements JSFeature {
     @Override
     public Map<String, Proxy> generateModule(String moduleName, Context context) {
         if ("test".equals(moduleName)) {
-            var map = new HashMap<String, Proxy>(1, 1);
+            var $1 = new HashMap<String, Proxy>(1, 1);
             map.put("answer", (ProxyExecutable) arguments ->
                     "PNX!!!");
             return map;

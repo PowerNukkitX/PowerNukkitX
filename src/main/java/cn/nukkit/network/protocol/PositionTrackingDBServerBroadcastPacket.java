@@ -25,7 +25,7 @@ import java.io.IOException;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.POS_TRACKING_SERVER_BROADCAST_PACKET;
+    public static final int $1 = ProtocolInfo.POS_TRACKING_SERVER_BROADCAST_PACKET;
     private static final Action[] ACTIONS = Action.values();
 
     private Action action;
@@ -40,10 +40,18 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
         }
         return tag;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAction(Action action) {
         this.action = action;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTrackingId(int trackingId) {
         this.trackingId = trackingId;
@@ -62,14 +70,26 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
         }
         return new BlockVector3(pos.get(0).data, pos.get(1).data, pos.get(2).data);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPosition(BlockVector3 position) {
         setPosition(position.x, position.y, position.z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPosition(Vector3 position) {
         setPosition(position.getFloorX(), position.getFloorY(), position.getFloorZ());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPosition(int x, int y, int z) {
         requireTag().putList("pos", new ListTag<>()
@@ -78,6 +98,10 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
                 .add(new IntTag(z))
         );
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getStatus() {
         if (tag == null) {
@@ -85,10 +109,18 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
         }
         return tag.getByte("status");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setStatus(int status) {
         requireTag().putByte("status", status);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getVersion() {
         if (tag == null) {
@@ -96,10 +128,18 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
         }
         return tag.getByte("version");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setVersion(int status) {
         requireTag().putByte("version", status);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getDimension() {
         if (tag == null) {
@@ -107,12 +147,20 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
         }
         return tag.getByte("dim");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDimension(int dimension) {
         requireTag().putInt("dim", dimension);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeByte((byte) action.ordinal());
         byteBuf.writeVarInt(trackingId);
@@ -124,10 +172,14 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         action = ACTIONS[byteBuf.readByte()];
         trackingId = byteBuf.readVarInt();
-        try (ByteBufInputStream inputStream = new ByteBufInputStream(byteBuf)) {
+        try (ByteBufInputStream $2 = new ByteBufInputStream(byteBuf)) {
             tag = NBTIO.readNetworkCompressed(inputStream);
         } catch (IOException e) {
             throw new EncoderException(e);
@@ -135,6 +187,10 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -150,6 +206,10 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
 
         NOT_FOUND
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

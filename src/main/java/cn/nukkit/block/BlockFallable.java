@@ -11,18 +11,26 @@ import cn.nukkit.nbt.tag.*;
  * @author rcsuperman (Nukkit Project)
  */
 public abstract class BlockFallable extends BlockSolid {
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockFallable(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
-        Block down = this.down();
+        Block $1 = this.down();
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if ((down.isAir() || down instanceof BlockFire || down instanceof BlockLiquid ||
                     (down instanceof BlockBubbleColumn && down.getLevelBlockAtLayer(1) instanceof BlockLiquid))) {
-                BlockFallEvent event = new BlockFallEvent(this);
+                BlockFallEvent $2 = new BlockFallEvent(this);
                 this.level.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) {
                     return type;
@@ -34,16 +42,20 @@ public abstract class BlockFallable extends BlockSolid {
         }
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void drop(CompoundTag customNbt) {
         this.level.setBlock(this, Block.get(Block.AIR), true, true);
-        EntityFallingBlock fall = createFallingEntity(customNbt);
+        EntityFallingBlock $3 = createFallingEntity(customNbt);
 
         fall.spawnToAll();
     }
 
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $4 = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(this.x + 0.5))
                         .add(new DoubleTag(this.y))
@@ -61,7 +73,7 @@ public abstract class BlockFallable extends BlockSolid {
             nbt.put(e.getKey(), e.getValue().copy());
         }
 
-        EntityFallingBlock fall = (EntityFallingBlock) Entity.createEntity(Entity.FALLING_BLOCK, this.getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
+        EntityFallingBlock $5 = (EntityFallingBlock) Entity.createEntity(Entity.FALLING_BLOCK, this.getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
 
         if (fall != null) {
             fall.spawnToAll();

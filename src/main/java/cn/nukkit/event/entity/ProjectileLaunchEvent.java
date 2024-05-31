@@ -6,13 +6,17 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
 public class ProjectileLaunchEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     protected Entity shooter;
+    /**
+     * @deprecated 
+     */
+    
 
     public ProjectileLaunchEvent(EntityProjectile entity, Entity shooter) {
         this.shooter = shooter;

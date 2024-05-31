@@ -18,42 +18,70 @@ import javax.annotation.Nullable;
 
 public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_LAMP);
+    public static final BlockProperties $1 = new BlockProperties(REDSTONE_LAMP);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockRedstoneLamp() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockRedstoneLamp(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Redstone Lamp";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.3D;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 1.5D;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (this.isGettingPower()) {
             this.level.setBlock(this, Block.get(BlockID.LIT_REDSTONE_LAMP), false, true);
@@ -64,6 +92,10 @@ public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
             if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
@@ -71,8 +103,8 @@ public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
             }
 
             if (this.isGettingPower()) {
-                // Redstone event
-                RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
+                // Redstone $2ent
+                RedstoneUpdateEvent $1 = new RedstoneUpdateEvent(this);
                 getLevel().getServer().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     return 0;

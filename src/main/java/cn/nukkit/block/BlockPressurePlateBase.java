@@ -27,6 +27,10 @@ import static cn.nukkit.block.property.CommonBlockProperties.REDSTONE_SIGNAL;
 public abstract class BlockPressurePlateBase extends BlockFlowable implements RedstoneComponent {
     protected float onPitch;
     protected float offPitch;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPressurePlateBase(BlockState blockState) {
         super(blockState);
@@ -35,71 +39,123 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     protected abstract int computeRedstoneStrength();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         return this.x + 0.625;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         return this.z + 0.625;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinY() {
         return this.y + 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         return this.x + 0.9375;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         return this.z + 0.9375;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return isActivated() ? this.y + 0.03125 : this.y + 0.0625;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPowerSource() {
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isActivated() {
         return getRedstonePower() == 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean isSupportValid(Block block, BlockFace blockFace) {
         return BlockLever.isSupportValid(block, blockFace) || block instanceof BlockFence;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isSupportValid(down(), BlockFace.UP)) {
                 this.level.useBreakOn(this, ItemTool.getBestTool(getToolType()));
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            int power = this.getRedstonePower();
+            int $1 = this.getRedstonePower();
 
             if (power > 0) {
                 this.updateState(power);
@@ -110,6 +166,10 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!isSupportValid(down(), BlockFace.UP)) {
             return false;
@@ -125,12 +185,16 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return;
         }
 
-        int power = getRedstonePower();
+        int $2 = getRedstonePower();
 
         if (power == 0) {
             Event ev;
@@ -148,10 +212,14 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void updateState(int oldStrength) {
-        int strength = this.computeRedstoneStrength();
-        boolean wasPowered = oldStrength > 0;
-        boolean isPowered = strength > 0;
+        int $3 = this.computeRedstoneStrength();
+        boolean $4 = oldStrength > 0;
+        boolean $5 = strength > 0;
 
         if (oldStrength != strength) {
             this.setRedstonePower(strength);
@@ -175,6 +243,10 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
         this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
 
@@ -187,27 +259,51 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWeakPower(BlockFace side) {
         return getRedstonePower();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getStrongPower(BlockFace side) {
-        return side == BlockFace.UP ? this.getRedstonePower() : 0;
+        return $6 == BlockFace.UP ? this.getRedstonePower() : 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getRedstonePower() {
         return getPropertyValue(REDSTONE_SIGNAL);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRedstonePower(int power) {
         setPropertyValue(REDSTONE_SIGNAL, power);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void playOnSound() {
         this.level.addLevelSoundEvent(this.add(0.5, 0.1, 0.5), LevelSoundEventPacket.SOUND_POWER_ON, getBlockState().blockStateHash());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void playOffSound() {
         this.level.addLevelSoundEvent(this.add(0.5, 0.1, 0.5), LevelSoundEventPacket.SOUND_POWER_OFF, getBlockState().blockStateHash());
     }

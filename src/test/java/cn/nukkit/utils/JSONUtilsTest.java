@@ -10,8 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JSONUtilsTest {
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_from_class() {
-        JsonObject from = JSONUtils.from("""
+        JsonObject $1 = JSONUtils.from("""
                 {
                     "a1": 123,
                     "a2": 22.2
@@ -22,6 +26,10 @@ public class JSONUtilsTest {
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_toPretty() {
         Map<String, Object> data = new HashMap<>();
         data.put("a1", 123);

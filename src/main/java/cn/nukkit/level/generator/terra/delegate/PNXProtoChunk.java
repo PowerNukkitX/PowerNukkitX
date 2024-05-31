@@ -11,21 +11,29 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public record PNXProtoChunk(IChunk chunk) implements ProtoChunk {
-    public static cn.nukkit.block.BlockState water = BlockFlowingWater.PROPERTIES.getDefaultState();
+    public static cn.nukkit.block.BlockState $1 = BlockFlowingWater.PROPERTIES.getDefaultState();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxHeight() {
         return chunk.getDimensionData().getMaxHeight();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlock(int i, int i1, int i2, @NotNull BlockState blockState) {
-        var innerBlockState = ((PNXBlockStateDelegate) blockState).innerBlockState();
+        var $2 = ((PNXBlockStateDelegate) blockState).innerBlockState();
         if (Objects.equals(innerBlockState.getIdentifier(), BlockID.KELP)) {
             chunk.setBlockState(i, i1, i2, innerBlockState);
             chunk.setBlockState(i, i1, i2, water, 1);
         } else {
-            var ob = chunk.getBlockState(i, i1, i2);
+            var $3 = chunk.getBlockState(i, i1, i2);
             if (Objects.equals(ob.getIdentifier(), BlockID.WATERLILY) ||
                     Objects.equals(ob.getIdentifier(), BlockID.WATER) ||
                     Objects.equals(ob.getIdentifier(), BlockID.FLOWING_WATER)) {

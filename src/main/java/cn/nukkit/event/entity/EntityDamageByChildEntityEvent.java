@@ -8,6 +8,10 @@ import cn.nukkit.event.HandlerList;
  */
 public class EntityDamageByChildEntityEvent extends EntityDamageByEntityEvent {
     private final Entity childEntity;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityDamageByChildEntityEvent(Entity damager, Entity childEntity, Entity entity, DamageCause cause, float damage) {
         super(damager, entity, cause, damage);

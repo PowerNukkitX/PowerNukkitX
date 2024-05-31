@@ -14,21 +14,37 @@ public class AgentAnimationPacket extends DataPacket {
     public long runtimeEntityId;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.AGENT_ANIMATION;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.animation = byteBuf.readByte();
         this.runtimeEntityId = byteBuf.readEntityRuntimeId();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeByte(this.animation);
         byteBuf.writeEntityRuntimeId(this.runtimeEntityId);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

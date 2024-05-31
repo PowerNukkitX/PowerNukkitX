@@ -12,13 +12,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull AnimatePacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         if (!player.spawned || !player.isAlive()) {
             return;
         }
 
-        AnimatePacket.Action animation = pk.action;
+        AnimatePacket.Action $2 = pk.action;
 
         // prevent client send illegal packet to server and broadcast to other client and make other client crash
         if (animation == null // illegal action id
@@ -28,7 +32,7 @@ public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {
             return;
         }
 
-        PlayerAnimationEvent animationEvent = new PlayerAnimationEvent(player, pk);
+        PlayerAnimationEvent $3 = new PlayerAnimationEvent(player, pk);
         player.getServer().getPluginManager().callEvent(animationEvent);
         if (animationEvent.isCancelled()) {
             return;
@@ -56,6 +60,10 @@ public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.ANIMATE_PACKET;
     }

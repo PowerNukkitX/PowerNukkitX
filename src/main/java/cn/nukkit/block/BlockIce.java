@@ -11,17 +11,29 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockIce extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(ICE);
+    public static final BlockProperties $1 = new BlockProperties(ICE);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockIce() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockIce(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Ice";
     }
@@ -32,26 +44,46 @@ public class BlockIce extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 2.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getFrictionFactor() {
         return 0.98;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
         if (level.getDimension() == Level.DIMENSION_NETHER 
                 || item.getEnchantmentLevel(Enchantment.ID_SILK_TOUCH) > 0 
@@ -63,10 +95,14 @@ public class BlockIce extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (level.getBlockLightAt((int) this.x, (int) this.y, (int) this.z) >= 12) {
-                BlockFadeEvent event = new BlockFadeEvent(this, level.getDimension() == Level.DIMENSION_NETHER ? get(AIR) : get(FLOWING_WATER));
+                BlockFadeEvent $2 = new BlockFadeEvent(this, level.getDimension() == Level.DIMENSION_NETHER ? get(AIR) : get(FLOWING_WATER));
                 level.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
                     level.setBlock(this, event.getNewState(), true);
@@ -83,16 +119,28 @@ public class BlockIce extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnChance() {
         return -1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightFilter() {
         return 2;
     }

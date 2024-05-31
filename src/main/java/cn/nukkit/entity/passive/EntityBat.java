@@ -10,9 +10,17 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityBat extends EntityAnimal implements EntityFlyable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return BAT;
     }
+    /**
+     * @deprecated 
+     */
+    
     
 
     public EntityBat(IChunk chunk, CompoundTag nbt) {
@@ -22,22 +30,38 @@ public class EntityBat extends EntityAnimal implements EntityFlyable {
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.5f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.9f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(6);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Bat";
     }

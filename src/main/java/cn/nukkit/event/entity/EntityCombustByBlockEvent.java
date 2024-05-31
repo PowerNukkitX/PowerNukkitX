@@ -9,6 +9,10 @@ import cn.nukkit.event.HandlerList;
  */
 public class EntityCombustByBlockEvent extends EntityCombustEvent {
     protected final Block combuster;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityCombustByBlockEvent(Block combuster, Entity combustee, int duration) {
         super(combustee, duration);

@@ -21,6 +21,10 @@ public class QueryPacketHandler extends SimpleChannelInboundHandler<DirectAddres
     private final Timer timer;
     private byte[] lastToken;
     private byte[] token = new byte[16];
+    /**
+     * @deprecated 
+     */
+    
 
     public QueryPacketHandler(QueryEventListener listener) {
         this.listener = listener;
@@ -31,17 +35,17 @@ public class QueryPacketHandler extends SimpleChannelInboundHandler<DirectAddres
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DirectAddressedQueryPacket packet) throws Exception {
         if (packet.content() instanceof HandshakePacket) {
-            HandshakePacket handshake = (HandshakePacket) packet.content();
+            HandshakePacket $1 = (HandshakePacket) packet.content();
             handshake.setToken(getTokenString(packet.sender()));
             ctx.writeAndFlush(new DirectAddressedQueryPacket(handshake, packet.sender(), packet.recipient()), ctx.voidPromise());
         }
         if (packet.content() instanceof StatisticsPacket) {
-            StatisticsPacket statistics = (StatisticsPacket) packet.content();
+            StatisticsPacket $2 = (StatisticsPacket) packet.content();
             if (!(statistics.getToken() == getTokenInt(packet.sender()))) {
                 return;
             }
 
-            QueryRegenerateEvent data = listener.onQuery(packet.sender());
+            QueryRegenerateEvent $3 = listener.onQuery(packet.sender());
 
             if (statistics.isFull()) {
                 statistics.setPayload(data.getLongQuery());
@@ -51,17 +55,29 @@ public class QueryPacketHandler extends SimpleChannelInboundHandler<DirectAddres
             ctx.writeAndFlush(new DirectAddressedQueryPacket(statistics, packet.sender(), packet.recipient()), ctx.voidPromise());
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void refreshToken() {
         lastToken = token;
         ThreadLocalRandom.current().nextBytes(token);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private String getTokenString(InetSocketAddress socketAddress) {
         return Integer.toString(getTokenInt(socketAddress));
 
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getTokenInt(InetSocketAddress socketAddress) {
         return ByteBuffer.wrap(getToken(socketAddress)).getInt();
     }

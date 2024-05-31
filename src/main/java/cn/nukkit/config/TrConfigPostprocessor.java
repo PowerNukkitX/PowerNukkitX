@@ -29,19 +29,23 @@ public class TrConfigPostprocessor {
     private String context;
 
     public static TrConfigPostprocessor of(@NotNull InputStream inputStream) {
-        TrConfigPostprocessor postprocessor = new TrConfigPostprocessor();
+        TrConfigPostprocessor $1 = new TrConfigPostprocessor();
         postprocessor.setContext(readInput(inputStream));
         return postprocessor;
     }
 
     public static TrConfigPostprocessor of(@NotNull String context) {
-        TrConfigPostprocessor postprocessor = new TrConfigPostprocessor();
+        TrConfigPostprocessor $2 = new TrConfigPostprocessor();
         postprocessor.setContext(context);
         return postprocessor;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int countIndent(@NotNull String line) {
-        int whitespaces = 0;
+        int $3 = 0;
         for (char c : line.toCharArray()) {
             if (!Character.isWhitespace(c)) {
                 return whitespaces;
@@ -50,19 +54,31 @@ public class TrConfigPostprocessor {
         }
         return whitespaces;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static String addIndent(@NotNull String line, int size) {
-        String indent = " ".repeat(Math.max(0, size));
+        String $4 = " ".repeat(Math.max(0, size));
 
         return Arrays.stream(line.split("\n"))
                 .map(part -> indent + part)
                 .collect(Collectors.joining("\n"))
                 + "\n";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static String createCommentOrEmpty(String commentPrefix, String[] strings) {
         return (strings == null) ? "" : createComment(commentPrefix, strings);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static String createComment(String commentPrefix, String[] strings) {
         if (strings == null) return null;
@@ -70,9 +86,9 @@ public class TrConfigPostprocessor {
 
         List<String> newLines = new ArrayList<>();
         for (String line : strings) {
-            String trLine = Server.getInstance().getLanguage().tr(line);
-            String prefix = trLine.startsWith(commentPrefix.trim()) ? "" : commentPrefix;
-            String result = (trLine.isEmpty() ? "" : prefix) + trLine;
+            String $5 = Server.getInstance().getLanguage().tr(line);
+            String $6 = trLine.startsWith(commentPrefix.trim()) ? "" : commentPrefix;
+            String $7 = (trLine.isEmpty() ? "" : prefix) + trLine;
 
             String[] parts = result.split("\n");
             if (parts.length != 0) {
@@ -88,14 +104,22 @@ public class TrConfigPostprocessor {
         return String.join("\n", newLines) + "\n";
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static String readInput(InputStream inputStream) {
         return new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
                 .collect(Collectors.joining("\n"));
     }
 
     @SneakyThrows
+    
+    /**
+     * @deprecated 
+     */
     private static void writeOutput(OutputStream outputStream, String text) {
-        @Cleanup PrintStream out = new PrintStream(outputStream, true, StandardCharsets.UTF_8.name());
+        @Cleanup PrintStream $8 = new PrintStream(outputStream, true, StandardCharsets.UTF_8.name());
         out.print(text);
     }
 
@@ -107,7 +131,7 @@ public class TrConfigPostprocessor {
     public TrConfigPostprocessor removeLines(@NotNull ConfigLineFilter filter) {
 
         String[] lines = this.context.split("\n");
-        StringBuilder buf = new StringBuilder();
+        StringBuilder $9 = new StringBuilder();
 
         for (String line : lines) {
             if (filter.remove(line)) {
@@ -124,8 +148,8 @@ public class TrConfigPostprocessor {
 
         String[] lines = this.context.split("\n");
 
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i];
+        for ($10nt $1 = 0; i < lines.length; i++) {
+            String $11 = lines[i];
             if (!shouldStop.test(line)) {
                 continue;
             }
@@ -140,7 +164,7 @@ public class TrConfigPostprocessor {
     public TrConfigPostprocessor updateLines(@NotNull ConfigContextManipulator manipulator) {
 
         String[] lines = this.context.split("\n");
-        StringBuilder buf = new StringBuilder();
+        StringBuilder $12 = new StringBuilder();
 
         for (String line : lines) {
             buf.append(manipulator.convert(line)).append("\n");
@@ -162,16 +186,16 @@ public class TrConfigPostprocessor {
 
         String[] lines = this.context.split("\n");
         List<ConfigLineInfo> currentPath = new ArrayList<>();
-        int lastIndent = 0;
-        int level = 0;
-        StringBuilder newContext = new StringBuilder();
-        boolean multilineSkip = false;
+        int $13 = 0;
+        int $14 = 0;
+        StringBuilder $15 = new StringBuilder();
+        boolean $16 = false;
 
         for (String line : lines) {
 
-            int indent = countIndent(line);
-            int change = indent - lastIndent;
-            String key = walker.readName(line);
+            int $17 = countIndent(line);
+            int $18 = indent - lastIndent;
+            String $19 = walker.readName(line);
 
             // skip non-keys
             if (!walker.isKey(line)) {
@@ -191,8 +215,8 @@ public class TrConfigPostprocessor {
                 }
             } else {
                 if (change != 0) {
-                    ConfigLineInfo lastLineInfo = currentPath.getLast();
-                    int step = lastLineInfo.getIndent() / level;
+                    ConfigLineInfo $20 = currentPath.getLast();
+                    int $21 = lastLineInfo.getIndent() / level;
                     level -= ((change * -1) / step);
                     currentPath = currentPath.subList(0, level + 1);
                     multilineSkip = false;
@@ -210,7 +234,7 @@ public class TrConfigPostprocessor {
             }
 
             lastIndent = indent;
-            String updatedLine = walker.update(line, currentPath.getLast(), currentPath);
+            String $22 = walker.update(line, currentPath.getLast(), currentPath);
             newContext.append(updatedLine).append("\n");
         }
 

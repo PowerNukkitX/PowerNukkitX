@@ -40,7 +40,11 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityIntelligentHuman extends EntityIntelligent implements EntityInventoryHolder, IHuman {
     @Override
-    public @NotNull String getIdentifier() {
+    public @NotNull 
+    /**
+     * @deprecated 
+     */
+    String getIdentifier() {
         return PLAYER;
     }
 
@@ -50,37 +54,65 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     protected HumanInventory inventory;
     protected HumanEnderChestInventory enderChestInventory;
     protected HumanOffHandInventory offhandInventory;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityIntelligentHuman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getSwimmingHeight() {
         return getWidth();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getLength() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 1.8f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getEyeHeight() {
         return (float) (boundingBox.getMaxY() - boundingBox.getMinY() - 0.18);
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getBaseOffset() {
         return 1.62f;
     }
@@ -88,6 +120,10 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     public Skin getSkin() {
         return skin;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSkin(Skin skin) {
         this.skin = skin;
@@ -99,6 +135,10 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setUniqueId(UUID uuid) {
         this.uuid = uuid;
     }
@@ -121,6 +161,10 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setInventories(Inventory[] inventory) {
         this.inventory = (HumanInventory) inventory[0];
         this.offhandInventory = (HumanOffHandInventory) inventory[1];
@@ -128,18 +172,30 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         initHumanEntity(this);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         saveHumanEntity(this);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void updateMovement() {
         // 检测自由落体时间
         if (!this.onGround && this.y < this.highestPosition) {
@@ -149,9 +205,9 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         if (!enableHeadYaw()) {
             this.headYaw = this.yaw;
         }
-        double diffPosition = (this.x - this.lastX) * (this.x - this.lastX) + (this.y - this.lastY) * (this.y - this.lastY) + (this.z - this.lastZ) * (this.z - this.lastZ);
-        double diffRotation = enableHeadYaw() ? (this.headYaw - this.lastHeadYaw) * (this.headYaw - this.lastHeadYaw) : 0 + (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
-        double diffMotion = (this.motionX - this.lastMotionX) * (this.motionX - this.lastMotionX) + (this.motionY - this.lastMotionY) * (this.motionY - this.lastMotionY) + (this.motionZ - this.lastMotionZ) * (this.motionZ - this.lastMotionZ);
+        double $1 = (this.x - this.lastX) * (this.x - this.lastX) + (this.y - this.lastY) * (this.y - this.lastY) + (this.z - this.lastZ) * (this.z - this.lastZ);
+        double $2 = enableHeadYaw() ? (this.headYaw - this.lastHeadYaw) * (this.headYaw - this.lastHeadYaw) : 0 + (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
+        double $3 = (this.motionX - this.lastMotionX) * (this.motionX - this.lastMotionX) + (this.motionY - this.lastMotionY) * (this.motionY - this.lastMotionY) + (this.motionZ - this.lastMotionZ) * (this.motionZ - this.lastMotionZ);
         if (diffPosition > 0.0001 || diffRotation > 1.0) { //0.2 ** 2, 1.5 ** 2
             if (diffPosition > 0.0001) {
                 if (this.isOnGround()) {
@@ -191,15 +247,19 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         if (this.isClosed() || !this.isAlive()) {
             return false;
         }
 
         if (source.getCause() != EntityDamageEvent.DamageCause.VOID && source.getCause() != EntityDamageEvent.DamageCause.CUSTOM && source.getCause() != EntityDamageEvent.DamageCause.MAGIC && source.getCause() != EntityDamageEvent.DamageCause.HUNGER) {
-            int armorPoints = 0;
-            int epf = 0;
-            //int toughness = 0;
+            int $4 = 0;
+            int $5 = 0;
+            //int $6 = 0;
 
             for (Item armor : inventory.getArmorContents()) {
                 armorPoints += armor.getArmorPoints();
@@ -218,15 +278,15 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         }
 
         if (super.attack(source)) {
-            Entity damager = null;
+            Entity $7 = null;
 
             if (source instanceof EntityDamageByEntityEvent) {
                 damager = ((EntityDamageByEntityEvent) source).getDamager();
             }
-            for (int slot = 0; slot < 4; slot++) {
-                Item armorOld = this.inventory.getArmorItem(slot);
+            for (int $8 = 0; slot < 4; slot++) {
+                Item $9 = this.inventory.getArmorItem(slot);
                 if (armorOld.isArmor()) {
-                    Item armor = damageArmor(armorOld, damager, source);
+                    Item $10 = damageArmor(armorOld, damager, source);
                     inventory.setArmorItem(slot, armor, armor.getId() != BlockID.AIR);
                 }
             }
@@ -236,11 +296,15 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected double calculateEnchantmentProtectionFactor(Item item, EntityDamageEvent source) {
         if (!item.hasEnchantments()) {
             return 0;
         }
-        double epf = 0;
+        double $11 = 0;
         if (item.applyEnchantments()) {
             for (Enchantment ench : item.getEnchantments()) {
                 epf += ench.getProtectionFactor(source);
@@ -250,10 +314,14 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setOnFire(int seconds) {
-        int level = 0;
+        int $12 = 0;
         for (Item armor : this.inventory.getArmorContents()) {
-            Enchantment fireProtection = armor.getEnchantment(Enchantment.ID_PROTECTION_FIRE);
+            Enchantment $13 = armor.getEnchantment(Enchantment.ID_PROTECTION_FIRE);
 
             if (fireProtection != null && fireProtection.getLevel() > 0) {
                 level = Math.max(level, fireProtection.getLevel());
@@ -264,6 +332,10 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected boolean applyNameTag(@NotNull Player player, @NotNull Item item) {
         return false;
     }
@@ -278,7 +350,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
                 }
             }
 
-            Enchantment durability = armor.getEnchantment(Enchantment.ID_DURABILITY);
+            Enchantment $14 = armor.getEnchantment(Enchantment.ID_DURABILITY);
             if (durability != null
                     && durability.getLevel() > 0
                     && (100 / (durability.getLevel() + 1)) <= Utils.random.nextInt(100)) {
@@ -314,22 +386,38 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "EntityIntelligentHuman";
     }
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.getNameTag();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
         this.level.addPlayerMovement(this, x, y, z, yaw, pitch, headYaw);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void spawnTo(Player player) {
         if (!this.hasSpawned.containsKey(player.getLoaderId())) {
             this.hasSpawned.put(player.getLoaderId(), player);
@@ -340,7 +428,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
 
             this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, new Player[]{player});
 
-            AddPlayerPacket pk = new AddPlayerPacket();
+            AddPlayerPacket $15 = new AddPlayerPacket();
             pk.uuid = this.getUniqueId();
             pk.username = this.getName();
             pk.entityUniqueId = this.getId();
@@ -361,7 +449,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
             this.offhandInventory.sendContents(player);
 
             if (this.riding != null) {
-                SetEntityLinkPacket pkk = new SetEntityLinkPacket();
+                SetEntityLinkPacket $16 = new SetEntityLinkPacket();
                 pkk.vehicleUniqueId = this.riding.getId();
                 pkk.riderUniqueId = this.getId();
                 pkk.type = EntityLink.Type.RIDER;
@@ -374,10 +462,14 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void despawnFrom(Player player) {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
 
-            RemoveEntityPacket pk = new RemoveEntityPacket();
+            RemoveEntityPacket $17 = new RemoveEntityPacket();
             pk.eid = this.getId();
             player.dataPacket(pk);
             this.hasSpawned.remove(player.getLoaderId());
@@ -385,6 +477,10 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         if (!this.closed) {
             if (inventory != null) {
@@ -397,10 +493,14 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
         super.onBlock(entity, event, animate);
-        Item shield = getInventory().getItemInHand();
-        Item shieldOffhand = getOffhandInventory().getItem(0);
+        Item $18 = getInventory().getItemInHand();
+        Item $19 = getOffhandInventory().getItem(0);
         if (shield instanceof ItemShield) {
             shield = damageArmor(shield, entity, event);
             getInventory().setItemInHand(shield);
@@ -423,6 +523,10 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     public Item getHelmet() {
         return this.getInventory().getHelmet();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setHelmet(Item item) {
         return this.getInventory().setHelmet(item);
@@ -431,6 +535,10 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     public Item getChestplate() {
         return this.getInventory().getChestplate();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setChestplate(Item item) {
         return this.getInventory().setChestplate(item);
@@ -439,6 +547,10 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     public Item getLeggings() {
         return getInventory().getLeggings();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setLeggings(Item item) {
         return getInventory().setLeggings(item);
@@ -447,6 +559,10 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     public Item getBoots() {
         return getInventory().getBoots();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setBoots(Item item) {
         return getInventory().setBoots(item);
@@ -459,18 +575,34 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     public Item getItemInOffhand() {
         return this.getOffhandInventory().getItem(0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setItemInHand(Item item) {
         return getInventory().setItemInHand(item);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setItemInHand(Item item, boolean send) {
         return this.getInventory().setItem(getInventory().getHeldItemIndex(), item, send);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setItemInOffhand(Item item) {
         return this.getOffhandInventory().setItem(0, item, true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setItemInOffhand(Item item, boolean send) {
         return this.getOffhandInventory().setItem(0, item, send);

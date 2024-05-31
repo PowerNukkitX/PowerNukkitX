@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class<? extends Item>> {
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Item>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final Map<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();
-    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static final AtomicBoolean $1 = new AtomicBoolean(false);
 
     @UnmodifiableView
     public Map<String, CustomItemDefinition> getCustomItemDefinition() {
@@ -30,6 +30,10 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         if (isLoad.getAndSet(true)) return;
         try {
@@ -515,9 +519,9 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
     public Item get(String id, int meta) {
         try {
-            var c = CACHE_CONSTRUCTORS.get(id);
+            var $2 = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
-            Item item = (Item) c.invoke();
+            Item $3 = (Item) c.invoke();
             item.setDamage(meta);
             return item;
         } catch (Throwable e) {
@@ -527,9 +531,9 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
     public Item get(String id, int meta, int count) {
         try {
-            var c = CACHE_CONSTRUCTORS.get(id);
+            var $4 = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
-            Item item = (Item) c.invoke();
+            Item $5 = (Item) c.invoke();
             item.setCount(count);
             item.setDamage(meta);
             return item;
@@ -540,9 +544,9 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
     public Item get(String id, int meta, int count, CompoundTag tags) {
         try {
-            var c = CACHE_CONSTRUCTORS.get(id);
+            var $6 = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
-            Item item = (Item) c.invoke();
+            Item $7 = (Item) c.invoke();
             item.setCount(count);
             item.setCompoundTag(tags);
             item.setDamage(meta);
@@ -554,9 +558,9 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
     public Item get(String id, int meta, int count, byte[] tags) {
         try {
-            var c = CACHE_CONSTRUCTORS.get(id);
+            var $8 = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
-            Item item = (Item) c.invoke();
+            Item $9 = (Item) c.invoke();
             item.setCount(count);
             if (tags != null) {
                 item.setCompoundTag(tags);
@@ -567,12 +571,20 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             throw new RuntimeException(e);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void trim() {
         CACHE_CONSTRUCTORS.trim();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reload() {
         isLoad.set(false);
         CACHE_CONSTRUCTORS.clear();
@@ -608,14 +620,14 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     public void registerCustomItem(Plugin plugin, Class<? extends Item> value) throws RegisterException {
         try {
             if (CustomItem.class.isAssignableFrom(value)) {
-                FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
+                FastMemberLoader $10 = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
                 FastConstructor<? extends Item> c = FastConstructor.create(value.getConstructor(), memberLoader, false);
-                CustomItem customItem = (CustomItem) c.invoke((Object) null);
-                String key = customItem.getDefinition().identifier();
+                CustomItem $11 = (CustomItem) c.invoke((Object) null);
+                String $12 = customItem.getDefinition().identifier();
                 if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
                     CUSTOM_ITEM_DEFINITIONS.put(key, customItem.getDefinition());
                     Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, customItem.getDefinition().getRuntimeId(), true));
-                    Item ci = (Item) customItem;
+                    Item $13 = (Item) customItem;
                     ci.setNetId(null);
                     Registries.CREATIVE.addCreativeItem(ci);
                 } else {
@@ -631,6 +643,10 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void register0(String key, Class<? extends Item> value) {
         try {
             register(key, value);

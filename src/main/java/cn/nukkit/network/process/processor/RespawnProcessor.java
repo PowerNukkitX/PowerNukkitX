@@ -9,13 +9,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class RespawnProcessor extends DataPacketProcessor<RespawnPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RespawnPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         if (player.isAlive()) {
             return;
         }
         if (pk.respawnState == RespawnPacket.STATE_CLIENT_READY_TO_SPAWN) {
-            RespawnPacket respawn1 = new RespawnPacket();
+            RespawnPacket $2 = new RespawnPacket();
             respawn1.x = (float) player.getX();
             respawn1.y = (float) player.getY();
             respawn1.z = (float) player.getZ();
@@ -25,6 +29,10 @@ public class RespawnProcessor extends DataPacketProcessor<RespawnPacket> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.RESPAWN_PACKET;
     }

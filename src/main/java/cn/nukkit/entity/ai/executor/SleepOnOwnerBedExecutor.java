@@ -12,8 +12,12 @@ import cn.nukkit.entity.data.EntityFlag;
  */
 public class SleepOnOwnerBedExecutor implements IBehaviorExecutor {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
-        Player owner = ((EntityOwnable) entity).getOwner();
+        Player $1 = ((EntityOwnable) entity).getOwner();
         if (entity.distanceSquared(owner) <= 4) {
             setSleeping(entity, true);
         }
@@ -21,26 +25,46 @@ public class SleepOnOwnerBedExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStart(EntityIntelligent entity) {
-        Player owner = ((EntityOwnable) entity).getOwner();
+        Player $2 = ((EntityOwnable) entity).getOwner();
         entity.setMoveTarget(owner);
         entity.setLookTarget(owner);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         stop(entity);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         stop(entity);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void stop(EntityIntelligent entity) {
         setSleeping(entity, false);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void setSleeping(EntityIntelligent entity, boolean sleeping) {
         entity.setDataFlag(EntityFlag.RESTING, sleeping);
         entity.setDataFlagExtend(EntityFlag.RESTING, sleeping);

@@ -11,32 +11,56 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockGravel extends BlockFallable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(GRAVEL);
+    public static final BlockProperties $1 = new BlockProperties(GRAVEL);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockGravel() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockGravel(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.6;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 3;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_SHOVEL;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Gravel";
     }
@@ -48,13 +72,13 @@ public class BlockGravel extends BlockFallable {
 
     @Override
     public Item[] getDrops(Item item) {
-        Enchantment enchantment = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
-        int fortune = 0;
+        Enchantment $2 = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
+        int $3 = 0;
         if (enchantment != null) {
             fortune = enchantment.getLevel();
         }
 
-        NukkitRandom nukkitRandom = new NukkitRandom();
+        NukkitRandom $4 = new NukkitRandom();
         switch (fortune) {
             case 0 -> {
                 if (nukkitRandom.nextInt(0, 9) == 0) {
@@ -80,6 +104,10 @@ public class BlockGravel extends BlockFallable {
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }

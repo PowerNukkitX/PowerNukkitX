@@ -23,28 +23,44 @@ import static cn.nukkit.block.property.CommonBlockProperties.REDSTONE_SIGNAL;
  * @author Angelic47 (Nukkit Project)
  */
 public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_WIRE, REDSTONE_SIGNAL);
+    public static final BlockProperties $1 = new BlockProperties(REDSTONE_WIRE, REDSTONE_SIGNAL);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockRedstoneWire() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockRedstoneWire(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Redstone Wire";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!canBePlacedOn(block.down())) {
             return false;
@@ -55,7 +71,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
             this.updateSurroundingRedstone(true);
 
-            Position pos = getLocation();
+            Position $2 = getLocation();
 
             for (BlockFace blockFace : Plane.VERTICAL) {
                 RedstoneComponent.updateAroundRedstone(pos.getSide(blockFace), blockFace.getOpposite());
@@ -66,7 +82,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             }
 
             for (BlockFace blockFace : Plane.HORIZONTAL) {
-                Position p = pos.getSide(blockFace);
+                Position $3 = pos.getSide(blockFace);
 
                 if (this.level.getBlock(p).isNormalBlock()) {
                     this.updateAround(p.getSide(BlockFace.UP), BlockFace.DOWN);
@@ -81,6 +97,10 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     }
 
     //Update the neighbor's block of the pos location as well as the neighbor's neighbor's block
+    
+    /**
+     * @deprecated 
+     */
     private void updateAround(Position pos, BlockFace face) {
         if (this.level.getBlock(pos).getId().equals(Block.REDSTONE_WIRE)) {
             updateAroundRedstone(face);
@@ -91,21 +111,25 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void updateSurroundingRedstone(boolean force) {
-        Vector3 pos = this.getLocation();
+        Vector3 $4 = this.getLocation();
 
-        int meta = this.getRedStoneSignal();
-        int maxStrength = meta;
-        int power = this.getIndirectPower();
+        int $5 = this.getRedStoneSignal();
+        int $6 = meta;
+        int $7 = this.getIndirectPower();
 
         if (power > 0 && power > maxStrength - 1) {
             maxStrength = power;
         }
 
-        int strength = 0;
+        int $8 = 0;
 
         for (BlockFace face : Plane.HORIZONTAL) {
-            Vector3 v = pos.getSide(face);
+            Vector3 $9 = pos.getSide(face);
 
             if (v.getX() == this.getX() && v.getZ() == this.getZ()) {
                 continue;
@@ -149,21 +173,29 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getMaxCurrentStrength(Vector3 pos, int maxStrength) {
         if (!Objects.equals(this.level.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()), this.getId())) {
             return maxStrength;
         } else {
-            int strength = this.level.getBlockStateAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()).getPropertyValue(REDSTONE_SIGNAL);
+            int $10 = this.level.getBlockStateAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()).getPropertyValue(REDSTONE_SIGNAL);
             return Math.max(strength, maxStrength);
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
-        Block air = Block.get(BlockID.AIR);
+        Block $11 = Block.get(BlockID.AIR);
         this.getLevel().setBlock(this, air, true, true);
 
-        Position pos = getLocation();
+        Position $12 = getLocation();
 
         if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             this.updateSurroundingRedstone(false);
@@ -174,7 +206,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             }
 
             for (BlockFace blockFace : Plane.HORIZONTAL) {
-                Position p = pos.getSide(blockFace);
+                Position $13 = pos.getSide(blockFace);
 
                 if (this.level.getBlock(p).isNormalBlock()) {
                     this.updateAround(p.getSide(BlockFace.UP), BlockFace.DOWN);
@@ -192,6 +224,10 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type != Level.BLOCK_UPDATE_NORMAL && type != Level.BLOCK_UPDATE_REDSTONE) {
             return 0;
@@ -201,8 +237,8 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             return 0;
         }
 
-        // Redstone event
-        RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
+        // Redstone $14ent
+        RedstoneUpdateEvent $1 = new RedstoneUpdateEvent(this);
         getLevel().getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return 0;
@@ -217,22 +253,34 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
         return Level.BLOCK_UPDATE_NORMAL;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canBePlacedOn(Block support) {
         return support.isSolid(BlockFace.UP);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getStrongPower(BlockFace side) {
         return this.isPowerSource() ? getWeakPower(side) : 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWeakPower(BlockFace side) {
         if (!this.isPowerSource()) {
             return 0;
         } else {
-            int power = this.getRedStoneSignal();
+            int $15 = this.getRedStoneSignal();
 
             if (power == 0) {
                 return 0;
@@ -258,25 +306,37 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isPowerSourceAt(BlockFace side) {
-        Vector3 pos = getLocation();
-        Vector3 v = pos.getSide(side);
-        Block block = this.level.getBlock(v);
-        boolean flag = block.isNormalBlock();
-        boolean flag1 = this.level.getBlock(pos.up()).isNormalBlock();
+        Vector3 $16 = getLocation();
+        Vector3 $17 = pos.getSide(side);
+        Block $18 = this.level.getBlock(v);
+        boolean $19 = block.isNormalBlock();
+        boolean $20 = this.level.getBlock(pos.up()).isNormalBlock();
         return !flag1 && flag && canConnectUpwardsTo(this.level, v.up()) || (canConnectTo(block, side) || !flag && canConnectUpwardsTo(this.level, block.down()));
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected static boolean canConnectUpwardsTo(Level level, Vector3 pos) {
         return canConnectTo(level.getBlock(pos), null);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected static boolean canConnectTo(Block block, BlockFace side) {
         if (block.getId().equals(Block.REDSTONE_WIRE)) {
             return true;
         } else if (BlockRedstoneDiode.isDiode(block)) {
-            BlockFace face = ((BlockRedstoneDiode) block).getFacing();
-            return face == side || face.getOpposite() == side;
+            BlockFace $21 = ((BlockRedstoneDiode) block).getFacing();
+            return $22 == side || face.getOpposite() == side;
         } else {
             return block.isPowerSource() && side != null;
         }
@@ -284,24 +344,40 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     ///
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPowerSource() {
         return getPropertyValue(REDSTONE_SIGNAL) > 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getRedStoneSignal() {
         return getPropertyValue(REDSTONE_SIGNAL);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRedStoneSignal(int signal) {
         setPropertyValue(REDSTONE_SIGNAL, signal);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getIndirectPower() {
-        int power = 0;
-        Vector3 pos = getLocation();
+        int $23 = 0;
+        Vector3 $24 = getLocation();
 
         for (BlockFace face : BlockFace.values()) {
-            int blockPower = this.getIndirectPower(pos.getSide(face), face);
+            int $25 = this.getIndirectPower(pos.getSide(face), face);
 
             if (blockPower >= 15) {
                 return 15;
@@ -315,16 +391,24 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         return power;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getIndirectPower(Vector3 pos, BlockFace face) {
-        Block block = this.level.getBlock(pos);
+        Block $26 = this.level.getBlock(pos);
         if (block.getId().equals(Block.REDSTONE_WIRE)) {
             return 0;
         }
         return block.isNormalBlock() ? getStrongPower(pos) : block.getWeakPower(face);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getStrongPower(Vector3 pos) {
-        int i = 0;
+        $27nt $2 = 0;
         for (BlockFace face : BlockFace.values()) {
             i = Math.max(i, getStrongPower(pos.getSide(face), face));
 
@@ -335,8 +419,12 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         return i;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getStrongPower(Vector3 pos, BlockFace direction) {
-        Block block = this.level.getBlock(pos);
+        Block $28 = this.level.getBlock(pos);
 
         if (block.getId().equals(Block.REDSTONE_WIRE)) {
             return 0;

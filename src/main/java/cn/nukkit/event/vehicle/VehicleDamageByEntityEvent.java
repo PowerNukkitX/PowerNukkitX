@@ -13,7 +13,7 @@ import cn.nukkit.event.HandlerList;
 
 public final class VehicleDamageByEntityEvent extends VehicleDamageEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -28,6 +28,10 @@ public final class VehicleDamageByEntityEvent extends VehicleDamageEvent {
      * @param attacker the attacking vehicle
      * @param damage   the caused damage on the vehicle
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public VehicleDamageByEntityEvent(final EntityVehicle vehicle, final Entity attacker, final double damage) {
         super(vehicle, damage);

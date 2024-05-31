@@ -9,14 +9,18 @@ import org.jetbrains.annotations.NotNull;
 
 public class RequestPermissionsProcessor extends DataPacketProcessor<RequestPermissionsPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RequestPermissionsPacket pk) {
         if (!playerHandle.player.isOp()) {
             playerHandle.player.kick("Illegal permission operation", true);
             return;
         }
-        var player = pk.getTargetPlayer();
+        var $1 = pk.getTargetPlayer();
         if (player != null && player.isOnline()) {
-            var customPermissions = pk.parseCustomPermissions();
+            var $2 = pk.parseCustomPermissions();
             for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES) {
                 player.getAdventureSettings().set(controllableAbility, customPermissions.contains(controllableAbility));
             }
@@ -26,6 +30,10 @@ public class RequestPermissionsProcessor extends DataPacketProcessor<RequestPerm
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.REQUEST_PERMISSIONS_PACKET;
     }

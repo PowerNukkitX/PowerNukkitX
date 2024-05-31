@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class GrindstoneEvent extends InventoryEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -43,6 +43,10 @@ public class GrindstoneEvent extends InventoryEvent implements Cancellable {
     private final @NotNull Item secondItem;
     private final @NotNull Player player;
     private int experienceDropped;
+    /**
+     * @deprecated 
+     */
+    
 
     public GrindstoneEvent(GrindstoneInventory inventory, @NotNull Item firstItem, @NotNull Item resultItem, @NotNull Item secondItem, int cost, @NotNull Player player) {
         super(inventory);
@@ -68,10 +72,18 @@ public class GrindstoneEvent extends InventoryEvent implements Cancellable {
     @NotNull public Item getSecondItem() {
         return this.secondItem;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getExperienceDropped() {
         return this.experienceDropped;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setExperienceDropped(int experienceDropped) {
         this.experienceDropped = experienceDropped;

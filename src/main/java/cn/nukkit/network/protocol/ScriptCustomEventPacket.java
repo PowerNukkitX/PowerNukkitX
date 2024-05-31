@@ -17,21 +17,37 @@ public class ScriptCustomEventPacket extends DataPacket {
     public byte[] eventData;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.SCRIPT_CUSTOM_EVENT_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.eventName = byteBuf.readString();
         this.eventData = byteBuf.readByteArray();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeString(this.eventName);
         byteBuf.writeByteArray(this.eventData);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

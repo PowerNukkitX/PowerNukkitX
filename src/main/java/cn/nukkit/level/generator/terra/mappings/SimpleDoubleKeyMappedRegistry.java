@@ -19,6 +19,10 @@ public class SimpleDoubleKeyMappedRegistry<K1, K2, VALUE> implements DoubleKeyMa
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setContent(MapPair<K1, K2, VALUE> mapPair) {
         this.mapPair = mapPair;
     }

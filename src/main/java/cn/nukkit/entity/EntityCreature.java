@@ -14,12 +14,20 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public abstract class EntityCreature extends EntityLiving implements EntityNameable, EntityAgeable {
+    /**
+     * @deprecated 
+     */
+    
     public EntityCreature(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     // Armor stands, when implemented, should also check this.
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (item.getId().equals(Item.NAME_TAG) && !player.isAdventure()) {
             return applyNameTag(player, item);
@@ -28,12 +36,20 @@ public abstract class EntityCreature extends EntityLiving implements EntityNamea
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final boolean playerApplyNameTag(@NotNull Player player, @NotNull Item item) {
         return applyNameTag(player, item);
     }
 
     // Structured like this so I can override nametags in player and dragon classes
     // without overriding onInteract.
+    
+    /**
+     * @deprecated 
+     */
     protected boolean applyNameTag(Player player, Item item) {
         if (item.hasCustomName()) {
             this.setNameTag(item.getCustomName());

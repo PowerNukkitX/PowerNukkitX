@@ -11,6 +11,10 @@ import java.util.List;
 public class PersonaPieceTint {
     public final String pieceType;
     public final ImmutableList<String> colors;
+    /**
+     * @deprecated 
+     */
+    
 
     public PersonaPieceTint(String pieceType, List<String> colors) {
         this.pieceType = pieceType;

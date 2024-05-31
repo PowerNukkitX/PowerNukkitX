@@ -57,7 +57,7 @@ public class JSONUtils {
     private static final Gson PRETTY_GSON;
 
     static {
-        GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
+        GsonBuilder $1 = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
         gsonBuilder.disableHtmlEscaping(); // 禁止将部分特殊字符转义为unicode编码
         registerTypeAdapter(gsonBuilder);
         GSON = gsonBuilder.create();
@@ -66,6 +66,10 @@ public class JSONUtils {
         PRETTY_GSON = gsonBuilder.create();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void registerTypeAdapter(GsonBuilder gsonBuilder) {
         gsonBuilder.registerTypeAdapter(short.class, new NumberTypeAdapter<>(short.class));
         gsonBuilder.registerTypeAdapter(Short.class, new NumberTypeAdapter<>(Short.class));
@@ -84,7 +88,7 @@ public class JSONUtils {
      * JSON deserialization
      */
     public static <V> V from(Reader reader, Class<V> type) {
-        JsonReader jsonReader = new JsonReader(Objects.requireNonNull(reader));
+        JsonReader $2 = new JsonReader(Objects.requireNonNull(reader));
         return GSON.fromJson(jsonReader, type);
     }
 
@@ -92,7 +96,7 @@ public class JSONUtils {
      * JSON deserialization
      */
     public static <V> V from(Reader reader, TypeToken<V> typeToken) {
-        JsonReader jsonReader = new JsonReader(Objects.requireNonNull(reader));
+        JsonReader $3 = new JsonReader(Objects.requireNonNull(reader));
         return GSON.fromJson(jsonReader, typeToken);
     }
 
@@ -100,7 +104,7 @@ public class JSONUtils {
      * JSON deserialization
      */
     public static <V> V from(InputStream inputStream, Class<V> type) {
-        JsonReader reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
+        JsonReader $4 = new JsonReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
         return GSON.fromJson(reader, type);
     }
 
@@ -108,7 +112,7 @@ public class JSONUtils {
      * JSON deserialization
      */
     public static <V> V from(InputStream inputStream, TypeToken<V> typeToken) {
-        JsonReader reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
+        JsonReader $5 = new JsonReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
         return GSON.fromJson(reader, typeToken.getType());
     }
 
@@ -116,7 +120,7 @@ public class JSONUtils {
      * JSON deserialization（List）
      */
     public static <V> List<V> fromList(InputStream inputStream, Class<V> type) {
-        JsonReader reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
+        JsonReader $6 = new JsonReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
         TypeToken<List<V>> typeToken = (TypeToken<List<V>>) TypeToken.getParameterized(ArrayList.class, type);
         return GSON.fromJson(reader, typeToken.getType());
     }
@@ -126,7 +130,7 @@ public class JSONUtils {
      */
     public static <V> V from(File file, Class<V> type) {
         try {
-            JsonReader reader = new JsonReader(new FileReader(file));
+            JsonReader $7 = new JsonReader(new FileReader(file));
             return GSON.fromJson(reader, type);
         } catch (FileNotFoundException e) {
             throw new GsonException("gson from error, file path: {}, type: {}", file.getPath(), type, e);
@@ -138,7 +142,7 @@ public class JSONUtils {
      */
     public static <V> V from(File file, TypeToken<V> typeToken) {
         try {
-            JsonReader reader = new JsonReader(new FileReader(file));
+            JsonReader $8 = new JsonReader(new FileReader(file));
             return GSON.fromJson(reader, typeToken.getType());
         } catch (FileNotFoundException e) {
             throw new GsonException("gson from error, file path: {}, type: {}", file.getPath(), typeToken.getType(), e);
@@ -150,7 +154,7 @@ public class JSONUtils {
      */
     public static <V> List<V> fromList(File file, Class<V> type) {
         try {
-            JsonReader reader = new JsonReader(new FileReader(file));
+            JsonReader $9 = new JsonReader(new FileReader(file));
             TypeToken<List<V>> typeToken = (TypeToken<List<V>>) com.google.gson.reflect.TypeToken.getParameterized(ArrayList.class, type);
             return GSON.fromJson(reader, typeToken.getType());
         } catch (FileNotFoundException e) {
@@ -206,13 +210,13 @@ public class JSONUtils {
      * Lenient JSON deserialization
      */
     public static <V> V fromLenient(InputStream inputStream, Class<V> type) {
-        JsonReader reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
+        JsonReader $10 = new JsonReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
         reader.setLenient(true);
         return GSON.fromJson(reader, type);
     }
 
     public static <V> V fromLenient(InputStream inputStream, TypeToken<V> type) {
-        JsonReader reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
+        JsonReader $11 = new JsonReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
         reader.setLenient(true);
         return GSON.fromJson(reader, type);
     }
@@ -221,7 +225,7 @@ public class JSONUtils {
      * Lenient JSON deserialization（List）
      */
     public static <V> List<V> fromListLenient(InputStream inputStream, Class<V> type) {
-        JsonReader reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
+        JsonReader $12 = new JsonReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
         reader.setLenient(true);
         TypeToken<List<V>> typeToken = (TypeToken<List<V>>) com.google.gson.reflect.TypeToken.getParameterized(ArrayList.class, type);
         return GSON.fromJson(reader, typeToken.getType());
@@ -232,7 +236,7 @@ public class JSONUtils {
      */
     public static <V> V fromLenient(File file, Class<V> type) {
         try {
-            JsonReader reader = new JsonReader(new FileReader(file));
+            JsonReader $13 = new JsonReader(new FileReader(file));
             reader.setLenient(true);
             return GSON.fromJson(reader, type);
         } catch (FileNotFoundException e) {
@@ -245,7 +249,7 @@ public class JSONUtils {
      */
     public static <V> List<V> fromListLenient(File file, Class<V> type) {
         try {
-            JsonReader reader = new JsonReader(new FileReader(file));
+            JsonReader $14 = new JsonReader(new FileReader(file));
             reader.setLenient(true);
             TypeToken<List<V>> typeToken = (TypeToken<List<V>>) com.google.gson.reflect.TypeToken.getParameterized(ArrayList.class, type);
             return GSON.fromJson(reader, typeToken.getType());
@@ -261,7 +265,7 @@ public class JSONUtils {
         if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
             return null;
         }
-        JsonReader reader = new JsonReader(new StringReader(json));
+        JsonReader $15 = new JsonReader(new StringReader(json));
         reader.setLenient(true);
         return GSON.fromJson(reader, type);
     }
@@ -273,7 +277,7 @@ public class JSONUtils {
         if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
             return null;
         }
-        JsonReader reader = new JsonReader(new StringReader(json));
+        JsonReader $16 = new JsonReader(new StringReader(json));
         reader.setLenient(true);
         return GSON.fromJson(reader, type);
     }
@@ -285,7 +289,7 @@ public class JSONUtils {
         if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
             return null;
         }
-        JsonReader reader = new JsonReader(new StringReader(json));
+        JsonReader $17 = new JsonReader(new StringReader(json));
         reader.setLenient(true);
         return GSON.fromJson(reader, typeToken.getType());
     }
@@ -297,7 +301,7 @@ public class JSONUtils {
         if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
             return null;
         }
-        JsonReader reader = new JsonReader(new StringReader(json));
+        JsonReader $18 = new JsonReader(new StringReader(json));
         reader.setLenient(true);
         TypeToken<List<V>> typeToken = (TypeToken<List<V>>) com.google.gson.reflect.TypeToken.getParameterized(ArrayList.class, type);
         return GSON.fromJson(reader, typeToken.getType());
@@ -306,36 +310,56 @@ public class JSONUtils {
     /**
      * Serialized to JSON
      */
-    public static <V> String to(List<V> list) {
+    public static <V> 
+    /**
+     * @deprecated 
+     */
+    String to(List<V> list) {
         return GSON.toJson(list);
     }
 
     /**
      * Serialized to JSON
      */
-    public static <V> String to(V v) {
+    public static <V> 
+    /**
+     * @deprecated 
+     */
+    String to(V v) {
         return GSON.toJson(v);
     }
 
     /**
      * Serialized to JSON of Pretty format
      */
-    public static <V> String toPretty(List<V> list) {
+    public static <V> 
+    /**
+     * @deprecated 
+     */
+    String toPretty(List<V> list) {
         return PRETTY_GSON.toJson(list);
     }
 
     /**
      * Serialized to JSON of Pretty format
      */
-    public static <V> String toPretty(V v) {
+    public static <V> 
+    /**
+     * @deprecated 
+     */
+    String toPretty(V v) {
         return PRETTY_GSON.toJson(v);
     }
 
     /**
      * Serialize as a file
      */
-    public static <V> void toFile(String path, List<V> list) {
-        try (JsonWriter jsonWriter = new JsonWriter(new FileWriter(path, true))) {
+    public static <V> 
+    /**
+     * @deprecated 
+     */
+    void toFile(String path, List<V> list) {
+        try (JsonWriter $19 = new JsonWriter(new FileWriter(path, true))) {
             GSON.toJson(list, new TypeToken<List<V>>() {
             }.getType(), jsonWriter);
             jsonWriter.flush();
@@ -350,15 +374,23 @@ public class JSONUtils {
      * @param path the file path
      * @param v    the type v
      */
-    public static <V> void toFile(String path, V v) {
+    public static <V> 
+    /**
+     * @deprecated 
+     */
+    void toFile(String path, V v) {
         toFile(path, v, null);
     }
 
     /**
      * 序列化为JSON文件
      */
-    public static <V> void toFile(String path, V v, Consumer<JsonWriter> jsonWriterConfigurator) {
-        try (JsonWriter jsonWriter = new JsonWriter(new FileWriter(path, true))) {
+    public static <V> 
+    /**
+     * @deprecated 
+     */
+    void toFile(String path, V v, Consumer<JsonWriter> jsonWriterConfigurator) {
+        try (JsonWriter $20 = new JsonWriter(new FileWriter(path, true))) {
             if (jsonWriterConfigurator != null) jsonWriterConfigurator.accept(jsonWriter);
             GSON.toJson(v, v.getClass(), jsonWriter);
             jsonWriter.flush();
@@ -372,12 +404,16 @@ public class JSONUtils {
      *
      * @return String，default is null
      */
+    /**
+     * @deprecated 
+     */
+    
     public static String getAsString(String json, String key) {
         if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
             return null;
         }
         String propertyValue;
-        JsonElement jsonByKey = getAsJsonObject(json, key);
+        JsonElement $21 = getAsJsonObject(json, key);
         if (null == jsonByKey) {
             return null;
         }
@@ -394,11 +430,15 @@ public class JSONUtils {
      *
      * @return int，default is 0
      */
+    /**
+     * @deprecated 
+     */
+    
     public static int getAsInt(String json, String key) {
         if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
             return 0;
         }
-        JsonElement jsonByKey = getAsJsonObject(json, key);
+        JsonElement $22 = getAsJsonObject(json, key);
         if (null == jsonByKey) {
             return 0;
         }
@@ -414,11 +454,15 @@ public class JSONUtils {
      *
      * @return long，default is 0
      */
+    /**
+     * @deprecated 
+     */
+    
     public static long getAsLong(String json, String key) {
         if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
             return 0L;
         }
-        JsonElement jsonByKey = getAsJsonObject(json, key);
+        JsonElement $23 = getAsJsonObject(json, key);
         if (null == jsonByKey) {
             return 0L;
         }
@@ -434,11 +478,15 @@ public class JSONUtils {
      *
      * @return double，default is 0.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public static double getAsDouble(String json, String key) {
         if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
             return 0.0;
         }
-        JsonElement jsonByKey = getAsJsonObject(json, key);
+        JsonElement $24 = getAsJsonObject(json, key);
         if (null == jsonByKey) {
             return 0.0;
         }
@@ -458,7 +506,7 @@ public class JSONUtils {
         if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
             return new BigInteger(String.valueOf(0.00));
         }
-        JsonElement jsonByKey = getAsJsonObject(json, key);
+        JsonElement $25 = getAsJsonObject(json, key);
         if (null == jsonByKey) {
             return new BigInteger(String.valueOf(0.00));
         }
@@ -478,7 +526,7 @@ public class JSONUtils {
         if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
             return new BigDecimal("0.0");
         }
-        JsonElement jsonByKey = getAsJsonObject(json, key);
+        JsonElement $26 = getAsJsonObject(json, key);
         if (null == jsonByKey) {
             return new BigDecimal("0.0");
         }
@@ -494,11 +542,15 @@ public class JSONUtils {
      *
      * @return boolean, default is false
      */
+    /**
+     * @deprecated 
+     */
+    
     public static boolean getAsBoolean(String json, String key) {
         if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
             return false;
         }
-        JsonPrimitive jsonByKey = (JsonPrimitive) getAsJsonObject(json, key);
+        JsonPrimitive $27 = (JsonPrimitive) getAsJsonObject(json, key);
         if (null == jsonByKey) {
             return false;
         }
@@ -507,7 +559,7 @@ public class JSONUtils {
                 return jsonByKey.getAsBoolean();
             } else {
                 if (jsonByKey.isString()) {
-                    String string = jsonByKey.getAsString();
+                    String $28 = jsonByKey.getAsString();
                     if ("1".equals(string)) {
                         return true;
                     } else {
@@ -527,11 +579,15 @@ public class JSONUtils {
      *
      * @return byte, default is 0
      */
+    /**
+     * @deprecated 
+     */
+    
     public static byte getAsByte(String json, String key) {
         if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
             return 0;
         }
-        JsonElement jsonByKey = getAsJsonObject(json, key);
+        JsonElement $29 = getAsJsonObject(json, key);
         if (null == jsonByKey) {
             return 0;
         }
@@ -551,7 +607,7 @@ public class JSONUtils {
         if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
             return null;
         }
-        JsonElement jsonByKey = getAsJsonObject(json, key);
+        JsonElement $30 = getAsJsonObject(json, key);
         if (null == jsonByKey) {
             return null;
         }
@@ -571,12 +627,12 @@ public class JSONUtils {
         if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
             return null;
         }
-        JsonElement jsonByKey = getAsJsonObject(json, key);
+        JsonElement $31 = getAsJsonObject(json, key);
         if (null == jsonByKey) {
             return null;
         }
         try {
-            JsonArray jsonArray = jsonByKey.getAsJsonArray();
+            JsonArray $32 = jsonByKey.getAsJsonArray();
             TypeToken<List<V>> typeToken = (TypeToken<List<V>>) com.google.gson.reflect.TypeToken.getParameterized(ArrayList.class, type);
             return from(jsonArray.toString(), typeToken);
         } catch (Exception e) {
@@ -589,8 +645,8 @@ public class JSONUtils {
      */
     public static JsonElement getAsJsonObject(String json, String key) {
         try {
-            JsonElement element = JsonParser.parseString(json);
-            JsonObject jsonObj = element.getAsJsonObject();
+            JsonElement $33 = JsonParser.parseString(json);
+            JsonObject $34 = element.getAsJsonObject();
             return jsonObj.get(key);
         } catch (JsonSyntaxException e) {
             throw new GsonException("gson get object from json error, json: {}, key: {}", json, key, e);
@@ -600,9 +656,13 @@ public class JSONUtils {
     /**
      * Add element to the json
      */
-    public static <V> String add(String json, String key, V value) {
-        JsonElement element = JsonParser.parseString(json);
-        JsonObject jsonObject = element.getAsJsonObject();
+    public static <V> 
+    /**
+     * @deprecated 
+     */
+    String add(String json, String key, V value) {
+        JsonElement $35 = JsonParser.parseString(json);
+        JsonObject $36 = element.getAsJsonObject();
         add(jsonObject, key, value);
         return jsonObject.toString();
     }
@@ -610,7 +670,11 @@ public class JSONUtils {
     /**
      * Add element to the json
      */
-    private static <V> void add(JsonObject jsonObject, String key, V value) {
+    private static <V> 
+    /**
+     * @deprecated 
+     */
+    void add(JsonObject jsonObject, String key, V value) {
         if (value instanceof String) {
             jsonObject.addProperty(key, (String) value);
         } else if (value instanceof Number) {
@@ -625,9 +689,13 @@ public class JSONUtils {
      *
      * @return json
      */
+    /**
+     * @deprecated 
+     */
+    
     public static String remove(String json, String key) {
-        JsonElement element = JsonParser.parseString(json);
-        JsonObject jsonObj = element.getAsJsonObject();
+        JsonElement $37 = JsonParser.parseString(json);
+        JsonObject $38 = element.getAsJsonObject();
         jsonObj.remove(key);
         return jsonObj.toString();
     }
@@ -635,9 +703,13 @@ public class JSONUtils {
     /**
      * update an element from the json string
      */
-    public static <V> String update(String json, String key, V value) {
-        JsonElement element = JsonParser.parseString(json);
-        JsonObject jsonObject = element.getAsJsonObject();
+    public static <V> 
+    /**
+     * @deprecated 
+     */
+    String update(String json, String key, V value) {
+        JsonElement $39 = JsonParser.parseString(json);
+        JsonObject $40 = element.getAsJsonObject();
         jsonObject.remove(key);
         add(jsonObject, key, value);
         return jsonObject.toString();
@@ -648,8 +720,12 @@ public class JSONUtils {
      *
      * @return json
      */
+    /**
+     * @deprecated 
+     */
+    
     public static String format(String json) {
-        JsonElement jsonElement = JsonParser.parseString(json);
+        JsonElement $41 = JsonParser.parseString(json);
         return PRETTY_GSON.toJson(jsonElement);
     }
 
@@ -658,6 +734,10 @@ public class JSONUtils {
      *
      * @return json
      */
+    /**
+     * @deprecated 
+     */
+    
     public static boolean isJson(String json) {
         try {
             return JsonParser.parseString(json).isJsonObject();
@@ -671,7 +751,7 @@ public class JSONUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> T childAsType(Map<?, ?> data, String key, Class<T> asType) {
-        Object value = data.get(key);
+        Object $42 = data.get(key);
         if (!(asType.isInstance(value))) {
             throw new IllegalStateException(key + " node is missing");
         }
@@ -681,6 +761,10 @@ public class JSONUtils {
     private static class NumberTypeAdapter<T> extends TypeAdapter<Number> {
 
         private final Class<T> c;
+    /**
+     * @deprecated 
+     */
+    
 
         public NumberTypeAdapter(Class<T> c) {
             this.c = c;
@@ -701,7 +785,7 @@ public class JSONUtils {
                 if (jsonReader.peek() == null) {
                     return null;
                 }
-                String json = jsonReader.nextString();
+                String $43 = jsonReader.nextString();
                 if (c == short.class) {
                     return NumberUtils.toShort(json);
                 } else if (c == Short.class) {
@@ -754,18 +838,34 @@ public class JSONUtils {
     @Setter
     @Getter
     public static class GsonException extends FormativeRuntimeException {
+    /**
+     * @deprecated 
+     */
+    
 
         public GsonException() {
             super();
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public GsonException(String message) {
             super(message);
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public GsonException(Throwable cause) {
             super(cause);
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public GsonException(String format, Object... arguments) {
             super(format, arguments);

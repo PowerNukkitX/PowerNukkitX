@@ -26,28 +26,44 @@ import javax.annotation.Nullable;
  */
 public class BlockNoteblock extends BlockSolid implements RedstoneComponent, BlockEntityHolder<BlockEntityMusic> {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(NOTEBLOCK);
+    public static final BlockProperties $1 = new BlockProperties(NOTEBLOCK);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockNoteblock() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockNoteblock(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Note Block";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
@@ -60,26 +76,46 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.MUSIC;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.8D;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 4D;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null && player.isSneaking()) {
             return false;
@@ -90,29 +126,45 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @org.jetbrains.annotations.Nullable Player player, @NotNull PlayerInteractEvent.Action action) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
         if (player != null && action == Action.LEFT_CLICK_BLOCK && player.isSurvival()) {
             this.emitSound(player);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getStrength() {
-        BlockEntityMusic blockEntity = this.getBlockEntity();
+        BlockEntityMusic $2 = this.getBlockEntity();
         return blockEntity != null ? blockEntity.getPitch() : 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void increaseStrength() {
         getOrCreateBlockEntity().changePitch();
     }
 
     public Instrument getInstrument() {
-        Block down = this.down();
+        Block $3 = this.down();
         if (down instanceof BlockWool) {
             return Instrument.GUITAR;
         }
@@ -169,21 +221,29 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
             default -> Instrument.PIANO;
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void emitSound() {
         emitSound(null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void emitSound(@Nullable Player player) {
         if (!this.up().isAir()) return;
 
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, this.add(0.5, 0.5, 0.5).clone(), VibrationType.BLOCK_CHANGE));
 
-        Instrument instrument = this.getInstrument();
+        Instrument $4 = this.getInstrument();
 
         this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_NOTE, instrument.ordinal() << 8 | this.getStrength());
 
-        BlockEventPacket pk = new BlockEventPacket();
+        BlockEventPacket $5 = new BlockEventPacket();
         pk.x = this.getFloorX();
         pk.y = this.getFloorY();
         pk.z = this.getFloorZ();
@@ -193,12 +253,16 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_REDSTONE) {
             // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
             // before the "real" BlockEntity is set. That means, if we'd use the other method here,
             // it would create two BlockEntities.
-            BlockEntityMusic music = getBlockEntity();
+            BlockEntityMusic $6 = getBlockEntity();
             if (music == null)
                 return 0;
 

@@ -7,6 +7,10 @@ import org.jetbrains.annotations.NotNull;
 
 
 public abstract class BlockWoodStripped extends BlockWood {
+    /**
+     * @deprecated 
+     */
+    
     public BlockWoodStripped(BlockState blockstate) {
         super(blockstate);
     }
@@ -17,16 +21,28 @@ public abstract class BlockWoodStripped extends BlockWood {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Stripped " + super.getName();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         return false;
     }

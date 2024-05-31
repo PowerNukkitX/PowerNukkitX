@@ -15,14 +15,26 @@ import java.util.UUID;
 public class PlayerScorer implements IScorer {
 
     private UUID uuid;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerScorer(UUID uuid) {
         this.uuid = uuid;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerScorer(String uuid) {
         this.uuid = UUID.fromString(uuid);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerScorer(Player player) {
         this.uuid = player.getUniqueId();
@@ -32,6 +44,10 @@ public class PlayerScorer implements IScorer {
         if (uuid == null) return null;
         return Server.getInstance().getPlayer(uuid).isPresent() ? Server.getInstance().getPlayer(uuid).get() : null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isOnline() {
         return getPlayer() != null;
@@ -43,11 +59,19 @@ public class PlayerScorer implements IScorer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return uuid != null ? uuid.hashCode() : 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (obj instanceof PlayerScorer playerScorer) {
             return uuid.equals(playerScorer.uuid);
@@ -56,6 +80,10 @@ public class PlayerScorer implements IScorer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return Server.getInstance().getOnlinePlayers().get(uuid) == null ? String.valueOf(uuid.getMostSignificantBits()) : Server.getInstance().getOnlinePlayers().get(uuid).getName();
     }

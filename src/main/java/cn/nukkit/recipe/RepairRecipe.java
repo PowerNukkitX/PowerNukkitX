@@ -11,6 +11,10 @@ import java.util.List;
 
 public class RepairRecipe extends BaseRecipe {
     private final InventoryType inventoryType;
+    /**
+     * @deprecated 
+     */
+    
 
     public RepairRecipe(InventoryType inventoryType, Item result, Collection<Item> ingredients) {
         super(RecipeRegistry.computeRecipeIdWithItem(List.of(result), ingredients, RecipeType.REPAIR));
@@ -25,6 +29,10 @@ public class RepairRecipe extends BaseRecipe {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean match(Input input) {
         return true;
     }

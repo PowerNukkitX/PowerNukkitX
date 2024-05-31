@@ -15,6 +15,10 @@ import java.util.stream.Collectors;
 
 
 public class CameraShakeCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public CameraShakeCommand(String name) {
         super(name, "commands.screenshake.description");
@@ -35,8 +39,12 @@ public class CameraShakeCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         List<Player> players = list.getResult(1);
         if (players.isEmpty()) {
             log.addNoTargetMatch().output();
@@ -44,16 +52,16 @@ public class CameraShakeCommand extends VanillaCommand {
         }
         switch (result.getKey()) {
             case "add" -> {
-                String players_str = players.stream().map(Player::getName).collect(Collectors.joining(" "));
-                float intensity = list.getResult(2);
-                float second = list.getResult(3);
-                String type = list.getResult(4);
-                CameraShakePacket.CameraShakeType shakeType = switch (type) {
+                String $2 = players.stream().map(Player::getName).collect(Collectors.joining(" "));
+                float $3 = list.getResult(2);
+                float $4 = list.getResult(3);
+                String $5 = list.getResult(4);
+                CameraShakePacket.CameraShakeType $6 = switch (type) {
                     case "positional" -> CameraShakePacket.CameraShakeType.POSITIONAL;
                     case "rotational" -> CameraShakePacket.CameraShakeType.ROTATIONAL;
                     default -> null;
                 };
-                CameraShakePacket packet = new CameraShakePacket();
+                CameraShakePacket $7 = new CameraShakePacket();
                 packet.intensity = intensity;
                 packet.duration = second;
                 packet.shakeType = shakeType;
@@ -63,8 +71,8 @@ public class CameraShakeCommand extends VanillaCommand {
                 return 1;
             }
             case "stop" -> {
-                String players_str = players.stream().map(Player::getName).collect(Collectors.joining(" "));
-                CameraShakePacket packet = new CameraShakePacket();
+                String $8 = players.stream().map(Player::getName).collect(Collectors.joining(" "));
+                CameraShakePacket $9 = new CameraShakePacket();
                 packet.shakeAction = CameraShakePacket.CameraShakeAction.STOP;
                 //avoid NPE
                 packet.intensity = -1;

@@ -31,6 +31,10 @@ public class BedrockBatchWrapper extends AbstractReferenceCounted {
     private boolean modified;
     private Set<BatchFlag> flags = new ObjectOpenHashSet<>();
 
+    
+    /**
+     * @deprecated 
+     */
     private BedrockBatchWrapper(ObjectPool.Handle<BedrockBatchWrapper> handle) {
         this.handle = handle;
     }
@@ -40,7 +44,7 @@ public class BedrockBatchWrapper extends AbstractReferenceCounted {
     }
 
     public static BedrockBatchWrapper newInstance(ByteBuf compressed, ByteBuf uncompressed) {
-        BedrockBatchWrapper batch = RECYCLER.get();
+        BedrockBatchWrapper $1 = RECYCLER.get();
         batch.compressed = compressed;
         batch.uncompressed = uncompressed;
         batch.setRefCnt(1);
@@ -52,7 +56,7 @@ public class BedrockBatchWrapper extends AbstractReferenceCounted {
     }
 
     public static BedrockBatchWrapper create(int subClientId, DataPacket... packets) {
-        BedrockBatchWrapper batch = BedrockBatchWrapper.newInstance();
+        BedrockBatchWrapper $2 = BedrockBatchWrapper.newInstance();
         for (DataPacket packet : packets) {
             batch.getPackets().add(new BedrockPacketWrapper(0, subClientId, 0, packet, null));
         }
@@ -60,6 +64,10 @@ public class BedrockBatchWrapper extends AbstractReferenceCounted {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void deallocate() {
         this.packets.forEach(ReferenceCountUtil::safeRelease);
         ReferenceCountUtil.safeRelease(this.uncompressed);
@@ -72,15 +80,27 @@ public class BedrockBatchWrapper extends AbstractReferenceCounted {
         this.flags.clear();
         this.handle.recycle(this);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addPacket(BedrockPacketWrapper wrapper) {
         this.packets.add(wrapper);
         this.modify();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void modify() {
         this.modified = true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCompressed(ByteBuf compressed) {
         if (this.compressed != null) {
@@ -92,6 +112,10 @@ public class BedrockBatchWrapper extends AbstractReferenceCounted {
             this.algorithm = null;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCompressed(ByteBuf compressed, CompressionAlgorithm algorithm) {
         if (this.compressed != null) {
@@ -101,6 +125,10 @@ public class BedrockBatchWrapper extends AbstractReferenceCounted {
         this.compressed = compressed;
         this.algorithm = algorithm;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setUncompressed(ByteBuf uncompressed) {
         if (this.uncompressed != null) {
@@ -108,14 +136,26 @@ public class BedrockBatchWrapper extends AbstractReferenceCounted {
         }
         this.uncompressed = uncompressed;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFlag(BatchFlag flag) {
         this.flags.add(flag);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasFlag(BatchFlag flag) {
         return this.flags.contains(flag);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void unsetFlag(BatchFlag flag) {
         this.flags.remove(flag);

@@ -56,7 +56,11 @@ public interface Registry<CONTENT> {
      *
      * @param consumer the consumer
      */
-    default void register(Consumer<CONTENT> consumer) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void register(Consumer<CONTENT> consumer) {
         consumer.accept(getContent());
     }
 }

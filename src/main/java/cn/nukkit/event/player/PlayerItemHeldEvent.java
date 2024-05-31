@@ -10,7 +10,7 @@ import cn.nukkit.item.Item;
  */
 public class PlayerItemHeldEvent extends PlayerEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -18,12 +18,20 @@ public class PlayerItemHeldEvent extends PlayerEvent implements Cancellable {
 
     private final Item item;
     private final int hotbarSlot;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerItemHeldEvent(Player player, Item item, int hotbarSlot) {
         this.player = player;
         this.item = item;
         this.hotbarSlot = hotbarSlot;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getSlot() {
         return this.hotbarSlot;

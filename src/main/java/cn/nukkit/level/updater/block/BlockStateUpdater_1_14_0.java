@@ -8,30 +8,42 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BlockStateUpdater_1_14_0 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_14_0();
+    public static final Updater $1 = new BlockStateUpdater_1_14_0();
 
+    
+    /**
+     * @deprecated 
+     */
     private static void addRailUpdater(String name, CompoundTagUpdaterContext context) {
         context.addUpdater(1, 14, 0)
                 .match("name", name)
                 .visit("states")
                 .edit("rail_direction", helper -> {
-                    int direction = (int) helper.getTag();
+                    int $2 = (int) helper.getTag();
                     if (direction > 5) direction = 0;
                     helper.replaceWith("rail_direction", direction);
                 });
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void addMaxStateUpdater(String name, String state, int maxValue, CompoundTagUpdaterContext context) {
         context.addUpdater(1, 14, 0)
                 .match("name", name)
                 .visit("states")
                 .edit(state, helper -> {
-                    int value = (int) helper.getTag();
+                    int $3 = (int) helper.getTag();
                     if (value > maxValue) value = maxValue;
                     helper.replaceWith(state, value);
                 });
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static int convertWeirdoDirectionToFacing(int weirdoDirection) {
         switch (weirdoDirection) {
             case 0:
@@ -47,13 +59,17 @@ public class BlockStateUpdater_1_14_0 implements Updater {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext context) {
         context.addUpdater(1, 14, 0)
                 .match("name", "minecraft:frame")
                 .visit("states")
                 .edit("weirdo_direction", helper -> {
-                    int tag = (int) helper.getTag();
-                    int newDirection = convertWeirdoDirectionToFacing(tag);
+                    int $4 = (int) helper.getTag();
+                    int $5 = convertWeirdoDirectionToFacing(tag);
                     helper.replaceWith("facing_direction", newDirection);
                 });
 

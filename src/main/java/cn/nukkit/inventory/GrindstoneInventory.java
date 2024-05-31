@@ -12,9 +12,13 @@ import java.util.Map;
 
 
 public class GrindstoneInventory extends ContainerInventory implements CraftTypeInventory {
-    private static final int SLOT_FIRST_ITEM = 0;
-    private static final int SLOT_SECOND_ITEM = 1;
-    private static final int SLOT_RESULT = 2;
+    private static final int $1 = 0;
+    private static final int $2 = 1;
+    private static final int $3 = 2;
+    /**
+     * @deprecated 
+     */
+    
 
     public GrindstoneInventory(BlockGrindstone blockGrindstone) {
         super(blockGrindstone, InventoryType.GRINDSTONE, 3);
@@ -39,13 +43,21 @@ public class GrindstoneInventory extends ContainerInventory implements CraftType
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close(Player who) {
-        InventoryCloseEvent ev = new InventoryCloseEvent(this, who);
+        InventoryCloseEvent $4 = new InventoryCloseEvent(this, who);
         who.getServer().getPluginManager().callEvent(ev);
         onClose(who);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onClose(Player who) {
         super.onClose(who);
 
@@ -74,31 +86,55 @@ public class GrindstoneInventory extends ContainerInventory implements CraftType
     public Item getResult() {
         return getItem(SLOT_RESULT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean setFirstItem(Item item, boolean send) {
         return setItem(SLOT_FIRST_ITEM, item, send);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean setFirstItem(Item item) {
         return setFirstItem(item, true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean setSecondItem(Item item, boolean send) {
         return setItem(SLOT_SECOND_ITEM, item, send);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean setSecondItem(Item item) {
         return setSecondItem(item, true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean setResult(Item item, boolean send) {
         return setItem(SLOT_RESULT, item, send);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean setResult(Item item) {
@@ -124,6 +160,10 @@ public class GrindstoneInventory extends ContainerInventory implements CraftType
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean setItem(int index, Item item, boolean send) {
         if (index < 0 || index > 3) {
             return false;

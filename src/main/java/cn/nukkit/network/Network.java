@@ -57,10 +57,18 @@ public class Network {
     private final Map<InetAddress, LocalDateTime> blockIpMap = new HashMap<>();
     private final RakServerChannel channel;
     private BedrockPong pong;
+    /**
+     * @deprecated 
+     */
+    
 
     public Network(Server server) {
         this(server, Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").build());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Network(Server server, int nettyThreadNumber, ThreadFactory threadFactory) {
         this.server = server;
@@ -86,7 +94,7 @@ public class Network {
             oclass = NioDatagramChannel.class;
             eventloopgroup = new NioEventLoopGroup(nettyThreadNumber, threadFactory);
         }
-        InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
+        InetSocketAddress $1 = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
 
         this.pong = new BedrockPong()
                 .edition("MCPE")
@@ -107,7 +115,11 @@ public class Network {
                 .group(eventloopgroup)
                 .childHandler(new BedrockServerInitializer() {
                     @Override
-                    protected void postInitChannel(Channel channel) {
+                    
+    /**
+     * @deprecated 
+     */
+    protected void postInitChannel(Channel channel) {
                         if (Network.this.server.getPropertyBoolean("enable-query", true)) {
                             channel.pipeline().addLast("queryPacketCodec", new QueryPacketCodec())
                                     .addLast("queryPacketHandler", new QueryPacketHandler(address -> Network.this.server.getQueryInformation()));
@@ -121,8 +133,8 @@ public class Network {
 
                     @Override
                     public BedrockSession createSession0(BedrockPeer peer, int subClientId) {
-                        BedrockSession session = new BedrockSession(peer, subClientId);
-                        InetSocketAddress address = (InetSocketAddress) session.getSocketAddress();
+                        BedrockSession $2 = new BedrockSession(peer, subClientId);
+                        InetSocketAddress $3 = (InetSocketAddress) session.getSocketAddress();
                         if (isAddressBlocked(address)) {
                             session.close("Your IP address has been blocked by this server!");
                             onSessionDisconnect(address);
@@ -133,7 +145,11 @@ public class Network {
                     }
 
                     @Override
-                    protected void initSession(BedrockSession session) {
+                    
+    /**
+     * @deprecated 
+     */
+    protected void initSession(BedrockSession session) {
                     }
                 })
                 .bind(bindAddress)
@@ -144,6 +160,10 @@ public class Network {
 
     record NetWorkStatisticData(long upload, long download) {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void shutdown() {
         this.channel.close();
@@ -151,18 +171,30 @@ public class Network {
         this.sessionMap.clear();
         this.netWorkStatisticDataList.clear();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getUpload() {
         return netWorkStatisticDataList.get(1).upload - netWorkStatisticDataList.get(0).upload;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getDownload() {
         return netWorkStatisticDataList.get(1).download - netWorkStatisticDataList.get(0).download;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void resetStatistics() {
-        long upload = 0;
-        long download = 0;
+        long $4 = 0;
+        long $5 = 0;
         if (netWorkStatisticDataList.size() > 1) {
             netWorkStatisticDataList.removeFirst();
         }
@@ -179,6 +211,10 @@ public class Network {
     /**
      * process tick for all network interfaces.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void processInterfaces() {
         try {
             this.process();
@@ -202,9 +238,13 @@ public class Network {
      * @param player the player
      * @return the network latency
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getNetworkLatency(Player player) {
-        var session = this.sessionMap.get(player.getRawSocketAddress());
-        return session == null ? -1 : (int) session.getPing();
+        var $6 = this.sessionMap.get(player.getRawSocketAddress());
+        return $7 == null ? -1 : (int) session.getPing();
     }
 
     /**
@@ -212,6 +252,10 @@ public class Network {
      *
      * @param address the address
      */
+    /**
+     * @deprecated 
+     */
+    
     public void blockAddress(InetAddress address) {
         blockIpMap.put(address, LocalDateTime.of(9999, 1, 1, 0, 0));
     }
@@ -222,6 +266,10 @@ public class Network {
      * @param address the address
      * @param timeout the timeout,unit millisecond
      */
+    /**
+     * @deprecated 
+     */
+    
     public void blockAddress(InetAddress address, int timeout) {
         blockIpMap.put(address, LocalDateTime.now().plus(timeout, ChronoUnit.MILLIS));
     }
@@ -231,6 +279,10 @@ public class Network {
      *
      * @param address the address
      */
+    /**
+     * @deprecated 
+     */
+    
     public void unblockAddress(InetAddress address) {
         blockIpMap.remove(address);
     }
@@ -254,6 +306,10 @@ public class Network {
      * @param newAddress the new address,usually the IP of the proxy
      * @param newSession original session
      */
+    /**
+     * @deprecated 
+     */
+    
     public void replaceSessionAddress(InetSocketAddress oldAddress, InetSocketAddress newAddress, BedrockSession newSession) {
         if (!this.sessionMap.containsKey(oldAddress))
             return;
@@ -268,10 +324,14 @@ public class Network {
     /**
      * whether the address is blocked
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isAddressBlocked(InetSocketAddress address) {
-        InetAddress a = address.getAddress();
+        InetAddress $8 = address.getAddress();
         if (this.blockIpMap.containsKey(a)) {
-            LocalDateTime localDateTime = this.blockIpMap.get(a);
+            LocalDateTime $9 = this.blockIpMap.get(a);
             return LocalDateTime.now().isBefore(localDateTime);
         }
         return false;
@@ -280,6 +340,10 @@ public class Network {
     /**
      * A function of tick for network session
      */
+    /**
+     * @deprecated 
+     */
+    
     public void process() {
         for (BedrockSession session : this.sessionMap.values()) {
             if (session.isDisconnected()) {
@@ -292,6 +356,10 @@ public class Network {
     /**
      * call on session disconnect.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void onSessionDisconnect(InetSocketAddress address) {
         this.sessionMap.remove(address);
     }

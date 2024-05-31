@@ -12,13 +12,21 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 public class EatGrassExecutor implements IBehaviorExecutor {
 
     protected int duration;
-    protected int currentTick = 0;
+    protected int $1 = 0;
+    /**
+     * @deprecated 
+     */
+    
 
     public EatGrassExecutor(int duration) {
         this.duration = duration;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
         if (currentTick == 0) {
             playEatGrassAnimation(entity);
@@ -48,12 +56,20 @@ public class EatGrassExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         currentTick = 0;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void playEatGrassAnimation(EntityIntelligent entity) {
-        EntityEventPacket pk = new EntityEventPacket();
+        EntityEventPacket $2 = new EntityEventPacket();
         pk.eid = entity.getId();
         pk.event = EntityEventPacket.EAT_GRASS_ANIMATION;
         Server.broadcastPacket(entity.getViewers().values(), pk);

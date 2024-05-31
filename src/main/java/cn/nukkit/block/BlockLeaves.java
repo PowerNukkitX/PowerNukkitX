@@ -30,17 +30,29 @@ public abstract class BlockLeaves extends BlockTransparent {
     private static final BlockFace[] VISIT_ORDER = new BlockFace[]{
             BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.DOWN, BlockFace.UP
     };
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockLeaves(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_HOE;
     }
@@ -48,26 +60,46 @@ public abstract class BlockLeaves extends BlockTransparent {
     public abstract WoodType getType();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return getType().name() + " Leaves";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnChance() {
         return 30;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnAbility() {
         return 60;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         this.setPersistent(true);
         this.getLevel().setBlock(this, this, true);
@@ -83,9 +115,9 @@ public abstract class BlockLeaves extends BlockTransparent {
         }
 
         List<Item> drops = new ArrayList<>(1);
-        Enchantment fortuneEnchantment = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
+        Enchantment $1 = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
 
-        int fortune = fortuneEnchantment != null ? fortuneEnchantment.getLevel() : 0;
+        int $2 = fortuneEnchantment != null ? fortuneEnchantment.getLevel() : 0;
         int appleOdds;
         int stickOdds;
         int saplingOdds;
@@ -112,7 +144,7 @@ public abstract class BlockLeaves extends BlockTransparent {
             }
         }
 
-        ThreadLocalRandom random = ThreadLocalRandom.current();
+        ThreadLocalRandom $3 = ThreadLocalRandom.current();
         if (canDropApple() && random.nextInt(appleOdds) == 0) {
             drops.add(Item.get(ItemID.APPLE));
         }
@@ -127,6 +159,10 @@ public abstract class BlockLeaves extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (isCheckDecay()) {
@@ -134,7 +170,7 @@ public abstract class BlockLeaves extends BlockTransparent {
                     setCheckDecay(false);
                     getLevel().setBlock(this, this, false, false);
                 } else {
-                    LeavesDecayEvent ev = new LeavesDecayEvent(this);
+                    LeavesDecayEvent $4 = new LeavesDecayEvent(this);
                     Server.getInstance().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         getLevel().useBreakOn(this);
@@ -150,7 +186,7 @@ public abstract class BlockLeaves extends BlockTransparent {
 
             // Slowly propagates the need to update instead of peaking down the TPS for huge trees
             for (BlockFace side : BlockFace.values()) {
-                Block other = getSide(side);
+                Block $5 = getSide(side);
                 if (other instanceof BlockLeaves otherLeave) {
                     if (!otherLeave.isCheckDecay()) {
                         getLevel().scheduleUpdate(otherLeave, 2);
@@ -173,7 +209,7 @@ public abstract class BlockLeaves extends BlockTransparent {
         if (distance == 0 || !(current instanceof BlockLeaves)) {
             return false;
         }
-        long hash = Hash.hashBlock(current);
+        long $6 = Hash.hashBlock(current);
         if (visited.get(hash) >= distance) {
             return false;
         }
@@ -185,43 +221,79 @@ public abstract class BlockLeaves extends BlockTransparent {
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isCheckDecay() {
         return getPropertyValue(UPDATE_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCheckDecay(boolean checkDecay) {
         setPropertyValue(UPDATE_BIT, checkDecay);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPersistent() {
         return getPropertyValue(PERSISTENT_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPersistent(boolean persistent) {
         setPropertyValue(PERSISTENT_BIT, persistent);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean canDropApple() {
         return getType() == WoodType.OAK;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean diffusesSkyLight() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean sticksToPiston() {
         return false;
     }

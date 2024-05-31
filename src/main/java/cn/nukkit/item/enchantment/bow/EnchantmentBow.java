@@ -10,6 +10,10 @@ import cn.nukkit.item.enchantment.EnchantmentType;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EnchantmentBow extends Enchantment {
+    
+    /**
+     * @deprecated 
+     */
     protected EnchantmentBow(int id, String name, Rarity rarity) {
         super(id, name, rarity, EnchantmentType.BOW);
     }
@@ -21,6 +25,10 @@ public abstract class EnchantmentBow extends Enchantment {
      * @param projectile 箭实体
      * @param bow        弓物品
      */
+    /**
+     * @deprecated 
+     */
+    
     public void onBowShoot(EntityLiving user, EntityProjectile projectile, ItemBow bow) {
 
     }

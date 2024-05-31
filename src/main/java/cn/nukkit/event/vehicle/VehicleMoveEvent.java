@@ -7,7 +7,7 @@ import cn.nukkit.level.Location;
 
 public class VehicleMoveEvent extends VehicleEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -15,6 +15,10 @@ public class VehicleMoveEvent extends VehicleEvent {
 
     private final Location from;
     private final Location to;
+    /**
+     * @deprecated 
+     */
+    
 
     public VehicleMoveEvent(Entity vehicle, Location from, Location to) {
         super(vehicle);

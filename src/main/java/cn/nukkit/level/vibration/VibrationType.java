@@ -46,7 +46,7 @@ public enum VibrationType {
     LIGHTNING_STRIKE(15),
     PISTON_EXTEND(15);
 
-    public final String identifier = "minecraft:" + this.name().toLowerCase(Locale.ENGLISH);
+    public final String $1 = "minecraft:" + this.name().toLowerCase(Locale.ENGLISH);
     public final int frequency;
 
     VibrationType(int frequency) {

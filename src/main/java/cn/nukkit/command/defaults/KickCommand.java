@@ -17,6 +17,10 @@ import java.util.Map;
  * @since 2015/11/11
  */
 public class KickCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public KickCommand(String name) {
         super(name, "commands.kick.description");
@@ -30,14 +34,18 @@ public class KickCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         List<Player> players = list.getResult(0);
         if (players.isEmpty()) {
             log.addNoTargetMatch().output();
             return 0;
         }
-        String reason = "";
+        String $2 = "";
         if (list.hasResult(1)) {
             reason = list.getResult(1);
         }

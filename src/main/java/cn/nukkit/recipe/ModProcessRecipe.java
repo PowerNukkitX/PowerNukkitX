@@ -9,7 +9,11 @@ import org.jetbrains.annotations.Nullable;
 public interface ModProcessRecipe extends Recipe {
     String getCategory();
 
-    default @NotNull String getRecipeId() {
+    default @NotNull 
+    /**
+     * @deprecated 
+     */
+    String getRecipeId() {
         return RecipeRegistry.computeRecipeId(getResults(), getIngredients(), getType());
     }
 
@@ -18,11 +22,19 @@ public interface ModProcessRecipe extends Recipe {
         return null;
     }
 
-    default double getEnergyCost() {
+    default 
+    /**
+     * @deprecated 
+     */
+    double getEnergyCost() {
         return 0;
     }
 
-    default boolean costEnergy() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean costEnergy() {
         return getEnergyType() != null && getEnergyCost() > 0;
     }
 

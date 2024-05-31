@@ -9,6 +9,10 @@ public class MolangDescriptor implements ItemDescriptor {
     private final String tagExpression;
     private final int molangVersion;
     private final int count;
+    /**
+     * @deprecated 
+     */
+    
 
     public MolangDescriptor(String tagExpression, int molangVersion, int count) {
         this.tagExpression = tagExpression;
@@ -30,18 +34,34 @@ public class MolangDescriptor implements ItemDescriptor {
     public ItemDescriptor clone() throws CloneNotSupportedException {
         return (ItemDescriptor) super.clone();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getTagExpression() {
         return this.tagExpression;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getMolangVersion() {
         return this.molangVersion;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getCount() {
         return this.count;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean equals(final Object o) {
         if (o == this) return true;
@@ -53,16 +73,24 @@ public class MolangDescriptor implements ItemDescriptor {
         if (this.getMolangVersion() != other.getMolangVersion()) return false;
         return this.getCount() == other.getCount();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
+        final int $1 = 59;
+        int $2 = 1;
         final Object $tagExpression = this.getTagExpression();
         result = result * PRIME + ($tagExpression == null ? 43 : $tagExpression.hashCode());
         result = result * PRIME + this.getMolangVersion();
         result = result * PRIME + this.getCount();
         return result;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String toString() {
         return "MolangDescriptor(tagExpression=" + this.getTagExpression() + ", molangVersion=" + this.getMolangVersion() + ", count=" + this.getCount() + ")";

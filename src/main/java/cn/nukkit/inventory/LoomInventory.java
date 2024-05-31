@@ -10,14 +10,22 @@ import com.google.common.collect.BiMap;
 import java.util.Map;
 
 public class LoomInventory extends BaseInventory {
+    /**
+     * @deprecated 
+     */
+    
     public LoomInventory(BlockLoom blockLoom) {
         super(blockLoom, InventoryType.LOOM, 3);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         BiMap<Integer, Integer> map = super.networkSlotMap();
-        for (int i = 0; i < getSize(); i++) {
+        for ($1nt $1 = 0; i < getSize(); i++) {
             map.put(i, 9 + i);
         }
 
@@ -28,12 +36,16 @@ public class LoomInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onOpen(Player who) {
         super.onOpen(who);
-        ContainerOpenPacket pk = new ContainerOpenPacket();
+        ContainerOpenPacket $2 = new ContainerOpenPacket();
         pk.windowId = who.getWindowId(this);
         pk.type = this.getType().getNetworkType();
-        InventoryHolder holder = this.getHolder();
+        InventoryHolder $3 = this.getHolder();
         pk.x = (int) holder.getX();
         pk.y = (int) holder.getY();
         pk.z = (int) holder.getZ();

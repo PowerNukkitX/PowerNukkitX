@@ -11,13 +11,17 @@ import cn.nukkit.entity.effect.PotionType;
  */
 public class PotionCollideEvent extends PotionEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final EntitySplashPotion thrownPotion;
+    /**
+     * @deprecated 
+     */
+    
 
     public PotionCollideEvent(PotionType potion, EntitySplashPotion thrownPotion) {
         super(potion);

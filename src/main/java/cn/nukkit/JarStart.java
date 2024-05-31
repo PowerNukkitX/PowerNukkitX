@@ -4,7 +4,11 @@ public final class JarStart {
     /**
      * If the user use java -jar to start the server.
      */
-    private static boolean usingJavaJar = false;
+    private static boolean $1 = false;
+    /**
+     * @deprecated 
+     */
+    
 
     public static void main(String[] args) {
         try {
@@ -19,6 +23,10 @@ public final class JarStart {
         usingJavaJar = true;
         Nukkit.main(args);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean isUsingJavaJar() {
         return usingJavaJar;

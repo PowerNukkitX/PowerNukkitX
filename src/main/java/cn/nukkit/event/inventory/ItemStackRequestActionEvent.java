@@ -9,7 +9,7 @@ import cn.nukkit.inventory.request.ItemStackRequestContext;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
 
 public class ItemStackRequestActionEvent extends Event implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -19,6 +19,10 @@ public class ItemStackRequestActionEvent extends Event implements Cancellable {
     private final Player player;
     private final ItemStackRequestContext context;
     private ActionResponse response;
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemStackRequestActionEvent(Player player, ItemStackRequestAction action, ItemStackRequestContext context) {
         this.player = player;
@@ -37,6 +41,10 @@ public class ItemStackRequestActionEvent extends Event implements Cancellable {
     public ItemStackRequestContext getContext() {
         return context;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setResponse(ActionResponse response) {
         this.response = response;

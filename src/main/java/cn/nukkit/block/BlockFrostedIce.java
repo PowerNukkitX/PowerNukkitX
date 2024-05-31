@@ -10,44 +10,72 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockFrostedIce extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(FROSTED_ICE, CommonBlockProperties.AGE_4);
+    public static final BlockProperties $1 = new BlockProperties(FROSTED_ICE, CommonBlockProperties.AGE_4);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockFrostedIce() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockFrostedIce(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Frosted Ice";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 2.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getFrictionFactor() {
         return 0.98;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        boolean success = super.place(item, block, target, face, fx, fy, fz, player);
+        boolean $2 = super.place(item, block, target, face, fx, fy, fz, player);
         if (success) {
             level.scheduleUpdate(this, ThreadLocalRandom.current().nextInt(20, 40));
         }
@@ -55,12 +83,20 @@ public class BlockFrostedIce extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
         level.setBlock(this, get(FLOWING_WATER), true);
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (level.getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) > 11 && (ThreadLocalRandom.current().nextInt(3) == 0 || countNeighbors() < 4)) {
@@ -82,12 +118,20 @@ public class BlockFrostedIce extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void slightlyMelt(boolean isSource) {
-        int age = getAge();
+        int $3 = getAge();
         if (age < 3) {
             setAge(age + 1);
             level.setBlock(this, layer, this, true);
@@ -96,7 +140,7 @@ public class BlockFrostedIce extends BlockTransparent {
             level.setBlock(this, layer, get(FLOWING_WATER), true);
             if (isSource) {
                 for (BlockFace face : BlockFace.values()) {
-                    Block block = getSide(face);
+                    Block $4 = getSide(face);
                     if (block instanceof BlockFrostedIce blockFrostedIce) {
                         blockFrostedIce.slightlyMelt(false);
                     }
@@ -105,8 +149,12 @@ public class BlockFrostedIce extends BlockTransparent {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int countNeighbors() {
-        int neighbors = 0;
+        int $5 = 0;
         for (BlockFace face : BlockFace.values()) {
             if (getSide(face).getId().equals(FROSTED_ICE) && ++neighbors >= 4) {
                 return neighbors;
@@ -114,10 +162,18 @@ public class BlockFrostedIce extends BlockTransparent {
         }
         return neighbors;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getAge() {
         return getPropertyValue(CommonBlockProperties.AGE_4);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAge(int age) {
         setPropertyValue(CommonBlockProperties.AGE_4, age);

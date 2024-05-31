@@ -8,6 +8,10 @@ import java.util.stream.IntStream;
 public final class AtomicIntIncrementSupplier implements IntSupplier {
     private final AtomicInteger next;
     private final int increment;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public AtomicIntIncrementSupplier(int first, int increment) {
@@ -16,6 +20,10 @@ public final class AtomicIntIncrementSupplier implements IntSupplier {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getAsInt() {
         return next.getAndAdd(increment);
     }

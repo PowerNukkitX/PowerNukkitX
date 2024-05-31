@@ -12,12 +12,20 @@ import cn.nukkit.utils.DyeColor;
 public class BlockEntityBed extends BlockEntitySpawnable {
 
     public int color;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityBed(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         if (!this.namedTag.contains("color")) {
@@ -28,11 +36,19 @@ public class BlockEntityBed extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return this.level.getBlockIdAt(this.getFloorX(), this.getFloorY(), this.getFloorZ()) == BlockID.BED;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putByte("color", this.color);

@@ -6,7 +6,7 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
 public class EntityFallEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -14,6 +14,10 @@ public class EntityFallEvent extends EntityEvent implements Cancellable {
 
     private Block blockFallOn;
     private float fallDistance;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityFallEvent(Entity entity, Block blockFallOn, float fallDistance) {
         this.entity = entity;
@@ -24,10 +28,18 @@ public class EntityFallEvent extends EntityEvent implements Cancellable {
     public Block getBlockFallOn() {
         return blockFallOn;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getFallDistance() {
         return fallDistance;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFallDistance(float distance) {
         this.fallDistance = distance;

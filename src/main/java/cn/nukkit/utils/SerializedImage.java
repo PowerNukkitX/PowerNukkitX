@@ -11,11 +11,15 @@ import static cn.nukkit.entity.data.Skin.*;
 @ToString(exclude = {"data"})
 @EqualsAndHashCode
 public class SerializedImage {
-    public static final SerializedImage EMPTY = new SerializedImage(0, 0, EmptyArrays.EMPTY_BYTES);
+    public static final SerializedImage $1 = new SerializedImage(0, 0, EmptyArrays.EMPTY_BYTES);
 
     public final int width;
     public final int height;
     public final byte[] data;
+    /**
+     * @deprecated 
+     */
+    
 
     public SerializedImage(int width, int height, byte[] data) {
         this.width = width;

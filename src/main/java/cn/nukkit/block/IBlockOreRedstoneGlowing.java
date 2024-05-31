@@ -16,10 +16,14 @@ public interface IBlockOreRedstoneGlowing{
         return getUnlitBlock().toItem();
     }
 
-    default int onUpdate(Block block, int type) {
+    default 
+    /**
+     * @deprecated 
+     */
+    int onUpdate(Block block, int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_RANDOM) {
-            Level level = getLevel();
-            BlockFadeEvent event = new BlockFadeEvent(block, getUnlitBlock());
+            Level $1 = getLevel();
+            BlockFadeEvent $2 = new BlockFadeEvent(block, getUnlitBlock());
             level.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 level.setBlock(block, event.getNewState(), true, true);

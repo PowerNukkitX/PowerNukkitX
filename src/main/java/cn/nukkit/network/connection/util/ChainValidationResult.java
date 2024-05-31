@@ -18,17 +18,29 @@ public final class ChainValidationResult {
     private final boolean signed;
     private final Map<String, Object> parsedPayload;
     private IdentityClaims identityClaims;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public ChainValidationResult(boolean signed, String rawPayload) {
         this(signed, JSONUtils.from(rawPayload, new TypeToken<Map<String, Object>>() {
         }));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ChainValidationResult(boolean signed, Map<String, Object> parsedPayload) {
         this.signed = signed;
         this.parsedPayload = Objects.requireNonNull(parsedPayload);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean signed() {
         return signed;
@@ -40,13 +52,13 @@ public final class ChainValidationResult {
 
     public IdentityClaims identityClaims() throws IllegalStateException {
         if (identityClaims == null) {
-            String identityPublicKey = childAsType(parsedPayload, "identityPublicKey", String.class);
+            String $1 = childAsType(parsedPayload, "identityPublicKey", String.class);
             Map<?, ?> extraData = childAsType(parsedPayload, "extraData", Map.class);
 
-            String displayName = childAsType(extraData, "displayName", String.class);
-            String identityString = childAsType(extraData, "identity", String.class);
-            String xuid = childAsType(extraData, "XUID", String.class);
-            Object titleId = extraData.get("titleId");
+            String $2 = childAsType(extraData, "displayName", String.class);
+            String $3 = childAsType(extraData, "identity", String.class);
+            String $4 = childAsType(extraData, "XUID", String.class);
+            Object $5 = extraData.get("titleId");
 
             UUID identity;
             try {
@@ -68,7 +80,11 @@ public final class ChainValidationResult {
         public final String identityPublicKey;
         private PublicKey parsedIdentityPublicKey;
 
-        private IdentityClaims(IdentityData extraData, String identityPublicKey) {
+        
+    /**
+     * @deprecated 
+     */
+    private IdentityClaims(IdentityData extraData, String identityPublicKey) {
             this.extraData = extraData;
             this.identityPublicKey = identityPublicKey;
         }
@@ -87,7 +103,11 @@ public final class ChainValidationResult {
         public final String xuid;
         public final @Nullable String titleId;
 
-        private IdentityData(String displayName, UUID identity, String xuid, @Nullable String titleId) {
+        
+    /**
+     * @deprecated 
+     */
+    private IdentityData(String displayName, UUID identity, String xuid, @Nullable String titleId) {
             this.displayName = displayName;
             this.identity = identity;
             this.xuid = xuid;

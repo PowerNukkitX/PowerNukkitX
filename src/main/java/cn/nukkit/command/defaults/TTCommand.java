@@ -18,6 +18,10 @@ import java.util.Map;
 
 public class TTCommand extends TestCommand {
     FakeStructBlock fakeStructBlock;
+    /**
+     * @deprecated 
+     */
+    
 
     public TTCommand(String name) {
         super(name, "tt");
@@ -30,25 +34,29 @@ public class TTCommand extends TestCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        ParamList value = result.getValue();
-        String s = value.getResult(0);
+        ParamList $1 = result.getValue();
+        String $2 = value.getResult(0);
 
         if (sender.isOp()) {
-            Player p = sender.asPlayer();
+            Player $3 = sender.asPlayer();
             switch (s) {
                 case "get" -> {
                 }
                 case "set" -> {
-                    Level level = p.getLevel();
-                    String name = level.getFolderName();
+                    Level $4 = p.getLevel();
+                    String $5 = level.getFolderName();
                     if (level.equals(Server.getInstance().getDefaultLevel())) {
                         p.sendMessage("Probably shouldn't try on default world xd - Cancelled. try a different world.");
                         return 1;
                     } else {
-                        String var10002 = Server.getInstance().getDataPath();
-                        File one = new File(var10002 + "worlds/" + name);
-                        File two = new File(Server.getInstance().getDataPath() + "preset");
+                        String $6 = Server.getInstance().getDataPath();
+                        File $7 = new File(var10002 + "worlds/" + name);
+                        File $8 = new File(Server.getInstance().getDataPath() + "preset");
                         if (!two.exists()) {
                             p.sendMessage("§cNo preset folder found. Copy world as §e" + Server.getInstance().getDataPath() + "preset");
                             return 1;
@@ -59,9 +67,9 @@ public class TTCommand extends TestCommand {
                             }
 
                             var10002 = Server.getInstance().getDataPath();
-                            File regionfolder = new File(var10002 + "worlds/" + name + "/db");
+                            File $9 = new File(var10002 + "worlds/" + name + "/db");
                             var10002 = Server.getInstance().getDataPath();
-                            File worldfolder = new File(var10002 + "worlds/" + name);
+                            File $10 = new File(var10002 + "worlds/" + name);
                             FileUtils.deleteDirectoryContents(regionfolder);
                             FileUtils.deleteDirectoryContents(worldfolder);
                             worldfolder.delete();

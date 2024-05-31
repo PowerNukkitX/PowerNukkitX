@@ -14,9 +14,17 @@ import org.jetbrains.annotations.NotNull;
 public class EntityStray extends EntityMob implements EntityWalkable, EntitySmite {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return STRAY;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityStray(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -25,22 +33,38 @@ public class EntityStray extends EntityMob implements EntityWalkable, EntitySmit
     
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 1.9f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Stray";
     }
@@ -51,16 +75,28 @@ public class EntityStray extends EntityMob implements EntityWalkable, EntitySmit
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isUndead() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPreventingSleep(Player player) {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         burn(this);
         return super.onUpdate(currentTick);

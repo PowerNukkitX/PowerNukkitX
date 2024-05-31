@@ -10,7 +10,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class BookEditPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.BOOK_EDIT_PACKET;
+    public static final int $1 = ProtocolInfo.BOOK_EDIT_PACKET;
 
     public Action action;
     public int inventorySlot;
@@ -25,11 +25,19 @@ public class BookEditPacket extends DataPacket {
     public String xuid;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.action = Action.values()[byteBuf.readByte()];
         this.inventorySlot = byteBuf.readByte();
@@ -57,6 +65,10 @@ public class BookEditPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
     }
@@ -68,6 +80,10 @@ public class BookEditPacket extends DataPacket {
         SWAP_PAGES,
         SIGN_BOOK
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

@@ -4,17 +4,33 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 
 public class ItemStainedHardenedClay extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemStainedHardenedClay() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemStainedHardenedClay(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemStainedHardenedClay(Integer meta, int count) {
         super(STAINED_HARDENED_CLAY, meta, count);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void internalAdjust() {
         switch (getDamage()) {

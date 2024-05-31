@@ -31,9 +31,17 @@ import java.util.Set;
  */
 public class EntityCow extends EntityAnimal implements EntityWalkable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return COW;
     }
+    /**
+     * @deprecated 
+     */
+    
     
 
     public EntityCow(IChunk chunk, CompoundTag nbt) {
@@ -70,6 +78,10 @@ public class EntityCow extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.45f;
@@ -78,6 +90,10 @@ public class EntityCow extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.isBaby()) {
             return 0.65f;
@@ -86,6 +102,10 @@ public class EntityCow extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Cow";
     }
@@ -101,12 +121,20 @@ public class EntityCow extends EntityAnimal implements EntityWalkable {
     
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (super.onInteract(player, item, clickedPos)) {
             return true;

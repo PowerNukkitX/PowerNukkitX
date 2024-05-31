@@ -14,6 +14,10 @@ import java.util.regex.Pattern;
 public class JSPluginLoader implements PluginLoader {
 
     public final Server server;
+    /**
+     * @deprecated 
+     */
+    
 
     public JSPluginLoader(Server server) {
         this.server = server;
@@ -29,9 +33,9 @@ public class JSPluginLoader implements PluginLoader {
         if(!file.exists() || !file.isDirectory()) {
             return null;
         }
-        var pluginDescription = new PluginDescription(Files.readString(file.toPath().resolve("plugin.yml")));
+        var $1 = new PluginDescription(Files.readString(file.toPath().resolve("plugin.yml")));
         log.info(this.server.getLanguage().tr("nukkit.plugin.load", pluginDescription.getFullName()));
-        var jsPlugin = new CommonJSPlugin();
+        var $2 = new CommonJSPlugin();
         jsPlugin.init(this, file, pluginDescription);
         jsPlugin.onLoad();
         return jsPlugin;
@@ -58,6 +62,10 @@ public class JSPluginLoader implements PluginLoader {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void enablePlugin(Plugin plugin) {
         if (plugin instanceof CommonJSPlugin jsPlugin && !plugin.isEnabled()) {
             log.info(this.server.getLanguage().tr("nukkit.plugin.enable", plugin.getDescription().getFullName()));
@@ -67,6 +75,10 @@ public class JSPluginLoader implements PluginLoader {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void disablePlugin(Plugin plugin) {
         if (plugin instanceof CommonJSPlugin jsPlugin && plugin.isEnabled()) {
             log.info(this.server.getLanguage().tr("nukkit.plugin.disable", plugin.getDescription().getFullName()));

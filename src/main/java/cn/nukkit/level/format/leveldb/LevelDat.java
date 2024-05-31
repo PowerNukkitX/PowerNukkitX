@@ -16,35 +16,35 @@ import lombok.Value;
 @ToString
 public class LevelDat {
     @Builder.Default
-    String biomeOverride = "";
+    String $1 = "";
     @Builder.Default
-    boolean centerMapsToOrigin = false;
+    boolean $2 = false;
     @Builder.Default
-    boolean confirmedPlatformLockedContent = false;
+    boolean $3 = false;
     @Builder.Default
-    int difficulty = 1;
+    int $4 = 1;
     @Builder.Default
-    String flatWorldLayers = "";
+    String $5 = "";
     @Builder.Default
-    boolean forceGameType = false;
+    boolean $6 = false;
     @Builder.Default
-    GameType gameType = GameType.from(0);
+    GameType $7 = GameType.from(0);
     @Builder.Default
-    int generator = 1;
+    int $8 = 1;
     @Builder.Default
-    String inventoryVersion = "1.20.60";
+    String $9 = "1.20.60";
     @Builder.Default
-    boolean LANBroadcast = true;
+    boolean $10 = true;
     @Builder.Default
-    boolean LANBroadcastIntent = true;
+    boolean $11 = true;
     @Builder.Default
-    long lastPlayed = 0L;
+    long $12 = 0L;
     @Builder.Default
-    String name = "Bedrock level";
+    String $13 = "Bedrock level";
     @Builder.Default
-    BlockVector3 limitedWorldOriginPoint = new BlockVector3(0, 64, 0);
+    BlockVector3 $14 = new BlockVector3(0, 64, 0);
     @Builder.Default
-    SemVersion minimumCompatibleClientVersion = new SemVersion(
+    SemVersion $15 = new SemVersion(
             1,
             20,
             50,
@@ -52,82 +52,82 @@ public class LevelDat {
             0
     );
     @Builder.Default
-    boolean multiplayerGame = true;
+    boolean $16 = true;
     @Builder.Default
-    boolean multiplayerGameIntent = false;
+    boolean $17 = false;
     @Builder.Default
-    int netherScale = 8;
+    int $18 = 8;
     @Builder.Default
-    int networkVersion = ProtocolInfo.CURRENT_PROTOCOL;
+    int $19 = ProtocolInfo.CURRENT_PROTOCOL;
     @Builder.Default
-    int platform = 2;
+    int $20 = 2;
     @Builder.Default
-    int platformBroadcastIntent = 0;
+    int $21 = 0;
     @Builder.Default
-    long randomSeed = 1811906518383890446L;
+    long $22 = 1811906518383890446L;
     @Builder.Default
-    boolean spawnV1Villagers = false;
+    boolean $23 = false;
     @Builder.Default
-    BlockVector3 spawnPoint = new BlockVector3(0, 70, 0);
+    BlockVector3 $24 = new BlockVector3(0, 70, 0);
     @Builder.Default
-    int storageVersion = 10;
+    int $25 = 10;
     @Builder.Default
-    long time = 0L;
+    long $26 = 0L;
     @Builder.Default
-    int worldVersion = 1;
+    int $27 = 1;
     @Builder.Default
-    int XBLBroadcastIntent = 0;
+    int $28 = 0;
     @Builder.Default
-    Abilities abilities = Abilities.builder().build();
+    Abilities $29 = Abilities.builder().build();
     @Builder.Default
-    String baseGameVersion = "*";
+    String $30 = "*";
     @Builder.Default
-    boolean bonusChestEnabled = false;
+    boolean $31 = false;
     @Builder.Default
-    boolean bonusChestSpawned = false;
+    boolean $32 = false;
     @Builder.Default
-    boolean cheatsEnabled = false;
+    boolean $33 = false;
     @Builder.Default
-    boolean commandsEnabled = true;
+    boolean $34 = true;
     @Builder.Default
     @Getter(AccessLevel.NONE)
-    GameRules gameRules = GameRules.getDefault();
+    GameRules $35 = GameRules.getDefault();
     @Builder.Default
-    long currentTick = 0L;
+    long $36 = 0L;
     @Builder.Default
-    int daylightCycle = 0;
+    int $37 = 0;
     @Builder.Default
-    int editorWorldType = 0;
+    int $38 = 0;
     @Builder.Default
-    int eduOffer = 0;
+    int $39 = 0;
     @Builder.Default
-    boolean educationFeaturesEnabled = false;
+    boolean $40 = false;
     @Builder.Default
-    Experiments experiments = Experiments.builder().build();
+    Experiments $41 = Experiments.builder().build();
     @Builder.Default
-    boolean hasBeenLoadedInCreative = true;
+    boolean $42 = true;
     @Builder.Default
-    boolean hasLockedBehaviorPack = false;
+    boolean $43 = false;
     @Builder.Default
-    boolean hasLockedResourcePack = false;
+    boolean $44 = false;
     @Builder.Default
-    boolean immutableWorld = false;
+    boolean $45 = false;
     @Builder.Default
-    boolean isCreatedInEditor = false;
+    boolean $46 = false;
     @Builder.Default
-    boolean isExportedFromEditor = false;
+    boolean $47 = false;
     @Builder.Default
-    boolean isFromLockedTemplate = false;
+    boolean $48 = false;
     @Builder.Default
-    boolean isFromWorldTemplate = false;
+    boolean $49 = false;
     @Builder.Default
-    boolean isRandomSeedAllowed = false;
+    boolean $50 = false;
     @Builder.Default
-    boolean isSingleUseWorld = false;
+    boolean $51 = false;
     @Builder.Default
-    boolean isWorldTemplateOptionLocked = false;
+    boolean $52 = false;
     @Builder.Default
-    SemVersion lastOpenedWithVersion = new SemVersion(
+    SemVersion $53 = new SemVersion(
             1,
             20,
             40,
@@ -135,73 +135,101 @@ public class LevelDat {
             0
     );
     @Builder.Default
-    float lightningLevel = 0.0f;
+    float $54 = 0.0f;
     @Builder.Default
-    int lightningTime = 0;//thunderTime
+    int $55 = 0;//thunderTime
     @Builder.Default
-    int limitedWorldDepth = 16;
+    int $56 = 16;
     @Builder.Default
-    int limitedWorldWidth = 16;
+    int $57 = 16;
     @Builder.Default
-    int permissionsLevel = 0;
+    int $58 = 0;
     @Builder.Default
-    int playerPermissionsLevel = 1;
+    int $59 = 1;
     @Builder.Default
-    int playersSleepingPercentage = 100;
+    int $60 = 100;
     @Builder.Default
-    String prid = "";
+    String $61 = "";
     @Builder.Default
-    float rainLevel = 0.0f;
+    float $62 = 0.0f;
     @Builder.Default
-    int rainTime = 0;//rainTime
+    int $63 = 0;//rainTime
     @Builder.Default
-    int randomTickSpeed = 1;
+    int $64 = 1;
     @Builder.Default
-    boolean recipesUnlock = false;
+    boolean $65 = false;
     @Builder.Default
-    boolean requiresCopiedPackRemovalCheck = false;
+    boolean $66 = false;
     @Builder.Default
-    int serverChunkTickRange = 4;
+    int $67 = 4;
     @Builder.Default
-    boolean spawnMobs = true;
+    boolean $68 = true;
     @Builder.Default
-    boolean startWithMapEnabled = false;
+    boolean $69 = false;
     @Builder.Default
-    boolean texturePacksRequired = false;
+    boolean $70 = false;
     @Builder.Default
-    boolean useMsaGamertagsOnly = true;
+    boolean $71 = true;
     @Builder.Default
-    long worldStartCount = 0L;
+    long $72 = 0L;
     @Builder.Default
-    WorldPolicies worldPolicies = new WorldPolicies();
+    WorldPolicies $73 = new WorldPolicies();
     @Builder.Default
-    boolean raining = false;//PNX Custom field
+    boolean $74 = false;//PNX Custom field
     @Builder.Default
-    boolean thundering = false;//PNX Custom field
+    boolean $75 = false;//PNX Custom field
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRandomSeed(long seed) {
         this.randomSeed = seed;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCurrentTick(int currentTick) {
         this.currentTick = currentTick;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setLightningTime(int lightningTime) {
         this.lightningTime = lightningTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setThundering(boolean thundering) {
         this.thundering = thundering;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRainTime(int rainTime) {
         this.rainTime = rainTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRaining(boolean raining) {
         this.raining = raining;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setGameType(GameType gameType) {
         this.gameType = gameType;
@@ -210,34 +238,66 @@ public class LevelDat {
     public GameType getGameType() {
         return gameType;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return name;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setName(String name) {
         this.name = name;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getDifficulty() {
         return difficulty;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long getTime() {
         return time;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTime(long time) {
         this.time = time;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addTime() {
         this.time++;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCurrentTick(long currentTick) {
         this.currentTick = currentTick;
@@ -246,6 +306,10 @@ public class LevelDat {
     public GameRules getGameRules() {
         return gameRules;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setGameRules(GameRules gameRules) {
         this.gameRules = gameRules;
@@ -257,6 +321,10 @@ public class LevelDat {
     public BlockVector3 getSpawnPoint() {
         return spawnPoint;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSpawnPoint(BlockVector3 spawnPoint) {
         this.spawnPoint = spawnPoint;
@@ -267,49 +335,49 @@ public class LevelDat {
     @ToString
     public static class Abilities {
         @Builder.Default
-        boolean attackMobs = true;
+        boolean $76 = true;
 
         @Builder.Default
-        boolean attackPlayers = true;
+        boolean $77 = true;
 
         @Builder.Default
-        boolean build = true;
+        boolean $78 = true;
 
         @Builder.Default
-        boolean doorsAndSwitches = true;
+        boolean $79 = true;
 
         @Builder.Default
-        float flySpeed = 0.05f;
+        float $80 = 0.05f;
 
         @Builder.Default
-        boolean flying = false;
+        boolean $81 = false;
 
         @Builder.Default
-        boolean instaBuild = false;
+        boolean $82 = false;
 
         @Builder.Default
-        boolean invulnerable = false;
+        boolean $83 = false;
 
         @Builder.Default
-        boolean lightning = false;
+        boolean $84 = false;
 
         @Builder.Default
-        boolean mayFly = false;
+        boolean $85 = false;
 
         @Builder.Default
-        boolean mine = true;
+        boolean $86 = true;
 
         @Builder.Default
-        boolean op = false;
+        boolean $87 = false;
 
         @Builder.Default
-        boolean openContainers = true;
+        boolean $88 = true;
 
         @Builder.Default
-        boolean teleport = false;
+        boolean $89 = false;
 
         @Builder.Default
-        float walkSpeed = 0.1f;
+        float $90 = 0.1f;
     }
 
     @Value
@@ -317,23 +385,23 @@ public class LevelDat {
     @ToString
     public static class Experiments {
         @Builder.Default
-        boolean experimentsEverUsed = false;
+        boolean $91 = false;
         @Builder.Default
-        boolean savedWithToggledExperiments = false;
+        boolean $92 = false;
         @Builder.Default
-        boolean cameras = false;
+        boolean $93 = false;
         @Builder.Default
-        boolean dataDrivenBiomes = false;
+        boolean $94 = false;
         @Builder.Default
-        boolean dataDrivenItems = false;
+        boolean $95 = false;
         @Builder.Default
-        boolean experimentalMolangFeatures = false;
+        boolean $96 = false;
         @Builder.Default
-        boolean gametest = false;
+        boolean $97 = false;
         @Builder.Default
-        boolean upcomingCreatorFeatures = false;
+        boolean $98 = false;
         @Builder.Default
-        boolean villagerTradesRebalance = false;
+        boolean $99 = false;
     }
 
     @Value

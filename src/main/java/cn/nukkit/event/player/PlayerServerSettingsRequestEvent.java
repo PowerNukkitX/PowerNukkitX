@@ -12,13 +12,17 @@ import java.util.Map;
  */
 public class PlayerServerSettingsRequestEvent extends PlayerEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private Map<Integer, FormWindow> settings;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerServerSettingsRequestEvent(Player player, Map<Integer, FormWindow> settings) {
         this.player = player;
@@ -28,10 +32,18 @@ public class PlayerServerSettingsRequestEvent extends PlayerEvent implements Can
     public Map<Integer, FormWindow> getSettings() {
         return settings;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSettings(Map<Integer, FormWindow> settings) {
         this.settings = settings;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSettings(int id, FormWindow window) {
         this.settings.put(id, window);

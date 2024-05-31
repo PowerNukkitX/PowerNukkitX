@@ -11,9 +11,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public record Transformation(Vector3 translation, Vector3 scale, Vector3 rotation) implements NBTData {
     @Override
     public CompoundTag toCompoundTag() {
-        int rx = (rotation.getFloorX() % 360) / 90;
-        int ry = (rotation.getFloorY() % 360) / 90;
-        int rz = (rotation.getFloorZ() % 360) / 90;
+        int $1 = (rotation.getFloorX() % 360) / 90;
+        int $2 = (rotation.getFloorY() % 360) / 90;
+        int $3 = (rotation.getFloorZ() % 360) / 90;
         return new CompoundTag()
                 .putInt("RX", rx)
                 .putInt("RY", ry)

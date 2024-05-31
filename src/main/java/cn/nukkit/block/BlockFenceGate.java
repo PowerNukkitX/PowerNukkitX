@@ -29,7 +29,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.OPEN_BIT;
  * @since 2015/11/23
  */
 public class BlockFenceGate extends BlockTransparent implements RedstoneComponent, Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(FENCE_GATE, DIRECTION, IN_WALL_BIT, OPEN_BIT);
+    public static final BlockProperties $1 = new BlockProperties(FENCE_GATE, DIRECTION, IN_WALL_BIT, OPEN_BIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -41,41 +41,73 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     // previously the gate always closed, when placing an unpowered redstone at the gate, this fixes it
     // and gives the vanilla behavior; no idea how to make this better :d
     private static final Set<Location> manualOverrides = Sets.newConcurrentHashSet();
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockFenceGate() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockFenceGate(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Oak Fence Gate";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 15;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
@@ -97,6 +129,10 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
         offMaxZ[1] = 1;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getOffsetIndex() {
         return switch (getBlockFace()) {
             case SOUTH, NORTH -> 0;
@@ -105,28 +141,48 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         return this.x + offMinX[getOffsetIndex()];
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         return this.z + offMinZ[getOffsetIndex()];
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         return this.x + offMaxX[getOffsetIndex()];
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         return this.z + offMaxZ[getOffsetIndex()];
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        BlockFace direction = player.getDirection();
+        BlockFace $2 = player.getDirection();
         setBlockFace(direction);
 
         if (getSide(direction.rotateY()) instanceof BlockWallBase
@@ -146,26 +202,38 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
-            Item itemInHand = player.getInventory().getItemInHand();
+            Item $3 = player.getInventory().getItemInHand();
             if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) return false;
             return toggle(player);
         } else return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean toggle(Player player) {
         if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
             return false;
         return this.setOpen(player, !this.isOpen());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setOpen(@Nullable Player player, boolean open) {
         if (open == this.isOpen()) {
             return false;
         }
 
-        DoorToggleEvent event = new DoorToggleEvent(this, player);
+        DoorToggleEvent $4 = new DoorToggleEvent(this, player);
         this.getLevel().getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -176,11 +244,11 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
 
         BlockFace direction;
 
-        BlockFace originDirection = getBlockFace();
+        BlockFace $5 = getBlockFace();
         
         if (player != null) {
-            double yaw = player.yaw;
-            double rotation = (yaw - 90) % 360;
+            double $6 = player.yaw;
+            double $7 = (yaw - 90) % 360;
 
             if (rotation < 0) {
                 rotation += 360.0;
@@ -217,11 +285,15 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
 
         playOpenCloseSound();
 
-        var source = this.clone().add(0.5, 0.5, 0.5);
-        VibrationEvent vibrationEvent = open ? new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_OPEN) : new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_CLOSE);
+        var $8 = this.clone().add(0.5, 0.5, 0.5);
+        VibrationEvent $9 = open ? new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_OPEN) : new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_CLOSE);
         this.level.getVibrationManager().callVibrationEvent(vibrationEvent);
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void playOpenCloseSound() {
         if (this.isOpen()) {
@@ -230,28 +302,48 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
             this.playCloseSound();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void playOpenSound() {
         level.addSound(this, Sound.RANDOM_DOOR_OPEN);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void playCloseSound() {
         level.addSound(this, Sound.RANDOM_DOOR_CLOSE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isOpen() {
         return getPropertyValue(OPEN_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setOpen(boolean open) {
         setPropertyValue(OPEN_BIT,open);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            BlockFace face = getBlockFace();
-            boolean touchingWall = getSide(face.rotateY()) instanceof BlockWallBase || getSide(face.rotateYCCW()) instanceof BlockWallBase;
+            BlockFace $10 = getBlockFace();
+            boolean $11 = getSide(face.rotateY()) instanceof BlockWallBase || getSide(face.rotateYCCW()) instanceof BlockWallBase;
             if (touchingWall != isInWall()) {
                 this.setInWall(touchingWall);
                 level.setBlock(this, this, true);
@@ -265,6 +357,10 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
         return 0;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void onRedstoneUpdate() {
         if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
             if (this.isOpen() != this.isGettingPower()) {
@@ -276,6 +372,10 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
             this.setManualOverride(false);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setManualOverride(boolean val) {
         if (val) {
@@ -284,20 +384,36 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
             manualOverrides.remove(this.getLocation());
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getManualOverride() {
         return manualOverrides.contains(this.getLocation());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
         this.setManualOverride(false);
         return super.onBreak(item);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isInWall() {
         return getPropertyValue(IN_WALL_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setInWall(boolean inWall) {
         setPropertyValue(IN_WALL_BIT, inWall);
@@ -309,16 +425,28 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(DIRECTION,face.getHorizontalIndex());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnChance() {
         return 5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnAbility() {
         return 20;
     }

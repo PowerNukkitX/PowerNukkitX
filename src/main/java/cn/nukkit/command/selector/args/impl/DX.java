@@ -16,12 +16,16 @@ public class DX extends ScopeArgument {
     public @Nullable Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
         ParseUtils.singleArgument(arguments, getKeyName());
         ParseUtils.cannotReversed(arguments[0]);
-        var x = basePos.getX();
-        var dx = Double.parseDouble(arguments[0]);
+        var $1 = basePos.getX();
+        var $2 = Double.parseDouble(arguments[0]);
         return entity -> ParseUtils.checkBetween(x, x + dx, entity.getX());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getKeyName() {
         return "dx";
     }

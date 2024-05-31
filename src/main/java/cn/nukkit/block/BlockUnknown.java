@@ -8,11 +8,19 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockUnknown extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties(UNKNOWN);
+    public static final BlockProperties $1 = new BlockProperties(UNKNOWN);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockUnknown() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockUnknown(BlockState blockstate) {
         super(null);
@@ -26,6 +34,10 @@ public class BlockUnknown extends Block {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Unknown";
     }

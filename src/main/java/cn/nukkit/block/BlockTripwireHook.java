@@ -26,34 +26,50 @@ import static cn.nukkit.block.property.CommonBlockProperties.POWERED_BIT;
 
 public class BlockTripwireHook extends BlockTransparent implements RedstoneComponent {
     /** Includes 40 tripwire and both tripwire hooks */
-    public static final int MAX_TRIPWIRE_CIRCUIT_LENGTH = 42;
+    public static final int $1 = 42;
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(TRIPWIRE_HOOK,
+    public static final BlockProperties $2 = new BlockProperties(TRIPWIRE_HOOK,
             DIRECTION, ATTACHED_BIT, POWERED_BIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTripwireHook() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTripwireHook(BlockState state) {
         super(state);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Tripwire Hook";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         switch(type) {
             case Level.BLOCK_UPDATE_NORMAL -> {
-                var supportBlock = this.getSide(this.getFacing().getOpposite());
+                var $3 = this.getSide(this.getFacing().getOpposite());
                 if (!supportBlock.isNormalBlock() && !(supportBlock instanceof BlockGlass)) {
                     this.level.useBreakOn(this);
                 }
@@ -68,8 +84,12 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        var supportBlock = this.getSide(face.getOpposite());
+        var $4 = this.getSide(face.getOpposite());
         if (face == BlockFace.DOWN || face == BlockFace.UP ||
                 (!supportBlock.isNormalBlock() && !(supportBlock instanceof BlockGlass))) {
             return false;
@@ -88,10 +108,14 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
         super.onBreak(item);
-        boolean attached = isAttached();
-        boolean powered = isPowered();
+        boolean $5 = isAttached();
+        boolean $6 = isPowered();
 
         if (attached || powered) {
             this.updateLine(true, false);
@@ -104,6 +128,10 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
 
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void updateLine(boolean isHookBroken, boolean doUpdateAroundHook,
                            int eventDistance, BlockTripWire eventBlock) {
@@ -111,19 +139,19 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
             return;
         }
 
-        BlockFace facing = this.getFacing();
-        Position position = this.getLocation();
-        boolean wasConnected = this.isAttached();
-        boolean wasPowered = this.isPowered();
+        BlockFace $7 = this.getFacing();
+        Position $8 = this.getLocation();
+        boolean $9 = this.isAttached();
+        boolean $10 = this.isPowered();
 
-        boolean isConnected = !isHookBroken;
-        boolean isPowered = false;
+        boolean $11 = !isHookBroken;
+        boolean $12 = false;
 
-        int pairedHookDistance = -1;
+        int $13 = -1;
         BlockTripWire[] line = new BlockTripWire[MAX_TRIPWIRE_CIRCUIT_LENGTH];
         //Skip the starting hook in potential circuit
-        for (int steps = 1; steps < MAX_TRIPWIRE_CIRCUIT_LENGTH; ++steps) {
-            Block b = this.level.getBlock(position.getSide(facing, steps));
+        for (int $14 = 1; steps < MAX_TRIPWIRE_CIRCUIT_LENGTH; ++steps) {
+            Block $15 = this.level.getBlock(position.getSide(facing, steps));
 
             if (b instanceof BlockTripwireHook hook) {
                 if (hook.getFacing() == facing.getOpposite()) {
@@ -142,7 +170,7 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
                 continue;
             }
 
-            boolean notDisarmed = !tripwire.isDisarmed();
+            boolean $16 = !tripwire.isDisarmed();
             isPowered |= notDisarmed && tripwire.isPowered();
 
             if (steps == eventDistance) {
@@ -152,18 +180,18 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
             line[steps] = tripwire;
         }
 
-        boolean foundPairedHook = pairedHookDistance > 1;
+        boolean $17 = pairedHookDistance > 1;
         isConnected &= foundPairedHook;
         isPowered &= isConnected;
 
-        BlockTripwireHook updatedHook = (BlockTripwireHook) Block.get(BlockID.TRIPWIRE_HOOK);
+        BlockTripwireHook $18 = (BlockTripwireHook) Block.get(BlockID.TRIPWIRE_HOOK);
         updatedHook.setLevel(this.level);
         updatedHook.setAttached(isConnected);
         updatedHook.setPowered(isPowered);
 
         if (foundPairedHook) {
-            Position pairedPos = position.getSide(facing, pairedHookDistance);
-            BlockFace pairedFace = facing.getOpposite();
+            Position $19 = position.getSide(facing, pairedHookDistance);
+            BlockFace $20 = facing.getOpposite();
             updatedHook.setFace(pairedFace);
             this.level.setBlock(pairedPos, updatedHook, true, true);
             RedstoneComponent.updateAroundRedstone(pairedPos);
@@ -184,19 +212,27 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
         }
 
         if (wasConnected == isConnected) { return; }
-        for (int steps = 1; steps < pairedHookDistance; steps++) {
-            BlockTripWire wire = line[steps];
+        for (int $21 = 1; steps < pairedHookDistance; steps++) {
+            BlockTripWire $22 = line[steps];
             if(wire == null) { continue; }
-            Vector3 vc = position.getSide(facing, steps);
+            Vector3 $23 = position.getSide(facing, steps);
             wire.setAttached(isConnected);
             this.level.setBlock(vc, wire, true, true);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void updateLine(boolean isHookBroken, boolean doUpdateAroundHook) {
         this.updateLine(isHookBroken, doUpdateAroundHook, -1, null);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addSound(Vector3 pos, boolean canConnect, boolean nextPowered, boolean attached, boolean powered) {
         if (nextPowered && !powered) {
             this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_ON);
@@ -214,62 +250,106 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
     public BlockFace getFacing() {
         return BlockFace.fromHorizontalIndex(this.getDirection());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getDirection() {
         return this.getPropertyValue(DIRECTION);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isAttached() {
         return this.getPropertyValue(ATTACHED_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPowered() {
         return this.getPropertyValue(POWERED_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPowered(boolean isPowered) {
         if (this.isPowered() == isPowered) { return; }
         this.setPropertyValue(POWERED_BIT, isPowered);
-        var pos = this.add(0.5, 0.5, 0.5);
-        VibrationType vibrationType = (isPowered) ? VibrationType.BLOCK_ACTIVATE : VibrationType.BLOCK_DEACTIVATE;
+        var $24 = this.add(0.5, 0.5, 0.5);
+        VibrationType $25 = (isPowered) ? VibrationType.BLOCK_ACTIVATE : VibrationType.BLOCK_DEACTIVATE;
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos, vibrationType));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAttached(boolean isAttached) {
         if (this.isAttached() == isAttached) { return; }
         this.setPropertyValue(ATTACHED_BIT, isAttached);
-        var pos = this.add(0.5, 0.5, 0.5);
-        VibrationType vibrationType = (isAttached) ? VibrationType.BLOCK_ATTACH : VibrationType.BLOCK_DETACH;
+        var $26 = this.add(0.5, 0.5, 0.5);
+        VibrationType $27 = (isAttached) ? VibrationType.BLOCK_ATTACH : VibrationType.BLOCK_DETACH;
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos, vibrationType));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFace(BlockFace face) {
-        int direction = face.getHorizontalIndex();
+        int $28 = face.getHorizontalIndex();
         if(this.getDirection() == direction) { return; }
         this.setPropertyValue(DIRECTION, direction);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPowerSource() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWeakPower(BlockFace face) {
         return isPowered() ? 15 : 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getStrongPower(BlockFace side) {
         return !isPowered() ? 0 : getFacing() == side ? 15 : 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeFlowedInto() {
         return false;
     }
@@ -280,16 +360,28 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return false;
     }

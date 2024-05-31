@@ -77,7 +77,7 @@ public class LevelDBProvider implements LevelProvider {
         });
         this.path = path;
         this.level = level;
-        var levelDat = readLevelDat();
+        var $1 = readLevelDat();
         if (levelDat == null) {
             levelDat = LevelDat.builder().build();
             this.levelDat = levelDat;
@@ -89,11 +89,11 @@ public class LevelDBProvider implements LevelProvider {
 
     @UsedByReflection
     public static void generate(String path, String name, LevelConfig.GeneratorConfig generatorConfig) throws IOException {
-        File dataDir = new File(path + "/db");
+        File $2 = new File(path + "/db");
         if (!dataDir.exists() && !dataDir.mkdirs()) {
             throw new IOException("Could not create the directory " + dataDir);
         }
-        LevelDat levelData = LevelDat.builder()
+        LevelDat $3 = LevelDat.builder()
                 .randomSeed(generatorConfig.seed())
                 .name(name)
                 .lastPlayed(System.currentTimeMillis() / 1000)
@@ -102,8 +102,12 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @UsedByReflection
+    /**
+     * @deprecated 
+     */
+    
     public static boolean isValid(String path) {
-        boolean isValid = (new File(path, "level.dat").exists()) && new File(path, "db").isDirectory();
+        boolean $4 = (new File(path, "level.dat").exists()) && new File(path, "db").isDirectory();
         if (isValid) {
             for (File file : Objects.requireNonNull(new File(path, "db").listFiles())) {
                 if (file.getName().endsWith(".ldb")) {
@@ -113,15 +117,19 @@ public class LevelDBProvider implements LevelProvider {
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void writeLevelDat(String pathName, DimensionData dimensionData, LevelDat levelDat) {
-        Path path = Path.of(pathName);
-        String levelDatName = "level.dat";
+        Path $5 = Path.of(pathName);
+        String $6 = "level.dat";
         if (dimensionData.getDimensionId() != 0) {
             levelDatName = "level_Dim%s.dat".formatted(dimensionData.getDimensionId());
         }
-        var levelDatNow = path.resolve(levelDatName).toFile();
-        try (var output = new FileOutputStream(levelDatNow)) {
+        var $7 = path.resolve(levelDatName).toFile();
+        try (var $8 = new FileOutputStream(levelDatNow)) {
             if (levelDatNow.exists()) {
                 Files.copy(path.resolve(levelDatName), path.resolve(levelDatName + "_old"), StandardCopyOption.REPLACE_EXISTING);
             } else {
@@ -151,14 +159,22 @@ public class LevelDBProvider implements LevelProvider {
         }
         return chunk;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int size() {
         return this.chunks.size();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void unloadChunks() {
-        var iter = chunks.values().iterator();
+        var $9 = chunks.values().iterator();
         while (iter.hasNext()) {
             iter.next().unload(true, false);
             iter.remove();
@@ -176,23 +192,39 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isChunkLoaded(int X, int Z) {
         return isChunkLoaded(Level.chunkHash(X, Z));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void putChunk(long index, IChunk chunk) {
         chunks.put(index, chunk);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isChunkLoaded(long hash) {
         return this.chunks.containsKey(hash);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setChunk(int chunkX, int chunkZ, IChunk chunk) {
         chunk.setPosition(chunkX, chunkZ);
-        long index = Level.chunkHash(chunkX, chunkZ);
+        long $10 = Level.chunkHash(chunkX, chunkZ);
         if (this.chunks.containsKey(index) && !Objects.equals(this.chunks.get(index), chunk)) {
             this.unloadChunk(chunkX, chunkZ, false);
         }
@@ -207,26 +239,26 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public Pair<byte[], Integer> requestChunkData(int x, int z) {
-        IChunk chunk = this.getChunk(x, z, false);
+        IChunk $11 = this.getChunk(x, z, false);
         if (chunk == null) {
             throw new ChunkException("Invalid Chunk Set");
         }
         AtomicReference<byte[]> data = new AtomicReference<>();
         AtomicReference<Integer> subChunkCountRef = new AtomicReference<>();
         chunk.batchProcess(unsafeChunk -> {
-            final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
+            final var $12 = ByteBufAllocator.DEFAULT.ioBuffer();
             try {
                 final ChunkSection[] sections = unsafeChunk.getSections();
-                int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount();
+                int $13 = unsafeChunk.getDimensionData().getChunkSectionCount();
                 while (subChunkCount-- != 0) {
                     if (sections[subChunkCount] != null) {
                         break;
                     }
                 }
-                int total = subChunkCount + 1;
+                int $14 = subChunkCount + 1;
                 //write block
                 if (level != null && level.isAntiXrayEnabled()) {
-                    for (int i = 0; i < total; i++) {
+                    for ($15nt $1 = 0; i < total; i++) {
                         if (sections[i] == null) {
                             sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
                         }
@@ -234,7 +266,7 @@ public class LevelDBProvider implements LevelProvider {
                         sections[i].writeObfuscatedToBuf(level, byteBuf);
                     }
                 } else {
-                    for (int i = 0; i < total; i++) {
+                    for ($16nt $2 = 0; i < total; i++) {
                         if (sections[i] == null) {
                             sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
                         }
@@ -244,7 +276,7 @@ public class LevelDBProvider implements LevelProvider {
                 }
 
                 // Write biomes
-                for (int i = 0; i < total; i++) {
+                for ($17nt $3 = 0; i < total; i++) {
                     sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);
                 }
 
@@ -259,7 +291,7 @@ public class LevelDBProvider implements LevelProvider {
                         level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
                     }
                 }
-                try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf)) {
+                try (ByteBufOutputStream $18 = new ByteBufOutputStream(byteBuf)) {
                     NBTIO.write(tagList, stream, ByteOrder.LITTLE_ENDIAN, true);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -275,81 +307,145 @@ public class LevelDBProvider implements LevelProvider {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getPath() {
         return path;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.levelDat.getName();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isRaining() {
         return this.levelDat.isRaining();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setRaining(boolean raining) {
         this.levelDat.setRaining(raining);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getRainTime() {
         return this.levelDat.getRainTime();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setRainTime(int rainTime) {
         this.levelDat.setRainTime(rainTime);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isThundering() {
         return this.levelDat.isThundering();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setThundering(boolean thundering) {
         this.levelDat.setThundering(thundering);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getThunderTime() {
         return this.levelDat.getLightningTime();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setThunderTime(int thunderTime) {
         this.levelDat.setLightningTime(thunderTime);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getCurrentTick() {
         return this.levelDat.getCurrentTick();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setCurrentTick(long currentTick) {
         this.levelDat.setCurrentTick(currentTick);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getTime() {
         return this.levelDat.getTime();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setTime(long value) {
         this.levelDat.setTime(value);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getSeed() {
         return this.levelDat.getRandomSeed();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setSeed(long value) {
         this.levelDat.setRandomSeed(value);
     }
@@ -360,6 +456,10 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setSpawn(Vector3 pos) {
         this.levelDat.setSpawnPoint(new BlockVector3((int) pos.x, (int) pos.y, (int) pos.z));
     }
@@ -370,11 +470,19 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setGameRules(GameRules rules) {
         this.levelDat.setGameRules(rules);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveChunks() {
         for (IChunk chunk : this.chunks.values()) {
             if (chunk.getChanges() != 0) {
@@ -385,8 +493,12 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveChunk(int X, int Z) {
-        IChunk chunk = this.getChunk(X, Z);
+        IChunk $19 = this.getChunk(X, Z);
         if (chunk != null) {
             try {
                 storage.writeChunk(chunk);
@@ -397,6 +509,10 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveChunk(int X, int Z, IChunk chunk) {
         chunk.setX(X);
         chunk.setZ(Z);
@@ -412,11 +528,19 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveLevelData() {
         writeLevelDat(path, getDimensionData(), this.levelDat);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void updateLevelName(String name) {
         if (!this.getName().equals(name)) {
             this.levelDat.setName(name);
@@ -424,13 +548,21 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean loadChunk(int chunkX, int chunkZ) {
         return this.loadChunk(chunkX, chunkZ, false);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean loadChunk(int chunkX, int chunkZ, boolean create) {
-        long index = Level.chunkHash(chunkX, chunkZ);
+        long $20 = Level.chunkHash(chunkX, chunkZ);
         if (this.chunks.containsKey(index)) {
             return true;
         }
@@ -438,14 +570,22 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean unloadChunk(int X, int Z) {
         return this.unloadChunk(X, Z, true);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean unloadChunk(int X, int Z, boolean safe) {
-        long index = Level.chunkHash(X, Z);
-        IChunk chunk = this.chunks.get(index);
+        long $21 = Level.chunkHash(X, Z);
+        IChunk $22 = this.chunks.get(index);
         if (chunk != null && chunk.unload(false, safe)) {
             lastChunk.remove();
             this.chunks.remove(index, chunk);
@@ -461,7 +601,7 @@ public class LevelDBProvider implements LevelProvider {
 
     @Nullable
     protected final IChunk getThreadLastChunk() {
-        var ref = lastChunk.get();
+        var $23 = lastChunk.get();
         if (ref == null) {
             return null;
         }
@@ -470,18 +610,18 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public IChunk getLoadedChunk(int chunkX, int chunkZ) {
-        var tmp = getThreadLastChunk();
+        var $24 = getThreadLastChunk();
         if (tmp != null && tmp.getX() == chunkX && tmp.getZ() == chunkZ) {
             return tmp;
         }
-        long index = Level.chunkHash(chunkX, chunkZ);
+        long $25 = Level.chunkHash(chunkX, chunkZ);
         lastChunk.set(new WeakReference<>(tmp = chunks.get(index)));
         return tmp;
     }
 
     @Override
     public IChunk getLoadedChunk(long hash) {
-        var tmp = getThreadLastChunk();
+        var $26 = getThreadLastChunk();
         if (tmp != null && tmp.getIndex() == hash) {
             return tmp;
         }
@@ -491,11 +631,11 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public IChunk getChunk(int chunkX, int chunkZ, boolean create) {
-        var tmp = getThreadLastChunk();
+        var $27 = getThreadLastChunk();
         if (tmp != null && tmp.getX() == chunkX && tmp.getZ() == chunkZ) {
             return tmp;
         }
-        long index = Level.chunkHash(chunkX, chunkZ);
+        long $28 = Level.chunkHash(chunkX, chunkZ);
         lastChunk.set(new WeakReference<>(tmp = chunks.get(index)));
         if (tmp != null) {
             return tmp;
@@ -512,33 +652,45 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isChunkPopulated(int chunkX, int chunkZ) {
-        IChunk chunk = this.getChunk(chunkX, chunkZ);
+        IChunk $29 = this.getChunk(chunkX, chunkZ);
         return chunk != null && chunk.getChunkState().ordinal() >= 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         storage.close();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isChunkGenerated(int chunkX, int chunkZ) {
         return true;
     }
 
     public synchronized LevelDat readLevelDat() throws IOException {
-        File levelDat = Path.of(path).resolve("level.dat").toFile();
+        File $30 = Path.of(path).resolve("level.dat").toFile();
         if (!levelDat.exists()) return null;
-        try (var input = new FileInputStream(levelDat)) {
+        try (var $31 = new FileInputStream(levelDat)) {
             //The first 8 bytes are magic number
             input.skip(8);
-            BufferedInputStream stream = new BufferedInputStream(new ByteArrayInputStream(input.readAllBytes()));
-            CompoundTag d = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
+            BufferedInputStream $32 = new BufferedInputStream(new ByteArrayInputStream(input.readAllBytes()));
+            Compoun$33Tag $4 = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
             stream.close();
-            CompoundTag abilities = d.getCompound("abilities");
-            CompoundTag experiments = d.getCompound("experiments");
-            GameRules gameRules = GameRules.getDefault();
+            CompoundTag $34 = d.getCompound("abilities");
+            CompoundTag $35 = d.getCompound("experiments");
+            GameRules $36 = GameRules.getDefault();
             gameRules.setGameRule(GameRule.COMMAND_BLOCK_OUTPUT, d.getBoolean("bonusChestSpawned"));
             gameRules.setGameRule(GameRule.COMMAND_BLOCKS_ENABLED, d.getBoolean("commandblocksenabled"));
             gameRules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, d.getBoolean("dodaylightcycle"));
@@ -569,7 +721,7 @@ public class LevelDBProvider implements LevelProvider {
             gameRules.setGameRule(GameRule.SHOW_TAGS, d.getBoolean("showtags"));
             gameRules.setGameRule(GameRule.SPAWN_RADIUS, d.getInt("spawnradius"));
             gameRules.setGameRule(GameRule.TNT_EXPLODES, d.getBoolean("tntexplodes"));
-            LevelDat.LevelDatBuilder levelDatBuilder = LevelDat.builder()
+            LevelDat.LevelDatBuilder $37 = LevelDat.builder()
                     .biomeOverride(d.getString("BiomeOverride"))
                     .centerMapsToOrigin(d.getBoolean("CenterMapsToOrigin"))
                     .confirmedPlatformLockedContent(d.getBoolean("ConfirmedPlatformLockedContent"))
@@ -682,7 +834,7 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     private static CompoundTag createWorldDataNBT(LevelDat worldData) {
-        CompoundTag levelDat = new CompoundTag();
+        CompoundTag $38 = new CompoundTag();
 
         levelDat.putString("BiomeOverride", worldData.getBiomeOverride());
         levelDat.putBoolean("CenterMapsToOrigin", worldData.isCenterMapsToOrigin());
@@ -717,7 +869,7 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putLong("Time", worldData.getTime());
         levelDat.putInt("WorldVersion", worldData.getWorldVersion());
         levelDat.putInt("XBLBroadcastIntent", worldData.getXBLBroadcastIntent());
-        CompoundTag abilities = new CompoundTag()
+        CompoundTag $39 = new CompoundTag()
                 .putBoolean("attackmobs", worldData.getAbilities().isAttackMobs())
                 .putBoolean("attackplayers", worldData.getAbilities().isAttackPlayers())
                 .putBoolean("build", worldData.getAbilities().isBuild())
@@ -733,7 +885,7 @@ public class LevelDBProvider implements LevelProvider {
                 .putBoolean("teleport", worldData.getAbilities().isTeleport())
                 .putFloat("flySpeed", worldData.getAbilities().getFlySpeed())
                 .putFloat("walkSpeed", worldData.getAbilities().getWalkSpeed());
-        CompoundTag experiments = new CompoundTag()
+        CompoundTag $40 = new CompoundTag()
                 .putBoolean("cameras", worldData.getExperiments().isCameras())
                 .putBoolean("data_driven_biomes", worldData.getExperiments().isDataDrivenBiomes())
                 .putBoolean("data_driven_items", worldData.getExperiments().isDataDrivenItems())

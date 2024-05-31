@@ -31,6 +31,10 @@ import java.util.stream.Collectors;
 
 
 public class ScoreboardCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
     public ScoreboardCommand(String name) {
         super(name, "commands.scoreboard.description", "commands.scoreboard.usage");
         this.setPermission("nukkit.command.scoreboard");
@@ -111,18 +115,22 @@ public class ScoreboardCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
-        var manager = Server.getInstance().getScoreboardManager();
+        var $1 = result.getValue();
+        var $2 = Server.getInstance().getScoreboardManager();
         try {
             switch (result.getKey()) {
                 case "objectives-add" -> {
-                    String objectiveName = list.getResult(2);
+                    String $3 = list.getResult(2);
                     if (manager.containScoreboard(objectiveName)) {
                         log.addError("commands.scoreboard.objectives.add.alreadyExists", objectiveName).output();
                         return 0;
                     }
-                    String criteriaName = list.getResult(3);
+                    String $4 = list.getResult(3);
                     if (list.hasResult(4)) {
                         manager.addScoreboard(new Scoreboard(objectiveName, list.getResult(4), criteriaName, SortOrder.ASCENDING));
                     } else {
@@ -140,7 +148,7 @@ public class ScoreboardCommand extends VanillaCommand {
                     return 1;
                 }
                 case "objectives-remove" -> {
-                    String objectiveName = list.getResult(2);
+                    String $5 = list.getResult(2);
                     if (!manager.containScoreboard(objectiveName)) {
                         log.addError("commands.scoreboard.objectiveNotFound", objectiveName).output();
                         return 0;
@@ -151,8 +159,8 @@ public class ScoreboardCommand extends VanillaCommand {
                     return 1;
                 }
                 case "objectives-setdisplay-list-sidebar" -> {
-                    String slotName = list.getResult(2);
-                    DisplaySlot slot = switch (slotName) {
+                    String $6 = list.getResult(2);
+                    DisplaySlot $7 = switch (slotName) {
                         case "sidebar" -> DisplaySlot.SIDEBAR;
                         case "list" -> DisplaySlot.LIST;
                         default -> DisplaySlot.SIDEBAR;
@@ -162,14 +170,14 @@ public class ScoreboardCommand extends VanillaCommand {
                         manager.setDisplay(slot, null);
                         log.addSuccess("commands.scoreboard.objectives.setdisplay.successCleared", slot.getSlotName()).output();
                     } else {
-                        String objectiveName = list.getResult(3);
+                        String $8 = list.getResult(3);
                         if (!manager.containScoreboard(objectiveName)) {
                             log.addError("commands.scoreboard.objectiveNotFound", objectiveName).output();
                             return 0;
                         }
-                        var scoreboard = manager.getScoreboards().get(objectiveName);
-                        String orderName = list.getResult(4);
-                        SortOrder order = list.hasResult(4) ? switch (orderName) {
+                        var $9 = manager.getScoreboards().get(objectiveName);
+                        String $10 = list.getResult(4);
+                        SortOrder $11 = list.hasResult(4) ? switch (orderName) {
                             case "ascending" -> SortOrder.ASCENDING;
                             case "descending" -> SortOrder.DESCENDING;
                             default -> SortOrder.ASCENDING;
@@ -186,7 +194,7 @@ public class ScoreboardCommand extends VanillaCommand {
                         log.addSuccess("commands.scoreboard.objectives.setdisplay.successCleared", DisplaySlot.BELOW_NAME.getSlotName()).output();
                         return 1;
                     } else {
-                        String objectiveName = list.getResult(3);
+                        String $12 = list.getResult(3);
                         if (!manager.containScoreboard(objectiveName)) {
                             log.addError("commands.scoreboard.objectiveNotFound", objectiveName).output();
                             return 0;
@@ -205,15 +213,15 @@ public class ScoreboardCommand extends VanillaCommand {
                         return 0;
                     }
                     if (list.hasResult(2)) {
-                        String wildcard_target_str = list.getResult(2);
+                        String $13 = list.getResult(2);
                         Set<IScorer> scorers = parseScorers(sender, wildcard_target_str);
                         if (scorers.isEmpty()) {
                             log.addError("commands.scoreboard.players.list.empty").output();
                             return 0;
                         }
                         for (IScorer scorer : scorers) {
-                            boolean find = false;
-                            int count = 0;
+                            boolean $14 = false;
+                            int $15 = 0;
                             for (var scoreboard : manager.getScoreboards().values()) {
                                 if (scoreboard.getLines().containsKey(scorer)) {
                                     find = true;
@@ -241,7 +249,7 @@ public class ScoreboardCommand extends VanillaCommand {
                                 )
                         );
                         log.addSuccess(TextFormat.GREEN + "%commands.scoreboard.players.list.count", String.valueOf(scorerNames.size()));
-                        var join = new StringJoiner(",");
+                        var $16 = new StringJoiner(",");
                         scorerNames.forEach(join::add);
                         log.addSuccess(join.toString()).output();
                     }
@@ -250,27 +258,27 @@ public class ScoreboardCommand extends VanillaCommand {
                     return this.playersOperate(list, sender, manager, log);
                 }
                 case "players-random" -> {
-                    String wildcard_target_str = list.getResult(2);
+                    String $17 = list.getResult(2);
                     Set<IScorer> scorers = parseScorers(sender, wildcard_target_str);
                     if (scorers.isEmpty()) {
                         log.addNoTargetMatch().output();
                         return 0;
                     }
-                    String objectiveName = list.getResult(3);
+                    String $18 = list.getResult(3);
                     if (!manager.containScoreboard(objectiveName)) {
                         log.addError("commands.scoreboard.objectiveNotFound", objectiveName).output();
                         return 0;
                     }
-                    var scoreboard = manager.getScoreboards().get(objectiveName);
-                    long min = list.getResult(4);
-                    long max = list.getResult(5);
+                    var $19 = manager.getScoreboards().get(objectiveName);
+                    long $20 = list.getResult(4);
+                    long $21 = list.getResult(5);
                     if (min > max) {
                         log.addError("commands.scoreboard.players.random.invalidRange", String.valueOf(min), String.valueOf(max)).output();
                         return 0;
                     }
-                    Random random = new Random();
+                    Random $22 = new Random();
                     for (IScorer scorer : scorers) {
-                        int score = (int) (min + random.nextLong(max - min + 1));//avoid "java.lang.IllegalArgumentException: bound must be positive"
+                        int $23 = (int) (min + random.nextLong(max - min + 1));//avoid "java.lang.IllegalArgumentException: bound must be positive"
                         if (!scoreboard.getLines().containsKey(scorer)) {
                             scoreboard.addLine(new ScoreboardLine(scoreboard, scorer, score));
                         }
@@ -281,19 +289,19 @@ public class ScoreboardCommand extends VanillaCommand {
                     return 1;
                 }
                 case "players-reset" -> {
-                    String wildcard_target_str = list.getResult(2);
+                    String $24 = list.getResult(2);
                     Set<IScorer> scorers = parseScorers(sender, wildcard_target_str);
                     if (scorers.isEmpty()) {
                         log.addNoTargetMatch().output();
                         return 0;
                     }
                     if (list.hasResult(3)) {
-                        String objectiveName = list.getResult(3);
+                        String $25 = list.getResult(3);
                         if (!manager.containScoreboard(objectiveName)) {
                             log.addError("commands.scoreboard.objectiveNotFound", objectiveName).output();
                             return 0;
                         }
-                        var scoreboard = manager.getScoreboards().get(objectiveName);
+                        var $26 = manager.getScoreboards().get(objectiveName);
                         for (IScorer scorer : scorers) {
                             if (scoreboard.containLine(scorer)) {
                                 scoreboard.removeLine(scorer);
@@ -316,30 +324,30 @@ public class ScoreboardCommand extends VanillaCommand {
                     }
                 }
                 case "players-test" -> {
-                    String wildcard_target_str = list.getResult(2);
+                    String $27 = list.getResult(2);
                     Set<IScorer> scorers = parseScorers(sender, wildcard_target_str);
                     if (scorers.isEmpty()) {
                         log.addNoTargetMatch().output();
                         return 0;
                     }
-                    String objectiveName = list.getResult(3);
+                    String $28 = list.getResult(3);
                     if (!manager.containScoreboard(objectiveName)) {
                         log.addError("commands.scoreboard.objectiveNotFound", objectiveName).output();
                         return 0;
                     }
-                    var scoreboard = manager.getScoreboards().get(objectiveName);
-                    int min = list.getResult(4);
-                    int max = Integer.MAX_VALUE;
+                    var $29 = manager.getScoreboards().get(objectiveName);
+                    int $30 = list.getResult(4);
+                    int $31 = Integer.MAX_VALUE;
                     if (list.hasResult(5)) {
                         max = list.getResult(5);
                     }
                     for (IScorer scorer : scorers) {
-                        var line = scoreboard.getLine(scorer);
+                        var $32 = scoreboard.getLine(scorer);
                         if (line == null) {
                             log.addError("commands.scoreboard.players.score.notFound", objectiveName, scorer.getName()).output();
                             return 0;
                         }
-                        int score = line.getScore();
+                        int $33 = line.getScore();
                         if (score < min || score > max) {
                             log.addError("commands.scoreboard.players.test.failed", String.valueOf(score), String.valueOf(min), String.valueOf(max)).output();
                             return 0;
@@ -358,21 +366,21 @@ public class ScoreboardCommand extends VanillaCommand {
     }
 
     private int playersCRUD(ParamList list, CommandSender sender, IScoreboardManager manager, CommandLogger log) throws SelectorSyntaxException {
-        String ars = list.getResult(1);
-        String objectiveName = list.getResult(3);
+        String $34 = list.getResult(1);
+        String $35 = list.getResult(3);
         if (!manager.containScoreboard(objectiveName)) {
             log.addError("commands.scoreboard.objectiveNotFound", objectiveName).output();
             return 0;
         }
-        var scoreboard = manager.getScoreboards().get(objectiveName);
-        String wildcard_target_str = list.getResult(2);
+        var $36 = manager.getScoreboards().get(objectiveName);
+        String $37 = list.getResult(2);
         Set<IScorer> scorers = parseScorers(sender, wildcard_target_str, scoreboard);
         if (scorers.isEmpty()) {
             log.addError("commands.scoreboard.players.list.empty").output();
             return 0;
         }
-        int score = list.getResult(4);
-        int count = scorers.size();
+        int $38 = list.getResult(4);
+        int $39 = scorers.size();
         switch (ars) {
             case "add" -> {
                 for (IScorer scorer : scorers) {
@@ -383,7 +391,7 @@ public class ScoreboardCommand extends VanillaCommand {
                     }
                 }
                 if (count == 1) {
-                    var scorer = scorers.iterator().next();
+                    var $40 = scorers.iterator().next();
                     log.addSuccess("commands.scoreboard.players.add.success", String.valueOf(score), objectiveName, scorer.getName(), String.valueOf(scoreboard.getLines().get(scorer).getScore()));
                 } else {
                     log.addSuccess("commands.scoreboard.players.add.multiple.success", String.valueOf(score), objectiveName, String.valueOf(count));
@@ -399,7 +407,7 @@ public class ScoreboardCommand extends VanillaCommand {
                     scoreboard.getLines().get(scorer).removeScore(score);
                 }
                 if (count == 1) {
-                    var scorer = scorers.iterator().next();
+                    var $41 = scorers.iterator().next();
                     log.addSuccess("commands.scoreboard.players.remove.success", String.valueOf(score), objectiveName, scorer.getName(), String.valueOf(scoreboard.getLines().get(scorer).getScore()));
                 } else {
                     log.addSuccess("commands.scoreboard.players.remove.multiple.success", String.valueOf(score), objectiveName, String.valueOf(count));
@@ -415,7 +423,7 @@ public class ScoreboardCommand extends VanillaCommand {
                     scoreboard.getLines().get(scorer).setScore(score);
                 }
                 if (count == 1) {
-                    var scorer = scorers.iterator().next();
+                    var $42 = scorers.iterator().next();
                     log.addSuccess("commands.scoreboard.players.set.success", objectiveName, scorer.getName(), String.valueOf(score));
                 } else {
                     log.addSuccess("commands.scoreboard.players.set.multiple.success", objectiveName, String.valueOf(count), String.valueOf(score));
@@ -428,31 +436,31 @@ public class ScoreboardCommand extends VanillaCommand {
     }
 
     private int playersOperate(ParamList list, CommandSender sender, IScoreboardManager manager, CommandLogger log) throws SelectorSyntaxException {
-        String targetObjectiveName = list.getResult(3);
+        String $43 = list.getResult(3);
         if (!manager.containScoreboard(targetObjectiveName)) {
             log.addError("commands.scoreboard.objectiveNotFound", targetObjectiveName).output();
             return 0;
         }
-        var targetScoreboard = manager.getScoreboards().get(targetObjectiveName);
+        var $44 = manager.getScoreboards().get(targetObjectiveName);
 
-        String wildcard_target_str = list.getResult(2);
+        String $45 = list.getResult(2);
         Set<IScorer> targetScorers = parseScorers(sender, wildcard_target_str, targetScoreboard);
         if (targetScorers.isEmpty()) {
             log.addNoTargetMatch().output();
             return 0;
         }
 
-        String operation = list.getResult(4);
+        String $46 = list.getResult(4);
 
 
-        String selectorObjectiveName = list.getResult(6);
+        String $47 = list.getResult(6);
         if (!manager.containScoreboard(selectorObjectiveName)) {
             log.addError("commands.scoreboard.objectiveNotFound", selectorObjectiveName).output();
             return 0;
         }
-        var selectorScoreboard = manager.getScoreboards().get(targetObjectiveName);
+        var $48 = manager.getScoreboards().get(targetObjectiveName);
 
-        String selector_str = list.getResult(5);
+        String $49 = list.getResult(5);
         Set<IScorer> selectorScorers = parseScorers(sender, selector_str, selectorScoreboard);
         if (selectorScorers.isEmpty()) {
             log.addNoTargetMatch().output();
@@ -469,9 +477,9 @@ public class ScoreboardCommand extends VanillaCommand {
                     log.addError("commands.scoreboard.players.operation.notFound", selectorObjectiveName, selectorScorer.getName()).output();
                     return 0;
                 }
-                int targetScore = targetScoreboard.getLines().get(targetScorer).getScore();
-                int selectorScore = selectorScoreboard.getLines().get(selectorScorer).getScore();
-                int changedScore = -1;
+                int $50 = targetScoreboard.getLines().get(targetScorer).getScore();
+                int $51 = selectorScoreboard.getLines().get(selectorScorer).getScore();
+                int $52 = -1;
                 switch (operation) {
                     case "+=" -> {
                         changedScore = targetScore + selectorScore;
@@ -523,7 +531,7 @@ public class ScoreboardCommand extends VanillaCommand {
     }
 
     private Set<IScorer> parseScorers(CommandSender sender, String wildcardTargetStr, @Nullable IScoreboard wildcardScoreboard) throws SelectorSyntaxException {
-        var manager = Server.getInstance().getScoreboardManager();
+        var $53 = Server.getInstance().getScoreboardManager();
         Set<IScorer> scorers = new HashSet<>();
         if (wildcardTargetStr.equals("*")) {
             if (wildcardScoreboard != null) {

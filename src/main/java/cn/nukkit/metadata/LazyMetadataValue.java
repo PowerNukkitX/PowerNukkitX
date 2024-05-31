@@ -21,7 +21,7 @@ public class LazyMetadataValue extends MetadataValueAdapter {
     private Callable<Object> lazyValue;
     private CacheStrategy cacheStrategy;
     private SoftReference<Object> internalValue;
-    private static final Object ACTUALLY_NULL = new Object();
+    private static final Object $1 = new Object();
 
     /**
      * Initialized a LazyMetadataValue object with the default
@@ -31,6 +31,10 @@ public class LazyMetadataValue extends MetadataValueAdapter {
      *                     value.
      * @param lazyValue    the lazy value assigned to this metadata value.
      */
+    /**
+     * @deprecated 
+     */
+    
     public LazyMetadataValue(Plugin owningPlugin, Callable<Object> lazyValue) {
         this(owningPlugin, CacheStrategy.CACHE_AFTER_FIRST_EVAL, lazyValue);
     }
@@ -44,6 +48,10 @@ public class LazyMetadataValue extends MetadataValueAdapter {
      *                      value.
      * @param lazyValue     the lazy value assigned to this metadata value.
      */
+    /**
+     * @deprecated 
+     */
+    
     public LazyMetadataValue(Plugin owningPlugin, CacheStrategy cacheStrategy, Callable<Object> lazyValue) {
         super(owningPlugin);
         Validate.notNull(cacheStrategy, "cacheStrategy cannot be null");
@@ -57,13 +65,17 @@ public class LazyMetadataValue extends MetadataValueAdapter {
      * Protected special constructor used by FixedMetadataValue to bypass
      * standard setup.
      */
+    
+    /**
+     * @deprecated 
+     */
     protected LazyMetadataValue(Plugin owningPlugin) {
         super(owningPlugin);
     }
 
     public Object value() {
         eval();
-        Object value = internalValue.get();
+        Object $2 = internalValue.get();
         if (value == ACTUALLY_NULL) {
             return null;
         }
@@ -79,7 +91,7 @@ public class LazyMetadataValue extends MetadataValueAdapter {
     private synchronized void eval() throws MetadataEvaluationException {
         if (cacheStrategy == CacheStrategy.NEVER_CACHE || internalValue.get() == null) {
             try {
-                Object value = lazyValue.call();
+                Object $3 = lazyValue.call();
                 if (value == null) {
                     value = ACTUALLY_NULL;
                 }
@@ -89,6 +101,10 @@ public class LazyMetadataValue extends MetadataValueAdapter {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public synchronized void invalidate() {
         if (cacheStrategy != CacheStrategy.CACHE_ETERNALLY) {

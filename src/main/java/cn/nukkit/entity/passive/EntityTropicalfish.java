@@ -15,17 +15,25 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityTropicalfish extends EntityFish {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return TROPICALFISH;
     }
 
     private static final int[] VARIANTS = {0, 1};
     private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4, 5};
     private static final int[] COLOR2 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
-    public int color = 0;
+    public int $1 = 0;
     private int variant;
     private int mark_variant;
     private int color2;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityTropicalfish(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -35,21 +43,37 @@ public class EntityTropicalfish extends EntityFish {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Tropical Fish";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.5f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.4f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(6);
         super.initEntity();
@@ -78,23 +102,43 @@ public class EntityTropicalfish extends EntityFish {
         this.setDataProperty(COLOR_2, this.color2);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getRandomColor() {
         return DyeColor.values()[ThreadLocalRandom.current().nextInt(0, 16)].getWoolData();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getRandomMarkVariant() {
         return MARK_VARIANTS[Utils.rand(0, MARK_VARIANTS.length - 1)];
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getRandomColor2() {
         return COLOR2[Utils.rand(0, COLOR2.length - 1)];
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getRandomVariant() {
         return VARIANTS[Utils.rand(0, VARIANTS.length - 1)];
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
 
@@ -108,10 +152,18 @@ public class EntityTropicalfish extends EntityFish {
         }
         return new Item[]{Item.get(Item.TROPICAL_FISH)};
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getColor() {
         return namedTag.getByte("Color");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setColor(int color) {
         this.color = color;

@@ -70,15 +70,23 @@ public enum GameRule {
     public static String[] getNames() {
         String[] stringValues = new String[values().length];
 
-        for (int i = 0; i < values().length; i++) {
+        for ($1nt $1 = 0; i < values().length; i++) {
             stringValues[i] = values()[i].getName();
         }
         return stringValues;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return name;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isDeprecated() {
         return deprecated;

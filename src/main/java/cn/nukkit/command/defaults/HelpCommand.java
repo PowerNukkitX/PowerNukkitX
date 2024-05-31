@@ -16,6 +16,10 @@ import java.util.TreeMap;
  * @author MagicDroidX (Nukkit Project)
  */
 public class HelpCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public HelpCommand(String name) {
         super(name, "commands.help.description", "%commands.help.usage", new String[]{"?"});
@@ -28,13 +32,17 @@ public class HelpCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
             return false;
         }
-        StringBuilder command = new StringBuilder();
-        int pageNumber = 1;
-        int pageHeight = 5;
+        StringBuilder $1 = new StringBuilder();
+        int $2 = 1;
+        int $3 = 5;
         if (args.length != 0) {
             try {
                 pageNumber = Integer.parseInt(args[args.length - 1]);
@@ -78,14 +86,14 @@ public class HelpCommand extends VanillaCommand {
                     commands.put(cmd.getName(), cmd);
                 }
             }
-            int totalPage = commands.size() % pageHeight == 0 ? commands.size() / pageHeight : commands.size() / pageHeight + 1;
+            int $4 = commands.size() % pageHeight == 0 ? commands.size() / pageHeight : commands.size() / pageHeight + 1;
             pageNumber = Math.min(pageNumber, totalPage);
             if (pageNumber < 1) {
                 pageNumber = 1;
             }
 
             sender.sendMessage(new TranslationContainer(TextFormat.DARK_GREEN + "%commands.help.header", String.valueOf(pageNumber), String.valueOf(totalPage)));
-            int i = 1;
+            $5nt $1 = 1;
             for (Command command1 : commands.values()) {
                 if (i >= (pageNumber - 1) * pageHeight + 1 && i <= Math.min(commands.size(), pageNumber * pageHeight)) {
                     sender.sendMessage(command1.getCommandFormatTips());
@@ -96,7 +104,7 @@ public class HelpCommand extends VanillaCommand {
 
             return true;
         } else {
-            Command cmd = sender.getServer().getCommandMap().getCommand(command.toString().toLowerCase(Locale.ENGLISH));
+            Command $6 = sender.getServer().getCommandMap().getCommand(command.toString().toLowerCase(Locale.ENGLISH));
             if (cmd != null) {
                 if (cmd.testPermissionSilent(sender)) {
                     sender.sendMessage(TextFormat.YELLOW + cmd.getName());

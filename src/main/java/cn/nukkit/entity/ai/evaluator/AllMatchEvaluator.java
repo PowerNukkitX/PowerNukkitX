@@ -13,16 +13,28 @@ import java.util.Set;
 
 
 public class AllMatchEvaluator extends MultiBehaviorEvaluator {
+    /**
+     * @deprecated 
+     */
+    
 
     public AllMatchEvaluator(@NotNull Set<IBehaviorEvaluator> evaluators) {
         super(evaluators);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public AllMatchEvaluator(@NotNull IBehaviorEvaluator... evaluators) {
         super(evaluators);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean evaluate(EntityIntelligent entity) {
         for (IBehaviorEvaluator evaluator : evaluators) {
             if (!evaluator.evaluate(entity)) return false;

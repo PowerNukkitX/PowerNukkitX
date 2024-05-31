@@ -20,7 +20,11 @@ public interface IBehavior extends IBehaviorExecutor, IBehaviorEvaluator {
      *
      * @return 优先级
      */
-    default int getPriority() {
+    default 
+    /**
+     * @deprecated 
+     */
+    int getPriority() {
         return 1;
     }
 
@@ -31,7 +35,11 @@ public interface IBehavior extends IBehaviorExecutor, IBehaviorEvaluator {
      *
      * @return 权重值
      */
-    default int getWeight() {
+    default 
+    /**
+     * @deprecated 
+     */
+    int getWeight() {
         return 1;
     }
 
@@ -42,7 +50,11 @@ public interface IBehavior extends IBehaviorExecutor, IBehaviorEvaluator {
      *
      * @return 刷新周期<br>Refresh period
      */
-    default int getPeriod() {
+    default 
+    /**
+     * @deprecated 
+     */
+    int getPeriod() {
         return 1;
     }
 

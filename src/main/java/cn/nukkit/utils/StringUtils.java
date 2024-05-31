@@ -9,23 +9,39 @@ import java.util.StringJoiner;
 
 
 public final class StringUtils {
+    
+    /**
+     * @deprecated 
+     */
     private StringUtils() {
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static String beforeLast(String str, String splitter) {
-        final int i = str.indexOf(splitter);
+        f$1nal $1nt i = str.indexOf(splitter);
         if (i == -1) return str;
         return str.substring(0, i);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static String afterFirst(String str, String splitter) {
-        final int i = str.indexOf(splitter);
+        f$2nal $2nt i = str.indexOf(splitter);
         if (i == -1) return str;
         return str.substring(i + 1);
     }
 
-    @NotNull public static String capitalize(@NotNull String str) {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public static String capitalize(@NotNull String str) {
         if (str.length() == 0) {
             return "";
         }
@@ -55,11 +71,11 @@ public final class StringUtils {
      */
 
     public static List<String> fastSplit(String delimiter, String str, int limit) {
-        var tmp = str;
-        var results = new ArrayList<String>();
-        var count = 1;
+        var $3 = str;
+        var $4 = new ArrayList<String>();
+        var $5 = 1;
         while (true) {
-            int j = tmp.indexOf(delimiter);
+            int $6 = tmp.indexOf(delimiter);
             if (j < 0) {
                 results.add(tmp);
                 break;
@@ -74,9 +90,13 @@ public final class StringUtils {
         }
         return results;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static String joinNotNull(String delim, String... elements) {
-        StringJoiner join = new StringJoiner(delim);
+        StringJoiner $7 = new StringJoiner(delim);
         for (var element : elements) {
             if (element != null) {
                 join.add(element);

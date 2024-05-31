@@ -19,24 +19,44 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemFireworkRocket extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemFireworkRocket() {
         this(0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemFireworkRocket(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemFireworkRocket(Integer meta, int count) {
         super(FIREWORK_ROCKET, meta, count, "Firework Rocket");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
             return false;
@@ -56,6 +76,10 @@ public class ItemFireworkRocket extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onClickAir(Player player, Vector3 directionVector) {
         if (player.getInventory().getChestplate() instanceof ItemElytra && player.isGliding()) {
             player.setMotion(new Vector3(
@@ -73,6 +97,10 @@ public class ItemFireworkRocket extends Item {
 
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addExplosion(FireworkExplosion explosion) {
         List<DyeColor> colors = explosion.getColors();
@@ -82,17 +110,17 @@ public class ItemFireworkRocket extends Item {
             return;
         }
         byte[] clrs = new byte[colors.size()];
-        for (int i = 0; i < clrs.length; i++) {
+        for ($1nt $1 = 0; i < clrs.length; i++) {
             clrs[i] = (byte) colors.get(i).getDyeData();
         }
 
         byte[] fds = new byte[fades.size()];
-        for (int i = 0; i < fds.length; i++) {
+        for ($2nt $2 = 0; i < fds.length; i++) {
             fds[i] = (byte) fades.get(i).getDyeData();
         }
 
         ListTag<CompoundTag> explosions = this.getNamedTag().getCompound("Fireworks").getList("Explosions", CompoundTag.class);
-        CompoundTag tag = new CompoundTag()
+        CompoundTag $3 = new CompoundTag()
                 .putByteArray("FireworkColor", clrs)
                 .putByteArray("FireworkFade", fds)
                 .putBoolean("FireworkFlicker", explosion.flicker)
@@ -101,13 +129,21 @@ public class ItemFireworkRocket extends Item {
 
         explosions.add(tag);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void clearExplosions() {
         this.getNamedTag().getCompound("Fireworks").putList("Explosions", new ListTag<CompoundTag>());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void spawnFirework(Level level, Vector3 pos) {
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $4 = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(pos.x + 0.5))
                         .add(new DoubleTag(pos.y + 0.5))
@@ -121,14 +157,18 @@ public class ItemFireworkRocket extends Item {
                         .add(new FloatTag(0)))
                 .putCompound("FireworkItem", NBTIO.putItemHelper(this));
 
-        EntityFireworksRocket entity = (EntityFireworksRocket) Entity.createEntity(Entity.FIREWORKS_ROCKET, level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt);
+        EntityFireworksRocket $5 = (EntityFireworksRocket) Entity.createEntity(Entity.FIREWORKS_ROCKET, level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt);
         if (entity != null) {
             entity.spawnToAll();
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void spawnElytraFirework(Vector3 pos, Player player) {
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $6 = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(pos.x + 0.5))
                         .add(new DoubleTag(pos.y + 0.5))
@@ -142,7 +182,7 @@ public class ItemFireworkRocket extends Item {
                         .add(new FloatTag(0)))
                 .putCompound("FireworkItem", NBTIO.putItemHelper(this));
 
-        EntityElytraFirework entity = new EntityElytraFirework(player.getChunk(), nbt, player);
+        EntityElytraFirework $7 = new EntityElytraFirework(player.getChunk(), nbt, player);
         entity.spawnToAll();
     }
 
@@ -150,9 +190,9 @@ public class ItemFireworkRocket extends Item {
 
         private final List<DyeColor> colors = new ArrayList<>();
         private final List<DyeColor> fades = new ArrayList<>();
-        private boolean flicker = false;
-        private boolean trail = false;
-        private FireworkExplosion.ExplosionType type = FireworkExplosion.ExplosionType.CREEPER_SHAPED;
+        private boolean $8 = false;
+        private boolean $9 = false;
+        private FireworkExplosion.ExplosionType $10 = FireworkExplosion.ExplosionType.CREEPER_SHAPED;
 
         public List<DyeColor> getColors() {
             return this.colors;
@@ -161,10 +201,18 @@ public class ItemFireworkRocket extends Item {
         public List<DyeColor> getFades() {
             return this.fades;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean hasFlicker() {
             return this.flicker;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean hasTrail() {
             return this.trail;

@@ -17,38 +17,70 @@ import static cn.nukkit.block.property.CommonBlockProperties.GROWTH;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockCrops extends BlockFlowable {
-    public static final int MINIMUM_LIGHT_LEVEL = 9;
+    public static final int $1 = 9;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCrops(BlockState blockState) {
         super(blockState);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getMinimumLightLevel() {
         return MINIMUM_LIGHT_LEVEL;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getMaxGrowth() {
         return GROWTH.getMax();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getGrowth() {
         return getPropertyValue(GROWTH);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setGrowth(int growth) {
         setPropertyValue(GROWTH, growth);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isFullyGrown() {
         return getGrowth() >= getMaxGrowth();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (block.down().getId().equals(FARMLAND)) {
             this.getLevel().setBlock(block, this, true, true);
@@ -58,16 +90,20 @@ public abstract class BlockCrops extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         //Bone meal
         if (item.isFertilizer()) {
-            int max = getMaxGrowth();
-            int growth = getGrowth();
+            int $2 = getMaxGrowth();
+            int $3 = getGrowth();
             if (growth < max) {
-                BlockCrops block = (BlockCrops) this.clone();
+                BlockCrops $4 = (BlockCrops) this.clone();
                 growth += ThreadLocalRandom.current().nextInt(3) + 2;
                 block.setGrowth(Math.min(growth, max));
-                BlockGrowEvent ev = new BlockGrowEvent(this, block);
+                BlockGrowEvent $5 = new BlockGrowEvent(this, block);
                 Server.getInstance().getPluginManager().callEvent(ev);
 
                 if (ev.isCancelled()) {
@@ -89,6 +125,10 @@ public abstract class BlockCrops extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!this.down().getId().equals(FARMLAND)) {
@@ -97,11 +137,11 @@ public abstract class BlockCrops extends BlockFlowable {
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (ThreadLocalRandom.current().nextInt(2) == 1 && getLevel().getFullLight(this) >= getMinimumLightLevel()) {
-                int growth = getGrowth();
+                int $6 = getGrowth();
                 if (growth < getMaxGrowth()) {
-                    BlockCrops block = (BlockCrops) this.clone();
+                    BlockCrops $7 = (BlockCrops) this.clone();
                     block.setGrowth(growth + 1);
-                    BlockGrowEvent ev = new BlockGrowEvent(this, block);
+                    BlockGrowEvent $8 = new BlockGrowEvent(this, block);
                     Server.getInstance().getPluginManager().callEvent(ev);
 
                     if (!ev.isCancelled()) {
@@ -119,6 +159,10 @@ public abstract class BlockCrops extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isFertilizable() {
         return true;
     }

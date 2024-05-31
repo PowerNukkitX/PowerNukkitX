@@ -30,7 +30,11 @@ public interface EntityCanAttack {
      * @param difficulty 难度id<br>difficulty id
      * @return 伤害<br>damage
      */
-    default float getDiffHandDamage(int difficulty) {
+    default 
+    /**
+     * @deprecated 
+     */
+    float getDiffHandDamage(int difficulty) {
         return difficulty != 0 ? getDiffHandDamage()[difficulty - 1] : 0;
     }
 

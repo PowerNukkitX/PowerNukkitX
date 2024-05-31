@@ -14,18 +14,26 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ResourcePackHandler extends BedrockSessionPacketHandler {
+    /**
+     * @deprecated 
+     */
+    
 
     public ResourcePackHandler(BedrockSession session) {
         super(session);
-        ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
+        ResourcePacksInfoPacket $1 = new ResourcePacksInfoPacket();
         infoPacket.resourcePackEntries = session.getServer().getResourcePackManager().getResourceStack();
         infoPacket.mustAccept = session.getServer().getForceResources();
         session.sendPacket(infoPacket);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(ResourcePackClientResponsePacket pk) {
-        var server = session.getServer();
+        var $2 = session.getServer();
         switch (pk.responseStatus) {
             case ResourcePackClientResponsePacket.STATUS_REFUSED -> {
                 log.debug("ResourcePackClientResponsePacket STATUS_REFUSED");
@@ -34,13 +42,13 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
             case ResourcePackClientResponsePacket.STATUS_SEND_PACKS -> {
                 log.debug("ResourcePackClientResponsePacket STATUS_SEND_PACKS");
                 for (ResourcePackClientResponsePacket.Entry entry : pk.packEntries) {
-                    ResourcePack resourcePack = server.getResourcePackManager().getPackById(entry.uuid);
+                    ResourcePack $3 = server.getResourcePackManager().getPackById(entry.uuid);
                     if (resourcePack == null) {
                         this.session.close("disconnectionScreen.resourcePack");
                         return;
                     }
 
-                    ResourcePackDataInfoPacket dataInfoPacket = new ResourcePackDataInfoPacket();
+                    ResourcePackDataInfoPacket $4 = new ResourcePackDataInfoPacket();
                     dataInfoPacket.packId = resourcePack.getPackId();
                     dataInfoPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
                     dataInfoPacket.maxChunkSize = server.getResourcePackManager().getMaxChunkSize();
@@ -52,7 +60,7 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
             }
             case ResourcePackClientResponsePacket.STATUS_HAVE_ALL_PACKS -> {
                 log.debug("ResourcePackClientResponsePacket STATUS_HAVE_ALL_PACKS");
-                ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
+                ResourcePackStackPacket $5 = new ResourcePackStackPacket();
                 stackPacket.mustAccept = server.getForceResources() && !server.getForceResourcesAllowOwnPacks();
                 stackPacket.resourcePackStack = server.getResourcePackManager().getResourceStack();
                 stackPacket.experiments.add(
@@ -83,16 +91,20 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(ResourcePackChunkRequestPacket pk) {
         // TODO: Pack version check
-        var mgr = session.getServer().getResourcePackManager();
-        ResourcePack resourcePack = mgr.getPackById(pk.getPackId());
+        var $6 = session.getServer().getResourcePackManager();
+        ResourcePack $7 = mgr.getPackById(pk.getPackId());
         if (resourcePack == null) {
             this.session.close("disconnectionScreen.resourcePack");
             return;
         }
-        int maxChunkSize = mgr.getMaxChunkSize();
-        ResourcePackChunkDataPacket dataPacket = new ResourcePackChunkDataPacket();
+        int $8 = mgr.getMaxChunkSize();
+        ResourcePackChunkDataPacket $9 = new ResourcePackChunkDataPacket();
         dataPacket.setPackId(resourcePack.getPackId());
         dataPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
         dataPacket.chunkIndex = pk.chunkIndex;

@@ -6,27 +6,47 @@ import cn.nukkit.nbt.stream.NBTOutputStream;
 import java.io.IOException;
 
 public class EndTag extends Tag {
+    /**
+     * @deprecated 
+     */
+    
 
     public EndTag() {
         super();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte getId() {
         return TAG_End;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "EndTag";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT() {
         return "";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT(int space) {
         return "";
     }

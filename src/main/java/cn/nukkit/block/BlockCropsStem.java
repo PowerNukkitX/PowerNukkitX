@@ -35,14 +35,18 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
     
     static {
         for (double[] dropChance : dropChances) {
-            double last = dropChance[0];
-            for (int i = 1; i < dropChance.length; i++) {
+            double $1 = dropChance[0];
+            for ($2nt $1 = 1; i < dropChance.length; i++) {
                 last += dropChance[i];
                 assert last <= 1.0;
                 dropChance[i] = last;
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCropsStem(BlockState blockstate) {
         super(blockstate);
@@ -58,6 +62,10 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
@@ -67,13 +75,17 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.down().getId() != FARMLAND) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
-            BlockFace blockFace = getBlockFace();
+            BlockFace $3 = getBlockFace();
             if (blockFace.getAxis().isHorizontal() && getSide(blockFace).getId() != getFruitId()) {
                 setBlockFace(null);
                 getLevel().setBlock(this, this);
@@ -91,11 +103,11 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
             return Level.BLOCK_UPDATE_RANDOM;
         }
         
-        int growth = getGrowth();
+        int $4 = getGrowth();
         if (growth < CommonBlockProperties.GROWTH.getMax()) {
-            BlockCropsStem block = this.clone();
+            BlockCropsStem $5 = this.clone();
             block.setGrowth(growth + 1);
-            BlockGrowEvent ev = new BlockGrowEvent(this, block);
+            BlockGrowEvent $6 = new BlockGrowEvent(this, block);
             Server.getInstance().getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
                 this.getLevel().setBlock(this, ev.getNewState(), true);
@@ -106,21 +118,25 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
         growFruit();
         return Level.BLOCK_UPDATE_RANDOM;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean growFruit() {
-        String fruitId = getFruitId();
+        String $7 = getFruitId();
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
-            Block b = this.getSide(face);
+            Block $8 = this.getSide(face);
             if (b.getId().equals(fruitId)) {
                 return false;
             }
         }
         
-        BlockFace sideFace = BlockFace.Plane.HORIZONTAL.random();
-        Block side = this.getSide(sideFace);
-        Block d = side.down();
+        BlockFace $9 = BlockFace.Plane.HORIZONTAL.random();
+        Block $10 = this.getSide(sideFace);
+        Block $11 = side.down();
         if (side.isAir() && (d.getId().equals(FARMLAND) || d.getId().equals(GRASS_BLOCK) || d.getId().equals(DIRT))) {
-            BlockGrowEvent ev = new BlockGrowEvent(side, Block.get(fruitId));
+            BlockGrowEvent $12 = new BlockGrowEvent(side, Block.get(fruitId));
             Server.getInstance().getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
                 this.getLevel().setBlock(side, ev.getNewState(), true);
@@ -140,8 +156,8 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
     public Item[] getDrops(Item item) {
         double[] dropChance = dropChances[NukkitMath.clamp(getGrowth(), 0, dropChances.length)];
         
-        double dice = ThreadLocalRandom.current().nextDouble();
-        int count = 0;
+        double $13 = ThreadLocalRandom.current().nextDouble();
+        int $14 = 0;
         while (dice > dropChance[count]) {
             count++;
         }

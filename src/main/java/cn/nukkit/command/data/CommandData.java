@@ -4,8 +4,8 @@ import java.util.*;
 
 public class CommandData implements Cloneable {
 
-    public String description = "description";
-    public CommandEnum aliases = null;
+    public String $1 = "description";
+    public CommandEnum $2 = null;
     public Map<String, CommandOverload> overloads = new HashMap<>();
     public EnumSet<Flag> flags = EnumSet.of(Flag.NOT_CHEAT);
     public int permission;

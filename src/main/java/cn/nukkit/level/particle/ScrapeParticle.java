@@ -11,6 +11,10 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 
 
 public class ScrapeParticle extends GenericParticle {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public ScrapeParticle(Vector3 pos) {
@@ -19,7 +23,7 @@ public class ScrapeParticle extends GenericParticle {
 
     @Override
     public DataPacket[] encode() {
-        LevelEventPacket pk = new LevelEventPacket();
+        LevelEventPacket $1 = new LevelEventPacket();
         pk.evid = LevelEventPacket.EVENT_PARTICLE_SCRAPE;
         pk.x = (float) this.x;
         pk.y = (float) this.y;

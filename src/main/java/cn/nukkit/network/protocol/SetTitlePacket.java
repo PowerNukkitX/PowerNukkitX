@@ -10,34 +10,42 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetTitlePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.SET_TITLE_PACKET;
+    public static final int $1 = ProtocolInfo.SET_TITLE_PACKET;
 
     private static final TitleAction[] TITLE_ACTIONS = TitleAction.values();
 
-    public static final int TYPE_CLEAR = 0;
-    public static final int TYPE_RESET = 1;
-    public static final int TYPE_TITLE = 2;
-    public static final int TYPE_SUBTITLE = 3;
-    public static final int TYPE_ACTION_BAR = 4;
-    public static final int TYPE_ANIMATION_TIMES = 5;
-    public static final int TYPE_TITLE_JSON = 6;
-    public static final int TYPE_SUBTITLE_JSON = 7;
-    public static final int TYPE_ACTIONBAR_JSON = 8;
+    public static final int $2 = 0;
+    public static final int $3 = 1;
+    public static final int $4 = 2;
+    public static final int $5 = 3;
+    public static final int $6 = 4;
+    public static final int $7 = 5;
+    public static final int $8 = 6;
+    public static final int $9 = 7;
+    public static final int $10 = 8;
 
     public int type;
-    public String text = "";
-    public int fadeInTime = 0;
-    public int stayTime = 0;
-    public int fadeOutTime = 0;
-    public String xuid = "";
-    public String platformOnlineId = "";
+    public String $11 = "";
+    public int $12 = 0;
+    public int $13 = 0;
+    public int $14 = 0;
+    public String $15 = "";
+    public String $16 = "";
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.type = byteBuf.readVarInt();
         this.text = byteBuf.readString();
@@ -49,6 +57,10 @@ public class SetTitlePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeVarInt(type);
@@ -61,60 +73,112 @@ public class SetTitlePacket extends DataPacket {
     }
 
     @NotNull public TitleAction getTitleAction() {
-        int currentType = this.type;
+        int $17 = this.type;
         if (currentType >= 0 && currentType < TITLE_ACTIONS.length) {
             return TITLE_ACTIONS[currentType];
         }
         throw new UnsupportedOperationException("Bad type: "+currentType);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTitleAction(@NotNull TitleAction type) {
         this.type = type.ordinal();
     }
 
-    @NotNull public String getText() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getText() {
         return text;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setText(@NotNull String text) {
         this.text = text;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFadeInTime() {
         return fadeInTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFadeInTime(int fadeInTime) {
         this.fadeInTime = fadeInTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getStayTime() {
         return stayTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setStayTime(int stayTime) {
         this.stayTime = stayTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFadeOutTime() {
         return fadeOutTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFadeOutTime(int fadeOutTime) {
         this.fadeOutTime = fadeOutTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getXuid() {
         return xuid;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setXuid(String xuid) {
         this.xuid = xuid;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getPlatformOnlineId() {
         return platformOnlineId;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPlatformOnlineId(String platformOnlineId) {
         this.platformOnlineId = platformOnlineId;
@@ -131,6 +195,10 @@ public class SetTitlePacket extends DataPacket {
         SET_SUBTITLE_JSON,
         SET_ACTIONBAR_JSON,
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

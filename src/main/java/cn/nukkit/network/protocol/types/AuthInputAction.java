@@ -85,6 +85,10 @@ public enum AuthInputAction {
     public static AuthInputAction from(int id) {
         return VALUES[id];
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int size() {
         return VALUES.length;

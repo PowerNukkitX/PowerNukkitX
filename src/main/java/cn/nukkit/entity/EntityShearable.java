@@ -13,7 +13,11 @@ public interface EntityShearable extends EntityComponent {
     /**
      * @return 此次操作是否有效。若有效，将会减少物品耐久 true if shearing succeeded.
      */
-    default boolean shear() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean shear() {
         if (this.isSheared() || (this.asEntity() instanceof EntityAgeable age && age.isBaby())) {
             return false;
         }
@@ -21,11 +25,19 @@ public interface EntityShearable extends EntityComponent {
         return true;
     }
 
-    default boolean isSheared() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isSheared() {
         return getMemoryStorage().get(CoreMemoryTypes.IS_SHEARED);
     }
 
-    default void setIsSheared(boolean isSheared) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void setIsSheared(boolean isSheared) {
         getMemoryStorage().put(CoreMemoryTypes.IS_SHEARED, isSheared);
     }
 }

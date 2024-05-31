@@ -9,18 +9,34 @@ import cn.nukkit.command.data.CommandData;
 
 
 public abstract class TestCommand extends Command {
+    /**
+     * @deprecated 
+     */
+    
 
     public TestCommand(String name) {
         this(name, "");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public TestCommand(String name, String description) {
         this(name, description, "");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public TestCommand(String name, String description, String usageMessage) {
         this(name, description, usageMessage, new String[]{});
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public TestCommand(String name, String description, String usageMessage, String[] aliases) {
         super(name, description, usageMessage, aliases);

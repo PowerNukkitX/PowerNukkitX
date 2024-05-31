@@ -13,9 +13,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MobEquipmentPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.MOB_EQUIPMENT_PACKET;
+    public static final int $1 = ProtocolInfo.MOB_EQUIPMENT_PACKET;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -27,6 +31,10 @@ public class MobEquipmentPacket extends DataPacket {
     public int windowId;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.eid = byteBuf.readEntityRuntimeId(); //EntityRuntimeID
         this.item = byteBuf.readSlot();
@@ -36,6 +44,10 @@ public class MobEquipmentPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeEntityRuntimeId(this.eid); //EntityRuntimeID
         byteBuf.writeSlot(this.item);
@@ -43,6 +55,10 @@ public class MobEquipmentPacket extends DataPacket {
         byteBuf.writeByte((byte) this.hotbarSlot);
         byteBuf.writeByte((byte) this.windowId);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

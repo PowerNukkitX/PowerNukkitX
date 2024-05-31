@@ -20,12 +20,20 @@ import javax.annotation.Nullable;
 import static cn.nukkit.block.property.CommonBlockProperties.AGE_16;
 public class BlockCactus extends BlockTransparent implements BlockFlowerPot.FlowerPotBlock {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(CACTUS,
+    public static final BlockProperties $1 = new BlockProperties(CACTUS,
             AGE_16);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCactus(BlockState state) {
         super(state);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCactus() {
         this(PROPERTIES.getDefaultState());
@@ -37,51 +45,91 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.4;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         return this.x + 0.0625;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinY() {
         return this.y;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         return this.z + 0.0625;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         return this.x + 0.9375;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return this.y + 0.9375;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         return this.z + 0.9375;
     }
@@ -92,21 +140,29 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         entity.attack(new EntityDamageByBlockEvent(this, entity, DamageCause.CONTACT, 1));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            Block down = down();
+            Block $2 = down();
             if (!ItemTags.getItemSet(ItemTags.SAND).contains(down.getId())
                     && !(down instanceof BlockCactus)) {
                 this.getLevel().useBreakOn(this);
                 return 0;
             }
-            for (int side = 2; side <= 5; ++side) {
-                Block block = getSide(BlockFace.fromIndex(side));
+            for (int $3 = 2; side <= 5; ++side) {
+                Block $4 = getSide(BlockFace.fromIndex(side));
                 if (!block.canBeFlowedInto()) {
                     this.getLevel().useBreakOn(this);
                 }
@@ -120,10 +176,10 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
                 this.getLevel().setBlock(this, this);
                 return 0;
             }
-            for (int y = 1; y < 3; ++y) {
-                Block b = this.getLevel().getBlock(new Vector3(this.x, this.y + y, this.z));
+            for (int $5 = 1; y < 3; ++y) {
+                Block $6 = this.getLevel().getBlock(new Vector3(this.x, this.y + y, this.z));
                 if (!b.isAir()) { continue; }
-                BlockGrowEvent event = new BlockGrowEvent(b, Block.get(BlockID.CACTUS));
+                BlockGrowEvent $7 = new BlockGrowEvent(b, Block.get(BlockID.CACTUS));
                 Server.getInstance().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
                     this.getLevel().setBlock(b, event.getNewState(), true);
@@ -137,16 +193,20 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        Block down = this.down();
+        Block $8 = this.down();
         if (!ItemTags.getItemSet(ItemTags.SAND.toString()).contains(down.getId())
                 && !(down instanceof BlockCactus)) {
             return false;
         }
-        Block block0 = north();
-        Block block1 = south();
-        Block block2 = west();
-        Block block3 = east();
+        Block $9 = north();
+        Block $10 = south();
+        Block $11 = west();
+        Block $12 = east();
         if (block0.canBeFlowedInto() && block1.canBeFlowedInto() && block2.canBeFlowedInto() && block3.canBeFlowedInto()) {
             this.getLevel().setBlock(this, this, true);
             return true;
@@ -155,6 +215,10 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Cactus";
     }
@@ -167,26 +231,50 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean sticksToPiston() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getAge() {
         return this.getPropertyValue(AGE_16);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAge(int age) {
         this.setPropertyValue(AGE_16, age);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int getMaxAge() {
         return AGE_16.getMax();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int getMinAge() {
         return AGE_16.getMin();

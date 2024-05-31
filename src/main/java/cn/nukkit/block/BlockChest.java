@@ -28,17 +28,25 @@ import java.util.Map;
  */
 
 public class BlockChest extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityChest> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockChest() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockChest(BlockState blockstate) {
         super(blockstate);
@@ -52,75 +60,131 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.CHEST;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Chest";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 2.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 12.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         return this.x + 0.0625;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinY() {
         return this.y;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         return this.z + 0.0625;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         return this.x + 0.9375;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return this.y + 0.9475;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         return this.z + 0.9375;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
 
-        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
+        CompoundTag $2 = new CompoundTag().putList("Items", new ListTag<>());
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -133,7 +197,7 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
             }
         }
 
-        BlockEntityChest blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt);
+        BlockEntityChest $3 = BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt);
         if (blockEntity == null) {
             return false;
         }
@@ -150,12 +214,16 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
      *
      * @return 是否连接成功 <br> Whether pairing was successful
      */
+    
+    /**
+     * @deprecated 
+     */
     protected boolean tryPair() {
-        BlockEntityChest blockEntity = getBlockEntity();
+        BlockEntityChest $4 = getBlockEntity();
         if (blockEntity == null)
             return false;
 
-        BlockEntityChest chest = findPair();
+        BlockEntityChest $5 = findPair();
         if (chest == null)
             return false;
 
@@ -173,11 +241,11 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
      */
     protected @Nullable BlockEntityChest findPair() {
         List<MinecraftCardinalDirection> universe = CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.getValidValues();
-        BlockFace thisFace = getBlockFace();
+        BlockFace $6 = getBlockFace();
         for (var face : universe) {
-            Block side = this.getSide(CommonPropertyMap.CARDINAL_BLOCKFACE.get(face));
+            Block $7 = this.getSide(CommonPropertyMap.CARDINAL_BLOCKFACE.get(face));
             if (side instanceof BlockChest chest) {
-                BlockFace pairFace = chest.getBlockFace();
+                BlockFace $8 = chest.getBlockFace();
                 if (thisFace == pairFace) {
                     return chest.getBlockEntity();
                 }
@@ -187,10 +255,14 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean cloneTo(Position pos) {
         if (!super.cloneTo(pos)) return false;
         else {
-            var blockEntity = this.getBlockEntity();
+            var $9 = this.getBlockEntity();
             if (blockEntity != null && blockEntity.isPaired())
                 ((BlockChest) pos.getLevelBlock()).tryPair();
             return true;
@@ -198,8 +270,12 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
-        BlockEntityChest chest = getBlockEntity();
+        BlockEntityChest $10 = getBlockEntity();
         if (chest != null) {
             chest.unpair();
         }
@@ -209,17 +285,21 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
-        Item itemInHand = player.getInventory().getItemInHand();
+        Item $11 = player.getInventory().getItemInHand();
         if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) return false;
 
-        Block top = up();
+        Block $12 = up();
         if (!top.isTransparent()) {
             return false;
         }
 
-        BlockEntityChest chest = getOrCreateBlockEntity();
+        BlockEntityChest $13 = getOrCreateBlockEntity();
         if (chest.namedTag.contains("Lock") && chest.namedTag.get("Lock") instanceof StringTag
                 && !chest.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
@@ -230,13 +310,21 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasComparatorInputOverride() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getComparatorInputOverride() {
-        BlockEntityChest blockEntity = getBlockEntity();
+        BlockEntityChest $14 = getBlockEntity();
 
         if (blockEntity != null) {
             return ContainerInventory.calculateRedstone(blockEntity.getInventory());
@@ -256,16 +344,28 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         this.setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePushed() {
         return canMove();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePulled() {
         return canMove();
     }
@@ -273,8 +373,12 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     /**
      * TODO: 大箱子在PNX不能推动
      */
+    
+    /**
+     * @deprecated 
+     */
     protected boolean canMove() {
-        var blockEntity = this.getBlockEntity();
-        return blockEntity == null || !blockEntity.isPaired();
+        var $15 = this.getBlockEntity();
+        return $16 == null || !blockEntity.isPaired();
     }
 }

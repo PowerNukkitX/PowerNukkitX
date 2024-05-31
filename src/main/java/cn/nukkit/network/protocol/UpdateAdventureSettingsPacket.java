@@ -13,11 +13,19 @@ public class UpdateAdventureSettingsPacket extends DataPacket {
     public boolean autoJump;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeBoolean(noPvM);
@@ -28,9 +36,17 @@ public class UpdateAdventureSettingsPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.UPDATE_ADVENTURE_SETTINGS_PACKET;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

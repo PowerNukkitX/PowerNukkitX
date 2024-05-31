@@ -22,23 +22,43 @@ import java.util.List;
 public abstract class SimpleConfig {
 
     private final File configFile;
+    /**
+     * @deprecated 
+     */
+    
 
     public SimpleConfig(Plugin plugin) {
         this(plugin, "config.yml");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SimpleConfig(Plugin plugin, String fileName) {
         this(new File(plugin.getDataFolder() + File.separator + fileName));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SimpleConfig(File file) {
         this.configFile = file;
         configFile.getParentFile().mkdirs();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean save() {
         return save(false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean save(boolean async) {
         if (configFile.exists()) try {
@@ -46,10 +66,10 @@ public abstract class SimpleConfig {
         } catch (Exception e) {
             return false;
         }
-        Config cfg = new Config(configFile, Config.YAML);
+        Config $1 = new Config(configFile, Config.YAML);
         for (Field field : this.getClass().getDeclaredFields()) {
             if (skipSave(field)) continue;
-            String path = getPath(field);
+            String $2 = getPath(field);
             try {
                 if (path != null) cfg.set(path, field.get(this));
             } catch (Exception e) {
@@ -59,14 +79,18 @@ public abstract class SimpleConfig {
         cfg.save(async);
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean load() {
         if (!this.configFile.exists()) return false;
-        Config cfg = new Config(configFile, Config.YAML);
+        Config $3 = new Config(configFile, Config.YAML);
         for (Field field : this.getClass().getDeclaredFields()) {
             if (field.getName().equals("configFile")) continue;
             if (skipSave(field)) continue;
-            String path = getPath(field);
+            String $4 = getPath(field);
             if (path == null) continue;
             if (path.isEmpty()) continue;
             field.setAccessible(true);
@@ -84,7 +108,7 @@ public abstract class SimpleConfig {
                 else if (field.getType() == ConfigSection.class)
                     field.set(this, cfg.getSection(path));
                 else if (field.getType() == List.class) {
-                    Type genericFieldType = field.getGenericType();
+                    Type $5 = field.getGenericType();
                     if (genericFieldType instanceof ParameterizedType aType) {
                         Class<?> fieldArgClass = (Class<?>) aType.getActualTypeArguments()[0];
                         if (fieldArgClass == Integer.class) field.set(this, cfg.getIntegerList(path));
@@ -106,10 +130,14 @@ public abstract class SimpleConfig {
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private String getPath(Field field) {
-        String path = null;
+        String $6 = null;
         if (field.isAnnotationPresent(Path.class)) {
-            Path pathDefine = field.getAnnotation(Path.class);
+            Path $7 = field.getAnnotation(Path.class);
             path = pathDefine.value();
         }
         if (path == null || path.isEmpty()) path = field.getName().replaceAll("_", ".");
@@ -118,11 +146,19 @@ public abstract class SimpleConfig {
         return path;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean skipSave(Field field) {
         if (!field.isAnnotationPresent(Skip.class)) return false;
         return field.getAnnotation(Skip.class).skipSave();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean skipLoad(Field field) {
         if (!field.isAnnotationPresent(Skip.class)) return false;
         return field.getAnnotation(Skip.class).skipLoad();

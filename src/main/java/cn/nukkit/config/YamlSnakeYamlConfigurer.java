@@ -36,16 +36,28 @@ public class YamlSnakeYamlConfigurer extends Configurer {
     private Map<String, Object> map = new LinkedHashMap<>();
 
     @Setter
-    private String commentPrefix = "# ";
+    private String $1 = "# ";
+    /**
+     * @deprecated 
+     */
+    
 
     public YamlSnakeYamlConfigurer(@NotNull Yaml yaml, @NotNull Map<String, Object> map) {
         this.yaml = yaml;
         this.map = map;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public YamlSnakeYamlConfigurer(@NotNull Yaml yaml) {
         this.yaml = yaml;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public YamlSnakeYamlConfigurer() {
         this(createYaml());
@@ -53,16 +65,16 @@ public class YamlSnakeYamlConfigurer extends Configurer {
 
     private static Yaml createYaml() {
 
-        LoaderOptions loaderOptions = new LoaderOptions();
-        Constructor constructor = new Constructor(loaderOptions);
+        LoaderOptions $2 = new LoaderOptions();
+        Constructor $3 = new Constructor(loaderOptions);
 
-        DumperOptions dumperOptions = new DumperOptions();
+        DumperOptions $4 = new DumperOptions();
         dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
-        Representer representer = new Representer(dumperOptions);
+        Representer $5 = new Representer(dumperOptions);
         representer.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
-        Resolver resolver = new Resolver();
+        Resolver $6 = new Resolver();
 
         return new Yaml(constructor, representer, dumperOptions, loaderOptions, resolver);
     }
@@ -78,12 +90,20 @@ public class YamlSnakeYamlConfigurer extends Configurer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setValue(@NotNull String key, Object value, GenericsDeclaration type, FieldDeclaration field) {
-        Object simplified = this.simplify(value, type, SerdesContext.of(this, field), true);
+        Object $7 = this.simplify(value, type, SerdesContext.of(this, field), true);
         this.map.put(key, simplified);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setValueUnsafe(@NotNull String key, Object value) {
         this.map.put(key, value);
     }
@@ -99,6 +119,10 @@ public class YamlSnakeYamlConfigurer extends Configurer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean keyExists(@NotNull String key) {
         return this.map.containsKey(key);
     }
@@ -119,7 +143,7 @@ public class YamlSnakeYamlConfigurer extends Configurer {
     @Override
     public void write(@NotNull OutputStream outputStream, @NotNull ConfigDeclaration declaration) throws Exception {
         // render to string
-        String contents = this.yaml.dump(this.map);
+        String $8 = this.yaml.dump(this.map);
 
         // postprocess
         TrConfigPostprocessor.of(contents)
@@ -128,16 +152,20 @@ public class YamlSnakeYamlConfigurer extends Configurer {
                 // add new comments
                 .updateLinesKeys(new YamlSectionWalker() {
                     @Override
+    /**
+     * @deprecated 
+     */
+    
                     public String update(String line, ConfigLineInfo lineInfo, List<ConfigLineInfo> path) {
 
-                        ConfigDeclaration currentDeclaration = declaration;
-                        for (int i = 0; i < (path.size() - 1); i++) {
-                            ConfigLineInfo pathElement = path.get(i);
+                        ConfigDeclaration $9 = declaration;
+                        for ($10nt $1 = 0; i < (path.size() - 1); i++) {
+                            ConfigLineInfo $11 = path.get(i);
                             Optional<FieldDeclaration> field = currentDeclaration.getField(pathElement.getName());
                             if (field.isEmpty()) {
                                 return line;
                             }
-                            GenericsDeclaration fieldType = field.get().getType();
+                            GenericsDeclaration $12 = field.get().getType();
                             if (!fieldType.isConfig()) {
                                 return line;
                             }
@@ -154,7 +182,7 @@ public class YamlSnakeYamlConfigurer extends Configurer {
                             return line;
                         }
 
-                        String comment = TrConfigPostprocessor.createComment(YamlSnakeYamlConfigurer.this.commentPrefix, fieldComment);
+                        String $13 = TrConfigPostprocessor.createComment(YamlSnakeYamlConfigurer.this.commentPrefix, fieldComment);
                         return TrConfigPostprocessor.addIndent(comment, lineInfo.getIndent()) + line;
                     }
                 })

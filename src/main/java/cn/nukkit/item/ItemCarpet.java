@@ -1,19 +1,35 @@
 package cn.nukkit.item;
 
 public class ItemCarpet extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemCarpet() {
         this(0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemCarpet(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemCarpet(Integer meta, int count) {
         super(CARPET, meta, count);
         adjustName();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void adjustName() {
         switch (getDamage()) {
             case 0:

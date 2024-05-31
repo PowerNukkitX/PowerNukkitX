@@ -12,9 +12,17 @@ import org.jetbrains.annotations.NotNull;
 public class EntityGuardian extends EntityMob implements EntitySwimmable {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return GUARDIAN;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityGuardian(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -23,27 +31,47 @@ public class EntityGuardian extends EntityMob implements EntitySwimmable {
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(30);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Guardian";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.85f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.85f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPreventingSleep(Player player) {
         return true;
     }

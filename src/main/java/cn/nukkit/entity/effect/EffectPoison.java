@@ -6,18 +6,30 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import java.awt.*;
 
 public class EffectPoison extends Effect {
+    /**
+     * @deprecated 
+     */
+    
 
     public EffectPoison() {
         super(EffectType.POISON, "%potion.poison", new Color(135, 163, 99), true);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canTick() {
-        int interval = 25 >> this.getAmplifier();
+        int $1 = 25 >> this.getAmplifier();
         return interval > 0 && this.getDuration() % interval == 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void apply(Entity entity, double tickCount) {
         if (this.canTick()) {
             if (entity.getHealth() > 1) {

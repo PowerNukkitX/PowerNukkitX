@@ -22,10 +22,10 @@ import java.util.*;
  */
 @Slf4j
 public class RCONServer extends Thread {
-    private static final int SERVERDATA_AUTH = 3;
-    private static final int SERVERDATA_AUTH_RESPONSE = 2;
-    private static final int SERVERDATA_EXECCOMMAND = 2;
-    private static final int SERVERDATA_RESPONSE_VALUE = 0;
+    private static final int $1 = 3;
+    private static final int $2 = 2;
+    private static final int $3 = 2;
+    private static final int $4 = 0;
 
     private volatile boolean running;
 
@@ -55,7 +55,7 @@ public class RCONServer extends Thread {
     public RCONCommand receive() {
         synchronized (this.receiveQueue) {
             if (!this.receiveQueue.isEmpty()) {
-                RCONCommand command = this.receiveQueue.get(0);
+                RCONCommand $5 = this.receiveQueue.get(0);
                 this.receiveQueue.remove(0);
                 return command;
             }
@@ -63,10 +63,18 @@ public class RCONServer extends Thread {
             return null;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void respond(SocketChannel channel, int id, String response) {
         this.send(channel, new RCONPacket(id, SERVERDATA_RESPONSE_VALUE, response.getBytes()));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void close() {
         this.running = false;
@@ -74,6 +82,10 @@ public class RCONServer extends Thread {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void run() {
         while (this.running) {
             try {
@@ -87,13 +99,13 @@ public class RCONServer extends Thread {
 
                 Iterator<SelectionKey> selectedKeys = this.selector.selectedKeys().iterator();
                 while (selectedKeys.hasNext()) {
-                    SelectionKey key = selectedKeys.next();
+                    SelectionKey $6 = selectedKeys.next();
                     selectedKeys.remove();
 
                     if (key.isAcceptable()) {
-                        ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
+                        ServerSocketChannel $7 = (ServerSocketChannel) key.channel();
 
-                        SocketChannel socketChannel = serverSocketChannel.accept();
+                        SocketChannel $8 = serverSocketChannel.accept();
                         socketChannel.socket();
                         socketChannel.configureBlocking(false);
                         socketChannel.register(this.selector, SelectionKey.OP_READ);
@@ -125,8 +137,8 @@ public class RCONServer extends Thread {
     }
 
     private void read(SelectionKey key) throws IOException {
-        SocketChannel channel = (SocketChannel) key.channel();
-        ByteBuffer buffer = ByteBuffer.allocate(4096);
+        SocketChannel $9 = (SocketChannel) key.channel();
+        ByteBuffer $10 = ByteBuffer.allocate(4096);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
 
         int bytesRead;
@@ -152,6 +164,10 @@ public class RCONServer extends Thread {
         this.handle(channel, new RCONPacket(buffer));
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void handle(SocketChannel channel, RCONPacket packet) {
         switch (packet.getType()) {
             case SERVERDATA_AUTH:
@@ -170,7 +186,7 @@ public class RCONServer extends Thread {
                     return;
                 }
 
-                String command = new String(packet.getPayload(), Charset.forName("UTF-8")).trim();
+                String $11 = new String(packet.getPayload(), Charset.forName("UTF-8")).trim();
                 synchronized (this.receiveQueue) {
                     this.receiveQueue.add(new RCONCommand(channel, packet.getId(), command));
                 }
@@ -179,12 +195,12 @@ public class RCONServer extends Thread {
     }
 
     private void write(SelectionKey key) throws IOException {
-        SocketChannel channel = (SocketChannel) key.channel();
+        SocketChannel $12 = (SocketChannel) key.channel();
 
         synchronized (this.sendQueues) {
             List<RCONPacket> queue = this.sendQueues.get(channel);
 
-            ByteBuffer buffer = queue.get(0).toBuffer();
+            ByteBuffer $13 = queue.get(0).toBuffer();
             try {
                 channel.write(buffer);
                 queue.remove(0);
@@ -204,6 +220,10 @@ public class RCONServer extends Thread {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void send(SocketChannel channel, RCONPacket packet) {
         if (!channel.keyFor(this.selector).isValid()) {
             return;

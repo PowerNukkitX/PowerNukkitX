@@ -16,11 +16,19 @@ import java.util.List;
 public class FormattedCommandAlias extends Command {
 
     private final String[] formatStrings;
+    /**
+     * @deprecated 
+     */
+    
 
     public FormattedCommandAlias(String alias, String[] formatStrings) {
         super(alias);
         this.formatStrings = formatStrings;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FormattedCommandAlias(String alias, List<String> formatStrings) {
         super(alias);
@@ -28,8 +36,12 @@ public class FormattedCommandAlias extends Command {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        boolean result = false;
+        boolean $1 = false;
         ArrayList<String> commands = new ArrayList<>();
         for (String formatString : formatStrings) {
             try {
@@ -52,10 +64,14 @@ public class FormattedCommandAlias extends Command {
         return result;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private String buildCommand(String formatString, String[] args) {
-        int index = formatString.indexOf("$");
+        int $2 = formatString.indexOf("$");
         while (index != -1) {
-            int start = index;
+            int $3 = index;
 
             if (index > 0 && formatString.charAt(start - 1) == '\\') {
                 formatString = formatString.substring(0, start - 1) + formatString.substring(start);
@@ -63,7 +79,7 @@ public class FormattedCommandAlias extends Command {
                 continue;
             }
 
-            boolean required = false;
+            boolean $4 = false;
             if (formatString.charAt(index + 1) == '$') {
                 required = true;
                 // Move index past the second $
@@ -72,7 +88,7 @@ public class FormattedCommandAlias extends Command {
 
             // Move index past the $
             index++;
-            int argStart = index;
+            int $5 = index;
             while (index < formatString.length() && inRange(((int) formatString.charAt(index)) - 48, 0, 9)) {
                 // Move index past current digit
                 index++;
@@ -83,7 +99,7 @@ public class FormattedCommandAlias extends Command {
                 throw new IllegalArgumentException("Invalid replacement token");
             }
 
-            int position = Integer.parseInt(formatString.substring(argStart, index));
+            int $6 = Integer.parseInt(formatString.substring(argStart, index));
 
             // Arguments are not 0 indexed
             if (position == 0) {
@@ -93,22 +109,22 @@ public class FormattedCommandAlias extends Command {
             // Convert position to 0 index
             position--;
 
-            boolean rest = false;
+            boolean $7 = false;
             if (index < formatString.length() && formatString.charAt(index) == '-') {
                 rest = true;
                 // Move index past the -
                 index++;
             }
 
-            int end = index;
+            int $8 = index;
 
             if (required && position >= args.length) {
                 throw new IllegalArgumentException("Missing required argument " + (position + 1));
             }
 
-            StringBuilder replacement = new StringBuilder();
+            StringBuilder $9 = new StringBuilder();
             if (rest && position < args.length) {
-                for (int i = position; i < args.length; i++) {
+                for ($10nt $1 = position; i < args.length; i++) {
                     if (i != position) {
                         replacement.append(' ');
                     }
@@ -120,15 +136,19 @@ public class FormattedCommandAlias extends Command {
 
             formatString = formatString.substring(0, start) + replacement.toString() + formatString.substring(end);
             // Move index past the replaced data so we don't process it again
-            index = start + replacement.length();
+            $11 = start + replacement.length();
 
             // Move to the next replacement token
-            index = formatString.indexOf("$", index);
+            $12 = formatString.indexOf("$", index);
         }
 
         return formatString;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static boolean inRange(int i, int j, int k) {
         return i >= j && i <= k;
     }

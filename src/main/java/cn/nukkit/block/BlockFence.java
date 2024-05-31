@@ -11,40 +11,60 @@ import static cn.nukkit.math.VectorMath.calculateFace;
  * @since 2015/12/7
  */
 public abstract class BlockFence extends BlockTransparent implements BlockConnectable {
+    /**
+     * @deprecated 
+     */
+    
     public BlockFence(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 3;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        boolean north = this.canConnect(this.north());
-        boolean south = this.canConnect(this.south());
-        boolean west = this.canConnect(this.west());
-        boolean east = this.canConnect(this.east());
-        double n = north ? 0 : 0.375;
-        double s = south ? 1 : 0.625;
-        double w = west ? 0 : 0.375;
-        double e = east ? 1 : 0.625;
+        boolean $1 = this.canConnect(this.north());
+        boolean $2 = this.canConnect(this.south());
+        boolean $3 = this.canConnect(this.west());
+        boolean $4 = this.canConnect(this.east());
+        double $5 = north ? 0 : 0.375;
+        double $6 = south ? 1 : 0.625;
+        double $7 = west ? 0 : 0.375;
+        doubl$8 $1 = east ? 1 : 0.625;
         return new SimpleAxisAlignedBB(
                 this.x + w,
                 this.y,
@@ -56,16 +76,28 @@ public abstract class BlockFence extends BlockTransparent implements BlockConnec
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnChance() {
         return 5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnAbility() {
         return 20;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canConnect(Block block) {
         if (block instanceof BlockFence) {
             if (block.getId().equals(NETHER_BRICK_FENCE) || this.getId().equals(NETHER_BRICK_FENCE)) {

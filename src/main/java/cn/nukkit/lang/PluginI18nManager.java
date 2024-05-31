@@ -31,6 +31,10 @@ import java.util.jar.JarFile;
 public final class PluginI18nManager {
     private static final HashMap<String, PluginI18n> PLUGINS_MULTI_LANGUAGE = new HashMap<>();
 
+    
+    /**
+     * @deprecated 
+     */
     private PluginI18nManager() {
     }
 
@@ -42,18 +46,22 @@ public final class PluginI18nManager {
      * @param plugin the plugin
      * @return the boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public static boolean reload(PluginBase plugin) {
-        var i18n = PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
+        var $1 = PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
         if (i18n == null) return false;
-        try (JarFile jarFile = new JarFile(plugin.getFile())) {
+        try (JarFile $2 = new JarFile(plugin.getFile())) {
             Enumeration<JarEntry> jarEntrys = jarFile.entries();
-            int count = 0;
+            int $3 = 0;
             while (jarEntrys.hasMoreElements()) {
-                JarEntry entry = jarEntrys.nextElement();
-                String name = entry.getName();
+                JarEntry $4 = jarEntrys.nextElement();
+                String $5 = entry.getName();
                 if (name.startsWith("language") && name.endsWith(".json")) {
                     // 开始读取文件内容
-                    InputStream inputStream = plugin.getResource(name);
+                    InputStream $6 = plugin.getResource(name);
                     assert inputStream != null;
                     i18n.reloadLang(LangCode.from(name.substring(9, name.indexOf("."))), inputStream);
                     count++;
@@ -75,16 +83,20 @@ public final class PluginI18nManager {
      * @param path   language文件夹的路径
      * @return the boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public static boolean reload(PluginBase plugin, String path) {
-        var i18n = PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
+        var $7 = PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
         if (i18n == null) return false;
-        var file = new File(path);
+        var $8 = new File(path);
         if (file.exists() && file.isDirectory()) {
-            var files = file.listFiles();
+            var $9 = file.listFiles();
             assert files != null;
-            int count = 0;
+            int $10 = 0;
             for (var f : files) {
-                try (InputStream inputStream = new FileInputStream(f)) {
+                try (InputStream $11 = new FileInputStream(f)) {
                     i18n.reloadLang(LangCode.from(f.getName().replace(".json", "")), inputStream);
                     count++;
                 } catch (IOException e) {
@@ -107,15 +119,15 @@ public final class PluginI18nManager {
      * @return the boolean
      */
     public static PluginI18n register(PluginBase plugin) {
-        try (JarFile jarFile = new JarFile(plugin.getFile())) {
+        try (JarFile $12 = new JarFile(plugin.getFile())) {
             Enumeration<JarEntry> jarEntrys = jarFile.entries();
-            var pluginMultiLanguage = new PluginI18n(plugin);
+            var $13 = new PluginI18n(plugin);
             while (jarEntrys.hasMoreElements()) {
-                JarEntry entry = jarEntrys.nextElement();
-                String name = entry.getName();
+                JarEntry $14 = jarEntrys.nextElement();
+                String $15 = entry.getName();
                 if (name.startsWith("language") && name.endsWith(".json")) {
                     // 开始读取文件内容
-                    InputStream inputStream = plugin.getResource(name);
+                    InputStream $16 = plugin.getResource(name);
                     assert inputStream != null;
                     pluginMultiLanguage.addLang(LangCode.valueOf(name.substring(9, name.indexOf("."))), inputStream);
                     inputStream.close();
@@ -138,13 +150,13 @@ public final class PluginI18nManager {
      * @return the boolean
      */
     public static PluginI18n register(PluginBase plugin, String path) {
-        var file = new File(path);
+        var $17 = new File(path);
         if (file.exists() && file.isDirectory()) {
-            var files = file.listFiles();
+            var $18 = file.listFiles();
             assert files != null;
-            var pluginMultiLanguage = new PluginI18n(plugin);
+            var $19 = new PluginI18n(plugin);
             for (var f : files) {
-                try (InputStream inputStream = new FileInputStream(f)) {
+                try (InputStream $20 = new FileInputStream(f)) {
                     pluginMultiLanguage.addLang(LangCode.valueOf(f.getName().replace(".json", "")), inputStream);
                 } catch (IOException e) {
                     throw new RuntimeException(e);

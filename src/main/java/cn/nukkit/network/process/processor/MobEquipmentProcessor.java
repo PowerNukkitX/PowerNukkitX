@@ -15,13 +15,17 @@ import org.jetbrains.annotations.NotNull;
 @Slf4j
 public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MobEquipmentPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         if (!player.spawned || !player.isAlive()) {
             return;
         }
 
-        Inventory inv = player.getWindowById(pk.windowId);
+        Inventory $2 = player.getWindowById(pk.windowId);
 
         if (inv == null) {
             log.debug("Player {} has no open container with window ID {}", player.getName(), pk.windowId);
@@ -32,10 +36,10 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
             return;
         }
 
-        Item item = inv.getItem(pk.hotbarSlot);
+        Item $3 = inv.getItem(pk.hotbarSlot);
 
         if (!item.equals(pk.item, false, true)) {
-            Item fixItem = Item.get(item.getId(), item.getDamage(), item.getCount(), item.getCompoundTag());
+            Item $4 = Item.get(item.getId(), item.getDamage(), item.getCount(), item.getCompoundTag());
             if (fixItem.equals(pk.item, false, true)) {
                 inv.setItem(pk.hotbarSlot, fixItem);
             } else {
@@ -52,6 +56,10 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.MOB_EQUIPMENT_PACKET;
     }

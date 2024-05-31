@@ -71,7 +71,11 @@ public interface IMemoryStorage {
      * @param type 记忆类型
      * @return 是否为空
      */
-    default boolean isEmpty(MemoryType<?> type) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isEmpty(MemoryType<?> type) {
         return get(type) == null;
     }
 
@@ -83,7 +87,11 @@ public interface IMemoryStorage {
      * @param type 记忆类型
      * @return 是否不为空
      */
-    default boolean notEmpty(MemoryType<?> type) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean notEmpty(MemoryType<?> type) {
         return get(type) != null;
     }
 
@@ -96,7 +104,11 @@ public interface IMemoryStorage {
      * @param to   指定的数据
      * @return 是否相同
      */
-    default <D> boolean compareDataTo(MemoryType<D> type, Object to) {
+    default <D> 
+    /**
+     * @deprecated 
+     */
+    boolean compareDataTo(MemoryType<D> type, Object to) {
         D value;
         return (value = get(type)) != null ? value.equals(to) : to == null;
     }
@@ -106,8 +118,12 @@ public interface IMemoryStorage {
      * <p>
      * Encode the data of this memory storage into the entity NBT (if there is a codec attached to the Memory Type)
      */
-    default void encode() {
-        var entity = getEntity();
+    default 
+    /**
+     * @deprecated 
+     */
+    void encode() {
+        var $1 = getEntity();
         for (var memoryType : getAll().entrySet()) {
             memoryType.getKey().forceEncode(entity, memoryType.getValue());
         }

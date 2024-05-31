@@ -18,6 +18,10 @@ public class EntitiesNode extends TargetNode<Entity> {
 
     //todo 支持uuid 或者 xuid
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         List<Entity> entities;
         if (arg.isBlank()) {
@@ -32,7 +36,7 @@ public class EntitiesNode extends TargetNode<Entity> {
             this.value = entities;
         } else {
             entities = Lists.newArrayList();
-            Player player = Server.getInstance().getPlayer(arg);
+            Player $1 = Server.getInstance().getPlayer(arg);
             if (player != null) {
                 entities.add(player);
             }

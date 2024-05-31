@@ -4,9 +4,13 @@ import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 
 public class ItemUpdater_1_20_70 implements Updater {
-    public static final Updater INSTANCE = new ItemUpdater_1_20_70();
+    public static final Updater $1 = new ItemUpdater_1_20_70();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext ctx) {
         ctx.addUpdater(1, 20, 70)
                 .match("Name", "minecraft:grass")

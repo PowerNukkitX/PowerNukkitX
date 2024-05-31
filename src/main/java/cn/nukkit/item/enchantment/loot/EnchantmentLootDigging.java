@@ -7,6 +7,10 @@ import cn.nukkit.item.enchantment.EnchantmentType;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EnchantmentLootDigging extends EnchantmentLoot {
+    /**
+     * @deprecated 
+     */
+    
     public EnchantmentLootDigging() {
         super(Enchantment.ID_FORTUNE_DIGGING, "lootBonusDigger", Rarity.RARE, EnchantmentType.DIGGER);
     }

@@ -7,6 +7,10 @@ import cn.nukkit.math.BlockFace;
 
 
 public class DyeDispenseBehavior extends DefaultDispenseBehavior {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public DyeDispenseBehavior() {
@@ -15,7 +19,7 @@ public class DyeDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
-        Block target = block.getSide(face);
+        Block $1 = block.getSide(face);
 
         if (item.isFertilizer()) {
             if (target.isFertilizable()) {

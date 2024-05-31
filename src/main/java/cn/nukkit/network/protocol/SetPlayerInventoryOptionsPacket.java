@@ -13,7 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class SetPlayerInventoryOptionsPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.SET_PLAYER_INVENTORY_OPTIONS_PACKET;
+    public static final int $1 = ProtocolInfo.SET_PLAYER_INVENTORY_OPTIONS_PACKET;
 
     public InventoryTabLeft leftTab;
     public InventoryTabRight rightTab;
@@ -22,11 +22,19 @@ public class SetPlayerInventoryOptionsPacket extends DataPacket {
     public InventoryLayout craftingLayout;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return (byte) NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.leftTab = InventoryTabLeft.VALUES[byteBuf.readVarInt()];
         this.rightTab = InventoryTabRight.VALUES[byteBuf.readVarInt()];
@@ -36,6 +44,10 @@ public class SetPlayerInventoryOptionsPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeVarInt(this.leftTab.ordinal());
@@ -44,6 +56,10 @@ public class SetPlayerInventoryOptionsPacket extends DataPacket {
         byteBuf.writeVarInt(this.layout.ordinal());
         byteBuf.writeVarInt(this.craftingLayout.ordinal());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

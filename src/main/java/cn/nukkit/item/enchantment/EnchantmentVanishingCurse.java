@@ -5,21 +5,37 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 
 public class EnchantmentVanishingCurse extends Enchantment {
+    
+    /**
+     * @deprecated 
+     */
     protected EnchantmentVanishingCurse() {
         super(ID_VANISHING_CURSE, "curse.vanishing", Rarity.VERY_RARE, EnchantmentType.BREAKABLE);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMinEnchantAbility(int level) {
         return 25;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxEnchantAbility(int level) {
         return 50;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canEnchant(Item item) {
         return switch (item.getId()) {
             case BlockID.SKULL, ItemID.COMPASS -> true;

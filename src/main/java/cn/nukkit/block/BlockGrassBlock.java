@@ -21,24 +21,36 @@ import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockGrassBlock extends BlockDirt {
-    public static final BlockProperties PROPERTIES = new BlockProperties(GRASS_BLOCK);
+    public static final BlockProperties $1 = new BlockProperties(GRASS_BLOCK);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockGrassBlock(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0.6;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Grass Block";
     }
@@ -57,6 +69,10 @@ public class BlockGrassBlock extends BlockDirt {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!this.up().canBeReplaced()) {
             return false;
@@ -67,7 +83,7 @@ public class BlockGrassBlock extends BlockDirt {
                 item.count--;
             }
             this.level.addParticle(new BoneMealParticle(this));
-            BlockManager blockManager = new BlockManager(this.level);
+            BlockManager $2 = new BlockManager(this.level);
             LegacyTallGrass.growGrass(blockManager, this, new NukkitRandom());
             blockManager.applyBlockUpdate();
             return true;
@@ -91,6 +107,10 @@ public class BlockGrassBlock extends BlockDirt {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             // Grass dies and changes to dirt after a random time (when a random tick lands on the block)
@@ -99,7 +119,7 @@ public class BlockGrassBlock extends BlockDirt {
             // but only if they cause the light level above the grass block to be four or below (like water does),
             // and the surrounding area is not otherwise sufficiently lit up.
             if (up().getLightFilter() > 1) {
-                BlockFadeEvent ev = new BlockFadeEvent(this, Block.get(BlockID.DIRT));
+                BlockFadeEvent $3 = new BlockFadeEvent(this, Block.get(BlockID.DIRT));
                 Server.getInstance().getPluginManager().callEvent(ev);
                 if (!ev.isCancelled()) {
                     this.getLevel().setBlock(this, ev.getNewState());
@@ -116,11 +136,11 @@ public class BlockGrassBlock extends BlockDirt {
 
                 // The dirt block receiving grass must be within a 3×5×3 range of the source block
                 // where the source block is in the center of the second topmost layer of that range.
-                ThreadLocalRandom random = ThreadLocalRandom.current();
-                int x = random.nextInt((int) this.x - 1, (int) this.x + 1 + 1);
-                int y = random.nextInt((int) this.y - 3, (int) this.y + 1 + 1);
-                int z = random.nextInt((int) this.z - 1, (int) this.z + 1 + 1);
-                Block block = this.getLevel().getBlock(new Vector3(x, y, z));
+                ThreadLocalRandom $4 = ThreadLocalRandom.current();
+                int $5 = random.nextInt((int) this.x - 1, (int) this.x + 1 + 1);
+                int $6 = random.nextInt((int) this.y - 3, (int) this.y + 1 + 1);
+                int $7 = random.nextInt((int) this.z - 1, (int) this.z + 1 + 1);
+                Block $8 = this.getLevel().getBlock(new Vector3(x, y, z));
                 if (block.getId().equals(Block.DIRT)
                         // It cannot spread to coarse dirt
                         && block.getPropertyValue(CommonBlockProperties.DIRT_TYPE) == DirtType.NORMAL
@@ -130,7 +150,7 @@ public class BlockGrassBlock extends BlockDirt {
 
                         // Any block directly above the dirt block must not reduce light by 2 levels or more.
                         && block.up().getLightFilter() < 2) {
-                    BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.GRASS_BLOCK));
+                    BlockSpreadEvent $9 = new BlockSpreadEvent(block, this, Block.get(BlockID.GRASS_BLOCK));
                     Server.getInstance().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         this.getLevel().setBlock(block, ev.getNewState());
@@ -143,6 +163,10 @@ public class BlockGrassBlock extends BlockDirt {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }

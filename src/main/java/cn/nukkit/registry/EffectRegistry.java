@@ -12,9 +12,13 @@ public class EffectRegistry implements IRegistry<EffectType, Effect, Class<? ext
     private static final Object2ObjectOpenHashMap<EffectType, FastConstructor<? extends Effect>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectOpenHashMap<String, EffectType> STRING_ID_2_TYPE = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectOpenHashMap<Integer, EffectType> INT_ID_2_TYPE = new Object2ObjectOpenHashMap<>();
-    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static final AtomicBoolean $1 = new AtomicBoolean(false);
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         if (isLoad.getAndSet(true)) return;
         register0(EffectType.SPEED, EffectSpeed.class);
@@ -78,11 +82,19 @@ public class EffectRegistry implements IRegistry<EffectType, Effect, Class<? ext
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void trim() {
         CACHE_CONSTRUCTORS.trim();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reload() {
         isLoad.set(false);
         INT_ID_2_TYPE.clear();
@@ -110,6 +122,10 @@ public class EffectRegistry implements IRegistry<EffectType, Effect, Class<? ext
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void register0(EffectType type, Class<? extends Effect> effect){
         try {
             register(type, effect);

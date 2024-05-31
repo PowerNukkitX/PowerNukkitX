@@ -9,11 +9,15 @@ import cn.nukkit.level.format.IChunk;
  */
 public class ChunkUnloadEvent extends ChunkEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ChunkUnloadEvent(IChunk chunk) {
         super(chunk);

@@ -5,9 +5,13 @@ import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 
 public class BlockStateUpdater_1_18_10 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_18_10();
+    public static final Updater $1 = new BlockStateUpdater_1_18_10();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext context) {
         context.addUpdater(1, 18, 10)
                 .match("name", "minecraft:skull")
@@ -19,10 +23,10 @@ public class BlockStateUpdater_1_18_10 implements Updater {
                 .match("name", "minecraft:glow_lichen")
                 .visit("states")
                 .tryEdit("multi_face_direction_bits", helper -> {
-                    int bits = (int) helper.getTag();
-                    boolean north = (bits & (1 << 2)) != 0;
-                    boolean south = (bits & (1 << 3)) != 0;
-                    boolean west = (bits & (1 << 4)) != 0;
+                    int $2 = (int) helper.getTag();
+                    boolean $3 = (bits & (1 << 2)) != 0;
+                    boolean $4 = (bits & (1 << 3)) != 0;
+                    boolean $5 = (bits & (1 << 4)) != 0;
                     if (north) {
                         bits |= 1 << 4;
                     } else {

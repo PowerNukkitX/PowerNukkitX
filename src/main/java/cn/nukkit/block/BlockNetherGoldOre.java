@@ -10,27 +10,43 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class BlockNetherGoldOre extends BlockGoldOre {
-    public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_GOLD_ORE);
+    public static final BlockProperties $1 = new BlockProperties(NETHER_GOLD_ORE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockNetherGoldOre() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockNetherGoldOre(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Nether Gold Ore";
     }
@@ -41,14 +57,14 @@ public class BlockNetherGoldOre extends BlockGoldOre {
             return Item.EMPTY_ARRAY;
         }
 
-        Enchantment enchantment = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
-        int fortune = 0;
+        Enchantment $2 = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
+        int $3 = 0;
         if (enchantment != null) {
             fortune = enchantment.getLevel();
         }
 
-        NukkitRandom nukkitRandom = new NukkitRandom();
-        int count = nukkitRandom.nextInt(2, 6);
+        NukkitRandom $4 = new NukkitRandom();
+        int $5 = nukkitRandom.nextInt(2, 6);
         switch (fortune) {
             case 0 -> {
                 // Does nothing
@@ -74,7 +90,11 @@ public class BlockNetherGoldOre extends BlockGoldOre {
     }
 
     @Override
-    protected @Nullable String getRawMaterial() {
+    protected @Nullable 
+    /**
+     * @deprecated 
+     */
+    String getRawMaterial() {
         return ItemID.GOLD_NUGGET;
     }
 }

@@ -7,9 +7,17 @@ import cn.nukkit.registry.RecipeRegistry;
 import java.util.List;
 
 public class BlastFurnaceRecipe extends SmeltingRecipe {
+    /**
+     * @deprecated 
+     */
+    
     public BlastFurnaceRecipe(Item result, Item ingredient) {
         this(null, result, ingredient);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BlastFurnaceRecipe(String recipeId, Item result, Item ingredient) {
@@ -22,6 +30,10 @@ public class BlastFurnaceRecipe extends SmeltingRecipe {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean match(Input input) {
         return false;
     }

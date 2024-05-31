@@ -44,11 +44,19 @@ import static cn.nukkit.block.property.CommonBlockProperties.EXTINGUISHED;
 
 @Slf4j
 public class BlockCampfire extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityCampfire> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CAMPFIRE, EXTINGUISHED, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(CAMPFIRE, EXTINGUISHED, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCampfire() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCampfire(BlockState blockstate) {
         super(blockstate);
@@ -60,7 +68,11 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getBlockEntityType() {
         return BlockEntity.CAMPFIRE;
     }
 
@@ -70,26 +82,46 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return isExtinguished() ? 0 : 15;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return true;
     }
@@ -100,22 +132,30 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (down().getProperties() == PROPERTIES) {
             return false;
         }
 
-        final Block layer0 = level.getBlock(this, 0);
-        final Block layer1 = level.getBlock(this, 1);
+        final Block $2 = level.getBlock(this, 0);
+        final Block $3 = level.getBlock(this, 1);
 
         setBlockFace(player != null ? player.getDirection().getOpposite() : null);
-        boolean defaultLayerCheck = (block instanceof BlockFlowingWater w && w.isSourceOrFlowingDown()) || block instanceof BlockFrostedIce;
-        boolean layer1Check = (layer1 instanceof BlockFlowingWater w && w.isSourceOrFlowingDown()) || layer1 instanceof BlockFrostedIce;
+        boolean $4 = (block instanceof BlockFlowingWater w && w.isSourceOrFlowingDown()) || block instanceof BlockFrostedIce;
+        boolean $5 = (layer1 instanceof BlockFlowingWater w && w.isSourceOrFlowingDown()) || layer1 instanceof BlockFrostedIce;
         if (defaultLayerCheck || layer1Check) {
             setExtinguished(true);
             this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
@@ -126,7 +166,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
 
         this.level.setBlock(block, this, true, true);
         try {
-            CompoundTag nbt = new CompoundTag();
+            CompoundTag $6 = new CompoundTag();
 
             if (item.hasCustomBlockData()) {
                 Map<String, Tag> customData = item.getCustomBlockData().getTags();
@@ -148,11 +188,19 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         if (isExtinguished()) {
             if (entity.isOnFire()) {
@@ -169,7 +217,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
             return;
         }
 
-        EntityCombustByBlockEvent ev = new EntityCombustByBlockEvent(this, entity, 8);
+        EntityCombustByBlockEvent $7 = new EntityCombustByBlockEvent(this, entity, 8);
         Server.getInstance().getPluginManager().callEvent(ev);
         if (!ev.isCancelled() && entity.isAlive()) {
             entity.setOnFire(ev.getDuration());
@@ -181,15 +229,23 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isExtinguished()) {
-                Block layer1 = getLevelBlockAtLayer(1);
+                Block $8 = getLevelBlockAtLayer(1);
                 if (layer1 instanceof BlockFlowingWater || layer1 instanceof BlockFrostedIce) {
                     setExtinguished(true);
                     this.level.setBlock(this, this, true, true);
@@ -202,14 +258,18 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isNull()) {
             return false;
         }
 
-        BlockEntityCampfire campfire = getOrCreateBlockEntity();
+        BlockEntityCampfire $9 = getOrCreateBlockEntity();
 
-        boolean itemUsed = false;
+        boolean $10 = false;
         if (!isExtinguished()) {
             if (item.isShovel()) {
                 setExtinguished(true);
@@ -226,11 +286,11 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
             itemUsed = true;
         }
 
-        Item cloned = item.clone();
+        Item $11 = item.clone();
         cloned.setCount(1);
-        CampfireInventory inventory = campfire.getInventory();
+        CampfireInventory $12 = campfire.getInventory();
         if (inventory.canAddItem(cloned)) {
-            CampfireRecipe recipe = this.level.getServer().getRecipeRegistry().findCampfireRecipe(cloned);
+            CampfireRecipe $13 = this.level.getServer().getRecipeRegistry().findCampfireRecipe(cloned);
             if (recipe != null) {
                 inventory.addItem(cloned);
                 item.setCount(item.getCount() - 1);
@@ -242,6 +302,10 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         if ((projectile instanceof EntitySmallFireball || (projectile.isOnFire() && projectile instanceof EntityArrow)) && isExtinguished()) {
             setExtinguished(false);
@@ -257,11 +321,19 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return y + 0.4371948;
     }
@@ -270,10 +342,18 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isExtinguished() {
         return getPropertyValue(EXTINGUISHED);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setExtinguished(boolean extinguished) {
         setPropertyValue(EXTINGUISHED, extinguished);
@@ -285,23 +365,39 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, MinecraftCardinalDirection.values()[face.getOpposite().getHorizontalIndex()]);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Campfire";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasComparatorInputOverride() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getComparatorInputOverride() {
-        BlockEntityCampfire blockEntity = getBlockEntity();
+        BlockEntityCampfire $14 = getBlockEntity();
 
         if (blockEntity != null) {
             return ContainerInventory.calculateRedstone(blockEntity.getInventory());
@@ -311,16 +407,28 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePulled() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePushed() {
         return true;
     }

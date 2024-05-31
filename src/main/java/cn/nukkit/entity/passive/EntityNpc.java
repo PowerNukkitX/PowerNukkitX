@@ -23,19 +23,27 @@ import org.jetbrains.annotations.NotNull;
 public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInteractable {
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return NPC;
     }
 
     //todo: Implement automatic steering of NPC entities
-    public static final String KEY_DIALOG_TITLE = "DialogTitle";
-    public static final String KEY_DIALOG_CONTENT = "DialogContent";
-    public static final String KEY_DIALOG_SKINDATA = "DialogSkinData";
-    public static final String KEY_DIALOG_BUTTONS = "DialogButtons";
+    public static final String $1 = "DialogTitle";
+    public static final String $2 = "DialogContent";
+    public static final String $3 = "DialogSkinData";
+    public static final String $4 = "DialogButtons";
 
     protected FormWindowDialog dialog;
 
-    protected int variant = 0;
+    protected int $5 = 0;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public EntityNpc(IChunk chunk, CompoundTag nbt) {
@@ -44,31 +52,55 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 2.1f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canDoInteraction() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getInteractButtonText(Player player) {
         return player.isCreative() ? "action.interact.edit" : "action.interact.talk";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "NPC";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(Integer.MAX_VALUE); // Should be Float max value
@@ -101,7 +133,7 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
                 this.setVariant(response.getSkinType());
             }
             if (response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION) {
-                ElementDialogButton clickedButton = response.getClickedButton();
+                ElementDialogButton $6 = response.getClickedButton();
                 for (ElementDialogButton.CmdLine line : clickedButton.getData()) {
                     Server.getInstance().executeCommand(new NPCCommandSender(this, player), line.cmd_line);
                 }
@@ -129,6 +161,10 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putString(KEY_DIALOG_TITLE, this.dialog.getTitle());
@@ -139,6 +175,10 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         //对于创造模式玩家，NPC发送过去的dialog的sceneName必须为空，否则客户端会不允许修改对话框内容
         //另外的，我们不需要记录发送给创造模式玩家的对话框，首先因为我们无法清除，其次没有必要
@@ -147,16 +187,28 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         if (source instanceof EntityDamageByEntityEvent event && event.getDamager() instanceof Player damager && damager.isCreative()) {
             this.kill();
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getVariant() {
         return this.variant;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setVariant(int variant) {
         this.variant = variant;

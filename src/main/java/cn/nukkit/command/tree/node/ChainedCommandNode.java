@@ -15,11 +15,15 @@ import java.util.StringJoiner;
 
 public class ChainedCommandNode extends EnumNode {
     private static final HashSet<String> CHAINED = Sets.newHashSet("run", "as", "at", "positioned", "if", "unless", "in", "align", "anchored", "rotated", "facing");
-    private boolean remain = false;
+    private boolean $1 = false;
 
     private final List<String> TMP = new ArrayList<>();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         if (arg.contains(" ")) {
             arg = "\"" + arg + "\"";
@@ -35,7 +39,7 @@ public class ChainedCommandNode extends EnumNode {
             if (this.paramList.getIndex() != this.paramList.getParamTree().getArgs().length) TMP.add(arg);
             else {
                 TMP.add(arg);
-                var join = new StringJoiner(" ", "execute ", "");
+                var $2 = new StringJoiner(" ", "execute ", "");
                 TMP.forEach(join::add);
                 this.value = join.toString();
             }
@@ -43,6 +47,10 @@ public class ChainedCommandNode extends EnumNode {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reset() {
         super.reset();
         TMP.clear();

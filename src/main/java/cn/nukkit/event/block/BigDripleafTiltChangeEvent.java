@@ -8,7 +8,7 @@ import cn.nukkit.event.HandlerList;
 
 public class BigDripleafTiltChangeEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -16,6 +16,10 @@ public class BigDripleafTiltChangeEvent extends BlockEvent implements Cancellabl
 
     private BigDripleafTilt oldTilt;
     private BigDripleafTilt newTilt;
+    /**
+     * @deprecated 
+     */
+    
 
     public BigDripleafTiltChangeEvent(Block block, BigDripleafTilt oldTilt, BigDripleafTilt newTilt) {
         super(block);
@@ -30,6 +34,10 @@ public class BigDripleafTiltChangeEvent extends BlockEvent implements Cancellabl
     public BigDripleafTilt getNewTilt() {
         return newTilt;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setNewTilt(BigDripleafTilt newTilt) {
         this.newTilt = newTilt;

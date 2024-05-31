@@ -8,6 +8,10 @@ public class EntityDataType<T> {
     private final int value;
     private final Function<T, ?> transformer;
     private final T defaultValue;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityDataType(T type, String name, int value) {
         this.name = name;
@@ -16,6 +20,10 @@ public class EntityDataType<T> {
         this.value = value;
         this.transformer = Function.identity();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityDataType(T type, String name, int value, Function<T, ?> transformer) {
         this.name = name;
@@ -24,10 +32,18 @@ public class EntityDataType<T> {
         this.value = value;
         this.transformer = transformer;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isInstance(Object value) {
         return type.isInstance(value);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getTypeName() {
         return this.type.getTypeName();
@@ -44,12 +60,20 @@ public class EntityDataType<T> {
     public Function<Object, Object> getTransformer() {
         return (Function<Object, Object>) transformer;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getValue() {
         return value;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return name;
     }

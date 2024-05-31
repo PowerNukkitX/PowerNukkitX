@@ -14,30 +14,46 @@ import static cn.nukkit.block.property.CommonBlockProperties.*;
 
 
 public class BlockSeagrass extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SEAGRASS, SEA_GRASS_TYPE);
+    public static final BlockProperties $1 = new BlockProperties(SEAGRASS, SEA_GRASS_TYPE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSeagrass() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSeagrass(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Seagrass";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        Block down = down();
-        Block layer1Block = block.getLevelBlockAtLayer(1);
+        Block $2 = down();
+        Block $3 = block.getLevelBlockAtLayer(1);
         int waterDamage;
         if (down.isSolid() && !down.getId().equals(MAGMA) && !down.getId().equals(SOUL_SAND) &&
                 (layer1Block instanceof BlockFlowingWater water && ((waterDamage = (water.getLiquidDepth())) == 0 || waterDamage == 8))
@@ -52,9 +68,13 @@ public class BlockSeagrass extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            Block blockLayer1 = getLevelBlockAtLayer(1);
+            Block $4 = getLevelBlockAtLayer(1);
             int damage;
             if (!(blockLayer1 instanceof BlockFrostedIce)
                     && (!(blockLayer1 instanceof BlockFlowingWater) || ((damage = blockLayer1.blockstate.specialValue()) != 0 && damage != 8))) {
@@ -62,8 +82,8 @@ public class BlockSeagrass extends BlockFlowable {
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 
-            Block down = down();
-            SeaGrassType propertyValue = getPropertyValue(SEA_GRASS_TYPE);
+            Block $5 = down();
+            SeaGrassType $6 = getPropertyValue(SEA_GRASS_TYPE);
             if (propertyValue == SeaGrassType.DEFAULT || propertyValue == SeaGrassType.DOUBLE_BOT) {
                 if (!down.isSolid() || down.getId().equals(MAGMA) || down.getId().equals(SOUL_SAND)) {
                     this.getLevel().useBreakOn(this);
@@ -71,7 +91,7 @@ public class BlockSeagrass extends BlockFlowable {
                 }
 
                 if (propertyValue == SeaGrassType.DOUBLE_BOT) {
-                    Block up = up();
+                    Block $7 = up();
                     if (!up.getId().equals(getId()) || up.getPropertyValue(SEA_GRASS_TYPE) != SeaGrassType.DOUBLE_TOP) {
                         this.getLevel().useBreakOn(this);
                     }
@@ -87,14 +107,22 @@ public class BlockSeagrass extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (getPropertyValue(SEA_GRASS_TYPE) == SeaGrassType.DEFAULT && item.isFertilizer()) {
-            Block up = this.up();
+            Block $8 = this.up();
             int damage;
             if (up instanceof BlockFlowingWater w && ((damage = w.getLiquidDepth()) == 0 || damage == 8)) {
                 if (player != null && (player.gamemode & 0x01) == 0) {
@@ -122,16 +150,28 @@ public class BlockSeagrass extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeReplaced() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_SHEARS;
     }

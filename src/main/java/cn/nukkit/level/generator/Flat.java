@@ -13,11 +13,19 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class Flat extends Generator {
+    /**
+     * @deprecated 
+     */
+    
     public Flat(DimensionData dimensionData, Map<String, Object> options) {
         super(dimensionData, options);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void stages(GenerateStage.Builder builder) {
         builder.start(Registries.GENERATE_STAGE.get(FlatGenerateStage.NAME));
         if (Server.getInstance().getSettings().chunkSettings().lightUpdates()) {
@@ -27,6 +35,10 @@ public class Flat extends Generator {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "flat";
     }

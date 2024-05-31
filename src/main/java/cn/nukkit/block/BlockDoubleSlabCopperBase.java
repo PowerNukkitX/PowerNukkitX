@@ -14,48 +14,84 @@ import javax.annotation.Nullable;
  * @since 2021-06-14
  */
 public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase implements Waxable, Oxidizable {
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDoubleSlabCopperBase(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 3;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 6;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_STONE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         return Waxable.super.onActivate(item, player, blockFace, fx, fy, fz)
                 || Oxidizable.super.onActivate(item, player, blockFace, fx, fy, fz);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         return Oxidizable.super.onUpdate(type);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
@@ -66,6 +102,10 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
         if (getOxidizationLevel().equals(oxidizationLevel)) {
             return true;
@@ -74,6 +114,10 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean setWaxed(boolean waxed) {
         if (isWaxed() == waxed) {
             return true;
@@ -82,6 +126,10 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isWaxed() {
         return false;
     }

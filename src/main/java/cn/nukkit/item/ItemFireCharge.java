@@ -15,25 +15,45 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author PetteriM1
  */
 public class ItemFireCharge extends Item {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemFireCharge() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemFireCharge(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemFireCharge(Integer meta, int count) {
         super(FIRE_CHARGE, 0, count, "Fire Charge");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
             return false;
@@ -46,14 +66,14 @@ public class ItemFireCharge extends Item {
                 }
             }
 
-            BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);
+            BlockFire $1 = (BlockFire) Block.get(BlockID.FIRE);
             fire.x = block.x;
             fire.y = block.y;
             fire.z = block.z;
             fire.level = level;
 
             if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
-                BlockIgniteEvent e = new BlockIgniteEvent(block, null, player, BlockIgniteEvent.BlockIgniteCause.FLINT_AND_STEEL);
+                BlockIgnit$2Ev$1nt e = new BlockIgniteEvent(block, null, player, BlockIgniteEvent.BlockIgniteCause.FLINT_AND_STEEL);
                 block.getLevel().getServer().getPluginManager().callEvent(e);
 
                 if (!e.isCancelled()) {
@@ -62,7 +82,7 @@ public class ItemFireCharge extends Item {
                     level.scheduleUpdate(fire, fire.tickRate() + ThreadLocalRandom.current().nextInt(10));
                 }
                 if (player.isSurvival()) {
-                    Item item = player.getInventory().getItemInHand();
+                    Item $3 = player.getInventory().getItemInHand();
                     item.setCount(item.getCount() - 1);
                     player.getInventory().setItemInHand(item);
                 }

@@ -38,26 +38,30 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityThrownTrident extends SlenderProjectile {
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return THROWN_TRIDENT;
     }
 
-    private static final String TAG_PICKUP = "pickup";
-    private static final String TAG_TRIDENT = "Trident";
-    private static final String TAG_FAVORED_SLOT = "favoredSlot";
-    private static final String TAG_CREATIVE = "isCreative";
-    private static final String TAG_PLAYER = "player";
-    private static final String NAME_TRIDENT = "Trident";
-    private static final Vector3 defaultCollisionPos = new Vector3(0, 0, 0);
-    private static final BlockVector3 defaultStuckToBlockPos = new BlockVector3(0, 0, 0);
+    private static final String $1 = "pickup";
+    private static final String $2 = "Trident";
+    private static final String $3 = "favoredSlot";
+    private static final String $4 = "isCreative";
+    private static final String $5 = "player";
+    private static final String $6 = "Trident";
+    private static final Vector3 $7 = new Vector3(0, 0, 0);
+    private static final BlockVector3 $8 = new BlockVector3(0, 0, 0);
 
     public boolean alreadyCollided;
     protected Item trident;
     // Default Values
 
-    protected float gravity = 0.04f;
+    protected float $9 = 0.04f;
 
-    protected float drag = 0.01f;
+    protected float $10 = 0.01f;
 
     protected int pickupMode;
     private Vector3 collisionPos;
@@ -69,36 +73,64 @@ public class EntityThrownTrident extends SlenderProjectile {
     private boolean hasChanneling;
     private int riptideLevel;
     private int impalingLevel;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityThrownTrident(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityThrownTrident(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getLength() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getGravity() {
         return 0.05f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getDrag() {
         return 0.01f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return NAME_TRIDENT;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.setHasAge(false);
         super.initEntity();
@@ -146,6 +178,10 @@ public class EntityThrownTrident extends SlenderProjectile {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
 
@@ -168,6 +204,10 @@ public class EntityThrownTrident extends SlenderProjectile {
     public Item getItem() {
         return this.trident != null ? this.trident.clone() : Item.AIR;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setItem(Item item) {
         this.trident = item.clone();
@@ -176,22 +216,38 @@ public class EntityThrownTrident extends SlenderProjectile {
         this.riptideLevel = this.trident.getEnchantmentLevel(Enchantment.ID_TRIDENT_RIPTIDE);
         this.impalingLevel = this.trident.getEnchantmentLevel(Enchantment.ID_TRIDENT_IMPALING);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCritical() {
         this.setCritical(true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isCritical() {
         return this.getDataFlag(EntityFlag.CRITICAL);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCritical(boolean value) {
         this.setDataFlag(EntityFlag.CRITICAL, value);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getResultDamage() {
-        int base = super.getResultDamage();
+        int $11 = super.getResultDamage();
 
         if (this.isCritical()) {
             base += ThreadLocalRandom.current().nextInt(base / 2 + 2);
@@ -201,12 +257,20 @@ public class EntityThrownTrident extends SlenderProjectile {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected double getBaseDamage() {
         return 8;
     }
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
@@ -216,7 +280,7 @@ public class EntityThrownTrident extends SlenderProjectile {
             this.getLevel().addSound(this, Sound.ITEM_TRIDENT_HIT_GROUND);
         }
 
-        boolean hasUpdate = super.onUpdate(currentTick);
+        boolean $12 = super.onUpdate(currentTick);
 
         if (this.onGround || this.hadCollision) {
             this.setCritical(false);
@@ -224,10 +288,10 @@ public class EntityThrownTrident extends SlenderProjectile {
 
         if (this.noClip) {
             if (this.canReturnToShooter()) {
-                Entity shooter = this.shootingEntity;
-                double force = 0.05d * (double) loyaltyLevel;
-                Vector3 vector3 = new Vector3(shooter.x - this.x, shooter.y + shooter.getEyeHeight() - this.y, shooter.z - this.z);
-                BVector3 bVector = BVector3.fromPos(vector3);
+                Entity $13 = this.shootingEntity;
+                double $14 = 0.05d * (double) loyaltyLevel;
+                Vector3 $15 = new Vector3(shooter.x - this.x, shooter.y + shooter.getEyeHeight() - this.y, shooter.z - this.z);
+                BVector3 $16 = BVector3.fromPos(vector3);
                 vector3 = bVector.addToPos();
                 this.setPosition(new Vector3(this.x + vector3.x * force, this.y + vector3.y * force, this.z + vector3.z * force));
                 this.setRotation(bVector.getYaw(), bVector.getPitch());
@@ -245,8 +309,12 @@ public class EntityThrownTrident extends SlenderProjectile {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void spawnTo(Player player) {
-        AddEntityPacket pk = new AddEntityPacket();
+        AddEntityPacket $17 = new AddEntityPacket();
         pk.type = Registries.ENTITY.getEntityNetworkId(THROWN_TRIDENT);
         pk.entityUniqueId = this.getId();
         pk.entityRuntimeId = this.getId();
@@ -266,6 +334,10 @@ public class EntityThrownTrident extends SlenderProjectile {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onCollideWithEntity(Entity entity) {
         if (this.noClip) {
             return;
@@ -277,7 +349,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
 
         this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity)));
-        float damage = this.getResultDamage();
+        float $18 = this.getResultDamage();
         if (this.impalingLevel > 0 && (entity.isTouchingWater() || (entity.getLevel().isRaining() && entity.getLevel().canBlockSeeSky(entity)))) {
             damage = damage + (2.5f * (float) this.impalingLevel);
         }
@@ -296,8 +368,8 @@ public class EntityThrownTrident extends SlenderProjectile {
 
         if (this.hasChanneling) {
             if (this.level.isThundering() && this.level.canBlockSeeSky(this)) {
-                Position pos = this.getPosition();
-                EntityLightningBolt lighting = new EntityLightningBolt(pos.getChunk(), getDefaultNBT(pos));
+                Position $19 = this.getPosition();
+                EntityLightningBolt $20 = new EntityLightningBolt(pos.getChunk(), getDefaultNBT(pos));
                 lighting.spawnToAll();
                 this.getLevel().addSound(this, Sound.ITEM_TRIDENT_THUNDER);
             }
@@ -310,16 +382,28 @@ public class EntityThrownTrident extends SlenderProjectile {
             this.setTridentRope(true);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getPickupMode() {
         return this.pickupMode;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPickupMode(int pickupMode) {
         this.pickupMode = pickupMode;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void onCollideWithBlock(Position position, Vector3 motion) {
         if (this.noClip) {
             return;
@@ -340,6 +424,10 @@ public class EntityThrownTrident extends SlenderProjectile {
     public Vector3 getCollisionPos() {
         return collisionPos;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCollisionPos(Vector3 collisionPos) {
         this.collisionPos = collisionPos;
@@ -348,34 +436,66 @@ public class EntityThrownTrident extends SlenderProjectile {
     public BlockVector3 getStuckToBlockPos() {
         return stuckToBlockPos;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setStuckToBlockPos(BlockVector3 stuckToBlockPos) {
         this.stuckToBlockPos = stuckToBlockPos;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFavoredSlot() {
         return favoredSlot;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFavoredSlot(int favoredSlot) {
         this.favoredSlot = favoredSlot;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isCreative() {
         return getPickupMode() == EntityProjectile.PICKUP_CREATIVE;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPlayer() {
         return player;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPlayer(boolean player) {
         this.player = player;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getLoyaltyLevel() {
         return loyaltyLevel;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setLoyaltyLevel(int loyaltyLevel) {
         this.loyaltyLevel = loyaltyLevel;
@@ -385,10 +505,18 @@ public class EntityThrownTrident extends SlenderProjectile {
             // TODO: this.trident.removeEnchantment(Enchantment.ID_TRIDENT_LOYALTY);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasChanneling() {
         return hasChanneling;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setChanneling(boolean hasChanneling) {
         this.hasChanneling = hasChanneling;
@@ -398,10 +526,18 @@ public class EntityThrownTrident extends SlenderProjectile {
             // TODO: this.trident.removeEnchantment(Enchantment.ID_TRIDENT_CHANNELING);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getRiptideLevel() {
         return riptideLevel;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRiptideLevel(int riptideLevel) {
         this.riptideLevel = riptideLevel;
@@ -411,10 +547,18 @@ public class EntityThrownTrident extends SlenderProjectile {
             // TODO: this.trident.removeEnchantment(Enchantment.ID_TRIDENT_RIPTIDE);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getImpalingLevel() {
         return impalingLevel;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setImpalingLevel(int impalingLevel) {
         this.impalingLevel = impalingLevel;
@@ -424,10 +568,18 @@ public class EntityThrownTrident extends SlenderProjectile {
             // TODO: this.trident.removeEnchantment(Enchantment.ID_TRIDENT_IMPALING);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getTridentRope() {
         return this.getDataFlag(EntityFlag.RETURN_TRIDENT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTridentRope(boolean tridentRope) {
         if (tridentRope) {
@@ -437,6 +589,10 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
         this.setDataFlag(EntityFlag.RETURN_TRIDENT, tridentRope);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canReturnToShooter() {
         if (this.loyaltyLevel <= 0) {
@@ -447,7 +603,7 @@ public class EntityThrownTrident extends SlenderProjectile {
             return false;
         }
 
-        Entity shooter = this.shootingEntity;
+        Entity $21 = this.shootingEntity;
         if (shooter != null) {
             if (shooter.isAlive() && shooter instanceof Player) {
                 return !(((Player) shooter).isSpectator());

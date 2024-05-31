@@ -16,9 +16,13 @@ import java.util.concurrent.TimeUnit;
 public class PlayerSkinProcessor extends DataPacketProcessor<PlayerSkinPacket> {
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerSkinPacket pk) {
-        Player player = playerHandle.player;
-        Skin skin = pk.skin;
+        Player $1 = playerHandle.player;
+        Skin $2 = pk.skin;
 
         if (!skin.isValid()) {
             log.warn(playerHandle.getUsername() + ": PlayerSkinPacket with invalid skin");
@@ -29,8 +33,8 @@ public class PlayerSkinProcessor extends DataPacketProcessor<PlayerSkinPacket> {
             skin.setTrusted(true);
         }
 
-        PlayerChangeSkinEvent playerChangeSkinEvent = new PlayerChangeSkinEvent(player, skin);
-        var tooQuick = TimeUnit.SECONDS.toMillis(player.getServer().getSettings().playerSettings().skinChangeCooldown()) > System.currentTimeMillis() - player.lastSkinChange;
+        PlayerChangeSkinEvent $3 = new PlayerChangeSkinEvent(player, skin);
+        var $4 = TimeUnit.SECONDS.toMillis(player.getServer().getSettings().playerSettings().skinChangeCooldown()) > System.currentTimeMillis() - player.lastSkinChange;
         if (tooQuick) {
             playerChangeSkinEvent.setCancelled(true);
             log.warn("Player " + playerHandle.getUsername() + " change skin too quick!");
@@ -43,6 +47,10 @@ public class PlayerSkinProcessor extends DataPacketProcessor<PlayerSkinPacket> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.PLAYER_SKIN_PACKET;
     }

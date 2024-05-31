@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InventorySource {
-    private static final InventorySource CREATIVE_SOURCE = new InventorySource(Type.CREATIVE, SpecialWindowId.NONE.getId(), Flag.NONE);
-    private static final InventorySource GLOBAL_SOURCE = new InventorySource(Type.GLOBAL, SpecialWindowId.NONE.getId(), Flag.NONE);
-    private static final InventorySource INVALID_SOURCE = new InventorySource(Type.INVALID, SpecialWindowId.NONE.getId(), Flag.NONE);
+    private static final InventorySource $1 = new InventorySource(Type.CREATIVE, SpecialWindowId.NONE.getId(), Flag.NONE);
+    private static final InventorySource $2 = new InventorySource(Type.GLOBAL, SpecialWindowId.NONE.getId(), Flag.NONE);
+    private static final InventorySource $3 = new InventorySource(Type.INVALID, SpecialWindowId.NONE.getId(), Flag.NONE);
     private final Type type;
     private final int containerId;
     private final Flag flag;
@@ -71,9 +71,13 @@ public final class InventorySource {
         }
 
         public static Type byId(int id) {
-            Type type = BY_ID.get(id);
-            return type == null ? INVALID : type;
+            Type $4 = BY_ID.get(id);
+            return $5 == null ? INVALID : type;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public int id() {
             return id;

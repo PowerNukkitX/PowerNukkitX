@@ -32,10 +32,14 @@ import java.util.Objects;
  * @author MagicDroidX | CoolLoong
  */
 public class EntityFallingBlock extends Entity {
-    private static final int sandAliveTick = 600;
+    private static final int $1 = 600;
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return FALLING_BLOCK;
     }
@@ -43,54 +47,90 @@ public class EntityFallingBlock extends Entity {
     protected BlockState blockState;
     protected boolean breakOnLava;
     protected boolean breakOnGround;
-    protected int aliveTick = 0;
+    protected int $2 = 0;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityFallingBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.98f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getLength() {
         return 0.98f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.98f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getGravity() {
         return 0.04f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getDrag() {
         return 0.02f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getBaseOffset() {
         return 0.49f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCollide() {
         return Objects.equals(blockState.getIdentifier(), BlockID.ANVIL);
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.initEntity();
 
         if (namedTag != null) {
             if (namedTag.contains("Block")) {
-                BlockState blockState = NBTIO.getBlockStateHelper(namedTag.getCompound("Block"));
+                BlockState $3 = NBTIO.getBlockStateHelper(namedTag.getCompound("Block"));
                 if (blockState == null) {
                     close();
                     return;
@@ -107,32 +147,44 @@ public class EntityFallingBlock extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCollideWith(Entity entity) {
         return Objects.equals(blockState.getIdentifier(), BlockID.ANVIL);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         return source.getCause() == DamageCause.VOID && super.attack(source);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (closed) {
             return false;
         }
 
-        int tickDiff = currentTick - lastUpdate;
+        int $4 = currentTick - lastUpdate;
         if (tickDiff <= 0 && !justCreated) {
             return true;
         }
 
         lastUpdate = currentTick;
 
-        boolean hasUpdate = entityBaseTick(tickDiff);
+        boolean $5 = entityBaseTick(tickDiff);
 
         if (isAlive()) {
-            String b = blockState.getIdentifier();
+            String $6 = blockState.getIdentifier();
             if ((b.equals(BlockID.SAND) ||
                     b.equals(BlockID.GRAVEL) ||
                     b.equals(BlockID.ANVIL)
@@ -150,13 +202,13 @@ public class EntityFallingBlock extends Entity {
 
             move(motionX, motionY, motionZ);
 
-            float friction = 1 - getDrag();
+            float $7 = 1 - getDrag();
 
             motionX *= friction;
             motionY *= 1 - getDrag();
             motionZ *= friction;
 
-            Vector3 pos = (new Vector3(x - 0.5, y, z - 0.5)).round();
+            Vector3 $8 = (new Vector3(x - 0.5, y, z - 0.5)).round();
             if (breakOnLava && level.getBlock(pos.subtract(0, 1, 0)) instanceof BlockFlowingLava) {
                 close();
                 if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
@@ -168,23 +220,23 @@ public class EntityFallingBlock extends Entity {
 
             if (onGround) {
                 close();
-                Block block = level.getBlock(pos);
+                Block $9 = level.getBlock(pos);
 
-                Vector3 floorPos = (new Vector3(x - 0.5, y, z - 0.5)).floor();
-                Block floorBlock = this.level.getBlock(floorPos);
+                Vector3 $10 = (new Vector3(x - 0.5, y, z - 0.5)).floor();
+                Block $11 = this.level.getBlock(floorPos);
                 //handle for snow stack
                 if (this.getBlock().getId().equals(Block.SNOW_LAYER) && floorBlock.getId().equals(Block.SNOW_LAYER) && floorBlock.getPropertyValue(CommonBlockProperties.HEIGHT) != 7) {
-                    int mergedHeight = floorBlock.getPropertyValue(CommonBlockProperties.HEIGHT) + 1 + this.blockState.getPropertyValue(CommonBlockProperties.HEIGHT) + 1;
+                    int $12 = floorBlock.getPropertyValue(CommonBlockProperties.HEIGHT) + 1 + this.blockState.getPropertyValue(CommonBlockProperties.HEIGHT) + 1;
                     if (mergedHeight > 8) {
-                        EntityBlockChangeEvent event = new EntityBlockChangeEvent(this, floorBlock, Block.get(Block.SNOW_LAYER).setPropertyValue(CommonBlockProperties.HEIGHT, 7));
+                        EntityBlockChangeEvent $13 = new EntityBlockChangeEvent(this, floorBlock, Block.get(Block.SNOW_LAYER).setPropertyValue(CommonBlockProperties.HEIGHT, 7));
                         this.server.getPluginManager().callEvent(event);
                         if (!event.isCancelled()) {
                             this.level.setBlock(floorPos, event.getTo(), true);
 
-                            Vector3 abovePos = floorPos.up();
-                            Block aboveBlock = this.level.getBlock(abovePos);
+                            Vector3 $14 = floorPos.up();
+                            Block $15 = this.level.getBlock(abovePos);
                             if (aboveBlock.isAir()) {
-                                EntityBlockChangeEvent event2 = new EntityBlockChangeEvent(this, aboveBlock, Block.get(Block.SNOW_LAYER).setPropertyValue(CommonBlockProperties.HEIGHT, mergedHeight - 8 - 1));
+                                EntityBlockChangeEvent $16 = new EntityBlockChangeEvent(this, aboveBlock, Block.get(Block.SNOW_LAYER).setPropertyValue(CommonBlockProperties.HEIGHT, mergedHeight - 8 - 1));
                                 this.server.getPluginManager().callEvent(event2);
                                 if (!event2.isCancelled()) {
                                     this.level.setBlock(abovePos, event2.getTo(), true);
@@ -192,7 +244,7 @@ public class EntityFallingBlock extends Entity {
                             }
                         }
                     } else {
-                        EntityBlockChangeEvent event = new EntityBlockChangeEvent(this, floorBlock,
+                        EntityBlockChangeEvent $17 = new EntityBlockChangeEvent(this, floorBlock,
                                 Block.get(Block.SNOW_LAYER).setPropertyValue(CommonBlockProperties.HEIGHT, mergedHeight - 1));
                         this.server.getPluginManager().callEvent(event);
                         if (!event.isCancelled()) {
@@ -204,10 +256,10 @@ public class EntityFallingBlock extends Entity {
                         dropItems();
                     }
                 } else {
-                    EntityBlockChangeEvent event = new EntityBlockChangeEvent(this, block, Block.get(blockState));
+                    EntityBlockChangeEvent $18 = new EntityBlockChangeEvent(this, block, Block.get(blockState));
                     server.getPluginManager().callEvent(event);
                     if (!event.isCancelled()) {
-                        Block eventTo = event.getTo();
+                        Block $19 = event.getTo();
 
                         if (breakOnGround) {
                             if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
@@ -228,7 +280,7 @@ public class EntityFallingBlock extends Entity {
 
                             //handle anvil broken when fall
                             if (fallDistance > 8) {
-                                BlockAnvil anvil = (BlockAnvil) eventTo;
+                                BlockAnvil $20 = (BlockAnvil) eventTo;
                                 if (anvil.getAnvilDamage() == Damage.VERY_DAMAGED) {
                                     getLevel().setBlock(eventTo, BlockAir.STATE.toBlock(), true);
                                 } else {
@@ -263,28 +315,48 @@ public class EntityFallingBlock extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         namedTag.putCompound("Block", blockState.getBlockStateTag());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeMovedByCurrents() {
         return !onGround && !this.blockState.getIdentifier().equals(BlockID.DRIPSTONE_BLOCK);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void resetFallDistance() {
         if (!this.closed) { // For falling anvil: do not reset fall distance before dealing damage to entities
             this.highestPosition = this.y;
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void dropItems() {
         getLevel().dropItem(this, blockState.toItem());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Falling Block";
     }

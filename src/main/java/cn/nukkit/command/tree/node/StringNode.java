@@ -10,6 +10,10 @@ package cn.nukkit.command.tree.node;
  */
 public class StringNode extends ParamNode<String> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         this.value = arg;
     }

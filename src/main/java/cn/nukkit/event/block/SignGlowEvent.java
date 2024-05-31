@@ -7,7 +7,7 @@ import cn.nukkit.event.HandlerList;
 
 public class SignGlowEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -15,6 +15,10 @@ public class SignGlowEvent extends BlockEvent implements Cancellable {
 
     private final Player player;
     private final boolean glowing;
+    /**
+     * @deprecated 
+     */
+    
 
     public SignGlowEvent(Block block, Player player, boolean glowing) {
         super(block);
@@ -25,6 +29,10 @@ public class SignGlowEvent extends BlockEvent implements Cancellable {
     public Player getPlayer() {
         return player;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isGlowing() {
         return this.glowing;

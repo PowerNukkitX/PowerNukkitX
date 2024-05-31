@@ -7,6 +7,10 @@ import cn.nukkit.math.Vector3;
  * @since 2015/11/21
  */
 public class SporeParticle extends GenericParticle {
+    /**
+     * @deprecated 
+     */
+    
     public SporeParticle(Vector3 pos) {
         super(pos, Particle.TYPE_TOWN_AURA);
     }

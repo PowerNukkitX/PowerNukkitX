@@ -7,27 +7,43 @@ import cn.nukkit.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockLitRedstoneLamp extends BlockRedstoneLamp {
-    public static final BlockProperties PROPERTIES = new BlockProperties(LIT_REDSTONE_LAMP);
+    public static final BlockProperties $1 = new BlockProperties(LIT_REDSTONE_LAMP);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockLitRedstoneLamp() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockLitRedstoneLamp(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Lit Redstone Lamp";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 15;
     }
@@ -38,6 +54,10 @@ public class BlockLitRedstoneLamp extends BlockRedstoneLamp {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return 0;
@@ -49,8 +69,8 @@ public class BlockLitRedstoneLamp extends BlockRedstoneLamp {
         }
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED && !this.isGettingPower()) {
-            // Redstone event
-            RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
+            // Redstone $2ent
+            RedstoneUpdateEvent $1 = new RedstoneUpdateEvent(this);
             this.level.getServer().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 return 0;

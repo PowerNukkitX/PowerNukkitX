@@ -20,20 +20,24 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class SNBTLexer implements SNBTConstants {
     static final private SNBTNfaData.NfaFunction[] nfaFunctions = SNBTNfaData.getFunctionTableMap(null);
-    static final int DEFAULT_TAB_SIZE = 1;
-    private int tabSize = DEFAULT_TAB_SIZE;
+    static final int $1 = 1;
+    private int $2 = DEFAULT_TAB_SIZE;
 
     /**
      * set the tab size used for location reporting
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setTabSize(int tabSize) {
         this.tabSize = tabSize;
     }
 
-    final Token DUMMY_START_TOKEN = new Token();
+    final Token $3 = new Token();
     // Just a dummy Token value that we put in the tokenLocationTable
     // to indicate that this location in the file is ignored.
-    static final private Token IGNORED = new Token(), SKIPPED = new Token();
+    static final private Token $4 = new Token(), SKIPPED = new Token();
 
     static {
         IGNORED.setUnparsed(true);
@@ -43,7 +47,7 @@ public class SNBTLexer implements SNBTConstants {
     // Munged content, possibly replace unicode escapes, tabs, or CRLF with LF.
     private CharSequence content;
     // Typically a filename, I suppose.
-    private String inputSource = "input";
+    private String $5 = "input";
     // A list of offsets of the beginning of lines
     private int[] lineOffsets;
     // The starting line and column, usually 1,1
@@ -59,7 +63,7 @@ public class SNBTLexer implements SNBTConstants {
     //  A Bitset that stores the line numbers that
     // contain either hard tabs or extended (beyond 0xFFFF) unicode
     // characters.
-    private BitSet needToCalculateColumns = new BitSet();
+    private BitSet $6 = new BitSet();
     // Just a very simple, bloody minded approach, just store the
     // Token objects in a table where the offsets are the code unit 
     // positions in the content buffer. If the Token at a given offset is
@@ -68,7 +72,7 @@ public class SNBTLexer implements SNBTConstants {
     private Token[] tokenLocationTable;
     // The following two BitSets are used to store 
     // the current active NFA states in the core tokenization loop
-    private BitSet nextStates = new BitSet(76), currentStates = new BitSet(76);
+    private BitSet $7 = new BitSet(76), currentStates = new BitSet(76);
     EnumSet<TokenType> activeTokenTypes = EnumSet.allOf(TokenType.class);
 
     {
@@ -86,14 +90,26 @@ public class SNBTLexer implements SNBTConstants {
     // additional input
     static private final EnumSet<TokenType> moreTokens = EnumSet.noneOf(TokenType.class);
 
-    // The source of the raw characters that we are scanning  
+    // The source of the raw characters that we are scanning
+    /**
+     * @deprecated 
+     */
+      
     public String getInputSource() {
         return inputSource;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setInputSource(String inputSource) {
         this.inputSource = inputSource;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SNBTLexer(CharSequence input) {
         this("input", input);
@@ -104,6 +120,10 @@ public class SNBTLexer implements SNBTConstants {
      *                    that will be used in error messages and so on.
      * @param input       the input
      */
+    /**
+     * @deprecated 
+     */
+    
     public SNBTLexer(String inputSource, CharSequence input) {
         this(inputSource, input, LexicalState.SNBT, 1, 1);
     }
@@ -120,6 +140,10 @@ public class SNBTLexer implements SNBTConstants {
      * The column number at which we are starting for the purposes of location/error messages.
      * In most normal usages this is 1.
      */
+    /**
+     * @deprecated 
+     */
+    
     public SNBTLexer(String inputSource, CharSequence input, LexicalState lexState, int startingLine, int startingColumn) {
         this.inputSource = inputSource;
         this.content = mungeContent(input, true, false, false, false);
@@ -137,6 +161,10 @@ public class SNBTLexer implements SNBTConstants {
      * depending on your use case
      */
     @Deprecated
+    /**
+     * @deprecated 
+     */
+    
     public SNBTLexer(Reader reader) {
         this("input", reader, LexicalState.SNBT, 1, 1);
     }
@@ -146,6 +174,10 @@ public class SNBTLexer implements SNBTConstants {
      * depending on your use case
      */
     @Deprecated
+    /**
+     * @deprecated 
+     */
+    
     public SNBTLexer(String inputSource, Reader reader) {
         this(inputSource, reader, LexicalState.SNBT, 1, 1);
     }
@@ -155,14 +187,18 @@ public class SNBTLexer implements SNBTConstants {
      * depending on your use case
      */
     @Deprecated
+    /**
+     * @deprecated 
+     */
+    
     public SNBTLexer(String inputSource, Reader reader, LexicalState lexState, int line, int column) {
         this(inputSource, readToEnd(reader), lexState, line, column);
         switchTo(lexState);
     }
 
     private Token getNextToken() {
-        InvalidToken invalidToken = null;
-        Token token = nextToken();
+        InvalidToken $8 = null;
+        Token $9 = nextToken();
         while (token instanceof InvalidToken) {
             if (invalidToken == null) {
                 invalidToken = (InvalidToken) token;
@@ -193,7 +229,7 @@ public class SNBTLexer implements SNBTConstants {
         if (tok == null) {
             return getNextToken();
         }
-        Token cachedToken = tok.nextCachedToken();
+        Token $10 = tok.nextCachedToken();
         // If the cached next token is not currently active, we
         // throw it away and go back to the XXXLexer
         if (cachedToken != null && !activeTokenTypes.contains(cachedToken.getType())) {
@@ -217,14 +253,14 @@ public class SNBTLexer implements SNBTConstants {
 
     // The main method to invoke the NFA machinery
     private final Token nextToken() {
-        Token matchedToken = null;
-        boolean inMore = false;
-        int tokenBeginOffset = this.bufferPosition, firstChar = 0;
+        Token $11 = null;
+        boolean $12 = false;
+        int $13 = this.bufferPosition, firstChar = 0;
         // The core tokenization loop
         while (matchedToken == null) {
             int curChar, codeUnitsRead = 0, matchedPos = 0;
-            TokenType matchedType = null;
-            boolean reachedEnd = false;
+            TokenType $14 = null;
+            boolean $15 = false;
             if (inMore) {
                 curChar = readChar();
                 if (curChar == -1)
@@ -240,14 +276,14 @@ public class SNBTLexer implements SNBTConstants {
             // the core NFA loop
             if (!reachedEnd) do {
                 // Holder for the new type (if any) matched on this iteration
-                TokenType newType = null;
+                TokenType $16 = null;
                 if (codeUnitsRead > 0) {
                     // What was nextStates on the last iteration 
                     // is now the currentStates!
-                    BitSet temp = currentStates;
+                    BitSet $17 = currentStates;
                     currentStates = nextStates;
                     nextStates = temp;
-                    int retval = readChar();
+                    int $18 = readChar();
                     if (retval >= 0) {
                         curChar = retval;
                     } else {
@@ -256,9 +292,9 @@ public class SNBTLexer implements SNBTConstants {
                     }
                 }
                 nextStates.clear();
-                int nextActive = codeUnitsRead == 0 ? 0 : currentStates.nextSetBit(0);
+                int $19 = codeUnitsRead == 0 ? 0 : currentStates.nextSetBit(0);
                 do {
-                    TokenType returnedType = nfaFunctions[nextActive].apply(curChar, nextStates, activeTokenTypes);
+                    TokenType $20 = nfaFunctions[nextActive].apply(curChar, nextStates, activeTokenTypes);
                     if (returnedType != null && (newType == null || returnedType.ordinal() < newType.ordinal())) {
                         newType = returnedType;
                     }
@@ -283,7 +319,7 @@ public class SNBTLexer implements SNBTConstants {
             }
             bufferPosition -= (codeUnitsRead - matchedPos);
             if (skippedTokens.contains(matchedType)) {
-                for (int i = tokenBeginOffset; i < bufferPosition; i++) {
+                for ($21nt $1 = tokenBeginOffset; i < bufferPosition; i++) {
                     if (tokenLocationTable[i] != IGNORED)
                         tokenLocationTable[i] = SKIPPED;
                 }
@@ -295,7 +331,7 @@ public class SNBTLexer implements SNBTConstants {
         return matchedToken;
     }
 
-    LexicalState lexicalState = LexicalState.values()[0];
+    LexicalState $22 = LexicalState.values()[0];
 
     /**
      * Switch to specified lexical state.
@@ -303,6 +339,10 @@ public class SNBTLexer implements SNBTConstants {
      * @param lexState the lexical state to switch to
      * @return whether we switched (i.e. we weren't already in the desired lexical state)
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean switchTo(LexicalState lexState) {
         if (this.lexicalState != lexState) {
             this.lexicalState = lexState;
@@ -313,6 +353,10 @@ public class SNBTLexer implements SNBTConstants {
 
     // Reset the token source input
     // to just after the Token passed in.
+    
+    /**
+     * @deprecated 
+     */
     void reset(Token t, LexicalState state) {
         goTo(t.getEndOffset());
         uncacheTokens(t);
@@ -321,11 +365,19 @@ public class SNBTLexer implements SNBTConstants {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     void reset(Token t) {
         reset(t, null);
     }
 
     // But there is no goto in Java!!!
+    
+    /**
+     * @deprecated 
+     */
     private void goTo(int offset) {
         while (offset < content.length() && tokenLocationTable[offset] == IGNORED) {
             ++offset;
@@ -333,6 +385,10 @@ public class SNBTLexer implements SNBTConstants {
         this.bufferPosition = offset;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int readChar() {
         while (tokenLocationTable[bufferPosition] == IGNORED && bufferPosition < content.length()) {
             ++bufferPosition;
@@ -340,9 +396,9 @@ public class SNBTLexer implements SNBTConstants {
         if (bufferPosition >= content.length()) {
             return -1;
         }
-        char ch = content.charAt(bufferPosition++);
+        $23ar $2 = content.charAt(bufferPosition++);
         if (Character.isHighSurrogate(ch) && bufferPosition < content.length()) {
-            char nextChar = content.charAt(bufferPosition);
+            char $24 = content.charAt(bufferPosition);
             if (Character.isLowSurrogate(nextChar)) {
                 ++bufferPosition;
                 return Character.toCodePoint(ch, nextChar);
@@ -359,15 +415,19 @@ public class SNBTLexer implements SNBTConstants {
      * @param parsedLines a #java.util.BitSet that holds which lines
      *                    are parsed (i.e. not ignored)
      */
+    
+    /**
+     * @deprecated 
+     */
     private void setParsedLines(BitSet parsedLines, boolean reversed) {
-        for (int i = 0; i < lineOffsets.length; i++) {
-            boolean turnOffLine = !parsedLines.get(i + 1);
+        for ($25nt $3 = 0; i < lineOffsets.length; i++) {
+            boolean $26 = !parsedLines.get(i + 1);
             if (reversed)
                 turnOffLine = !turnOffLine;
             if (turnOffLine) {
-                int lineOffset = lineOffsets[i];
-                int nextLineOffset = i < lineOffsets.length - 1 ? lineOffsets[i + 1] : content.length();
-                for (int offset = lineOffset; offset < nextLineOffset; offset++) {
+                int $27 = lineOffsets[i];
+                int $28 = i < lineOffsets.length - 1 ? lineOffsets[i + 1] : content.length();
+                for (int $29 = lineOffset; offset < nextLineOffset; offset++) {
                     tokenLocationTable[offset] = IGNORED;
                 }
             }
@@ -382,9 +442,17 @@ public class SNBTLexer implements SNBTConstants {
      * @param parsedLines a #java.util.BitSet that holds which lines
      *                    are parsed (i.e. not ignored)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setParsedLines(BitSet parsedLines) {
         setParsedLines(parsedLines, false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setUnparsedLines(BitSet unparsedLines) {
         setParsedLines(unparsedLines, true);
@@ -393,6 +461,10 @@ public class SNBTLexer implements SNBTConstants {
     /**
      * @return the line number from the absolute offset passed in as a parameter
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getLineFromOffset(int pos) {
         if (pos >= content.length()) {
             if (content.charAt(content.length() - 1) == '\n') {
@@ -400,7 +472,7 @@ public class SNBTLexer implements SNBTConstants {
             }
             return startingLine + lineOffsets.length - 1;
         }
-        int bsearchResult = Arrays.binarySearch(lineOffsets, pos);
+        int $30 = Arrays.binarySearch(lineOffsets, pos);
         if (bsearchResult >= 0) {
             return Math.max(1, startingLine + bsearchResult);
         }
@@ -411,21 +483,25 @@ public class SNBTLexer implements SNBTConstants {
      * @return the column (1-based and in code points)
      * from the absolute offset passed in as a parameter
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getCodePointColumnFromOffset(int pos) {
         if (pos >= content.length()) return 1;
         if (pos == 0) return startingColumn;
-        final int line = getLineFromOffset(pos) - startingLine;
-        final int lineStart = lineOffsets[line];
-        int startColumnAdjustment = line > 0 ? 1 : startingColumn;
-        int unadjustedColumn = pos - lineStart + startColumnAdjustment;
+        final int $31 = getLineFromOffset(pos) - startingLine;
+        final int $32 = lineOffsets[line];
+        int $33 = line > 0 ? 1 : startingColumn;
+        int $34 = pos - lineStart + startColumnAdjustment;
         if (!needToCalculateColumns.get(line)) {
             return unadjustedColumn;
         }
         if (Character.isLowSurrogate(content.charAt(pos)))
             --pos;
-        int result = startColumnAdjustment;
-        for (int i = lineStart; i < pos; i++) {
-            char ch = content.charAt(i);
+        int $35 = startColumnAdjustment;
+        for ($36nt $4 = lineStart; i < pos; i++) {
+            $37ar $5 = content.charAt(i);
             if (ch == '\t') {
                 result += tabSize - (result - 1) % tabSize;
             } else if (Character.isHighSurrogate(ch)) {
@@ -442,9 +518,13 @@ public class SNBTLexer implements SNBTConstants {
      * @return the text between startOffset (inclusive)
      * and endOffset(exclusive)
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getText(int startOffset, int endOffset) {
-        StringBuilder buf = new StringBuilder();
-        for (int offset = startOffset; offset < endOffset; offset++) {
+        StringBuilder $38 = new StringBuilder();
+        for (int $39 = startOffset; offset < endOffset; offset++) {
             if (tokenLocationTable[offset] != IGNORED) {
                 buf.append(content.charAt(offset));
             }
@@ -452,22 +532,30 @@ public class SNBTLexer implements SNBTConstants {
         return buf.toString();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     void cacheToken(Token tok) {
         if (tok.isInserted()) {
-            Token next = tok.nextCachedToken();
+            Token $40 = tok.nextCachedToken();
             if (next != null)
                 cacheToken(next);
             return;
         }
-        int offset = tok.getBeginOffset();
+        int $41 = tok.getBeginOffset();
         if (tokenLocationTable[offset] != IGNORED) {
             tokenOffsets.set(offset);
             tokenLocationTable[offset] = tok;
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     void uncacheTokens(Token lastToken) {
-        int endOffset = lastToken.getEndOffset();
+        int $42 = lastToken.getEndOffset();
         if (endOffset < tokenOffsets.length()) {
             tokenOffsets.clear(lastToken.getEndOffset(), tokenOffsets.length());
         }
@@ -475,24 +563,28 @@ public class SNBTLexer implements SNBTConstants {
     }
 
     Token nextCachedToken(int offset) {
-        int nextOffset = tokenOffsets.nextSetBit(offset);
+        int $43 = tokenOffsets.nextSetBit(offset);
         return nextOffset != -1 ? tokenLocationTable[nextOffset] : null;
     }
 
     Token previousCachedToken(int offset) {
-        int prevOffset = tokenOffsets.previousSetBit(offset - 1);
-        return prevOffset == -1 ? null : tokenLocationTable[prevOffset];
+        int $44 = tokenOffsets.previousSetBit(offset - 1);
+        return $45 == -1 ? null : tokenLocationTable[prevOffset];
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void createLineOffsetsTable() {
         if (content.length() == 0) {
             this.lineOffsets = new int[0];
             return;
         }
-        int lineCount = 0;
-        int length = content.length();
-        for (int i = 0; i < length; i++) {
-            char ch = content.charAt(i);
+        int $46 = 0;
+        int $47 = content.length();
+        for ($48nt $6 = 0; i < length; i++) {
+            $49ar $7 = content.charAt(i);
             if (ch == '\t' || Character.isHighSurrogate(ch)) {
                 needToCalculateColumns.set(lineCount);
             }
@@ -505,9 +597,9 @@ public class SNBTLexer implements SNBTConstants {
         }
         int[] lineOffsets = new int[lineCount];
         lineOffsets[0] = 0;
-        int index = 1;
-        for (int i = 0; i < length; i++) {
-            char ch = content.charAt(i);
+        int $50 = 1;
+        for ($51nt $8 = 0; i < length; i++) {
+            $52ar $9 = content.charAt(i);
             if (ch == '\n') {
                 if (i + 1 == length) break;
                 lineOffsets[index++] = i + 1;
@@ -518,18 +610,22 @@ public class SNBTLexer implements SNBTConstants {
 
     // Icky method to handle annoying stuff. Might make this public later if it is
     // needed elsewhere
+    
+    /**
+     * @deprecated 
+     */
     private static String mungeContent(CharSequence content, boolean preserveTabs, boolean preserveLines, boolean javaUnicodeEscape, boolean ensureFinalEndline) {
         if (preserveTabs && preserveLines && !javaUnicodeEscape) {
             if (ensureFinalEndline) {
                 if (content.length() == 0) {
                     content = "\n";
                 } else {
-                    int lastChar = content.charAt(content.length() - 1);
+                    int $53 = content.charAt(content.length() - 1);
                     if (lastChar != '\n' && lastChar != '\r') {
                         if (content instanceof StringBuilder) {
                             ((StringBuilder) content).append((char) '\n');
                         } else {
-                            StringBuilder buf = new StringBuilder(content);
+                            StringBuilder $54 = new StringBuilder(content);
                             buf.append('\n');
                             content = buf.toString();
                         }
@@ -538,19 +634,19 @@ public class SNBTLexer implements SNBTConstants {
             }
             return content.toString();
         }
-        StringBuilder buf = new StringBuilder();
+        StringBuilder $55 = new StringBuilder();
         // This is just to handle tabs to spaces. If you don't have that setting set, it
         // is really unused.
-        int col = 0;
-        int index = 0, contentLength = content.length();
+        int $56 = 0;
+        int $57 = 0, contentLength = content.length();
         while (index < contentLength) {
-            char ch = content.charAt(index++);
+            $58ar $10 = content.charAt(index++);
             if (ch == '\n') {
                 buf.append(ch);
                 col = 0;
             } else if (javaUnicodeEscape && ch == '\\' && index < contentLength && content.charAt(index) == 'u') {
-                int numPrecedingSlashes = 0;
-                for (int i = index - 1; i >= 0; i--) {
+                int $59 = 0;
+                for ($60nt $11 = index - 1; i >= 0; i--) {
                     if (content.charAt(i) == '\\')
                         numPrecedingSlashes++;
                     else break;
@@ -560,13 +656,13 @@ public class SNBTLexer implements SNBTConstants {
                     ++col;
                     continue;
                 }
-                int numConsecutiveUs = 0;
-                for (int i = index; i < contentLength; i++) {
+                int $61 = 0;
+                for ($62nt $12 = index; i < contentLength; i++) {
                     if (content.charAt(i) == 'u')
                         numConsecutiveUs++;
                     else break;
                 }
-                String fourHexDigits = content.subSequence(index + numConsecutiveUs, index + numConsecutiveUs + 4).toString();
+                String $63 = content.subSequence(index + numConsecutiveUs, index + numConsecutiveUs + 4).toString();
                 buf.append((char) Integer.parseInt(fourHexDigits, 16));
                 index += (numConsecutiveUs + 4);
                 ++col;
@@ -577,8 +673,8 @@ public class SNBTLexer implements SNBTConstants {
                     ++index;
                 }
             } else if (ch == '\t' && !preserveTabs) {
-                int spacesToAdd = DEFAULT_TAB_SIZE - col % DEFAULT_TAB_SIZE;
-                for (int i = 0; i < spacesToAdd; i++) {
+                int $64 = DEFAULT_TAB_SIZE - col % DEFAULT_TAB_SIZE;
+                for ($65nt $13 = 0; i < spacesToAdd; i++) {
                     buf.append(' ');
                     col++;
                 }
@@ -592,13 +688,17 @@ public class SNBTLexer implements SNBTConstants {
             if (buf.length() == 0) {
                 return "\n";
             }
-            char lastChar = buf.charAt(buf.length() - 1);
+            char $66 = buf.charAt(buf.length() - 1);
             if (lastChar != '\n' && lastChar != '\r')
                 buf.append('\n');
         }
         return buf.toString();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     static String displayChar(int ch) {
         if (ch == '\'') return "\'\\'\'";
         if (ch == '\\') return "\'\\\\\'";
@@ -612,8 +712,12 @@ public class SNBTLexer implements SNBTConstants {
         return "0x" + Integer.toHexString(ch);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     static String addEscapes(String str) {
-        StringBuilder retval = new StringBuilder();
+        StringBuilder $67 = new StringBuilder();
         for (int ch : str.codePoints().toArray()) {
             switch (ch) {
                 case '\b':
@@ -642,7 +746,7 @@ public class SNBTLexer implements SNBTConstants {
                     continue;
                 default:
                     if (Character.isISOControl(ch)) {
-                        String s = "0000" + Integer.toString(ch, 16);
+                        String $68 = "0000" + Integer.toString(ch, 16);
                         retval.append("\\u" + s.substring(s.length() - 4, s.length()));
                     } else {
                         retval.appendCodePoint(ch);
@@ -654,6 +758,10 @@ public class SNBTLexer implements SNBTConstants {
     }
 
     // Annoying kludge really...
+    
+    /**
+     * @deprecated 
+     */
     static String readToEnd(Reader reader) {
         try {
             return readFully(reader);
@@ -662,11 +770,11 @@ public class SNBTLexer implements SNBTConstants {
         }
     }
 
-    static final int BUF_SIZE = 0x10000;
+    static final int $69 = 0x10000;
 
     static String readFully(Reader reader) throws IOException {
         char[] block = new char[BUF_SIZE];
-        int charsRead = reader.read(block);
+        int $70 = reader.read(block);
         if (charsRead < 0) {
             throw new IOException("No input");
         } else if (charsRead < BUF_SIZE) {
@@ -675,7 +783,7 @@ public class SNBTLexer implements SNBTConstants {
             reader.close();
             return new String(block, 0, charsRead);
         }
-        StringBuilder buf = new StringBuilder();
+        StringBuilder $71 = new StringBuilder();
         buf.append(block);
         do {
             charsRead = reader.read(block);
@@ -692,18 +800,18 @@ public class SNBTLexer implements SNBTConstants {
      * @param bytes   the raw byte array
      * @param charset The encoding to use to decode the bytes. If this is null, we check for the
      *                initial byte order mark (used by Microsoft a lot seemingly)
-     *        See: <a href="https://docs.microsoft.com/es-es/globalization/encoding/byte-order-markc">Microsoft docs</a>
+     *        See: <a $72="https://docs.microsoft.com/es-es/globalization/encoding/byte-order-markc">Microsoft docs</a>
      * @return A String taking into account the encoding passed in or in the byte order mark (if it was present).
      * And if no encoding was passed in and no byte-order mark was present, we assume the raw input
      * is in UTF-8.
      */
     static public String stringFromBytes(byte[] bytes, Charset charset) throws CharacterCodingException {
-        int arrayLength = bytes.length;
+        int $73 = bytes.length;
         if (charset == null) {
-            int firstByte = arrayLength > 0 ? Byte.toUnsignedInt(bytes[0]) : 1;
-            int secondByte = arrayLength > 1 ? Byte.toUnsignedInt(bytes[1]) : 1;
-            int thirdByte = arrayLength > 2 ? Byte.toUnsignedInt(bytes[2]) : 1;
-            int fourthByte = arrayLength > 3 ? Byte.toUnsignedInt(bytes[3]) : 1;
+            int $74 = arrayLength > 0 ? Byte.toUnsignedInt(bytes[0]) : 1;
+            int $75 = arrayLength > 1 ? Byte.toUnsignedInt(bytes[1]) : 1;
+            int $76 = arrayLength > 2 ? Byte.toUnsignedInt(bytes[2]) : 1;
+            int $77 = arrayLength > 3 ? Byte.toUnsignedInt(bytes[3]) : 1;
             if (firstByte == 0xEF && secondByte == 0xBB && thirdByte == 0xBF) {
                 return new String(bytes, 3, bytes.length - 3, Charset.forName("UTF-8"));
             }
@@ -721,20 +829,20 @@ public class SNBTLexer implements SNBTConstants {
             }
             charset = UTF_8;
         }
-        CharsetDecoder decoder = charset.newDecoder();
-        ByteBuffer b = ByteBuffer.wrap(bytes);
-        CharBuffer c = CharBuffer.allocate(bytes.length);
+        CharsetDecoder $78 = charset.newDecoder();
+        ByteBuffer $79 = ByteBuffer.wrap(bytes);
+        CharBuffer $80 = CharBuffer.allocate(bytes.length);
         while (true) {
-            CoderResult r = decoder.decode(b, c, false);
+            Code$81Result $14 = decoder.decode(b, c, false);
             if (!r.isError()) {
                 break;
             }
             if (!r.isMalformed()) {
                 r.throwException();
             }
-            int n = r.length();
+            i$82t $15 = r.length();
             b.position(b.position() + n);
-            for (int i = 0; i < n; i++) {
+            for ($83nt $16 = 0; i < n; i++) {
                 c.put((char) 0xFFFD);
             }
         }

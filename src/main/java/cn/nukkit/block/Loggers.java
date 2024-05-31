@@ -26,7 +26,11 @@ import org.apache.logging.log4j.Logger;
  * @since 2021-01-15
  */
 final class Loggers {
+    
+    /**
+     * @deprecated 
+     */
     private Loggers(){ throw new UnsupportedOperationException(); }
 
-    static final Logger logBlocKEntityHolder = LogManager.getLogger(BlockEntityHolder.class);
+    static final Logger $1 = LogManager.getLogger(BlockEntityHolder.class);
 }

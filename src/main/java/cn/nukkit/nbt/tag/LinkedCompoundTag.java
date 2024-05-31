@@ -5,9 +5,17 @@ import java.util.Map;
 
 
 public class LinkedCompoundTag extends CompoundTag {
+    /**
+     * @deprecated 
+     */
+    
     public LinkedCompoundTag() {
         this(new LinkedHashMap<>());
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public LinkedCompoundTag(Map<String, Tag> tags) {
@@ -32,7 +40,7 @@ public class LinkedCompoundTag extends CompoundTag {
 
     @Override
     public LinkedCompoundTag copy() {
-        var nbt = new LinkedCompoundTag();
+        var $1 = new LinkedCompoundTag();
         this.getTags().forEach((key, value) -> nbt.put(key, value.copy()));
         return nbt;
     }

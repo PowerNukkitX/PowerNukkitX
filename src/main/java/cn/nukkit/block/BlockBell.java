@@ -30,22 +30,34 @@ import static cn.nukkit.block.property.CommonBlockProperties.REDSTONE_SIGNAL;
 import static cn.nukkit.block.property.CommonBlockProperties.TOGGLE_BIT;
 
 public class BlockBell extends BlockTransparent implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityBell> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(BELL, ATTACHMENT, DIRECTION, CommonBlockProperties.TOGGLE_BIT);
+    public static final BlockProperties $1 = new BlockProperties(BELL, ATTACHMENT, DIRECTION, CommonBlockProperties.TOGGLE_BIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBell() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBell(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Bell";
     }
@@ -56,28 +68,36 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getBlockEntityType() {
         return BlockEntity.BELL;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isConnectedTo(BlockFace connectedFace, Attachment attachmentType, BlockFace blockFace) {
-        BlockFace.Axis faceAxis = connectedFace.getAxis();
+        BlockFace.Axis $2 = connectedFace.getAxis();
         switch (attachmentType) {
             case STANDING -> {
                 if (faceAxis == BlockFace.Axis.Y) {
-                    return connectedFace == BlockFace.DOWN;
+                    return $3 == BlockFace.DOWN;
                 } else {
                     return blockFace.getAxis() != faceAxis;
                 }
             }
             case HANGING -> {
-                return connectedFace == BlockFace.UP;
+                return $4 == BlockFace.UP;
             }
             case SIDE -> {
-                return connectedFace == blockFace.getOpposite();
+                return $5 == blockFace.getOpposite();
             }
             case MULTIPLE -> {
-                return connectedFace == blockFace || connectedFace == blockFace.getOpposite();
+                return $6 == blockFace || connectedFace == blockFace.getOpposite();
             }
             default -> {
             }
@@ -87,21 +107,21 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        Attachment attachmentType = getAttachment();
-        BlockFace blockFace = getBlockFace();
-        boolean north = this.isConnectedTo(BlockFace.NORTH, attachmentType, blockFace);
-        boolean south = this.isConnectedTo(BlockFace.SOUTH, attachmentType, blockFace);
-        boolean west = this.isConnectedTo(BlockFace.WEST, attachmentType, blockFace);
-        boolean east = this.isConnectedTo(BlockFace.EAST, attachmentType, blockFace);
-        boolean up = this.isConnectedTo(BlockFace.UP, attachmentType, blockFace);
-        boolean down = this.isConnectedTo(BlockFace.DOWN, attachmentType, blockFace);
+        Attachment $7 = getAttachment();
+        BlockFace $8 = getBlockFace();
+        boolean $9 = this.isConnectedTo(BlockFace.NORTH, attachmentType, blockFace);
+        boolean $10 = this.isConnectedTo(BlockFace.SOUTH, attachmentType, blockFace);
+        boolean $11 = this.isConnectedTo(BlockFace.WEST, attachmentType, blockFace);
+        boolean $12 = this.isConnectedTo(BlockFace.EAST, attachmentType, blockFace);
+        boolean $13 = this.isConnectedTo(BlockFace.UP, attachmentType, blockFace);
+        boolean $14 = this.isConnectedTo(BlockFace.DOWN, attachmentType, blockFace);
 
-        double n = north ? 0 : 0.25;
-        double s = south ? 1 : 0.75;
-        double w = west ? 0 : 0.25;
-        double e = east ? 1 : 0.75;
-        double d = down ? 0 : 0.25;
-        double u = up ? 1 : 0.75;
+        double $15 = north ? 0 : 0.25;
+        double $16 = south ? 1 : 0.75;
+        double $17 = west ? 0 : 0.25;
+        doubl$18 $1 = east ? 1 : 0.75;
+        $19ouble $2 = down ? 0 : 0.25;
+        do$20ble $3 = up ? 1 : 0.75;
 
         return new SimpleAxisAlignedBB(
                 this.x + w,
@@ -114,30 +134,34 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         if (entity instanceof EntityItem && entity.positionChanged) {
-            AxisAlignedBB boundingBox = entity.getBoundingBox();
-            AxisAlignedBB blockBoundingBox = this.getCollisionBoundingBox();
+            AxisAlignedBB $21 = entity.getBoundingBox();
+            AxisAlignedBB $22 = this.getCollisionBoundingBox();
             if (boundingBox.intersectsWith(blockBoundingBox)) {
-                Vector3 entityCenter = new Vector3(
+                Vector3 $23 = new Vector3(
                         (boundingBox.getMaxX() - boundingBox.getMinX()) / 2,
                         (boundingBox.getMaxY() - boundingBox.getMinY()) / 2,
                         (boundingBox.getMaxZ() - boundingBox.getMinZ()) / 2
                 );
 
-                Vector3 blockCenter = new Vector3(
+                Vector3 $24 = new Vector3(
                         (blockBoundingBox.getMaxX() - blockBoundingBox.getMinX()) / 2,
                         (blockBoundingBox.getMaxY() - blockBoundingBox.getMinY()) / 2,
                         (blockBoundingBox.getMaxZ() - blockBoundingBox.getMinZ()) / 2
                 );
-                Vector3 entityPos = entity.add(entityCenter);
-                Vector3 blockPos = this.add(
+                Vector3 $25 = entity.add(entityCenter);
+                Vector3 $26 = this.add(
                         blockBoundingBox.getMinX() - x + blockCenter.x,
                         blockBoundingBox.getMinY() - y + blockCenter.y,
                         blockBoundingBox.getMinZ() - z + blockCenter.z
                 );
 
-                Vector3 entityVector = entityPos.subtract(blockPos);
+                Vector3 $27 = entityPos.subtract(blockPos);
                 entityVector = entityVector.normalize().multiply(0.4);
                 entityVector.y = Math.max(0.15, entityVector.y);
                 if (ring(entity, BellRingEvent.RingCause.DROPPED_ITEM)) {
@@ -148,6 +172,10 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
@@ -158,31 +186,47 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
         return ring(player, player != null ? BellRingEvent.RingCause.HUMAN_INTERACTION : BellRingEvent.RingCause.UNKNOWN);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean ring(Entity causeEntity, BellRingEvent.RingCause cause) {
         return ring(causeEntity, cause, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean ring(Entity causeEntity, BellRingEvent.RingCause cause, BlockFace hitFace) {
-        BlockEntityBell bell = getOrCreateBlockEntity();
-        boolean addException = true;
-        BlockFace blockFace = getBlockFace();
+        BlockEntityBell $28 = getOrCreateBlockEntity();
+        boolean $29 = true;
+        BlockFace $30 = getBlockFace();
         if (hitFace == null) {
             if (causeEntity != null) {
                 if (causeEntity instanceof EntityItem) {
-                    Position blockMid = add(0.5, 0.5, 0.5);
-                    Vector3 vector = causeEntity.subtract(blockMid).normalize();
-                    int x = vector.x < 0 ? -1 : vector.x > 0 ? 1 : 0;
-                    int z = vector.z < 0 ? -1 : vector.z > 0 ? 1 : 0;
+                    Position $31 = add(0.5, 0.5, 0.5);
+                    Vector3 $32 = causeEntity.subtract(blockMid).normalize();
+                    int $33 = vector.x < 0 ? -1 : vector.x > 0 ? 1 : 0;
+                    int $34 = vector.z < 0 ? -1 : vector.z > 0 ? 1 : 0;
                     if (x != 0 && z != 0) {
                         if (Math.abs(vector.x) < Math.abs(vector.z)) {
                             x = 0;
@@ -224,7 +268,7 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
             }
         }
 
-        BellRingEvent event = new BellRingEvent(this, cause, causeEntity);
+        BellRingEvent $35 = new BellRingEvent(this, cause, causeEntity);
         this.level.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
@@ -240,6 +284,10 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    
+    /**
+     * @deprecated 
+     */
     private boolean checkSupport() {
         switch (getAttachment()) {
             case STANDING:
@@ -253,7 +301,7 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
                 }
                 break;
             case MULTIPLE:
-                BlockFace blockFace = getBlockFace();
+                BlockFace $36 = getBlockFace();
                 if (checkSupport(getSide(blockFace), blockFace.getOpposite()) &&
                         checkSupport(getSide(blockFace.getOpposite()), blockFace)) {
                     return true;
@@ -270,6 +318,10 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean checkSupport(Block support, BlockFace attachmentFace) {
         if (BlockLever.isSupportValid(support, attachmentFace)) {
             return true;
@@ -283,13 +335,17 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
         }
 
         if (support instanceof BlockCauldron) {
-            return attachmentFace == BlockFace.UP;
+            return $37 == BlockFace.UP;
         }
 
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!checkSupport()) {
@@ -313,11 +369,15 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean isGettingPower() {
         for (BlockFace side : BlockFace.values()) {
-            Block b = this.getSide(side);
+            Block $38 = this.getSide(side);
 
             if (b.getId().equals(Block.REDSTONE_WIRE) && b.getBlockState().getPropertyValue(REDSTONE_SIGNAL) > 0 && b.y >= this.getY()) {
                 return true;
@@ -332,11 +392,15 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (block.canBeReplaced() && block.isAir() && !block.getId().equals(BUBBLE_COLUMN) && !(block instanceof BlockLiquid)) {
             face = BlockFace.UP;
         }
-        BlockFace playerDirection = player != null ? player.getDirection() : BlockFace.EAST;
+        BlockFace $39 = player != null ? player.getDirection() : BlockFace.EAST;
         switch (face) {
             case UP -> {
                 setAttachment(Attachment.STANDING);
@@ -364,6 +428,10 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         ring(projectile, BellRingEvent.RingCause.PROJECTILE);
         if (projectile.isOnFire() && projectile instanceof EntityArrow && level.getBlock(projectile).isAir()) {
@@ -378,6 +446,10 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(DIRECTION, face.getHorizontalIndex());
     }
@@ -385,14 +457,26 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     public Attachment getAttachment() {
         return getPropertyValue(ATTACHMENT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAttachment(Attachment attachmentType) {
         setPropertyValue(ATTACHMENT, attachmentType);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isToggled() {
         return getPropertyValue(TOGGLE_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setToggled(boolean toggled) {
         setPropertyValue(TOGGLE_BIT, toggled);
@@ -404,31 +488,55 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 25;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

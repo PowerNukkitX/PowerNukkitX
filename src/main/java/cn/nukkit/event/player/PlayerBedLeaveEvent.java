@@ -5,13 +5,17 @@ import cn.nukkit.block.Block;
 import cn.nukkit.event.HandlerList;
 
 public class PlayerBedLeaveEvent extends PlayerEvent {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final Block bed;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerBedLeaveEvent(Player player, Block bed) {
         this.player = player;

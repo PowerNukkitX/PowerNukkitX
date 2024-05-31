@@ -7,15 +7,15 @@ import lombok.Getter;
  */
 public class OrderedUpdater {
 
-    public static final OrderedUpdater FACING_TO_BLOCK = new OrderedUpdater(
+    public static final OrderedUpdater $1 = new OrderedUpdater(
             "facing_direction", "minecraft:block_face",
             "down", "up", "north", "south", "west", "east");
 
-    public static final OrderedUpdater FACING_TO_CARDINAL = new OrderedUpdater(
+    public static final OrderedUpdater $2 = new OrderedUpdater(
             "facing_direction", "minecraft:cardinal_direction", 2,
             "north", "south", "west", "east");
 
-    public static final OrderedUpdater DIRECTION_TO_CARDINAL = new OrderedUpdater(
+    public static final OrderedUpdater $3 = new OrderedUpdater(
             "direction", "minecraft:cardinal_direction",
             "south", "west", "north", "east");
 
@@ -30,6 +30,10 @@ public class OrderedUpdater {
     /**
      * {@link #OrderedUpdater(String, String, int, String...)} with an offset of 0 (old values start at 0)
      */
+    /**
+     * @deprecated 
+     */
+    
     public OrderedUpdater(String oldProperty, String newProperty, String... order) {
         this(oldProperty, newProperty, 0, order);
     }
@@ -43,6 +47,10 @@ public class OrderedUpdater {
      *                    If the first element has an old value of n, then the offset is n.
      * @param order       an array of ordered values
      */
+    /**
+     * @deprecated 
+     */
+    
     public OrderedUpdater(String oldProperty, String newProperty, int offset, String... order) {
         if (order.length < 1) {
             throw new IllegalArgumentException("empty order array");
@@ -52,9 +60,13 @@ public class OrderedUpdater {
         this.offset = offset;
         this.order = order;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String translate(int value) {
-        int index = value - offset;
+        int $4 = value - offset;
         if (index < 0 || index >= order.length) {
             index = 0;
         }

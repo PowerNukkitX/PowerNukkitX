@@ -6,6 +6,10 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class BlockStemStripped extends BlockStem {
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockStemStripped(BlockState blockstate) {
         super(blockstate);
@@ -17,11 +21,19 @@ public abstract class BlockStemStripped extends BlockStem {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         return false;
     }

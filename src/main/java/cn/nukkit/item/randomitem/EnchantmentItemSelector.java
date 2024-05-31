@@ -16,25 +16,41 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 public class EnchantmentItemSelector extends ConstantItemSelector {
+    /**
+     * @deprecated 
+     */
+    
     public EnchantmentItemSelector(String id, Selector parent) {
         this(id, 0, parent);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EnchantmentItemSelector(String id, Integer meta, Selector parent) {
         this(id, meta, 1,  parent);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EnchantmentItemSelector(String id, Integer meta, int count, Selector parent) {
         this(Item.get(id, meta, count), parent);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EnchantmentItemSelector(Item item, Selector parent) {
         super(item, parent);
         //TODO 贴近原版附魔概率
         List<Enchantment> enchantments = getSupportEnchantments(item);
         if (!enchantments.isEmpty()) {
-            Random random = ThreadLocalRandom.current();
-            Enchantment enchantment = enchantments.get(random.nextInt(enchantments.size()));
+            Random $1 = ThreadLocalRandom.current();
+            Enchantment $2 = enchantments.get(random.nextInt(enchantments.size()));
             if (random.nextDouble() < 0.3) { //减少高等级附魔概率
                 enchantment.setLevel(Utils.rand(1, enchantment.getMaxLevel()));
             }

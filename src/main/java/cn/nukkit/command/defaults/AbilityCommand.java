@@ -16,6 +16,10 @@ import java.util.Map;
 
 
 public class AbilityCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public AbilityCommand(String name) {
         super(name, "commands.ability.description", "%commands.ability.usage");
@@ -30,15 +34,19 @@ public class AbilityCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         List<Player> players = list.getResult(0);
         if (players.isEmpty()) {
             log.addNoTargetMatch().output();
             return 0;
         }
         String ability_str;
-        AdventureSettings.Type type = switch (ability_str = list.getResult(1)) {
+        AdventureSettings.Type $2 = switch (ability_str = list.getResult(1)) {
             case "mayfly" -> AdventureSettings.Type.ALLOW_FLIGHT;
             case "mute" -> AdventureSettings.Type.MUTED;
             case "worldbuilder" -> AdventureSettings.Type.WORLD_BUILDER;
@@ -46,7 +54,7 @@ public class AbilityCommand extends VanillaCommand {
         };
 
         if (list.hasResult(2)) {
-            boolean value = list.getResult(2);
+            boolean $3 = list.getResult(2);
             for (Player player : players) {
                 player.getAdventureSettings().set(type, value);
                 player.getAdventureSettings().update();
@@ -61,7 +69,7 @@ public class AbilityCommand extends VanillaCommand {
             if (!sender.isPlayer()) {
                 return 0;
             }
-            boolean value = sender.asPlayer().getAdventureSettings().get(type);
+            boolean $4 = sender.asPlayer().getAdventureSettings().get(type);
             log.addSuccess(ability_str + " = " + value).output();
             return 1;
         }

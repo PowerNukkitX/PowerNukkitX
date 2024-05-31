@@ -23,6 +23,10 @@ import java.util.stream.Collectors;
  * @since 2015/12/9
  */
 public class GiveCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
     public GiveCommand(String name) {
         super(name, "commands.give.description");
         this.setPermission("nukkit.command.give");
@@ -38,8 +42,12 @@ public class GiveCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         List<Player> players = list.getResult(0);
 
         if (players.isEmpty()) {
@@ -47,7 +55,7 @@ public class GiveCommand extends VanillaCommand {
             return 0;
         }
 
-        Item item = list.getResult(1);
+        Item $2 = list.getResult(1);
         if (item.isNull()) {
             log.addError("commands.give.item.notFound", item.getDisplayName()).output();
             return 0;
@@ -66,12 +74,12 @@ public class GiveCommand extends VanillaCommand {
             item.setCount(count);
         }
         if (list.hasResult(3)) {
-            int damage = list.getResult(3);
+            int $3 = list.getResult(3);
             item.setDamage(damage);
         }
         if (list.hasResult(4)) {
-            String json = list.getResult(4);
-            Item.ItemJsonComponents components = Item.ItemJsonComponents.fromJson(json);
+            String $4 = list.getResult(4);
+            Item.ItemJsonComponents $5 = Item.ItemJsonComponents.fromJson(json);
             item.readItemJsonComponents(components);
         }
 
@@ -79,13 +87,13 @@ public class GiveCommand extends VanillaCommand {
             Item[] returns = player.getInventory().addItem(item.clone());
             List<Item> drops = new ArrayList<>();
             for (Item returned : returns) {
-                int maxStackSize = returned.getMaxStackSize();
+                int $6 = returned.getMaxStackSize();
                 if (returned.getCount() <= maxStackSize) {
                     drops.add(returned);
                 } else {
                     while (returned.getCount() > maxStackSize) {
-                        Item drop = returned.clone();
-                        int toDrop = Math.min(returned.getCount(), maxStackSize);
+                        Item $7 = returned.clone();
+                        int $8 = Math.min(returned.getCount(), maxStackSize);
                         drop.setCount(toDrop);
                         returned.setCount(returned.getCount() - toDrop);
                         drops.add(drop);

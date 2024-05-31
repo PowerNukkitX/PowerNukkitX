@@ -4,9 +4,17 @@
 package cn.nukkit.utils;
 
 public class InvalidIdentifierException extends RuntimeException {
+    /**
+     * @deprecated 
+     */
+    
     public InvalidIdentifierException(String message) {
         super(message);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public InvalidIdentifierException(String message, Throwable throwable) {
         super(message, throwable);

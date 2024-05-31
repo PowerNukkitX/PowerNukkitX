@@ -4,13 +4,25 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 
 public class ItemConcretePowder extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemConcretePowder() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemConcretePowder(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemConcretePowder(Integer meta, int count) {
         super(CONCRETE_POWDER, meta, count);
@@ -18,6 +30,10 @@ public class ItemConcretePowder extends Item {
         adjustBlock();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void adjustBlock() {
         switch (getDamage()) {
             case 0:
@@ -70,6 +86,10 @@ public class ItemConcretePowder extends Item {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void adjustName() {
         switch (getDamage()) {
             case 0:

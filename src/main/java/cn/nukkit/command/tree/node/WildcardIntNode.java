@@ -5,20 +5,32 @@ package cn.nukkit.command.tree.node;
  * <p>
  * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#WILDCARD_INT WILDCARD_INT}如果没有手动指定{@link IParamNode},则会默认使用这个解析
  * <p>
- * {@code defaultV = Integer.MIN_VALUE}
+ * {@code $1 = Integer.MIN_VALUE}
  */
 public class WildcardIntNode extends ParamNode<Integer> {
     private final int defaultV;
+    /**
+     * @deprecated 
+     */
+    
 
     public WildcardIntNode() {
         this(Integer.MIN_VALUE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public WildcardIntNode(int defaultV) {
         this.defaultV = defaultV;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         if (arg.length() == 1 && arg.charAt(0) == '*') {
             this.value = defaultV;

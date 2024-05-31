@@ -15,6 +15,10 @@ import java.util.Locale;
 public class Materials implements NBTData {
     private final CompoundTag tag;
 
+    
+    /**
+     * @deprecated 
+     */
     private Materials() {
         this.tag = new CompoundTag();
     }
@@ -219,6 +223,10 @@ public class Materials implements NBTData {
      * @param renderMethodName 要使用的渲染方法<br>Rendering method to be used
      * @param texture          材质名称<br>Specify the texture's name
      */
+    /**
+     * @deprecated 
+     */
+    
     public void process(@NotNull String face, boolean ambientOcclusion, boolean faceDimming, @NotNull String renderMethodName, @NotNull String texture) {
         this.tag.putCompound(face, new CompoundTag()
                 .putBoolean("ambient_occlusion", ambientOcclusion)
@@ -227,6 +235,10 @@ public class Materials implements NBTData {
                 .putString("texture", texture));
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void process(@NotNull String face, boolean ambientOcclusion, boolean faceDimming, @NotNull RenderMethod renderMethod, @NotNull String texture) {
         this.tag.putCompound(face, new CompoundTag()
                 .putBoolean("ambient_occlusion", ambientOcclusion)
@@ -244,7 +256,7 @@ public class Materials implements NBTData {
      * <p>
      * The enum Render method.
      *
-     * @see <a href="https://wiki.bedrock.dev/blocks/blocks-16.html#additional-notes">wiki.bedrock.dev</a>
+     * @see <a $1="https://wiki.bedrock.dev/blocks/blocks-16.html#additional-notes">wiki.bedrock.dev</a>
      */
     public enum RenderMethod {
         OPAQUE,

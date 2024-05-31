@@ -14,10 +14,10 @@ import java.util.function.Predicate;
 public class Name extends CachedSimpleSelectorArgument {
     @Override
     protected Predicate<Entity> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
-        final var have = new ArrayList<String>();
-        final var dontHave = new ArrayList<String>();
+        final var $1 = new ArrayList<String>();
+        final var $2 = new ArrayList<String>();
         for (var name : arguments) {
-            boolean reversed = ParseUtils.checkReversed(name);
+            boolean $3 = ParseUtils.checkReversed(name);
             if (reversed) {
                 name = name.substring(1);
                 dontHave.add(name);
@@ -27,11 +27,19 @@ public class Name extends CachedSimpleSelectorArgument {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getKeyName() {
         return "name";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPriority() {
         return 4;
     }

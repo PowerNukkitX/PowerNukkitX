@@ -18,25 +18,37 @@ import static cn.nukkit.block.property.CommonBlockProperties.AGE_4;
  * @since 22.03.17
  */
 public class BlockNetherWart extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_WART, AGE_4);
+    public static final BlockProperties $1 = new BlockProperties(NETHER_WART, AGE_4);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockNetherWart() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockNetherWart(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        Block down = this.down();
+        Block $2 = this.down();
         if (down.getId().equals(SOUL_SAND)) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
@@ -45,6 +57,10 @@ public class BlockNetherWart extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!this.down().getId().equals(SOUL_SAND)) {
@@ -54,9 +70,9 @@ public class BlockNetherWart extends BlockFlowable {
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (new Random().nextInt(10) == 1) {
                 if (this.getAge() < 0x03) {
-                    BlockNetherWart block = (BlockNetherWart) this.clone();
+                    BlockNetherWart $3 = (BlockNetherWart) this.clone();
                     block.setAge(block.getAge() + 1);
-                    BlockGrowEvent ev = new BlockGrowEvent(this, block);
+                    BlockGrowEvent $4 = new BlockGrowEvent(this, block);
                     Server.getInstance().getPluginManager().callEvent(ev);
 
                     if (!ev.isCancelled()) {
@@ -74,6 +90,10 @@ public class BlockNetherWart extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Nether Wart Block";
     }
@@ -90,10 +110,18 @@ public class BlockNetherWart extends BlockFlowable {
             };
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getAge() {
         return getPropertyValue(AGE_4);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAge(int age) {
         setPropertyValue(AGE_4, age);

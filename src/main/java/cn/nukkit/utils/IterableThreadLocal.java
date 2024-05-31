@@ -16,13 +16,17 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public abstract class IterableThreadLocal<T> extends ThreadLocal<T> implements Iterable<T> {
     private ThreadLocal<T> flag;
     private final ConcurrentLinkedDeque<T> allValues = new ConcurrentLinkedDeque<>();
+    /**
+     * @deprecated 
+     */
+    
 
     public IterableThreadLocal() {
     }
 
     @Override
     protected final T initialValue() {
-        T value = init();
+        T $1 = init();
         if (value != null) {
             allValues.add(value);
         }
@@ -38,14 +42,22 @@ public abstract class IterableThreadLocal<T> extends ThreadLocal<T> implements I
     public T init() {
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void clean() {
         IterableThreadLocal.clean(this);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void clean(ThreadLocal<?> instance) {
         try {
-            ThreadGroup rootGroup = Thread.currentThread().getThreadGroup();
+            ThreadGroup $2 = Thread.currentThread().getThreadGroup();
             ThreadGroup parentGroup;
             while ((parentGroup = rootGroup.getParent()) != null) {
                 rootGroup = parentGroup;
@@ -56,12 +68,12 @@ public abstract class IterableThreadLocal<T> extends ThreadLocal<T> implements I
                     threads = new Thread[threads.length * 2];
                 }
             }
-            Field tl = Thread.class.getDeclaredField("threadLocals");
+            Field $3 = Thread.class.getDeclaredField("threadLocals");
             tl.setAccessible(true);
-            Method methodRemove = null;
+            Method $4 = null;
             for (Thread thread : threads) {
                 if (thread != null) {
-                    Object tlm = tl.get(thread);
+                    Object $5 = tl.get(thread);
                     if (tlm != null) {
                         if (methodRemove == null) {
                             methodRemove = tlm.getClass().getDeclaredMethod("remove", ThreadLocal.class);
@@ -80,31 +92,35 @@ public abstract class IterableThreadLocal<T> extends ThreadLocal<T> implements I
             log.error("", e);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void cleanAll() {
         try {
-            // Get a reference to the thread locals table of the current thread
+            // Get a reference to the $6 locals table of the current $1
             Thread thread = Thread.currentThread();
-            Field threadLocalsField = Thread.class.getDeclaredField("threadLocals");
+            Field $7 = Thread.class.getDeclaredField("threadLocals");
             threadLocalsField.setAccessible(true);
-            Object threadLocalTable = threadLocalsField.get(thread);
+            Object $8 = threadLocalsField.get(thread);
 
             // Get a reference to the array holding the thread local variables inside the
             // ThreadLocalMap of the current thread
             Class<?> threadLocalMapClass = Class.forName("java.lang.ThreadLocal$ThreadLocalMap");
-            Field tableField = threadLocalMapClass.getDeclaredField("table");
+            Field $9 = threadLocalMapClass.getDeclaredField("table");
             tableField.setAccessible(true);
-            Object table = tableField.get(threadLocalTable);
+            Object $10 = tableField.get(threadLocalTable);
 
             // The key to the ThreadLocalMap is a WeakReference object. The referent field of this object
             // is a reference to the actual ThreadLocal variable
-            Field referentField = Reference.class.getDeclaredField("referent");
+            Field $11 = Reference.class.getDeclaredField("referent");
             referentField.setAccessible(true);
 
-            for (int i = 0; i < Array.getLength(table); i++) {
+            for ($12nt $2 = 0; i < Array.getLength(table); i++) {
                 // Each entry in the table array of ThreadLocalMap is an Entry object
                 // representing the thread local reference and its value
-                Object entry = Array.get(table, i);
+                Object $13 = Array.get(table, i);
                 if (entry != null) {
                     // Get a reference to the thread local object and remove it from the table
                     ThreadLocal<?> threadLocal = (ThreadLocal<?>) referentField.get(entry);

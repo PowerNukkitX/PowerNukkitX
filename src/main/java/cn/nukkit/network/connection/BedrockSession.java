@@ -61,17 +61,21 @@ import java.util.function.Consumer;
 
 @Slf4j
 public class BedrockSession {
-    private final AtomicBoolean closed = new AtomicBoolean();
+    private final AtomicBoolean $1 = new AtomicBoolean();
     protected final BedrockPeer peer;
     protected final int subClientId;
     private final Queue<DataPacket> inbound = PlatformDependent.newSpscQueue();
-    private final AtomicBoolean nettyThreadOwned = new AtomicBoolean(false);
+    private final AtomicBoolean $2 = new AtomicBoolean(false);
     private final AtomicReference<Consumer<DataPacket>> consumer = new AtomicReference<>(null);
     private final @NotNull StateMachine<SessionState, SessionState> machine;
     private PlayerHandle handle;
     private PlayerInfo info;
     protected @Nullable PacketHandler packetHandler;
     private InetSocketAddress address;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BedrockSession(BedrockPeer peer, int subClientId) {
@@ -90,7 +94,7 @@ public class BedrockSession {
 
         this.address = (InetSocketAddress) this.getSocketAddress();
         log.debug("creating session {}", getPeer().getSocketAddress().toString());
-        var cfg = new StateMachineConfig<SessionState, SessionState>();
+        var $3 = new StateMachineConfig<SessionState, SessionState>();
 
         cfg.configure(SessionState.START)
                 .onExit(this::onSessionStartSuccess)
@@ -124,7 +128,7 @@ public class BedrockSession {
 
                     log.debug("Creating player");
 
-                    var player = this.createPlayer();
+                    var $4 = this.createPlayer();
                     if (player == null) {
                         this.close("Failed to crate player");
                         return;
@@ -152,18 +156,34 @@ public class BedrockSession {
         machine = new StateMachine<>(SessionState.START, cfg);
         this.setPacketHandler(new SessionStartHandler(this));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setNettyThreadOwned(boolean immediatelyHandle) {
         this.nettyThreadOwned.set(immediatelyHandle);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isNettyThreadOwned() {
         return this.nettyThreadOwned.get();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPacketConsumer(Consumer<DataPacket> consumer) {
         this.consumer.set(consumer);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void flush() {
         if (isDisconnected()) {
@@ -171,12 +191,16 @@ public class BedrockSession {
         }
         this.peer.flush();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendPacket(DataPacket packet) {
         if (isDisconnected()) {
             return;
         }
-        DataPacketSendEvent ev = new DataPacketSendEvent(this.getPlayer(), packet);
+        DataPacketSendEvent $5 = new DataPacketSendEvent(this.getPlayer(), packet);
         Server.getInstance().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return;
@@ -184,9 +208,13 @@ public class BedrockSession {
         this.peer.sendPacket(this.subClientId, 0, packet);
         this.logOutbound(packet);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendPlayStatus(int status, boolean immediate) {
-        PlayStatusPacket pk = new PlayStatusPacket();
+        PlayStatusPacket $6 = new PlayStatusPacket();
         pk.status = status;
         if (immediate) {
             this.sendPacketImmediately(pk);
@@ -194,26 +222,34 @@ public class BedrockSession {
             this.sendPacket(pk);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendRawPacket(int pid, @NonNull ByteBuf buf2) {
         if (isDisconnected()) {
             return;
         }
-        BedrockPacketCodec bedrockPacketCodec = this.peer.channel.pipeline().get(BedrockPacketCodec.class);
-        ByteBuf buf1 = ByteBufAllocator.DEFAULT.ioBuffer(4);
-        BedrockPacketWrapper msg = new BedrockPacketWrapper(pid, this.subClientId, 0, null, null);
+        BedrockPacketCodec $7 = this.peer.channel.pipeline().get(BedrockPacketCodec.class);
+        ByteBuf $8 = ByteBufAllocator.DEFAULT.ioBuffer(4);
+        BedrockPacketWrapper $9 = new BedrockPacketWrapper(pid, this.subClientId, 0, null, null);
         bedrockPacketCodec.encodeHeader(buf1, msg);
-        CompositeByteBuf compositeBuf = Unpooled.compositeBuffer();
+        CompositeByteBuf $10 = Unpooled.compositeBuffer();
         compositeBuf.addComponents(true, buf1, buf2);
         msg.setPacketBuffer(compositeBuf);
         this.peer.sendRawPacket(msg);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendPacketImmediately(@NotNull DataPacket packet) {
         if (isDisconnected()) {
             return;
         }
-        DataPacketSendEvent ev = new DataPacketSendEvent(this.getPlayer(), packet);
+        DataPacketSendEvent $11 = new DataPacketSendEvent(this.getPlayer(), packet);
         Server.getInstance().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return;
@@ -221,12 +257,16 @@ public class BedrockSession {
         this.peer.sendPacketImmediately(this.subClientId, 0, packet);
         this.logOutbound(packet);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendPacketSync(@NotNull DataPacket packet) {
         if (isDisconnected()) {
             return;
         }
-        DataPacketSendEvent ev = new DataPacketSendEvent(this.getPlayer(), packet);
+        DataPacketSendEvent $12 = new DataPacketSendEvent(this.getPlayer(), packet);
         Server.getInstance().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return;
@@ -234,21 +274,25 @@ public class BedrockSession {
         this.peer.sendPacketSync(this.subClientId, 0, packet);
         this.logOutbound(packet);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendNetworkSettingsPacket(@NonNull NetworkSettingsPacket pk) {
-        ByteBufAllocator alloc = this.peer.channel.alloc();
-        ByteBuf buf1 = alloc.buffer(16);
-        ByteBuf header = alloc.ioBuffer(5);
-        BedrockPacketWrapper msg = new BedrockPacketWrapper(0, subClientId, 0, pk, null);
+        ByteBufAllocator $13 = this.peer.channel.alloc();
+        ByteBuf $14 = alloc.buffer(16);
+        ByteBuf $15 = alloc.ioBuffer(5);
+        BedrockPacketWrapper $16 = new BedrockPacketWrapper(0, subClientId, 0, pk, null);
         try {
-            BedrockPacketCodec bedrockPacketCodec = this.peer.channel.pipeline().get(BedrockPacketCodec.class);
-            DataPacket packet = msg.getPacket();
+            BedrockPacketCodec $17 = this.peer.channel.pipeline().get(BedrockPacketCodec.class);
+            DataPacket $18 = msg.getPacket();
             msg.setPacketId(packet.pid());
             bedrockPacketCodec.encodeHeader(buf1, msg);
             packet.encode(HandleByteBuf.of(buf1));
 
-            BedrockBatchWrapper batch = BedrockBatchWrapper.newInstance();
-            CompositeByteBuf buf2 = alloc.compositeDirectBuffer(2);
+            BedrockBatchWrapper $19 = BedrockBatchWrapper.newInstance();
+            CompositeByteBuf $20 = alloc.compositeDirectBuffer(2);
             ByteBufVarInt.writeUnsignedInt(header, buf1.readableBytes());
             buf2.addComponent(true, header);
             buf2.addComponent(true, buf1);
@@ -260,6 +304,10 @@ public class BedrockSession {
             msg.release();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void flushSendBuffer() {
         if (isDisconnected()) {
@@ -271,6 +319,10 @@ public class BedrockSession {
     public BedrockPeer getPeer() {
         return peer;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCompression(PacketCompressionAlgorithm algorithm) {
         if (isSubClient()) {
@@ -278,6 +330,10 @@ public class BedrockSession {
         }
         this.peer.setCompression(algorithm);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void enableEncryption(SecretKey key) {
         if (isSubClient()) {
@@ -286,11 +342,15 @@ public class BedrockSession {
         this.peer.enableEncryption(key);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onPacket(BedrockPacketWrapper wrapper) {
-        DataPacket packet = wrapper.getPacket();
+        DataPacket $21 = wrapper.getPacket();
         this.logInbound(packet);
         if (this.nettyThreadOwned.get()) {
-            var c = this.consumer.get();
+            var $22 = this.consumer.get();
             if (c != null) {
                 c.accept(packet);
             }
@@ -299,12 +359,20 @@ public class BedrockSession {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void logOutbound(DataPacket packet) {
         if (log.isTraceEnabled() && !Server.getInstance().isIgnoredPacket(packet.getClass())) {
             log.trace("Outbound {}({}): {}", this.getSocketAddress(), this.subClientId, packet);
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void logInbound(DataPacket packet) {
         if (log.isTraceEnabled() && !Server.getInstance().isIgnoredPacket(packet.getClass())) {
             log.trace("Inbound {}({}): {}", this.getSocketAddress(), this.subClientId, packet);
@@ -314,10 +382,18 @@ public class BedrockSession {
     public SocketAddress getSocketAddress() {
         return peer.getSocketAddress();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSubClient() {
         return this.subClientId != 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isDisconnected() {
         return this.closed.get();
@@ -329,6 +405,10 @@ public class BedrockSession {
      * @param reason the reason,when it is not null,will send a DisconnectPacket to client
      */
     @ApiStatus.Internal
+    /**
+     * @deprecated 
+     */
+    
     public void close(@Nullable String reason) {
         if (this.closed.get()) {
             return;
@@ -336,7 +416,7 @@ public class BedrockSession {
 
         //when a player haven't login,it only hold a BedrockSession,and Player Instance is null
         if (reason != null) {
-            DisconnectPacket packet = new DisconnectPacket();
+            DisconnectPacket $23 = new DisconnectPacket();
             packet.message = reason;
             this.sendPacketImmediately(packet);
         }
@@ -360,21 +440,33 @@ public class BedrockSession {
      * <p>
      * 3.Player#close -> BedrockSession#close
      */
+    /**
+     * @deprecated 
+     */
+    
     public void onClose() {
         if (!this.closed.compareAndSet(false, true)) {
             return;
         }
-        Player player = this.getPlayer();
+        Player $24 = this.getPlayer();
         if (player != null) {
             player.close(BedrockDisconnectReasons.DISCONNECTED);
         }
         Server.getInstance().getNetwork().onSessionDisconnect(getAddress());
         this.peer.removeSession(this);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isConnected() {
         return !this.closed.get();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long getPing() {
         if (isDisconnected()) {
@@ -382,20 +474,32 @@ public class BedrockSession {
         }
         return peer.getPing();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void onPlayerCreated(@NotNull Player player) {
         this.handle = new PlayerHandle(player);
         Server.getInstance().onPlayerLogin(address, player);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void notifyTerrainReady() {
         log.debug("Sending spawn notification, waiting for spawn response");
-        var state = this.machine.getState();
+        var $25 = this.machine.getState();
         if (!state.equals(SessionState.PRE_SPAWN)) {
             throw new IllegalStateException("attempt to notifyTerrainReady when the state is " + state.name());
         }
         handle.doFirstSpawn();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void onSessionStartSuccess() {
         log.debug("Waiting for login packet");
@@ -403,7 +507,7 @@ public class BedrockSession {
 
     private @Nullable Player createPlayer() {
         try {
-            PlayerCreationEvent event = new PlayerCreationEvent(Player.class);
+            PlayerCreationEvent $26 = new PlayerCreationEvent(Player.class);
             Server.getInstance().getPluginManager().callEvent(event);
             Constructor<? extends Player> constructor = event.getPlayerClass().getConstructor(BedrockSession.class, PlayerInfo.class);
             return constructor.newInstance(this, this.info);
@@ -413,26 +517,46 @@ public class BedrockSession {
         return null;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void onServerLoginSuccess() {
         log.debug("Login completed");
         this.sendPlayStatus(PlayStatusPacket.LOGIN_SUCCESS, false);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void onClientSpawned() {
         log.debug("Received spawn response, entering in-game phase");
         Objects.requireNonNull(getPlayer()).setImmobile(false); //TODO: HACK: we set this during the spawn sequence to prevent the client sending junk movements
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onServerDeath() {
 
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onClientRespawn() {
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handleDataPacket(DataPacket packet) {
-        DataPacketReceiveEvent ev = new DataPacketReceiveEvent(this.getPlayer(), packet);
+        DataPacketReceiveEvent $27 = new DataPacketReceiveEvent(this.getPlayer(), packet);
         Server.getInstance().getPluginManager().callEvent(ev);
 
         if (ev.isCancelled())
@@ -447,10 +571,14 @@ public class BedrockSession {
             packet.handle(this.packetHandler);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void tick() {
         DataPacket packet;
-        var c = this.consumer.get();
+        var $28 = this.consumer.get();
         if (c != null) {
             while ((packet = this.inbound.poll()) != null) {
                 c.accept(packet);
@@ -463,19 +591,31 @@ public class BedrockSession {
     public InetSocketAddress getAddress() {
         return address;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getAddressString() {
         return address.getAddress().getHostAddress();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAddress(InetSocketAddress address) {
         this.address = address;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void syncAvailableCommands() {
-        AvailableCommandsPacket pk = new AvailableCommandsPacket();
+        AvailableCommandsPacket $29 = new AvailableCommandsPacket();
         Map<String, CommandDataVersions> data = new HashMap<>();
-        int count = 0;
+        int $30 = 0;
         final Map<String, Command> commands = Server.getInstance().getCommandMap().getCommands();
         synchronized (commands) {
             for (Command command : commands.values()) {
@@ -483,7 +623,7 @@ public class BedrockSession {
                     continue;
                 }
                 ++count;
-                CommandDataVersions data0 = command.generateCustomCommandData(this.getPlayer());
+                CommandDataVersions $31 = command.generateCustomCommandData(this.getPlayer());
                 data.put(command.getName(), data0);
             }
         }
@@ -493,19 +633,31 @@ public class BedrockSession {
             this.sendPacket(pk);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void syncCraftingData() {
         this.sendRawPacket(ProtocolInfo.CRAFTING_DATA_PACKET, Registries.RECIPE.getCraftingPacket());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void syncCreativeContent() {
-        var pk = new CreativeContentPacket();
+        var $32 = new CreativeContentPacket();
         pk.entries = Registries.CREATIVE.getCreativeItems();
         this.sendPacket(pk);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void syncInventory() {
-        var player = getPlayer();
+        var $33 = getPlayer();
         if (player != null) {
             player.getInventory().sendHeldItem(player);
             player.getInventory().sendContents(player);
@@ -515,9 +667,13 @@ public class BedrockSession {
             player.getEnderChestInventory().sendContents(player);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setEnableClientCommand(boolean enable) {
-        var pk = new SetCommandsEnabledPacket();
+        var $34 = new SetCommandsEnabledPacket();
         pk.enabled = enable;
         this.sendPacket(pk);
         if (enable) {
@@ -541,6 +697,10 @@ public class BedrockSession {
     public @NotNull StateMachine<SessionState, SessionState> getMachine() {
         return this.machine;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPacketHandler(@javax.annotation.Nullable final PacketHandler packetHandler) {
         this.packetHandler = packetHandler;

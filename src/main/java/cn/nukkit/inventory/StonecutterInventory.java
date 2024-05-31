@@ -6,6 +6,10 @@ import cn.nukkit.item.Item;
 
 
 public class StonecutterInventory extends ContainerInventory implements CraftTypeInventory {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public StonecutterInventory(BlockStonecutterBlock blockStonecutterBlock) {
@@ -18,6 +22,10 @@ public class StonecutterInventory extends ContainerInventory implements CraftTyp
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onClose(Player who) {
         super.onClose(who);
 

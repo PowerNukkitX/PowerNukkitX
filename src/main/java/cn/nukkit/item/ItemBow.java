@@ -25,30 +25,54 @@ import java.util.stream.Stream;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemBow extends ItemTool {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemBow() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemBow(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemBow(Integer meta, int count) {
         super(BOW, meta, count, "Bow");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxDurability() {
         return ItemTool.DURABILITY_BOW;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getEnchantAbility() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return player.isCreative() ||
                 Stream.of(player.getInventory(), player.getOffhandInventory())
@@ -56,10 +80,14 @@ public class ItemBow extends ItemTool {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onRelease(Player player, int ticksUsed) {
-        Item itemArrow = Item.get(Item.ARROW, 0, 1);
+        Item $1 = Item.get(Item.ARROW, 0, 1);
 
-        Inventory inventory = player.getOffhandInventory();
+        Inventory $2 = player.getOffhandInventory();
 
         if (!inventory.contains(itemArrow) && !(inventory = player.getInventory()).contains(itemArrow) && (player.isAdventure() || player.isSurvival())) {
             player.getOffhandInventory().sendContents(player);
@@ -67,22 +95,22 @@ public class ItemBow extends ItemTool {
             return false;
         }
 
-        double damage = 2;
+        double $3 = 2;
 
-        Enchantment bowDamage = this.getEnchantment(Enchantment.ID_BOW_POWER);
+        Enchantment $4 = this.getEnchantment(Enchantment.ID_BOW_POWER);
         if (bowDamage != null && bowDamage.getLevel() > 0) {
             damage += (double) bowDamage.getLevel() * 0.5 + 0.5;
         }
 
-        Enchantment flameEnchant = this.getEnchantment(Enchantment.ID_BOW_FLAME);
-        boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
+        Enchantment $5 = this.getEnchantment(Enchantment.ID_BOW_FLAME);
+        boolean $6 = flameEnchant != null && flameEnchant.getLevel() > 0;
 
-        Location arrowLocation = player.getLocation();
-        Vector3 directionVector = player.getDirectionVector().multiply(1.1);
+        Location $7 = player.getLocation();
+        Vector3 $8 = player.getDirectionVector().multiply(1.1);
         arrowLocation = arrowLocation.add(directionVector.getX(), 0, directionVector.getZ());
         arrowLocation.setY(player.y + player.getEyeHeight() + directionVector.getY());
 
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $9 = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(arrowLocation.x))
                         .add(new DoubleTag(arrowLocation.y))
@@ -97,17 +125,17 @@ public class ItemBow extends ItemTool {
                 .putShort("Fire", flame ? 45 * 60 : 0)
                 .putDouble("damage", damage);
 
-        double p = (double) ticksUsed / 20;
-        final double maxForce = 3.5;
-        double f = Math.min((p * p + p * 2) / 3, 1) * maxForce;
+        double $10 = (double) ticksUsed / 20;
+        final double $11 = 3.5;
+        double $12 = Math.min((p * p + p * 2) / 3, 1) * maxForce;
 
-        EntityArrow arrow = (EntityArrow) Entity.createEntity(Entity.ARROW, player.chunk, nbt, player, f == maxForce);
+        EntityArrow $13 = (EntityArrow) Entity.createEntity(Entity.ARROW, player.chunk, nbt, player, f == maxForce);
 
         if (arrow == null) {
             return false;
         }
 
-        EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(player, this, arrow, f);
+        EntityShootBowEvent $14 = new EntityShootBowEvent(player, this, arrow, f);
 
         if (f < 0.1 || ticksUsed < 3) {
             entityShootBowEvent.setCancelled();
@@ -120,8 +148,8 @@ public class ItemBow extends ItemTool {
             player.getOffhandInventory().sendContents(player);
         } else {
             entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
-            Enchantment infinityEnchant = this.getEnchantment(Enchantment.ID_BOW_INFINITY);
-            boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0;
+            Enchantment $15 = this.getEnchantment(Enchantment.ID_BOW_INFINITY);
+            boolean $16 = infinityEnchant != null && infinityEnchant.getLevel() > 0;
             EntityProjectile projectile;
             if (infinity && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
                 ((EntityArrow) projectile).setPickupMode(EntityProjectile.PICKUP_CREATIVE);
@@ -138,7 +166,7 @@ public class ItemBow extends ItemTool {
                     inventory.removeItem(itemArrow);
                 }
                 if (!this.isUnbreakable()) {
-                    Enchantment durability = this.getEnchantment(Enchantment.ID_DURABILITY);
+                    Enchantment $17 = this.getEnchantment(Enchantment.ID_DURABILITY);
                     if (!(durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= new Random().nextInt(100))) {
                         this.setDamage(this.getDamage() + 1);
                         if (this.getDamage() >= getMaxDurability()) {
@@ -150,7 +178,7 @@ public class ItemBow extends ItemTool {
                 }
             }
             if (entityShootBowEvent.getProjectile() != null) {
-                ProjectileLaunchEvent projectev = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile(), player);
+                ProjectileLaunchEvent $18 = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile(), player);
                 Server.getInstance().getPluginManager().callEvent(projectev);
                 if (projectev.isCancelled()) {
                     entityShootBowEvent.getProjectile().kill();

@@ -13,15 +13,19 @@ import java.util.Set;
 
 public class EntityArmorInventory extends BaseInventory {
     private final Entity entity;
-    public static final int SLOT_HEAD = 0;
-    public static final int SLOT_CHEST = 1;
-    public static final int SLOT_LEGS = 2;
-    public static final int SLOT_FEET = 3;
+    public static final int $1 = 0;
+    public static final int $2 = 1;
+    public static final int $3 = 2;
+    public static final int $4 = 3;
 
     /**
      * @param holder an Entity which implements {@link InventoryHolder}.
      * @throws ClassCastException if the entity does not implements {@link InventoryHolder}
      */
+    /**
+     * @deprecated 
+     */
+    
     public EntityArmorInventory(InventoryHolder holder) {
         super(holder, InventoryType.INVENTORY, 4);
         this.entity = (Entity) holder;
@@ -33,6 +37,10 @@ public class EntityArmorInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getSize() {
         return 4;
     }
@@ -56,21 +64,37 @@ public class EntityArmorInventory extends BaseInventory {
     public Item getBoots() {
         return this.getItem(SLOT_FEET);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean setHelmet(Item item) {
         return this.setItem(SLOT_HEAD, item);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean setChestplate(Item item) {
         return this.setItem(SLOT_CHEST, item);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean setLeggings(Item item) {
         return this.setItem(SLOT_LEGS, item);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean setBoots(Item item) {
@@ -78,6 +102,10 @@ public class EntityArmorInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendSlot(int index, Player... players) {
         for (Player player : players) {
             this.sendSlot(index, player);
@@ -85,13 +113,17 @@ public class EntityArmorInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendSlot(int index, Player player) {
-        MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
+        MobArmorEquipmentPacket $5 = new MobArmorEquipmentPacket();
         mobArmorEquipmentPacket.eid = this.entity.getId();
         mobArmorEquipmentPacket.slots = new Item[]{this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
 
         if (player == this.holder) {
-            InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
+            InventorySlotPacket $6 = new InventorySlotPacket();
             inventorySlotPacket.inventoryId = player.getWindowId(this);
             inventorySlotPacket.slot = index;
             inventorySlotPacket.item = this.getItem(index);
@@ -102,6 +134,10 @@ public class EntityArmorInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendContents(Player... players) {
         for (Player player : players) {
             this.sendContents(player);
@@ -109,13 +145,17 @@ public class EntityArmorInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendContents(Player player) {
-        MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
+        MobArmorEquipmentPacket $7 = new MobArmorEquipmentPacket();
         mobArmorEquipmentPacket.eid = this.entity.getId();
         mobArmorEquipmentPacket.slots = new Item[]{this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
 
         if (player == this.holder) {
-            InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
+            InventoryContentPacket $8 = new InventoryContentPacket();
             inventoryContentPacket.inventoryId = player.getWindowId(this);
             inventoryContentPacket.slots = new Item[]{this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
             player.dataPacket(inventoryContentPacket);
@@ -125,11 +165,19 @@ public class EntityArmorInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onOpen(Player who) {
         this.viewers.add(who);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onClose(Player who) {
         this.viewers.remove(who);
     }

@@ -22,17 +22,29 @@ import static cn.nukkit.block.property.CommonBlockProperties.OPEN_BIT;
 
 
 public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityBarrel> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(BARREL, FACING_DIRECTION, OPEN_BIT);
+    public static final BlockProperties $1 = new BlockProperties(BARREL, FACING_DIRECTION, OPEN_BIT);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBarrel() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBarrel(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Barrel";
     }
@@ -45,6 +57,10 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.BARREL;
     }
@@ -56,12 +72,16 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (player == null) {
             setBlockFace(BlockFace.UP);
         } else {
             if (Math.abs(player.x - this.x) < 2 && Math.abs(player.z - this.z) < 2) {
-                double y = player.y + player.getEyeHeight();
+                double $2 = player.y + player.getEyeHeight();
 
                 if (y - this.y > 2) {
                     setBlockFace(BlockFace.UP);
@@ -75,7 +95,7 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
             }
         }
 
-        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
+        CompoundTag $3 = new CompoundTag().putList("Items", new ListTag<>());
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -92,10 +112,14 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
 
-        BlockEntityBarrel barrel = getOrCreateBlockEntity();
+        BlockEntityBarrel $4 = getOrCreateBlockEntity();
 
         if (barrel.namedTag.contains("Lock") && barrel.namedTag.get("Lock") instanceof StringTag
                 && !barrel.namedTag.getString("Lock").equals(item.getCustomName())) {
@@ -107,21 +131,37 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 2.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 12.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
@@ -137,26 +177,46 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isOpen() {
         return getPropertyValue(OPEN_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setOpen(boolean open) {
         setPropertyValue(OPEN_BIT, open);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasComparatorInputOverride() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getComparatorInputOverride() {
-        BlockEntityBarrel blockEntity = getBlockEntity();
+        BlockEntityBarrel $5 = getBlockEntity();
 
         if (blockEntity != null) {
             return ContainerInventory.calculateRedstone(blockEntity.getInventory());

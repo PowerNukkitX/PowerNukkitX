@@ -15,6 +15,10 @@ import cn.nukkit.network.protocol.LevelSoundEventPacketV2;
  * @author CreeperFace
  */
 public abstract class ProjectileItem extends Item {
+    /**
+     * @deprecated 
+     */
+    
 
     public ProjectileItem(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
@@ -25,8 +29,12 @@ public abstract class ProjectileItem extends Item {
     abstract public float getThrowForce();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $1 = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(player.x))
                         .add(new DoubleTag(player.y + player.getEyeHeight() - 0.30000000149011612))
@@ -41,7 +49,7 @@ public abstract class ProjectileItem extends Item {
 
         this.correctNBT(nbt);
 
-        Entity projectile = Entity.createEntity(this.getProjectileEntityType(), player.getLevel().getChunk(player.getFloorX() >> 4, player.getFloorZ() >> 4), nbt, player);
+        Entity $2 = Entity.createEntity(this.getProjectileEntityType(), player.getLevel().getChunk(player.getFloorX() >> 4, player.getFloorZ() >> 4), nbt, player);
         if (projectile != null) {
             projectile = correctProjectile(player, projectile);
             if (projectile == null) {
@@ -51,7 +59,7 @@ public abstract class ProjectileItem extends Item {
             projectile.setMotion(projectile.getMotion().multiply(this.getThrowForce()));
 
             if (projectile instanceof EntityProjectile) {
-                ProjectileLaunchEvent ev = new ProjectileLaunchEvent((EntityProjectile) projectile, player);
+                ProjectileLaunchEvent $3 = new ProjectileLaunchEvent((EntityProjectile) projectile, player);
 
                 player.getServer().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
@@ -70,6 +78,10 @@ public abstract class ProjectileItem extends Item {
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void addThrowSound(Player player) {
         player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacketV2.SOUND_THROW, -1, "minecraft:player", false, false);
     }
@@ -78,6 +90,10 @@ public abstract class ProjectileItem extends Item {
         return projectile;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void correctNBT(CompoundTag nbt) {
 
     }

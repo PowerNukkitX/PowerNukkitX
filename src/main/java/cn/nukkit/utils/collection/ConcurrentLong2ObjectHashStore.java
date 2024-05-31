@@ -10,30 +10,46 @@ public final class ConcurrentLong2ObjectHashStore<T> {
     private final Long2ObjectOpenHashMap<T> internalMap;
     private final ReadWriteLock lock;
     private T defaultReturnValue;
+    /**
+     * @deprecated 
+     */
+    
 
     public ConcurrentLong2ObjectHashStore(int expected, float l) {
         this.internalMap = new Long2ObjectOpenHashMap<>(expected, l);
         this.lock = new ReentrantReadWriteLock();
         this.defaultReturnValue = null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ConcurrentLong2ObjectHashStore(int expected, float l, T defaultReturnValue) {
         this.internalMap = new Long2ObjectOpenHashMap<>(expected, l);
         this.lock = new ReentrantReadWriteLock();
         this.defaultReturnValue = defaultReturnValue;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int size() {
-        var readLock = lock.readLock();
+        var $1 = lock.readLock();
         try {
             return internalMap.size();
         } finally {
             readLock.unlock();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void clear() {
-        var writeLock = lock.writeLock();
+        var $2 = lock.writeLock();
         while (true) {
             if (writeLock.tryLock()) {
                 try {
@@ -45,18 +61,26 @@ public final class ConcurrentLong2ObjectHashStore<T> {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isEmpty() {
-        var readLock = lock.readLock();
+        var $3 = lock.readLock();
         try {
             return internalMap.isEmpty();
         } finally {
             readLock.unlock();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containsValue(T value) {
-        var readLock = lock.readLock();
+        var $4 = lock.readLock();
         while (true) {
             if (readLock.tryLock()) {
                 try {
@@ -67,9 +91,13 @@ public final class ConcurrentLong2ObjectHashStore<T> {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void put(long key, T value) {
-        var writeLock = lock.writeLock();
+        var $5 = lock.writeLock();
         while (true) {
             if (writeLock.tryLock()) {
                 try {
@@ -81,6 +109,10 @@ public final class ConcurrentLong2ObjectHashStore<T> {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void defaultReturnValue(T rv) {
         this.defaultReturnValue = rv;
@@ -91,7 +123,7 @@ public final class ConcurrentLong2ObjectHashStore<T> {
     }
 
     public T get(long key) {
-        var readLock = lock.readLock();
+        var $6 = lock.readLock();
         while (true) {
             if (readLock.tryLock()) {
                 try {
@@ -102,9 +134,13 @@ public final class ConcurrentLong2ObjectHashStore<T> {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containsKey(long key) {
-        var readLock = lock.readLock();
+        var $7 = lock.readLock();
         while (true) {
             if (readLock.tryLock()) {
                 try {

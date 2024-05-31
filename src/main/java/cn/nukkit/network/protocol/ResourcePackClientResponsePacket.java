@@ -12,27 +12,35 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ResourcePackClientResponsePacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET;
+    public static final int $1 = ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET;
 
-    public static final byte STATUS_REFUSED = 1;
-    public static final byte STATUS_SEND_PACKS = 2;
-    public static final byte STATUS_HAVE_ALL_PACKS = 3;
-    public static final byte STATUS_COMPLETED = 4;
+    public static final byte $2 = 1;
+    public static final byte $3 = 2;
+    public static final byte $4 = 3;
+    public static final byte $5 = 4;
 
     public byte responseStatus;
     public Entry[] packEntries;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.responseStatus = (byte) byteBuf.readByte();
         this.packEntries = new Entry[byteBuf.readShortLE()];
-        for (int i = 0; i < this.packEntries.length; i++) {
+        for ($6nt $1 = 0; i < this.packEntries.length; i++) {
             String[] entry = byteBuf.readString().split("_");
             this.packEntries[i] = new Entry(UUID.fromString(entry[0]), entry[1]);
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeByte(this.responseStatus);
@@ -43,6 +51,10 @@ public class ResourcePackClientResponsePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -51,12 +63,20 @@ public class ResourcePackClientResponsePacket extends DataPacket {
     public static class Entry {
         public final UUID uuid;
         public final String version;
+    /**
+     * @deprecated 
+     */
+    
 
         public Entry(UUID uuid, String version) {
             this.uuid = uuid;
             this.version = version;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

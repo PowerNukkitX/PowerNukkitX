@@ -17,14 +17,26 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityXpBottle extends EntityProjectile {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return XP_BOTTLE;
     }
+    /**
+     * @deprecated 
+     */
+    
     
 
     public EntityXpBottle(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityXpBottle(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
@@ -33,37 +45,61 @@ public class EntityXpBottle extends EntityProjectile {
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getLength() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.25f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getGravity() {
         return 0.1f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getDrag() {
         return 0.01f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
         }
 
-        boolean hasUpdate = super.onUpdate(currentTick);
+        boolean $1 = super.onUpdate(currentTick);
 
         if (this.age > 1200) {
             this.kill();
@@ -80,13 +116,21 @@ public class EntityXpBottle extends EntityProjectile {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onCollideWithEntity(Entity entity) {
         this.kill();
         this.dropXp();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void dropXp() {
-        Particle particle2 = new SpellParticle(this, 0x00385dc6);
+        Particle $2 = new SpellParticle(this, 0x00385dc6);
         this.getLevel().addParticle(particle2);
 
         this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_GLASS);
@@ -95,11 +139,19 @@ public class EntityXpBottle extends EntityProjectile {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void addHitEffect() {
         this.getLevel().addSound(this, Sound.RANDOM_GLASS);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Bottle o' Enchanting";
     }

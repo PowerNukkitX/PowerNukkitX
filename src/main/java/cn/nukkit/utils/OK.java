@@ -12,6 +12,10 @@ import java.util.Objects;
 
 public record OK<E>(boolean ok, @Nullable E error) {
     public static final OK<Void> TRUE = new OK<>(true);
+    /**
+     * @deprecated 
+     */
+    
 
     public OK(boolean ok) {
         this(ok, null);

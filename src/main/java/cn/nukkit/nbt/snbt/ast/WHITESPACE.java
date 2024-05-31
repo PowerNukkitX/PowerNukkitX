@@ -9,6 +9,10 @@ import cn.nukkit.nbt.snbt.Token;
 
 
 public class WHITESPACE extends Token {
+    /**
+     * @deprecated 
+     */
+    
 
     public WHITESPACE(TokenType type, SNBTLexer tokenSource, int beginOffset, int endOffset) {
         super(type, tokenSource, beginOffset, endOffset);

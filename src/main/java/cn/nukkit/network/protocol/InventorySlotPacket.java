@@ -13,9 +13,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InventorySlotPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.INVENTORY_SLOT_PACKET;
+    public static final int $1 = ProtocolInfo.INVENTORY_SLOT_PACKET;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -25,6 +29,10 @@ public class InventorySlotPacket extends DataPacket {
     public Item item;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.inventoryId = byteBuf.readUnsignedVarInt();
         this.slot = byteBuf.readUnsignedVarInt();
@@ -32,11 +40,19 @@ public class InventorySlotPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarInt(this.inventoryId);
         byteBuf.writeUnsignedVarInt(this.slot);
         byteBuf.writeSlot(this.item);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

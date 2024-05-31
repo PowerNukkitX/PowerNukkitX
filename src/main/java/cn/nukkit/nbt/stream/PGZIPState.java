@@ -8,6 +8,10 @@ public class PGZIPState {
     protected final DeflaterOutputStream str;
     protected final ByteArrayOutputStream buf;
     protected final Deflater def;
+    /**
+     * @deprecated 
+     */
+    
 
     public PGZIPState(PGZIPOutputStream parent) {
         this.def = parent.newDeflater();

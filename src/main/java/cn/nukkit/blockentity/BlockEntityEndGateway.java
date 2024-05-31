@@ -24,24 +24,36 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     private BlockVector3 exitPortal;
 
     // Default value
-    private static final BlockVector3 defaultExitPortal = new BlockVector3(0, 0, 0);
+    private static final BlockVector3 $1 = new BlockVector3(0, 0, 0);
 
     // Others
     public int teleportCooldown;
 
-    private static final BlockState STATE_BEDROCK = BlockBedrock.PROPERTIES.getDefaultState();
+    private static final BlockState $2 = BlockBedrock.PROPERTIES.getDefaultState();
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityEndGateway(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initBlockEntity() {
         super.initBlockEntity();
         scheduleUpdate();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         if (this.namedTag.contains("Age")) {
@@ -61,11 +73,19 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return this.getLevel().getBlockIdAt(getFloorX(), getFloorY(), getFloorZ()) == Block.END_GATEWAY;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putInt("Age", this.age);
@@ -77,12 +97,16 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate() {
         if (this.closed) {
             return false;
         }
 
-        boolean isGenerated = isGenerating();
+        boolean $3 = isGenerating();
 
         this.age++;
 
@@ -105,6 +129,10 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
 
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void teleportEntity(Entity entity) {
         if (exitPortal != null) {
@@ -125,20 +153,20 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
 
     public BlockVector3 getSafeExitPortal() {
         // TODO: Find better way
-        for (int x = -1; x <= 1; x++) {
-            for (int z = -1; z <= 1; z++) {
-                int chunkX = (exitPortal.getX() >> 4) + x;
-                int chunkZ = (exitPortal.getZ() >> 4) + z;
-                IChunk chunk = this.getLevel().getChunk(chunkX, chunkZ, false);
+        for (int $4 = -1; x <= 1; x++) {
+            for (int $5 = -1; z <= 1; z++) {
+                int $6 = (exitPortal.getX() >> 4) + x;
+                int $7 = (exitPortal.getZ() >> 4) + z;
+                IChunk $8 = this.getLevel().getChunk(chunkX, chunkZ, false);
                 if (chunk == null || !(chunk.isGenerated() || chunk.isPopulated())) {
                     this.getLevel().generateChunk(chunkX, chunkZ);
                 }
             }
         }
 
-        for (int x = exitPortal.getX() - 5; x <= exitPortal.getX() + 5; x++) {
-            for (int z = exitPortal.getZ() - 5; z <= exitPortal.getZ() + 5; z++) {
-                for (int y = 255; y > Math.max(0, exitPortal.getY() + 2); y--) {
+        for (int $9 = exitPortal.getX() - 5; x <= exitPortal.getX() + 5; x++) {
+            for (int $10 = exitPortal.getZ() - 5; z <= exitPortal.getZ() + 5; z++) {
+                for (int $11 = 255; y > Math.max(0, exitPortal.getY() + 2); y--) {
                     if (!this.getLevel().getBlockStateAt(x, y, z).equals(BlockAir.STATE)) {
                         if (this.getLevel().getBlockStateAt(x, y, z) != STATE_BEDROCK) {
                             return new BlockVector3(x, y + 1, z);
@@ -150,10 +178,18 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
 
         return this.exitPortal.up(2);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getAge() {
         return age;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAge(int age) {
         this.age = age;
@@ -162,22 +198,42 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     public BlockVector3 getExitPortal() {
         return exitPortal;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setExitPortal(BlockVector3 exitPortal) {
         this.exitPortal = exitPortal;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isGenerating() {
         return age < 200;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isTeleportCooldown() {
         return teleportCooldown > 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTeleportCooldown() {
         this.setTeleportCooldown(40);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTeleportCooldown(int teleportCooldown) {
         this.teleportCooldown = teleportCooldown;
@@ -186,6 +242,10 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
         this.spawnToAll();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void sendBlockEventPacket(int eventData) {
         if (this.closed) {
             return;
@@ -195,7 +255,7 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
             return;
         }
 
-        BlockEventPacket pk = new BlockEventPacket();
+        BlockEventPacket $12 = new BlockEventPacket();
         pk.x = this.getFloorX();
         pk.y = this.getFloorY();
         pk.z = this.getFloorZ();

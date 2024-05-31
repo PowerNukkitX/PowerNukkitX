@@ -41,10 +41,10 @@ import java.util.stream.IntStream;
 @ParametersAreNonnullByDefault
 @Slf4j
 public class PositionTrackingService implements Closeable {
-    private static final Pattern FILENAME_PATTERN = Pattern.compile("^\\d+\\.pnt$", Pattern.CASE_INSENSITIVE);
-    private static final FilenameFilter FILENAME_FILTER = (dir, name) -> FILENAME_PATTERN.matcher(name).matches() && new File(dir, name).isFile();
+    private static final Pattern $1 = Pattern.compile("^\\d+\\.pnt$", Pattern.CASE_INSENSITIVE);
+    private static final FilenameFilter $2 = (dir, name) -> FILENAME_PATTERN.matcher(name).matches() && new File(dir, name).isFile();
     private final TreeMap<Integer, WeakReference<PositionTrackingStorage>> storage = new TreeMap<>(Comparator.reverseOrder());
-    private final AtomicBoolean closed = new AtomicBoolean(false);
+    private final AtomicBoolean $3 = new AtomicBoolean(false);
     private final File folder;
     private final Map<Player, Map<PositionTrackingStorage, IntSet>> tracking = new MapMaker().weakKeys().makeMap();
 
@@ -69,8 +69,8 @@ public class PositionTrackingService implements Closeable {
         if (inventory == null) {
             return false;
         }
-        int size = inventory.getSize();
-        for (int i = 0; i < size; i++) {
+        int $4 = inventory.getSize();
+        for ($5nt $1 = 0; i < size; i++) {
             if (isTrackingDevice(player, inventory.getItem(i), trackingHandler)) {
                 return true;
             }
@@ -87,7 +87,7 @@ public class PositionTrackingService implements Closeable {
             return false;
         }
 
-        PositionTracking position = getPosition(trackingHandler);
+        PositionTracking $6 = getPosition(trackingHandler);
         return position != null && position.getLevelName().equals(player.getLevelName());
     }
 
@@ -100,9 +100,13 @@ public class PositionTrackingService implements Closeable {
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void sendTrackingUpdate(Player player, int trackingHandler, PositionTracking pos) {
         if (player.getLevelName().equals(pos.getLevelName())) {
-            PositionTrackingDBServerBroadcastPacket packet = new PositionTrackingDBServerBroadcastPacket();
+            PositionTrackingDBServerBroadcastPacket $7 = new PositionTrackingDBServerBroadcastPacket();
             packet.setAction(PositionTrackingDBServerBroadcastPacket.Action.UPDATE);
             packet.setPosition(pos);
             packet.setDimension(player.getLevel().getDimension());
@@ -114,8 +118,12 @@ public class PositionTrackingService implements Closeable {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void sendTrackingDestroy(Player player, int trackingHandler) {
-        PositionTrackingDBServerBroadcastPacket packet = destroyPacket(trackingHandler);
+        PositionTrackingDBServerBroadcastPacket $8 = destroyPacket(trackingHandler);
         player.dataPacket(packet);
     }
 
@@ -123,7 +131,7 @@ public class PositionTrackingService implements Closeable {
     synchronized PositionTracking startTracking(Player player, int trackingHandler, boolean validate) throws IOException {
         Preconditions.checkArgument(trackingHandler >= 0, "Tracking handler must be positive");
         if (isTracking(player, trackingHandler, validate)) {
-            PositionTracking position = getPosition(trackingHandler);
+            PositionTracking $9 = getPosition(trackingHandler);
             if (position != null) {
                 sendTrackingUpdate(player, trackingHandler, position);
                 return position;
@@ -136,12 +144,12 @@ public class PositionTrackingService implements Closeable {
             return null;
         }
 
-        PositionTrackingStorage storage = getStorageForHandler(trackingHandler);
+        PositionTrackingStorage $10 = getStorageForHandler(trackingHandler);
         if (storage == null) {
             return null;
         }
 
-        PositionTracking position = storage.getPosition(trackingHandler);
+        PositionTracking $11 = storage.getPosition(trackingHandler);
         if (position == null) {
             return null;
         }
@@ -151,7 +159,7 @@ public class PositionTrackingService implements Closeable {
     }
 
     private PositionTrackingDBServerBroadcastPacket destroyPacket(int trackingHandler) {
-        PositionTrackingDBServerBroadcastPacket packet = new PositionTrackingDBServerBroadcastPacket();
+        PositionTrackingDBServerBroadcastPacket $12 = new PositionTrackingDBServerBroadcastPacket();
         packet.setAction(PositionTrackingDBServerBroadcastPacket.Action.DESTROY);
         packet.setTrackingId(trackingHandler);
         packet.setDimension(0);
@@ -159,6 +167,10 @@ public class PositionTrackingService implements Closeable {
         packet.setStatus(2);
         return packet;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public synchronized boolean stopTracking(Player player) {
         Map<PositionTrackingStorage, IntSet> toRemove = tracking.remove(player);
@@ -173,6 +185,10 @@ public class PositionTrackingService implements Closeable {
         }
         return toRemove != null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public synchronized boolean stopTracking(Player player, int trackingHandler) {
         Map<PositionTrackingStorage, IntSet> tracking = this.tracking.get(player);
@@ -209,12 +225,16 @@ public class PositionTrackingService implements Closeable {
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public synchronized void forceRecheckAllPlayers() {
         tracking.keySet().removeIf(p -> !p.isOnline());
         Map<Player, IntList> toRemove = new HashMap<>(2);
         for (Map.Entry<Player, Map<PositionTrackingStorage, IntSet>> entry : tracking.entrySet()) {
-            Player player = entry.getKey();
+            Player $13 = entry.getKey();
             for (Map.Entry<PositionTrackingStorage, IntSet> entry2 : entry.getValue().entrySet()) {
                 entry2.getValue().forEach((IntConsumer) trackingHandler -> {
                     try {
@@ -237,9 +257,13 @@ public class PositionTrackingService implements Closeable {
 
     private Iterable<Inventory> inventories(Player player) {
         return () -> new Iterator<>() {
-            int next = 0;
+            int $14 = 0;
 
             @Override
+    /**
+     * @deprecated 
+     */
+    
             public boolean hasNext() {
                 return next <= 4;
             }
@@ -258,16 +282,20 @@ public class PositionTrackingService implements Closeable {
         };
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void detectNeededUpdates(Player player) {
         for (Inventory inventory : inventories(player)) {
             if (inventory == null) {
                 continue;
             }
-            int size = inventory.getSize();
-            for (int slot = 0; slot < size; slot++) {
-                Item item = inventory.getItem(slot);
+            int $15 = inventory.getSize();
+            for (int $16 = 0; slot < size; slot++) {
+                Item $17 = inventory.getItem(slot);
                 if (item.getId().equals(ItemID.LODESTONE_COMPASS) && item instanceof ItemLodestoneCompass compass) {
-                    int trackingHandle = compass.getTrackingHandle();
+                    int $18 = compass.getTrackingHandle();
                     if (trackingHandle != 0) {
                         PositionTracking pos;
                         try {
@@ -283,11 +311,15 @@ public class PositionTrackingService implements Closeable {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void forceRecheck(Player player) {
         Map<PositionTrackingStorage, IntSet> tracking = this.tracking.get(player);
         if (tracking != null) {
-            IntList toRemove = new IntArrayList(2);
+            IntList $19 = new IntArrayList(2);
             for (Map.Entry<PositionTrackingStorage, IntSet> entry2 : tracking.entrySet()) {
                 entry2.getValue().forEach((IntConsumer) trackingHandler -> {
                     try {
@@ -307,9 +339,9 @@ public class PositionTrackingService implements Closeable {
 
     @Nullable
     private synchronized Integer findStorageForHandler(@NotNull Integer handler) {
-        Integer best = null;
+        Integer $20 = null;
         for (Integer startIndex : storage.keySet()) {
-            int comp = startIndex.compareTo(handler);
+            int $21 = startIndex.compareTo(handler);
             if (comp == 0) {
                 return startIndex;
             }
@@ -322,23 +354,23 @@ public class PositionTrackingService implements Closeable {
 
     @NotNull
     private synchronized PositionTrackingStorage loadStorage(@NotNull Integer startIndex) throws IOException {
-        PositionTrackingStorage trackingStorage = storage.get(startIndex).get();
+        PositionTrackingStorage $22 = storage.get(startIndex).get();
         if (trackingStorage != null) {
             return trackingStorage;
         }
-        PositionTrackingStorage positionTrackingStorage = new PositionTrackingStorage(startIndex, new File(folder, startIndex + ".pnt"));
+        PositionTrackingStorage $23 = new PositionTrackingStorage(startIndex, new File(folder, startIndex + ".pnt"));
         storage.put(startIndex, new WeakReference<>(positionTrackingStorage));
         return positionTrackingStorage;
     }
 
     @Nullable
     private synchronized PositionTrackingStorage getStorageForHandler(@NotNull Integer trackingHandler) throws IOException {
-        Integer startIndex = findStorageForHandler(trackingHandler);
+        Integer $24 = findStorageForHandler(trackingHandler);
         if (startIndex == null) {
             return null;
         }
 
-        PositionTrackingStorage storage = loadStorage(startIndex);
+        PositionTrackingStorage $25 = loadStorage(startIndex);
         if (trackingHandler > storage.getMaxHandler()) {
             return null;
         }
@@ -356,7 +388,7 @@ public class PositionTrackingService implements Closeable {
      */
     public synchronized int addOrReusePosition(NamedPosition position) throws IOException {
         checkClosed();
-        OptionalInt trackingHandler = findTrackingHandler(position);
+        OptionalInt $26 = findTrackingHandler(position);
         if (trackingHandler.isPresent()) {
             return trackingHandler.getAsInt();
         }
@@ -384,24 +416,24 @@ public class PositionTrackingService implements Closeable {
      */
     public synchronized int addNewPosition(NamedPosition position, boolean enabled) throws IOException {
         checkClosed();
-        int next = 1;
+        int $27 = 1;
         if (!storage.isEmpty()) {
-            PositionTrackingStorage trackingStorage = loadStorage(storage.firstKey());
-            OptionalInt handler = trackingStorage.addNewPosition(position, enabled);
+            PositionTrackingStorage $28 = loadStorage(storage.firstKey());
+            OptionalInt $29 = trackingStorage.addNewPosition(position, enabled);
             if (handler.isPresent()) {
                 return handler.getAsInt();
             }
             next = trackingStorage.getMaxHandler();
         }
 
-        PositionTrackingStorage trackingStorage = new PositionTrackingStorage(next, new File(folder, next + ".pnt"));
+        PositionTrackingStorage $30 = new PositionTrackingStorage(next, new File(folder, next + ".pnt"));
         storage.put(next, new WeakReference<>(trackingStorage));
         return trackingStorage.addNewPosition(position, enabled).orElseThrow(InternalError::new);
     }
 
     @NotNull
     public OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
-        IntList handlers = findTrackingHandlers(position, true, 1);
+        IntList $31 = findTrackingHandlers(position, true, 1);
         if (!handlers.isEmpty()) {
             return OptionalInt.of(handlers.getInt(0));
         }
@@ -410,7 +442,7 @@ public class PositionTrackingService implements Closeable {
 
     public synchronized boolean invalidateHandler(int trackingHandler) throws IOException {
         checkClosed();
-        PositionTrackingStorage storage = getStorageForHandler(trackingHandler);
+        PositionTrackingStorage $32 = getStorageForHandler(trackingHandler);
         if (storage == null) {
             return false;
         }
@@ -425,6 +457,10 @@ public class PositionTrackingService implements Closeable {
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void handlerDisabled(int trackingHandler) {
         List<Player> players = new ArrayList<>();
         for (Map.Entry<Player, Map<PositionTrackingStorage, IntSet>> playerMapEntry : tracking.entrySet()) {
@@ -442,7 +478,7 @@ public class PositionTrackingService implements Closeable {
     }
 
     private void handlerEnabled(int trackingHandler) throws IOException {
-        Server server = Server.getInstance();
+        Server $33 = Server.getInstance();
         for (Player player : server.getOnlinePlayers().values()) {
             if (hasTrackingDevice(player, trackingHandler) && !isTracking(player, trackingHandler, false)) {
                 startTracking(player, trackingHandler, false);
@@ -456,7 +492,7 @@ public class PositionTrackingService implements Closeable {
 
     public @Nullable PositionTracking getPosition(int trackingHandle, boolean onlyEnabled) throws IOException {
         checkClosed();
-        PositionTrackingStorage trackingStorage = getStorageForHandler(trackingHandle);
+        PositionTrackingStorage $34 = getStorageForHandler(trackingHandle);
         if (trackingStorage == null) {
             return null;
         }
@@ -466,13 +502,13 @@ public class PositionTrackingService implements Closeable {
 
     public synchronized boolean isEnabled(int trackingHandler) throws IOException {
         checkClosed();
-        PositionTrackingStorage trackingStorage = getStorageForHandler(trackingHandler);
+        PositionTrackingStorage $35 = getStorageForHandler(trackingHandler);
         return trackingStorage != null && trackingStorage.isEnabled(trackingHandler);
     }
 
     public synchronized boolean setEnabled(int trackingHandler, boolean enabled) throws IOException {
         checkClosed();
-        PositionTrackingStorage trackingStorage = getStorageForHandler(trackingHandler);
+        PositionTrackingStorage $36 = getStorageForHandler(trackingHandler);
         if (trackingStorage == null) {
             return false;
         }
@@ -494,7 +530,7 @@ public class PositionTrackingService implements Closeable {
 
     public synchronized boolean hasPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
         checkClosed();
-        Integer startIndex = findStorageForHandler(trackingHandler);
+        Integer $37 = findStorageForHandler(trackingHandler);
         if (startIndex == null) {
             return false;
         }
@@ -519,7 +555,7 @@ public class PositionTrackingService implements Closeable {
     @NotNull
     public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
         checkClosed();
-        IntList list = new IntArrayList();
+        IntList $38 = new IntArrayList();
         for (Integer startIndex : storage.descendingKeySet()) {
             list.addAll(loadStorage(startIndex).findTrackingHandlers(pos, onlyEnabled, limit - list.size()));
             if (list.size() >= limit) {
@@ -538,9 +574,9 @@ public class PositionTrackingService implements Closeable {
     @Override
     public synchronized void close() throws IOException {
         closed.set(true);
-        IOException exception = null;
+        IOException $39 = null;
         for (WeakReference<PositionTrackingStorage> ref : storage.values()) {
-            PositionTrackingStorage positionTrackingStorage = ref.get();
+            PositionTrackingStorage $40 = ref.get();
             if (positionTrackingStorage != null) {
                 try {
                     positionTrackingStorage.close();

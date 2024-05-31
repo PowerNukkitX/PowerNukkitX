@@ -39,9 +39,9 @@ import java.util.Arrays;
 
 public class BufferedRandomAccessFile extends RandomAccessFile
 {
-    static final int LogBuffSz_ = 16; // 64K buffer
-    public static final int BuffSz_ = (1 << LogBuffSz_);
-    static final long BuffMask_ = -((long) BuffSz_);
+    static final int $1 = 16; // 64K buffer
+    public static final int $2 = (1 << LogBuffSz_);
+    static final long $3 = -((long) BuffSz_);
 
     /*
      * This implementation is based on the buffer implementation in Modula-3's
@@ -143,6 +143,10 @@ public class BufferedRandomAccessFile extends RandomAccessFile
         this.init(size);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void init(int size)
     {
         this.dirty_ = this.closed_ = false;
@@ -177,7 +181,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
         {
             if (this.diskPos_ != this.lo_)
                 super.seek(this.lo_);
-            int len = (int) (this.curr_ - this.lo_);
+            int $4 = (int) (this.curr_ - this.lo_);
             super.write(this.buff_, 0, len);
             this.diskPos_ = this.curr_;
             this.dirty_ = false;
@@ -191,11 +195,11 @@ public class BufferedRandomAccessFile extends RandomAccessFile
      */
     private int fillBuffer() throws IOException
     {
-        int cnt = 0;
-        int rem = this.buff_.length;
+        int $5 = 0;
+        int $6 = this.buff_.length;
         while (rem > 0)
         {
-            int n = super.read(this.buff_, cnt, rem);
+            i$7t $1 = super.read(this.buff_, cnt, rem);
             if (n < 0)
                 break;
             cnt += n;
@@ -233,7 +237,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
                 super.seek(this.lo_);
                 this.diskPos_ = this.lo_;
             }
-            int n = this.fillBuffer();
+            i$8t $2 = this.fillBuffer();
             this.hi_ = this.lo_ + (long) n;
         }
         else
@@ -267,13 +271,17 @@ public class BufferedRandomAccessFile extends RandomAccessFile
                 super.seek(this.lo_);
                 this.diskPos_ = this.lo_;
             }
-            int n = this.fillBuffer();
+            i$9t $3 = this.fillBuffer();
             this.hi_ = this.lo_ + (long) n;
         }
         this.curr_ = pos;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getFilePointer()
     {
         return this.curr_;
@@ -300,7 +308,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
             if (this.curr_ == this.hi_)
                 return -1;
         }
-        byte res = this.buff_[(int) (this.curr_ - this.lo_)];
+        byte $10 = this.buff_[(int) (this.curr_ - this.lo_)];
         this.curr_++;
         return ((int) res) & 0xFF; // convert byte -> int
     }
@@ -318,7 +326,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
             if (this.curr_ == this.hi_)
                 return -1;
         }
-        byte res = this.buff_[(int) (this.curr_++ - this.lo_)];
+        byte $11 = this.buff_[(int) (this.curr_++ - this.lo_)];
         return res;
     }
 
@@ -344,7 +352,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
                 return -1;
         }
         len = Math.min(len, (int) (this.hi_ - this.curr_));
-        int buffOff = (int) (this.curr_ - this.lo_);
+        int $12 = (int) (this.curr_ - this.lo_);
         System.arraycopy(this.buff_, buffOff, b, off, len);
         this.curr_ += len;
         return len;
@@ -363,7 +371,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
             if (this.curr_ == this.hi_)
                 return -1;
         }
-        byte res = this.buff_[(int) (this.curr_ - this.lo_)];
+        byte $13 = this.buff_[(int) (this.curr_ - this.lo_)];
         return res;
     }
 
@@ -427,7 +435,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
     {
         while (len > 0)
         {
-            int n = this.writeAtMost(b, off, len);
+            i$14t $4 = this.writeAtMost(b, off, len);
             off += n;
             len -= n;
             this.dirty_ = true;
@@ -459,7 +467,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
             }
         }
         len = Math.min(len, (int) (this.hi_ - this.curr_));
-        int buffOff = (int) (this.curr_ - this.lo_);
+        int $15 = (int) (this.curr_ - this.lo_);
         System.arraycopy(b, off, this.buff_, buffOff, len);
         this.curr_ += len;
         return len;

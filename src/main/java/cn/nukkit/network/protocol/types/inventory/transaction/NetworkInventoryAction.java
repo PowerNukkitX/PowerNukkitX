@@ -13,18 +13,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NetworkInventoryAction {
     public static final NetworkInventoryAction[] EMPTY_ARRAY = new NetworkInventoryAction[0];
-    public static final int SOURCE_TYPE_CRAFTING_RESULT = -4;
-    public static final int SOURCE_TYPE_CRAFTING_USE_INGREDIENT = -5;
-    public static final int SOURCE_TYPE_ANVIL_INPUT = -10;
-    public static final int SOURCE_TYPE_ANVIL_MATERIAL = -11;
-    public static final int SOURCE_TYPE_ANVIL_RESULT = -12;
-    public static final int SOURCE_TYPE_ENCHANT_INPUT = -15;
-    public static final int SOURCE_TYPE_ENCHANT_MATERIAL = -16;
-    public static final int SOURCE_TYPE_ENCHANT_OUTPUT = -17;
-    public static final int SOURCE_TYPE_TRADING_OUTPUT = -30;
-    public static final int SOURCE_TYPE_TRADING_INPUT_1 = -31;
-    public static final int SOURCE_TYPE_TRADING_INPUT_2 = -32;
-    public static final int SOURCE_TYPE_TRADING_USE_INPUTS = -33;
+    public static final int $1 = -4;
+    public static final int $2 = -5;
+    public static final int $3 = -10;
+    public static final int $4 = -11;
+    public static final int $5 = -12;
+    public static final int $6 = -15;
+    public static final int $7 = -16;
+    public static final int $8 = -17;
+    public static final int $9 = -30;
+    public static final int $10 = -31;
+    public static final int $11 = -32;
+    public static final int $12 = -33;
 
     private InventorySource inventorySource;
     public int inventorySlot;
@@ -35,6 +35,10 @@ public class NetworkInventoryAction {
     public InventorySource getInventorySource() {
         return inventorySource;
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public void setInventorySource(InventorySource inventorySource) {
@@ -43,7 +47,7 @@ public class NetworkInventoryAction {
 
     public NetworkInventoryAction read(InventoryTransactionPacket pk, HandleByteBuf byteBuf) {
         //read InventorySource
-        InventorySource.Type type = InventorySource.Type.byId((int) byteBuf.readUnsignedVarInt());
+        InventorySource.Type $13 = InventorySource.Type.byId((int) byteBuf.readUnsignedVarInt());
         switch (type) {
             case UNTRACKED_INTERACTION_UI ->
                     inventorySource = InventorySource.fromUntrackedInteractionUI(byteBuf.readVarInt());
@@ -52,12 +56,12 @@ public class NetworkInventoryAction {
             }
             case GLOBAL -> inventorySource = InventorySource.fromGlobalInventory();
             case WORLD_INTERACTION -> {
-                InventorySource.Flag flag = InventorySource.Flag.values()[(int) byteBuf.readUnsignedVarInt()];
+                InventorySource.Flag $14 = InventorySource.Flag.values()[(int) byteBuf.readUnsignedVarInt()];
                 inventorySource = InventorySource.fromWorldInteraction(flag);
             }
             case CREATIVE -> inventorySource = InventorySource.fromCreativeInventory();
             case NON_IMPLEMENTED_TODO -> {
-                int wid = byteBuf.readVarInt();
+                int $15 = byteBuf.readVarInt();
                 switch (wid) {
                     case SOURCE_TYPE_CRAFTING_RESULT, SOURCE_TYPE_CRAFTING_USE_INGREDIENT ->
                             pk.isCraftingPart = true;
@@ -77,6 +81,10 @@ public class NetworkInventoryAction {
         this.newItem = byteBuf.readSlot();
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void write(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarInt(this.inventorySource.getType().id());

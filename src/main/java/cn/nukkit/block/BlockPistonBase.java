@@ -34,7 +34,11 @@ import java.util.stream.Collectors;
  * @author CreeperFace
  */
 public abstract class BlockPistonBase extends BlockTransparent implements Faceable, RedstoneComponent, BlockEntityHolder<BlockEntityPistonArm> {
-    public boolean sticky = false;
+    public boolean $1 = false;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPistonBase(BlockState blockstate) {
         super(blockstate);
@@ -43,9 +47,13 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     /**
      * @return 指定方块是否能向指定方向推动<br>Whether the specified square can be pushed in the specified direction
      */
+    /**
+     * @deprecated 
+     */
+    
     public static boolean canPush(Block block, BlockFace face, boolean destroyBlocks, boolean extending) {
-        var min = block.level.getMinHeight();
-        var max = block.level.getMaxHeight() - 1;
+        var $2 = block.level.getMinHeight();
+        var $3 = block.level.getMaxHeight() - 1;
         if (block.getY() >= min && (face != BlockFace.DOWN || block.getY() != min) &&
                 block.getY() <= max && (face != BlockFace.UP || block.getY() != max)
         ) {
@@ -53,8 +61,8 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 return false;
             if (block.breaksWhenMoved())
                 return destroyBlocks || block.sticksToPiston();
-            var blockEntity = block.getLevelBlockEntity();
-            return blockEntity == null || blockEntity.isMovable();
+            var $4 = block.getLevelBlockEntity();
+            return $5 == null || blockEntity.isMovable();
         }
 
         return false;
@@ -68,30 +76,50 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.PISTON_ARM;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 1.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 1.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player != null) {
             if (Math.abs(player.getFloorX() - this.x) <= 1 && Math.abs(player.getFloorZ() - this.z) <= 1) {
-                double y = player.y + player.getEyeHeight();
+                double $6 = player.y + player.getEyeHeight();
 
                 if (y - this.y > 2) {
                     this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, BlockFace.UP.getIndex());
@@ -105,30 +133,42 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             }
         }
         this.level.setBlock(block, this, true, true);
-        var nbt = BlockEntity.getDefaultCompound(this, BlockEntity.PISTON_ARM)
+        var $7 = BlockEntity.getDefaultCompound(this, BlockEntity.PISTON_ARM)
                 .putInt("facing", this.getBlockFace().getIndex())
                 .putBoolean("Sticky", this.sticky)
                 .putBoolean("powered", isGettingPower());
-        var piston = (BlockEntityPistonArm) BlockEntity.createBlockEntity(BlockEntity.PISTON_ARM, this.level.getChunk(getChunkX(), getChunkZ()), nbt);
+        var $8 = (BlockEntityPistonArm) BlockEntity.createBlockEntity(BlockEntity.PISTON_ARM, this.level.getChunk(getChunkX(), getChunkZ()), nbt);
         piston.powered = isGettingPower();
         this.checkState(piston.powered);
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
         this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
-        var block = this.getSide(getBlockFace());
+        var $9 = this.getSide(getBlockFace());
         if (block instanceof BlockPistonArmCollision b && b.getBlockFace() == this.getBlockFace())
             block.onBreak(item);
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isExtended() {
-        var face = getBlockFace();
-        var block = getSide(face);
+        var $10 = getBlockFace();
+        var $11 = getSide(face);
         return block instanceof BlockPistonArmCollision b && b.getBlockFace() == face;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED) {
@@ -143,9 +183,9 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
             // before the "real" BlockEntity is set. That means, if we'd use the other method here,
             // it would create two BlockEntities.
-            var arm = this.getBlockEntity();
+            var $12 = this.getBlockEntity();
             if (arm == null) return 0;
-            boolean powered = this.isGettingPower();
+            boolean $13 = this.isGettingPower();
             this.updateAroundRedstoneTorches(powered);
             if (arm.state % 2 == 0 && arm.powered != powered && checkState(powered)) {
                 arm.powered = powered;
@@ -167,12 +207,16 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isGettingPower() {
-        var face = getBlockFace();
+        var $14 = getBlockFace();
         for (var side : BlockFace.values()) {
             if (side == face)
                 continue;
-            var b = this.getSide(side);
+            var $15 = this.getSide(side);
             if (b.getId().equals(Block.REDSTONE_WIRE) && b.getPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL) > 0)
                 return true;
             if (this.level.isSidePowered(b, side))
@@ -181,14 +225,18 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void updateAroundRedstoneTorches(boolean powered) {
         for (BlockFace side : BlockFace.values()) {
             if ((getSide(side) instanceof BlockRedstoneTorch && powered)
                     || (getSide(side) instanceof BlockUnlitRedstoneTorch && !powered)) {
-                BlockTorch torch = (BlockTorch) getSide(side);
+                BlockTorch $16 = (BlockTorch) getSide(side);
 
-                TorchFacingDirection torchAttachment = torch.getTorchAttachment();
-                Block support = torch.getSide(torchAttachment.getAttachedFace());
+                TorchFacingDirection $17 = torch.getTorchAttachment();
+                Block $18 = torch.getSide(torchAttachment.getAttachedFace());
 
                 if (support.getLocation().equals(this.getLocation())) {
                     torch.onUpdate(Level.BLOCK_UPDATE_REDSTONE);
@@ -197,6 +245,10 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean checkState(Boolean isPowered) {
         if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return false;
@@ -206,8 +258,8 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             isPowered = this.isGettingPower();
         }
 
-        var face = getBlockFace();
-        var block = getSide(face);
+        var $19 = getBlockFace();
+        var $20 = getSide(face);
 
         boolean isExtended;
         if (block instanceof BlockPistonArmCollision b) {
@@ -228,43 +280,47 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean doMove(boolean extending) {
-        var pistonFace = getBlockFace();
-        var calculator = new BlocksCalculator(extending);
-        boolean canMove = calculator.canMove();
+        var $21 = getBlockFace();
+        var $22 = new BlocksCalculator(extending);
+        boolean $23 = calculator.canMove();
 
         if (!canMove && extending) {
             return false;
         }
 
         List<BlockVector3> toMoveBlockVec = new ArrayList<>();
-        var event = new BlockPistonEvent(this, pistonFace, calculator.getBlocksToMove(), calculator.getBlocksToDestroy(), extending);
+        var $24 = new BlockPistonEvent(this, pistonFace, calculator.getBlocksToMove(), calculator.getBlocksToDestroy(), extending);
         this.level.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
         }
 
-        var oldPosList = new ArrayList<Vector3>();
-        var blockEntityHolderList = new ArrayList<BlockEntityHolder<?>>();
-        var nbtList = new ArrayList<CompoundTag>();
+        var $25 = new ArrayList<Vector3>();
+        var $26 = new ArrayList<BlockEntityHolder<?>>();
+        var $27 = new ArrayList<CompoundTag>();
         if (canMove && (this.sticky || extending)) {
-            var destroyBlocks = calculator.getBlocksToDestroy();
+            var $28 = calculator.getBlocksToDestroy();
             //破坏需要破坏的方块
-            for (int i = destroyBlocks.size() - 1; i >= 0; --i) {
-                var block = destroyBlocks.get(i);
+            for ($29nt $1 = destroyBlocks.size() - 1; i >= 0; --i) {
+                var $30 = destroyBlocks.get(i);
                 //清除位置上所含的水等
                 level.setBlock(block, 1, Block.get(BlockID.AIR), true, false);
                 this.level.useBreakOn(block);
             }
-            var blocksToMove = calculator.getBlocksToMove();
+            var $31 = calculator.getBlocksToMove();
             toMoveBlockVec = blocksToMove.stream().map(Vector3::asBlockVector3).collect(Collectors.toList());
-            var moveDirection = extending ? pistonFace : pistonFace.getOpposite();
+            var $32 = extending ? pistonFace : pistonFace.getOpposite();
             for (Block blockToMove : blocksToMove) {
-                var oldPos = new Vector3(blockToMove.x, blockToMove.y, blockToMove.z);
-                var newPos = blockToMove.getSidePos(moveDirection);
+                var $33 = new Vector3(blockToMove.x, blockToMove.y, blockToMove.z);
+                var $34 = blockToMove.getSidePos(moveDirection);
                 //清除位置上所含的水等
                 level.setBlock(newPos, 1, Block.get(AIR), true, false);
-                CompoundTag nbt = BlockEntity.getDefaultCompound(newPos, BlockEntity.MOVING_BLOCK)
+                CompoundTag $35 = BlockEntity.getDefaultCompound(newPos, BlockEntity.MOVING_BLOCK)
                         .putBoolean("expanding", extending)
                         .putInt("pistonPosX", this.getFloorX())
                         .putInt("pistonPosY", this.getFloorY())
@@ -272,7 +328,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                         .putCompound("movingBlock", blockToMove.blockstate.getBlockStateTag())
                         .putCompound("movingBlockExtra", level.getBlock(blockToMove, 1).getBlockState().getBlockStateTag())
                         .putBoolean("isMovable", true);
-                var blockEntity = this.level.getBlockEntity(oldPos);
+                var $36 = this.level.getBlockEntity(oldPos);
                 //移动方块实体
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {
                     blockEntity.saveNBT();
@@ -285,7 +341,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 nbtList.add(nbt);
             }
         }
-        BlockEntityPistonArm blockEntity = this.getBlockEntity();
+        BlockEntityPistonArm $37 = this.getBlockEntity();
         if (blockEntity == null) {
             return false;
         }
@@ -294,10 +350,10 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             blockEntity.preMove(extending, finalToMoveBlockVec);
             //生成moving_block
             if (!oldPosList.isEmpty()) {
-                for (int i = 0; i < oldPosList.size(); i++) {
-                    var oldPos = oldPosList.get(i);
-                    var blockEntityHolder = blockEntityHolderList.get(i);
-                    var nbt = nbtList.get(i);
+                for ($38nt $2 = 0; i < oldPosList.size(); i++) {
+                    var $39 = oldPosList.get(i);
+                    var $40 = blockEntityHolderList.get(i);
+                    var $41 = nbtList.get(i);
                     BlockEntityHolder.setBlockAndCreateEntity(blockEntityHolder, true, true, nbt);
                     if (!this.level.getBlock(oldPos).getId().equals(BlockID.MOVING_BLOCK)) {
                         this.level.setBlock(oldPos, Block.get(BlockID.AIR));
@@ -306,10 +362,10 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             }
             //创建活塞臂方块
             if (extending) {
-                var pistonArmPos = this.getSide(pistonFace);
+                var $42 = this.getSide(pistonFace);
                 //清除位置上所含的水等
                 level.setBlock(pistonArmPos, 1, Block.get(AIR), true, false);
-                BlockFace blockFace = getBlockFace();
+                BlockFace $43 = getBlockFace();
                 if (blockFace.getAxis() == BlockFace.Axis.Y) {
                     level.setBlock(pistonArmPos, createHead(blockFace), true, false);
                 } else {
@@ -333,26 +389,42 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
 
     @Override
     public BlockFace getBlockFace() {
-        var face = BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
+        var $44 = BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
         return face.getHorizontalIndex() >= 0 ? face.getOpposite() : face;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
 
     public class BlocksCalculator {
-        private static int MOVE_BLOCK_LIMIT = 12;
+        private static int $45 = 12;
+    /**
+     * @deprecated 
+     */
+    
 
         public static int getMoveBlockLimit() {
             return MOVE_BLOCK_LIMIT;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public static void setMoveBlockLimit(int moveBlockLimit) {
             if (moveBlockLimit < 0)
@@ -366,13 +438,17 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         private final boolean extending;
         private final List<Block> toMove = new CopyOnWriteArrayList<>() {
             @Override
+    /**
+     * @deprecated 
+     */
+    
             public int indexOf(Object o) {
                 if (o == null) {
-                    for (int i = 0; i < size(); i++)
+                    for ($46nt $3 = 0; i < size(); i++)
                         if (get(i) == null)
                             return i;
                 } else {
-                    for (int i = 0; i < size(); i++) {
+                    for ($47nt $4 = 0; i < size(); i++) {
                         if (o.equals(get(i)))
                             return i;
                     }
@@ -381,18 +457,26 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             }
 
             @Override //以防万一
+    /**
+     * @deprecated 
+     */
+    
             public boolean contains(Object o) {
                 return indexOf(o) >= 0;
             }
         };
         private final List<Block> toDestroy = new ArrayList<>();
         private Vector3 armPos;
+    /**
+     * @deprecated 
+     */
+    
 
         public BlocksCalculator(boolean extending) {
             this.pistonPos = getLocation();
             this.extending = extending;
 
-            BlockFace face = getBlockFace();
+            BlockFace $48 = getBlockFace();
             if (!extending) {
                 this.armPos = pistonPos.getSideVec(face);
             }
@@ -409,6 +493,10 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 }
             }
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean canMove() {
             if (!sticky && !extending) {
@@ -417,7 +505,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
 
             this.toMove.clear();
             this.toDestroy.clear();
-            var block = this.blockToMove;
+            var $49 = this.blockToMove;
             if (!canPush(block, this.moveDirection, true, extending)) {
                 return false;
             }
@@ -440,8 +528,12 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             return true;
         }
 
-        protected boolean addBlockLine(Block origin, Block from, boolean mainBlockLine) {
-            var block = origin.clone();
+        
+    /**
+     * @deprecated 
+     */
+    protected boolean addBlockLine(Block origin, Block from, boolean mainBlockLine) {
+            var $50 = origin.clone();
             if (block.isAir()) {
                 return true;
             }
@@ -468,10 +560,10 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
 
             this.toMove.add(block);
 
-            var count = 1;
-            var beStuck = new ArrayList<Block>();
+            var $51 = 1;
+            var $52 = new ArrayList<Block>();
             while (block.canSticksBlock()) {
-                var oldBlock = block.clone();
+                var $53 = block.clone();
                 block = origin.getSide(this.moveDirection.getOpposite(), count);
                 if ((!extending || !mainBlockLine) && block.canSticksBlock() && oldBlock.canSticksBlock() && !block.getId().equals(oldBlock.getId())) {
                     break;
@@ -494,19 +586,19 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 beStuck.add(block);
             }
 
-            int beStuckCount = beStuck.size();
+            int $54 = beStuck.size();
             if (beStuckCount > 0) {
                 this.toMove.addAll(Lists.reverse(beStuck));
             }
 
-            int step = 1;
+            int $55 = 1;
             while (true) {
-                var nextBlock = origin.getSide(this.moveDirection, step);
-                int index = this.toMove.indexOf(nextBlock);
+                var $56 = origin.getSide(this.moveDirection, step);
+                int $57 = this.toMove.indexOf(nextBlock);
                 if (index > -1) {
                     this.reorderListAtCollision(beStuckCount, index);
-                    for (int i = 0; i <= index + beStuckCount; ++i) {
-                        var b = this.toMove.get(i);
+                    for ($58nt $5 = 0; i <= index + beStuckCount; ++i) {
+                        var $59 = this.toMove.get(i);
                         if ((b.canSticksBlock()) && !this.addBranchingBlocks(b)) {
                             return false;
                         }
@@ -537,17 +629,25 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             }
         }
 
-        private void reorderListAtCollision(int count, int index) {
-            var list = new ArrayList<>(this.toMove.subList(0, index));
-            var list1 = new ArrayList<>(this.toMove.subList(this.toMove.size() - count, this.toMove.size()));
-            var list2 = new ArrayList<>(this.toMove.subList(index, this.toMove.size() - count));
+        
+    /**
+     * @deprecated 
+     */
+    private void reorderListAtCollision(int count, int index) {
+            var $60 = new ArrayList<>(this.toMove.subList(0, index));
+            var $61 = new ArrayList<>(this.toMove.subList(this.toMove.size() - count, this.toMove.size()));
+            var $62 = new ArrayList<>(this.toMove.subList(index, this.toMove.size() - count));
             this.toMove.clear();
             this.toMove.addAll(list);
             this.toMove.addAll(list1);
             this.toMove.addAll(list2);
         }
 
-        protected boolean addBranchingBlocks(Block block) {
+        
+    /**
+     * @deprecated 
+     */
+    protected boolean addBranchingBlocks(Block block) {
             for (BlockFace face : BlockFace.values()) {
                 if (face.getAxis() != this.moveDirection.getAxis() && !this.addBlockLine(block.getSide(face), block, false))
                     return false;

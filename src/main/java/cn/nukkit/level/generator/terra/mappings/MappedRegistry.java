@@ -38,7 +38,7 @@ public interface MappedRegistry<KEY, VALUE, MAPPING extends Map<KEY, VALUE>> ext
      * @return the mapped value from the given key if present
      */
     default <U> Optional<U> map(KEY key, Function<? super VALUE, ? extends U> mapper) {
-        VALUE value = this.get(key);
+        VALUE $1 = this.get(key);
         if (value == null) {
             return Optional.empty();
         } else {

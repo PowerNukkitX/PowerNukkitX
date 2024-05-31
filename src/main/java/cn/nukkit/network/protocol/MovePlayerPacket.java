@@ -14,12 +14,12 @@ import lombok.ToString;
 @AllArgsConstructor
 public class MovePlayerPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.MOVE_PLAYER_PACKET;
+    public static final int $1 = ProtocolInfo.MOVE_PLAYER_PACKET;
 
-    public static final int MODE_NORMAL = 0;
-    public static final int MODE_RESET = 1;//MODE_RESPAWN
-    public static final int MODE_TELEPORT = 2;
-    public static final int MODE_PITCH = 3; //facepalm Mojang MODE_HEAD_ROTATION
+    public static final int $2 = 0;
+    public static final int $3 = 1;//MODE_RESPAWN
+    public static final int $4 = 2;
+    public static final int $5 = 3; //facepalm Mojang MODE_HEAD_ROTATION
 
     public long eid;
     public float x;
@@ -28,18 +28,22 @@ public class MovePlayerPacket extends DataPacket {
     public float yaw;
     public float headYaw;
     public float pitch;
-    public int mode = MODE_NORMAL;
+    public int $6 = MODE_NORMAL;
     public boolean onGround;
     public long ridingEid;
-    public int int1 = 0;//teleportationCause
-    public int int2 = 0;//entityType
+    public int $7 = 0;//teleportationCause
+    public int $8 = 0;//entityType
 
     public long frame;//tick
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.eid = byteBuf.readEntityRuntimeId();
-        Vector3f v = byteBuf.readVector3f();
+        Vector3f $9 = byteBuf.readVector3f();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
@@ -57,6 +61,10 @@ public class MovePlayerPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeEntityRuntimeId(this.eid);
@@ -75,9 +83,17 @@ public class MovePlayerPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

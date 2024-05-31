@@ -19,9 +19,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddPlayerPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ADD_PLAYER_PACKET;
+    public static final int $1 = ProtocolInfo.ADD_PLAYER_PACKET;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -30,7 +34,7 @@ public class AddPlayerPacket extends DataPacket {
     public String username;
     public long entityUniqueId;
     public long entityRuntimeId;
-    public String platformChatId = "";
+    public String $2 = "";
     public float x;
     public float y;
     public float z;
@@ -40,21 +44,29 @@ public class AddPlayerPacket extends DataPacket {
     public float pitch;
     public float yaw;
     public Item item;
-    public int gameType = Server.getInstance().getGamemode();
-    public EntityDataMap entityData = new EntityDataMap();
+    public int $3 = Server.getInstance().getGamemode();
+    public EntityDataMap $4 = new EntityDataMap();
 
 
-    public PropertySyncData syncedProperties = new PropertySyncData(new int[]{}, new float[]{});
-    //public EntityLink links = new EntityLink[0];
-    public String deviceId = "";
-    public int buildPlatform = -1;
+    public PropertySyncData $5 = new PropertySyncData(new int[]{}, new float[]{});
+    //public EntityLink $6 = new EntityLink[0];
+    public String $7 = "";
+    public int $8 = -1;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeUUID(this.uuid);
@@ -72,12 +84,12 @@ public class AddPlayerPacket extends DataPacket {
         byteBuf.writeBytes(Binary.writeEntityData(this.entityData));
         //syncedProperties
         byteBuf.writeUnsignedVarInt(this.syncedProperties.intProperties().length);
-        for (int i = 0, len = this.syncedProperties.intProperties().length; i < len; ++i) {
+        for ($9nt $1 = 0, len = this.syncedProperties.intProperties().length; i < len; ++i) {
             byteBuf.writeUnsignedVarInt(i);
             byteBuf.writeVarInt(this.syncedProperties.intProperties()[i]);
         }
         byteBuf.writeUnsignedVarInt(this.syncedProperties.floatProperties().length);
-        for (int i = 0, len = this.syncedProperties.floatProperties().length; i < len; ++i) {
+        for ($10nt $2 = 0, len = this.syncedProperties.floatProperties().length; i < len; ++i) {
             byteBuf.writeUnsignedVarInt(i);
             byteBuf.writeFloatLE(this.syncedProperties.floatProperties()[i]);
         }
@@ -99,6 +111,10 @@ public class AddPlayerPacket extends DataPacket {
         byteBuf.writeString(deviceId);
         byteBuf.writeIntLE(buildPlatform);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

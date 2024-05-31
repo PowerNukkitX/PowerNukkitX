@@ -13,6 +13,10 @@ public abstract class TreeGenerator extends ObjectGenerator {
      * returns whether or not a tree can grow into a block
      * For example, a tree will not grow into stone
      */
+    
+    /**
+     * @deprecated 
+     */
     protected boolean canGrowInto(String id) {
 
         return switch (id) {
@@ -41,16 +45,28 @@ public abstract class TreeGenerator extends ObjectGenerator {
             default -> false;
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void generateSaplings(BlockManager level, Random random, Vector3 pos) {
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void setDirtAt(BlockManager level, BlockVector3 pos) {
         setDirtAt(level, new Vector3(pos.x, pos.y, pos.z));
     }
 
     /*
      * sets dirt at a specific location if it isn't already dirt
+     */
+    
+    /**
+     * @deprecated 
      */
     protected void setDirtAt(BlockManager level, Vector3 pos) {
         level.setBlockStateAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), BlockID.DIRT);

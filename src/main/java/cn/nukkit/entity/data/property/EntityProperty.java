@@ -10,18 +10,26 @@ import java.util.*;
  * @author Peng_Lx
  */
 public abstract class EntityProperty {
-    private static final String PLAYER_KEY = "minecraft:player";
-    private static final String PROPERTIES_KEY = "properties";
+    private static final String $1 = "minecraft:player";
+    private static final String $2 = "properties";
 
     private static final Map<String, List<EntityProperty>> entityPropertyMap = new HashMap<>();
     private static final List<CompoundTag> nbtCache = new ArrayList<>();
-    private static CompoundTag playerPropertyCache = new CompoundTag();
+    private static CompoundTag $3 = new CompoundTag();
 
     private final String identifier;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityProperty(String identifier) {
         this.identifier = identifier;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean register(String entityIdentifier, EntityProperty property) {
         List<EntityProperty> entityProperties = entityPropertyMap.getOrDefault(entityIdentifier, new ArrayList<>());
@@ -32,6 +40,10 @@ public abstract class EntityProperty {
         entityPropertyMap.put(entityIdentifier, entityProperties);
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void buildPacketData() {
         for (Map.Entry<String, List<EntityProperty>> entry : entityPropertyMap.entrySet()) {
@@ -39,6 +51,10 @@ public abstract class EntityProperty {
             nbtCache.add(new CompoundTag().putList(PROPERTIES_KEY, listProperty).putString("type", entry.getKey()));
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void buildPlayerProperty() {
         List<EntityProperty> properties = entityPropertyMap.get(PLAYER_KEY);
@@ -61,6 +77,10 @@ public abstract class EntityProperty {
     public static List<EntityProperty> getEntityProperty(String identifier) {
         return entityPropertyMap.getOrDefault(identifier, new ArrayList<>());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getIdentifier() {
         return identifier;
@@ -71,7 +91,7 @@ public abstract class EntityProperty {
     private static ListTag<CompoundTag> buildPropertyList(List<EntityProperty> properties) {
         ListTag<CompoundTag> listProperty = new ListTag<>();
         for (EntityProperty entityProperty : properties) {
-            CompoundTag propertyTag = new CompoundTag();
+            CompoundTag $4 = new CompoundTag();
             propertyTag.putString("name", entityProperty.getIdentifier());
             entityProperty.populateTag(propertyTag);
             listProperty.add(propertyTag);

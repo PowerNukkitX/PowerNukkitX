@@ -15,15 +15,27 @@ public class TranslationContainer extends TextContainer {
      * Insert the argument of each index of the params into the corresponding placeholder {@code {%0,%1,%2...}
      */
     protected String[] params;
+    /**
+     * @deprecated 
+     */
+    
 
     public TranslationContainer(String text) {
         this(text, new String[]{});
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public TranslationContainer(String text, String params) {
         super(text);
         this.setParameters(new String[]{params});
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public TranslationContainer(String text, String... params) {
         super(text);
@@ -33,14 +45,26 @@ public class TranslationContainer extends TextContainer {
     public String[] getParameters() {
         return params;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setParameters(String[] params) {
         this.params = params;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getParameter(int i) {
         return (i >= 0 && i < this.params.length) ? this.params[i] : null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setParameter(int i, String str) {
         if (i >= 0 && i < this.params.length) {

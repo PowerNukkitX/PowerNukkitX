@@ -12,7 +12,11 @@ import cn.nukkit.level.Level;
  * @author MagicDroidX (Nukkit Project)
  */
 public interface EntitySmite {
-    default void burn(Entity entity) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void burn(Entity entity) {
         if (entity.getLevel().getDimension() == Level.DIMENSION_OVERWORLD && entity.getLevel().isDaytime() && !entity.getLevel().isRaining()
                 && (!entity.hasEffect(EffectType.FIRE_RESISTANCE) || (entity instanceof EntityInventoryHolder entityInventoryHolder && entityInventoryHolder.getHelmet().isNull()))
                 && !entity.isInsideOfWater() && !entity.isUnderBlock() && !entity.isOnFire()) {

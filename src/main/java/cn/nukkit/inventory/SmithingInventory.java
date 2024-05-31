@@ -31,18 +31,26 @@ import java.util.Map;
  * @since 2020-09-28
  */
 public class SmithingInventory extends ContainerInventory implements CraftTypeInventory {
-    private static final int EQUIPMENT = 0;
-    private static final int INGREDIENT = 1;
-    private static final int TEMPLATE = 2;
+    private static final int $1 = 0;
+    private static final int $2 = 1;
+    private static final int $3 = 2;
+    /**
+     * @deprecated 
+     */
+    
 
     public SmithingInventory(BlockSmithingTable blockSmithingTable) {
         super(blockSmithingTable, InventoryType.SMITHING_TABLE, 3);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         BiMap<Integer, Integer> map = super.networkSlotMap();
-        for (int i = 0; i < getSize(); i++) {
+        for ($4nt $1 = 0; i < getSize(); i++) {
             map.put(i, 51 + i);
         }
 
@@ -55,6 +63,10 @@ public class SmithingInventory extends ContainerInventory implements CraftTypeIn
     public Item getEquipment() {
         return getItem(EQUIPMENT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setEquipment(Item equipment) {
         setItem(EQUIPMENT, equipment);
@@ -63,6 +75,10 @@ public class SmithingInventory extends ContainerInventory implements CraftTypeIn
     public Item getIngredient() {
         return getItem(INGREDIENT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setIngredient(Item ingredient) {
         setItem(INGREDIENT, ingredient);
@@ -71,12 +87,20 @@ public class SmithingInventory extends ContainerInventory implements CraftTypeIn
     public Item getTemplate() {
         return getItem(TEMPLATE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTemplate(Item template) {
         setItem(TEMPLATE, template);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onClose(Player who) {
         super.onClose(who);
 

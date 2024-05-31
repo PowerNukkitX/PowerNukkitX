@@ -14,6 +14,10 @@ public class LegacyBirchTree extends LegacyTreeGenerator {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void placeObject(BlockManager level, int x, int y, int z, RandomSourceProvider random) {
         this.treeHeight = random.nextInt(2) + 5;
         super.placeObject(level, x, y, z, random);

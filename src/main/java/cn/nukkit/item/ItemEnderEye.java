@@ -1,14 +1,26 @@
 package cn.nukkit.item;
 
 public class ItemEnderEye extends Item {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemEnderEye() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemEnderEye(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemEnderEye(Integer meta, int count) {
         super(ENDER_EYE, meta, count, "Ender Eye");

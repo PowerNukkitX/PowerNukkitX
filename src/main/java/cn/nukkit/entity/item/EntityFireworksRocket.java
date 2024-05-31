@@ -29,6 +29,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityFireworksRocket extends Entity {
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return FIREWORKS_ROCKET;
     }
@@ -37,13 +41,17 @@ public class EntityFireworksRocket extends Entity {
     private int fireworkAge;
     private Item firework;
     private boolean hadCollision;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public EntityFireworksRocket(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
         this.fireworkAge = 0;
-        Random rand = ThreadLocalRandom.current();
+        Random $1 = ThreadLocalRandom.current();
         this.lifetime = 30 + rand.nextInt(12);
 
         this.motionX = rand.nextGaussian() * 0.001D;
@@ -57,12 +65,12 @@ public class EntityFireworksRocket extends Entity {
         }
 
         if (!firework.hasCompoundTag() || !firework.getNamedTag().contains("Fireworks")) {
-            CompoundTag tag = firework.getNamedTag();
+            CompoundTag $2 = firework.getNamedTag();
             if (tag == null) {
                 tag = new CompoundTag();
             }
 
-            CompoundTag ex = new CompoundTag()
+            CompoundTag $3 = new CompoundTag()
                     .putByteArray("FireworkColor", new byte[]{(byte) DyeColor.BLACK.getDyeData()})
                     .putByteArray("FireworkFade", new byte[]{})
                     .putBoolean("FireworkFlicker", false)
@@ -84,12 +92,16 @@ public class EntityFireworksRocket extends Entity {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
         }
 
-        int tickDiff = currentTick - this.lastUpdate;
+        int $4 = currentTick - this.lastUpdate;
 
         if (tickDiff <= 0 && !this.justCreated) {
             return true;
@@ -97,15 +109,15 @@ public class EntityFireworksRocket extends Entity {
 
         this.lastUpdate = currentTick;
 
-        boolean hasUpdate = this.entityBaseTick(tickDiff);
+        boolean $5 = this.entityBaseTick(tickDiff);
 
         if (this.isAlive()) {
 
             this.motionX *= 1.15D;
             this.motionZ *= 1.15D;
             this.motionY += 0.04D;
-            Position position = getPosition();
-            Vector3 motion = getMotion();
+            Position $6 = getPosition();
+            Vector3 $7 = getMotion();
             this.move(this.motionX, this.motionY, this.motionZ);
 
             if (this.isCollided && !this.hadCollision) { //collide with block
@@ -122,7 +134,7 @@ public class EntityFireworksRocket extends Entity {
             this.updateMovement();
 
 
-            float f = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+            $8loat $1 = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
             this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
 
             this.pitch = (float) (Math.atan2(this.motionY, f) * (180D / Math.PI));
@@ -136,7 +148,7 @@ public class EntityFireworksRocket extends Entity {
 
             hasUpdate = true;
             if (this.fireworkAge >= this.lifetime) {
-                EntityEventPacket pk = new EntityEventPacket();
+                EntityEventPacket $9 = new EntityEventPacket();
                 pk.data = 0;
                 pk.event = EntityEventPacket.FIREWORK_EXPLOSION;
                 pk.eid = this.getId();
@@ -154,6 +166,10 @@ public class EntityFireworksRocket extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         return (source.getCause() == DamageCause.VOID ||
                 source.getCause() == DamageCause.FIRE_TICK ||
@@ -161,6 +177,10 @@ public class EntityFireworksRocket extends Entity {
                 source.getCause() == DamageCause.BLOCK_EXPLOSION)
                 && super.attack(source);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFirework(Item item) {
         this.firework = item;
@@ -168,16 +188,28 @@ public class EntityFireworksRocket extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Firework Rocket";
     }

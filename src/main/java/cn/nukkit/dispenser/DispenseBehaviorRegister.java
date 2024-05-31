@@ -15,7 +15,11 @@ import java.util.Map;
 public final class DispenseBehaviorRegister {
 
     private static final Map<String, DispenseBehavior> behaviors = new HashMap<>();
-    private static final DispenseBehavior defaultBehavior = new DefaultDispenseBehavior();
+    private static final DispenseBehavior $1 = new DefaultDispenseBehavior();
+    /**
+     * @deprecated 
+     */
+    
 
     public static void registerBehavior(String itemIdentifier, DispenseBehavior behavior) {
         behaviors.put(itemIdentifier, behavior);
@@ -24,10 +28,18 @@ public final class DispenseBehaviorRegister {
     public static DispenseBehavior getBehavior(String identifier) {
         return behaviors.getOrDefault(identifier, defaultBehavior);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void removeDispenseBehavior(String identifier) {
         behaviors.remove(identifier);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void init() {
         registerBehavior(ItemID.SHEARS, new ShearsDispenseBehavior());
@@ -68,7 +80,11 @@ public final class DispenseBehaviorRegister {
         registerBehavior(BlockID.TNT, new TNTDispenseBehavior());
         registerBehavior(ItemID.ARROW, new ProjectileDispenseBehavior("Arrow") {
             @Override
-            protected double getMotion() {
+            
+    /**
+     * @deprecated 
+     */
+    protected double getMotion() {
                 return super.getMotion() * 1.5;
             }
         });
@@ -78,7 +94,11 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.SNOWBALL, new ProjectileDispenseBehavior("Snowball"));
         registerBehavior(ItemID.FIRE_CHARGE, new ProjectileDispenseBehavior("Small FireBall") {
             @Override
-            protected float getAccuracy() {
+            
+    /**
+     * @deprecated 
+     */
+    protected float getAccuracy() {
                 return 0;
             }
 
@@ -98,35 +118,59 @@ public final class DispenseBehaviorRegister {
         });
         registerBehavior(ItemID.EXPERIENCE_BOTTLE, new ProjectileDispenseBehavior("ThrownExpBottle") {
             @Override
-            protected float getAccuracy() {
+            
+    /**
+     * @deprecated 
+     */
+    protected float getAccuracy() {
                 return super.getAccuracy() * 0.5f;
             }
 
             @Override
-            protected double getMotion() {
+            
+    /**
+     * @deprecated 
+     */
+    protected double getMotion() {
                 return super.getMotion() * 1.25;
             }
         });
         registerBehavior(ItemID.SPLASH_POTION, new ProjectileDispenseBehavior("ThrownPotion") {
             @Override
-            protected float getAccuracy() {
+            
+    /**
+     * @deprecated 
+     */
+    protected float getAccuracy() {
                 return super.getAccuracy() * 0.5f;
             }
 
             @Override
-            protected double getMotion() {
+            
+    /**
+     * @deprecated 
+     */
+    protected double getMotion() {
                 return super.getMotion() * 1.25;
             }
         });
 //        registerBehavior(ItemID.LINGERING_POTION, new ProjectileDispenseBehavior("LingeringPotion")); //TODO
         registerBehavior(ItemID.TRIDENT, new ProjectileDispenseBehavior("ThrownTrident") {
             @Override
-            protected float getAccuracy() {
+            
+    /**
+     * @deprecated 
+     */
+    protected float getAccuracy() {
                 return super.getAccuracy() * 0.5f;
             }
 
             @Override
-            protected double getMotion() {
+            
+    /**
+     * @deprecated 
+     */
+    protected double getMotion() {
                 return super.getMotion() * 1.25;
             }
 

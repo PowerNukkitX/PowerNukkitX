@@ -16,40 +16,40 @@ import static cn.nukkit.utils.Utils.dynamic;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class ItemTool extends Item implements ItemDurable {
-    public static final int TIER_WOODEN = 1;
-    public static final int TIER_GOLD = 2;
-    public static final int TIER_STONE = 3;
-    public static final int TIER_IRON = 4;
-    public static final int TIER_DIAMOND = 5;
-    public static final int TIER_NETHERITE = 6;
+    public static final int $1 = 1;
+    public static final int $2 = 2;
+    public static final int $3 = 3;
+    public static final int $4 = 4;
+    public static final int $5 = 5;
+    public static final int $6 = 6;
 
-    public static final int TYPE_NONE = 0;
-    public static final int TYPE_SWORD = 1;
-    public static final int TYPE_SHOVEL = 2;
-    public static final int TYPE_PICKAXE = 3;
-    public static final int TYPE_AXE = 4;
-    public static final int TYPE_SHEARS = 5;
-    public static final int TYPE_HOE = 6;
+    public static final int $7 = 0;
+    public static final int $8 = 1;
+    public static final int $9 = 2;
+    public static final int $10 = 3;
+    public static final int $11 = 4;
+    public static final int $12 = 5;
+    public static final int $13 = 6;
     /**
      * Same breaking speed independent of the tool.
      */
-    public static final int TYPE_HANDS_ONLY = dynamic(Integer.MAX_VALUE);
+    public static final int $14 = dynamic(Integer.MAX_VALUE);
 
-    public static final int DURABILITY_WOODEN = dynamic(60);
-    public static final int DURABILITY_GOLD = dynamic(33);
-    public static final int DURABILITY_STONE = dynamic(132);
-    public static final int DURABILITY_IRON = dynamic(251);
-    public static final int DURABILITY_DIAMOND = dynamic(1562);
-    public static final int DURABILITY_NETHERITE = dynamic(2032);
-    public static final int DURABILITY_FLINT_STEEL = dynamic(65);
-    public static final int DURABILITY_SHEARS = dynamic(239);
-    public static final int DURABILITY_BOW = dynamic(385);
-    public static final int DURABILITY_TRIDENT = dynamic(251);
-    public static final int DURABILITY_FISHING_ROD = dynamic(384);
-    public static final int DURABILITY_CROSSBOW = dynamic(464);
-    public static final int DURABILITY_CARROT_ON_A_STICK = dynamic(26);
-    public static final int DURABILITY_WARPED_FUNGUS_ON_A_STICK = dynamic(101);
-    public static final int DURABILITY_SHIELD = dynamic(337);
+    public static final int $15 = dynamic(60);
+    public static final int $16 = dynamic(33);
+    public static final int $17 = dynamic(132);
+    public static final int $18 = dynamic(251);
+    public static final int $19 = dynamic(1562);
+    public static final int $20 = dynamic(2032);
+    public static final int $21 = dynamic(65);
+    public static final int $22 = dynamic(239);
+    public static final int $23 = dynamic(385);
+    public static final int $24 = dynamic(251);
+    public static final int $25 = dynamic(384);
+    public static final int $26 = dynamic(464);
+    public static final int $27 = dynamic(26);
+    public static final int $28 = dynamic(101);
+    public static final int $29 = dynamic(337);
 
     @NotNull
     public static Item getBestTool(int toolType) {
@@ -81,29 +81,53 @@ public abstract class ItemTool extends Item implements ItemDurable {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemTool(String id) {
         this(id, 0, 1, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemTool(String id, Integer meta) {
         this(id, meta, 1, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemTool(String id, Integer meta, int count) {
         this(id, meta, count, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemTool(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxStackSize() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean useOn(Block block) {
         if (this.isUnbreakable() || isDurable() || noDamageOnBreak()) {
             return true;
@@ -130,18 +154,30 @@ public abstract class ItemTool extends Item implements ItemDurable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDamage(int damage) {
         super.setDamage(damage);
         if (damage != 0) {
             this.getOrCreateNamedTag().putInt("Damage", damage);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void incDamage(int v) {
         setDamage(this.meta += v);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean useOn(Entity entity) {
         if (this.isUnbreakable() || isDurable() || noDamageOnAttack()) {
             return true;
@@ -156,59 +192,99 @@ public abstract class ItemTool extends Item implements ItemDurable {
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isDurable() {
         if (!hasEnchantments()) {
             return false;
         }
 
-        Enchantment durability = getEnchantment(Enchantment.ID_DURABILITY);
+        Enchantment $30 = getEnchantment(Enchantment.ID_DURABILITY);
         return durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= new Random().nextInt(100);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isUnbreakable() {
-        Tag tag = this.getNamedTagEntry("Unbreakable");
+        Tag $31 = this.getNamedTagEntry("Unbreakable");
         return tag instanceof ByteTag && ((ByteTag) tag).data > 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPickaxe() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isAxe() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSword() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isShovel() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isHoe() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isShears() {
         return (Objects.equals(this.id, SHEARS));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isTool() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getEnchantAbility() {
-        int tier = this.getTier();
+        int $32 = this.getTier();
         switch (tier) {
             case TIER_STONE -> {
                 return 5;
@@ -236,6 +312,10 @@ public abstract class ItemTool extends Item implements ItemDurable {
      *
      * @return whether the item should take damage when used to attack entities
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean noDamageOnAttack() {
         return false;
     }
@@ -245,6 +325,10 @@ public abstract class ItemTool extends Item implements ItemDurable {
      *
      * @return whether the item should take damage when used to break blocks
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean noDamageOnBreak() {
         return false;
     }

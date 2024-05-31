@@ -20,6 +20,10 @@ public abstract class GenerateStage {
         return next;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void next(GenerateStage stage) {
         if (this.next == null) {
             this.next = stage;//next -> null
@@ -29,6 +33,10 @@ public abstract class GenerateStage {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return name();
     }

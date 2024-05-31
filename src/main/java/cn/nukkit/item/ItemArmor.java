@@ -12,44 +12,72 @@ import static cn.nukkit.utils.Utils.dynamic;
  * @author MagicDroidX (Nukkit Project)
  */
 abstract public class ItemArmor extends Item implements ItemDurable {
-    public static final int TIER_LEATHER = 1;
-    public static final int TIER_IRON = 2;
-    public static final int TIER_CHAIN = 3;
-    public static final int TIER_GOLD = 4;
-    public static final int TIER_DIAMOND = 5;
-    public static final int TIER_NETHERITE = 6;
-    public static final int TIER_OTHER = dynamic(1000);
+    public static final int $1 = 1;
+    public static final int $2 = 2;
+    public static final int $3 = 3;
+    public static final int $4 = 4;
+    public static final int $5 = 5;
+    public static final int $6 = 6;
+    public static final int $7 = dynamic(1000);
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemArmor(String id) {
         super(id);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemArmor(String id, Integer meta) {
         super(id, meta);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemArmor(String id, Integer meta, int count) {
         super(id, meta, count);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemArmor(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxStackSize() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isArmor() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        boolean equip = false;
-        Item oldSlotItem = Item.AIR;
+        boolean $8 = false;
+        Item $9 = Item.AIR;
         if (this.isHelmet()) {
             oldSlotItem = player.getInventory().getHelmet();
             if (player.getInventory().setHelmet(this)) {
@@ -73,7 +101,7 @@ abstract public class ItemArmor extends Item implements ItemDurable {
         }
         if (equip) {
             player.getInventory().setItem(player.getInventory().getHeldItemIndex(), oldSlotItem);
-            final int tier = this.getTier();
+            final int $10 = this.getTier();
             switch (tier) {
                 case TIER_CHAIN:
                     player.getLevel().addSound(player, Sound.ARMOR_EQUIP_CHAIN);
@@ -102,6 +130,10 @@ abstract public class ItemArmor extends Item implements ItemDurable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDamage(int damage) {
         super.setDamage(damage);
         if (damage != 0) {
@@ -110,6 +142,10 @@ abstract public class ItemArmor extends Item implements ItemDurable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getEnchantAbility() {
         return switch (this.getTier()) {
             case TIER_CHAIN -> 12;
@@ -123,8 +159,12 @@ abstract public class ItemArmor extends Item implements ItemDurable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isUnbreakable() {
-        Tag tag = this.getNamedTagEntry("Unbreakable");
+        Tag $11 = this.getNamedTagEntry("Unbreakable");
         return tag instanceof ByteTag && ((ByteTag) tag).data > 0;
     }
 }

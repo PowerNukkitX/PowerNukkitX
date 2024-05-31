@@ -11,6 +11,10 @@ public class FormResponseCustom extends FormResponse {
     private final HashMap<Integer, FormResponseData> stepSliderResponses;
     private final HashMap<Integer, Boolean> toggleResponses;
     private final HashMap<Integer, String> labelResponses;
+    /**
+     * @deprecated 
+     */
+    
 
     public FormResponseCustom(HashMap<Integer, Object> responses, HashMap<Integer, FormResponseData> dropdownResponses,
                               HashMap<Integer, String> inputResponses, HashMap<Integer, Float> sliderResponses,
@@ -37,10 +41,18 @@ public class FormResponseCustom extends FormResponse {
     public FormResponseData getDropdownResponse(int id) {
         return dropdownResponses.get(id);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getInputResponse(int id) {
         return inputResponses.get(id);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getSliderResponse(int id) {
         return sliderResponses.get(id);
@@ -49,10 +61,18 @@ public class FormResponseCustom extends FormResponse {
     public FormResponseData getStepSliderResponse(int id) {
         return stepSliderResponses.get(id);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getToggleResponse(int id) {
         return toggleResponses.get(id);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getLabelResponse(int id) {
         return labelResponses.get(id);

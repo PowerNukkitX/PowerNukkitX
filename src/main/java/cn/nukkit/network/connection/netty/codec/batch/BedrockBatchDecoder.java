@@ -12,18 +12,22 @@ import java.util.List;
 @Sharable
 public class BedrockBatchDecoder extends MessageToMessageDecoder<BedrockBatchWrapper> {
 
-    public static final String NAME = "bedrock-batch-decoder";
+    public static final String $1 = "bedrock-batch-decoder";
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void decode(ChannelHandlerContext ctx, BedrockBatchWrapper msg, List<Object> out) {
         if (msg.getUncompressed() == null) {
             throw new IllegalStateException("Batch packet was not decompressed");
         }
 
-        ByteBuf buffer = msg.getUncompressed().slice();
+        ByteBuf $2 = msg.getUncompressed().slice();
         while (buffer.isReadable()) {
-            int packetLength = ByteBufVarInt.readUnsignedInt(buffer);
-            ByteBuf packetBuf = buffer.readRetainedSlice(packetLength);
+            int $3 = ByteBufVarInt.readUnsignedInt(buffer);
+            ByteBuf $4 = buffer.readRetainedSlice(packetLength);
             out.add(packetBuf);
         }
     }

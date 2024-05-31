@@ -21,6 +21,10 @@ import java.util.Set;
 
 
 public abstract class EntityFish extends EntityAnimal implements EntitySwimmable {
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityFish(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

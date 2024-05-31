@@ -20,18 +20,34 @@ public class Behavior extends AbstractBehavior {
     protected final int period;
     protected IBehaviorExecutor executor;
     protected IBehaviorEvaluator evaluator;
+    /**
+     * @deprecated 
+     */
+    
 
     public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator) {
         this(executor, evaluator, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator, int priority) {
         this(executor, evaluator, priority, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator, int priority, int weight) {
         this(executor, evaluator, priority, weight, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator, int priority, int weight, int period) {
         this.executor = executor;
@@ -42,31 +58,55 @@ public class Behavior extends AbstractBehavior {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean evaluate(EntityIntelligent entity) {
         return evaluator.evaluate(entity);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
         return executor.execute(entity);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStart(EntityIntelligent entity) {
         executor.onStart(entity);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         executor.onInterrupt(entity);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         executor.onStop(entity);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "[" + priority + "] " + executor.getClass().getSimpleName() + " | " + evaluator.getClass().getSimpleName();
     }

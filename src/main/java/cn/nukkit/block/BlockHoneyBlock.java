@@ -15,56 +15,84 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 
 public class BlockHoneyBlock extends BlockSolid {
-    private static final Random RANDOM = new Random();
+    private static final Random $1 = new Random();
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(HONEY_BLOCK);
+    public static final BlockProperties $2 = new BlockProperties(HONEY_BLOCK);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockHoneyBlock() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockHoneyBlock(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Honey Block";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         if (!entity.onGround && entity.motionY <= 0.08 &&
                 (!(entity instanceof Player)
                         || !((Player) entity).getAdventureSettings().get(AdventureSettings.Type.FLYING))) {
-            double ex = Math.abs(x + 0.5D - entity.x);
-            double ez = Math.abs(z + 0.5D - entity.z);
-            double width = 0.4375D + (double)(entity.getWidth() / 2.0F);
+            double $3 = Math.abs(x + 0.5D - entity.x);
+            double $4 = Math.abs(z + 0.5D - entity.z);
+            double $5 = 0.4375D + (double)(entity.getWidth() / 2.0F);
             if (ex + 1.0E-3D > width || ez + 1.0E-3D > width) {
-                Vector3 motion = entity.getMotion();
+                Vector3 $6 = entity.getMotion();
                 motion.y = -0.05;
                 if (entity.motionY < -0.13) {
-                    double m = -0.05 / entity.motionY;
+                    double $7 = -0.05 / entity.motionY;
                     motion.x *= m;
                     motion.z *= m;
                 }
@@ -87,39 +115,67 @@ public class BlockHoneyBlock extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         return x + 0.1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         return x + 0.9;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         return z + 0.1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         return z + 0.9;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightFilter() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean useDefaultFallDamage() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityFallOn(Entity entity, float fallDistance) {
-        int jumpBoost = entity.hasEffect(EffectType.JUMP_BOOST)? Effect.get(EffectType.JUMP_BOOST).getLevel() : 0;
-        float damage = (float) Math.floor(fallDistance - 3 - jumpBoost);
+        int $8 = entity.hasEffect(EffectType.JUMP_BOOST)? Effect.get(EffectType.JUMP_BOOST).getLevel() : 0;
+        float $9 = (float) Math.floor(fallDistance - 3 - jumpBoost);
 
         damage *= 0.2F;
 
@@ -129,6 +185,10 @@ public class BlockHoneyBlock extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSticksBlock() {
         return true;
     }

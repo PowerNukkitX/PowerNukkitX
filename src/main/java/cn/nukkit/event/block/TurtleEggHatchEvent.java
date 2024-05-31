@@ -9,7 +9,7 @@ import cn.nukkit.event.HandlerList;
 
 public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -17,18 +17,26 @@ public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
 
     private int eggsHatching;
     private Block newState;
-    private boolean recalculateOnFailure = true;
+    private boolean $2 = true;
+    /**
+     * @deprecated 
+     */
+    
 
     public TurtleEggHatchEvent(BlockTurtleEgg turtleEgg, int eggsHatching, Block newState) {
         super(turtleEgg);
         this.eggsHatching = eggsHatching;
         this.newState = newState;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void recalculateNewState() {
-        BlockTurtleEgg turtleEgg = getBlock();
-        int eggCount = turtleEgg.getEggCount().ordinal() + 1;
-        int eggsHatching = this.eggsHatching;
+        BlockTurtleEgg $3 = getBlock();
+        int $4 = turtleEgg.getEggCount().ordinal() + 1;
+        int $5 = this.eggsHatching;
         if (eggCount <= eggsHatching) {
             newState = new BlockAir();
         } else {
@@ -41,6 +49,10 @@ public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
     public Block getNewState() {
         return newState;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setNewState(Block newState) {
         this.newState = newState;
@@ -50,18 +62,34 @@ public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
     public BlockTurtleEgg getBlock() {
         return (BlockTurtleEgg) super.getBlock();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getEggsHatching() {
         return eggsHatching;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setEggsHatching(int eggsHatching) {
         this.eggsHatching = eggsHatching;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isRecalculateOnFailure() {
         return recalculateOnFailure;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRecalculateOnFailure(boolean recalculateOnFailure) {
         this.recalculateOnFailure = recalculateOnFailure;

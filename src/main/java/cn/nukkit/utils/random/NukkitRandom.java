@@ -12,12 +12,20 @@ import org.apache.commons.rng.simple.RandomSource;
 public class NukkitRandom implements RandomSourceProvider {
     final RestorableUniformRandomProvider provider;
     final ContinuousSampler sampler;
+    /**
+     * @deprecated 
+     */
+    
 
     public NukkitRandom() {
         provider = RandomSource.MT.create();
         sampler = GaussianSampler.of(ZigguratSampler.NormalizedGaussian.of(RandomSource.ISAAC.create()),
                 0, 0.33333);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public NukkitRandom(long seeds) {
         provider = RandomSource.MT.create(seeds);
@@ -31,48 +39,88 @@ public class NukkitRandom implements RandomSourceProvider {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int nextInt(int min, int max) {
         return provider.nextInt(min, max + 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int nextRange(int min, int max) {
         return provider.nextInt(min, max + 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int nextBoundedInt(int bound) {
         return nextInt(bound);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int nextInt(int max) {
         return provider.nextInt(max + 1);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int nextInt() {
         return provider.nextInt();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long nextLong() {
         return provider.nextLong();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double nextDouble() {
         return provider.nextDouble();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double nextGaussian() {
-        double sample = sampler.sample();
+        double $1 = sampler.sample();
         return Math.min(1, Math.max(sample, -1));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float nextFloat() {
         return provider.nextFloat();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean nextBoolean() {
         return provider.nextBoolean();

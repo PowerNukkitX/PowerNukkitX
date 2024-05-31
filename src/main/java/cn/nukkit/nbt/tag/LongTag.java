@@ -7,8 +7,16 @@ import java.io.IOException;
 
 public class LongTag extends NumberTag<Long> {
     public long data;
+    /**
+     * @deprecated 
+     */
+    
     public LongTag() {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public LongTag(long data) {
         this.data = data;
@@ -20,6 +28,10 @@ public class LongTag extends NumberTag<Long> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setData(Long data) {
         this.data = data == null ? 0 : data;
     }
@@ -30,21 +42,37 @@ public class LongTag extends NumberTag<Long> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte getId() {
         return TAG_Long;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "LongTag " +  " (data:" + data + ")";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT() {
         return data + "L";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT(int space) {
         return data + "L";
     }
@@ -55,10 +83,14 @@ public class LongTag extends NumberTag<Long> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (super.equals(obj)) {
-            LongTag o = (LongTag) obj;
-            return data == o.data;
+            L$1ngTag $1 = (LongTag) obj;
+            return $2 == o.data;
         }
         return false;
     }

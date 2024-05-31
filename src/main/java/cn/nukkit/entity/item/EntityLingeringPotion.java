@@ -17,30 +17,50 @@ import java.util.List;
 public class EntityLingeringPotion extends EntitySplashPotion {
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return LINGERING_POTION;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityLingeringPotion(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityLingeringPotion(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.initEntity();
         setDataFlag(EntityFlag.LINGERING, true);
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void splash(Entity collidedWith) {
         super.splash(collidedWith);
         saveNBT();
         ListTag<?> pos = (ListTag<?>) namedTag.getList("Pos", CompoundTag.class).copy();
-        EntityAreaEffectCloud entity = (EntityAreaEffectCloud) Entity.createEntity(Entity.AREA_EFFECT_CLOUD, getChunk(),
+        EntityAreaEffectCloud $1 = (EntityAreaEffectCloud) Entity.createEntity(Entity.AREA_EFFECT_CLOUD, getChunk(),
                 new CompoundTag().putList("Pos", pos)
                         .putList("Rotation", new ListTag<>()
                                 .add(new FloatTag(0))
@@ -64,6 +84,10 @@ public class EntityLingeringPotion extends EntitySplashPotion {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Lingering Potion";
     }

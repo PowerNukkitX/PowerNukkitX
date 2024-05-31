@@ -30,9 +30,17 @@ import java.util.Set;
  */
 public class EntityChicken extends EntityAnimal implements EntityWalkable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return CHICKEN;
     }
+    /**
+     * @deprecated 
+     */
+    
     
 
     public EntityChicken(IChunk chunk, CompoundTag nbt) {
@@ -40,6 +48,10 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void updateMovement() {
         //补充鸡的缓慢无伤落地特性
         if (!this.onGround && this.motionY < -0.08f) {
@@ -101,6 +113,10 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.3f;
@@ -109,6 +125,10 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.isBaby()) {
             return 0.4f;
@@ -117,6 +137,10 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Chicken";
     }
@@ -129,15 +153,23 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
     
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(4);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBreedingItem(Item item) {
-        String id = item.getId();
+        String $1 = item.getId();
 
-        return id == Item.WHEAT_SEEDS || id == Item.MELON_SEEDS || id == Item.PUMPKIN_SEEDS || id == Item.BEETROOT_SEEDS;
+        return $2 == Item.WHEAT_SEEDS || id == Item.MELON_SEEDS || id == Item.PUMPKIN_SEEDS || id == Item.BEETROOT_SEEDS;
     }
 }

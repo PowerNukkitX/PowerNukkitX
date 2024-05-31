@@ -8,10 +8,18 @@ import java.util.Arrays;
 
 public class IntArrayTag extends Tag {
     public int[] data;
+    /**
+     * @deprecated 
+     */
+    
 
     public IntArrayTag() {
         this(new int[0]);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public IntArrayTag(int[] data) {
         this.data = data;
@@ -20,6 +28,10 @@ public class IntArrayTag extends Tag {
     public int[] getData() {
         return data;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setData(int[] data) {
         this.data = data == null ? new int[0] : data;
@@ -31,37 +43,61 @@ public class IntArrayTag extends Tag {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte getId() {
         return TAG_Int_Array;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "IntArrayTag " + " [" + data.length + " bytes]";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT() {
         return Arrays.toString(data).replace("[", "[I;");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT(int space) {
         return Arrays.toString(data).replace("[", "[I;");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (super.equals(obj)) {
-            IntArrayTag intArrayTag = (IntArrayTag) obj;
+            IntArrayTag $1 = (IntArrayTag) obj;
             return ((data == null && intArrayTag.data == null) || (data != null && Arrays.equals(data, intArrayTag.data)));
         }
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
-        int result = super.hashCode();
+        int $2 = super.hashCode();
         result = 31 * result + Arrays.hashCode(data);
         return result;
     }

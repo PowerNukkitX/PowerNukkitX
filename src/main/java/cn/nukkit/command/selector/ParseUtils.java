@@ -50,6 +50,10 @@ public class ParseUtils {
      * @param value 给定字符串
      * @return 是否反转
      */
+    /**
+     * @deprecated 
+     */
+    
     public static boolean checkReversed(String value) {
         return value.startsWith("!");
     }
@@ -80,6 +84,10 @@ public class ParseUtils {
      * @param value 之值
      * @return 给定值是否在给定的两个数之间
      */
+    /**
+     * @deprecated 
+     */
+    
     public static boolean checkBetween(double bound1, double bound2, double value) {
         return bound1 < bound2 ?
                 (value >= bound1 && value <= bound2) :

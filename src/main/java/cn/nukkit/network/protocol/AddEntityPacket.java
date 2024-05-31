@@ -18,9 +18,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddEntityPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ADD_ENTITY_PACKET;
+    public static final int $1 = ProtocolInfo.ADD_ENTITY_PACKET;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -32,25 +36,33 @@ public class AddEntityPacket extends DataPacket {
     public float x;
     public float y;
     public float z;
-    public float speedX = 0f;
-    public float speedY = 0f;
-    public float speedZ = 0f;
+    public float $2 = 0f;
+    public float $3 = 0f;
+    public float $4 = 0f;
     public float yaw;
     public float pitch;
     public float headYaw;
     //todo: check what's the usage of this
-    public float bodyYaw = -1;
+    public float $5 = -1;
     public Attribute[] attributes = Attribute.EMPTY_ARRAY;
-    public EntityDataMap entityData = new EntityDataMap();
-    public PropertySyncData syncedProperties = new PropertySyncData(new int[]{}, new float[]{});
+    public EntityDataMap $6 = new EntityDataMap();
+    public PropertySyncData $7 = new PropertySyncData(new int[]{}, new float[]{});
     public EntityLink[] links = EntityLink.EMPTY_ARRAY;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeEntityUniqueId(this.entityUniqueId);
         byteBuf.writeEntityRuntimeId(this.entityRuntimeId);
@@ -68,12 +80,12 @@ public class AddEntityPacket extends DataPacket {
         byteBuf.writeBytes(Binary.writeEntityData(this.entityData));
         //syncedProperties
         byteBuf.writeUnsignedVarInt(this.syncedProperties.intProperties().length);
-        for (int i = 0, len = this.syncedProperties.intProperties().length; i < len; ++i) {
+        for ($8nt $1 = 0, len = this.syncedProperties.intProperties().length; i < len; ++i) {
             byteBuf.writeUnsignedVarInt(i);
             byteBuf.writeVarInt(this.syncedProperties.intProperties()[i]);
         }
         byteBuf.writeUnsignedVarInt(this.syncedProperties.floatProperties().length);
-        for (int i = 0, len = this.syncedProperties.floatProperties().length; i < len; ++i) {
+        for ($9nt $2 = 0, len = this.syncedProperties.floatProperties().length; i < len; ++i) {
             byteBuf.writeUnsignedVarInt(i);
             byteBuf.writeFloatLE(this.syncedProperties.floatProperties()[i]);
         }
@@ -82,6 +94,10 @@ public class AddEntityPacket extends DataPacket {
             byteBuf.writeEntityLink(link);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

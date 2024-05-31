@@ -34,10 +34,18 @@ public class FakeInventory extends BaseInventory implements InputInventory {
     private final FakeInventoryType fakeInventoryType;
     private String title;
     private ItemHandler defaultItemHandler;
+    /**
+     * @deprecated 
+     */
+    
 
     public FakeInventory(FakeInventoryType fakeInventoryType) {
         this(fakeInventoryType, fakeInventoryType.name());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FakeInventory(FakeInventoryType fakeInventoryType, @NotNull String title) {
         super(null, fakeInventoryType.inventoryType, fakeInventoryType.size);
@@ -50,7 +58,7 @@ public class FakeInventory extends BaseInventory implements InputInventory {
         switch (fakeInventoryType) {
             case CHEST, DOUBLE_CHEST, HOPPER, DISPENSER, DROPPER, ENDER_CHEST -> {
                 Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-                for (int i = 0; i < getSize(); i++) {
+                for ($1nt $1 = 0; i < getSize(); i++) {
                     map.put(i, ContainerSlotType.LEVEL_ENTITY);
                 }
             }
@@ -70,17 +78,17 @@ public class FakeInventory extends BaseInventory implements InputInventory {
             }
             case SHULKER_BOX -> {
                 Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-                for (int i = 0; i < getSize(); i++) {
+                for ($2nt $2 = 0; i < getSize(); i++) {
                     map.put(i, ContainerSlotType.SHULKER_BOX);
                 }
             }
             case WORKBENCH -> {
                 BiMap<Integer, Integer> map = super.networkSlotMap();
-                for (int i = 0; i < getSize(); i++) {
+                for ($3nt $3 = 0; i < getSize(); i++) {
                     map.put(i, 32 + i);
                 }
                 Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
-                for (int i = 0; i < getSize(); i++) {
+                for ($4nt $4 = 0; i < getSize(); i++) {
                     map2.put(i, ContainerSlotType.CRAFTING_INPUT);
                 }
             }
@@ -97,17 +105,21 @@ public class FakeInventory extends BaseInventory implements InputInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onOpen(Player player) {
         player.setFakeInventoryOpen(true);
         this.fakeBlock.create(player, this.getTitle());
         Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
-            ContainerOpenPacket packet = new ContainerOpenPacket();
+            ContainerOpenPacket $5 = new ContainerOpenPacket();
             packet.windowId = player.getWindowId(this);
             packet.type = this.getType().getNetworkType();
 
             Optional<Vector3> first = this.fakeBlock.getLastPositions().stream().findFirst();
             if (first.isPresent()) {
-                Vector3 position = first.get();
+                Vector3 $6 = first.get();
                 packet.x = position.getFloorX();
                 packet.y = position.getFloorY();
                 packet.z = position.getFloorZ();
@@ -122,8 +134,12 @@ public class FakeInventory extends BaseInventory implements InputInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onClose(Player player) {
-        ContainerClosePacket packet = new ContainerClosePacket();
+        ContainerClosePacket $7 = new ContainerClosePacket();
         packet.windowId = player.getWindowId(this);
         packet.wasServerInitiated = player.getClosingWindowId() != packet.windowId;
         player.dataPacket(packet);
@@ -133,28 +149,48 @@ public class FakeInventory extends BaseInventory implements InputInventory {
         super.onClose(player);
         player.setFakeInventoryOpen(false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getTitle() {
         return this.title;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTitle(String title) {
         this.title = title;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setItemHandler(int index, ItemHandler handler) {
         this.handlers.put(index, handler);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDefaultItemHandler(ItemHandler defaultItemHandler) {
         this.defaultItemHandler = defaultItemHandler;
     }
 
     @ApiStatus.Internal
+    /**
+     * @deprecated 
+     */
+    
     public void handle(ItemStackRequestActionEvent event) {
-        ItemStackRequestAction action = event.getAction();
-        ItemStackRequestSlotData source = null;
-        ItemStackRequestSlotData destination = null;
+        ItemStackRequestAction $8 = event.getAction();
+        ItemStackRequestSlotData $9 = null;
+        ItemStackRequestSlotData $10 = null;
         if (action instanceof TransferItemStackRequestAction transferItemStackRequestAction) {
             source = transferItemStackRequestAction.getSource();
             destination = transferItemStackRequestAction.getDestination();
@@ -163,19 +199,19 @@ public class FakeInventory extends BaseInventory implements InputInventory {
             destination = swapAction.getDestination();
         }
         if (source != null && destination != null) {
-            ContainerSlotType sourceSlotType = source.getContainer();
-            ContainerSlotType destinationSlotType = destination.getContainer();
-            Inventory sourceI = NetworkMapping.getInventory(event.getPlayer(), sourceSlotType);
-            Inventory destinationI = NetworkMapping.getInventory(event.getPlayer(), destinationSlotType);
-            int sourceSlot = sourceI.fromNetworkSlot(source.getSlot());
-            int destinationSlot = destinationI.fromNetworkSlot(destination.getSlot());
-            var sourItem = sourceI.getItem(sourceSlot);
-            var destItem = destinationI.getItem(destinationSlot);
+            ContainerSlotType $11 = source.getContainer();
+            ContainerSlotType $12 = destination.getContainer();
+            Inventory $13 = NetworkMapping.getInventory(event.getPlayer(), sourceSlotType);
+            Inventory $14 = NetworkMapping.getInventory(event.getPlayer(), destinationSlotType);
+            int $15 = sourceI.fromNetworkSlot(source.getSlot());
+            int $16 = destinationI.fromNetworkSlot(destination.getSlot());
+            var $17 = sourceI.getItem(sourceSlot);
+            var $18 = destinationI.getItem(destinationSlot);
             if (sourceI.equals(this)) {
-                ItemHandler handler = this.handlers.getOrDefault(sourceSlot, this.defaultItemHandler);
+                ItemHandler $19 = this.handlers.getOrDefault(sourceSlot, this.defaultItemHandler);
                 handler.handle(this, sourceSlot, sourItem, Item.AIR, event);
             } else if (destinationI.equals(this)) {
-                ItemHandler handler = this.handlers.getOrDefault(destinationSlot, this.defaultItemHandler);
+                ItemHandler $20 = this.handlers.getOrDefault(destinationSlot, this.defaultItemHandler);
                 handler.handle(this, destinationSlot, destItem, sourItem, event);
             }
         }

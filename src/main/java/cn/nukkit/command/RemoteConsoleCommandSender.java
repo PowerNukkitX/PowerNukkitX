@@ -9,25 +9,41 @@ import org.jetbrains.annotations.NotNull;
  * @author Tee7even
  */
 public class RemoteConsoleCommandSender extends ConsoleCommandSender {
-    private final StringBuilder messages = new StringBuilder();
+    private final StringBuilder $1 = new StringBuilder();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendMessage(String message) {
         message = this.getServer().getLanguage().tr(message);
         this.messages.append(message.trim()).append("\n");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendMessage(TextContainer message) {
         this.sendMessage(this.getServer().getLanguage().tr(message));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getMessages() {
         return messages.toString();
     }
 
     @Override
-    @NotNull public String getName() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getName() {
         return "Rcon";
     }
 }

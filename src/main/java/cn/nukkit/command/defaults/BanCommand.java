@@ -14,6 +14,10 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BanCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public BanCommand(String name) {
         super(name, "commands.ban.description", "%commands.ban.usage");
@@ -28,13 +32,17 @@ public class BanCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
-        String name = list.getResult(0);
-        String reason = list.getResult(1);
+        var $1 = result.getValue();
+        String $2 = list.getResult(0);
+        String $3 = list.getResult(1);
         sender.getServer().getNameBans().addBan(name, reason, null, sender.getName());
 
-        Player player = sender.getServer().getPlayerExact(name);
+        Player $4 = sender.getServer().getPlayerExact(name);
         if (player != null) {
             player.kick(PlayerKickEvent.Reason.NAME_BANNED, (reason.length() > 0) ? "Banned by admin. Reason: " + reason : "Banned by admin");
         }

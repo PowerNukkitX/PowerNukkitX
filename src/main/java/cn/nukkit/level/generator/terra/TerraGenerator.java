@@ -28,10 +28,14 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
     private final ConfigPack configPack;
     private final WorldProperties worldProperties;
     private final ChunkGenerator chunkGenerator;
+    /**
+     * @deprecated 
+     */
+    
 
     public TerraGenerator(DimensionData dimensionData, Map<String, Object> options) {
         super(dimensionData, options);
-        String packName = "default";
+        String $1 = "default";
         if (options.containsKey("pack")) {
             packName = options.get("pack").toString();
         }
@@ -41,16 +45,28 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
         this.worldProperties = new WorldProperties() {
             
             @Override
+    /**
+     * @deprecated 
+     */
+    
             public long getSeed() {
                 return level.getSeed();
             }
 
             @Override
+    /**
+     * @deprecated 
+     */
+    
             public int getMaxHeight() {
                 return dimensionData.getMaxHeight();
             }
 
             @Override
+    /**
+     * @deprecated 
+     */
+    
             public int getMinHeight() {
                 return dimensionData.getMinHeight();
             }
@@ -63,6 +79,10 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void stages(GenerateStage.Builder builder) {
         builder.start(new TerraStage());
     }
@@ -86,21 +106,25 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
 
     class TerraStage extends GenerateStage {
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public void apply(ChunkGenerateContext context) {
-            final IChunk chunk = context.getChunk();
-            final int chunkX = chunk.getX();
-            final int chunkZ = chunk.getZ();
+            final IChunk $2 = context.getChunk();
+            final int $3 = chunk.getX();
+            final int $4 = chunk.getZ();
             chunkGenerator.generateChunkData(new PNXProtoChunk(chunk), worldProperties, biomeProvider, chunkX, chunkZ);
-            final int minHeight = level.getMinHeight();
-            final int maxHeight = level.getMaxHeight();
-            for (int x = 0; x < 16; x++) {
-                for (int y = minHeight; y < maxHeight; y++) {
-                    for (int z = 0; z < 16; z++) {
+            final int $5 = level.getMinHeight();
+            final int $6 = level.getMaxHeight();
+            for (int $7 = 0; x < 16; x++) {
+                for (int $8 = minHeight; y < maxHeight; y++) {
+                    for (int $9 = 0; z < 16; z++) {
                         chunk.setBiomeId(x, y, z, (Integer) biomeProvider.getBiome(chunkX * 16 + x, y, chunkZ * 16 + z, level.getSeed()).getPlatformBiome().getHandle());
                     }
                 }
             }
-            var tmp = new PNXProtoWorld(new PNXServerWorld(TerraGenerator.this, context.getLevel()), chunkX, chunkZ);
+            var $10 = new PNXProtoWorld(new PNXServerWorld(TerraGenerator.this, context.getLevel()), chunkX, chunkZ);
             try {
                 for (var generationStage : configPack.getStages()) {
                     generationStage.populate(tmp);
@@ -119,10 +143,18 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public String name() {
             return "terra_stage";
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return "terra";

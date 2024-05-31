@@ -6,6 +6,10 @@ import cn.nukkit.blockentity.BlockEntityNameable;
 
 
 public class DropperInventory extends EjectableInventory {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public DropperInventory(BlockEntityDropper blockEntity) {

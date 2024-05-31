@@ -10,13 +10,17 @@ import cn.nukkit.event.HandlerList;
  */
 public class PlayerChangeSkinEvent extends PlayerEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final Skin skin;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerChangeSkinEvent(Player player, Skin skin) {
         this.player = player;

@@ -4,6 +4,10 @@ import cn.nukkit.item.enchantment.Enchantment;
 
 
 public class EnchantmentCrossbowQuickCharge extends EnchantmentCrossbow {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public EnchantmentCrossbowQuickCharge() {
@@ -11,11 +15,19 @@ public class EnchantmentCrossbowQuickCharge extends EnchantmentCrossbow {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMinEnchantAbility(int level) {
         return 12 + 20 * (level - 1);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxLevel() {
         return 3;
     }

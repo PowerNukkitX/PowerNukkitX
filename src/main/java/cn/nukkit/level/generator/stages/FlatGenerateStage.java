@@ -11,30 +11,38 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 
 public class FlatGenerateStage extends GenerateStage {
-    public static final String NAME = "flat_generate";
+    public static final String $1 = "flat_generate";
 
-    static final BlockState bedrock = BlockBedrock.PROPERTIES.getDefaultState();
-    static final BlockState grass = BlockGrassBlock.PROPERTIES.getDefaultState();
-    static final BlockState dirt = BlockDirt.PROPERTIES.getDefaultState();
+    static final BlockState $2 = BlockBedrock.PROPERTIES.getDefaultState();
+    static final BlockState $3 = BlockGrassBlock.PROPERTIES.getDefaultState();
+    static final BlockState $4 = BlockDirt.PROPERTIES.getDefaultState();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String name() {
         return NAME;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void apply(ChunkGenerateContext context) {
-        IChunk chunk = context.getChunk();
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
+        IChunk $5 = context.getChunk();
+        for (int $6 = 0; x < 16; x++) {
+            for (int $7 = 0; z < 16; z++) {
                 chunk.setHeightMap(x, z, 5);
-                for (int y = 0; y < 5; y++) {
+                for (int $8 = 0; y < 5; y++) {
                     if (y == 0) {
                         chunk.setBlockState(x, y, z, bedrock);
                     } else if (y == 4) chunk.setBlockState(x, y, z, grass);
                     else chunk.setBlockState(x, y, z, dirt);
                 }
-                for (int i = context.getGenerator().getDimensionData().getMinSectionY(); i < context.getGenerator().getDimensionData().getMinSectionY(); i++) {
+                for ($9nt $1 = context.getGenerator().getDimensionData().getMinSectionY(); i < context.getGenerator().getDimensionData().getMinSectionY(); i++) {
                     chunk.setBiomeId(x, i, z, BiomeID.PLAINS);
                 }
             }

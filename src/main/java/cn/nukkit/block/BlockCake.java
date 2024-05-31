@@ -17,17 +17,29 @@ import static cn.nukkit.block.property.CommonBlockProperties.BITE_COUNTER;
  * @author Nukkit Project Team
  */
 public class BlockCake extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CAKE, BITE_COUNTER);
+    public static final BlockProperties $1 = new BlockProperties(CAKE, BITE_COUNTER);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCake(BlockState blockState) {
         super(blockState);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCake() {
         this(PROPERTIES.getDefaultState());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Cake Block";
     }
@@ -39,56 +51,100 @@ public class BlockCake extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         return this.x + (1 + getBiteCount() * 2) / 16;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinY() {
         return this.y;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         return this.z + 0.0625;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         return this.x - 0.0625 + 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return this.y + 0.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         return this.z - 0.0625 + 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (!down().isAir()) {
             getLevel().setBlock(block, this, true, true);
@@ -99,6 +155,10 @@ public class BlockCake extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (down().isAir()) {
@@ -117,12 +177,16 @@ public class BlockCake extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
         if (item.getBlock() instanceof BlockCandle && this.getBiteCount() == 0) {
             return false;
         }
-        int damage = getBiteCount();
+        int $2 = getBiteCount();
         if (player != null && (player.getFoodData().isHungry() || player.isCreative() || player.getServer().getDifficulty() == 0)) {
             if (damage < BITE_COUNTER.getMax()) setBiteCount(damage + 1);
             if (damage >= BITE_COUNTER.getMax()) {
@@ -139,28 +203,52 @@ public class BlockCake extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getComparatorInputOverride() {
         return (7 - this.getBiteCount()) * 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasComparatorInputOverride() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean sticksToPiston() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getBiteCount() {
         return getPropertyValue(BITE_COUNTER);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBiteCount(int count) {
         setPropertyValue(BITE_COUNTER, count);

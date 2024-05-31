@@ -144,10 +144,18 @@ public interface IBehaviorGroup {
      * <p>
      * When EntityAI.checkDebugOption(BEHAVIOR) == true, this method is called every 1gt to refresh the content related to debug mode
      */
-    default void debugTick(EntityIntelligent entity) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void debugTick(EntityIntelligent entity) {
     }
 
-    default void save(EntityIntelligent entity) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void save(EntityIntelligent entity) {
         //EmptyBehaviorGroup will return null
         if (getMemoryStorage() != null)
             getMemoryStorage().encode();

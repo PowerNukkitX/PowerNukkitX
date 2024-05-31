@@ -28,13 +28,13 @@ import java.util.zip.GZIPOutputStream;
 @Slf4j
 public class Metrics {
 
-    public static final int B_STATS_VERSION = 1;
-    private static final String VALUES = "values";
+    public static final int $1 = 1;
+    private static final String $2 = "values";
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1, t -> new Thread(t, "metrics#scheduler"));
+    private final ScheduledExecutorService $3 = Executors.newScheduledThreadPool(1, t -> new Thread(t, "metrics#scheduler"));
 
     // The url to which the data is sent
-    private static final String URL = "https://bStats.org/submitData/server-implementation";
+    private static final String $4 = "https://bStats.org/submitData/server-implementation";
 
     // A list with all custom charts
     private final List<CustomChart> charts = new ArrayList<>();
@@ -68,6 +68,10 @@ public class Metrics {
      * @param serverUUID        The unique identifier of this server.
      * @param logFailedRequests If failed submissions should be logged.
      */
+    /**
+     * @deprecated 
+     */
+    
     public Metrics(String name, String serverUUID, boolean logFailedRequests) {
         this.name = name;
         this.serverUUID = serverUUID;
@@ -82,6 +86,10 @@ public class Metrics {
      *
      * @param chart The chart to add.
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public void addCustomChart(CustomChart chart) {
         if (chart == null) {
@@ -93,15 +101,19 @@ public class Metrics {
     /**
      * Starts the Scheduler which submits our data every 30 minutes.
      */
+    
+    /**
+     * @deprecated 
+     */
     private void startSubmitting() {
-        final Runnable submitTask = this::submitData;
+        final Runnable $5 = this::submitData;
 
         // Many servers tend to restart at a fixed time at xx:00 which causes an uneven distribution of requests on the
         // bStats backend. To circumvent this problem, we introduce some randomness into the initial and second delay.
         // WARNING: You must not modify and part of this Metrics class, including the submit delay or frequency!
         // WARNING: Modifying this code will get your plugin banned on bStats. Just don't do it!
-        long initialDelay = (long) (1000 * 60 * (3 + Math.random() * 3));
-        long secondDelay = (long) (1000 * 60 * (Math.random() * 30));
+        long $6 = (long) (1000 * 60 * (3 + Math.random() * 3));
+        long $7 = (long) (1000 * 60 * (Math.random() * 30));
         scheduler.schedule(submitTask, initialDelay, TimeUnit.MILLISECONDS);
         scheduler.scheduleAtFixedRate(submitTask, initialDelay + secondDelay, 1000 * 60 * 30L, TimeUnit.MILLISECONDS);
     }
@@ -112,13 +124,13 @@ public class Metrics {
      * @return The plugin specific data.
      */
     private JSONObject getPluginData() {
-        JSONObject data = new JSONObject();
+        JSONObject $8 = new JSONObject();
 
         data.put("pluginName", name); // Append the name of the server software
-        JSONArray customCharts = new JSONArray();
+        JSONArray $9 = new JSONArray();
         for (CustomChart customChart : charts) {
-            // Add the data of the custom charts
-            JSONObject chart = customChart.getRequestJsonObject();
+            // Add the data of the custom $10s
+            JSONObject $1 = customChart.getRequestJsonObject();
             if (chart == null) { // If the chart is null, we skip it
                 continue;
             }
@@ -136,12 +148,12 @@ public class Metrics {
      */
     private JSONObject getServerData() {
         // OS specific data
-        String osName = System.getProperty("os.name");
-        String osArch = System.getProperty("os.arch");
-        String osVersion = System.getProperty("os.version");
-        int coreCount = Runtime.getRuntime().availableProcessors();
+        String $11 = System.getProperty("os.name");
+        String $12 = System.getProperty("os.arch");
+        String $13 = System.getProperty("os.version");
+        int $14 = Runtime.getRuntime().availableProcessors();
 
-        JSONObject data = new JSONObject();
+        JSONObject $15 = new JSONObject();
         data.put("serverUUID", serverUUID);
         data.put("osName", osName);
         data.put("osArch", osArch);
@@ -153,10 +165,14 @@ public class Metrics {
     /**
      * Collects the data and sends it afterwards.
      */
+    
+    /**
+     * @deprecated 
+     */
     private void submitData() {
-        final JSONObject data = getServerData();
+        final JSONObject $16 = getServerData();
 
-        JSONArray pluginData = new JSONArray();
+        JSONArray $17 = new JSONArray();
         pluginData.add(getPluginData());
         data.put("plugins", pluginData);
 
@@ -182,7 +198,7 @@ public class Metrics {
             throw new IllegalArgumentException("Data cannot be null!");
         }
 
-        HttpsURLConnection connection = (HttpsURLConnection) new java.net.URL(URL).openConnection();
+        HttpsURLConnection $18 = (HttpsURLConnection) new java.net.URL(URL).openConnection();
 
         // Compress the data to save bandwidth
         byte[] compressedData = compress(data.toString());
@@ -198,7 +214,7 @@ public class Metrics {
 
         // Send data
         connection.setDoOutput(true);
-        DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+        DataOutputStream $19 = new DataOutputStream(connection.getOutputStream());
         outputStream.write(compressedData);
         outputStream.flush();
         outputStream.close();
@@ -217,8 +233,8 @@ public class Metrics {
         if (str == null) {
             return EmptyArrays.EMPTY_BYTES;
         }
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        GZIPOutputStream gzip = new GZIPOutputStream(outputStream);
+        ByteArrayOutputStream $20 = new ByteArrayOutputStream();
+        GZIPOutputStream $21 = new GZIPOutputStream(outputStream);
         gzip.write(str.getBytes(StandardCharsets.UTF_8));
         gzip.close();
         return outputStream.toByteArray();
@@ -246,10 +262,10 @@ public class Metrics {
         }
 
         private JSONObject getRequestJsonObject() {
-            JSONObject chart = new JSONObject();
+            JSONObject $22 = new JSONObject();
             chart.put("chartId", chartId);
             try {
-                JSONObject data = getChartData();
+                JSONObject $23 = getChartData();
                 if (data == null) {
                     // If the data is null we don't send the chart.
                     return null;
@@ -281,6 +297,10 @@ public class Metrics {
          * @param chartId  The id of the chart.
          * @param callable The callable which is used to request the chart data.
          */
+    /**
+     * @deprecated 
+     */
+    
 
         public SimplePie(String chartId, Callable<String> callable) {
             super(chartId);
@@ -289,8 +309,8 @@ public class Metrics {
 
         @Override
         protected JSONObject getChartData() throws Exception {
-            JSONObject data = new JSONObject();
-            String value = callable.call();
+            JSONObject $24 = new JSONObject();
+            String $25 = callable.call();
             if (value == null || value.isEmpty()) {
                 // Null = skip the chart
                 return null;
@@ -314,6 +334,10 @@ public class Metrics {
          * @param chartId  The id of the chart.
          * @param callable The callable which is used to request the chart data.
          */
+    /**
+     * @deprecated 
+     */
+    
 
         public AdvancedPie(String chartId, Callable<Map<String, Integer>> callable) {
             super(chartId);
@@ -327,14 +351,14 @@ public class Metrics {
     }
 
     private static JSONObject createAdvancedChartData(final Callable<Map<String, Integer>> callable) throws Exception {
-        JSONObject data = new JSONObject();
-        JSONObject values = new JSONObject();
+        JSONObject $26 = new JSONObject();
+        JSONObject $27 = new JSONObject();
         Map<String, Integer> map = callable.call();
         if (map == null || map.isEmpty()) {
             // Null = skip the chart
             return null;
         }
-        boolean allSkipped = true;
+        boolean $28 = true;
         for (Map.Entry<String, Integer> entry : map.entrySet()) {
             if (entry.getValue() == 0) {
                 continue; // Skip this invalid
@@ -365,6 +389,10 @@ public class Metrics {
          * @param chartId  The id of the chart.
          * @param callable The callable which is used to request the chart data.
          */
+    /**
+     * @deprecated 
+     */
+    
 
         public DrilldownPie(String chartId, Callable<Map<String, Map<String, Integer>>> callable) {
             super(chartId);
@@ -373,17 +401,17 @@ public class Metrics {
 
         @Override
         public JSONObject getChartData() throws Exception {
-            JSONObject data = new JSONObject();
-            JSONObject values = new JSONObject();
+            JSONObject $29 = new JSONObject();
+            JSONObject $30 = new JSONObject();
             Map<String, Map<String, Integer>> map = callable.call();
             if (map == null || map.isEmpty()) {
                 // Null = skip the chart
                 return null;
             }
-            boolean reallyAllSkipped = true;
+            boolean $31 = true;
             for (Map.Entry<String, Map<String, Integer>> entryValues : map.entrySet()) {
-                JSONObject value = new JSONObject();
-                boolean allSkipped = true;
+                JSONObject $32 = new JSONObject();
+                boolean $33 = true;
                 for (Map.Entry<String, Integer> valueEntry : map.get(entryValues.getKey()).entrySet()) {
                     value.put(valueEntry.getKey(), valueEntry.getValue());
                     allSkipped = false;
@@ -416,6 +444,10 @@ public class Metrics {
          * @param chartId  The id of the chart.
          * @param callable The callable which is used to request the chart data.
          */
+    /**
+     * @deprecated 
+     */
+    
 
         public SingleLineChart(String chartId, Callable<Integer> callable) {
             super(chartId);
@@ -424,8 +456,8 @@ public class Metrics {
 
         @Override
         protected JSONObject getChartData() throws Exception {
-            JSONObject data = new JSONObject();
-            int value = callable.call();
+            JSONObject $34 = new JSONObject();
+            int $35 = callable.call();
             if (value == 0) {
                 // Null = skip the chart
                 return null;
@@ -450,6 +482,10 @@ public class Metrics {
          * @param chartId  The id of the chart.
          * @param callable The callable which is used to request the chart data.
          */
+    /**
+     * @deprecated 
+     */
+    
 
         public MultiLineChart(String chartId, Callable<Map<String, Integer>> callable) {
             super(chartId);
@@ -477,6 +513,10 @@ public class Metrics {
          * @param chartId  The id of the chart.
          * @param callable The callable which is used to request the chart data.
          */
+    /**
+     * @deprecated 
+     */
+    
 
         public SimpleBarChart(String chartId, Callable<Map<String, Integer>> callable) {
             super(chartId);
@@ -485,15 +525,15 @@ public class Metrics {
 
         @Override
         protected JSONObject getChartData() throws Exception {
-            JSONObject data = new JSONObject();
-            JSONObject values = new JSONObject();
+            JSONObject $36 = new JSONObject();
+            JSONObject $37 = new JSONObject();
             Map<String, Integer> map = callable.call();
             if (map == null || map.isEmpty()) {
                 // Null = skip the chart
                 return null;
             }
             for (Map.Entry<String, Integer> entry : map.entrySet()) {
-                JSONArray categoryValues = new JSONArray();
+                JSONArray $38 = new JSONArray();
                 categoryValues.add(entry.getValue());
                 values.put(entry.getKey(), categoryValues);
             }
@@ -517,6 +557,10 @@ public class Metrics {
          * @param chartId  The id of the chart.
          * @param callable The callable which is used to request the chart data.
          */
+    /**
+     * @deprecated 
+     */
+    
 
         public AdvancedBarChart(String chartId, Callable<Map<String, int[]>> callable) {
             super(chartId);
@@ -525,20 +569,20 @@ public class Metrics {
 
         @Override
         protected JSONObject getChartData() throws Exception {
-            JSONObject data = new JSONObject();
-            JSONObject values = new JSONObject();
+            JSONObject $39 = new JSONObject();
+            JSONObject $40 = new JSONObject();
             Map<String, int[]> map = callable.call();
             if (map == null || map.isEmpty()) {
                 // Null = skip the chart
                 return null;
             }
-            boolean allSkipped = true;
+            boolean $41 = true;
             for (Map.Entry<String, int[]> entry : map.entrySet()) {
                 if (entry.getValue().length == 0) {
                     continue; // Skip this invalid
                 }
                 allSkipped = false;
-                JSONArray categoryValues = new JSONArray();
+                JSONArray $42 = new JSONArray();
                 for (int categoryValue : entry.getValue()) {
                     categoryValues.add(categoryValue);
                 }
@@ -553,6 +597,10 @@ public class Metrics {
         }
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void close() {
         this.scheduler.shutdownNow();

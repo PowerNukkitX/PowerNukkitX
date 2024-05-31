@@ -11,9 +11,13 @@ public class TradeRecipeBuildUtils {
     private final CompoundTag recipe;
     private final int size;
 
-    public static final int TRADE_RECIPEID = 10000;
+    public static final int $1 = 10000;
     public static final ConcurrentHashMap<Integer, CompoundTag> RECIPE_MAP = new ConcurrentHashMap<>();
-    private static final AtomicInteger TRADE_RECIPE_NETID = new AtomicInteger(TRADE_RECIPEID);
+    private static final AtomicInteger $2 = new AtomicInteger(TRADE_RECIPEID);
+    /**
+     * @deprecated 
+     */
+    
 
     public TradeRecipeBuildUtils(CompoundTag tag, int size) {
         this.recipe = tag;
@@ -26,7 +30,7 @@ public class TradeRecipeBuildUtils {
      * @return 配方构造工具
      */
     public static TradeRecipeBuildUtils of(Item buyA, Item output) {
-        var cmp = new CompoundTag()
+        var $3 = new CompoundTag()
                 .putCompound("buyA", new CompoundTag()
                         .putByte("Count", buyA.getCount())
                         .putShort("Damage", buyA.getDamage())
@@ -59,7 +63,7 @@ public class TradeRecipeBuildUtils {
      * @return 配方构造工具
      */
     public static TradeRecipeBuildUtils of(Item buyA, Item buyB, Item output) {
-        var cmp = new CompoundTag()
+        var $4 = new CompoundTag()
                 .putCompound("buyA", new CompoundTag()
                         .putByte("Count", buyA.getCount())
                         .putShort("Damage", buyA.getDamage())

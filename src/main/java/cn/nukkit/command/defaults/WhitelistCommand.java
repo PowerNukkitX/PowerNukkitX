@@ -17,6 +17,10 @@ import java.util.Map;
  * @since 2015/11/12
  */
 public class WhitelistCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public WhitelistCommand(String name) {
         super(name, "nukkit.command.whitelist.description", "nukkit.command.allowlist.usage", new String[]{"allowlist"}); // In Minecraft Bedrock v1.18.10 the whitelist was renamed to allowlist
@@ -47,11 +51,15 @@ public class WhitelistCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         switch (result.getKey()) {
             case "1arg" -> {
-                String action = list.getResult(0);
+                String $2 = list.getResult(0);
                 if (this.badPerm(log, sender, action.toLowerCase(Locale.ENGLISH))) {
                     return 0;
                 }
@@ -72,8 +80,8 @@ public class WhitelistCommand extends VanillaCommand {
                         return 1;
                     }
                     case "list" -> {
-                        StringBuilder re = new StringBuilder();
-                        int count = 0;
+                        StringBuilder $3 = new StringBuilder();
+                        int $4 = 0;
                         for (String player : sender.getServer().getWhitelist().getAll().keySet()) {
                             re.append(player).append(", ");
                             ++count;
@@ -85,8 +93,8 @@ public class WhitelistCommand extends VanillaCommand {
                 }
             }
             case "2args" -> {
-                String action = list.getResult(0);
-                String name = list.getResult(1);
+                String $5 = list.getResult(0);
+                String $6 = list.getResult(1);
                 if (this.badPerm(log, sender, action.toLowerCase(Locale.ENGLISH))) {
                     return 0;
                 }
@@ -110,6 +118,10 @@ public class WhitelistCommand extends VanillaCommand {
         return 1;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean badPerm(CommandLogger log, CommandSender sender, String perm) {
         if (!sender.hasPermission("nukkit.command.whitelist." + perm) && !sender.hasPermission("nukkit.command.allowlist." + perm)) {
             log.addMessage(TextFormat.RED + "%nukkit.command.generic.permission").output();

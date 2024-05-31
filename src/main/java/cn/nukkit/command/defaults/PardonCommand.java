@@ -15,6 +15,10 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class PardonCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public PardonCommand(String name) {
         super(name, "unban a player");
@@ -28,6 +32,10 @@ public class PardonCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         List<IPlayer> players = result.getValue().getResult(0);
         if (players.isEmpty()) {

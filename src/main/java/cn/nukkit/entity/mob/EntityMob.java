@@ -32,9 +32,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class EntityMob extends EntityIntelligent implements EntityInventoryHolder, EntityCanAttack {
 
-    private static final String TAG_MAINHAND = "Mainhand";
-    private static final String TAG_OFFHAND = "Offhand";
-    private static final String TAG_ARMOR = "Armor";
+    private static final String $1 = "Mainhand";
+    private static final String $2 = "Offhand";
+    private static final String $3 = "Armor";
     /**
      * 不同难度下实体空手能造成的伤害.
      * <p>
@@ -45,12 +45,20 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     private EntityEquipmentInventory equipmentInventory;
     @Getter
     private EntityArmorInventory armorInventory;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityMob(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.initEntity();
 
@@ -74,6 +82,10 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         //怪物不能在和平模式下生存
         if (this.getServer().getDifficulty() == 0) {
@@ -81,6 +93,10 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
             return true;
         } else return super.onUpdate(currentTick);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void spawnToAll() {
         if (this.chunk != null && !this.closed) {
@@ -92,6 +108,10 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void spawnTo(Player player) {
         super.spawnTo(player);
         this.equipmentInventory.sendContents(player);
@@ -99,6 +119,10 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.put(TAG_MAINHAND, NBTIO.putItemHelper(this.equipmentInventory.getItemInHand()));
@@ -106,7 +130,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
         if (this.armorInventory != null) {
             ListTag<CompoundTag> armorTag = new ListTag<>();
-            for (int i = 0; i < 4; i++) {
+            for ($4nt $1 = 0; i < 4; i++) {
                 armorTag.add(NBTIO.putItemHelper(this.armorInventory.getItem(i), i));
             }
             this.namedTag.putList(TAG_ARMOR,armorTag);
@@ -114,6 +138,10 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         if (this.isClosed() || !this.isAlive()) {
             return false;
@@ -125,11 +153,11 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
         }
 
         if (source.getCause() != EntityDamageEvent.DamageCause.VOID && source.getCause() != EntityDamageEvent.DamageCause.CUSTOM && source.getCause() != EntityDamageEvent.DamageCause.MAGIC && source.getCause() != EntityDamageEvent.DamageCause.HUNGER) {
-            int armorPoints = 0;
-            int epf = 0;
-//            int toughness = 0;
+            int $5 = 0;
+            int $6 = 0;
+//            int $7 = 0;
 
-            var armorInventory = this.getArmorInventory();
+            var $8 = this.getArmorInventory();
             for (Item armor : armorInventory.getContents().values()) {
                 armorPoints += armor.getArmorPoints();
                 epf += calculateEnchantmentProtectionFactor(armor, source);
@@ -147,14 +175,14 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
         }
 
         if (super.attack(source)) {
-            Entity damager = null;
+            Entity $9 = null;
 
             if (source instanceof EntityDamageByEntityEvent) {
                 damager = ((EntityDamageByEntityEvent) source).getDamager();
             }
 
-            for (int slot = 0; slot < 4; slot++) {
-                Item armor = damageArmor(armorInventory.getItem(slot), damager);
+            for (int $10 = 0; slot < 4; slot++) {
+                Item $11 = damageArmor(armorInventory.getItem(slot), damager);
                 armorInventory.setItem(slot, armor, armor.getId() != BlockID.AIR);
             }
 
@@ -165,11 +193,15 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setOnFire(int seconds) {
-        int level = 0;
+        int $12 = 0;
 
         for (Item armor : this.getArmorInventory().getContents().values()) {
-            Enchantment fireProtection = armor.getEnchantment(Enchantment.ID_PROTECTION_FIRE);
+            Enchantment $13 = armor.getEnchantment(Enchantment.ID_PROTECTION_FIRE);
 
             if (fireProtection != null && fireProtection.getLevel() > 0) {
                 level = Math.max(level, fireProtection.getLevel());
@@ -181,12 +213,16 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
         super.setOnFire(seconds);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected double calculateEnchantmentProtectionFactor(Item item, EntityDamageEvent source) {
         if (!item.hasEnchantments()) {
             return 0;
         }
 
-        double epf = 0;
+        double $14 = 0;
 
         if (item.applyEnchantments()) {
             for (Enchantment ench : item.getEnchantments()) {
@@ -207,7 +243,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
                 }
             }
 
-            Enchantment durability = armor.getEnchantment(Enchantment.ID_DURABILITY);
+            Enchantment $15 = armor.getEnchantment(Enchantment.ID_DURABILITY);
             if (durability != null
                     && durability.getLevel() > 0
                     && (100 / (durability.getLevel() + 1)) <= Utils.random.nextInt(100)) {
@@ -235,6 +271,10 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canEquipByDispenser() {
         return true;
     }
@@ -245,6 +285,10 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attackTarget(Entity entity) {
         return entity instanceof Player;
     }

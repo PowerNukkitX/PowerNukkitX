@@ -9,6 +9,10 @@ import java.nio.charset.StandardCharsets;
 public class QueryUtil {
     public static final byte[] LONG_RESPONSE_PADDING_TOP = new byte[]{115, 112, 108, 105, 116, 110, 117, 109, 0, -128, 0};
     public static final byte[] LONG_RESPONSE_PADDING_BOTTOM = new byte[]{1, 112, 108, 97, 121, 101, 114, 95, 0, 0};
+    /**
+     * @deprecated 
+     */
+    
 
     public static void writeNullTerminatedByteArray(ByteBuf buf, byte[] array) {
         if (array != null) {
@@ -16,15 +20,23 @@ public class QueryUtil {
         }
         buf.writeByte(0); // Null byte
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static String readNullTerminatedString(ByteBuf in) {
-        StringBuilder read = new StringBuilder();
+        StringBuilder $1 = new StringBuilder();
         byte readIn;
         while ((readIn = in.readByte()) != '\0') {
             read.append((char) readIn);
         }
         return read.toString();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void writeNullTerminatedString(ByteBuf buf, String string) {
         writeNullTerminatedByteArray(buf, string.getBytes(StandardCharsets.UTF_8));

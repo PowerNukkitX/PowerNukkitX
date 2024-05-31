@@ -2,13 +2,25 @@ package cn.nukkit.nbt.tag;
 
 public class FloatTag extends NumberTag<Float> {
     public float data;
+    /**
+     * @deprecated 
+     */
+    
 
     public FloatTag() {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FloatTag(double data) {
         this.data = (float) data;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FloatTag(float data) {
         this.data = data;
@@ -20,6 +32,10 @@ public class FloatTag extends NumberTag<Float> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setData(Float data) {
         this.data = data == null ? 0 : data;
     }
@@ -30,21 +46,37 @@ public class FloatTag extends NumberTag<Float> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte getId() {
         return TAG_Float;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "FloatTag " + " (data: " + data + ")";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT() {
         return data + "f";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT(int space) {
         return data + "f";
     }
@@ -55,10 +87,14 @@ public class FloatTag extends NumberTag<Float> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (super.equals(obj)) {
-            FloatTag o = (FloatTag) obj;
-            return data == o.data;
+            Fl$1atTag $1 = (FloatTag) obj;
+            return $2 == o.data;
         }
         return false;
     }

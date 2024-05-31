@@ -46,6 +46,10 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
 
         return flag;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean existFlag(EntityFlag flag) {
         Objects.requireNonNull(flag, "flag");
@@ -69,7 +73,7 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
     @SuppressWarnings("unchecked")
     public <T> T getOrDefault(EntityDataType<T> type, T defaultValue) {
         Objects.requireNonNull(type, "type");
-        Object object = this.map.getOrDefault(type, defaultValue);
+        Object $1 = this.map.getOrDefault(type, defaultValue);
         try {
             return (T) object;
         } catch (ClassCastException e) {
@@ -77,26 +81,46 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
         }
     }
 
-    public <T> void putType(EntityDataType<T> type, T value) {
+    public <T> 
+    /**
+     * @deprecated 
+     */
+    void putType(EntityDataType<T> type, T value) {
         this.put(type, value);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int size() {
         return this.map.size();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isEmpty() {
         return this.map.isEmpty();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsKey(Object key) {
         return this.map.containsKey(key);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsValue(Object value) {
         return this.map.containsValue(value);
     }
@@ -116,7 +140,7 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
         }
         if (Number.class.isAssignableFrom(value.getClass())) {
             Class<?> type = key.getType();
-            Number number = (Number) value;
+            Number $2 = (Number) value;
             if (type == long.class || type == Long.class) {
                 value = number.longValue();
             } else if (type == int.class || type == Integer.class) {
@@ -140,12 +164,20 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void putAll(@NonNull Map<? extends EntityDataType<?>, ?> map) {
         checkNotNull(map, "map");
         this.map.putAll(map);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void clear() {
         this.map.clear();
     }
@@ -169,22 +201,30 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        EntityDataMap that = (EntityDataMap) o;
+        EntityDataMap $3 = (EntityDataMap) o;
         return this.map.equals(that.map);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return this.map.hashCode();
     }
 
     public EntityDataMap copy(EntityDataType<?>... entityDataTypes) {
-        EntityDataMap entityDataMap = new EntityDataMap();
+        EntityDataMap $4 = new EntityDataMap();
         for (var t : entityDataTypes) {
-            Object o = this.get(t);
+            Object $5 = this.get(t);
             if (o != null) {
                 entityDataMap.put(t, o);
             }
@@ -193,18 +233,22 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         Iterator<Entry<EntityDataType<?>, Object>> i = map.entrySet().iterator();
         if (!i.hasNext())
             return "{}";
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder $6 = new StringBuilder();
         sb.append('{');
         while (i.hasNext()) {
             Entry<EntityDataType<?>, Object> e = i.next();
             EntityDataType<?> key = e.getKey();
             if (key == FLAGS_2) continue; // We don't want this to be visible.
-            String stringVal = e.getValue().toString();
+            String $7 = e.getValue().toString();
             sb.append(key.toString()).append('=').append(stringVal);
             if (!i.hasNext())
                 return sb.append('}').toString();

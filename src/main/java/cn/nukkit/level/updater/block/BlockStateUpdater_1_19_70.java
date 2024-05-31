@@ -5,7 +5,7 @@ import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 
 public class BlockStateUpdater_1_19_70 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_19_70();
+    public static final Updater $1 = new BlockStateUpdater_1_19_70();
 
     public static final String[] COLORS = {
             "magenta",
@@ -27,12 +27,20 @@ public class BlockStateUpdater_1_19_70 implements Updater {
     };
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext context) {
         for (String color : COLORS) {
             this.addColorUpdater(context, color);
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addColorUpdater(CompoundTagUpdaterContext context, String color) {
         context.addUpdater(1, 19, 70)
                 .match("name", "minecraft:wool")

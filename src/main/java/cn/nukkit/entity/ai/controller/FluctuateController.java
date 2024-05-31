@@ -10,9 +10,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 public class FluctuateController implements IController {
-    private boolean lastTickInWater = false;
+    private boolean $1 = false;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean control(EntityIntelligent entity) {
         if (entity.hasWaterAt(entity.getFloatingHeight())) {
             if (!lastTickInWater) lastTickInWater = true;

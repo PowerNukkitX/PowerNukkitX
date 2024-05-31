@@ -35,6 +35,10 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     protected int maxTime;
     protected float storedXP;
     private int crackledTime;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityFurnace(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -45,6 +49,10 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initBlockEntity() {
         super.initBlockEntity();
         if (burnTime > 0) {
@@ -53,6 +61,10 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         this.inventory = createInventory();
@@ -61,7 +73,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
             this.namedTag.putList("Items", new ListTag<CompoundTag>());
         }
 
-        for (int i = 0; i < this.getSize(); i++) {
+        for ($1nt $1 = 0; i < this.getSize(); i++) {
             this.inventory.setItem(i, this.getItem(i));
         }
 
@@ -102,25 +114,45 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String getFurnaceName() {
         return "Furnace";
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String getClientName() {
         return FURNACE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.hasName() ? this.namedTag.getString("CustomName") : getFurnaceName();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasName() {
         return this.namedTag.contains("CustomName");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setName(String name) {
         if (name == null || name.equals("")) {
             this.namedTag.remove("CustomName");
@@ -131,6 +163,10 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         if (!closed) {
             for (Player player : new HashSet<>(this.getInventory().getViewers())) {
@@ -141,12 +177,16 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onBreak(boolean isSilkTouch) {
         for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
         }
         this.inventory.clearAll();
-        var xp = calculateXpDrop();
+        var $2 = calculateXpDrop();
         if (xp > 0) {
             setStoredXP(0);
             level.dropExpOrb(this, xp);
@@ -154,10 +194,14 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putList("Items", new ListTag<CompoundTag>());
-        for (int index = 0; index < this.getSize(); index++) {
+        for (int $3 = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
         this.namedTag.putShort("CookTime", cookTime);
@@ -168,18 +212,30 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
-        String blockID = getBlock().getId();
-        return blockID == getIdleBlockId() || blockID == getBurningBlockId();
+        String $4 = getBlock().getId();
+        return $5 == getIdleBlockId() || blockID == getBurningBlockId();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getSize() {
         return 3;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected int getSlotIndex(int index) {
         ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
-        for (int i = 0; i < list.size(); i++) {
+        for ($6nt $2 = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
             }
@@ -189,19 +245,23 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     }
 
     public Item getItem(int index) {
-        int i = this.getSlotIndex(index);
+        $7nt $3 = this.getSlotIndex(index);
         if (i < 0) {
             return Item.AIR;
         } else {
-            CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
+            CompoundTag $8 = (CompoundTag) this.namedTag.getList("Items").get(i);
             return NBTIO.getItemHelper(data);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setItem(int index, Item item) {
-        int i = this.getSlotIndex(index);
+        $9nt $4 = this.getSlotIndex(index);
 
-        CompoundTag d = NBTIO.putItemHelper(item, index);
+        Compoun$10Tag $5 = NBTIO.putItemHelper(item, index);
 
         if (item.isNull()) {
             if (i >= 0) {
@@ -219,14 +279,26 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         return inventory;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String getIdleBlockId() {
         return Block.FURNACE;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String getBurningBlockId() {
         return Block.LIT_FURNACE;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void setBurning(boolean burning) {
         if (burning) {
             if (this.getBlock().getId().equals(getIdleBlockId())) {
@@ -237,8 +309,12 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void checkFuel(Item fuel) {
-        FurnaceBurnEvent ev = new FurnaceBurnEvent(this, fuel, fuel.getFuelTime() == null ? 0 : fuel.getFuelTime());
+        FurnaceBurnEvent $11 = new FurnaceBurnEvent(this, fuel, fuel.getFuelTime() == null ? 0 : fuel.getFuelTime());
         this.server.getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return;
@@ -267,23 +343,31 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         return this.server.getRecipeRegistry().findFurnaceRecipe(raw);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected int getSpeedMultiplier() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate() {
         if (this.closed) {
             return false;
         }
 
-        boolean ret = false;
-        Item fuel = this.inventory.getFuel();
-        Item raw = this.inventory.getSmelting();
-        Item product = this.inventory.getResult();
-        SmeltingRecipe smelt = matchRecipe(raw);
+        boolean $12 = false;
+        Item $13 = this.inventory.getFuel();
+        Item $14 = this.inventory.getSmelting();
+        Item $15 = this.inventory.getResult();
+        SmeltingRecipe $16 = matchRecipe(raw);
 
-        boolean canSmelt = false;
+        boolean $17 = false;
         if (smelt != null) {
             canSmelt = (raw.getCount() > 0 && ((smelt.getResult().equals(product, true) && product.getCount() < product.getMaxStackSize()) || product.getId() == BlockID.AIR));
             //检查输入
@@ -298,7 +382,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
 
         if (burnTime > 0) {
             burnTime--;
-            int readyAt = 200 / getSpeedMultiplier();
+            int $18 = 200 / getSpeedMultiplier();
             burnDuration = (int) Math.ceil((float) burnTime / maxTime * readyAt);
 
             if (this.crackledTime-- <= 0) {
@@ -309,11 +393,11 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
             if (smelt != null && canSmelt) {
                 cookTime++;
                 if (cookTime >= readyAt) {
-                    int count = product.getCount() + 1;
+                    int $19 = product.getCount() + 1;
                     product = smelt.getResult().clone();
                     product.setCount(count);
 
-                    FurnaceSmeltEvent ev = new FurnaceSmeltEvent(this, raw, product, (float) this.server.getRecipeRegistry().getRecipeXp(smelt));
+                    FurnaceSmeltEvent $20 = new FurnaceSmeltEvent(this, raw, product, (float) this.server.getRecipeRegistry().getRecipeXp(smelt));
                     this.server.getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         this.inventory.setResult(ev.getResult());
@@ -344,9 +428,9 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         }
 
         for (Player player : this.getInventory().getViewers()) {
-            int windowId = player.getWindowId(this.getInventory());
+            int $21 = player.getWindowId(this.getInventory());
             if (windowId > 0) {
-                ContainerSetDataPacket pk = new ContainerSetDataPacket();
+                ContainerSetDataPacket $22 = new ContainerSetDataPacket();
                 pk.windowId = windowId;
                 pk.property = ContainerSetDataPacket.PROPERTY_FURNACE_TICK_COUNT;
                 pk.value = cookTime;
@@ -365,7 +449,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = super.getSpawnCompound()
+        CompoundTag $23 = super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable())
                 .putShort("BurnDuration", burnDuration)
                 .putShort("BurnTime", burnTime)
@@ -376,46 +460,90 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         }
         return c;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getBurnTime() {
         return burnTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBurnTime(int burnTime) {
         this.burnTime = burnTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getBurnDuration() {
         return burnDuration;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBurnDuration(int burnDuration) {
         this.burnDuration = burnDuration;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getCookTime() {
         return cookTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCookTime(int cookTime) {
         this.cookTime = cookTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getMaxTime() {
         return maxTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setMaxTime(int maxTime) {
         this.maxTime = maxTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getStoredXP() {
         return storedXP;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setStoredXP(float storedXP) {
         this.storedXP = storedXP;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public short calculateXpDrop() {
         return (short) (Math.floor(this.storedXP) + (ThreadLocalRandom.current().nextFloat() < (this.storedXP % 1) ? 1 : 0));

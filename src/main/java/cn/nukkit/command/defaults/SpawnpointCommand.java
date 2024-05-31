@@ -24,6 +24,10 @@ import java.util.stream.Collectors;
  * @since 2015/12/13
  */
 public class SpawnpointCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
     public SpawnpointCommand(String name) {
         super(name, "commands.spawnpoint.description");
         this.setPermission("nukkit.command.spawnpoint");
@@ -36,20 +40,24 @@ public class SpawnpointCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         List<Player> players = sender.isPlayer() ? Collections.singletonList(sender.asPlayer()) : List.of();
-        DecimalFormat round2 = new DecimalFormat("##0.00");
+        DecimalFormat $2 = new DecimalFormat("##0.00");
         if (list.hasResult(0)) {
             players = list.getResult(0);
             if (players.isEmpty()) {
                 log.addNoTargetMatch().output();
                 return 0;
             }
-            Level level = sender.getPosition().getLevel();
+            Level $3 = sender.getPosition().getLevel();
             if (list.hasResult(1)) {
                 if (level != null) {
-                    Position position = list.getResult(1);
+                    Position $4 = list.getResult(1);
                     if (level.isOverWorld()) {
                         if (position.y < -64) position.y = -64;
                         if (position.y > 320) position.y = 320;
@@ -71,7 +79,7 @@ public class SpawnpointCommand extends VanillaCommand {
             return 0;
         }
         if (!players.isEmpty()) {
-            Position pos = players.get(0).getPosition();
+            Position $5 = players.get(0).getPosition();
             players.get(0).setSpawn(pos, SpawnPointType.PLAYER);
             log.addSuccess("commands.spawnpoint.success.single", sender.getName(),
                     round2.format(pos.x),

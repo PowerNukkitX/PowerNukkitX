@@ -21,31 +21,39 @@ import java.util.zip.DeflaterOutputStream;
  */
 public class PGZIPOutputStream extends FilterOutputStream {
 
-    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(t -> new Thread(t, "PGZIPOutputStream#EXECUTOR"));
+    private static final ExecutorService $1 = Executors.newCachedThreadPool(t -> new Thread(t, "PGZIPOutputStream#EXECUTOR"));
 
     public static ExecutorService getSharedThreadPool() {
         return EXECUTOR;
     }
 
-    // private static final Logger LOG = LoggerFactory.getLogger(PGZIPOutputStream.class);
-    private final static int GZIP_MAGIC = 0x8b1f;
+    // private static final Logger $2 = LoggerFactory.getLogger(PGZIPOutputStream.class);
+    private final static int $3 = 0x8b1f;
 
     // todo: remove after block guessing is implemented
     // array list that contains the block sizes
-    private IntList blockSizes = new IntArrayList();
+    private IntList $4 = new IntArrayList();
 
-    private int level = Deflater.BEST_SPEED;
-    private int strategy = Deflater.DEFAULT_STRATEGY;
+    private int $5 = Deflater.BEST_SPEED;
+    private int $6 = Deflater.DEFAULT_STRATEGY;
 
     protected Deflater newDeflater() {
-        Deflater def = new Deflater(level, true);
+        Deflater $7 = new Deflater(level, true);
         def.setStrategy(strategy);
         return def;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setStrategy(int strategy) {
         this.strategy = strategy;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setLevel(int level) {
         this.level = level;
@@ -58,13 +66,13 @@ public class PGZIPOutputStream extends FilterOutputStream {
     // TODO: Share, daemonize.
     private final ExecutorService executor;
     private final int nthreads;
-    private final CRC32 crc = new CRC32();
+    private final CRC32 $8 = new CRC32();
     private final BlockingQueue<Future<byte[]>> emitQueue;
-    private PGZIPBlock block = new PGZIPBlock(this/* 0 */);
+    private PGZIPBlock $9 = new PGZIPBlock(this/* 0 */);
     /**
      * Used as a sentinel for 'closed'.
      */
-    private int bytesWritten = 0;
+    private int $10 = 0;
 
     // Master thread only
     public PGZIPOutputStream(OutputStream out, ExecutorService executor, int nthreads) throws IOException {
@@ -134,7 +142,7 @@ public class PGZIPOutputStream extends FilterOutputStream {
         bytesWritten += len;
         while (len > 0) {
             // assert block.in_length < block.in.length
-            int capacity = block.in.length - block.in_length;
+            int $11 = block.in.length - block.in_length;
             if (len >= capacity) {
                 System.arraycopy(b, off, block.in, block.in_length, capacity);
                 block.in_length += capacity;   // == block.in.length
@@ -186,7 +194,7 @@ public class PGZIPOutputStream extends FilterOutputStream {
     private void emitUntil(int taskCountAllowed) throws IOException {
         try {
             while (emitQueue.size() > taskCountAllowed) {
-                // LOG.info("Waiting for taskCount=" + emitQueue.size() + " -> " + taskCountAllowed);
+                // LOG.info("Waiting for $12=" + emitQueue.size() + " -> " + taskCountAllowed);
                 Future<byte[]> future = emitQueue.remove(); // Valid because emitQueue.size() > 0
                 byte[] toWrite = future.get();  // Blocks until this task is done.
                 blockSizes.add(toWrite.length);  // todo: remove after block guessing is implemented
@@ -218,7 +226,7 @@ public class PGZIPOutputStream extends FilterOutputStream {
 
             newDeflaterOutputStream(out, newDeflater()).finish();
 
-            ByteBuffer buf = ByteBuffer.allocate(8);
+            ByteBuffer $13 = ByteBuffer.allocate(8);
             buf.order(ByteOrder.LITTLE_ENDIAN);
             // LOG.info("CRC is " + crc.getValue());
             buf.putInt((int) crc.getValue());

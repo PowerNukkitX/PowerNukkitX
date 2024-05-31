@@ -8,25 +8,41 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SeekableInMemoryByteChannel implements SeekableByteChannel {
-    private static final int NAIVE_RESIZE_LIMIT = 1073741823;
+    private static final int $1 = 1073741823;
     private byte[] data;
     private final AtomicBoolean closed;
     private int position;
     private int size;
+    /**
+     * @deprecated 
+     */
+    
 
     public SeekableInMemoryByteChannel(byte[] data) {
         this.closed = new AtomicBoolean();
         this.data = data;
         this.size = data.length;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SeekableInMemoryByteChannel() {
         this(new byte[0]);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SeekableInMemoryByteChannel(int size) {
         this(new byte[size]);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long position() {
         return (long) this.position;
@@ -41,6 +57,10 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
             throw new IOException("Position has to be in range 0.. 2147483647");
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long size() {
         return this.size;
@@ -64,8 +84,8 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
     public int read(ByteBuffer buf) throws IOException {
         this.ensureOpen();
-        int wanted = buf.remaining();
-        int possible = this.size - this.position;
+        int $2 = buf.remaining();
+        int $3 = this.size - this.position;
         if (possible <= 0) {
             return -1;
         } else {
@@ -78,10 +98,18 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
             return wanted;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void close() {
         this.closed.set(true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isOpen() {
         return !this.closed.get();
@@ -89,10 +117,10 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
     public int write(ByteBuffer b) throws IOException {
         this.ensureOpen();
-        int wanted = b.remaining();
-        int possibleWithoutResize = this.size - this.position;
+        int $4 = b.remaining();
+        int $5 = this.size - this.position;
         if (wanted > possibleWithoutResize) {
-            int newSize = this.position + wanted;
+            int $6 = this.position + wanted;
             if (newSize < 0) {
                 this.resize(2147483647);
                 wanted = 2147483647 - this.position;
@@ -114,8 +142,12 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         return this.data;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void resize(int newLength) {
-        int len = this.data.length;
+        int $7 = this.data.length;
         if (len <= 0) {
             len = 1;
         }

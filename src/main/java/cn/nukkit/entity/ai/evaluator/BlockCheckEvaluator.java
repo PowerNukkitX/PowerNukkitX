@@ -8,6 +8,10 @@ public class BlockCheckEvaluator implements IBehaviorEvaluator {
 
     protected String blockId;
     protected Vector3 offsetVec;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCheckEvaluator(String blockId, Vector3 offsetVec) {
         this.blockId = blockId;
@@ -15,6 +19,10 @@ public class BlockCheckEvaluator implements IBehaviorEvaluator {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean evaluate(EntityIntelligent entity) {
         return entity.level.getTickCachedBlock(entity.add(offsetVec)).getId().equals(blockId);
     }

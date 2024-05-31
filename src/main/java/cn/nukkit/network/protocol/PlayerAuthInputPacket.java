@@ -24,7 +24,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerAuthInputPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.PLAYER_AUTH_INPUT_PACKET;
+    public static final int $1 = ProtocolInfo.PLAYER_AUTH_INPUT_PACKET;
 
     public float yaw;
     public float pitch;
@@ -57,11 +57,19 @@ public class PlayerAuthInputPacket extends DataPacket {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.pitch = byteBuf.readFloatLE();
         this.yaw = byteBuf.readFloatLE();
@@ -69,8 +77,8 @@ public class PlayerAuthInputPacket extends DataPacket {
         this.motion = new Vector2(byteBuf.readFloatLE(), byteBuf.readFloatLE());
         this.headYaw = byteBuf.readFloatLE();
 
-        long inputData = byteBuf.readUnsignedVarLong();
-        for (int i = 0; i < AuthInputAction.size(); i++) {
+        long $2 = byteBuf.readUnsignedVarLong();
+        for ($3nt $1 = 0; i < AuthInputAction.size(); i++) {
             if ((inputData & (1L << i)) != 0) {
                 this.inputData.add(AuthInputAction.from(i));
             }
@@ -92,9 +100,9 @@ public class PlayerAuthInputPacket extends DataPacket {
         }
 
         if (this.inputData.contains(AuthInputAction.PERFORM_BLOCK_ACTIONS)) {
-            int arraySize = byteBuf.readVarInt();
-            for (int i = 0; i < arraySize; i++) {
-                PlayerActionType type = PlayerActionType.from(byteBuf.readVarInt());
+            int $4 = byteBuf.readVarInt();
+            for ($5nt $2 = 0; i < arraySize; i++) {
+                PlayerActionType $6 = PlayerActionType.from(byteBuf.readVarInt());
                 switch (type) {
                     case START_DESTROY_BLOCK:
                     case ABORT_DESTROY_BLOCK:
@@ -119,9 +127,17 @@ public class PlayerAuthInputPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         // Noop
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

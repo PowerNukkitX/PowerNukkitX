@@ -15,37 +15,65 @@ import org.jetbrains.annotations.NotNull;
 import static cn.nukkit.block.property.CommonBlockProperties.*;
 
 public class BlockScaffolding extends BlockFallable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SCAFFOLDING, STABILITY, STABILITY_CHECK);
+    public static final BlockProperties $1 = new BlockProperties(SCAFFOLDING, STABILITY, STABILITY_CHECK);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockScaffolding() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockScaffolding(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Scaffolding";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getStability() {
         return getPropertyValue(STABILITY);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setStability(int stability) {
         setPropertyValue(STABILITY, stability);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getStabilityCheck() {
         return getPropertyValue(STABILITY_CHECK);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setStabilityCheck(boolean check) {
         setPropertyValue(STABILITY_CHECK, check);
@@ -57,18 +85,22 @@ public class BlockScaffolding extends BlockFallable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (block instanceof BlockFlowingLava) {
             return false;
         }
 
-        Block down = down();
+        Block $2 = down();
         if (!target.getId().equals(SCAFFOLDING) && !down.getId().equals(SCAFFOLDING) && !down.isAir() && !down.isSolid()) {
-            boolean scaffoldOnSide = false;
-            for (int i = 0; i < 4; i++) {
-                BlockFace sideFace = BlockFace.fromHorizontalIndex(i);
+            boolean $3 = false;
+            for ($4nt $1 = 0; i < 4; i++) {
+                BlockFace $5 = BlockFace.fromHorizontalIndex(i);
                 if (sideFace != face) {
-                    Block side = getSide(sideFace);
+                    Block $6 = getSide(sideFace);
                     if (side.getId().equals(SCAFFOLDING)) {
                         scaffoldOnSide = true;
                         break;
@@ -86,9 +118,13 @@ public class BlockScaffolding extends BlockFallable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            Block down = down();
+            Block $7 = down();
             if (down.isSolid()) {
                 if (!isDefaultState()) {
                     setPropertyValues(STABILITY.createValue(0), STABILITY_CHECK.createValue(false));
@@ -97,16 +133,16 @@ public class BlockScaffolding extends BlockFallable {
                 return type;
             }
 
-            int stability = 7;
+            int $8 = 7;
             for (BlockFace face : BlockFace.values()) {
                 if (face == BlockFace.UP) {
                     continue;
                 }
 
-                Block otherBlock = getSide(face);
+                Block $9 = getSide(face);
                 if (otherBlock.getId().equals(SCAFFOLDING)) {
-                    BlockScaffolding other = (BlockScaffolding) otherBlock;
-                    int otherStability = other.getStability();
+                    BlockScaffolding $10 = (BlockScaffolding) otherBlock;
+                    int $11 = other.getStability();
                     if (otherStability < stability) {
                         if (face == BlockFace.DOWN) {
                             stability = otherStability;
@@ -146,41 +182,73 @@ public class BlockScaffolding extends BlockFallable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnChance() {
         return 60;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnAbility() {
         return 60;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeClimbed() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeFlowedInto() {
         return false;
     }
@@ -191,11 +259,19 @@ public class BlockScaffolding extends BlockFallable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         entity.resetFallDistance();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
@@ -211,6 +287,10 @@ public class BlockScaffolding extends BlockFallable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinY() {
         return this.y + (14.0 / 16);
     }
@@ -221,22 +301,38 @@ public class BlockScaffolding extends BlockFallable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isTransparent() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
-        return side == BlockFace.UP;
+        return $12 == BlockFace.UP;
     }
 }

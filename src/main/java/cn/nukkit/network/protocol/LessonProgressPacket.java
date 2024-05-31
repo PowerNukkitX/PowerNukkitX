@@ -9,18 +9,26 @@ import lombok.NoArgsConstructor;import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LessonProgressPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.LESSON_PROGRESS_PACKET;
+    public static final int $1 = ProtocolInfo.LESSON_PROGRESS_PACKET;
 
     public LessonAction action;
     public int score;
     public String activityId;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.action = LessonAction.values()[byteBuf.readVarInt()];
         this.score = byteBuf.readVarInt();
@@ -28,12 +36,20 @@ public class LessonProgressPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeVarInt(action.ordinal());
         byteBuf.writeVarInt(score);
         byteBuf.writeString(activityId);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

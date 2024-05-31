@@ -9,7 +9,7 @@ import cn.nukkit.level.Level;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityLevelChangeEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -17,6 +17,10 @@ public class EntityLevelChangeEvent extends EntityEvent implements Cancellable {
 
     private final Level originLevel;
     private final Level targetLevel;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityLevelChangeEvent(Entity entity, Level originLevel, Level targetLevel) {
         this.entity = entity;

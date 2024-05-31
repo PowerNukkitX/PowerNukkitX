@@ -13,7 +13,11 @@ public interface ItemDescriptor extends Cloneable {
 
     int getCount();
 
-    default boolean match(Item item) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean match(Item item) {
         return false;
     }
 }

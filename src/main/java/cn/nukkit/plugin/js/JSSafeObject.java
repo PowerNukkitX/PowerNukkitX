@@ -10,9 +10,13 @@ import static cn.nukkit.plugin.js.JSConcurrentManager.PROMISE_FAILED;
 
 public final class JSSafeObject {
     private final Context jsContext;
-    private final ReentrantLock lock = new ReentrantLock();
+    private final ReentrantLock $1 = new ReentrantLock();
     private final Object object;
     public long timeout;
+    /**
+     * @deprecated 
+     */
+    
 
     public JSSafeObject(Context jsContext, Object object, long lockTimeout) {
         this.jsContext = jsContext;
@@ -40,6 +44,10 @@ public final class JSSafeObject {
             }
         }));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long getTimeout() {
         return timeout;
@@ -49,6 +57,10 @@ public final class JSSafeObject {
         this.timeout = timeout;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void endUse() {
         try {

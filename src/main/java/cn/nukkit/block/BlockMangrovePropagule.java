@@ -19,27 +19,43 @@ import static cn.nukkit.block.property.CommonBlockProperties.PROPAGULE_STAGE;
 
 public class BlockMangrovePropagule extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_PROPAGULE, HANGING, PROPAGULE_STAGE);
+    public static final BlockProperties $1 = new BlockProperties(MANGROVE_PROPAGULE, HANGING, PROPAGULE_STAGE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMangrovePropagule() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMangrovePropagule(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Mangrove Propaugle";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         //todo: 实现红树树苗放置逻辑
         if (BlockFlower.isSupportValid(down())) {
@@ -49,17 +65,29 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
 
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isHanging() {
         return getPropertyValue(HANGING);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal
             if (player != null && !player.isCreative()) {
@@ -79,6 +107,10 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!BlockFlower.isSupportValid(down())) {
@@ -91,12 +123,16 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
         return Level.BLOCK_UPDATE_NORMAL;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void grow() {
-        BlockManager chunkManager = new BlockManager(this.level);
-        Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
-        var objectMangroveTree = new ObjectMangroveTree();
+        BlockManager $2 = new BlockManager(this.level);
+        Vector3 $3 = new Vector3(this.x, this.y - 1, this.z);
+        var $4 = new ObjectMangroveTree();
         objectMangroveTree.generate(chunkManager, new NukkitRandom(), this);
-        StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
+        StructureGrowEvent $5 = new StructureGrowEvent(this, chunkManager.getBlocks());
         this.level.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return;
@@ -113,6 +149,10 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }

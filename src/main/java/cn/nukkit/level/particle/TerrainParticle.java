@@ -8,6 +8,10 @@ import cn.nukkit.math.Vector3;
  * @since 2015/11/21
  */
 public class TerrainParticle extends GenericParticle {
+    /**
+     * @deprecated 
+     */
+    
     public TerrainParticle(Vector3 pos, Block block) {
         super(pos, Particle.TYPE_TERRAIN, block.getRuntimeId());
     }

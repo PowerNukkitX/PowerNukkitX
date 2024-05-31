@@ -15,10 +15,14 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
     protected Class<T> entityClass;
     protected int findingRangeSquared;
     protected int duration;
-    protected int currentTick = 0;
+    protected int $1 = 0;
     protected float moveSpeed;
     protected boolean finded;
     protected T another;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityBreedingExecutor(Class<T> entityClass, int findingRangeSquared, int duration, float moveSpeed) {
         this.entityClass = entityClass;
@@ -28,9 +32,13 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent uncasted) {
         if (entityClass.isInstance(uncasted)) {
-            T entity = entityClass.cast(uncasted);
+            T $2 = entityClass.cast(uncasted);
             if (shouldFindingSpouse(entity)) {
                 if (!entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))
                     return false;
@@ -69,6 +77,10 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         clearData((T) entity);
 
@@ -82,11 +94,19 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void setSpouse(T entity1, T entity2) {
         entity1.getMemoryStorage().put(CoreMemoryTypes.ENTITY_SPOUSE, entity2);
         entity2.getMemoryStorage().put(CoreMemoryTypes.ENTITY_SPOUSE, entity1);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void clearData(T entity) {
         entity.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_SPOUSE);
         //clear move target
@@ -99,6 +119,10 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
         entity.getMemoryStorage().put(CoreMemoryTypes.IS_IN_LOVE, false);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void updateMove(T entity1, T entity2) {
         if (!entity1.isEnablePitch()) entity1.setEnablePitch(true);
         if (!entity2.isEnablePitch()) entity2.setEnablePitch(true);
@@ -108,8 +132,8 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
         if (entity1.getOffsetBoundingBox().intersectsWith(entity2.getOffsetBoundingBox())) return;
 
         //clone the vec
-        var cloned1 = entity1.clone();
-        var cloned2 = entity2.clone();
+        var $3 = entity1.clone();
+        var $4 = entity2.clone();
 
         //update move target
         entity1.setMoveTarget(cloned2);
@@ -127,13 +151,13 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
 
     @Nullable
     protected T getNearestInLove(EntityIntelligent entity) {
-        var entities = entity.level.getEntities();
-        var maxDistanceSquared = -1d;
-        T nearestInLove = null;
+        var $5 = entity.level.getEntities();
+        var $6 = -1d;
+        T $7 = null;
         for (var e : entities) {
-            var newDistance = e.distanceSquared(entity);
+            var $8 = e.distanceSquared(entity);
             if (!e.equals(entity) && entityClass.isInstance(e)) {
-                T another = (T) e;
+                T $9 = (T) e;
                 if (!another.isBaby() && another.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE) && another.getMemoryStorage().isEmpty(CoreMemoryTypes.ENTITY_SPOUSE) && (maxDistanceSquared == -1 || newDistance < maxDistanceSquared)) {
                     maxDistanceSquared = newDistance;
                     nearestInLove = another;
@@ -143,13 +167,21 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
         return nearestInLove;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean shouldFindingSpouse(T entity) {
         return entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ENTITY_SPOUSE);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void bear(T entity1, T entity2) {
-        var rand = ThreadLocalRandom.current();
-        T baby = (T) Entity.createEntity(entity1.getNetworkId(), entity1.getPosition());
+        var $10 = ThreadLocalRandom.current();
+        T $11 = (T) Entity.createEntity(entity1.getNetworkId(), entity1.getPosition());
         baby.setBaby(true);
         //防止小屁孩去生baby
         baby.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, Server.getInstance().getTick());

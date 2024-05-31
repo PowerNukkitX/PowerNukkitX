@@ -24,6 +24,10 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     protected BlockVector3 piston;
     //true if the piston is extending instead of withdrawing.
     protected boolean expanding;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityMovingBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -55,12 +59,16 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
      * }
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         if (namedTag.contains("movingBlock")) {
-            CompoundTag movingBlock = namedTag.getCompound("movingBlock");
-            int blockhash = HashUtils.fnv1a_32_nbt_palette(movingBlock);
-            BlockState blockState = Registries.BLOCKSTATE.get(blockhash);
+            CompoundTag $1 = namedTag.getCompound("movingBlock");
+            int $2 = HashUtils.fnv1a_32_nbt_palette(movingBlock);
+            BlockState $3 = Registries.BLOCKSTATE.get(blockhash);
             if(blockState==null){
                 log.error("cant load moving block {}",movingBlock.toSNBT());
             }else{
@@ -91,9 +99,13 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     public Block getMovingBlock() {
         return this.block;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void moveCollidedEntities(BlockEntityPistonArm piston, BlockFace moveDirection) {
-        var bb = block.getBoundingBox();
+        var $4 = block.getBoundingBox();
         if (bb == null)
             return;
         bb = bb.getOffsetBoundingBox(
@@ -107,6 +119,10 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return this.getBlock().getId() == BlockID.MOVING_BLOCK;
     }

@@ -20,37 +20,61 @@ import org.jetbrains.annotations.NotNull;
  * @since 03.01.2016
  */
 public class BlockMycelium extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(MYCELIUM);
+    public static final BlockProperties $1 = new BlockProperties(MYCELIUM);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMycelium() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMycelium(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Mycelium";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_SHOVEL;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.6;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 2.5;
     }
@@ -63,18 +87,22 @@ public class BlockMycelium extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
                 //TODO: light levels
-                NukkitRandom random = new NukkitRandom();
+                NukkitRandom $2 = new NukkitRandom();
                 x = random.nextInt((int) x - 1, (int) x + 1);
                 y = random.nextInt((int) y - 1, (int) y + 1);
                 z = random.nextInt((int) z - 1, (int) z + 1);
-                Block block = this.getLevel().getBlock(new Vector3(x, y, z));
+                Block $3 = this.getLevel().getBlock(new Vector3(x, y, z));
                 if (block.getId().equals(Block.DIRT) && block.getPropertyValue(CommonBlockProperties.DIRT_TYPE) == DirtType.NORMAL) {
                     if (block.up().isTransparent()) {
-                        BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.MYCELIUM));
+                        BlockSpreadEvent $4 = new BlockSpreadEvent(block, this, Block.get(BlockID.MYCELIUM));
                         Server.getInstance().getPluginManager().callEvent(ev);
                         if (!ev.isCancelled()) {
                             this.getLevel().setBlock(block, ev.getNewState());
@@ -87,16 +115,28 @@ public class BlockMycelium extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!this.up().canBeReplaced()) {
             return false;

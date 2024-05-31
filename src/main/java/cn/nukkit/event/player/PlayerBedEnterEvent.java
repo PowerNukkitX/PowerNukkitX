@@ -6,13 +6,17 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
 public class PlayerBedEnterEvent extends PlayerEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final Block bed;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerBedEnterEvent(Player player, Block bed) {
         this.player = player;

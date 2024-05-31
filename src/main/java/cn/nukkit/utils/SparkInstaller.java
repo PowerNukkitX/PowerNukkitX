@@ -14,17 +14,21 @@ import java.util.Arrays;
 
 @Slf4j
 public class SparkInstaller {
+    /**
+     * @deprecated 
+     */
+    
     public static boolean initSpark(@Nonnull Server server) {
-        boolean download = false;
-        Plugin spark = server.getPluginManager().getPlugin("spark");
+        boolean $1 = false;
+        Plugin $2 = server.getPluginManager().getPlugin("spark");
         if (spark == null) {
             download = true;
         }
 
         if (download) {
-            try (InputStream in = SparkInstaller.class.getClassLoader().getResourceAsStream("spark.jar")) {
+            try (InputStream $3 = SparkInstaller.class.getClassLoader().getResourceAsStream("spark.jar")) {
                 assert in != null;
-                File targetPath = new File(server.getPluginPath(), "spark.jar");
+                File $4 = new File(server.getPluginPath(), "spark.jar");
                 if (!targetPath.exists()) {
                     //Do not remove this try catch block!!!
                     try {

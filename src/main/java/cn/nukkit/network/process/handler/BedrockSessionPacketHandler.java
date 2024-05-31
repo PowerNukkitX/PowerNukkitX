@@ -10,12 +10,20 @@ public class BedrockSessionPacketHandler implements PacketHandler {
     protected final Player player;
     protected final BedrockSession session;
     protected final PlayerHandle handle;
+    /**
+     * @deprecated 
+     */
+    
 
     public BedrockSessionPacketHandler(BedrockSession session) {
         this.player = session.getPlayer();
         this.session = session;
         this.handle = session.getHandle();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(DisconnectPacket pk) {
         if (player != null) {

@@ -8,7 +8,7 @@ import cn.nukkit.network.protocol.BookEditPacket;
 
 public class PlayerEditBookEvent extends PlayerEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -17,6 +17,10 @@ public class PlayerEditBookEvent extends PlayerEvent implements Cancellable {
     private final Item oldBook;
     private final BookEditPacket.Action action;
     private Item newBook;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerEditBookEvent(Player player, Item oldBook, Item newBook, BookEditPacket.Action action) {
         this.player = player;
@@ -36,6 +40,10 @@ public class PlayerEditBookEvent extends PlayerEvent implements Cancellable {
     public Item getNewBook() {
         return this.newBook;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setNewBook(Item book) {
         this.newBook = book;

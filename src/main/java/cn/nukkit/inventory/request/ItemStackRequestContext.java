@@ -16,15 +16,27 @@ public class ItemStackRequestContext {
     @Getter
     private final ItemStackRequest itemStackRequest;
     private final Map<String, Object> extraData;
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemStackRequestContext(ItemStackRequest request) {
         this.itemStackRequest = request;
         this.extraData = new HashMap<>();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void put(String key, Object value) {
         extraData.put(key, value);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean has(String key) {
         return extraData.containsKey(key);

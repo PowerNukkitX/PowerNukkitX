@@ -27,20 +27,24 @@ public class LegacyTallGrass {
             BlockPinkTulip.PROPERTIES.getDefaultState(),// 2
             BlockWhiteTulip.PROPERTIES.getDefaultState(),// 2
     };
+    /**
+     * @deprecated 
+     */
+    
 
     public static void growGrass(BlockManager level, Vector3 pos, RandomSourceProvider random) {
-        int y = pos.getFloorY() + 1;
-        int minx = pos.getFloorX() - 2;
-        int minz = pos.getFloorZ() - 2;
-        int maxx = pos.getFloorX() + 2;
-        int maxz = pos.getFloorZ() + 2;
-        for (int x = minx; x <= maxx; x++) {
-            for (int z = minz; z <= maxz; z++) {
-                int newY = y + random.nextInt(2) * (random.nextBoolean() ? -1 : 1);
+        int $1 = pos.getFloorY() + 1;
+        int $2 = pos.getFloorX() - 2;
+        int $3 = pos.getFloorZ() - 2;
+        int $4 = pos.getFloorX() + 2;
+        int $5 = pos.getFloorZ() + 2;
+        for (int $6 = minx; x <= maxx; x++) {
+            for (int $7 = minz; z <= maxz; z++) {
+                int $8 = y + random.nextInt(2) * (random.nextBoolean() ? -1 : 1);
                 if (random.nextBoolean()) {
                     if (Objects.equals(level.getBlockIdAt(x, newY, z), Block.AIR) && Objects.equals(level.getBlockIdAt(x, newY - 1, z), Block.GRASS_BLOCK)) {
-                        int ranNumber = (int) Math.round(random.nextGaussian() * 1000);
-                        int absRn = Math.abs(ranNumber);
+                        int $9 = (int) Math.round(random.nextGaussian() * 1000);
+                        int $10 = Math.abs(ranNumber);
                         if (-300 <= ranNumber && ranNumber <= 300) {
                             level.setBlockStateAt(x, newY, z, places[0]);
                         } else if (300 <= absRn && absRn <= 500) {//-300 ~ -500 + 300 ~ 500

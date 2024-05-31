@@ -14,6 +14,10 @@ public enum SpecialWindowId {
     SpecialWindowId(int id) {
         this.id = id;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getId() {
         return this.id;

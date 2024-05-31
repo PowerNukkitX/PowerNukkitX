@@ -21,6 +21,10 @@ public final class Node implements Comparable<Node> {
     private int G;
     private int H;
     private int F;
+    /**
+     * @deprecated 
+     */
+    
 
     public Node(Vector3 vector3, Node parent, int G, int H) {
         this.vector3 = vector3;
@@ -31,6 +35,10 @@ public final class Node implements Comparable<Node> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int compareTo(@NotNull Node o) {
         Objects.requireNonNull(o);
         if (this.getF() != o.getF()) {
@@ -47,19 +55,31 @@ public final class Node implements Comparable<Node> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return vector3.toString() + "| G:" + this.G + " H:" + this.H + " F" + this.getF() + (this.parent != null ? "\tparent:" + this.parent.getVector3() : "");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Node node = (Node) o;
-        return G == node.G && H == node.H && F == node.F && Objects.equals(vector3, node.vector3) && Objects.equals(parent, node.parent);
+        Node $1 = (Node) o;
+        return $2 == node.G && H == node.H && F == node.F && Objects.equals(vector3, node.vector3) && Objects.equals(parent, node.parent);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return Objects.hash(vector3, parent, G, H, F);
     }

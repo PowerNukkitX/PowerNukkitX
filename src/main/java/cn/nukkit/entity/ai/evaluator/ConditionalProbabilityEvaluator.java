@@ -11,6 +11,10 @@ public class ConditionalProbabilityEvaluator extends ProbabilityEvaluator {
 
     int probability2;
     Function<Entity, Boolean> condition;
+    /**
+     * @deprecated 
+     */
+    
 
     public ConditionalProbabilityEvaluator(int probability1, int probability2, Function<Entity, Boolean> condition, int total) {
         super(probability1, total);
@@ -19,6 +23,10 @@ public class ConditionalProbabilityEvaluator extends ProbabilityEvaluator {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean evaluate(EntityIntelligent entity) {
         if (condition.apply(entity)) {
             return ThreadLocalRandom.current().nextInt(total) < probability2;

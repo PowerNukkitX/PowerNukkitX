@@ -12,6 +12,10 @@ public class MobSpawnParticle extends Particle {
 
     protected final int width;
     protected final int height;
+    /**
+     * @deprecated 
+     */
+    
 
     public MobSpawnParticle(Vector3 pos, float width, float height) {
         super(pos.x, pos.y, pos.z);
@@ -21,7 +25,7 @@ public class MobSpawnParticle extends Particle {
 
     @Override
     public DataPacket[] encode() {
-        LevelEventPacket packet = new LevelEventPacket();
+        LevelEventPacket $1 = new LevelEventPacket();
         packet.evid = LevelEventPacket.EVENT_PARTICLE_MOB_BLOCK_SPAWN;
         packet.x = (float) this.x;
         packet.y = (float) this.y;

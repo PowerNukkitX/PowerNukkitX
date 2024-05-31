@@ -9,6 +9,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class PlayerHotbarProcessor extends DataPacketProcessor<PlayerHotbarPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerHotbarPacket pk) {
         if (pk.windowId != SpecialWindowId.PLAYER.getId()) {
             return; //In PE this should never happen
@@ -17,6 +21,10 @@ public class PlayerHotbarProcessor extends DataPacketProcessor<PlayerHotbarPacke
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.PLAYER_HOTBAR_PACKET;
     }

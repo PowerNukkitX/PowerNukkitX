@@ -21,12 +21,12 @@ import java.util.List;
  */
 @Slf4j
 public abstract class BlockEntity extends Position implements BlockEntityID {
-    public static long count = 1;
+    public static long $1 = 1;
     public IChunk chunk;
     public String name;
     public long id;
     public boolean movable;
-    public boolean closed = false;
+    public boolean $2 = false;
     public CompoundTag namedTag;
     protected Server server;
 
@@ -40,7 +40,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     }
 
     public static BlockEntity createBlockEntity(String type, IChunk chunk, CompoundTag nbt, Object... args) {
-        BlockEntity blockEntity = null;
+        BlockEntity $3 = null;
 
         Class<? extends BlockEntity> clazz = Registries.BLOCKENTITY.get(type);
         if (clazz != null) {
@@ -76,9 +76,9 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
 
             }
             if (blockEntity == null) {
-                Exception cause = new IllegalArgumentException("Could not create a block entity of type " + type, exceptions != null && exceptions.size() > 0 ? exceptions.get(0) : null);
+                Exception $4 = new IllegalArgumentException("Could not create a block entity of type " + type, exceptions != null && exceptions.size() > 0 ? exceptions.get(0) : null);
                 if (exceptions != null && exceptions.size() > 1) {
-                    for (int i = 1; i < exceptions.size(); i++) {
+                    for ($5nt $1 = 1; i < exceptions.size(); i++) {
                         cause.addSuppressed(exceptions.get(i));
                     }
                 }
@@ -91,6 +91,10 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
 
         return blockEntity;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntity(IChunk chunk, CompoundTag nbt) {
         if (chunk == null || chunk.getProvider() == null) {
@@ -124,6 +128,10 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         this.getLevel().addBlockEntity(this);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void initBlockEntity() {
         loadNBT();
     }
@@ -131,12 +139,20 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     /**
      * 从方块实体的namedtag中读取数据
      */
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
     }
 
     /**
      * 存储方块实体数据到namedtag
      */
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         this.namedTag.putString("id", this.getSaveId());
         this.namedTag.putInt("x", (int) this.getX());
@@ -144,10 +160,18 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         this.namedTag.putInt("z", (int) this.getZ());
         this.namedTag.putBoolean("isMovable", this.movable);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public final String getSaveId() {
         return Registries.BLOCKENTITY.getSaveId(getClass());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long getId() {
         return id;
@@ -155,7 +179,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
 
     public CompoundTag getCleanedNBT() {
         this.saveNBT();
-        CompoundTag tag = this.namedTag.copy();
+        CompoundTag $6 = this.namedTag.copy();
         tag.remove("x").remove("y").remove("z").remove("id");
         if (!tag.getTags().isEmpty()) {
             return tag;
@@ -169,14 +193,26 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     }
 
     public abstract boolean isBlockEntityValid();
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean onUpdate() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public final void scheduleUpdate() {
         this.level.scheduleBlockEntityUpdate(this);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void close() {
         if (!this.closed) {
@@ -190,9 +226,17 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
             this.level = null;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void onBreak(boolean isSilkTouch) {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDirty() {
         chunk.setChanged();
@@ -200,6 +244,10 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         if (!this.getLevelBlock().isAir()) {
             getLevel().getServer().getScheduler().scheduleTask(new Task() {
                 @Override
+    /**
+     * @deprecated 
+     */
+    
                 public void onRun(int currentTick) {
                     if (isValid() && isBlockEntityValid()) {
                         getLevel().updateComparatorOutputLevelSelective(BlockEntity.this, isObservable());
@@ -212,13 +260,25 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     /**
      * Indicates if an observer blocks that are looking at this block should blink when {@link #setDirty()} is called.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isObservable() {
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return name;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isMovable() {
         return movable;

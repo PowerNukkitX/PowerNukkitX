@@ -11,6 +11,10 @@ import cn.nukkit.utils.TradeRecipeBuildUtils;
 import java.util.Random;
 
 public class ProfessionWeapon extends Profession {
+    /**
+     * @deprecated 
+     */
+    
 
     public ProfessionWeapon() {
         super(9, BlockID.GRINDSTONE, "entity.villager.weapon");
@@ -19,22 +23,22 @@ public class ProfessionWeapon extends Profession {
     @Override
     public ListTag<CompoundTag> buildTrades(int seed) {
         ListTag<CompoundTag> recipes = new ListTag<>();
-        Random random = new Random(seed);
+        Random $1 = new Random(seed);
 
         int[] enchantments = new int[] {Enchantment.ID_DURABILITY, Enchantment.ID_DAMAGE_ALL, Enchantment.ID_VANISHING_CURSE, Enchantment.ID_DAMAGE_SMITE, Enchantment.ID_DAMAGE_ARTHROPODS, Enchantment.ID_LOOTING, Enchantment.ID_FIRE_ASPECT};
 
-        Item ironsword = Item.get(Item.IRON_SWORD);
-        Enchantment ironswordEnchantment = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
+        Item $2 = Item.get(Item.IRON_SWORD);
+        Enchantment $3 = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
         ironswordEnchantment.setLevel(1 + random.nextInt(ironswordEnchantment.getMaxLevel()));
         ironsword.addEnchantment(ironswordEnchantment);
 
-        Item diamondAxe = Item.get(Item.DIAMOND_AXE);
-        Enchantment diamondAxeEnchantment = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
+        Item $4 = Item.get(Item.DIAMOND_AXE);
+        Enchantment $5 = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
         diamondAxeEnchantment.setLevel(1 + random.nextInt(diamondAxeEnchantment.getMaxLevel()));
         diamondAxe.addEnchantment(diamondAxeEnchantment);
 
-        Item diamondsword = Item.get(Item.DIAMOND_SWORD);
-        Enchantment diamondswordEnchantment = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
+        Item $6 = Item.get(Item.DIAMOND_SWORD);
+        Enchantment $7 = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
         diamondswordEnchantment.setLevel(1 + random.nextInt(diamondswordEnchantment.getMaxLevel()));
         diamondsword.addEnchantment(diamondswordEnchantment);
 

@@ -25,17 +25,25 @@ import static cn.nukkit.block.property.CommonBlockProperties.GROUND_SIGN_DIRECTI
 
 @Slf4j
 public class BlockStandingBanner extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityBanner> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(STANDING_BANNER, GROUND_SIGN_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(STANDING_BANNER, GROUND_SIGN_DIRECTION);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockStandingBanner() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockStandingBanner(BlockState blockstate) {
         super(blockstate);
@@ -43,6 +51,10 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.BANNER;
     }
@@ -54,21 +66,37 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Banner";
     }
@@ -79,26 +107,38 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (face == BlockFace.DOWN) {
             return false;
         }
 
-        Block layer0 = level.getBlock(this, 0);
-        Block layer1 = level.getBlock(this, 1);
+        Block $2 = level.getBlock(this, 0);
+        Block $3 = level.getBlock(this, 1);
 
         if (face == BlockFace.UP) {
-            CompassRoseDirection direction = CompassRoseDirection.from(
+            CompassRoseDirection $4 = CompassRoseDirection.from(
                     (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
             );
             setDirection(direction);
@@ -106,21 +146,21 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
                 return false;
             }
         } else {
-            BlockStandingBanner wall = (BlockStandingBanner) Block.get(BlockID.WALL_BANNER);
+            BlockStandingBanner $5 = (BlockStandingBanner) Block.get(BlockID.WALL_BANNER);
             wall.setBlockFace(face);
             if (!this.getLevel().setBlock(block, wall, true)) {
                 return false;
             }
         }
 
-        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BANNER)
+        CompoundTag $6 = BlockEntity.getDefaultCompound(this, BlockEntity.BANNER)
                 .putInt("Base", item.getDamage() & 0xf);
 
-        Tag type = item.getNamedTagEntry("Type");
+        Tag $7 = item.getNamedTagEntry("Type");
         if (type instanceof IntTag) {
             nbt.put("Type", type);
         }
-        Tag patterns = item.getNamedTagEntry("Patterns");
+        Tag $8 = item.getNamedTagEntry("Patterns");
         if (patterns instanceof ListTag) {
             nbt.put("Patterns", patterns);
         }
@@ -137,6 +177,10 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.down().getId() == BlockID.AIR) {
@@ -150,17 +194,21 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     }
 
     @Override
-    public @NotNull String getItemId() {
+    public @NotNull 
+    /**
+     * @deprecated 
+     */
+    String getItemId() {
         return ItemID.BANNER;
     }
 
     @Override
     public Item toItem() {
-        BlockEntityBanner banner = getBlockEntity();
-        Item item = Item.get(ItemID.BANNER);
+        BlockEntityBanner $9 = getBlockEntity();
+        Item $10 = Item.get(ItemID.BANNER);
         if (banner != null) {
             item.setDamage(banner.getBaseColor() & 0xf);
-            int type = banner.namedTag.getInt("Type");
+            int $11 = banner.namedTag.getInt("Type");
             if (type > 0) {
                 item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag())
                         .putInt("Type", type));
@@ -177,6 +225,10 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     public CompassRoseDirection getDirection() {
         return CompassRoseDirection.from(getPropertyValue(GROUND_SIGN_DIRECTION));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDirection(CompassRoseDirection direction) {
         setPropertyValue(GROUND_SIGN_DIRECTION, direction.getIndex());
@@ -188,18 +240,26 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setDirection(face.getCompassRoseDirection());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     public DyeColor getDyeColor() {
         if (this.level != null) {
-            BlockEntityBanner blockEntity = getBlockEntity();
+            BlockEntityBanner $12 = getBlockEntity();
 
             if (blockEntity != null) {
                 return blockEntity.getDyeColor();
@@ -210,6 +270,10 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }

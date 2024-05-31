@@ -16,22 +16,34 @@ import javax.annotation.Nullable;
  * @since 7.8.2017
  */
 public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockEntityJukebox> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(JUKEBOX);
+    public static final BlockProperties $1 = new BlockProperties(JUKEBOX);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockJukebox() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockJukebox(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Jukebox";
     }
@@ -42,11 +54,19 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getBlockEntityType() {
         return BlockEntity.JUKEBOX;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
@@ -57,20 +77,28 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        BlockEntityJukebox jukebox = getOrCreateBlockEntity();
+        BlockEntityJukebox $2 = getOrCreateBlockEntity();
         if (!jukebox.getRecordItem().isNull()) {
             jukebox.dropItem();
             return true;
         }
 
         if (!item.isNull() && item instanceof ItemMusicDisc) {
-            Item record = item.clone();
+            Item $3 = item.clone();
             record.count = 1;
             item.count--;
             jukebox.setRecordItem(record);
@@ -82,6 +110,10 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }

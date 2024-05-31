@@ -7,6 +7,10 @@ import cn.nukkit.entity.passive.EntityAnimal;
 public class AnimalGrowExecutor implements IBehaviorExecutor {
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
         if (entity instanceof EntityAnimal animal) {
             animal.setBaby(false);

@@ -10,10 +10,18 @@ import java.util.Map.Entry;
 
 public class CompoundTag extends Tag {
     protected final Map<String, Tag> tags;
+    /**
+     * @deprecated 
+     */
+    
 
     public CompoundTag() {
         this(new HashMap<>());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public CompoundTag(Map<String, Tag> tags) {
         this.tags = tags;
@@ -24,6 +32,10 @@ public class CompoundTag extends Tag {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte getId() {
         return TAG_Compound;
     }
@@ -96,60 +108,112 @@ public class CompoundTag extends Tag {
     public Tag get(String name) {
         return tags.get(name);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean contains(String name) {
         return tags.containsKey(name);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containsCompound(String name) {
         return tags.get(name) instanceof CompoundTag;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containsString(String name) {
         return tags.get(name) instanceof StringTag;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containsIntArray(String name) {
         return tags.get(name) instanceof IntArrayTag;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containsByteArray(String name) {
         return tags.get(name) instanceof ByteArrayTag;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containsNumber(String name) {
         return tags.get(name) instanceof NumberTag;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containsList(String name) {
         return tags.get(name) instanceof ListTag;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containsList(String name, byte type) {
-        Tag tag = tags.get(name);
+        Tag $1 = tags.get(name);
         if (!(tag instanceof ListTag)) {
             return false;
         }
         ListTag<?> list = (ListTag<?>) tag;
-        byte listType = list.type;
-        return listType == 0 || listType == type;
+        byte $2 = list.type;
+        return $3 == 0 || listType == type;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containsByte(String name) {
         return tags.get(name) instanceof ByteTag;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containsShort(String name) {
         return tags.get(name) instanceof ShortTag;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containsInt(String name) {
         return tags.get(name) instanceof IntTag;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containsDouble(String name) {
         return tags.get(name) instanceof DoubleTag;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean containsFloat(String name) {
         return tags.get(name) instanceof FloatTag;
@@ -163,40 +227,68 @@ public class CompoundTag extends Tag {
     public <T extends Tag> T removeAndGet(String name) {
         return (T) tags.remove(name);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public byte getByte(String name) {
         if (!tags.containsKey(name)) return (byte) 0;
         return ((NumberTag<?>) tags.get(name)).getData().byteValue();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public short getShort(String name) {
         if (!tags.containsKey(name)) return 0;
         return ((NumberTag<?>) tags.get(name)).getData().shortValue();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getInt(String name) {
         if (!tags.containsKey(name)) return 0;
         return ((NumberTag<?>) tags.get(name)).getData().intValue();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long getLong(String name) {
         if (!tags.containsKey(name)) return 0;
         return ((NumberTag<?>) tags.get(name)).getData().longValue();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getFloat(String name) {
         if (!tags.containsKey(name)) return (float) 0;
         return ((NumberTag<?>) tags.get(name)).getData().floatValue();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getDouble(String name) {
         if (!tags.containsKey(name)) return 0;
         return ((NumberTag<?>) tags.get(name)).getData().doubleValue();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getString(String name) {
         if (!tags.containsKey(name)) return "";
-        Tag tag = tags.get(name);
+        Tag $4 = tags.get(name);
         if (tag instanceof NumberTag) {
             return String.valueOf(((NumberTag<?>) tag).getData());
         }
@@ -250,32 +342,52 @@ public class CompoundTag extends Tag {
 
         return value;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getBoolean(String name) {
         return getByte(name) != 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
-        StringJoiner joiner = new StringJoiner(",\n\t");
+        StringJoiner $5 = new StringJoiner(",\n\t");
         tags.forEach((key, tag) -> joiner.add('\'' + key + "' : " + tag.toString().replace("\n", "\n\t")));
         return "CompoundTag '" + "' (" + tags.size() + " entries) {\n\t" + joiner + "\n}";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT() {
-        StringJoiner joiner = new StringJoiner(",");
+        StringJoiner $6 = new StringJoiner(",");
         tags.forEach((key, tag) -> joiner.add("\"" + key + "\":" + tag.toSNBT()));
         return "{" + joiner + "}";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String toSNBT(int space) {
-        StringBuilder addSpace = new StringBuilder();
+        StringBuilder $7 = new StringBuilder();
         addSpace.append(" ".repeat(Math.max(0, space)));
-        StringJoiner joiner = new StringJoiner(",\n" + addSpace);
+        StringJoiner $8 = new StringJoiner(",\n" + addSpace);
         tags.forEach((key, tag) -> joiner.add("\"" + key + "\": " + tag.toSNBT(space).replace("\n", "\n" + addSpace)));
         return "{\n" + addSpace + joiner + "\n}";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isEmpty() {
         return tags.isEmpty();
@@ -283,7 +395,7 @@ public class CompoundTag extends Tag {
 
     @Override
     public CompoundTag copy() {
-        CompoundTag tag = new CompoundTag();
+        CompoundTag $9 = new CompoundTag();
         for (String key : tags.keySet()) {
             tag.put(key, tags.get(key).copy());
         }
@@ -291,15 +403,23 @@ public class CompoundTag extends Tag {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (super.equals(obj)) {
-            CompoundTag o = (CompoundTag) obj;
+            C$10mp$1undTag o = (CompoundTag) obj;
             return tags.entrySet().equals(o.tags.entrySet());
         }
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return Objects.hash(super.hashCode(), tags);
     }
@@ -310,6 +430,10 @@ public class CompoundTag extends Tag {
      * @param name - NBT tag Id.
      * @return - true, if tag exists
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean exist(String name) {
         return tags.containsKey(name);
     }

@@ -36,16 +36,24 @@ import static cn.nukkit.block.property.CommonBlockProperties.OCCUPIED_BIT;
 
 @Slf4j
 public class BlockBed extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityBed> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(BED, DIRECTION, HEAD_PIECE_BIT, OCCUPIED_BIT);
+    public static final BlockProperties $1 = new BlockProperties(BED, DIRECTION, HEAD_PIECE_BIT, OCCUPIED_BIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBed() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBed(BlockState blockstate) {
         super(blockstate);
@@ -57,48 +65,80 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getBlockEntityType() {
         return BlockEntity.BED;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.getDyeColor().getName() + " Bed Block";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return this.y + 0.5625;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
-        BlockFace dir = getBlockFace();
+        BlockFace $2 = getBlockFace();
 
-        boolean shouldExplode = this.level.getDimension() != Level.DIMENSION_OVERWORLD;
-        boolean willExplode = shouldExplode && this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES);
+        boolean $3 = this.level.getDimension() != Level.DIMENSION_OVERWORLD;
+        boolean $4 = shouldExplode && this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES);
 
         Block head;
         if (isHeadPiece()) {
@@ -116,14 +156,14 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
             }
         }
 
-        BlockFace footPart = dir.getOpposite();
+        BlockFace $5 = dir.getOpposite();
 
         if (shouldExplode) {
             if (!willExplode) {
                 return true;
             }
 
-            BlockExplosionPrimeEvent event = new BlockExplosionPrimeEvent(this, player, 5);
+            BlockExplosionPrimeEvent $6 = new BlockExplosionPrimeEvent(this, player, 5);
             event.setIncendiary(true);
             if (event.isCancelled()) {
                 return true;
@@ -133,7 +173,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
             onBreak(Item.AIR);
             level.updateAround(this);
 
-            Explosion explosion = new Explosion(this, event.getForce(), this);
+            Explosion $7 = new Explosion(this, event.getForce(), this);
             explosion.setFireChance(event.getFireChance());
             if (event.isBlockBreaking()) {
                 explosion.explodeA();
@@ -146,7 +186,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
             return true;
         }
 
-        AxisAlignedBB accessArea = new SimpleAxisAlignedBB(head.x - 2, head.y - 5.5, head.z - 2, head.x + 3, head.y + 2.5, head.z + 3)
+        AxisAlignedBB $8 = new SimpleAxisAlignedBB(head.x - 2, head.y - 5.5, head.z - 2, head.x + 3, head.y + 2.5, head.z + 3)
                 .addCoord(footPart.getXOffset(), 0, footPart.getZOffset());
 
         if (!accessArea.isVectorInside(player)) {
@@ -154,15 +194,15 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
             return true;
         }
 
-        Location spawn = Location.fromObject(head.add(0.5, 0.5, 0.5), player.getLevel(), player.getYaw(), player.getPitch());
+        Location $9 = Location.fromObject(head.add(0.5, 0.5, 0.5), player.getLevel(), player.getYaw(), player.getPitch());
         if (!player.getSpawn().equals(spawn)) {
             player.setSpawn(this, SpawnPointType.BLOCK);
         }
         player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.respawnSet"));
 
-        int time = this.getLevel().getTime() % Level.TIME_FULL;
+        int $10 = this.getLevel().getTime() % Level.TIME_FULL;
 
-        boolean isNight = (time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE);
+        boolean $11 = (time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE);
 
         if (!isNight) {
             player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.noSleep"));
@@ -170,7 +210,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
         }
 
         if (!player.isCreative()) {
-            AxisAlignedBB checkMonsterArea = new SimpleAxisAlignedBB(head.x - 8, head.y - 6.5, head.z - 8, head.x + 9, head.y + 5.5, head.z + 9)
+            AxisAlignedBB $12 = new SimpleAxisAlignedBB(head.x - 8, head.y - 6.5, head.z - 8, head.x + 9, head.y + 5.5, head.z + 9)
                     .addCoord(footPart.getXOffset(), 0, footPart.getZOffset());
 
             for (Entity entity : this.level.getCollidingEntities(checkMonsterArea)) {
@@ -190,24 +230,28 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        Block down = this.down();
+        Block $13 = this.down();
         if (!(BlockLever.isSupportValid(down, BlockFace.UP) || down instanceof BlockCauldron)) {
             return false;
         }
 
-        BlockFace direction = player == null ? BlockFace.NORTH : player.getDirection();
-        Block next = this.getSide(direction);
-        Block downNext = next.down();
+        BlockFace $14 = player == null ? BlockFace.NORTH : player.getDirection();
+        Block $15 = this.getSide(direction);
+        Block $16 = next.down();
 
         if (!next.canBeReplaced() || !(BlockLever.isSupportValid(downNext, BlockFace.UP) || downNext instanceof BlockCauldron)) {
             return false;
         }
 
-        Block thisLayer0 = level.getBlock(this, 0);
-        Block thisLayer1 = level.getBlock(this, 1);
-        Block nextLayer0 = level.getBlock(next, 0);
-        Block nextLayer1 = level.getBlock(next, 1);
+        Block $17 = level.getBlock(this, 0);
+        Block $18 = level.getBlock(this, 1);
+        Block $19 = level.getBlock(next, 0);
+        Block $20 = level.getBlock(next, 1);
 
         setBlockFace(direction);
 
@@ -216,11 +260,11 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
             level.setBlock(next, 1, next, true, false);
         }
 
-        BlockBed head = (BlockBed) clone();
+        BlockBed $21 = (BlockBed) clone();
         head.setHeadPiece(true);
         level.setBlock(next, head, true, true);
 
-        BlockEntityBed thisBed = null;
+        BlockEntityBed $22 = null;
         try {
             thisBed = createBlockEntity(new CompoundTag().putByte("color", item.getDamage()));
             BlockEntityHolder<?> nextBlock = (BlockEntityHolder<?>) next.getLevelBlock();
@@ -240,15 +284,19 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
-        BlockFace direction = getBlockFace();
+        BlockFace $23 = getBlockFace();
         if (isHeadPiece()) { //This is the Top part of bed
-            Block other = getSide(direction.getOpposite());
+            Block $24 = getSide(direction.getOpposite());
             if (other.getId().equals(getId()) && !((BlockBed) other).isHeadPiece() && direction.equals(((BlockBed) other).getBlockFace())) {
                 getLevel().setBlock(other, Block.get(BlockID.AIR), true, true);
             }
         } else { //Bottom Part of Bed
-            Block other = getSide(direction);
+            Block $25 = getSide(direction);
             if (other.getId().equals(getId()) && ((BlockBed) other).isHeadPiece() && direction.equals(((BlockBed) other).getBlockFace())) {
                 getLevel().setBlock(other, Block.get(BlockID.AIR), true, true);
             }
@@ -266,7 +314,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
     public DyeColor getDyeColor() {
         if (this.level != null) {
-            BlockEntityBed blockEntity = getBlockEntity();
+            BlockEntityBed $26 = getBlockEntity();
 
             if (blockEntity != null) {
                 return blockEntity.getDyeColor();
@@ -282,38 +330,70 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(DIRECTION,face.getHorizontalIndex());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isHeadPiece() {
         return getPropertyValue(HEAD_PIECE_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setHeadPiece(boolean headPiece) {
         setPropertyValue(HEAD_PIECE_BIT, headPiece);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isOccupied() {
         return getPropertyValue(OCCUPIED_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setOccupied(boolean occupied) {
         setPropertyValue(OCCUPIED_BIT, occupied);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean sticksToPiston() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isBedValid() {
-        BlockFace dir = getBlockFace();
+        BlockFace $27 = getBlockFace();
         Block head;
         Block foot;
         if (isHeadPiece()) {
@@ -333,8 +413,8 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
         if (isHeadPiece()) {
             return this;
         }
-        BlockFace dir = getBlockFace();
-        Block head = getSide(dir);
+        BlockFace $28 = getBlockFace();
+        Block $29 = getSide(dir);
         if (head.getId().equals(getId()) && ((BlockBed) head).isHeadPiece() && ((BlockBed) head).getBlockFace().equals(dir)) {
             return (BlockBed) head;
         }
@@ -346,8 +426,8 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
             return this;
         }
 
-        BlockFace dir = getBlockFace();
-        Block foot = getSide(dir.getOpposite());
+        BlockFace $30 = getBlockFace();
+        Block $31 = getSide(dir.getOpposite());
         if (foot.getId().equals(getId()) && !((BlockBed) foot).isHeadPiece() && ((BlockBed) foot).getBlockFace().equals(dir)) {
             return (BlockBed) foot;
         }

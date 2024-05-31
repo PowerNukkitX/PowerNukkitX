@@ -6,29 +6,49 @@ import cn.nukkit.entity.Entity;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EnchantmentDamageAll extends EnchantmentDamage {
+    /**
+     * @deprecated 
+     */
+    
 
     public EnchantmentDamageAll() {
         super(ID_DAMAGE_ALL, "all", Rarity.COMMON, TYPE.ALL);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMinEnchantAbility(int level) {
         return 1 + (level - 1) * 11;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxEnchantAbility(int level) {
         return this.getMinEnchantAbility(level) + 20;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxLevel() {
         return 4;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getDamageBonus(Entity entity) {
-        int level = getLevel();
+        int $1 = getLevel();
         if (level <= 0) {
             return 0;
         }

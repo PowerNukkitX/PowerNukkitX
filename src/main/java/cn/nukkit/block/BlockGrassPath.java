@@ -12,11 +12,19 @@ import org.jetbrains.annotations.NotNull;
  * @since 2015/11/22
  */
 public class BlockGrassPath extends BlockGrassBlock {
-    public static final BlockProperties PROPERTIES = new BlockProperties(GRASS_PATH);
+    public static final BlockProperties $1 = new BlockProperties(GRASS_PATH);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockGrassPath() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockGrassPath(BlockState blockState) {
         super(blockState);
@@ -28,21 +36,37 @@ public class BlockGrassPath extends BlockGrassBlock {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Dirt Path";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.65;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0.65;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.up().isSolid()) {
@@ -55,6 +79,10 @@ public class BlockGrassPath extends BlockGrassBlock {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isHoe()) {
             item.useOn(this);
@@ -69,6 +97,10 @@ public class BlockGrassPath extends BlockGrassBlock {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isTransparent() {
         return true;
     }

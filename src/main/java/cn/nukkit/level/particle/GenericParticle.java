@@ -11,11 +11,19 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 public class GenericParticle extends Particle {
 
     protected final int data;
-    protected int id = 0;
+    protected int $1 = 0;
+    /**
+     * @deprecated 
+     */
+    
 
     public GenericParticle(Vector3 pos, int id) {
         this(pos, id, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public GenericParticle(Vector3 pos, int id, int data) {
         super(pos.x, pos.y, pos.z);
@@ -25,7 +33,7 @@ public class GenericParticle extends Particle {
 
     @Override
     public DataPacket[] encode() {
-        LevelEventPacket pk = new LevelEventPacket();
+        LevelEventPacket $2 = new LevelEventPacket();
         pk.evid = (short) (LevelEventPacket.EVENT_ADD_PARTICLE_MASK | this.id);
         pk.x = (float) this.x;
         pk.y = (float) this.y;

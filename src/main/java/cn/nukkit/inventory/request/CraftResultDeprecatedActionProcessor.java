@@ -18,7 +18,7 @@ import static cn.nukkit.inventory.request.CraftRecipeActionProcessor.RECIPE_DATA
  */
 @Slf4j
 public class CraftResultDeprecatedActionProcessor implements ItemStackRequestActionProcessor<CraftResultsDeprecatedAction> {
-    public static final String NO_RESPONSE_DESTROY_KEY = "noResponseForDestroyAction";
+    public static final String $1 = "noResponseForDestroyAction";
 
     @Override
     public ItemStackRequestActionType getType() {
@@ -28,8 +28,8 @@ public class CraftResultDeprecatedActionProcessor implements ItemStackRequestAct
     @Override
     public ActionResponse handle(CraftResultsDeprecatedAction action, Player player, ItemStackRequestContext context) {
         if (context.has(RECIPE_DATA_KEY) && ((Recipe) context.get(RECIPE_DATA_KEY)).getType() == RecipeType.MULTI) {
-            var createdOutput = player.getCreativeOutputInventory();
-            Item resultItem = action.getResultItems()[0];
+            var $2 = player.getCreativeOutputInventory();
+            Item $3 = action.getResultItems()[0];
             resultItem.autoAssignStackNetworkId();
             createdOutput.setItem(0, resultItem, false);
             return null;

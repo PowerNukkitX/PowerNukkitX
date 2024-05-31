@@ -3,99 +3,99 @@ package cn.nukkit.blockentity;
 import java.lang.String;
 
 public interface BlockEntityID {
-    String BANNER = "Banner";
+    String $1 = "Banner";
 
-    String BARREL = "Barrel";
+    String $2 = "Barrel";
 
-    String BEACON = "Beacon";
+    String $3 = "Beacon";
 
-    String BED = "Bed";
+    String $4 = "Bed";
 
-    String BEEHIVE = "Beehive";
+    String $5 = "Beehive";
 
-    String BELL = "Bell";
+    String $6 = "Bell";
 
-    String BLAST_FURNACE = "BlastFurnace";
+    String $7 = "BlastFurnace";
 
-    String BREWING_STAND = "BrewingStand";
+    String $8 = "BrewingStand";
 
-    String BRUSHABLE_BLOCK = "BrushableBlock";
+    String $9 = "BrushableBlock";
 
-    String CALIBRATED_SCULK_SENSOR = "CalibratedSculkSensor";
+    String $10 = "CalibratedSculkSensor";
 
-    String CAMPFIRE = "Campfire";
+    String $11 = "Campfire";
 
-    String CAULDRON = "Cauldron";
+    String $12 = "Cauldron";
 
-    String CHEST = "Chest";
+    String $13 = "Chest";
 
-    String CHISELED_BOOKSHELF = "ChiseledBookshelf";
+    String $14 = "ChiseledBookshelf";
 
-    String COMMAND_BLOCK = "CommandBlock";
+    String $15 = "CommandBlock";
 
-    String COMPARATOR = "Comparator";
+    String $16 = "Comparator";
 
-    String CONDUIT = "Conduit";
+    String $17 = "Conduit";
 
-    String DAYLIGHT_DETECTOR = "DaylightDetector";
+    String $18 = "DaylightDetector";
 
-    String DECORATED_POT = "DecoratedPot";
+    String $19 = "DecoratedPot";
 
-    String DISPENSER = "Dispenser";
+    String $20 = "Dispenser";
 
-    String DROPPER = "Dropper";
+    String $21 = "Dropper";
 
-    String ENCHANT_TABLE = "EnchantTable";
+    String $22 = "EnchantTable";
 
-    String END_PORTAL = "EndPortal";
+    String $23 = "EndPortal";
 
-    String ENDER_CHEST = "EnderChest";
+    String $24 = "EnderChest";
 
-    String FLOWER_POT = "FlowerPot";
+    String $25 = "FlowerPot";
 
-    String FURNACE = "Furnace";
+    String $26 = "Furnace";
 
-    String GLOW_ITEM_FRAME = "GlowItemFrame";
+    String $27 = "GlowItemFrame";
 
-    String HANGING_SIGN = "HangingSign";
+    String $28 = "HangingSign";
 
-    String HOPPER = "Hopper";
+    String $29 = "Hopper";
 
-    String ITEM_FRAME = "ItemFrame";
+    String $30 = "ItemFrame";
 
-    String JUKEBOX = "Jukebox";
+    String $31 = "Jukebox";
 
-    String LECTERN = "Lectern";
+    String $32 = "Lectern";
 
-    String LODESTONE = "Lodestone";
+    String $33 = "Lodestone";
 
-    String MOB_SPAWNER = "MobSpawner";
+    String $34 = "MobSpawner";
 
-    String MUSIC = "Music";
+    String $35 = "Music";
 
-    String PISTON_ARM = "PistonArm";
+    String $36 = "PistonArm";
 
-    String SCULK_CATALYST = "SculkCatalyst";
+    String $37 = "SculkCatalyst";
 
-    String SCULK_SENSOR = "SculkSensor";
+    String $38 = "SculkSensor";
 
-    String SCULK_SHRIEKER = "SculkShrieker";
+    String $39 = "SculkShrieker";
 
-    String SHULKER_BOX = "ShulkerBox";
+    String $40 = "ShulkerBox";
 
-    String SIGN = "Sign";
+    String $41 = "Sign";
 
-    String SKULL = "Skull";
+    String $42 = "Skull";
 
-    String SMOKER = "Smoker";
+    String $43 = "Smoker";
 
-    String STRUCTURE_BLOCK = "StructureBlock";
+    String $44 = "StructureBlock";
 
-    String MOVING_BLOCK = "MovingBlock";
+    String $45 = "MovingBlock";
 
-    String NETHER_REACTOR = "NetherReactor";
+    String $46 = "NetherReactor";
 
-    String END_GATEWAY = "EndGateway";
+    String $47 = "EndGateway";
 
-    String TARGET = "Target";//???? todo check this
+    String $48 = "Target";//???? todo check this
 }

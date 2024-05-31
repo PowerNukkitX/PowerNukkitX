@@ -4,17 +4,33 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 
 public class ItemWood extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemWood() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemWood(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemWood(Integer meta, int count) {
         super(WOOD, meta, count);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void internalAdjust() {
         switch (getDamage()) {
@@ -72,6 +88,10 @@ public class ItemWood extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equalItemBlock(Item item) {
         if (this.isBlock() && item.isBlock()) {
             return  this.getBlockUnsafe().getProperties() == item.getBlockUnsafe().getProperties();

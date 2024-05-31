@@ -14,30 +14,34 @@ import org.jetbrains.annotations.NotNull;
 
 public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormResponsePacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ModalFormResponsePacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         if (!player.spawned || !player.isAlive()) {
             return;
         }
         if (playerHandle.getFormWindows().containsKey(pk.formId)) {
-            FormWindow window = playerHandle.getFormWindows().remove(pk.formId);
+            FormWindow $2 = playerHandle.getFormWindows().remove(pk.formId);
             window.setResponse(pk.data.trim());
 
             for (FormResponseHandler handler : window.getHandlers()) {
                 handler.handle(player, pk.formId);
             }
 
-            PlayerFormRespondedEvent event = new PlayerFormRespondedEvent(player, pk.formId, window);
+            PlayerFormRespondedEvent $3 = new PlayerFormRespondedEvent(player, pk.formId, window);
             player.getServer().getPluginManager().callEvent(event);
         } else if (playerHandle.getServerSettings().containsKey(pk.formId)) {
-            FormWindow window = playerHandle.getServerSettings().get(pk.formId);
+            FormWindow $4 = playerHandle.getServerSettings().get(pk.formId);
             window.setResponse(pk.data.trim());
 
             for (FormResponseHandler handler : window.getHandlers()) {
                 handler.handle(player, pk.formId);
             }
 
-            PlayerSettingsRespondedEvent event = new PlayerSettingsRespondedEvent(player, pk.formId, window);
+            PlayerSettingsRespondedEvent $5 = new PlayerSettingsRespondedEvent(player, pk.formId, window);
             player.getServer().getPluginManager().callEvent(event);
 
             //Set back new settings if not been cancelled
@@ -48,6 +52,10 @@ public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormRes
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.MODAL_FORM_RESPONSE_PACKET;
     }

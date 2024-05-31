@@ -11,11 +11,19 @@ import javax.annotation.Nullable;
 
 
 public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+    /**
+     * @deprecated 
+     */
+    
     public BlockFungus(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!isValidSupport(down())) {
             return false;
@@ -24,6 +32,10 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL && !isValidSupport(down())) {
             level.useBreakOn(this);
@@ -34,6 +46,10 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isNull() || !item.isFertilizer()) {
             return false;
@@ -45,7 +61,7 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
             item.count--;
         }
 
-        Block down = down();
+        Block $1 = down();
         if (!isValidSupport(down)) {
             level.useBreakOn(this);
             return true;
@@ -62,6 +78,10 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
 
     protected abstract boolean canGrowOn(Block support);
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean isValidSupport(@NotNull Block support) {
         return switch (support.getId()) {
             case GRASS_BLOCK, DIRT, PODZOL, FARMLAND, CRIMSON_NYLIUM, WARPED_NYLIUM, SOUL_SOIL, MYCELIUM -> true;
@@ -70,6 +90,10 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }

@@ -14,10 +14,18 @@ import java.util.UUID;
 public class EntityScorer implements IScorer {
 
     private UUID entityUuid;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityScorer(UUID uuid) {
         this.entityUuid = uuid;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityScorer(Entity entity) {
         this.entityUuid = entity.getUniqueId();
@@ -29,11 +37,19 @@ public class EntityScorer implements IScorer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return entityUuid.hashCode();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (obj instanceof EntityScorer entityScorer) {
             return entityUuid.equals(entityScorer.entityUuid);
@@ -42,6 +58,10 @@ public class EntityScorer implements IScorer {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return entityUuid.toString();
     }

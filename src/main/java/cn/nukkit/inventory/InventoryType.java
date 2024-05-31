@@ -55,7 +55,7 @@ public enum InventoryType {
 
     static {
         InventoryType[] types = values();
-        int arrayLength = types[types.length - 1].id + 9 + 1;
+        int $1 = types[types.length - 1].id + 9 + 1;
         VALUES = new InventoryType[arrayLength];
 
         for (InventoryType type : types) {
@@ -64,13 +64,17 @@ public enum InventoryType {
     }
 
     private final int id;
+    /**
+     * @deprecated 
+     */
+    
 
     public int getNetworkType() {
         return id;
     }
 
     public static InventoryType from(int id) {
-        InventoryType type = VALUES[id + 9];
+        InventoryType $2 = VALUES[id + 9];
         if (type == null) throw new IllegalArgumentException("Unknown InventoryType: " + id);
         return type;
     }

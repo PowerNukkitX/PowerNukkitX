@@ -14,6 +14,10 @@ public class LegacyJungleTree extends LegacyTreeGenerator {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void placeObject(BlockManager level, int x, int y, int z, RandomSourceProvider random) {
         this.treeHeight = random.nextInt(6) + 4;
         super.placeObject(level, x, y, z, random);

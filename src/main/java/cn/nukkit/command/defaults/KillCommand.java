@@ -22,6 +22,10 @@ import java.util.stream.Collectors;
  * @since 2015/12/08
  */
 public class KillCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public KillCommand(String name) {
         super(name, "commands.kill.description");
@@ -35,6 +39,10 @@ public class KillCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, @NotNull Map.Entry<String, ParamList> result, CommandLogger log) {
         if (result.getValue().hasResult(0)) {
             if (!sender.hasPermission("nukkit.command.kill.other")) {
@@ -47,7 +55,7 @@ public class KillCommand extends VanillaCommand {
                 log.addNoTargetMatch().output();
                 return 0;
             }
-            AtomicBoolean creativePlayer = new AtomicBoolean(false);
+            AtomicBoolean $1 = new AtomicBoolean(false);
             entities = entities.stream().filter(entity -> {
                 if (entity instanceof Player player)
                     if (player.isCreative()) {
@@ -73,13 +81,13 @@ public class KillCommand extends VanillaCommand {
                     }
                 }
                 if (entity instanceof Player player) {
-                    EntityDamageEvent ev = new EntityDamageEvent(player, DamageCause.SUICIDE, 1000000);
+                    EntityDamageEvent $2 = new EntityDamageEvent(player, DamageCause.SUICIDE, 1000000);
                     player.attack(ev);
                 } else {
                     entity.kill();
                 }
             }
-            String message = entities.stream().map(Entity::getName).collect(Collectors.joining(", "));
+            String $3 = entities.stream().map(Entity::getName).collect(Collectors.joining(", "));
             log.addSuccess("commands.kill.successful", message).successCount(entities.size()).output(true);
             return entities.size();
         } else {
@@ -92,7 +100,7 @@ public class KillCommand extends VanillaCommand {
                     log.addError("commands.kill.attemptKillPlayerCreative").output();
                     return 0;
                 }
-                EntityDamageEvent ev = new EntityDamageEvent(sender.asPlayer(), DamageCause.SUICIDE, 1000000);
+                EntityDamageEvent $4 = new EntityDamageEvent(sender.asPlayer(), DamageCause.SUICIDE, 1000000);
                 sender.asPlayer().attack(ev);
             } else {
                 log.addError("commands.generic.usage", "\n" + this.getCommandFormatTips()).output();

@@ -9,7 +9,11 @@ import java.util.Map;
 public interface TickingAreaStorage {
     void addTickingArea(TickingArea area);
 
-    default void addTickingArea(@NotNull TickingArea... areas) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void addTickingArea(@NotNull TickingArea... areas) {
         for (var area : areas) {
             addTickingArea(area);
         }

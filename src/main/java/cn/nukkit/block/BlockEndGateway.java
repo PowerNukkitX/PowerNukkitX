@@ -17,22 +17,34 @@ import javax.annotation.Nullable;
  * @author PikyCZ
  */
 public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<BlockEntityEndGateway> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(END_GATEWAY);
+    public static final BlockProperties $1 = new BlockProperties(END_GATEWAY);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEndGateway() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEndGateway(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "End Gateway";
     }
@@ -43,16 +55,28 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getBlockEntityType() {
         return BlockEntity.END_GATEWAY;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         if (this.getLevel() == null) {
             return false;
@@ -66,26 +90,46 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return -1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 3600000;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 15;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
@@ -96,16 +140,28 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePushed() {
         return false;
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePulled() {
         return false;
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         if (this.getLevel() == null) {
             return;
@@ -119,7 +175,7 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
             return;
         }
         
-        BlockEntityEndGateway endGateway = getOrCreateBlockEntity();
+        BlockEntityEndGateway $2 = getOrCreateBlockEntity();
         if (endGateway == null) {
             return;
         }

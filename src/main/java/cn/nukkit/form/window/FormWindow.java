@@ -8,8 +8,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 
 public abstract class FormWindow {
-    protected transient boolean closed = false;
+    protected transient boolean $1 = false;
     protected final transient List<FormResponseHandler> handlers = new ObjectArrayList<>();
+    /**
+     * @deprecated 
+     */
+    
 
     public String getJSONData() {
         return JSONUtils.to(this);
@@ -18,10 +22,18 @@ public abstract class FormWindow {
     public abstract void setResponse(String data);
 
     public abstract FormResponse getResponse();
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean wasClosed() {
         return closed;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addHandler(FormResponseHandler handler) {
         this.handlers.add(handler);

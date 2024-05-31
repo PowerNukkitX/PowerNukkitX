@@ -14,18 +14,30 @@ import java.util.concurrent.ExecutionException;
 public class MultipleExecutor implements IBehaviorExecutor {
 
     protected Set<IBehaviorExecutor> executors;
+    /**
+     * @deprecated 
+     */
+    
 
     public MultipleExecutor(@NotNull Set<IBehaviorExecutor> executors) {
         this.executors = executors;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public MultipleExecutor(@NotNull IBehaviorExecutor... executors) {
         this.executors = Set.of(executors);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
-        var tasks = new ArrayList<CompletableFuture<?>>();
+        var $1 = new ArrayList<CompletableFuture<?>>();
         for (IBehaviorExecutor executor : executors) {
             tasks.add(CompletableFuture.supplyAsync(() -> executor.execute(entity)));
         }
@@ -47,11 +59,19 @@ public class MultipleExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         IBehaviorExecutor.super.onInterrupt(entity);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         IBehaviorExecutor.super.onStop(entity);
     }

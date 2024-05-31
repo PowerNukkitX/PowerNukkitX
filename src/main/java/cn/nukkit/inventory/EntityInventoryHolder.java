@@ -10,7 +10,11 @@ public interface EntityInventoryHolder extends InventoryHolder {
 
     EntityEquipmentInventory getEquipmentInventory();
 
-    default boolean canEquipByDispenser() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean canEquipByDispenser() {
         return false;
     }
 
@@ -18,7 +22,11 @@ public interface EntityInventoryHolder extends InventoryHolder {
         return getArmorInventory().getHelmet();
     }
 
-    default boolean setHelmet(Item item) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean setHelmet(Item item) {
         return getArmorInventory().setHelmet(item);
     }
 
@@ -26,7 +34,11 @@ public interface EntityInventoryHolder extends InventoryHolder {
         return getArmorInventory().getChestplate();
     }
 
-    default boolean setChestplate(Item item) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean setChestplate(Item item) {
         return getArmorInventory().setChestplate(item);
     }
 
@@ -34,7 +46,11 @@ public interface EntityInventoryHolder extends InventoryHolder {
         return getArmorInventory().getLeggings();
     }
 
-    default boolean setLeggings(Item item) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean setLeggings(Item item) {
         return getArmorInventory().setLeggings(item);
     }
 
@@ -42,7 +58,11 @@ public interface EntityInventoryHolder extends InventoryHolder {
         return getArmorInventory().getBoots();
     }
 
-    default boolean setBoots(Item item) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean setBoots(Item item) {
         return getArmorInventory().setBoots(item);
     }
 
@@ -54,19 +74,35 @@ public interface EntityInventoryHolder extends InventoryHolder {
         return this.getEquipmentInventory().getItemInOffhand();
     }
 
-    default boolean setItemInHand(Item item) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean setItemInHand(Item item) {
         return getEquipmentInventory().setItemInHand(item);
     }
 
-    default boolean setItemInHand(Item item, boolean send) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean setItemInHand(Item item, boolean send) {
         return getEquipmentInventory().setItemInHand(item, send);
     }
 
-    default boolean setItemInOffhand(Item item) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean setItemInOffhand(Item item) {
         return this.getEquipmentInventory().setItemInOffhand(item, true);
     }
 
-    default boolean setItemInOffhand(Item item, boolean send) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean setItemInOffhand(Item item, boolean send) {
         return this.getEquipmentInventory().setItemInOffhand(item, send);
     }
 }

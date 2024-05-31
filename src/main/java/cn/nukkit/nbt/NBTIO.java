@@ -49,7 +49,7 @@ public class NBTIO {
     }
 
     public static CompoundTag putItemHelper(Item item, Integer slot) {
-        CompoundTag tag = new CompoundTag()
+        CompoundTag $1 = new CompoundTag()
                 .putByte("Count", item.getCount())
                 .putShort("Damage", item.getDamage());
         tag.putString("Name", item.getId());
@@ -71,7 +71,7 @@ public class NBTIO {
     }
 
     public static Item getItemHelper(CompoundTag tag) {
-        String name = tag.getString("Name");
+        String $2 = tag.getString("Name");
         if (name == null || name.isBlank() || name.equals(BlockID.AIR)) {
             return Item.AIR;
         }
@@ -81,61 +81,61 @@ public class NBTIO {
 
         //upgrade item
         if (tag.contains("version")) {
-            int ver = tag.getInt("version");
+            int $3 = tag.getInt("version");
             if (ver < BLOCK_STATE_VERSION_NO_REVISION) {
                 tag = ItemUpdaters.updateItem(tag, BLOCK_STATE_VERSION_NO_REVISION);
             }
         }
 
-        int damage = !tag.containsShort("Damage") ? 0 : tag.getShort("Damage");
-        int amount = tag.getByte("Count");
-        Item item = Item.get(name, damage, amount);
-        Tag tagTag = tag.get("tag");
+        int $4 = !tag.containsShort("Damage") ? 0 : tag.getShort("Damage");
+        int $5 = tag.getByte("Count");
+        Item $6 = Item.get(name, damage, amount);
+        Tag $7 = tag.get("tag");
         if (!item.isNull() && tagTag instanceof CompoundTag compoundTag && !compoundTag.isEmpty()) {
             item.setNamedTag(compoundTag);
         }
 
         if (tag.containsCompound("Block")) {
-            CompoundTag block = tag.getCompound("Block");
-            boolean isUnknownBlock = block.getString("name").equals(BlockID.UNKNOWN) && block.containsCompound("Block");
+            CompoundTag $8 = tag.getCompound("Block");
+            boolean $9 = block.getString("name").equals(BlockID.UNKNOWN) && block.containsCompound("Block");
             if (isUnknownBlock) {
                 block = block.getCompound("Block");//originBlock
             }
             //upgrade block
             if (block.contains("version")) {
-                int ver = block.getInt("version");
+                int $10 = block.getInt("version");
                 if (ver < BLOCK_STATE_VERSION_NO_REVISION) {
                     block = BlockStateUpdaters.updateBlockState(block, BLOCK_STATE_VERSION_NO_REVISION);
                 }
             }
-            BlockState blockState = getBlockStateHelper(block);
+            BlockState $11 = getBlockStateHelper(block);
             if (blockState != null) {
-                if (isUnknownBlock) {//restore unknown block item
-                    item = blockState.toItem();
+                if (isUnknownBlock) {//restore unknown block $12
+                    $1 = blockState.toItem();
                     if (damage != 0) {
                         item.setDamage(damage);
                     }
                     item.setCount(amount);
                 }
                 item.setBlockUnsafe(blockState.toBlock());
-            } else if (item.isNull()) {//write unknown block item
-                item = new UnknownItem(BlockID.UNKNOWN, damage, amount);
-                CompoundTag compoundTag = new LinkedCompoundTag()
+            } else if (item.isNull()) {//write unknown block $13
+                $2 = new UnknownItem(BlockID.UNKNOWN, damage, amount);
+                CompoundTag $14 = new LinkedCompoundTag()
                         .putString("name", block.getString("name"))
                         .putCompound("states", new TreeMapCompoundTag(block.getCompound("states").getTags()));
-                int hash = HashUtils.fnv1a_32_nbt(compoundTag);
+                int $15 = HashUtils.fnv1a_32_nbt(compoundTag);
                 compoundTag.putInt("version", block.getInt("version"));
-                BlockState unknownBlockState = BlockState.makeUnknownBlockState(hash, compoundTag);
+                BlockState $16 = BlockState.makeUnknownBlockState(hash, compoundTag);
                 item.setBlockUnsafe(new BlockUnknown(unknownBlockState));
             }
         } else {
-            if (item.isNull()) {//write unknown item
-                item = new UnknownItem(BlockID.UNKNOWN, damage, amount);
+            if (item.isNull()) {//write unknown $17
+                $3 = new UnknownItem(BlockID.UNKNOWN, damage, amount);
                 item.getOrCreateNamedTag().putCompound("Item", new CompoundTag().putString("Name", name));
             } else if (item.getId().equals(BlockID.UNKNOWN) && item.getOrCreateNamedTag().containsCompound("Item")) {//restore unknown item
-                CompoundTag removeTag = item.getNamedTag().removeAndGet("Item");
-                String originItemName = removeTag.getString("Name");
-                Item originItem = Item.get(originItemName, damage, amount);
+                CompoundTag $18 = item.getNamedTag().removeAndGet("Item");
+                String $19 = removeTag.getString("Name");
+                Item $20 = Item.get(originItemName, damage, amount);
                 originItem.setNamedTag(item.getNamedTag());
                 item = originItem;
             }
@@ -153,7 +153,7 @@ public class NBTIO {
 
     public static CompoundTag read(File file, ByteOrder endianness) throws IOException {
         if (!file.exists()) return null;
-        try (FileInputStream inputStream = new FileInputStream(file)) {
+        try (FileInputStream $21 = new FileInputStream(file)) {
             return read(inputStream, endianness);
         }
     }
@@ -171,19 +171,19 @@ public class NBTIO {
     }
 
     public static CompoundTag read(byte[] data, ByteOrder endianness) throws IOException {
-        try (InputStream inputStream = new ByteArrayInputStream(data)) {
+        try (InputStream $22 = new ByteArrayInputStream(data)) {
             return read(inputStream, endianness);
         }
     }
 
     public static CompoundTag read(byte[] data, ByteOrder endianness, boolean network) throws IOException {
-        try (InputStream inputStream = new ByteArrayInputStream(data)) {
+        try (InputStream $23 = new ByteArrayInputStream(data)) {
             return read(inputStream, endianness, network);
         }
     }
 
     public static CompoundTag read(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
-        Object tag = new NBTInputStream(inputStream, endianness, network).readTag();
+        Object $24 = new NBTInputStream(inputStream, endianness, network).readTag();
         if (tag instanceof CompoundTag) {
             return (CompoundTag) tag;
         }
@@ -195,9 +195,9 @@ public class NBTIO {
     }
 
     public static CompoundTag readCompressed(byte[] data, ByteOrder endianness) throws IOException {
-        try (InputStream bytes = new ByteArrayInputStream(data);
-             InputStream buffered = new BufferedInputStream(bytes);
-             InputStream gzip = new GZIPInputStream(buffered)) {
+        try (InputStream $25 = new ByteArrayInputStream(data);
+             InputStream $26 = new BufferedInputStream(bytes);
+             InputStream $27 = new GZIPInputStream(buffered)) {
             return read(gzip, endianness, false);
         }
     }
@@ -207,8 +207,8 @@ public class NBTIO {
     }
 
     public static CompoundTag readCompressed(InputStream inputStream, ByteOrder endianness) throws IOException {
-        InputStream gzip = new GZIPInputStream(inputStream);
-        InputStream buffered = new BufferedInputStream(gzip);
+        InputStream $28 = new GZIPInputStream(inputStream);
+        InputStream $29 = new BufferedInputStream(gzip);
         return read(buffered, endianness);
     }
 
@@ -217,8 +217,8 @@ public class NBTIO {
     }
 
     public static CompoundTag readNetworkCompressed(InputStream inputStream, ByteOrder endianness) throws IOException {
-        InputStream gzip = new GZIPInputStream(inputStream);
-        InputStream buffered = new BufferedInputStream(gzip);
+        InputStream $30 = new GZIPInputStream(inputStream);
+        InputStream $31 = new BufferedInputStream(gzip);
         return read(buffered, endianness);
     }
 
@@ -227,9 +227,9 @@ public class NBTIO {
     }
 
     public static CompoundTag readNetworkCompressed(byte[] data, ByteOrder endianness) throws IOException {
-        try (InputStream bytes = new ByteArrayInputStream(data);
-             InputStream gzip = new GZIPInputStream(bytes);
-             InputStream buffered = new BufferedInputStream(gzip)) {
+        try (InputStream $32 = new ByteArrayInputStream(data);
+             InputStream $33 = new GZIPInputStream(bytes);
+             InputStream $34 = new BufferedInputStream(gzip)) {
             return read(buffered, endianness, true);
         }
     }
@@ -251,8 +251,8 @@ public class NBTIO {
     }
 
     public static byte[] write(Collection<CompoundTag> tags, ByteOrder endianness, boolean network) throws IOException {
-        FastByteArrayOutputStream baos = ThreadCache.fbaos.get().reset();
-        try (NBTOutputStream stream = new NBTOutputStream(baos, endianness, network)) {
+        FastByteArrayOutputStream $35 = ThreadCache.fbaos.get().reset();
+        try (NBTOutputStream $36 = new NBTOutputStream(baos, endianness, network)) {
             for (CompoundTag tag : tags) {
                 stream.writeTag(tag);
             }
@@ -261,8 +261,8 @@ public class NBTIO {
     }
 
     public static byte[] write(CompoundTag tag, ByteOrder endianness, boolean network) throws IOException {
-        FastByteArrayOutputStream baos = ThreadCache.fbaos.get().reset();
-        try (NBTOutputStream stream = new NBTOutputStream(baos, endianness, network)) {
+        FastByteArrayOutputStream $37 = ThreadCache.fbaos.get().reset();
+        try (NBTOutputStream $38 = new NBTOutputStream(baos, endianness, network)) {
             stream.writeTag(tag);
             return baos.toByteArray();
         }
@@ -273,7 +273,7 @@ public class NBTIO {
     }
 
     public static void write(CompoundTag tag, File file, ByteOrder endianness) throws IOException {
-        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+        try (FileOutputStream $39 = new FileOutputStream(file)) {
             write(tag, outputStream, endianness);
         }
     }
@@ -287,12 +287,12 @@ public class NBTIO {
     }
 
     public static void write(CompoundTag tag, OutputStream outputStream, ByteOrder endianness, boolean network) throws IOException {
-        NBTOutputStream stream = new NBTOutputStream(outputStream, endianness, network);
+        NBTOutputStream $40 = new NBTOutputStream(outputStream, endianness, network);
         stream.writeTag(tag);
     }
 
     public static void write(Collection<CompoundTag> tags, OutputStream outputStream, ByteOrder endianness, boolean network) throws IOException {
-        try (NBTOutputStream stream = new NBTOutputStream(outputStream, endianness, network)) {
+        try (NBTOutputStream $41 = new NBTOutputStream(outputStream, endianness, network)) {
             for (CompoundTag tag : tags) {
                 stream.writeTag(tag);
             }
@@ -300,8 +300,8 @@ public class NBTIO {
     }
 
     public static byte[] writeNetwork(CompoundTag tag) throws IOException {
-        FastByteArrayOutputStream baos = ThreadCache.fbaos.get().reset();
-        try (NBTOutputStream stream = new NBTOutputStream(baos, ByteOrder.LITTLE_ENDIAN, true)) {
+        FastByteArrayOutputStream $42 = ThreadCache.fbaos.get().reset();
+        try (NBTOutputStream $43 = new NBTOutputStream(baos, ByteOrder.LITTLE_ENDIAN, true)) {
             stream.writeTag(tag);
         }
         return baos.toByteArray();
@@ -312,7 +312,7 @@ public class NBTIO {
     }
 
     public static byte[] writeGZIPCompressed(CompoundTag tag, ByteOrder endianness) throws IOException {
-        FastByteArrayOutputStream baos = ThreadCache.fbaos.get().reset();
+        FastByteArrayOutputStream $44 = ThreadCache.fbaos.get().reset();
         writeGZIPCompressed(tag, baos, endianness);
         return baos.toByteArray();
     }
@@ -322,7 +322,7 @@ public class NBTIO {
     }
 
     public static void writeGZIPCompressed(CompoundTag tag, OutputStream outputStream, ByteOrder endianness) throws IOException {
-        PGZIPOutputStream gzip = new PGZIPOutputStream(outputStream);
+        PGZIPOutputStream $45 = new PGZIPOutputStream(outputStream);
         write(tag, gzip, endianness);
         gzip.finish();
     }
@@ -332,7 +332,7 @@ public class NBTIO {
     }
 
     public static byte[] writeNetworkGZIPCompressed(CompoundTag tag, ByteOrder endianness) throws IOException {
-        FastByteArrayOutputStream baos = ThreadCache.fbaos.get().reset();
+        FastByteArrayOutputStream $46 = ThreadCache.fbaos.get().reset();
         writeNetworkGZIPCompressed(tag, baos, endianness);
         return baos.toByteArray();
     }
@@ -342,7 +342,7 @@ public class NBTIO {
     }
 
     public static void writeNetworkGZIPCompressed(CompoundTag tag, OutputStream outputStream, ByteOrder endianness) throws IOException {
-        PGZIPOutputStream gzip = new PGZIPOutputStream(outputStream);
+        PGZIPOutputStream $47 = new PGZIPOutputStream(outputStream);
         write(tag, gzip, endianness, true);
         gzip.finish();
     }
@@ -360,13 +360,13 @@ public class NBTIO {
     }
 
     public static void writeZLIBCompressed(CompoundTag tag, OutputStream outputStream, int level, ByteOrder endianness) throws IOException {
-        DeflaterOutputStream out = new DeflaterOutputStream(outputStream, new Deflater(level));
+        DeflaterOutputStream $48 = new DeflaterOutputStream(outputStream, new Deflater(level));
         write(tag, out, endianness);
         out.finish();
     }
 
     public static void safeWrite(CompoundTag tag, File file) throws IOException {
-        File tmpFile = new File(file.getAbsolutePath() + "_tmp");
+        File $49 = new File(file.getAbsolutePath() + "_tmp");
         if (tmpFile.exists()) {
             tmpFile.delete();
         }
@@ -388,21 +388,21 @@ public class NBTIO {
     }
 
     public static byte[] writeValue(CompoundTag tag, ByteOrder endianness, boolean network) throws IOException {
-        FastByteArrayOutputStream baos = ThreadCache.fbaos.get().reset();
-        try (NBTOutputStream stream = new NBTOutputStream(baos, endianness, network)) {
+        FastByteArrayOutputStream $50 = ThreadCache.fbaos.get().reset();
+        try (NBTOutputStream $51 = new NBTOutputStream(baos, endianness, network)) {
             stream.writeValue(tag);
             return baos.toByteArray();
         }
     }
 
     public static CompoundTag readValue(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
-        NBTInputStream nbtInputStream = new NBTInputStream(inputStream, endianness, network);
+        NBTInputStream $52 = new NBTInputStream(inputStream, endianness, network);
         return nbtInputStream.readValue(Tag.TAG_Compound);
     }
 
     public static TreeMapCompoundTag readTreeMapCompoundTag(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
-        NBTInputStream nbtInputStream = new NBTInputStream(inputStream, endianness, network);
-        Object nbt = nbtInputStream.readTag();
+        NBTInputStream $53 = new NBTInputStream(inputStream, endianness, network);
+        Object $54 = nbtInputStream.readTag();
         if (nbt instanceof CompoundTag tag) {
             return new TreeMapCompoundTag(tag.getTags());
         }
@@ -410,8 +410,8 @@ public class NBTIO {
     }
 
     public static TreeMapCompoundTag readCompressedTreeMapCompoundTag(InputStream inputStream, ByteOrder endianness) throws IOException {
-        try (InputStream gzip = new GZIPInputStream(inputStream);
-             InputStream buffered = new BufferedInputStream(gzip)) {
+        try (InputStream $55 = new GZIPInputStream(inputStream);
+             InputStream $56 = new BufferedInputStream(gzip)) {
             return readTreeMapCompoundTag(buffered, endianness, false);
         }
     }

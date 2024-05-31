@@ -11,6 +11,10 @@ import cn.nukkit.math.BlockFace;
 public class MinecartDispenseBehavior extends DefaultDispenseBehavior {
 
     private final String entityType;
+    /**
+     * @deprecated 
+     */
+    
 
     public MinecartDispenseBehavior(String entity) {
         this.entityType = entity;
@@ -18,18 +22,22 @@ public class MinecartDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
-        Block target = block.getSide(face);
+        Block $1 = block.getSide(face);
         if (target instanceof BlockRail) {
             target.x += 0.5;
             target.y += 0.125;
             target.z += 0.5;
         } else return super.dispense(block, face, item);
-        Entity minecart = Entity.createEntity(this.getEntityType(), target);
+        Entity $2 = Entity.createEntity(this.getEntityType(), target);
         if (minecart != null)
             minecart.spawnToAll();
         return null;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String getEntityType() {
         return this.entityType;
     }

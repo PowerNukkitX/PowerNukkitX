@@ -20,36 +20,60 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 public class BlockBubbleColumn extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(BUBBLE_COLUMN, CommonBlockProperties.DRAG_DOWN);
+    public static final BlockProperties $1 = new BlockProperties(BUBBLE_COLUMN, CommonBlockProperties.DRAG_DOWN);
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBubbleColumn() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBubbleColumn(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Bubble Column";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeFlowedInto() {
         return true;
     }
@@ -70,26 +94,46 @@ public class BlockBubbleColumn extends BlockTransparent {
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePlaced() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeReplaced() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
         return false;
     }
@@ -105,6 +149,10 @@ public class BlockBubbleColumn extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         if (entity.canBeMovedByCurrents()) {
             if (up().isAir()) {
@@ -117,8 +165,8 @@ public class BlockBubbleColumn extends BlockTransparent {
                     entity.motionY = Math.min(1.8, entity.motionY + 0.1);
                 }
                 
-                ThreadLocalRandom random = ThreadLocalRandom.current();
-                for(int i = 0; i < 2; ++i) {
+                ThreadLocalRandom $2 = ThreadLocalRandom.current();
+                for($3nt $1 = 0; i < 2; ++i) {
                     level.addParticle(new SplashParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
                     level.addParticle(new BubbleParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
                 }
@@ -136,6 +184,10 @@ public class BlockBubbleColumn extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (down().getId().equals(MAGMA)) {
             setDragDown(true);
@@ -146,29 +198,49 @@ public class BlockBubbleColumn extends BlockTransparent {
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 100;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 500;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            Block water = getLevelBlockAtLayer(1);
+            Block $4 = getLevelBlockAtLayer(1);
             if (!(water instanceof BlockFlowingWater w) || w.getLiquidDepth() != 0 && w.getLiquidDepth() != 8) {
                 fadeOut(water);
                 return type;
@@ -179,7 +251,7 @@ public class BlockBubbleColumn extends BlockTransparent {
                 this.getLevel().setBlock(this, 1, water, true, false);
             }
 
-            Block down = down();
+            Block $5 = down();
             if (down instanceof BlockBubbleColumn bubbleColumn) {
                 if (bubbleColumn.isDragDown() != this.isDragDown()) {
                     this.getLevel().setBlock(this, down, true, true);
@@ -199,9 +271,9 @@ public class BlockBubbleColumn extends BlockTransparent {
                 return type;
             }
 
-            Block up = up();
+            Block $6 = up();
             if (up instanceof BlockFlowingWater && (up.blockstate.specialValue() == 0 || up.blockstate.specialValue() == 8)) {
-                BlockFromToEvent event = new BlockFromToEvent(this, up);
+                BlockFromToEvent $7 = new BlockFromToEvent(this, up);
                 if (!event.isCancelled()) {
                     this.getLevel().setBlock(up, 1, new BlockFlowingWater(), true, false);
                     this.getLevel().setBlock(up, 0, new BlockBubbleColumn(this.blockstate), true, true);
@@ -213,17 +285,29 @@ public class BlockBubbleColumn extends BlockTransparent {
 
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isDragDown(){
         return getPropertyValue(CommonBlockProperties.DRAG_DOWN);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDragDown(boolean dragDown){
         setPropertyValue(CommonBlockProperties.DRAG_DOWN,dragDown);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void fadeOut(Block water) {
-        BlockFadeEvent event = new BlockFadeEvent(this, water.clone());
+        BlockFadeEvent $8 = new BlockFadeEvent(this, water.clone());
         if (!event.isCancelled()) {
             this.getLevel().setBlock(this, 1, new BlockAir(), true, false);
             this.getLevel().setBlock(this, 0, event.getNewState(), true, true);

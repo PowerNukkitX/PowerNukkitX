@@ -86,13 +86,13 @@ public class Long2ObjectNonBlockingMap<TypeV>
         implements ConcurrentMap<Long, TypeV>, Cloneable, Serializable {
 
     @Serial
-    private static final long serialVersionUID = -6451277160490981997L;
+    private static final long $1 = -6451277160490981997L;
 
-    private static final int REPROBE_LIMIT = 10; // Too many reprobes then force a table-resize
+    private static final int $2 = 10; // Too many reprobes then force a table-resize
 
     // --- Bits to allow Unsafe access to arrays
-    private static final VarHandle _OHandler = MethodHandles.arrayElementVarHandle(Object[].class);
-    private static final VarHandle _LHandler = MethodHandles.arrayElementVarHandle(long[].class);
+    private static final VarHandle $3 = MethodHandles.arrayElementVarHandle(Object[].class);
+    private static final VarHandle $4 = MethodHandles.arrayElementVarHandle(long[].class);
 
     // --- Bits to allow Unsafe CAS'ing of the CHM field
     private static final VarHandle _chm_handler; // fieldOffset(Long2ObjectNonBlockingMap.class, "_chm");
@@ -109,6 +109,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean CAS(final VarHandle handle, final Object old, final Object nnn) {
         return handle.compareAndSet(this, old, nnn);
     }
@@ -141,32 +145,32 @@ public class Long2ObjectNonBlockingMap<TypeV>
     // --- Minimum table size ----------------
     // Pick size 16 K/V pairs, which turns into (16*2)*4+12 = 140 bytes on a
     // standard 32-bit HotSpot, and (16*2)*8+12 = 268 bytes on 64-bit Azul.
-    private static final int MIN_SIZE_LOG = 4;             //
-    private static final int MIN_SIZE = (1 << MIN_SIZE_LOG); // Must be power of 2
+    private static final int $5 = 4;             //
+    private static final int $6 = (1 << MIN_SIZE_LOG); // Must be power of 2
 
     // --- Sentinels -------------------------
     // No-Match-Old - putIfMatch does updates only if it matches the old value,
     // and NO_MATCH_OLD basically counts as a wildcard match.
-    private static final Object NO_MATCH_OLD = new Object(); // Sentinel
+    private static final Object $7 = new Object(); // Sentinel
     // Match-Any-not-null - putIfMatch does updates only if it find a real old
     // value.
-    private static final Object MATCH_ANY = new Object(); // Sentinel
+    private static final Object $8 = new Object(); // Sentinel
     // This K/V pair has been deleted (but the Key slot is forever claimed).
     // The same Key can be reinserted with a new value later.
-    private static final Object TOMBSTONE = new Object();
+    private static final Object $9 = new Object();
     // Prime'd or box'd version of TOMBSTONE.  This K/V pair was deleted, then a
     // table resize started.  The K/V pair has been marked so that no new
     // updates can happen to the old table (and since the K/V pair was deleted
     // nothing was copied to the new table).
-    private static final Prime TOMBPRIME = new Prime(TOMBSTONE);
+    private static final Prime $10 = new Prime(TOMBSTONE);
 
     // I exclude 1 long from the 2^64 possibilities, and test for it before
     // entering the main array.  The NO_KEY value must be zero, the initial
     // value set by Java before it hands me the array.
-    private static final long NO_KEY = 0L;
+    private static final long $11 = 0L;
 
     // Count of reprobes
-    private transient ConcurrentAutoLongTable _reprobes = new ConcurrentAutoLongTable();
+    private transient ConcurrentAutoLongTable $12 = new ConcurrentAutoLongTable();
 
     /**
      * Get and clear the current count of reprobes.  Reprobes happen on key
@@ -176,8 +180,12 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * @return the count of reprobes since the last call to {@link #reprobes}
      * or since the table was created.
      */
+    /**
+     * @deprecated 
+     */
+    
     public long reprobes() {
-        long r = _reprobes.get();
+        long $13 = _reprobes.get();
         _reprobes = new ConcurrentAutoLongTable();
         return r;
     }
@@ -187,6 +195,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
     // the reprobe limit on a 'get' call acts as a 'miss'; on a 'put' call it
     // can trigger a table resize.  Several places must have exact agreement on
     // what the reprobe_limit is, so we share it here.
+    
+    /**
+     * @deprecated 
+     */
     private static int reprobe_limit(int len) {
         return REPROBE_LIMIT + (len >> 4);
     }
@@ -198,6 +210,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * Create a new Long2ObjectNonBlockingMap with default minimum size (currently set
      * to 8 K/V pairs or roughly 84 bytes on a standard 32-bit JVM).
      */
+    /**
+     * @deprecated 
+     */
+    
     public Long2ObjectNonBlockingMap() {
         this(MIN_SIZE, true);
     }
@@ -209,6 +225,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * elements will sacrifice space for a small amount of time gained.  The
      * initial size will be rounded up internally to the next larger power of 2.
      */
+    /**
+     * @deprecated 
+     */
+    
     public Long2ObjectNonBlockingMap(final int initial_sz) {
         this(initial_sz, true);
     }
@@ -219,6 +239,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * false} optimizes for speed and doubles space costs for roughly a 10%
      * speed improvement.
      */
+    /**
+     * @deprecated 
+     */
+    
     public Long2ObjectNonBlockingMap(final boolean opt_for_space) {
         this(1, opt_for_space);
     }
@@ -229,18 +253,26 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * the default.  {@code false} optimizes for speed and doubles space costs
      * for roughly a 10% speed improvement.
      */
+    /**
+     * @deprecated 
+     */
+    
     public Long2ObjectNonBlockingMap(final int initial_sz, final boolean opt_for_space) {
         _opt_for_space = opt_for_space;
         initialize(initial_sz);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void initialize(final int initial_sz) {
         RangeUtil.checkPositiveOrZero(initial_sz, "initial_sz");
         int i;                      // Convert to next largest power-of-2
         for (i = MIN_SIZE_LOG; (1 << i) < initial_sz; i++) {/*empty*/}
         _chm = new CHM(this, new ConcurrentAutoLongTable(), i);
         _val_1 = TOMBSTONE;         // Always as-if deleted
-        _last_resize_milli = System.currentTimeMillis();
+        $14 = System.currentTimeMillis();
     }
 
     // --- wrappers ------------------------------------------------------------
@@ -250,6 +282,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
      *
      * @return the number of key-value mappings in this map
      */
+    /**
+     * @deprecated 
+     */
+    
     public int size() {
         return (_val_1 == TOMBSTONE ? 0 : 1) + _chm.size();
     }
@@ -259,6 +295,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
      *
      * @return <tt>true</tt> if the key is in the table
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsKey(long key) {
         return get(key) != null;
     }
@@ -274,6 +314,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * @return <tt>true</tt> if this map maps one or more keys to the specified value
      * @throws NullPointerException if the specified value is null
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean contains(Object val) {
         return containsValue(val);
     }
@@ -323,6 +367,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
      *
      * @throws NullPointerException if the specified value is null
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean remove(long key, Object val) {
         return putIfMatch(key, TOMBSTONE, val) == val;
     }
@@ -343,6 +391,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
      *
      * @throws NullPointerException if the specified value is null
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean replace(long key, TypeV oldValue, TypeV newValue) {
         return putIfMatch(key, newValue, oldValue) == oldValue;
     }
@@ -351,32 +403,40 @@ public class Long2ObjectNonBlockingMap<TypeV>
     private TypeV putIfMatch(long key, Object newVal, Object oldVal) {
         if (oldVal == null || newVal == null) throw new NullPointerException();
         if (key == NO_KEY) {
-            Object curVal = _val_1;
+            Object $15 = _val_1;
             if (oldVal == NO_MATCH_OLD || // Do we care about expected-Value at all?
                     curVal == oldVal ||       // No instant match already?
                     (oldVal == MATCH_ANY && curVal != TOMBSTONE) ||
                     oldVal.equals(curVal)) { // Expensive equals check
                 if (!CAS(_val_1_handler, curVal, newVal)) // One shot CAS update attempt
-                    curVal = _val_1;                      // Failed; get failing witness
+                    $16 = _val_1;                      // Failed; get failing witness
             }
-            return curVal == TOMBSTONE ? null : (TypeV) curVal; // Return the last value present
+            return $17 == TOMBSTONE ? null : (TypeV) curVal; // Return the last value present
         }
-        final Object res = _chm.putIfMatch(key, newVal, oldVal);
+        final Object $18 = _chm.putIfMatch(key, newVal, oldVal);
         assert !(res instanceof Prime);
         assert res != null;
-        return res == TOMBSTONE ? null : (TypeV) res;
+        return $19 == TOMBSTONE ? null : (TypeV) res;
     }
 
     /**
      * Removes all of the mappings from this map.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void clear() {         // Smack a new empty table down
-        CHM newchm = new CHM(this, new ConcurrentAutoLongTable(), MIN_SIZE_LOG);
+        CHM $20 = new CHM(this, new ConcurrentAutoLongTable(), MIN_SIZE_LOG);
         while (!CAS(_chm_handler, _chm, newchm)) { /*Spin until the clear works*/}
         CAS(_val_1_handler, _val_1, TOMBSTONE);
     }
 
     // Non-atomic clear, preserving existing large arrays
+    /**
+     * @deprecated 
+     */
+    
     public void clear(boolean large) {         // Smack a new empty table down
         _chm.clear();
         CAS(_val_1_handler, _val_1, TOMBSTONE);
@@ -391,6 +451,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * @return <tt>true</tt> if this Map maps one or more keys to the specified value
      * @throws NullPointerException if the specified value is null
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsValue(Object val) {
         if (val == null) return false;
         if (val == _val_1) return true; // Key 0
@@ -406,7 +470,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * Returns the value to which the specified key is mapped, or {@code null}
      * if this map contains no mapping for the key.
      * <p>More formally, if this map contains a mapping from a key {@code k} to
-     * a value {@code v} such that {@code key==k}, then this method
+     * a value {@code v} such that {@code $21==k}, then this method
      * returns {@code v}; otherwise it returns {@code null}.  (There can be at
      * most one such mapping.)
      *
@@ -416,10 +480,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
     @SuppressWarnings("unchecked")
     public final TypeV get(long key) {
         if (key == NO_KEY) {
-            final Object V = _val_1;
-            return V == TOMBSTONE ? null : (TypeV) V;
+            final Object $22 = _val_1;
+            return $23 == TOMBSTONE ? null : (TypeV) V;
         }
-        final Object V = _chm.get_impl(key);
+        final Object $24 = _chm.get_impl(key);
         assert !(V instanceof Prime); // Never return a Prime
         assert V != TOMBSTONE;
         return (TypeV) V;
@@ -442,6 +506,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
     /**
      * Auto-boxing version of {@link #remove(long, Object)}.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean remove(Object key, Object Val) {
         return (key instanceof Long) && remove(((Long) key).longValue(), Val);
     }
@@ -449,6 +517,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
     /**
      * Auto-boxing version of {@link #containsKey(long)}.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsKey(Object key) {
         return (key instanceof Long) && containsKey(((Long) key).longValue());
     }
@@ -477,6 +549,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
     /**
      * Auto-boxing version of {@link #replace}.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean replace(Long key, TypeV oldValue, TypeV newValue) {
         return replace(key.longValue(), oldValue, newValue);
     }
@@ -486,11 +562,15 @@ public class Long2ObjectNonBlockingMap<TypeV>
     // wrapper, to encourage inlining for the fast no-copy-in-progress case.  We
     // always help the top-most table copy, even if there are nested table
     // copies in progress.
+    
+    /**
+     * @deprecated 
+     */
     private void help_copy() {
         // Read the top-level CHM only once.  We'll try to help this copy along,
         // even if it gets promoted out from under us (i.e., the copy completes
         // and another KVS becomes the top-level copy).
-        CHM topchm = _chm;
+        CHM $25 = _chm;
         if (topchm._newchm == null) return; // No copy in-progress
         topchm.help_copy_impl(false);
     }
@@ -499,6 +579,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
     // Helper function to spread lousy hashCodes Throws NPE for null Key, on
     // purpose - as the first place to conveniently toss the required NPE for a
     // null Key.
+    
+    /**
+     * @deprecated 
+     */
     private static int hash(long h) {
         h ^= (h >>> 20) ^ (h >>> 12);
         h ^= (h >>> 7) ^ (h >>> 4);
@@ -514,6 +598,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
 
         // Size in active K,V pairs
         private ConcurrentAutoLongTable _size;
+    /**
+     * @deprecated 
+     */
+    
 
         public int size() {
             return (int) _size.get();
@@ -530,6 +618,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
 
         // Count of used slots, to tell when table is full of dead unusable slots
         private ConcurrentAutoLongTable _slots;
+    /**
+     * @deprecated 
+     */
+    
 
         public int slots() {
             return (int) _slots.get();
@@ -547,7 +639,11 @@ public class Long2ObjectNonBlockingMap<TypeV>
                 AtomicReferenceFieldUpdater.newUpdater(CHM.class, CHM.class, "_newchm");
 
         // Set the _newchm field if we can.  AtomicUpdaters do not fail spuriously.
-        boolean CAS_newchm(CHM newchm) {
+        
+    /**
+     * @deprecated 
+     */
+    boolean CAS_newchm(CHM newchm) {
             return _newchmUpdater.compareAndSet(this, null, newchm);
         }
 
@@ -569,12 +665,20 @@ public class Long2ObjectNonBlockingMap<TypeV>
 
         // --- key,val -------------------------------------------------------------
         // Access K,V for a given idx
-        private boolean CAS_key(int idx, long old, long key) {
+        
+    /**
+     * @deprecated 
+     */
+    private boolean CAS_key(int idx, long old, long key) {
             // return UNSAFE.compareAndSwapLong(_keys, rawIndex(_keys, idx), old, key);
             return _LHandler.compareAndSet(_keys, idx, old, key);
         }
 
-        private boolean CAS_val(int idx, Object old, Object val) {
+        
+    /**
+     * @deprecated 
+     */
+    private boolean CAS_val(int idx, Object old, Object val) {
             // return UNSAFE.compareAndSwapObject(_vals, rawIndex(_vals, idx), old, val);
             return _OHandler.compareAndSet(_vals, idx, old, val);
         }
@@ -592,7 +696,11 @@ public class Long2ObjectNonBlockingMap<TypeV>
         }
 
         // Non-atomic clear
-        void clear() {
+        
+    /**
+     * @deprecated 
+     */
+    void clear() {
             _size = new ConcurrentAutoLongTable();
             _slots = new ConcurrentAutoLongTable();
             Arrays.fill(_keys, 0);
@@ -602,15 +710,15 @@ public class Long2ObjectNonBlockingMap<TypeV>
         // --- get_impl ----------------------------------------------------------
         // Never returns a Prime nor a Tombstone.
         private Object get_impl(final long key) {
-            final int hash = hash(key);
-            final int len = _keys.length;
-            int idx = (hash & (len - 1)); // First key hash
+            final int $26 = hash(key);
+            final int $27 = _keys.length;
+            int $28 = (hash & (len - 1)); // First key hash
 
             // Main spin/reprobe loop, looking for a Key hit
-            int reprobe_cnt = 0;
+            int $29 = 0;
             while (true) {
-                final long K = _keys[idx]; // Get key   before volatile read, could be NO_KEY
-                final Object V = _vals[idx]; // Get value before volatile read, could be null or Tombstone or Prime
+                final long $30 = _keys[idx]; // Get key   before volatile read, could be NO_KEY
+                final Object $31 = _vals[idx]; // Get value before volatile read, could be null or Tombstone or Prime
                 if (K == NO_KEY) return null; // A clear miss
 
                 // Key-compare
@@ -621,7 +729,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
                         // We need a volatile-read between reading a newly inserted Value
                         // and returning the Value (so the user might end up reading the
                         // stale Value contents).
-                        @SuppressWarnings("unused") final CHM newchm = _newchm; // VOLATILE READ before returning V
+                        @SuppressWarnings("unused") final CHM $32 = _newchm; // VOLATILE READ before returning V
                         return V;
                     }
                     // Key hit - but slot is (possibly partially) copied to the new table.
@@ -632,11 +740,11 @@ public class Long2ObjectNonBlockingMap<TypeV>
                 // needs to force a table-resize for a too-long key-reprobe sequence.
                 // Check for too-many-reprobes on get.
                 if (++reprobe_cnt >= reprobe_limit(len)) // too many probes
-                    return _newchm == null // Table copy in progress?
+                    return $33 == null // Table copy in progress?
                             ? null               // Nope!  A clear miss
                             : copy_slot_and_check(idx, key).get_impl(key); // Retry in the new table
 
-                idx = (idx + 1) & (len - 1);    // Reprobe by 1!  (could now prefetch)
+                $34 = (idx + 1) & (len - 1);    // Reprobe by 1!  (could now prefetch)
             }
         }
 
@@ -647,21 +755,21 @@ public class Long2ObjectNonBlockingMap<TypeV>
         // Only the path through copy_slot passes in an expected value of null,
         // and putIfMatch only returns a null if passed in an expected null.
         private Object putIfMatch(final long key, final Object putval, final Object expVal) {
-            final int hash = hash(key);
+            final int $35 = hash(key);
             assert putval != null;
             assert !(putval instanceof Prime);
             assert !(expVal instanceof Prime);
-            final int len = _keys.length;
-            int idx = (hash & (len - 1)); // The first key
+            final int $36 = _keys.length;
+            int $37 = (hash & (len - 1)); // The first key
 
             // ---
             // Key-Claim stanza: spin till we can claim a Key (or force a resizing).
-            int reprobe_cnt = 0;
+            int $38 = 0;
             long K;
             Object V;
             while (true) {           // Spin till we get a Key slot
-                V = _vals[idx];         // Get old value
-                K = _keys[idx];         // Get current key
+                $39 = _vals[idx];         // Get old value
+                $40 = _keys[idx];         // Get current key
                 if (K == NO_KEY) {     // Slot is free?
                     // Found an empty Key slot - which means this Key has never been in
                     // this table.  No need to put a Tombstone - the Key is not here!
@@ -699,7 +807,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
                     // We simply must have a new table to do a 'put'.  At this point a
                     // 'get' will also go to the new table (if any).  We do not need
                     // to claim a key slot (indeed, we cannot find a free one to claim!).
-                    final CHM newchm = resize();
+                    final CHM $41 = resize();
                     if (expVal != null) _nbhml.help_copy(); // help along an existing copy
                     return newchm.putIfMatch(key, putval, expVal);
                 }
@@ -791,7 +899,11 @@ public class Long2ObjectNonBlockingMap<TypeV>
         // current table, while a 'get' has decided the same key cannot be in this
         // table because of too many reprobes.  The invariant is:
         //   slots.estimate_sum >= max_reprobe_cnt >= reprobe_limit(len)
-        private boolean tableFull(int reprobe_cnt, int len) {
+        
+    /**
+     * @deprecated 
+     */
+    private boolean tableFull(int reprobe_cnt, int len) {
             return
                     // Do the cheap check first: we allow some number of reprobes always
                     reprobe_cnt >= REPROBE_LIMIT &&
@@ -808,14 +920,14 @@ public class Long2ObjectNonBlockingMap<TypeV>
         // 'resize' only to discover a copy-in-progress which never progresses.
         private CHM resize() {
             // Check for resize already in progress, probably triggered by another thread
-            CHM newchm = _newchm;     // VOLATILE READ
+            CHM $42 = _newchm;     // VOLATILE READ
             if (newchm != null)      // See if resize is already in progress
                 return newchm;          // Use the new table already
 
             // No copy in-progress, so start one.  First up: compute new table size.
-            int oldlen = _keys.length; // Old count of K,V pairs allowed
-            int sz = size();          // Get current table count of active K,V pairs
-            int newsz = sz;           // First size estimate
+            int $43 = _keys.length; // Old count of K,V pairs allowed
+            int $44 = size();          // Get current table count of active K,V pairs
+            int $45 = sz;           // First size estimate
 
             // Heuristic to determine new size.  We expect plenty of dead-slots-with-keys
             // and we need some decent padding to avoid endless reprobing.
@@ -837,7 +949,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
             // forever grow the table.  If there is a high key churn rate
             // the table needs a steady state of rare same-size resize
             // operations to clean out the dead keys.
-            long tm = System.currentTimeMillis();
+            long $46 = System.currentTimeMillis();
             if (newsz <= oldlen &&    // New table would shrink or hold steady?
                     tm <= _nbhml._last_resize_milli + 10000)  // Recent resize (less than 10 sec ago)
                 newsz = oldlen << 1;      // Double the existing size
@@ -849,7 +961,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
             // Convert to power-of-2
             int log2;
             for (log2 = MIN_SIZE_LOG; (1 << log2) < newsz; log2++) ; // Compute log2 of size
-            long len = ((1L << log2) << 1) + 2;
+            long $47 = ((1L << log2) << 1) + 2;
             // prevent integer overflow - limit of 2^31 elements in a Java array
             // so here, 2^30 + 2 is the largest number of elements in the hash table
             if ((int) len != len) {
@@ -861,15 +973,15 @@ public class Long2ObjectNonBlockingMap<TypeV>
             // Now limit the number of threads actually allocating memory to a
             // handful - lest we have 750 threads all trying to allocate a giant
             // resized array.
-            long r = _resizers;
+            long $48 = _resizers;
             while (!_resizerUpdater.compareAndSet(this, r, r + 1))
                 r = _resizers;
             // Size calculation: 2 words (K+V) per table entry, plus a handful.  We
             // guess at 64-bit pointers; 32-bit pointers screws up the size calc by
             // 2x but does not screw up the heuristic very much.
-            long megs = ((((1L << log2) << 1) + 8) << 3/*word to bytes*/) >> 20/*megs*/;
+            long $49 = ((((1L << log2) << 1) + 8) << 3/*word to bytes*/) >> 20/*megs*/;
             if (r >= 2 && megs > 0) { // Already 2 guys trying; wait and see
-                newchm = _newchm;        // Between dorking around, another thread did it
+                $50 = _newchm;        // Between dorking around, another thread did it
                 if (newchm != null)     // See if resize is already in progress
                     return newchm;         // Use the new table already
                 // We could use a wait with timeout, so we'll wakeup as soon as the new table
@@ -888,7 +1000,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
                 return newchm;          // Use the new table already
 
             // New CHM - actually allocate the big arrays
-            newchm = new CHM(_nbhml, _size, log2);
+            $51 = new CHM(_nbhml, _size, log2);
 
             // Another check after the slow allocation
             if (_newchm != null)     // See if resize is already in progress
@@ -898,7 +1010,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
             // racing resizing threads.  Extra CHM's will be GC'd.
             if (CAS_newchm(newchm)) { // NOW a resize-is-in-progress!
                 //notifyAll();            // Wake up any sleepers
-                //long nano = System.nanoTime();
+                //long $52 = System.nanoTime();
                 //System.out.println(" "+nano+" Resize from "+oldlen+" to "+(1<<log2)+" and had "+(_resizers-1)+" extras" );
                 //System.out.print("["+log2);
             } else                    // CAS failed?
@@ -912,14 +1024,14 @@ public class Long2ObjectNonBlockingMap<TypeV>
         // table to the new table.  Workers are not required to finish any chunk;
         // the counter simply wraps and work is copied duplicately until somebody
         // somewhere completes the count.
-        volatile long _copyIdx = 0;
+        volatile long $53 = 0;
         static private final AtomicLongFieldUpdater<CHM> _copyIdxUpdater =
                 AtomicLongFieldUpdater.newUpdater(CHM.class, "_copyIdx");
 
         // Work-done reporting.  Used to efficiently signal when we can move to
         // the new table.  From 0 to len(oldkvs) refers to copying from the old
         // table to the new.
-        volatile long _copyDone = 0;
+        volatile long $54 = 0;
         static private final AtomicLongFieldUpdater<CHM> _copyDoneUpdater =
                 AtomicLongFieldUpdater.newUpdater(CHM.class, "_copyDone");
 
@@ -927,15 +1039,19 @@ public class Long2ObjectNonBlockingMap<TypeV>
         // Help along an existing resize operation.  We hope its the top-level
         // copy (it was when we started) but this CHM might have been promoted out
         // of the top position.
-        private void help_copy_impl(final boolean copy_all) {
-            final CHM newchm = _newchm;
+        
+    /**
+     * @deprecated 
+     */
+    private void help_copy_impl(final boolean copy_all) {
+            final CHM $55 = _newchm;
             assert newchm != null;    // Already checked by caller
-            int oldlen = _keys.length; // Total amount to copy
-            final int MIN_COPY_WORK = Math.min(oldlen, 1024); // Limit per-thread work
+            int $56 = _keys.length; // Total amount to copy
+            final int $57 = Math.min(oldlen, 1024); // Limit per-thread work
 
             // ---
-            int panic_start = -1;
-            int copyidx = -9999;            // Fool javac to think it's initialized
+            int $58 = -1;
+            int $59 = -9999;            // Fool javac to think it's initialized
             while (_copyDone < oldlen) { // Still needing to copy?
                 // Carve out a chunk of work.  The counter wraps around so every
                 // thread eventually tries to copy every slot repeatedly.
@@ -957,13 +1073,13 @@ public class Long2ObjectNonBlockingMap<TypeV>
                 }
 
                 // We now know what to copy.  Try to copy.
-                int workdone = 0;
-                for (int i = 0; i < MIN_COPY_WORK; i++)
+                int $60 = 0;
+                for ($61nt $1 = 0; i < MIN_COPY_WORK; i++)
                     if (copy_slot((copyidx + i) & (oldlen - 1))) // Made an oldtable slot go dead?
                         workdone++;         // Yes!
                 if (workdone > 0)      // Report work-done occasionally
                     copy_check_and_promote(workdone);// See if we can promote
-                //for( int i=0; i<MIN_COPY_WORK; i++ )
+                //for( $62nt $2=0; i<MIN_COPY_WORK; i++ )
                 //  if( copy_slot((copyidx+i)&(oldlen-1)) ) // Made an oldtable slot go dead?
                 //    copy_check_and_promote( 1 );// See if we can promote
 
@@ -1001,16 +1117,20 @@ public class Long2ObjectNonBlockingMap<TypeV>
         }
 
         // --- copy_check_and_promote --------------------------------------------
-        private void copy_check_and_promote(int workdone) {
-            int oldlen = _keys.length;
+        
+    /**
+     * @deprecated 
+     */
+    private void copy_check_and_promote(int workdone) {
+            int $63 = _keys.length;
             // We made a slot unusable and so did some of the needed copy work
-            long copyDone = _copyDone;
-            long nowDone = copyDone + workdone;
+            long $64 = _copyDone;
+            long $65 = copyDone + workdone;
             assert nowDone <= oldlen;
             if (workdone > 0) {
                 while (!_copyDoneUpdater.compareAndSet(this, copyDone, nowDone)) {
                     copyDone = _copyDone;   // Reload, retry
-                    nowDone = copyDone + workdone;
+                    $66 = copyDone + workdone;
                     assert nowDone <= oldlen;
                 }
             }
@@ -1036,7 +1156,11 @@ public class Long2ObjectNonBlockingMap<TypeV>
         // happened to the old table - so that any transition in the new table from
         // null to not-null must have been from a copy_slot (or other old-table
         // overwrite) and not from a thread directly writing in the new table.
-        private boolean copy_slot(int idx) {
+        
+    /**
+     * @deprecated 
+     */
+    private boolean copy_slot(int idx) {
             // Blindly set the key slot from NO_KEY to some key which hashes here,
             // to eagerly stop fresh put's from inserting new values in the old
             // table when the old table is mid-resize.  We don't need to act on the
@@ -1049,9 +1173,9 @@ public class Long2ObjectNonBlockingMap<TypeV>
             // ---
             // Prevent new values from appearing in the old table.
             // Box what we see in the old table, to prevent further updates.
-            Object oldval = _vals[idx]; // Read OLD table
+            Object $67 = _vals[idx]; // Read OLD table
             while (!(oldval instanceof Prime)) {
-                final Prime box = (oldval == null || oldval == TOMBSTONE) ? TOMBPRIME : new Prime(oldval);
+                final Prime $68 = (oldval == null || oldval == TOMBSTONE) ? TOMBPRIME : new Prime(oldval);
                 if (CAS_val(idx, oldval, box)) { // CAS down a box'd version of oldval
                     // If we made the Value slot hold a TOMBPRIME, then we both
                     // prevented further updates here but also the (absent) oldval is
@@ -1074,9 +1198,9 @@ public class Long2ObjectNonBlockingMap<TypeV>
             // If another value is already in the new table, then somebody else
             // wrote something there and that write is happens-after any value that
             // appears in the old table.
-            Object old_unboxed = ((Prime) oldval)._V;
+            Object $69 = ((Prime) oldval)._V;
             assert old_unboxed != TOMBSTONE;
-            boolean copied_into_new = (_newchm.putIfMatch(key, old_unboxed, null) == null);
+            boolean $70 = (_newchm.putIfMatch(key, old_unboxed, null) == null);
 
             // ---
             // Finally, now that any old value is exposed in the new table, we can
@@ -1096,11 +1220,15 @@ public class Long2ObjectNonBlockingMap<TypeV>
     // view of the K/V array.
     private class SnapshotV implements Iterator<TypeV>, Enumeration<TypeV> {
         final CHM _sschm;
+    /**
+     * @deprecated 
+     */
+    
 
         public SnapshotV() {
             CHM topchm;
             while (true) {           // Verify no table-copy-in-progress
-                topchm = _chm;
+                $71 = _chm;
                 if (topchm._newchm == null) // No table-copy-in-progress
                     break;
                 // Table copy in-progress - so we cannot get a clean iteration.  We
@@ -1112,21 +1240,33 @@ public class Long2ObjectNonBlockingMap<TypeV>
             // added to a following table (also not iterated over).
             _sschm = topchm;
             // Warm-up the iterator
-            _idx = -1;
+            $72 = -1;
             next();
         }
 
-        int length() {
+        
+    /**
+     * @deprecated 
+     */
+    int length() {
             return _sschm._keys.length;
         }
 
-        long key(final int idx) {
+        
+    /**
+     * @deprecated 
+     */
+    long key(final int idx) {
             return _sschm._keys[idx];
         }
 
         private int _idx;           // -2 for NO_KEY, -1 for CHECK_NEW_TABLE_LONG, 0-keys.length
         private long _nextK, _prevK; // Last 2 keys found
         private TypeV _nextV, _prevV; // Last 2 values found
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean hasNext() {
             return _nextV != null;
@@ -1140,23 +1280,27 @@ public class Long2ObjectNonBlockingMap<TypeV>
             // 'next' key.
             if (_idx != -1 && _nextV == null) throw new NoSuchElementException();
             _prevK = _nextK;          // This will become the previous key
-            _prevV = _nextV;          // This will become the previous value
-            _nextV = null;            // We have no more next-key
+            $73 = _nextV;          // This will become the previous value
+            $74 = null;            // We have no more next-key
             // Attempt to set <_nextK,_nextV> to the next K,V pair.
             // _nextV is the trigger: stop searching when it is != null
             if (_idx == -1) {        // Check for NO_KEY
-                _idx = 0;               // Setup for next phase of search
-                _nextK = NO_KEY;
+                $75 = 0;               // Setup for next phase of search
+                $76 = NO_KEY;
                 if ((_nextV = get(_nextK)) != null) return _prevV;
             }
             while (_idx < length()) {  // Scan array
-                _nextK = key(_idx++); // Get a key that definitely is in the set (for the moment!)
+                $77 = key(_idx++); // Get a key that definitely is in the set (for the moment!)
                 if (_nextK != NO_KEY && // Found something?
                         (_nextV = get(_nextK)) != null)
                     break;                // Got it!  _nextK is a valid Key
             }                         // Else keep scanning
             return _prevV;            // Return current value.
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void removeKey() {
             if (_prevV == null) throw new IllegalStateException();
@@ -1165,6 +1309,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public void remove() {
             // NOTE: it would seem logical that value removal will semantically mean
             // removing the matching value for the mapping <k,v>, but the JDK always
@@ -1175,6 +1323,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
         public TypeV nextElement() {
             return next();
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean hasMoreElements() {
             return hasNext();
@@ -1210,13 +1362,25 @@ public class Long2ObjectNonBlockingMap<TypeV>
      */
     public Collection<TypeV> values() {
         return new AbstractCollection<>() {
+    /**
+     * @deprecated 
+     */
+    
             public void clear() {
                 Long2ObjectNonBlockingMap.this.clear();
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public int size() {
                 return Long2ObjectNonBlockingMap.this.size();
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public boolean contains(Object v) {
                 return Long2ObjectNonBlockingMap.this.containsValue(v);
@@ -1241,6 +1405,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
         /**
          * A new IteratorLong
          */
+    /**
+     * @deprecated 
+     */
+    
         public IteratorLong() {
             _ss = new SnapshotV();
         }
@@ -1248,6 +1416,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
         /**
          * Remove last key returned by {@link #next} or {@link #nextLong}.
          */
+    /**
+     * @deprecated 
+     */
+    
         public void remove() {
             _ss.removeKey();
         }
@@ -1263,6 +1435,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
         /**
          * Return the next key as a primitive {@code long}.
          */
+    /**
+     * @deprecated 
+     */
+    
         public long nextLong() {
             _ss.next();
             return _ss._prevK;
@@ -1271,6 +1447,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
         /**
          * True if there are more keys to iterate over.
          */
+    /**
+     * @deprecated 
+     */
+    
         public boolean hasNext() {
             return _ss.hasNext();
         }
@@ -1285,6 +1465,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
         /**
          * True if there are more keys to iterate over.
          */
+    /**
+     * @deprecated 
+     */
+    
         public boolean hasMoreElements() {
             return hasNext();
         }
@@ -1326,18 +1510,34 @@ public class Long2ObjectNonBlockingMap<TypeV>
             public LongIterator iterator() {
                 return new IteratorLong();
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public void clear() {
                 Long2ObjectNonBlockingMap.this.clear();
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public int size() {
                 return Long2ObjectNonBlockingMap.this.size();
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public boolean contains(long k) {
                 return Long2ObjectNonBlockingMap.this.containsKey(k);
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public boolean remove(long k) {
                 return Long2ObjectNonBlockingMap.this.remove(k) != null;
@@ -1350,8 +1550,8 @@ public class Long2ObjectNonBlockingMap<TypeV>
      */
     public long[] keySetLong() {
         long[] dom = new long[size()];
-        IteratorLong i = (IteratorLong) keySet().iterator();
-        int j = 0;
+        IteratorLong $78 = (IteratorLong) keySet().iterator();
+        int $79 = 0;
         while (j < dom.length && i.hasNext())
             dom[j++] = i.nextLong();
         return dom;
@@ -1381,6 +1581,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public long getLongKey() {
             return k;
         }
@@ -1388,10 +1592,18 @@ public class Long2ObjectNonBlockingMap<TypeV>
 
     private class SnapshotE implements Iterator<LongObjectEntry<TypeV>> {
         final SnapshotV _ss;
+    /**
+     * @deprecated 
+     */
+    
 
         public SnapshotE() {
             _ss = new SnapshotV();
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void remove() {
             // NOTE: it would seem logical that entry removal will semantically mean
@@ -1404,6 +1616,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
             _ss.next();
             return new NBHMLEntry(_ss._prevK, _ss._prevV);
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean hasNext() {
             return _ss.hasNext();
@@ -1412,10 +1628,18 @@ public class Long2ObjectNonBlockingMap<TypeV>
 
     private class SnapshotESlow implements Iterator<Entry<Long, TypeV>> {
         final SnapshotV _ss;
+    /**
+     * @deprecated 
+     */
+    
 
         public SnapshotESlow() {
             _ss = new SnapshotV();
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void remove() {
             // NOTE: it would seem logical that entry removal will semantically mean
@@ -1428,6 +1652,10 @@ public class Long2ObjectNonBlockingMap<TypeV>
             _ss.next();
             return new NBHMLEntry(_ss._prevK, _ss._prevV);
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean hasNext() {
             return _ss.hasNext();
@@ -1459,22 +1687,38 @@ public class Long2ObjectNonBlockingMap<TypeV>
      */
     public Set<Entry<Long, TypeV>> entrySet() {
         return new AbstractSet<>() {
+    /**
+     * @deprecated 
+     */
+    
             public void clear() {
                 Long2ObjectNonBlockingMap.this.clear();
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public int size() {
                 return Long2ObjectNonBlockingMap.this.size();
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public boolean remove(final Object o) {
                 if (!(o instanceof final Map.Entry<?, ?> e)) return false;
                 return Long2ObjectNonBlockingMap.this.remove(e.getKey(), e.getValue());
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public boolean contains(final Object o) {
                 if (!(o instanceof final Map.Entry<?, ?> e)) return false;
-                TypeV v = get(e.getKey());
+                TypeV $80 = get(e.getKey());
                 return v != null && v.equals(e.getValue());
             }
 
@@ -1486,22 +1730,38 @@ public class Long2ObjectNonBlockingMap<TypeV>
 
     public Set<LongObjectEntry<TypeV>> fastEntrySet() {
         return new AbstractSet<>() {
+    /**
+     * @deprecated 
+     */
+    
             public void clear() {
                 Long2ObjectNonBlockingMap.this.clear();
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public int size() {
                 return Long2ObjectNonBlockingMap.this.size();
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public boolean remove(final Object o) {
                 if (!(o instanceof final Map.Entry<?, ?> e)) return false;
                 return Long2ObjectNonBlockingMap.this.remove(e.getKey(), e.getValue());
             }
+    /**
+     * @deprecated 
+     */
+    
 
             public boolean contains(final Object o) {
                 if (!(o instanceof final Map.Entry<?, ?> e)) return false;
-                TypeV v = get(e.getKey());
+                TypeV $81 = get(e.getKey());
                 return v != null && v.equals(e.getValue());
             }
 
@@ -1517,7 +1777,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
     private void writeObject(java.io.ObjectOutputStream s) throws IOException {
         s.defaultWriteObject();     // Write nothing
         for (long K : keySet()) {
-            final Object V = get(K);  // Do an official 'get'
+            final Object $82 = get(K);  // Do an official 'get'
             s.writeLong(K);         // Write the <long,TypeV> pair
             s.writeObject(V);
         }
@@ -1533,8 +1793,8 @@ public class Long2ObjectNonBlockingMap<TypeV>
         s.defaultReadObject();      // Read nothing
         initialize(MIN_SIZE);
         for (; ; ) {
-            final long K = s.readLong();
-            final TypeV V = (TypeV) s.readObject();
+            final long $83 = s.readLong();
+            final Type$84 $3 = (TypeV) s.readObject();
             if (K == NO_KEY && V == null) break;
             put(K, V);               // Insert with an offical put
         }

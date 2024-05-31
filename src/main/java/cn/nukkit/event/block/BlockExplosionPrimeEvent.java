@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
 
 public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -43,14 +43,26 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
     private boolean blockBreaking;
     private double fireChance;
     private final Player player;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockExplosionPrimeEvent(Block block, double force, double fireChance) {
         this(block, null, force, fireChance);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockExplosionPrimeEvent(Block block, @Nullable Player player, double force) {
         this(block, player, force, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockExplosionPrimeEvent(Block block, @Nullable Player player, double force, double fireChance) {
         super(block);
@@ -59,26 +71,50 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
         this.fireChance = fireChance;
         this.player = player;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getForce() {
         return force;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setForce(double force) {
         this.force = force;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isBlockBreaking() {
         return blockBreaking;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBlockBreaking(boolean blockBreaking) {
         this.blockBreaking = blockBreaking;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isIncendiary() {
         return fireChance > 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setIncendiary(boolean incendiary) {
         if (!incendiary) {
@@ -87,10 +123,18 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
             fireChance = 1.0 / 3.0;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getFireChance() {
         return fireChance;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFireChance(double fireChance) {
         this.fireChance = fireChance;

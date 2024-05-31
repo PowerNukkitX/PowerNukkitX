@@ -10,7 +10,7 @@ import cn.nukkit.level.Location;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityTeleportEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -19,10 +19,18 @@ public class EntityTeleportEvent extends EntityEvent implements Cancellable {
     private Location from;
     private Location to;
     private final PlayerTeleportEvent.TeleportCause cause;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityTeleportEvent(Entity entity, Location from, Location to) {
         this(entity, from, to, PlayerTeleportEvent.TeleportCause.UNKNOWN);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityTeleportEvent(Entity entity, Location from, Location to, PlayerTeleportEvent.TeleportCause cause) {
         this.entity = entity;
@@ -34,6 +42,10 @@ public class EntityTeleportEvent extends EntityEvent implements Cancellable {
     public Location getFrom() {
         return from;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFrom(Location from) {
         this.from = from;
@@ -42,6 +54,10 @@ public class EntityTeleportEvent extends EntityEvent implements Cancellable {
     public Location getTo() {
         return to;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTo(Location to) {
         this.to = to;

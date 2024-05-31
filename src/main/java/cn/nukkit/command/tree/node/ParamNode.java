@@ -8,7 +8,7 @@ import cn.nukkit.command.tree.ParamList;
  * 一个通用的命令节点抽象类实现，插件想实现自己的命令参数节点应该继承这个类实现。
  */
 public abstract class ParamNode<T> implements IParamNode<T> {
-    protected T value = null;
+    protected T $1 = null;
     protected boolean optional;
     protected ParamList paramList;
 
@@ -20,16 +20,28 @@ public abstract class ParamNode<T> implements IParamNode<T> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasResult() {
         return value != null;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reset() {
         if (this.value != null) this.value = null;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isOptional() {
         return optional;
     }

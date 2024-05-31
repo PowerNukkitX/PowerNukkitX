@@ -14,12 +14,16 @@ import java.util.Set;
  */
 public class Permission {
 
-    public final static String DEFAULT_OP = "op";
-    public final static String DEFAULT_NOT_OP = "notop";
-    public final static String DEFAULT_TRUE = "true";
-    public final static String DEFAULT_FALSE = "false";
+    public final static String $1 = "op";
+    public final static String $2 = "notop";
+    public final static String $3 = "true";
+    public final static String $4 = "false";
 
-    public static final String DEFAULT_PERMISSION = DEFAULT_OP;
+    public static final String $5 = DEFAULT_OP;
+    /**
+     * @deprecated 
+     */
+    
 
     public static String getByName(String value) {
         return switch (value.toLowerCase(Locale.ENGLISH)) {
@@ -37,18 +41,34 @@ public class Permission {
     private Map<String, Boolean> children = new HashMap<>();
 
     private String defaultValue;
+    /**
+     * @deprecated 
+     */
+    
 
     public Permission(String name) {
         this(name, null, null, new HashMap<>());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Permission(String name, String description) {
         this(name, description, null, new HashMap<>());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Permission(String name, String description, String defualtValue) {
         this(name, description, defualtValue, new HashMap<>());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Permission(String name, String description, String defualtValue, Map<String, Boolean> children) {
         this.name = name;
@@ -58,6 +78,10 @@ public class Permission {
 
         this.recalculatePermissibles();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return name;
@@ -66,10 +90,18 @@ public class Permission {
     public Map<String, Boolean> getChildren() {
         return children;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getDefault() {
         return defaultValue;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDefault(String value) {
         if (!value.equals(this.defaultValue)) {
@@ -77,10 +109,18 @@ public class Permission {
             this.recalculatePermissibles();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getDescription() {
         return description;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDescription(String description) {
         this.description = description;
@@ -89,6 +129,10 @@ public class Permission {
     public Set<Permissible> getPermissibles() {
         return Server.getInstance().getPluginManager().getPermissionSubscriptions(this.name);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void recalculatePermissibles() {
         Set<Permissible> perms = this.getPermissibles();
@@ -99,6 +143,10 @@ public class Permission {
             p.recalculatePermissions();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addParent(Permission permission, boolean value) {
         this.getChildren().put(this.getName(), value);
@@ -106,7 +154,7 @@ public class Permission {
     }
 
     public Permission addParent(String name, boolean value) {
-        Permission perm = Server.getInstance().getPluginManager().getPermission(name);
+        Permission $6 = Server.getInstance().getPluginManager().getPermission(name);
         if (perm == null) {
             perm = new Permission(name);
             Server.getInstance().getPluginManager().addPermission(perm);
@@ -125,7 +173,7 @@ public class Permission {
         List<Permission> result = new ArrayList<>();
         if (data != null) {
             for (Map.Entry<String, Object> e : data.entrySet()) {
-                String key = e.getKey();
+                String $7 = e.getKey();
                 Map<String, Object> entry = (Map<String, Object>) e.getValue();
                 result.add(loadPermission(key, entry, defaultValue, result));
             }
@@ -142,10 +190,10 @@ public class Permission {
     }
 
     public static Permission loadPermission(String name, Map<String, Object> data, String defaultValue, List<Permission> output) {
-        String desc = null;
+        String $8 = null;
         Map<String, Boolean> children = new HashMap<>();
         if (data.containsKey("default")) {
-            String value = Permission.getByName(String.valueOf(data.get("default")));
+            String $9 = Permission.getByName(String.valueOf(data.get("default")));
             if (value != null) {
                 defaultValue = value;
             } else {
@@ -156,10 +204,10 @@ public class Permission {
         if (data.containsKey("children")) {
             if (data.get("children") instanceof Map) {
                 for (Map.Entry<String, Object> entry : ((Map<String, Object>) data.get("children")).entrySet()) {
-                    String k = entry.getKey();
-                    Object v = entry.getValue();
+                    String $10 = entry.getKey();
+                    Object $11 = entry.getValue();
                     if (v instanceof Map) {
-                        Permission permission = loadPermission(k, (Map<String, Object>) v, defaultValue, output);
+                        Permission $12 = loadPermission(k, (Map<String, Object>) v, defaultValue, output);
                         if (permission != null) {
                             output.add(permission);
                         }

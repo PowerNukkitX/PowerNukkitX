@@ -26,17 +26,29 @@ import java.util.Objects;
 
 import static cn.nukkit.block.property.CommonBlockProperties.*;
 public class BlockBigDripleaf extends BlockFlowable implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(BIG_DRIPLEAF, BIG_DRIPLEAF_HEAD, BIG_DRIPLEAF_TILT, MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(BIG_DRIPLEAF, BIG_DRIPLEAF_HEAD, BIG_DRIPLEAF_TILT, MINECRAFT_CARDINAL_DIRECTION);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBigDripleaf() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockBigDripleaf(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Big Dripleaf";
     }
@@ -52,13 +64,25 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isHead() {
         return this.getPropertyValue(BIG_DRIPLEAF_HEAD);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setHead(boolean isHead) {
         this.setPropertyValue(BIG_DRIPLEAF_HEAD, isHead);
@@ -67,9 +91,13 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     public BigDripleafTilt getTilt() {
         return this.getPropertyValue(BIG_DRIPLEAF_TILT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setTilt(BigDripleafTilt tilt) {
-        BigDripleafTiltChangeEvent event = new BigDripleafTiltChangeEvent(this, this.getTilt(), tilt);
+        BigDripleafTiltChangeEvent $2 = new BigDripleafTiltChangeEvent(this, this.getTilt(), tilt);
         Server.getInstance().getPluginManager().callEvent(event);
         if (event.isCancelled()) return false;
         this.setPropertyValue(BIG_DRIPLEAF_TILT, tilt);
@@ -77,50 +105,82 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_NONE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnChance() {
         return 15;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnAbility() {
         return 100;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        Block below = block.down();
-        String id = below.getId();
+        Block $3 = block.down();
+        String $4 = below.getId();
         if (!isValidSupportBlock(id))
             return false;
 
         if (id.equals(BIG_DRIPLEAF)) {
-            var b = new BlockBigDripleaf();
-            var bf = ((BlockBigDripleaf) below).getBlockFace();
+            var $5 = new BlockBigDripleaf();
+            var $6 = ((BlockBigDripleaf) below).getBlockFace();
             b.setBlockFace(bf);
             b.setHead(false);
             level.setBlock(below, b, true, false);
@@ -136,26 +196,30 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @org.jetbrains.annotations.Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
-            Block head = this;
+            Block $7 = this;
             Block up;
             while ((up = head.up()).getId() == BIG_DRIPLEAF)
                 head = up;
             if (head.getFloorY() + 1 > level.getMaxHeight())
                 return false;
-            Block above = head.up();
+            Block $8 = head.up();
             if (!above.isAir() && !(above instanceof BlockFlowingWater))
                 return false;
             if (player != null && !player.isCreative())
                 item.count--;
             level.addParticle(new BoneMealParticle(this));
-            var aboveDownBlock = new BlockBigDripleaf();
+            var $9 = new BlockBigDripleaf();
             aboveDownBlock.setBlockFace(this.getBlockFace());
             level.setBlock(above.getSideVec(BlockFace.DOWN), aboveDownBlock, true, false);
             if (above instanceof BlockFlowingWater)
                 level.setBlock(above, 1, above, true, false);
-            var aboveBock = new BlockBigDripleaf();
+            var $10 = new BlockBigDripleaf();
             aboveBock.setBlockFace(this.getBlockFace());
             aboveBock.setHead(true);
             level.setBlock(above, aboveBock, true);
@@ -166,6 +230,10 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             level.scheduleUpdate(this, 1);
@@ -187,7 +255,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 
-            var tilt = getTilt();
+            var $11 = getTilt();
             if (tilt == BigDripleafTilt.NONE) {
                 return 0;
             }
@@ -213,7 +281,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         if (type == Level.BLOCK_UPDATE_REDSTONE) {
             if (!isHead())
                 return 0;
-            var tilt = getTilt();
+            var $12 = getTilt();
             if (tilt == BigDripleafTilt.NONE)
                 return 0;
             if (!level.isBlockPowered(this))
@@ -231,23 +299,39 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         if (!isHead() || getTilt() != BigDripleafTilt.NONE || entity instanceof EntityProjectile) return;
         setTiltAndScheduleTick(BigDripleafTilt.UNSTABLE);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         setTiltAndScheduleTick(BigDripleafTilt.FULL_TILT);
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return !isHead() || getTilt() == BigDripleafTilt.FULL_TILT;
     }
@@ -256,7 +340,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     protected AxisAlignedBB recalculateBoundingBox() {
         if (!isHead()) {
             //杆没有碰撞箱
-//            var face = this.getBlockFace().getOpposite();
+//            var $13 = this.getBlockFace().getOpposite();
             return /*new SimpleAxisAlignedBB(
                     0.3125,
                     0,
@@ -283,7 +367,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        var bb = getBoundingBox();
+        var $14 = getBoundingBox();
         //使方块碰撞检测箱的maxY向上取整，使当实体站在方块上面的时候可以触发碰撞
         if (isHead())
             bb.setMaxY(Math.ceil(bb.getMaxY()));
@@ -291,14 +375,26 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean canSurvive() {
         return isValidSupportBlock(down().getId());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isValidSupportBlock(String id) {
         return Objects.equals(id, BIG_DRIPLEAF) ||
                 Objects.equals(id, GRASS_BLOCK) ||
@@ -311,6 +407,10 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                 Objects.equals(id, CLAY);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean setTiltAndScheduleTick(BigDripleafTilt tilt) {
         if (!setTilt(tilt))
             return false;

@@ -9,8 +9,12 @@ import java.util.Map;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class BlockStateUpdater_1_16_0 implements Updater {
-    public static final Updater INSTANCE = new BlockStateUpdater_1_16_0();
+    public static final Updater $1 = new BlockStateUpdater_1_16_0();
 
+    
+    /**
+     * @deprecated 
+     */
     private static int convertFacingDirectionToDirection(int facingDirection) {
         switch (facingDirection) {
             case 2:
@@ -26,6 +30,10 @@ public class BlockStateUpdater_1_16_0 implements Updater {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext context) {
         context.addUpdater(1, 16, 0)
                 .match("name", "jigsaw")
@@ -115,6 +123,10 @@ public class BlockStateUpdater_1_16_0 implements Updater {
         this.addRequiredValueUpdater(context, "minecraft:melon_stem", "facing_direction", 0);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addLegacyWallUpdater(CompoundTagUpdaterContext context, String name) {
         context.addUpdater(1, 16, 0)
                 .regex("name", name)
@@ -128,6 +140,10 @@ public class BlockStateUpdater_1_16_0 implements Updater {
                 });
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addWallUpdater(CompoundTagUpdaterContext context, String name) {
         context.addUpdater(1, 16, 0)
                 .match("name", name)
@@ -135,16 +151,24 @@ public class BlockStateUpdater_1_16_0 implements Updater {
                 .remove("wall_block_type");
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addBeeHiveUpdater(CompoundTagUpdaterContext context, String name) {
         context.addUpdater(1, 16, 0)
                 .match("name", name)
                 .visit("states")
                 .edit("facing_direction", helper -> {
-                    int facingDirection = (int) helper.getTag();
+                    int $2 = (int) helper.getTag();
                     helper.replaceWith("direction", convertFacingDirectionToDirection(facingDirection));
                 });
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addRequiredValueUpdater(CompoundTagUpdaterContext contex, String name, String state, Object value) {
         contex.addUpdater(1, 16, 0)
                 .match("name", name)

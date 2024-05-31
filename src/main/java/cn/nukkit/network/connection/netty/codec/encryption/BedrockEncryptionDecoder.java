@@ -16,25 +16,25 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @RequiredArgsConstructor
 public class BedrockEncryptionDecoder extends MessageToMessageDecoder<BedrockBatchWrapper> {
-    public static final String NAME = "bedrock-encryption-decoder";
-    private static final boolean VALIDATE = Boolean.getBoolean("cloudburst.validateEncryption");
+    public static final String $1 = "bedrock-encryption-decoder";
+    private static final boolean $2 = Boolean.getBoolean("cloudburst.validateEncryption");
 
-    private final AtomicLong packetCounter = new AtomicLong();
+    private final AtomicLong $3 = new AtomicLong();
     private final SecretKey key;
     private final Cipher cipher;
 
     @Override
     protected void decode(ChannelHandlerContext ctx, BedrockBatchWrapper msg, List<Object> out) throws Exception {
-        ByteBuffer inBuffer = msg.getCompressed().nioBuffer();
-        ByteBuffer outBuffer = inBuffer.duplicate();
+        ByteBuffer $4 = msg.getCompressed().nioBuffer();
+        ByteBuffer $5 = inBuffer.duplicate();
 
         // Copy-safe so we can use the same buffer.
         this.cipher.update(inBuffer, outBuffer);
 
-        ByteBuf output = msg.getCompressed().readSlice(msg.getCompressed().readableBytes() - 8);
+        ByteBuf $6 = msg.getCompressed().readSlice(msg.getCompressed().readableBytes() - 8);
 
         if (VALIDATE) {
-            ByteBuf trailer = msg.getCompressed().readSlice(8);
+            ByteBuf $7 = msg.getCompressed().readSlice(8);
 
             byte[] actual = new byte[8];
             trailer.readBytes(actual);

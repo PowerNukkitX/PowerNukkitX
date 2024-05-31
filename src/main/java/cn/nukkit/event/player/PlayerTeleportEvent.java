@@ -9,7 +9,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 
 public class PlayerTeleportEvent extends PlayerEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -19,9 +19,17 @@ public class PlayerTeleportEvent extends PlayerEvent implements Cancellable {
     private Location from;
     private Location to;
 
+    
+    /**
+     * @deprecated 
+     */
     private PlayerTeleportEvent(Player player) {
         this.player = player;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerTeleportEvent(Player player, Location from, Location to, TeleportCause cause) {
         this(player);
@@ -29,6 +37,10 @@ public class PlayerTeleportEvent extends PlayerEvent implements Cancellable {
         this.to = to;
         this.cause = cause;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerTeleportEvent(Player player, Vector3 from, Vector3 to, TeleportCause cause) {
         this(player);

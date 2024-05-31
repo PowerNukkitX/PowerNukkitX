@@ -15,6 +15,10 @@ import cn.nukkit.level.Position;
 import java.util.Map;
 
 public class SetBlockCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public SetBlockCommand(String name) {
         super(name, "commands.setblock.description");
@@ -30,20 +34,24 @@ public class SetBlockCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
-        Position position = list.getResult(0);
-        Block block = list.getResult(1);
+        var $1 = result.getValue();
+        Position $2 = list.getResult(0);
+        Block $3 = list.getResult(1);
         try {
             if (list.hasResult(2)) {
-                int data = list.getResult(2);
+                int $4 = list.getResult(2);
                 block = block.getProperties().getBlockState((short) data).toBlock();
             }
         } catch (IndexOutOfBoundsException e) {
             log.addError("commands.setblock.notFound", block.getId()).output();
             return 0;
         }
-        String oldBlockHandling = "replace";
+        String $5 = "replace";
         if (list.hasResult(3)) {
             oldBlockHandling = list.getResult(3);
         }
@@ -52,8 +60,8 @@ public class SetBlockCommand extends VanillaCommand {
             return 0;
         }
 
-        Level level = sender.getPosition().getLevel();
-        Block current = level.getBlock(position);
+        Level $6 = sender.getPosition().getLevel();
+        Block $7 = level.getBlock(position);
         if (current.getId().equals(block.getId()) && current.getBlockState() == block.getBlockState()) {
             log.addError("commands.setblock.noChange").output();
             return 0;

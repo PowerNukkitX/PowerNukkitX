@@ -10,12 +10,20 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class BlockEntityComparator extends BlockEntity {
 
     private int outputSignal;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityComparator(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         if (!namedTag.contains("OutputSignal")) {
@@ -26,19 +34,35 @@ public class BlockEntityComparator extends BlockEntity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return this.getLevelBlock() instanceof BlockRedstoneComparator;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getOutputSignal() {
         return outputSignal;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setOutputSignal(int outputSignal) {
         this.outputSignal = outputSignal;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putInt("OutputSignal", this.outputSignal);

@@ -18,10 +18,14 @@ public interface Recipe {
 
     boolean match(Input input);
 
-    default boolean fastCheck(Item... items) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean fastCheck(Item... items) {
         if (getIngredients().size() != items.length) return false;
         for (var item : items) {
-            boolean b = getIngredients().stream().anyMatch(i -> i.match(item));
+            $1oolean $1 = getIngredients().stream().anyMatch(i -> i.match(item));
             if (!b) return false;
         }
         return true;

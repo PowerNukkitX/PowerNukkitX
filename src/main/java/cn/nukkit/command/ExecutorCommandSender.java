@@ -24,6 +24,10 @@ public class ExecutorCommandSender implements CommandSender {
     private final CommandSender executor;
     private final Entity entity;
     private final Location executeLocation;
+    /**
+     * @deprecated 
+     */
+    
 
     public ExecutorCommandSender(@NotNull CommandSender executor, @Nullable Entity entity, @Nullable Location executeLocation) {
         if (executor instanceof ExecutorCommandSender executorCommandSender) {
@@ -36,14 +40,26 @@ public class ExecutorCommandSender implements CommandSender {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendMessage(String message) {
         executor.sendMessage(message);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendMessage(TextContainer message) {
         executor.sendMessage(message);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendCommandOutput(CommandOutputContainer container) {
         executor.sendCommandOutput(container);
@@ -55,16 +71,28 @@ public class ExecutorCommandSender implements CommandSender {
     }
 
     @Override
-    @NotNull public String getName() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getName() {
         return entity.getName();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPlayer() {
         return entity instanceof Player;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isEntity() {
         return true;
     }
@@ -90,31 +118,55 @@ public class ExecutorCommandSender implements CommandSender {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isOp() {
         return this.executor.isOp();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setOp(boolean value) {
         this.executor.setOp(value);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPermissionSet(String name) {
         return executor.isPermissionSet(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPermissionSet(Permission permission) {
         return executor.isPermissionSet(permission);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasPermission(String name) {
         return executor.hasPermission(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasPermission(Permission permission) {
         return executor.hasPermission(permission);
     }
@@ -135,11 +187,19 @@ public class ExecutorCommandSender implements CommandSender {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeAttachment(PermissionAttachment attachment) {
         executor.removeAttachment(attachment);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void recalculatePermissions() {
         executor.recalculatePermissions();
     }

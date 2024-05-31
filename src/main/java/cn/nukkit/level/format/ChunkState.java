@@ -10,6 +10,10 @@ public enum ChunkState {
     GENERATED,
     POPULATED,
     FINISHED;
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canSend() {
         return this.ordinal() >= 2;

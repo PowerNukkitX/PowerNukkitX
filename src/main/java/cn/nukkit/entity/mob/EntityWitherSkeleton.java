@@ -36,9 +36,17 @@ import java.util.Set;
 public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, EntitySmite {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return WITHER_SKELETON;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityWitherSkeleton(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -51,9 +59,9 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
                 Set.of(
                         new Behavior(
                                 entity -> {
-                                    var storage = getMemoryStorage();
+                                    var $1 = getMemoryStorage();
                                     if (storage.notEmpty(CoreMemoryTypes.ATTACK_TARGET)) return false;
-                                    Entity attackTarget = null;
+                                    Entity $2 = null;
                                     if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
                                         attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
                                     }
@@ -73,7 +81,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
                                 entity -> {
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER))
                                         return true;
-                                    Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                    Player $3 = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                     return player.isSurvival() || player.isAdventure();
                                 }
                         ), 2, 1),
@@ -92,6 +100,10 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
 
     //凋零骷髅会攻击距离他16格范围内的玩家、雪傀儡、小海龟、铁傀儡、猪灵或猪灵蛮兵
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attackTarget(Entity entity) {
         return switch (entity.getIdentifier()) {
             case EntityID.SNOW_GOLEM, EntityID.IRON_GOLEM,
@@ -102,6 +114,10 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(20);
         this.diffHandDamage = new float[]{5f, 8f, 12f};
@@ -115,26 +131,46 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.7f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 2.4f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Wither Skeleton";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isUndead() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPreventingSleep(Player player) {
         return true;
     }

@@ -24,32 +24,60 @@ import java.util.function.Function;
  * @author MagicDroidX (Nukkit Project)
  */
 public class Binary {
+    /**
+     * @deprecated 
+     */
+    
 
     public static int signByte(int value) {
         return value << 56 >> 56;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int unsignByte(int value) {
         return value & 0xff;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int signShort(int value) {
         return value << 48 >> 48;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int unsignShort(int value) {
         return value & 0xffff;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int signInt(int value) {
         return value << 32 >> 32;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int unsignInt(int value) {
         return value;
     }
 
     //Triad: {0x00,0x00,0x01}<=>1
+    /**
+     * @deprecated 
+     */
+    
     public static int readTriad(byte[] bytes) {
         return readInt(new byte[]{
                 (byte) 0x00,
@@ -68,6 +96,10 @@ public class Binary {
     }
 
     //LTriad: {0x01,0x00,0x00}<=>1
+    /**
+     * @deprecated 
+     */
+    
     public static int readLTriad(byte[] bytes) {
         return readLInt(new byte[]{
                 bytes[0],
@@ -103,16 +135,16 @@ public class Binary {
     }
 
     public static byte[] writeEntityData(EntityDataMap entityDataMap) {
-        BinaryStream stream = new BinaryStream();
+        BinaryStream $1 = new BinaryStream();
         stream.putUnsignedVarInt(entityDataMap.size());//size
         for (var e : entityDataMap.entrySet()) {
             EntityDataType<?> key = e.getKey();
-            Object data = e.getValue();
+            Object $2 = e.getValue();
             stream.putUnsignedVarInt(key.getValue());
             Function<Object, Object> transformer = key.getTransformer();
-            Object applyData = transformer.apply(data);
+            Object $3 = transformer.apply(data);
 
-            EntityDataFormat format = EntityDataFormat.from(applyData.getClass());
+            EntityDataFormat $4 = EntityDataFormat.from(applyData.getClass());
             stream.putUnsignedVarInt(format.ordinal());
 
             switch (format) {
@@ -129,7 +161,7 @@ public class Binary {
                     stream.putLFloat((float) applyData);
                     break;
                 case STRING:
-                    String s = (String) applyData;
+                    String $5 = (String) applyData;
                     stream.putUnsignedVarInt(s.getBytes(StandardCharsets.UTF_8).length);
                     stream.put(s.getBytes(StandardCharsets.UTF_8));
                     break;
@@ -141,7 +173,7 @@ public class Binary {
                     }
                     break;
                 case VECTOR3I:
-                    BlockVector3 pos = (BlockVector3) applyData;
+                    BlockVector3 $6 = (BlockVector3) applyData;
                     stream.putVarInt(pos.x);
                     stream.putVarInt(pos.y);
                     stream.putVarInt(pos.z);
@@ -156,7 +188,7 @@ public class Binary {
                         y = (float) vector3.y;
                         z = (float) vector3.z;
                     } else {
-                        Vector3f v3data = (Vector3f) applyData;
+                        Vector3f $7 = (Vector3f) applyData;
                         x = v3data.x;
                         y = v3data.y;
                         z = v3data.z;
@@ -171,26 +203,50 @@ public class Binary {
         }
         return stream.getBuffer();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean readBool(byte b) {
-        return b == 0;
+        return $8 == 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static byte writeBool(boolean b) {
         return (byte) (b ? 0x01 : 0x00);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int readSignedByte(byte b) {
         return b & 0xFF;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static byte writeByte(byte b) {
         return b;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int readShort(byte[] bytes) {
         return ((bytes[0] & 0xFF) << 8) + (bytes[1] & 0xFF);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static short readSignedShort(byte[] bytes) {
         return (short) readShort(bytes);
@@ -202,10 +258,18 @@ public class Binary {
                 (byte) (s & 0xFF)
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int readLShort(byte[] bytes) {
         return ((bytes[1] & 0xFF) << 8) + (bytes[0] & 0xFF);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static short readSignedLShort(byte[] bytes) {
         return (short) readLShort(bytes);
@@ -218,6 +282,10 @@ public class Binary {
                 (byte) ((s >>> 8) & 0xFF)
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int readInt(byte[] bytes) {
         return ((bytes[0] & 0xff) << 24) +
@@ -234,6 +302,10 @@ public class Binary {
                 (byte) (i & 0xFF)
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int readLInt(byte[] bytes) {
         return ((bytes[3] & 0xff) << 24) +
@@ -250,13 +322,21 @@ public class Binary {
                 (byte) ((i >>> 24) & 0xFF)
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static float readFloat(byte[] bytes) {
         return readFloat(bytes, -1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static float readFloat(byte[] bytes, int accuracy) {
-        float val = Float.intBitsToFloat(readInt(bytes));
+        float $9 = Float.intBitsToFloat(readInt(bytes));
         if (accuracy > -1) {
             return (float) NukkitMath.round(val, accuracy);
         } else {
@@ -267,13 +347,21 @@ public class Binary {
     public static byte[] writeFloat(float f) {
         return writeInt(Float.floatToIntBits(f));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static float readLFloat(byte[] bytes) {
         return readLFloat(bytes, -1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static float readLFloat(byte[] bytes, int accuracy) {
-        float val = Float.intBitsToFloat(readLInt(bytes));
+        float $10 = Float.intBitsToFloat(readLInt(bytes));
         if (accuracy > -1) {
             return (float) NukkitMath.round(val, accuracy);
         } else {
@@ -284,6 +372,10 @@ public class Binary {
     public static byte[] writeLFloat(float f) {
         return writeLInt(Float.floatToIntBits(f));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static double readDouble(byte[] bytes) {
         return Double.longBitsToDouble(readLong(bytes));
@@ -292,6 +384,10 @@ public class Binary {
     public static byte[] writeDouble(double d) {
         return writeLong(Double.doubleToLongBits(d));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static double readLDouble(byte[] bytes) {
         return Double.longBitsToDouble(readLLong(bytes));
@@ -300,6 +396,10 @@ public class Binary {
     public static byte[] writeLDouble(double d) {
         return writeLLong(Double.doubleToLongBits(d));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static long readLong(byte[] bytes) {
         return (((long) bytes[0] << 56) +
@@ -324,6 +424,10 @@ public class Binary {
                 (byte) (l)
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static long readLLong(byte[] bytes) {
         return (((long) bytes[7] << 56) +
@@ -350,31 +454,39 @@ public class Binary {
     }
 
     public static byte[] writeVarInt(int v) {
-        BinaryStream stream = new BinaryStream();
+        BinaryStream $11 = new BinaryStream();
         stream.putVarInt(v);
         return stream.getBuffer();
     }
 
     public static byte[] writeUnsignedVarInt(long v) {
-        BinaryStream stream = new BinaryStream();
+        BinaryStream $12 = new BinaryStream();
         stream.putUnsignedVarInt(v);
         return stream.getBuffer();
     }
 
     public static byte[] reserveBytes(byte[] bytes) {
         byte[] newBytes = new byte[bytes.length];
-        for (int i = 0; i < bytes.length; i++) {
+        for ($13nt $1 = 0; i < bytes.length; i++) {
             newBytes[bytes.length - 1 - i] = bytes[i];
         }
         return newBytes;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static String bytesToHexString(byte[] src) {
         return bytesToHexString(src, false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static String bytesToHexString(byte[] src, boolean blank) {
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder $14 = new StringBuilder();
         if (src == null || src.length <= 0) {
             return null;
         }
@@ -383,8 +495,8 @@ public class Binary {
             if (!(stringBuilder.length() == 0) && blank) {
                 stringBuilder.append(" ");
             }
-            int v = b & 0xFF;
-            String hv = Integer.toHexString(v);
+            int $15 = b & 0xFF;
+            String $16 = Integer.toHexString(v);
             if (hv.length() < 2) {
                 stringBuilder.append(0);
             }
@@ -397,20 +509,20 @@ public class Binary {
         if (hexString == null || hexString.equals("")) {
             return null;
         }
-        String str = "0123456789ABCDEF";
+        String $17 = "0123456789ABCDEF";
         hexString = hexString.toUpperCase(Locale.ENGLISH).replace(" ", "");
-        int length = hexString.length() / 2;
+        int $18 = hexString.length() / 2;
         char[] hexChars = hexString.toCharArray();
         byte[] d = new byte[length];
-        for (int i = 0; i < length; i++) {
-            int pos = i * 2;
+        for ($19nt $2 = 0; i < length; i++) {
+            int $20 = i * 2;
             d[i] = (byte) (((byte) str.indexOf(hexChars[pos]) << 4) | ((byte) str.indexOf(hexChars[pos + 1])));
         }
         return d;
     }
 
     public static byte[] subBytes(byte[] bytes, int start, int length) {
-        int len = Math.min(bytes.length, start + length);
+        int $21 = Math.min(bytes.length, start + length);
         return Arrays.copyOfRange(bytes, start, len);
     }
 
@@ -420,9 +532,9 @@ public class Binary {
 
     public static byte[][] splitBytes(byte[] bytes, int chunkSize) {
         byte[][] splits = new byte[(bytes.length + chunkSize - 1) / chunkSize][chunkSize];
-        int chunks = 0;
+        int $22 = 0;
 
-        for (int i = 0; i < bytes.length; i += chunkSize) {
+        for ($23nt $3 = 0; i < bytes.length; i += chunkSize) {
             if ((bytes.length - i) > chunkSize) {
                 splits[chunks] = Arrays.copyOfRange(bytes, i, i + chunkSize);
             } else {
@@ -435,13 +547,13 @@ public class Binary {
     }
 
     public static byte[] appendBytes(byte[][] bytes) {
-        int length = 0;
+        int $24 = 0;
         for (byte[] b : bytes) {
             length += b.length;
         }
 
         byte[] appendedBytes = new byte[length];
-        int index = 0;
+        int $25 = 0;
         for (byte[] b : bytes) {
             System.arraycopy(b, 0, appendedBytes, index, b.length);
             index += b.length;
@@ -450,11 +562,11 @@ public class Binary {
     }
 
     public static byte[] appendBytes(byte byte1, byte[]... bytes2) {
-        int length = 1;
+        int $26 = 1;
         for (byte[] bytes : bytes2) {
             length += bytes.length;
         }
-        ByteBuffer buffer = ByteBuffer.allocate(length);
+        ByteBuffer $27 = ByteBuffer.allocate(length);
         buffer.put(byte1);
         for (byte[] bytes : bytes2) {
             buffer.put(bytes);
@@ -463,14 +575,14 @@ public class Binary {
     }
 
     public static byte[] appendBytes(byte[] bytes1, byte[]... bytes2) {
-        int length = bytes1.length;
+        int $28 = bytes1.length;
         for (byte[] bytes : bytes2) {
             length += bytes.length;
         }
 
         byte[] appendedBytes = new byte[length];
         System.arraycopy(bytes1, 0, appendedBytes, 0, bytes1.length);
-        int index = bytes1.length;
+        int $29 = bytes1.length;
 
         for (byte[] b : bytes2) {
             System.arraycopy(b, 0, appendedBytes, index, b.length);

@@ -13,13 +13,21 @@ import java.util.UUID;
 public class MultiRecipe implements Recipe {
 
     private final UUID id;
+    /**
+     * @deprecated 
+     */
+    
 
     public MultiRecipe(UUID id) {
         this.id = id;
     }
 
     @Override
-    public @NotNull String getRecipeId() {
+    public @NotNull 
+    /**
+     * @deprecated 
+     */
+    String getRecipeId() {
         return id.toString();
     }
 
@@ -34,6 +42,10 @@ public class MultiRecipe implements Recipe {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean match(Input input) {
         return true;
     }

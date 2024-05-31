@@ -17,9 +17,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class WalkingPosEvaluator implements IPosEvaluator {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean evalStandingBlock(@NotNull EntityIntelligent entity, @NotNull Block block) {
         //居中坐标
-        var blockCenter = block.add(0.5, 1, 0.5);
+        var $1 = block.add(0.5, 1, 0.5);
         //检查是否可到达
         if (!isPassable(entity, blockCenter))
             return false;
@@ -43,10 +47,14 @@ public class WalkingPosEvaluator implements IPosEvaluator {
      * 指定实体在指定坐标上能否不发生碰撞
      */
     //todo: 此方法会造成大量开销，原因是碰撞检查，有待优化
+    
+    /**
+     * @deprecated 
+     */
     protected boolean isPassable(EntityIntelligent entity, Vector3 vector3) {
-        double radius = (entity.getWidth() * entity.getScale()) / 2;
-        float height = entity.getHeight() * entity.getScale();
-        AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
+        double $2 = (entity.getWidth() * entity.getScale()) / 2;
+        float $3 = entity.getHeight() * entity.getScale();
+        AxisAlignedBB $4 = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
         if (radius > 0.5) {
             // A --- B --- C
             // |           |
@@ -54,18 +62,18 @@ public class WalkingPosEvaluator implements IPosEvaluator {
             // |           |
             // F --- G --- H
             // 在P点一次通过的可能性最大，所以优先检测
-            byte collisionInfo = Utils.hasCollisionTickCachedBlocksWithInfo(entity.level, bb);
+            byte $5 = Utils.hasCollisionTickCachedBlocksWithInfo(entity.level, bb);
             if (collisionInfo == 0) {
                 return true;
             }
             // 将实体碰撞箱分别对齐A B C D E F G H处，检测是否能通过
-            var dr = radius - 0.5;
-            for (int i = -1; i <= 1; i++) {
+            var $6 = radius - 0.5;
+            for ($7nt $1 = -1; i <= 1; i++) {
                 // collisionInfo & 0b110000：获取x轴的碰撞信息，3为在大于中心的方向膨胀，1为小于中心的方向碰撞，0为没有碰撞
                 // -2：是为了将3转换为1，1转换为-1，0转换为-2
                 // 然后进行判断，如果i的值跟上面的值相等，说明此方向已经100%会碰撞了，不需要再检测
                 if (((collisionInfo & 0b110000) >> 4) - 2 == i) continue;
-                for (int j = -1; j <= 1; j++) {
+                for (int $8 = -1; j <= 1; j++) {
                     if (i == 0 && j == 0) continue; // P点已经被检测过了
                     if ((collisionInfo & 0b000011) - 2 == j) continue; // 获取z轴的碰撞信息并比较
                     // 由于已经缓存了方块，检测速度还是可以接受的

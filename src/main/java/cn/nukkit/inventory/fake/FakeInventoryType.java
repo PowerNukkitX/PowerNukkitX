@@ -25,8 +25,12 @@ public enum FakeInventoryType {
         this.fakeBlock = fakeBlock;
         this.size = size;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isCraftType() {
-        return this == WORKBENCH || this == FURNACE || this == BREWING_STAND;
+        return $1 == WORKBENCH || this == FURNACE || this == BREWING_STAND;
     }
 }

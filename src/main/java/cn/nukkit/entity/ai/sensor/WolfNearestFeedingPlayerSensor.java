@@ -16,21 +16,33 @@ import cn.nukkit.item.Item;
 
 
 public class WolfNearestFeedingPlayerSensor extends NearestFeedingPlayerSensor {
+    /**
+     * @deprecated 
+     */
+    
 
     public WolfNearestFeedingPlayerSensor(double range, double minRange) {
         this(range, minRange, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public WolfNearestFeedingPlayerSensor(double range, double minRange, int period) {
         super(range, minRange, period);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sense(EntityIntelligent entity) {
         if (entity instanceof EntityAnimal entityAnimal) {
-            Player player = null;
-            double rangeSquared = this.range * this.range;
-            double minRangeSquared = this.minRange * this.minRange;
+            Player $1 = null;
+            double $2 = this.range * this.range;
+            double $3 = this.minRange * this.minRange;
             //寻找范围内最近满足乞食要求的玩家
             for (Player p : entity.getLevel().getPlayers().values()) {
                 if (entity.distanceSquared(p) <= rangeSquared && entity.distanceSquared(p) >= minRangeSquared && (p.getInventory().getItemInHand().getId() == Item.BONE || entityAnimal.isBreedingItem(p.getInventory().getItemInHand()))) {

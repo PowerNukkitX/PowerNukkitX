@@ -8,7 +8,7 @@ import cn.nukkit.form.window.FormWindow;
 
 public class PlayerSettingsRespondedEvent extends PlayerEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -16,13 +16,21 @@ public class PlayerSettingsRespondedEvent extends PlayerEvent implements Cancell
 
     protected int formID;
     protected FormWindow window;
-    protected boolean closed = false;
+    protected boolean $2 = false;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerSettingsRespondedEvent(Player player, int formID, FormWindow window) {
         this.player = player;
         this.formID = formID;
         this.window = window;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFormID() {
         return this.formID;
@@ -46,11 +54,19 @@ public class PlayerSettingsRespondedEvent extends PlayerEvent implements Cancell
      *
      * @return form closed
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean wasClosed() {
         return window.wasClosed();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setCancelled() {
         super.setCancelled();
     }

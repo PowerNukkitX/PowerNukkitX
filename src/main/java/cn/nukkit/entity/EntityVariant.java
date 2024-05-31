@@ -9,22 +9,38 @@ import cn.nukkit.utils.Utils;
 
 
 public interface EntityVariant extends EntityComponent {
-    default int getVariant() {
+    default 
+    /**
+     * @deprecated 
+     */
+    int getVariant() {
         return getMemoryStorage().get(CoreMemoryTypes.VARIANT);
     }
 
-    default void setVariant(int variant) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void setVariant(int variant) {
         getMemoryStorage().put(CoreMemoryTypes.VARIANT, variant);
     }
 
-    default boolean hasVariant() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean hasVariant() {
         return getMemoryStorage().notEmpty(CoreMemoryTypes.VARIANT);
     }
 
     /**
      * 随机一个变种值
      */
-    default int randomVariant() {
+    default 
+    /**
+     * @deprecated 
+     */
+    int randomVariant() {
         return getAllVariant()[Utils.rand(0, getAllVariant().length - 1)];
     }
 

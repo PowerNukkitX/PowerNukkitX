@@ -25,32 +25,56 @@ public class EntityHuman extends EntityHumanType {
     protected UUID uuid;
     protected byte[] rawUUID;
     protected Skin skin;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityHuman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getLength() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 1.8f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getSwimmingHeight() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getEyeHeight() {
         return (float) (boundingBox.getMaxY() - boundingBox.getMinY() - 0.18);
     }
@@ -61,6 +85,10 @@ public class EntityHuman extends EntityHumanType {
      * @return the base offset
      */
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getBaseOffset() {
         return 1.62f;
     }
@@ -68,6 +96,10 @@ public class EntityHuman extends EntityHumanType {
     public Skin getSkin() {
         return skin;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSkin(Skin skin) {
         this.skin = skin;
@@ -79,9 +111,17 @@ public class EntityHuman extends EntityHumanType {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setUniqueId(UUID uuid) {
         this.uuid = uuid;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRawUniqueId(byte[] rawUUID) {
         this.rawUUID = rawUUID;
@@ -92,44 +132,68 @@ public class EntityHuman extends EntityHumanType {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         initHumanEntity(this);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Human";
     }
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.getNameTag();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         saveHumanEntity(this);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean entityBaseTick() {
         return this.entityBaseTick(1);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean entityBaseTick(int tickDiff) {
-        boolean hasUpdate = super.entityBaseTick(tickDiff);
+        boolean $1 = super.entityBaseTick(tickDiff);
         //handle human entity freeze
-        var collidedWithPowderSnow = this.getTickCachedCollisionBlocks().stream().anyMatch(block -> block.getId() == Block.POWDER_SNOW);
+        var $2 = this.getTickCachedCollisionBlocks().stream().anyMatch(block -> block.getId() == Block.POWDER_SNOW);
         if (this.getFreezingTicks() < 140 && collidedWithPowderSnow) {
             if (getFreezingTicks() == 0) {//玩家疾跑进来要设置为非疾跑，统一为默认速度0.1
                 this.setSprinting(false);
             }
             this.addFreezingTicks(1);
-            EntityFreezeEvent event = new EntityFreezeEvent(this);
+            EntityFreezeEvent $3 = new EntityFreezeEvent(this);
             this.server.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 this.setMovementSpeed((float) Math.max(0.05, getMovementSpeed() - 3.58e-4));
@@ -145,11 +209,19 @@ public class EntityHuman extends EntityHumanType {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
         this.level.addPlayerMovement(this, x, y, z, yaw, pitch, headYaw);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void spawnTo(Player player) {
         if (this != player && !this.hasSpawned.containsKey(player.getLoaderId())) {
             this.hasSpawned.put(player.getLoaderId(), player);
@@ -163,7 +235,7 @@ public class EntityHuman extends EntityHumanType {
             else
                 this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, new Player[]{player});
 
-            AddPlayerPacket pk = new AddPlayerPacket();
+            AddPlayerPacket $4 = new AddPlayerPacket();
             pk.uuid = this.getUniqueId();
             pk.username = this.getName();
             pk.entityUniqueId = this.getId();
@@ -184,7 +256,7 @@ public class EntityHuman extends EntityHumanType {
             this.offhandInventory.sendContents(player);
 
             if (this.riding != null) {
-                SetEntityLinkPacket pkk = new SetEntityLinkPacket();
+                SetEntityLinkPacket $5 = new SetEntityLinkPacket();
                 pkk.vehicleUniqueId = this.riding.getId();
                 pkk.riderUniqueId = this.getId();
                 pkk.type = EntityLink.Type.RIDER;
@@ -200,10 +272,14 @@ public class EntityHuman extends EntityHumanType {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void despawnFrom(Player player) {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
 
-            RemoveEntityPacket pk = new RemoveEntityPacket();
+            RemoveEntityPacket $6 = new RemoveEntityPacket();
             pk.eid = this.getId();
             player.dataPacket(pk);
             this.hasSpawned.remove(player.getLoaderId());
@@ -211,6 +287,10 @@ public class EntityHuman extends EntityHumanType {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         if (!this.closed) {
             if (inventory != null && (!(this instanceof Player) || ((Player) this).loggedIn)) {
@@ -224,10 +304,14 @@ public class EntityHuman extends EntityHumanType {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
         super.onBlock(entity, event, animate);
-        Item shield = getInventory().getItemInHand();
-        Item shieldOffhand = getOffhandInventory().getItem(0);
+        Item $7 = getInventory().getItemInHand();
+        Item $8 = getOffhandInventory().getItem(0);
         if (shield instanceof ItemShield) {
             shield = damageArmor(shield, entity, event);
             getInventory().setItemInHand(shield);

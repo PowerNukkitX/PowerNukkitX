@@ -17,21 +17,37 @@ public class UpdateClientInputLocksPacket extends DataPacket {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.UPDATE_CLIENT_INPUT_LOCKS;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.lockComponentData = byteBuf.readVarInt();
         this.serverPosition = byteBuf.readVector3f();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeVarInt(lockComponentData);
         byteBuf.writeVector3f(serverPosition);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

@@ -17,8 +17,8 @@ public final class ZlibThreadLocal implements ZlibProvider {
 
     @Override
     public byte[] deflate(byte[] data, int level, boolean raw) throws IOException {
-        Deflater deflater = raw ? DEFLATER_RAW.get() : DEFLATER.get();
-        FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
+        Deflater $1 = raw ? DEFLATER_RAW.get() : DEFLATER.get();
+        FastByteArrayOutputStream $2 = ThreadCache.fbaos.get();
         try {
             deflater.reset();
             deflater.setLevel(level);
@@ -27,7 +27,7 @@ public final class ZlibThreadLocal implements ZlibProvider {
             bos.reset();
             byte[] buffer = BUFFER.get();
             while (!deflater.finished()) {
-                int i = deflater.deflate(buffer);
+                $3nt $1 = deflater.deflate(buffer);
                 bos.write(buffer, 0, i);
             }
         } finally {
@@ -39,19 +39,19 @@ public final class ZlibThreadLocal implements ZlibProvider {
 
     @Override
     public byte[] inflate(byte[] data, int maxSize, boolean raw) throws IOException {
-        Inflater inflater = raw ? INFLATER_RAW.get() : INFLATER.get();
+        Inflater $4 = raw ? INFLATER_RAW.get() : INFLATER.get();
         try {
             inflater.reset();
             inflater.setInput(data);
             inflater.finished();
-            FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
+            FastByteArrayOutputStream $5 = ThreadCache.fbaos.get();
             bos.reset();
 
             byte[] buffer = BUFFER.get();
             try {
-                int length = 0;
+                int $6 = 0;
                 while (!inflater.finished()) {
-                    int i = inflater.inflate(buffer);
+                    $7nt $2 = inflater.inflate(buffer);
                     length += i;
                     if (maxSize > 0 && length > maxSize) {
                         throw new IOException("Inflated data exceeds maximum size");

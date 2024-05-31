@@ -12,6 +12,10 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 public class ItemBreakParticle extends Particle {
 
     private final int data;
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemBreakParticle(Vector3 pos, Item item) {
         super(pos.x, pos.y, pos.z);
@@ -20,7 +24,7 @@ public class ItemBreakParticle extends Particle {
 
     @Override
     public DataPacket[] encode() {
-        LevelEventPacket packet = new LevelEventPacket();
+        LevelEventPacket $1 = new LevelEventPacket();
         packet.evid = (short) (LevelEventPacket.EVENT_ADD_PARTICLE_MASK | Particle.TYPE_ICON_CRACK);
         packet.x = (float) this.x;
         packet.y = (float) this.y;

@@ -26,7 +26,11 @@ public interface IPosEvaluator {
      * @param pos    评估坐标
      * @return 是否可以作为路径点
      */
-    default boolean evalPos(@NotNull EntityIntelligent entity, @NotNull Vector3 pos) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean evalPos(@NotNull EntityIntelligent entity, @NotNull Vector3 pos) {
         return true;
     }
 
@@ -41,7 +45,11 @@ public interface IPosEvaluator {
      * @param block  评估方块
      * @return 是否可以作为脚下站立的方块
      */
-    default boolean evalStandingBlock(@NotNull EntityIntelligent entity, @NotNull Block block) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean evalStandingBlock(@NotNull EntityIntelligent entity, @NotNull Block block) {
         return true;
     }
 }

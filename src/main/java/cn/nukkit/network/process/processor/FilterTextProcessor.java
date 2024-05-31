@@ -11,13 +11,17 @@ import org.jetbrains.annotations.NotNull;
 @Slf4j
 public class FilterTextProcessor extends DataPacketProcessor<FilterTextPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull FilterTextPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         if (pk.text == null || pk.text.length() > 64) {
             log.debug(playerHandle.getUsername() + ": FilterTextPacket with too long text");
             return;
         }
-        FilterTextPacket textResponsePacket = new FilterTextPacket();
+        FilterTextPacket $2 = new FilterTextPacket();
 
         textResponsePacket.text = pk.text;
         textResponsePacket.fromServer = true;
@@ -25,6 +29,10 @@ public class FilterTextProcessor extends DataPacketProcessor<FilterTextPacket> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.FILTER_TEXT_PACKET;
     }

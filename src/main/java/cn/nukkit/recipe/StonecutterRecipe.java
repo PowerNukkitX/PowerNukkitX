@@ -9,13 +9,25 @@ import java.util.UUID;
 
 
 public class StonecutterRecipe extends CraftingRecipe {
+    /**
+     * @deprecated 
+     */
+    
     public StonecutterRecipe(Item result, Item ingredient) {
         this(null, 10, result, ingredient);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public StonecutterRecipe(String recipeId, int priority, Item result, Item ingredient) {
         this(recipeId, null, priority, result, ingredient);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public StonecutterRecipe(String recipeId, UUID uuid, int priority, Item result, Item ingredient) {
         super(recipeId == null ? RecipeRegistry.computeRecipeIdWithItem(List.of(result), List.of(ingredient), RecipeType.STONECUTTER) : recipeId, priority);
@@ -36,6 +48,10 @@ public class StonecutterRecipe extends CraftingRecipe {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean match(Input input) {
         return true;
     }

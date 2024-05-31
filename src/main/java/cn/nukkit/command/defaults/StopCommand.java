@@ -11,6 +11,10 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class StopCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public StopCommand(String name) {
         super(name, "commands.stop.description");
@@ -21,6 +25,10 @@ public class StopCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         log.addSuccess("commands.stop.start").output(true);
         sender.getServer().shutdown();

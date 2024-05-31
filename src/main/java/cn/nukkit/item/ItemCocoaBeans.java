@@ -5,6 +5,10 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.utils.DyeColor;
 
 public class ItemCocoaBeans extends ItemDye {
+    /**
+     * @deprecated 
+     */
+    
     public ItemCocoaBeans() {
         super(COCOA_BEANS);
         this.block = Block.get(BlockID.COCOA);
@@ -16,6 +20,10 @@ public class ItemCocoaBeans extends ItemDye {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDamage(int meta) {
     }
 }

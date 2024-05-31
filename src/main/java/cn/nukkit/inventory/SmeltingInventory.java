@@ -5,6 +5,10 @@ import cn.nukkit.blockentity.BlockEntityFurnace;
 import cn.nukkit.item.Item;
 
 public abstract class SmeltingInventory extends ContainerInventory {
+    /**
+     * @deprecated 
+     */
+    
     public SmeltingInventory(InventoryHolder holder, InventoryType type, int size) {
         super(holder, type, size);
     }
@@ -20,14 +24,26 @@ public abstract class SmeltingInventory extends ContainerInventory {
     public Item getSmelting() {
         return this.getItem(0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setResult(Item item) {
         return this.setItem(2, item);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setFuel(Item item) {
         return this.setItem(1, item);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setSmelting(Item item) {
         return this.setItem(0, item);
@@ -39,10 +55,14 @@ public abstract class SmeltingInventory extends ContainerInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
         if (index == 2 && (item.isNull() || item.getCount() == 0)) {
-            var holder = getHolder();
-            var xp = holder.calculateXpDrop();
+            var $1 = getHolder();
+            var $2 = holder.calculateXpDrop();
             if (xp > 0) {
                 holder.setStoredXP(0);
                 holder.level.dropExpOrb(player, xp);
@@ -52,6 +72,10 @@ public abstract class SmeltingInventory extends ContainerInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onSlotChange(int index, Item before, boolean send) {
         super.onSlotChange(index, before, send);
 

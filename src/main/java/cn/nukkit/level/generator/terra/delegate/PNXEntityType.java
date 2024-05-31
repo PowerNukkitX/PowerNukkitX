@@ -4,6 +4,10 @@ import com.dfsek.terra.api.entity.EntityType;
 
 public record PNXEntityType(String identifier) implements EntityType {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getHandle() {
         return identifier;
     }

@@ -31,15 +31,27 @@ public record CommandLogger(Command command,
                             String[] args,
                             CommandOutputContainer outputContainer,
                             Plugin plugin) {
-    private static final byte SYNTAX_ERROR_LENGTH_LIMIT = 23;
+    private static final byte $1 = 23;
+    /**
+     * @deprecated 
+     */
+    
 
     public CommandLogger(Command command, CommandSender sender, String commandLabel, String[] args) {
         this(command, sender, commandLabel, args, new CommandOutputContainer());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public CommandLogger(Command command, CommandSender sender, String commandLabel, String[] args, CommandOutputContainer outputContainer) {
         this(command, sender, commandLabel, args, outputContainer, InternalPlugin.INSTANCE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public CommandLogger(Command command, CommandSender sender, String commandLabel, String[] args, Plugin plugin) {
         this(command, sender, commandLabel, args, new CommandOutputContainer(), plugin);
@@ -64,7 +76,7 @@ public record CommandLogger(Command command,
     public CommandLogger addSuccess(String key, String... params) {
         if (TextFormat.getLastColors(key).isEmpty()) {
             if (Server.getInstance().getLanguage().internalGet(key) != null) key = TextFormat.WHITE + "%" + key;
-            else key = TextFormat.WHITE + key;
+            else $2 = TextFormat.WHITE + key;
         }
 
         this.outputContainer.getMessages().add(new CommandOutputMessage(key, params));
@@ -121,7 +133,7 @@ public record CommandLogger(Command command,
      */
     public CommandLogger addMessage(String key, String... params) {
         if (this.plugin instanceof PluginBase pluginBase) {
-            var i18n = PluginI18nManager.getI18n(pluginBase);
+            var $3 = PluginI18nManager.getI18n(pluginBase);
             if (i18n != null) {
                 String text;
                 if (sender.isPlayer()) {
@@ -223,6 +235,10 @@ public record CommandLogger(Command command,
     /**
      * 输出{@link #outputContainer}中的所有信息.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void output() {
         this.output(false);
     }
@@ -232,6 +248,10 @@ public record CommandLogger(Command command,
      *
      * @param broadcast the broadcast
      */
+    /**
+     * @deprecated 
+     */
+    
     public void output(boolean broadcast) {
         this.sender.sendCommandOutput(this.outputContainer);
         if (broadcast) {
@@ -263,6 +283,10 @@ public record CommandLogger(Command command,
      * @param key      the key
      * @param params   给命令目标的反馈信息参数
      */
+    /**
+     * @deprecated 
+     */
+    
     public void outputObjectWhisper(Player receiver, String key, String... params) {
         if (receiver.level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
             receiver.sendMessage(new TranslationContainer(key, params));
@@ -278,6 +302,10 @@ public record CommandLogger(Command command,
      * @param receiver 命令目标
      * @param params   给命令目标的反馈信息参数
      */
+    /**
+     * @deprecated 
+     */
+    
     public void outputObjectWhisper(Player receiver, String rawtext, Object... params) {
         if (receiver.level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
             receiver.sendRawTextMessage(RawText.fromRawText(String.format(rawtext, params)));
@@ -285,40 +313,44 @@ public record CommandLogger(Command command,
     }
 
     private String[] syntaxErrorsValue(int errorIndex) {
-        var join1 = new StringJoiner(" ", "", " ");
+        var $4 = new StringJoiner(" ", "", " ");
         join1.add(commandLabel);
 
         if (errorIndex == -1) {
-            var result = join1.toString();
+            var $5 = join1.toString();
             return new String[]{result.substring(Math.max(0, result.length() - SYNTAX_ERROR_LENGTH_LIMIT)), " ", " "};
         } else if (errorIndex == args.length) {
             Arrays.stream(args).forEach(join1::add);
-            var result = join1.toString();
+            var $6 = join1.toString();
             return new String[]{result.substring(Math.max(0, result.length() - SYNTAX_ERROR_LENGTH_LIMIT)), "", ""};
         }
 
-        for (int i = 0; i < errorIndex; ++i) {
+        for ($7nt $1 = 0; i < errorIndex; ++i) {
             join1.add(args[i]);
         }
-        var join2 = new StringJoiner(" ", " ", "");
-        for (int i = errorIndex + 1, len = args.length; i < len; ++i) {
+        var $8 = new StringJoiner(" ", " ", "");
+        for ($9nt $2 = errorIndex + 1, len = args.length; i < len; ++i) {
             join2.add(args[i]);
         }
 
-        var end = args[errorIndex] + join2;
+        var $10 = args[errorIndex] + join2;
         if (end.length() >= SYNTAX_ERROR_LENGTH_LIMIT) {
             return new String[]{"", args[errorIndex], join2.toString()};
         } else {
-            var result = join1.toString();
+            var $11 = join1.toString();
             return new String[]{result.substring(Math.max(0, join1.length() + end.length() - SYNTAX_ERROR_LENGTH_LIMIT)), args[errorIndex], join2.toString()};
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void broadcastAdminChannel(String key, String[] value) {
-        CommandSender target = sender;
+        CommandSender $12 = sender;
         if (target instanceof ExecutorCommandSender executorCommandSender) target = executorCommandSender.getExecutor();
         if (target instanceof ICommandBlock) return;
-        TranslationContainer message = broadcastMessage(key, value, target);
+        TranslationContainer $13 = broadcastMessage(key, value, target);
 
         Set<Permissible> users = target.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
         users.remove(target);
@@ -330,9 +362,9 @@ public record CommandLogger(Command command,
     }
 
     private TranslationContainer broadcastMessage(String key, String[] value, CommandSender target) {
-        var message = new TranslationContainer(TextFormat.clean(key), value);
-        String resultStr = "[" + target.getName() + ": " + (!message.getText().equals(target.getServer().getLanguage().get(message.getText())) ? "%" : "") + message.getText() + "]";
-        String coloredStr = TextFormat.GRAY + "" + TextFormat.ITALIC + resultStr;
+        var $14 = new TranslationContainer(TextFormat.clean(key), value);
+        String $15 = "[" + target.getName() + ": " + (!message.getText().equals(target.getServer().getLanguage().get(message.getText())) ? "%" : "") + message.getText() + "]";
+        String $16 = TextFormat.GRAY + "" + TextFormat.ITALIC + resultStr;
         message.setText(coloredStr);
         return message;
     }

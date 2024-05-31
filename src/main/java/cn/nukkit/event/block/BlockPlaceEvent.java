@@ -11,7 +11,7 @@ import cn.nukkit.item.Item;
  */
 public class BlockPlaceEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -21,6 +21,10 @@ public class BlockPlaceEvent extends BlockEvent implements Cancellable {
     protected final Block blockAgainst;
     protected final Item item;
     protected final Player player;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPlaceEvent(Player player, Block blockPlace, Block blockReplace, Block blockAgainst, Item item) {
         super(blockPlace);

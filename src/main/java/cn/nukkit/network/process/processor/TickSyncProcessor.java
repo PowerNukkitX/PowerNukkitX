@@ -8,14 +8,22 @@ import org.jetbrains.annotations.NotNull;
 
 public class TickSyncProcessor extends DataPacketProcessor<TickSyncPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull TickSyncPacket pk) {
-        TickSyncPacket tickSyncPacketToClient = new TickSyncPacket();
+        TickSyncPacket $1 = new TickSyncPacket();
         tickSyncPacketToClient.setRequestTimestamp(pk.getRequestTimestamp());
         tickSyncPacketToClient.setResponseTimestamp(playerHandle.player.getServer().getTick());
         playerHandle.player.dataPacketImmediately(tickSyncPacketToClient);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.TICK_SYNC_PACKET;
     }

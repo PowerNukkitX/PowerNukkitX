@@ -9,13 +9,17 @@ import cn.nukkit.level.Level;
  */
 public class ThunderChangeEvent extends WeatherEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final boolean to;
+    /**
+     * @deprecated 
+     */
+    
 
     public ThunderChangeEvent(Level level, boolean to) {
         super(level);
@@ -27,6 +31,10 @@ public class ThunderChangeEvent extends WeatherEvent implements Cancellable {
      *
      * @return true if the thunder is being set to start, false otherwise
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean toThunderState() {
         return to;
     }

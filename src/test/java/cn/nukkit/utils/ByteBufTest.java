@@ -8,9 +8,13 @@ public class ByteBufTest {
     @Test
     //readRetainedSlice creates a slice of the original buf, with a reference count of +1,
     //and the reference count of the slice is the same as that of the original buf,but the index is independent
+    
+    /**
+     * @deprecated 
+     */
     void testReadRetainedSlice(){
-        ByteBuf originalBuf = Unpooled.wrappedBuffer(new byte[]{1, 2, 3, 4, 5});
-        ByteBuf slice = originalBuf.readRetainedSlice(3);
+        ByteBuf $1 = Unpooled.wrappedBuffer(new byte[]{1, 2, 3, 4, 5});
+        ByteBuf $2 = originalBuf.readRetainedSlice(3);
 
         System.out.println("Original Buf refCnt: " + originalBuf.refCnt());
         System.out.println("Original Buf readerIndex: " + originalBuf.readerIndex());

@@ -20,11 +20,19 @@ public class PlayerSkinPacket extends DataPacket {
     public String oldSkinName;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.PLAYER_SKIN_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         uuid = byteBuf.readUUID();
         skin = byteBuf.readSkin();
@@ -36,6 +44,10 @@ public class PlayerSkinPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeUUID(uuid);
         byteBuf.writeSkin(skin);
@@ -43,6 +55,10 @@ public class PlayerSkinPacket extends DataPacket {
         byteBuf.writeString(oldSkinName);
         byteBuf.writeBoolean(skin.isTrusted() || Server.getInstance().getSettings().playerSettings().forceSkinTrusted());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

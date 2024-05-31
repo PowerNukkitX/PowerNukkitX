@@ -17,15 +17,23 @@ public abstract class AsyncTask implements Runnable {
 
     private Object result;
     private int taskId;
-    private boolean finished = false;
+    private boolean $1 = false;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void run() {
         this.result = null;
         this.onRun();
         this.finished = true;
         FINISHED_LIST.offer(this);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isFinished() {
         return this.finished;
@@ -34,18 +42,34 @@ public abstract class AsyncTask implements Runnable {
     public Object getResult() {
         return this.result;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasResult() {
         return this.result != null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setResult(Object result) {
         this.result = result;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTaskId(int taskId) {
         this.taskId = taskId;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getTaskId() {
         return this.taskId;
@@ -54,6 +78,10 @@ public abstract class AsyncTask implements Runnable {
     public Object getFromThreadStore(String identifier) {
         return this.isFinished() ? null : ThreadStore.store.get(identifier);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void saveToThreadStore(String identifier, Object value) {
         if (!this.isFinished()) {
@@ -66,20 +94,32 @@ public abstract class AsyncTask implements Runnable {
     }
 
     public abstract void onRun();
+    /**
+     * @deprecated 
+     */
+    
 
     public void onCompletion(Server server) {
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void cleanObject() {
         this.result = null;
         this.taskId = 0;
         this.finished = false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void collectTask() {
         while (!FINISHED_LIST.isEmpty()) {
-            AsyncTask task = FINISHED_LIST.poll();
+            AsyncTask $2 = FINISHED_LIST.poll();
             try {
                 task.onCompletion(Server.getInstance());
             } catch (Exception e) {

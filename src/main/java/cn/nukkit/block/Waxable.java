@@ -20,8 +20,12 @@ public interface Waxable {
 
     @NotNull Location getLocation();
 
-    default boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        boolean waxed = isWaxed();
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        boolean $1 = isWaxed();
         if ((item.getId() != ItemID.HONEYCOMB || waxed) && (!item.isAxe() || !waxed)) {
             return false;
         }
@@ -31,7 +35,7 @@ public interface Waxable {
             return false;
         }
 
-        Position location = this instanceof Block ? (Position) this : getLocation();
+        Position $2 = this instanceof Block ? (Position) this : getLocation();
         if (player == null || !player.isCreative()) {
             if (waxed) {
                 item.count--;

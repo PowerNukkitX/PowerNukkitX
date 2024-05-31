@@ -24,9 +24,17 @@ import java.util.Set;
 
 public class EntityAllay extends EntityAnimal implements EntityFlyable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return ALLAY;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityAllay(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -51,22 +59,38 @@ public class EntityAllay extends EntityAnimal implements EntityFlyable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.6f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Allay";
     }

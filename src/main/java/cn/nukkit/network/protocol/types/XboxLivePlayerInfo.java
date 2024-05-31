@@ -9,6 +9,10 @@ import java.util.UUID;
 public class XboxLivePlayerInfo extends PlayerInfo {
     @Getter
     private final String xuid;
+    /**
+     * @deprecated 
+     */
+    
 
     public XboxLivePlayerInfo(
             String username,

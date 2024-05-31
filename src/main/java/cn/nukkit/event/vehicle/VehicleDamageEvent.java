@@ -10,7 +10,7 @@ import cn.nukkit.event.HandlerList;
  */
 public class VehicleDamageEvent extends VehicleEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -24,6 +24,10 @@ public class VehicleDamageEvent extends VehicleEvent implements Cancellable {
      * @param vehicle the damaged vehicle
      * @param damage  the caused damage on the vehicle
      */
+    /**
+     * @deprecated 
+     */
+    
     public VehicleDamageEvent(final EntityVehicle vehicle, final double damage) {
         super(vehicle);
 
@@ -35,6 +39,10 @@ public class VehicleDamageEvent extends VehicleEvent implements Cancellable {
      *
      * @return caused damage on the vehicle
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public double getDamage() {
         return damage;
@@ -45,6 +53,10 @@ public class VehicleDamageEvent extends VehicleEvent implements Cancellable {
      *
      * @param damage the caused damage
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDamage(final double damage) {
         this.damage = damage;

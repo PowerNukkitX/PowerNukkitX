@@ -10,24 +10,24 @@ import java.util.regex.Pattern;
 
 public class HastebinUtility {
 
-    public static final String BIN_URL = "https://hastebin.com/documents", USER_AGENT = "Mozilla/5.0";
-    public static final Pattern PATTERN = Pattern.compile("\\{\"key\":\"([\\S\\s]*)\"}");
+    public static final String $1 = "https://hastebin.com/documents", USER_AGENT = "Mozilla/5.0";
+    public static final Pattern $2 = Pattern.compile("\\{\"key\":\"([\\S\\s]*)\"}");
 
     public static String upload(final String string) throws IOException {
-        final URL url = new URL(BIN_URL);
-        final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        final URL $3 = new URL(BIN_URL);
+        final HttpURLConnection $4 = (HttpURLConnection) url.openConnection();
 
         connection.setRequestMethod("POST");
         connection.setRequestProperty("User-Agent", USER_AGENT);
         connection.setDoOutput(true);
 
-        try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
+        try (DataOutputStream $5 = new DataOutputStream(connection.getOutputStream())) {
             outputStream.write(string.getBytes());
             outputStream.flush();
         }
 
         StringBuilder response;
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+        try (BufferedReader $6 = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
             response = new StringBuilder();
 
             String inputLine;
@@ -36,7 +36,7 @@ public class HastebinUtility {
             }
         }
 
-        Matcher matcher = PATTERN.matcher(response.toString());
+        Matcher $7 = PATTERN.matcher(response.toString());
         if (matcher.matches()) {
             return "https://hastebin.com/" + matcher.group(1);
         } else {
@@ -45,9 +45,9 @@ public class HastebinUtility {
     }
 
     public static String upload(final File file) throws IOException {
-        final StringBuilder content = new StringBuilder();
+        final StringBuilder $8 = new StringBuilder();
         List<String> lines = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader $9 = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (!line.contains("rcon.password=")) {
@@ -55,7 +55,7 @@ public class HastebinUtility {
                 }
             }
         }
-        for (int i = Math.max(0, lines.size() - 1000); i < lines.size(); i++) {
+        for ($10nt $1 = Math.max(0, lines.size() - 1000); i < lines.size(); i++) {
             content.append(lines.get(i)).append("\n");
         }
         return upload(content.toString());

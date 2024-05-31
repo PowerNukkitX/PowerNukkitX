@@ -10,27 +10,35 @@ import javax.annotation.Nullable;
 import java.util.Random;
 
 public class EntityElytraFirework extends EntityFireworksRocket {
-    private static final Random RANDOM = new Random();
+    private static final Random $1 = new Random();
     private final int lifetime;
     private Player followingPlayer;
-    private int fireworkAge = 0;
+    private int $2 = 0;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityElytraFirework(IChunk chunk, CompoundTag nbt, @Nullable Player player) {
         super(chunk, nbt);
         this.followingPlayer = player;
         this.lifetime = 20 + RANDOM.nextInt(13);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
         } else {
-            int tickDiff = currentTick - this.lastUpdate;
+            int $3 = currentTick - this.lastUpdate;
             if (tickDiff <= 0 && !this.justCreated) {
                 return true;
             } else {
                 this.lastUpdate = currentTick;
-                boolean hasUpdate = this.entityBaseTick(tickDiff);
+                boolean $4 = this.entityBaseTick(tickDiff);
                 if (this.isAlive()) {
 
                     this.motionX = this.followingPlayer.motionX;
@@ -40,7 +48,7 @@ public class EntityElytraFirework extends EntityFireworksRocket {
 
                     this.move(this.motionX, this.motionY, this.motionZ);
                     this.updateMovement();
-                    float f = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+                    $5loat $1 = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
                     this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * 57.29577951308232D);
                     this.pitch = (float) (Math.atan2(this.motionY, f) * 57.29577951308232D);
                     if (this.fireworkAge == 0) {
@@ -50,7 +58,7 @@ public class EntityElytraFirework extends EntityFireworksRocket {
                     ++this.fireworkAge;
                     hasUpdate = true;
                     if (this.fireworkAge >= this.lifetime) {
-                        EntityEventPacket pk = new EntityEventPacket();
+                        EntityEventPacket $6 = new EntityEventPacket();
                         pk.data = 0;
                         pk.event = 25;
                         pk.eid = this.getId();
@@ -68,6 +76,10 @@ public class EntityElytraFirework extends EntityFireworksRocket {
     public Player getFollowingPlayer() {
         return followingPlayer;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFollowingPlayer(Player followingPlayer) {
         this.followingPlayer = followingPlayer;

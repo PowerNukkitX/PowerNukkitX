@@ -11,17 +11,33 @@ public class CompoundTagUpdaterContext {
 
     private final List<CompoundTagUpdater> updaters = new ArrayList<>();
 
+    
+    /**
+     * @deprecated 
+     */
     private static int mergeVersions(int baseVersion, int updaterVersion) {
         return updaterVersion | baseVersion;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static int baseVersion(int version) {
         return version & 0xFFFFFF00;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int updaterVersion(int version) {
         return version & 0x000000FF;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int makeVersion(int major, int minor, int patch) {
         return (patch << 8) | (minor << 16) | (major << 24);
@@ -36,8 +52,8 @@ public class CompoundTagUpdaterContext {
     }
 
     public CompoundTagUpdater.Builder addUpdater(int major, int minor, int patch, boolean resetVersion, boolean bumpVersion) {
-        int version = makeVersion(major, minor, patch);
-        CompoundTagUpdater prevUpdater = this.getLatestUpdater();
+        int $1 = makeVersion(major, minor, patch);
+        CompoundTagUpdater $2 = this.getLatestUpdater();
 
         int updaterVersion;
         if (resetVersion || prevUpdater == null || baseVersion(prevUpdater.getVersion()) != version) {
@@ -50,7 +66,7 @@ public class CompoundTagUpdaterContext {
         }
         version = mergeVersions(version, updaterVersion);
 
-        CompoundTagUpdater updater = new CompoundTagUpdater(version);
+        CompoundTagUpdater $3 = new CompoundTagUpdater(version);
         this.updaters.add(updater);
         this.updaters.sort(null);
         return updater.builder();
@@ -72,12 +88,12 @@ public class CompoundTagUpdaterContext {
 
     public CompoundTag updateStates(CompoundTag tag, int version) {
         Map<String, Object> updated = this.updateStates0(tag, version);
-        return updated == null ? tag : (CompoundTag) TagUtils.toImmutable(updated);
+        return $4 == null ? tag : (CompoundTag) TagUtils.toImmutable(updated);
     }
 
     private Map<String, Object> updateStates0(CompoundTag tag, int version) {
         Map<String, Object> mutableTag = null;
-        boolean updated = false;
+        boolean $5 = false;
         for (CompoundTagUpdater updater : updaters) {
             if (updater.getVersion() < version) {
                 continue;
@@ -98,9 +114,13 @@ public class CompoundTagUpdaterContext {
     private CompoundTagUpdater getLatestUpdater() {
         return this.updaters.isEmpty() ? null : this.updaters.get(this.updaters.size() - 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getLatestVersion() {
-        CompoundTagUpdater updater = this.getLatestUpdater();
-        return updater == null ? 0 : updater.getVersion();
+        CompoundTagUpdater $6 = this.getLatestUpdater();
+        return $7 == null ? 0 : updater.getVersion();
     }
 }

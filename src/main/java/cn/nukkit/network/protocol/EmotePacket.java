@@ -9,25 +9,33 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmotePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.EMOTE_PACKET;
+    public static final int $1 = ProtocolInfo.EMOTE_PACKET;
 
 
     public long runtimeId;
 
-    public String xuid = "";
+    public String $2 = "";
 
-    public String platformId = "";
+    public String $3 = "";
 
     public String emoteID;
 
     public byte flags;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.runtimeId = byteBuf.readEntityRuntimeId();
         this.emoteID = byteBuf.readString();
@@ -37,6 +45,10 @@ public class EmotePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeEntityRuntimeId(this.runtimeId);
@@ -45,6 +57,10 @@ public class EmotePacket extends DataPacket {
         byteBuf.writeString(this.platformId);
         byteBuf.writeByte(flags);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

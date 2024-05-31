@@ -13,19 +13,31 @@ import java.util.List;
 public class UpdateSoftEnumPacket extends DataPacket {
 
     public List<String> values = List.of();
-    public String name = "";
-    public Type type = Type.SET;
+    public String $1 = "";
+    public Type $2 = Type.SET;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.UPDATE_SOFT_ENUM_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeString(name);
@@ -42,6 +54,10 @@ public class UpdateSoftEnumPacket extends DataPacket {
         REMOVE,
         SET
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

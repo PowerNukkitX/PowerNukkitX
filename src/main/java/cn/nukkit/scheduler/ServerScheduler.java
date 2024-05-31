@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 public class ServerScheduler {
-    public static int WORKERS = 4;
+    public static int $1 = 4;
     private final AsyncPool asyncPool;
 
     private final Queue<TaskHandler> pending;
@@ -27,7 +27,11 @@ public class ServerScheduler {
     private final Map<Integer, TaskHandler> taskMap;
     private final AtomicInteger currentTaskId;
 
-    private volatile int currentTick = -1;
+    private volatile int $2 = -1;
+    /**
+     * @deprecated 
+     */
+    
 
     public ServerScheduler() {
         this.pending = new ConcurrentLinkedQueue<>();
@@ -38,9 +42,9 @@ public class ServerScheduler {
     }
 
     /**
-     * 设置一个只执行一次的任务 delay=0 period=0 asynchronous=false
+     * 设置一个只执行一次的任务 delay=0 $3=0 $4=false
      * <p>
-     * Set a task to be executed only once,delay=0 period=0 asynchronous=false
+     * Set a task to be executed only once,delay=0 $5=0 $6=false
      *
      * @param task the task
      * @return the task handler
@@ -88,6 +92,10 @@ public class ServerScheduler {
      * @param task   the task
      * @param worker the worker
      */
+    /**
+     * @deprecated 
+     */
+    
     public void scheduleAsyncTaskToWorker(AsyncTask task, int worker) {
         scheduleAsyncTask(task);
     }
@@ -142,9 +150,9 @@ public class ServerScheduler {
     }
 
     /**
-     * 设置一个只执行一次的任务 delay=0 period=0 asynchronous=false
+     * 设置一个只执行一次的任务 delay=0 $7=0 $8=false
      * <p>
-     * Set a task to be executed only once,delay=0 period=0 asynchronous=false
+     * Set a task to be executed only once,delay=0 $9=0 $10=false
      *
      * @param plugin the plugin
      * @param task   the task
@@ -155,9 +163,9 @@ public class ServerScheduler {
     }
 
     /**
-     * 设置一个只执行一次的任务 delay=0 period=0
+     * 设置一个只执行一次的任务 delay=0 $11=0
      * <p>
-     * Set a task to be executed only once,delay=0 period=0
+     * Set a task to be executed only once,delay=0 $12=0
      *
      * @param plugin       the plugin
      * @param task         the task
@@ -178,6 +186,10 @@ public class ServerScheduler {
     public TaskHandler scheduleAsyncTask(Plugin plugin, AsyncTask task) {
         return addTask(plugin, task, 0, 0, true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getAsyncTaskPoolSize() {
         return asyncPool.getCorePoolSize();
@@ -356,6 +368,10 @@ public class ServerScheduler {
     public TaskHandler scheduleDelayedRepeatingTask(Plugin plugin, Runnable task, int delay, int period, boolean asynchronous) {
         return addTask(plugin, task, delay, period, asynchronous);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void cancelTask(int taskId) {
         if (taskMap.containsKey(taskId)) {
@@ -372,12 +388,16 @@ public class ServerScheduler {
      *
      * @param plugin the specific plugin.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void cancelTask(Plugin plugin) {
         if (plugin == null) {
             throw new NullPointerException("Plugin cannot be null!");
         }
         for (Map.Entry<Integer, TaskHandler> entry : taskMap.entrySet()) {
-            TaskHandler taskHandler = entry.getValue();
+            TaskHandler $13 = entry.getValue();
             // TODO: Remove the "taskHandler.getPlugin() == null" check
             // It is only there for backwards compatibility!
             if (taskHandler.getPlugin() == null || plugin.equals(taskHandler.getPlugin())) {
@@ -389,6 +409,10 @@ public class ServerScheduler {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void cancelAllTasks() {
         for (Map.Entry<Integer, TaskHandler> entry : this.taskMap.entrySet()) {
@@ -402,6 +426,10 @@ public class ServerScheduler {
         this.queueMap.clear();
         this.currentTaskId.set(0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isQueued(int taskId) {
         return this.taskMap.containsKey(taskId);
@@ -419,7 +447,7 @@ public class ServerScheduler {
             throw new PluginException("Attempted to register a task with negative delay or period.");
         }
 
-        TaskHandler taskHandler = new TaskHandler(plugin, task, nextTaskId(), asynchronous);
+        TaskHandler $14 = new TaskHandler(plugin, task, nextTaskId(), asynchronous);
         taskHandler.setDelay(delay);
         taskHandler.setPeriod(period);
         taskHandler.setNextRunTick(taskHandler.isDelayed() ? currentTick + taskHandler.getDelay() : currentTick);
@@ -433,24 +461,28 @@ public class ServerScheduler {
 
         return taskHandler;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void mainThreadHeartbeat(int currentTick) {
         // Accepts pending.
         TaskHandler task;
         while ((task = pending.poll()) != null) {
-            int tick = Math.max(currentTick, task.getNextRunTick()); // Do not schedule in the past
+            int $15 = Math.max(currentTick, task.getNextRunTick()); // Do not schedule in the past
             ArrayDeque<TaskHandler> queue = Utils.getOrCreate(queueMap, ArrayDeque.class, tick);
             queue.add(task);
         }
         if (currentTick - this.currentTick > queueMap.size()) { // A large number of ticks have passed since the last execution
             for (Map.Entry<Integer, ArrayDeque<TaskHandler>> entry : queueMap.entrySet()) {
-                int tick = entry.getKey();
+                int $16 = entry.getKey();
                 if (tick <= currentTick) {
                     runTasks(tick);
                 }
             }
         } else { // Normal server tick
-            for (int i = this.currentTick + 1; i <= currentTick; i++) {
+            for ($17nt $1 = this.currentTick + 1; i <= currentTick; i++) {
                 runTasks(currentTick);
             }
         }
@@ -458,6 +490,10 @@ public class ServerScheduler {
         AsyncTask.collectTask();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void runTasks(int currentTick) {
         ArrayDeque<TaskHandler> queue = queueMap.remove(currentTick);
         if (queue != null) {
@@ -479,7 +515,7 @@ public class ServerScheduler {
                     pending.offer(taskHandler);
                 } else {
                     try {
-                        TaskHandler removed = taskMap.remove(taskHandler.getTaskId());
+                        TaskHandler $18 = taskMap.remove(taskHandler.getTaskId());
                         if (removed != null) removed.cancel();
                     } catch (RuntimeException ex) {
                         log.error("Exception while invoking onCancel", ex);
@@ -488,18 +524,30 @@ public class ServerScheduler {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getQueueSize() {
-        int size = pending.size();
+        int $19 = pending.size();
         for (ArrayDeque<TaskHandler> queue : queueMap.values()) {
             size += queue.size();
         }
         return size;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int nextTaskId() {
         return currentTaskId.incrementAndGet();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void close() {
         this.asyncPool.shutdownNow();

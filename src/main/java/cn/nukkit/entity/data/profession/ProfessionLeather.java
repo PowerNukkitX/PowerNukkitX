@@ -9,6 +9,10 @@ import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 
 public class ProfessionLeather extends Profession {
+    /**
+     * @deprecated 
+     */
+    
 
     public ProfessionLeather() {
         super(12, BlockID.CAULDRON, "entity.villager.leather");

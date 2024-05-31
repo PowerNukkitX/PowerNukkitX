@@ -10,18 +10,26 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LecternUpdatePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.LECTERN_UPDATE_PACKET;
+    public static final int $1 = ProtocolInfo.LECTERN_UPDATE_PACKET;
 
     public int page;
     public int totalPages;
     public BlockVector3 blockPosition;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.page = byteBuf.readUnsignedByte();
         this.totalPages = byteBuf.readUnsignedByte();
@@ -29,8 +37,16 @@ public class LecternUpdatePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

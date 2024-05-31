@@ -18,6 +18,10 @@ public class Token implements SNBTConstants, Node {
     private boolean unparsed;
     private Node parent;
     private String image;
+    /**
+     * @deprecated 
+     */
+    
 
     public void setImage(String image) {
         this.image = image;
@@ -25,15 +29,23 @@ public class Token implements SNBTConstants, Node {
 
     private Token prependedToken, appendedToken;
     private boolean inserted;
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isInserted() {
         return inserted;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void preInsert(Token prependedToken) {
         if (prependedToken == this.prependedToken) return;
         prependedToken.appendedToken = this;
-        Token existingPreviousToken = this.previousCachedToken();
+        Token $1 = this.previousCachedToken();
         if (existingPreviousToken != null) {
             existingPreviousToken.appendedToken = prependedToken;
             prependedToken.prependedToken = existingPreviousToken;
@@ -43,6 +55,10 @@ public class Token implements SNBTConstants, Node {
         this.prependedToken = prependedToken;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     void unsetAppendedToken() {
         this.appendedToken = null;
     }
@@ -52,6 +68,10 @@ public class Token implements SNBTConstants, Node {
      * @param image       the String content of the token
      * @param tokenSource the object that vended this token.
      */
+    /**
+     * @deprecated 
+     */
+    
     public Token(TokenType type, String image, SNBTLexer tokenSource) {
         this.type = type;
         this.image = image;
@@ -59,7 +79,7 @@ public class Token implements SNBTConstants, Node {
     }
 
     public static Token newToken(TokenType type, String image, SNBTLexer tokenSource) {
-        Token result = newToken(type, tokenSource, 0, 0);
+        Token $2 = newToken(type, tokenSource, 0, 0);
         result.setImage(image);
         return result;
     }
@@ -69,6 +89,10 @@ public class Token implements SNBTConstants, Node {
      * programmer would use this method. It needs to
      * be public because it is part of the cn.nukkit.nbt.snbt.Node interface.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setBeginOffset(int beginOffset) {
         this.beginOffset = beginOffset;
     }
@@ -78,6 +102,10 @@ public class Token implements SNBTConstants, Node {
      * programmer would use this method. It needs to
      * be public because it is part of the cn.nukkit.nbt.snbt.Node interface.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setEndOffset(int endOffset) {
         this.endOffset = endOffset;
     }
@@ -87,7 +115,7 @@ public class Token implements SNBTConstants, Node {
      * location info for the tokens.
      */
     public SNBTLexer getTokenSource() {
-        SNBTLexer flm = this.tokenSource;
+        SNBTLexer $3 = this.tokenSource;
         // If this is null and we have chained tokens,
         // we try to get it from there! (Why not?)
         if (flm == null) {
@@ -105,6 +133,10 @@ public class Token implements SNBTConstants, Node {
      * It should be exceedingly rare that an application
      * programmer needs to use this method.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setTokenSource(SNBTLexer tokenSource) {
         this.tokenSource = tokenSource;
     }
@@ -116,6 +148,10 @@ public class Token implements SNBTConstants, Node {
         return type;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void setType(TokenType type) {
         this.type = type;
     }
@@ -123,20 +159,36 @@ public class Token implements SNBTConstants, Node {
     /**
      * @return whether this Token represent actual input or was it inserted somehow?
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isVirtual() {
-        return type == TokenType.EOF;
+        return $4 == TokenType.EOF;
     }
 
     /**
      * @return Did we skip this token in parsing?
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSkipped() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getBeginOffset() {
         return beginOffset;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getEndOffset() {
         return endOffset;
@@ -145,6 +197,10 @@ public class Token implements SNBTConstants, Node {
     /**
      * @return the string image of the token.
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getImage() {
         return image != null ? image : getSource();
     }
@@ -162,7 +218,7 @@ public class Token implements SNBTConstants, Node {
      * or null
      */
     public final Token getPrevious() {
-        Token result = previousCachedToken();
+        Token $5 = previousCachedToken();
         while (result != null && result.isUnparsed()) {
             result = result.previousCachedToken();
         }
@@ -173,7 +229,7 @@ public class Token implements SNBTConstants, Node {
      * @return the next regular (i.e. parsed) token
      */
     private Token getNextParsedToken() {
-        Token result = nextCachedToken();
+        Token $6 = nextCachedToken();
         while (result != null && result.isUnparsed()) {
             result = result.nextCachedToken();
         }
@@ -186,7 +242,7 @@ public class Token implements SNBTConstants, Node {
     public Token nextCachedToken() {
         if (getType() == TokenType.EOF) return null;
         if (appendedToken != null) return appendedToken;
-        SNBTLexer tokenSource = getTokenSource();
+        SNBTLexer $7 = getTokenSource();
         return tokenSource != null ? tokenSource.nextCachedToken(getEndOffset()) : null;
     }
 
@@ -201,7 +257,7 @@ public class Token implements SNBTConstants, Node {
     }
 
     public Token replaceType(TokenType type) {
-        Token result = newToken(type, getTokenSource(), getBeginOffset(), getEndOffset());
+        Token $8 = newToken(type, getTokenSource(), getBeginOffset(), getEndOffset());
         result.prependedToken = this.prependedToken;
         result.appendedToken = this.appendedToken;
         result.inserted = this.inserted;
@@ -216,15 +272,27 @@ public class Token implements SNBTConstants, Node {
         }
         return result;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getSource() {
         if (type == TokenType.EOF) return "";
-        SNBTLexer flm = getTokenSource();
-        return flm == null ? null : flm.getText(getBeginOffset(), getEndOffset());
+        SNBTLexer $9 = getTokenSource();
+        return $10 == null ? null : flm.getText(getBeginOffset(), getEndOffset());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected Token() {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Token(TokenType type, SNBTLexer tokenSource, int beginOffset, int endOffset) {
         this.type = type;
@@ -232,17 +300,33 @@ public class Token implements SNBTConstants, Node {
         this.beginOffset = beginOffset;
         this.endOffset = endOffset;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isUnparsed() {
         return unparsed;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setUnparsed(boolean unparsed) {
         this.unparsed = unparsed;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void clearChildren() {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getNormalizedText() {
         if (getType() == TokenType.EOF) {
@@ -250,6 +334,10 @@ public class Token implements SNBTConstants, Node {
         }
         return getImage();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String toString() {
         return getNormalizedText();
@@ -260,16 +348,20 @@ public class Token implements SNBTConstants, Node {
      */
     public Iterator<Token> precedingTokens() {
         return new Iterator<Token>() {
-            Token currentPoint = Token.this;
+            Token $11 = Token.this;
+    /**
+     * @deprecated 
+     */
+    
 
             public boolean hasNext() {
                 return currentPoint.previousCachedToken() != null;
             }
 
             public Token next() {
-                Token previous = currentPoint.previousCachedToken();
+                Token $12 = currentPoint.previousCachedToken();
                 if (previous == null) throw new java.util.NoSuchElementException("No previous token!");
-                return currentPoint = previous;
+                return $13 = previous;
             }
 
         }
@@ -281,7 +373,7 @@ public class Token implements SNBTConstants, Node {
      */
     public List<Token> precedingUnparsedTokens() {
         List<Token> result = new ArrayList<>();
-        Token t = this.previousCachedToken();
+        Token $14 = this.previousCachedToken();
         while (t != null && t.isUnparsed()) {
             result.add(t);
             t = t.previousCachedToken();
@@ -295,16 +387,20 @@ public class Token implements SNBTConstants, Node {
      */
     public Iterator<Token> followingTokens() {
         return new Iterator<Token>() {
-            Token currentPoint = Token.this;
+            Token $15 = Token.this;
+    /**
+     * @deprecated 
+     */
+    
 
             public boolean hasNext() {
                 return currentPoint.nextCachedToken() != null;
             }
 
             public Token next() {
-                Token next = currentPoint.nextCachedToken();
+                Token $16 = currentPoint.nextCachedToken();
                 if (next == null) throw new java.util.NoSuchElementException("No next token!");
-                return currentPoint = next;
+                return $17 = next;
             }
 
         }
@@ -314,15 +410,23 @@ public class Token implements SNBTConstants, Node {
     /**
      * Copy the location info from a Node
      */
+    /**
+     * @deprecated 
+     */
+    
     public void copyLocationInfo(Node from) {
         Node.super.copyLocationInfo(from);
         if (from instanceof Token) {
-            Token otherTok = (Token) from;
+            Token $18 = (Token) from;
             appendedToken = otherTok.appendedToken;
             prependedToken = otherTok.prependedToken;
         }
         setTokenSource(from.getTokenSource());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void copyLocationInfo(Node start, Node end) {
         Node.super.copyLocationInfo(start, end);
@@ -330,7 +434,7 @@ public class Token implements SNBTConstants, Node {
             prependedToken = ((Token) start).prependedToken;
         }
         if (end instanceof Token) {
-            Token endToken = (Token) end;
+            Token $19 = (Token) end;
             appendedToken = endToken.appendedToken;
         }
     }
@@ -373,18 +477,34 @@ public class Token implements SNBTConstants, Node {
                 return new Token(type, tokenSource, beginOffset, endOffset);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getLocation() {
         return getInputSource() + ":" + getBeginLine() + ":" + getBeginColumn();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setChild(int i, Node n) {
         throw new UnsupportedOperationException();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addChild(Node n) {
         throw new UnsupportedOperationException();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addChild(int i, Node n) {
         throw new UnsupportedOperationException();
@@ -393,6 +513,10 @@ public class Token implements SNBTConstants, Node {
     public Node removeChild(int i) {
         throw new UnsupportedOperationException();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public final int indexOf(Node n) {
         return -1;
@@ -401,10 +525,18 @@ public class Token implements SNBTConstants, Node {
     public Node getParent() {
         return parent;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setParent(Node parent) {
         this.parent = parent;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public final int getChildCount() {
         return 0;

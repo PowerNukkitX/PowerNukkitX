@@ -7,7 +7,7 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 
 public class PlayerChangeArmorStandEvent extends PlayerEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -16,6 +16,10 @@ public class PlayerChangeArmorStandEvent extends PlayerEvent implements Cancella
     private final Entity armorStand;
     private final int slot;
     private Item item;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerChangeArmorStandEvent(Player player, Entity armorStand, Item item, int slot) {
         this.player = player;
@@ -27,6 +31,10 @@ public class PlayerChangeArmorStandEvent extends PlayerEvent implements Cancella
     public Entity getArmorStand() {
         return armorStand;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getSlot() {
         return slot;
@@ -35,6 +43,10 @@ public class PlayerChangeArmorStandEvent extends PlayerEvent implements Cancella
     public Item getItem() {
         return item;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setItem(Item item) {
         this.item = item;

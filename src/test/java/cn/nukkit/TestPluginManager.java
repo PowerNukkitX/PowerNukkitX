@@ -13,36 +13,60 @@ import java.util.Map;
 public class TestPluginManager extends PluginManager {
     static Map<Class<? extends Event>, TestEventHandler> handlers = new HashMap<>();
     static Map<Class<? extends Event>, Integer> counts = new HashMap<>();
+    /**
+     * @deprecated 
+     */
+    
 
     public TestPluginManager(Server server, SimpleCommandMap commandMap) {
         super(server, commandMap);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void callEvent(Event event) {
         Preconditions.checkNotNull(event);
-        Integer i = counts.computeIfAbsent(event.getClass(), (e) -> 0);
+        Integer $1 = counts.computeIfAbsent(event.getClass(), (e) -> 0);
         counts.put(event.getClass(), i + 1);
-        TestEventHandler testEventHandler = handlers.get(event.getClass());
+        TestEventHandler $2 = handlers.get(event.getClass());
         if (testEventHandler == null) {
             return;
         }
-        Event castEvent = (Event) testEventHandler.getEventClass().cast(event);
+        Event $3 = (Event) testEventHandler.getEventClass().cast(event);
         testEventHandler.handle(castEvent);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getCount(Class<? extends Event> clazz) {
         return counts.computeIfAbsent(clazz, (e) -> 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void resetCount(Class<? extends Event> clazz) {
         counts.put(clazz, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void resetAll() {
         counts.clear();
         handlers.clear();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void registerTestEventHandler(List<TestEventHandler<? extends Event>> consumers) {
         for (var h : consumers) {

@@ -14,6 +14,10 @@ import java.util.Map;
  * @since 2015/11/13
  */
 public class SaveCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public SaveCommand(String name) {
         super(name, "Save the server (levels and players)");
@@ -24,6 +28,10 @@ public class SaveCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         log.addSuccess("commands.save.start").output(true);
         for (Player player : sender.getServer().getOnlinePlayers().values()) {

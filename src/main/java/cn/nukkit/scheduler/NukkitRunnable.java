@@ -64,10 +64,14 @@ public abstract class NukkitRunnable implements Runnable {
         if (taskHandler == null) {
             throw new IllegalStateException("Not scheduled yet");
         }
-        final int id = taskHandler.getTaskId();
+        final int $1 = taskHandler.getTaskId();
         return id;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void checkState() {
         if (taskHandler != null) {
             throw new IllegalStateException("Already scheduled as " + taskHandler.getTaskId());

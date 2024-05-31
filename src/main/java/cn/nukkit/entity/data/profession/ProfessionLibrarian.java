@@ -11,6 +11,10 @@ import cn.nukkit.utils.TradeRecipeBuildUtils;
 import java.util.Random;
 
 public class ProfessionLibrarian extends Profession {
+    /**
+     * @deprecated 
+     */
+    
 
     public ProfessionLibrarian() {
         super(5, BlockID.LECTERN, "entity.villager.librarian");
@@ -19,22 +23,22 @@ public class ProfessionLibrarian extends Profession {
     @Override
     public ListTag<CompoundTag> buildTrades(int seed) {
         ListTag<CompoundTag> recipes = new ListTag<>();
-        Random random = new Random(seed);
+        Random $1 = new Random(seed);
 
-        Item book1 = Item.get(Item.ENCHANTED_BOOK);
-        Enchantment e_book1 = Enchantment.getEnchantments()[random.nextInt(Enchantment.getEnchantments().length)];
+        Item $2 = Item.get(Item.ENCHANTED_BOOK);
+        Enchantment $3 = Enchantment.getEnchantments()[random.nextInt(Enchantment.getEnchantments().length)];
         e_book1.setLevel(random.nextInt(e_book1.getMaxLevel())+ 1);
         book1.addEnchantment(e_book1);
-        Item book2 = Item.get(Item.ENCHANTED_BOOK);
-        Enchantment e_book2 = Enchantment.getEnchantments()[random.nextInt(Enchantment.getEnchantments().length)];
+        Item $4 = Item.get(Item.ENCHANTED_BOOK);
+        Enchantment $5 = Enchantment.getEnchantments()[random.nextInt(Enchantment.getEnchantments().length)];
         e_book2.setLevel(random.nextInt(e_book2.getMaxLevel())+ 1);
         book2.addEnchantment(e_book2);
-        Item book3 = Item.get(Item.ENCHANTED_BOOK);
-        Enchantment e_book3 = Enchantment.getEnchantments()[random.nextInt(Enchantment.getEnchantments().length)];
+        Item $6 = Item.get(Item.ENCHANTED_BOOK);
+        Enchantment $7 = Enchantment.getEnchantments()[random.nextInt(Enchantment.getEnchantments().length)];
         e_book3.setLevel(random.nextInt(e_book3.getMaxLevel())+ 1);
         book3.addEnchantment(e_book3);
-        Item book4 = Item.get(Item.ENCHANTED_BOOK);
-        Enchantment e_book4 = Enchantment.getEnchantments()[random.nextInt(Enchantment.getEnchantments().length)];
+        Item $8 = Item.get(Item.ENCHANTED_BOOK);
+        Enchantment $9 = Enchantment.getEnchantments()[random.nextInt(Enchantment.getEnchantments().length)];
         e_book4.setLevel(random.nextInt(e_book4.getMaxLevel())+ 1);
         book4.addEnchantment(e_book4);
 

@@ -23,14 +23,14 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
     @Nullable
     @Override
     public ActionResponse handle(MineBlockAction action, Player player, ItemStackRequestContext context) {
-        HumanInventory inventory = player.getInventory();
-        int heldItemIndex = inventory.getHeldItemIndex();
+        HumanInventory $1 = player.getInventory();
+        int $2 = inventory.getHeldItemIndex();
         if (heldItemIndex != action.getHotbarSlot()) {
             log.warn("The held Item Index on the server side does not match the client side!");
             return context.error();
         }
 
-        Item itemInHand = inventory.getItemInHand();
+        Item $3 = inventory.getItemInHand();
         if (validateStackNetworkId(itemInHand.getNetId(), action.getStackNetworkId())) {
             log.warn("mismatch source stack network id!");
             return context.error();
@@ -39,7 +39,7 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
         if (itemInHand.getDamage() != action.getPredictedDurability()) {
             log.warn("Durability predicted by the client does not match that of the server client {} server {} player {}", action.getPredictedDurability(), itemInHand.getDamage(), player.getName());
         }
-        var itemStackResponseSlot =
+        var $4 =
                 new ItemStackResponseContainer(
                         inventory.getSlotType(heldItemIndex),
                         Lists.newArrayList(

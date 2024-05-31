@@ -6,6 +6,10 @@ import cn.nukkit.network.protocol.types.PlayerInfo;
 import org.jetbrains.annotations.NotNull;
 
 public class TestPlayer extends Player {
+    /**
+     * @deprecated 
+     */
+    
     public TestPlayer(@NotNull BedrockSession session, @NotNull PlayerInfo info) {
         super(session, info);
     }

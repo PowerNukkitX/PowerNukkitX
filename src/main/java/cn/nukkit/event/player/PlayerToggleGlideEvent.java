@@ -5,18 +5,26 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
 public class PlayerToggleGlideEvent extends PlayerEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     protected final boolean isGliding;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerToggleGlideEvent(Player player, boolean isSneaking) {
         this.player = player;
         this.isGliding = isSneaking;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isGliding() {
         return this.isGliding;

@@ -6,6 +6,10 @@ package cn.nukkit.item.enchantment;
 public class EnchantmentList {
 
     private final EnchantmentEntry[] enchantments;
+    /**
+     * @deprecated 
+     */
+    
 
     public EnchantmentList(int size) {
         this.enchantments = new EnchantmentEntry[size];
@@ -24,6 +28,10 @@ public class EnchantmentList {
     public EnchantmentEntry getSlot(int slot) {
         return enchantments[slot];
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getSize() {
         return enchantments.length;

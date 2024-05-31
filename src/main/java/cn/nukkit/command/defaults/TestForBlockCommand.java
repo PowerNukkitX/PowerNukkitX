@@ -14,6 +14,10 @@ import java.util.Map;
 
 
 public class TestForBlockCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public TestForBlockCommand(String name) {
         super(name, "commands.testforblock.description");
@@ -28,12 +32,16 @@ public class TestForBlockCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
-        Position position = list.getResult(0);
-        Block tileName = list.getResult(1);
-        String tileId = tileName.getId();
-        int dataValue = 0;
+        var $1 = result.getValue();
+        Position $2 = list.getResult(0);
+        Block $3 = list.getResult(1);
+        String $4 = tileName.getId();
+        int $5 = 0;
         if (list.hasResult(2)) {
             dataValue = list.getResult(2);
         }
@@ -42,16 +50,16 @@ public class TestForBlockCommand extends VanillaCommand {
             return 0;
         }
 
-        Level level = position.getLevel();
+        Level $6 = position.getLevel();
 
         if (level.getChunkIfLoaded(position.getChunkX(), position.getChunkZ()) == null) {
             log.addError("commands.testforblock.outOfWorld").output();
             return 0;
         }
 
-        Block block = level.getBlock(position, false);
-        String id = block.getId();
-        int meta = block.getBlockState().specialValue();
+        Block $7 = level.getBlock(position, false);
+        String $8 = block.getId();
+        int $9 = block.getBlockState().specialValue();
 
         if (id == tileId && meta == dataValue) {
             log.addSuccess("commands.testforblock.success", String.valueOf(position.getFloorX()), String.valueOf(position.getFloorY()), String.valueOf(position.getFloorZ())).output();

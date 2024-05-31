@@ -9,6 +9,10 @@ public enum PlayerFlag {
     PlayerFlag(int value) {
         this.value = value;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getValue() {
         return value;

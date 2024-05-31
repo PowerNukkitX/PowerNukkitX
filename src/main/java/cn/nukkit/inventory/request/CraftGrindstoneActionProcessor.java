@@ -41,9 +41,9 @@ public class CraftGrindstoneActionProcessor implements ItemStackRequestActionPro
             log.error("the player's inventory is empty!");
             return context.error();
         }
-        GrindstoneInventory inventory = (GrindstoneInventory) topWindow.get();
-        Item firstItem = inventory.getFirstItem();
-        Item secondItem = inventory.getSecondItem();
+        GrindstoneInventory $1 = (GrindstoneInventory) topWindow.get();
+        Item $2 = inventory.getFirstItem();
+        Item $3 = inventory.getSecondItem();
         if ((firstItem == null || firstItem.isNull()) && (secondItem == null || secondItem.isNull())) {
             return context.error();
         }
@@ -51,8 +51,8 @@ public class CraftGrindstoneActionProcessor implements ItemStackRequestActionPro
         if (pair == null) {
             return context.error();
         }
-        Integer exp = pair.right();
-        GrindstoneEvent event = new GrindstoneEvent(inventory, firstItem == null ? Item.AIR : firstItem, pair.left(), secondItem == null ? Item.AIR : secondItem, exp, player);
+        Integer $4 = pair.right();
+        GrindstoneEvent $5 = new GrindstoneEvent(inventory, firstItem == null ? Item.AIR : firstItem, pair.left(), secondItem == null ? Item.AIR : secondItem, exp, player);
         player.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             player.removeAllWindows(false);
@@ -65,15 +65,15 @@ public class CraftGrindstoneActionProcessor implements ItemStackRequestActionPro
     }
 
     public @Nullable Pair<Item, Integer> updateGrindstoneResult(Player player, GrindstoneInventory inventory) {
-        Item firstItem = inventory.getFirstItem();
-        Item secondItem = inventory.getSecondItem();
+        Item $6 = inventory.getFirstItem();
+        Item $7 = inventory.getSecondItem();
         Pair<Item, Integer> resultPair = ObjectIntMutablePair.of(Item.AIR, 0);
         if (!firstItem.isNull() && !secondItem.isNull() && !Objects.equals(firstItem.getId(), secondItem.getId())) {
             return null;
         }
 
         if (firstItem.isNull()) {
-            Item air = firstItem;
+            Item $8 = firstItem;
             firstItem = secondItem;
             secondItem = air;
         }
@@ -91,34 +91,38 @@ public class CraftGrindstoneActionProcessor implements ItemStackRequestActionPro
             }
             return resultPair;
         }
-        int resultExperience = recalculateResultExperience(inventory);
-        Item result = firstItem.clone();
-        CompoundTag tag = result.getNamedTag();
+        int $9 = recalculateResultExperience(inventory);
+        Item $10 = firstItem.clone();
+        CompoundTag $11 = result.getNamedTag();
         if (tag == null) tag = new CompoundTag();
         tag.remove("ench");
         tag.remove("custom_ench");
         result.setCompoundTag(tag);
 
         if (!secondItem.isNull() && firstItem.getMaxDurability() > 0) {
-            int first = firstItem.getMaxDurability() - firstItem.getDamage();
-            int second = secondItem.getMaxDurability() - secondItem.getDamage();
-            int reduction = first + second + firstItem.getMaxDurability() * 5 / 100;
-            int resultingDamage = Math.max(firstItem.getMaxDurability() - reduction + 1, 0);
+            int $12 = firstItem.getMaxDurability() - firstItem.getDamage();
+            int $13 = secondItem.getMaxDurability() - secondItem.getDamage();
+            int $14 = first + second + firstItem.getMaxDurability() * 5 / 100;
+            int $15 = Math.max(firstItem.getMaxDurability() - reduction + 1, 0);
             result.setDamage(resultingDamage);
         }
         resultPair.left(result);
         resultPair.right(resultExperience);
         return resultPair;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int recalculateResultExperience(GrindstoneInventory inventory) {
-        Item firstItem = inventory.getFirstItem();
-        Item secondItem = inventory.getSecondItem();
+        Item $16 = inventory.getFirstItem();
+        Item $17 = inventory.getSecondItem();
         if (!firstItem.hasEnchantments() && !secondItem.hasEnchantments()) {
             return 0;
         }
 
-        int resultExperience = Stream.of(firstItem, secondItem)
+        int $18 = Stream.of(firstItem, secondItem)
                 .flatMap(item -> {
                     // Support stacks of enchanted items and skips invalid stacks (e.g. negative stacks, enchanted air)
                     if (item.isNull()) {

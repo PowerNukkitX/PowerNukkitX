@@ -15,6 +15,10 @@ public class MemoryCodec<Data> implements IMemoryCodec<Data> {
     private final BiConsumer<Data, CompoundTag> encoder;
     @Nullable
     private BiConsumer<Data, EntityIntelligent> onInit = null;
+    /**
+     * @deprecated 
+     */
+    
 
     public MemoryCodec(
             Function<CompoundTag, Data> decoder,
@@ -33,6 +37,10 @@ public class MemoryCodec<Data> implements IMemoryCodec<Data> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init(@Nullable Data data, EntityIntelligent entity) {
         if (onInit != null) {
             onInit.accept(data, entity);

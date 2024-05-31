@@ -9,16 +9,24 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 public class InLoveExecutor implements IBehaviorExecutor {
 
     protected int duration;
-    protected int currentTick = 0;
+    protected int $1 = 0;
+    /**
+     * @deprecated 
+     */
+    
 
     public InLoveExecutor(int duration) {
         this.duration = duration;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
         if (currentTick == 0) {
-//            var memory = entity.getMemoryStorage().get(InLoveMemory.class);
+//            var $2 = entity.getMemoryStorage().get(InLoveMemory.class);
 //            memory.setData(Server.getInstance().getTick());
 //            memory.setInLove(true);
             entity.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, Server.getInstance().getTick());
@@ -37,13 +45,21 @@ public class InLoveExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         entity.getMemoryStorage().put(CoreMemoryTypes.IS_IN_LOVE, false);
         currentTick = 0;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void sendLoveParticle(EntityIntelligent entity) {
-        EntityEventPacket pk = new EntityEventPacket();
+        EntityEventPacket $3 = new EntityEventPacket();
         pk.eid = entity.getId();
         pk.event = EntityEventPacket.LOVE_PARTICLES;
         Server.broadcastPacket(entity.getViewers().values(), pk);

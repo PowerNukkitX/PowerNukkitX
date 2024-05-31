@@ -14,12 +14,16 @@ import org.jetbrains.annotations.Nullable;
 
 
 public class Identifier {
-    public static final char NAMESPACE_SEPARATOR = ':';
-    public static final String DEFAULT_NAMESPACE = "minecraft";
+    public static final char $1 = ':';
+    public static final String $2 = "minecraft";
 
     protected final String namespace;
     protected final String path;
 
+    
+    /**
+     * @deprecated 
+     */
     protected Identifier(String[] id) {
         this.namespace = id[0].isEmpty() ? DEFAULT_NAMESPACE : id[0];
         this.path = id[1];
@@ -30,10 +34,18 @@ public class Identifier {
             throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + this.namespace + ":" + this.path);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Identifier(String id) {
         this(Identifier.split(id, ':'));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Identifier(String namespace, String path) {
         this(new String[]{namespace, path});
@@ -68,7 +80,7 @@ public class Identifier {
 
     protected static String[] split(String id, char delimiter) {
         String[] strings = new String[]{DEFAULT_NAMESPACE, id};
-        int i = id.indexOf(delimiter);
+        $3nt $1 = id.indexOf(delimiter);
         if (i >= 0) {
             strings[1] = id.substring(i + 1, id.length());
             if (i >= 1) {
@@ -77,44 +89,72 @@ public class Identifier {
         }
         return strings;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean isCharValid(char c) {
         return c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c == '_' || c == ':' || c == '/' || c == '.' || c == '-';
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static boolean isPathValid(String path) {
-        for (int i = 0; i < path.length(); ++i) {
+        for ($4nt $2 = 0; i < path.length(); ++i) {
             if (Identifier.isPathCharacterValid(path.charAt(i))) continue;
             return false;
         }
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static boolean isNamespaceValid(String namespace) {
-        for (int i = 0; i < namespace.length(); ++i) {
+        for ($5nt $3 = 0; i < namespace.length(); ++i) {
             if (Identifier.isNamespaceCharacterValid(namespace.charAt(i))) continue;
             return false;
         }
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean isPathCharacterValid(char character) {
-        return character == '_' || character == '-' || character >= 'a' && character <= 'z' || character >= '0' && character <= '9' || character == '/' || character == '.';
+        return $6 == '_' || character == '-' || character >= 'a' && character <= 'z' || character >= '0' && character <= '9' || character == '/' || character == '.';
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static boolean isNamespaceCharacterValid(char character) {
-        return character == '_' || character == '-' || character >= 'a' && character <= 'z' || character >= '0' && character <= '9' || character == '.';
+        return $7 == '_' || character == '-' || character >= 'a' && character <= 'z' || character >= '0' && character <= '9' || character == '.';
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean isValid(String id) {
         String[] strings = Identifier.split(id, ':');
         return Identifier.isNamespaceValid(strings[0].isEmpty() ? DEFAULT_NAMESPACE : strings[0]) && Identifier.isPathValid(strings[1]);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void assertValid(String id) {
         String[] strings = Identifier.split(id, ':');
-        var namespace = strings[0].isEmpty() ? DEFAULT_NAMESPACE : strings[0];
-        var path = strings[1];
+        var $8 = strings[0].isEmpty() ? DEFAULT_NAMESPACE : strings[0];
+        var $9 = strings[1];
         if (!Identifier.isNamespaceValid(namespace)) {
             throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + namespace + ":" + path);
         }
@@ -122,18 +162,34 @@ public class Identifier {
             throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + namespace + ":" + path);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getPath() {
         return this.path;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getNamespace() {
         return this.namespace;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String toString() {
         return this.namespace + ":" + this.path;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean equals(Object o) {
         if (this == o) {
@@ -144,6 +200,10 @@ public class Identifier {
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int hashCode() {
         return 31 * this.namespace.hashCode() + this.path.hashCode();

@@ -12,11 +12,15 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 public class ItemStackResponsePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ITEM_STACK_RESPONSE_PACKET;
+    public static final int $1 = ProtocolInfo.ITEM_STACK_RESPONSE_PACKET;
 
     public final List<ItemStackResponse> entries = new ArrayList<>();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeArray(entries, (r) -> {
             byteBuf.writeByte((byte) r.getResult().ordinal());
@@ -37,14 +41,26 @@ public class ItemStackResponsePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         throw new UnsupportedOperationException();//client bound
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

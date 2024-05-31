@@ -11,9 +11,17 @@ import java.util.List;
  * @author MagicDroidX (Nukkit Project)
  */
 public class FurnaceRecipe extends SmeltingRecipe {
+    /**
+     * @deprecated 
+     */
+    
     public FurnaceRecipe(Item result, Item ingredient) {
         this(null, result, ingredient);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FurnaceRecipe(@Nullable String recipeId, Item result, Item ingredient) {
         super(recipeId == null ?
@@ -25,6 +33,10 @@ public class FurnaceRecipe extends SmeltingRecipe {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean match(Input input) {
         return false;
     }

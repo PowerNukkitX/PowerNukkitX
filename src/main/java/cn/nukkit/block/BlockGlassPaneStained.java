@@ -7,6 +7,10 @@ import cn.nukkit.utils.DyeColor;
  * @since 7.8.2017
  */
 public abstract class BlockGlassPaneStained extends BlockGlassPane {
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockGlassPaneStained(BlockState blockState) {
         super(blockState);

@@ -22,7 +22,11 @@ public class PlayerFood {
 
     private int foodTickTimer;
 
-    private boolean enabled = true;
+    private boolean $1 = true;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerFood(Player player, int food, float saturation) {
         this.player = player;
@@ -34,10 +38,18 @@ public class PlayerFood {
     public Player getPlayer() {
         return player;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFood() {
         return food;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFood(int food, float saturation) {
         food = Math.max(0, Math.min(food, 20));
@@ -46,7 +58,7 @@ public class PlayerFood {
             this.player.setSprinting(false);
         }
 
-        PlayerFoodLevelChangeEvent event = new PlayerFoodLevelChangeEvent(this.player, food, saturation);
+        PlayerFoodLevelChangeEvent $2 = new PlayerFoodLevelChangeEvent(this.player, food, saturation);
         Server.getInstance().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -59,69 +71,113 @@ public class PlayerFood {
 
         this.sendFood();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getMaxFood() {
         return maxFood;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getSaturation() {
         return saturation;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSaturation(float saturation) {
         saturation = Math.max(0, Math.min(saturation, food));
 
-        PlayerFoodLevelChangeEvent event = new PlayerFoodLevelChangeEvent(player, food, saturation);
+        PlayerFoodLevelChangeEvent $3 = new PlayerFoodLevelChangeEvent(player, food, saturation);
         Server.getInstance().getPluginManager().callEvent(event);
 
         if (!event.isCancelled()) {
             this.saturation = event.getFoodSaturationLevel();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addFood(ItemFood food) {
         this.addFood(food.getFoodRestore(), food.getSaturationRestore());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFood(int food) {
         this.setFood(food, -1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addFood(int food, float saturation) {
         this.setFood(this.food + food, this.saturation + saturation);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendFood() {
         this.sendFood(this.food);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendFood(int food) {
         if (this.player.spawned) {
-            Attribute attribute = player.getAttributes().computeIfAbsent(Attribute.FOOD, Attribute::getAttribute);
+            Attribute $4 = player.getAttributes().computeIfAbsent(Attribute.FOOD, Attribute::getAttribute);
             if (attribute.getValue() != food) {
                 attribute.setValue(food);
                 this.player.syncAttribute(attribute);
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isHungry() {
         return food < maxFood;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getExhaustion() {
         return exhaustion;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setExhaustion(float exhaustion) {
         while (exhaustion >= 4.0f) {
             exhaustion -= 4.0f;
-            float saturation = this.saturation;
+            float $5 = this.saturation;
             if (saturation > 0) {
                 saturation = Math.max(0, saturation - 1.0f);
                 this.setSaturation(saturation);
             } else {
-                int food = this.food;
+                int $6 = this.food;
                 if (food > 0) {
                     food--;
                     this.setFood(Math.max(food, 0));
@@ -130,23 +186,27 @@ public class PlayerFood {
         }
         this.exhaustion = exhaustion;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void exhaust(double amount) {
         if (!this.isEnabled() || Server.getInstance().getDifficulty() == 0 || player.hasEffect(EffectType.SATURATION)) {
             return;
         }
 
-        double exhaustion = this.exhaustion + amount;
+        double $7 = this.exhaustion + amount;
 
         while (exhaustion >= 4.0f) {
             exhaustion -= 4.0f;
 
-            float saturation = this.saturation;
+            float $8 = this.saturation;
             if (saturation > 0) {
                 saturation = Math.max(0, saturation - 1.0f);
                 this.setSaturation(saturation);
             } else {
-                int food = this.food;
+                int $9 = this.food;
                 if (food > 0) {
                     food--;
                     this.setFood(Math.max(food, 0));
@@ -156,10 +216,18 @@ public class PlayerFood {
 
         this.exhaustion = exhaustion;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFoodTickTimer() {
         return foodTickTimer;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void reset() {
         this.food = 20;
@@ -168,20 +236,24 @@ public class PlayerFood {
         this.foodTickTimer = 0;
         this.sendFood();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void tick(int tickDiff) {
         if (!player.isAlive() || !this.isEnabled()) {
             return;
         }
 
-        double health = player.getHealth();
+        double $10 = player.getHealth();
 
         this.foodTickTimer += tickDiff;
         if (this.foodTickTimer >= 80) {
             this.foodTickTimer = 0;
         }
 
-        int difficulty = Server.getInstance().getDifficulty();
+        int $11 = Server.getInstance().getDifficulty();
 
         if (difficulty == 0 && this.foodTickTimer % 10 == 0) {
             if (this.isHungry()) {
@@ -209,10 +281,18 @@ public class PlayerFood {
             this.player.setSprinting(false);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isEnabled() {
         return !(player.isCreative() || player.isSpectator()) && this.enabled;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;

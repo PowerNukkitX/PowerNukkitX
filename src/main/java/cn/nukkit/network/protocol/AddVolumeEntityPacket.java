@@ -11,7 +11,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddVolumeEntityPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ADD_VOLUME_ENTITY_PACKET;
+    public static final int $1 = ProtocolInfo.ADD_VOLUME_ENTITY_PACKET;
 
     public int id;
     public CompoundTag data;
@@ -29,11 +29,19 @@ public class AddVolumeEntityPacket extends DataPacket {
     public String instanceName;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         id = byteBuf.readUnsignedVarInt();
         data = byteBuf.readTag();
@@ -43,6 +51,10 @@ public class AddVolumeEntityPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarInt((int) Integer.toUnsignedLong(id));
         byteBuf.writeTag(data);
@@ -50,6 +62,10 @@ public class AddVolumeEntityPacket extends DataPacket {
         byteBuf.writeString(identifier);
         byteBuf.writeString(instanceName);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

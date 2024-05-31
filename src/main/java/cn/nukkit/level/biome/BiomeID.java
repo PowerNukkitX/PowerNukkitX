@@ -1,175 +1,175 @@
 package cn.nukkit.level.biome;
 
 public interface BiomeID {
-  int OCEAN = 0;
+  int $1 = 0;
 
-  int PLAINS = 1;
+  int $2 = 1;
 
-  int DESERT = 2;
+  int $3 = 2;
 
-  int EXTREME_HILLS = 3;
+  int $4 = 3;
 
-  int FOREST = 4;
+  int $5 = 4;
 
-  int TAIGA = 5;
+  int $6 = 5;
 
-  int SWAMPLAND = 6;
+  int $7 = 6;
 
-  int RIVER = 7;
+  int $8 = 7;
 
-  int HELL = 8;
+  int $9 = 8;
 
-  int THE_END = 9;
+  int $10 = 9;
 
-  int LEGACY_FROZEN_OCEAN = 10;
+  int $11 = 10;
 
-  int FROZEN_RIVER = 11;
+  int $12 = 11;
 
-  int ICE_PLAINS = 12;
+  int $13 = 12;
 
-  int ICE_MOUNTAINS = 13;
+  int $14 = 13;
 
-  int MUSHROOM_ISLAND = 14;
+  int $15 = 14;
 
-  int MUSHROOM_ISLAND_SHORE = 15;
+  int $16 = 15;
 
-  int BEACH = 16;
+  int $17 = 16;
 
-  int DESERT_HILLS = 17;
+  int $18 = 17;
 
-  int FOREST_HILLS = 18;
+  int $19 = 18;
 
-  int TAIGA_HILLS = 19;
+  int $20 = 19;
 
-  int EXTREME_HILLS_EDGE = 20;
+  int $21 = 20;
 
-  int JUNGLE = 21;
+  int $22 = 21;
 
-  int JUNGLE_HILLS = 22;
+  int $23 = 22;
 
-  int JUNGLE_EDGE = 23;
+  int $24 = 23;
 
-  int DEEP_OCEAN = 24;
+  int $25 = 24;
 
-  int STONE_BEACH = 25;
+  int $26 = 25;
 
-  int COLD_BEACH = 26;
+  int $27 = 26;
 
-  int BIRCH_FOREST = 27;
+  int $28 = 27;
 
-  int BIRCH_FOREST_HILLS = 28;
+  int $29 = 28;
 
-  int ROOFED_FOREST = 29;
+  int $30 = 29;
 
-  int COLD_TAIGA = 30;
+  int $31 = 30;
 
-  int COLD_TAIGA_HILLS = 31;
+  int $32 = 31;
 
-  int MEGA_TAIGA = 32;
+  int $33 = 32;
 
-  int MEGA_TAIGA_HILLS = 33;
+  int $34 = 33;
 
-  int EXTREME_HILLS_PLUS_TREES = 34;
+  int $35 = 34;
 
-  int SAVANNA = 35;
+  int $36 = 35;
 
-  int SAVANNA_PLATEAU = 36;
+  int $37 = 36;
 
-  int MESA = 37;
+  int $38 = 37;
 
-  int MESA_PLATEAU_STONE = 38;
+  int $39 = 38;
 
-  int MESA_PLATEAU = 39;
+  int $40 = 39;
 
-  int WARM_OCEAN = 40;
+  int $41 = 40;
 
-  int DEEP_WARM_OCEAN = 41;
+  int $42 = 41;
 
-  int LUKEWARM_OCEAN = 42;
+  int $43 = 42;
 
-  int DEEP_LUKEWARM_OCEAN = 43;
+  int $44 = 43;
 
-  int COLD_OCEAN = 44;
+  int $45 = 44;
 
-  int DEEP_COLD_OCEAN = 45;
+  int $46 = 45;
 
-  int FROZEN_OCEAN = 46;
+  int $47 = 46;
 
-  int DEEP_FROZEN_OCEAN = 47;
+  int $48 = 47;
 
-  int BAMBOO_JUNGLE = 48;
+  int $49 = 48;
 
-  int BAMBOO_JUNGLE_HILLS = 49;
+  int $50 = 49;
 
-  int SUNFLOWER_PLAINS = 129;
+  int $51 = 129;
 
-  int DESERT_MUTATED = 130;
+  int $52 = 130;
 
-  int EXTREME_HILLS_MUTATED = 131;
+  int $53 = 131;
 
-  int FLOWER_FOREST = 132;
+  int $54 = 132;
 
-  int TAIGA_MUTATED = 133;
+  int $55 = 133;
 
-  int SWAMPLAND_MUTATED = 134;
+  int $56 = 134;
 
-  int ICE_PLAINS_SPIKES = 140;
+  int $57 = 140;
 
-  int JUNGLE_MUTATED = 149;
+  int $58 = 149;
 
-  int JUNGLE_EDGE_MUTATED = 151;
+  int $59 = 151;
 
-  int BIRCH_FOREST_MUTATED = 155;
+  int $60 = 155;
 
-  int BIRCH_FOREST_HILLS_MUTATED = 156;
+  int $61 = 156;
 
-  int ROOFED_FOREST_MUTATED = 157;
+  int $62 = 157;
 
-  int COLD_TAIGA_MUTATED = 158;
+  int $63 = 158;
 
-  int REDWOOD_TAIGA_MUTATED = 160;
+  int $64 = 160;
 
-  int REDWOOD_TAIGA_HILLS_MUTATED = 161;
+  int $65 = 161;
 
-  int EXTREME_HILLS_PLUS_TREES_MUTATED = 162;
+  int $66 = 162;
 
-  int SAVANNA_MUTATED = 163;
+  int $67 = 163;
 
-  int SAVANNA_PLATEAU_MUTATED = 164;
+  int $68 = 164;
 
-  int MESA_BRYCE = 165;
+  int $69 = 165;
 
-  int MESA_PLATEAU_STONE_MUTATED = 166;
+  int $70 = 166;
 
-  int MESA_PLATEAU_MUTATED = 167;
+  int $71 = 167;
 
-  int SOULSAND_VALLEY = 178;
+  int $72 = 178;
 
-  int CRIMSON_FOREST = 179;
+  int $73 = 179;
 
-  int WARPED_FOREST = 180;
+  int $74 = 180;
 
-  int BASALT_DELTAS = 181;
+  int $75 = 181;
 
-  int JAGGED_PEAKS = 182;
+  int $76 = 182;
 
-  int FROZEN_PEAKS = 183;
+  int $77 = 183;
 
-  int SNOWY_SLOPES = 184;
+  int $78 = 184;
 
-  int GROVE = 185;
+  int $79 = 185;
 
-  int MEADOW = 186;
+  int $80 = 186;
 
-  int LUSH_CAVES = 187;
+  int $81 = 187;
 
-  int DRIPSTONE_CAVES = 188;
+  int $82 = 188;
 
-  int STONY_PEAKS = 189;
+  int $83 = 189;
 
-  int DEEP_DARK = 190;
+  int $84 = 190;
 
-  int MANGROVE_SWAMP = 191;
+  int $85 = 191;
 
-  int CHERRY_GROVE = 192;
+  int $86 = 192;
 }

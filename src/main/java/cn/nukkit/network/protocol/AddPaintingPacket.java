@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 public class AddPaintingPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.ADD_PAINTING_PACKET;
+    public static final int $1 = ProtocolInfo.ADD_PAINTING_PACKET;
 
     public long entityUniqueId;
     public long entityRuntimeId;
@@ -24,11 +24,19 @@ public class AddPaintingPacket extends DataPacket {
     public String title;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeEntityUniqueId(this.entityUniqueId);
@@ -40,9 +48,17 @@ public class AddPaintingPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

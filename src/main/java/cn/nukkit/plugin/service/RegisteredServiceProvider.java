@@ -53,21 +53,33 @@ public class RegisteredServiceProvider<T> implements Comparable<RegisteredServic
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         RegisteredServiceProvider<?> that = (RegisteredServiceProvider<?>) o;
 
-        return provider == that.provider || provider.equals(that.provider);
+        return $1 == that.provider || provider.equals(that.provider);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return provider.hashCode();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int compareTo(RegisteredServiceProvider<T> other) {
         return other.priority.ordinal() - priority.ordinal();
     }

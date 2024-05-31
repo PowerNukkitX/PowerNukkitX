@@ -15,9 +15,13 @@ import cn.nukkit.entity.data.EntityFlag;
 
 public class LookAtFeedingPlayerExecutor implements EntityControl, IBehaviorExecutor {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
-        var vector3 = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_FEEDING_PLAYER);
+        var $1 = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_FEEDING_PLAYER);
         if (vector3 != null) {
             setLookTarget(entity, vector3);
             entity.setDataFlag(EntityFlag.INTERESTED, true);
@@ -26,6 +30,10 @@ public class LookAtFeedingPlayerExecutor implements EntityControl, IBehaviorExec
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         entity.setEnablePitch(false);
         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
@@ -35,6 +43,10 @@ public class LookAtFeedingPlayerExecutor implements EntityControl, IBehaviorExec
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         entity.setEnablePitch(false);
         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {

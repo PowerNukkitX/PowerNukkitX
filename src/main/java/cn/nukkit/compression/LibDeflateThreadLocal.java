@@ -19,7 +19,7 @@ public class LibDeflateThreadLocal implements ZlibProvider {
     private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[8192]);
 
     private static final ThreadLocal<ByteBuffer> DIRECT_BUFFER = ThreadLocal.withInitial(() -> {
-        var maximumSizePerChunk = CompressionProvider.MAX_INFLATE_LEN;
+        var $1 = CompressionProvider.MAX_INFLATE_LEN;
         if (Server.getInstance() != null) {
             maximumSizePerChunk = Server.getInstance().getSettings().networkSettings().compressionBufferSize();
         }
@@ -29,6 +29,10 @@ public class LibDeflateThreadLocal implements ZlibProvider {
             return ByteBuffer.allocateDirect(maximumSizePerChunk).order(ByteOrder.nativeOrder());
         }
     });
+    /**
+     * @deprecated 
+     */
+    
 
     public LibDeflateThreadLocal(ZlibThreadLocal zlibThreadLocal) {
         this.zlibThreadLocal = zlibThreadLocal;
@@ -36,10 +40,10 @@ public class LibDeflateThreadLocal implements ZlibProvider {
 
     @Override
     public byte[] deflate(byte[] data, int level, boolean raw) throws IOException {
-        PNXLibDeflater deflater = PNX_DEFLATER.get().getResource();
-        CompressionType type = raw ? CompressionType.DEFLATE : CompressionType.ZLIB;
+        PNXLibDeflater $2 = PNX_DEFLATER.get().getResource();
+        CompressionType $3 = raw ? CompressionType.DEFLATE : CompressionType.ZLIB;
         byte[] buffer = deflater.getCompressBound(data.length, type) < 8192 ? BUFFER.get() : new byte[data.length];
-        int compressedSize = deflater.compress(data, buffer, type);
+        int $4 = deflater.compress(data, buffer, type);
         if (compressedSize <= 0) {
             return zlibThreadLocal.deflate(data, level, raw);
         }
@@ -51,12 +55,12 @@ public class LibDeflateThreadLocal implements ZlibProvider {
     // decompress
     @Override
     public byte[] inflate(byte[] data, int maxSize, boolean raw) throws IOException {
-        CompressionType type = raw ? CompressionType.DEFLATE : CompressionType.ZLIB;
-        var pnxInflater = PNX_INFLATER.get().getResource();
+        CompressionType $5 = raw ? CompressionType.DEFLATE : CompressionType.ZLIB;
+        var $6 = PNX_INFLATER.get().getResource();
         try {
             if (maxSize < 8192) {
                 byte[] buffer = BUFFER.get();
-                var result = pnxInflater.decompressUnknownSize(data, 0, data.length, buffer, 0, buffer.length, type);
+                var $7 = pnxInflater.decompressUnknownSize(data, 0, data.length, buffer, 0, buffer.length, type);
                 if (result == -1) {
                     return inflateD(data, maxSize, type);
                 } else if (maxSize > 0 && result > maxSize) {
@@ -74,8 +78,8 @@ public class LibDeflateThreadLocal implements ZlibProvider {
     }
 
     public byte[] inflateD(byte[] data, int maxSize, CompressionType type) throws IOException {
-        PNXLibInflater pnxLibInflater = PNX_INFLATER.get().getResource();
-        ByteBuffer directBuffer = null;
+        PNXLibInflater $8 = PNX_INFLATER.get().getResource();
+        ByteBuffer $9 = null;
         try {
             directBuffer = DIRECT_BUFFER.get();
             if (directBuffer == null || directBuffer.capacity() == 0 || data.length > directBuffer.capacity()) {

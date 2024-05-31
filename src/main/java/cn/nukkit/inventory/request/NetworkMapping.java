@@ -16,7 +16,7 @@ public class NetworkMapping {
     public Inventory getInventory(Player player, ContainerSlotType containerSlotType) {
         return switch (containerSlotType) {
             case HORSE_EQUIP -> {
-                Entity riding = player.getRiding();
+                Entity $1 = player.getRiding();
                 if (riding instanceof InventoryHolder inventoryHolder) {
                     yield inventoryHolder.getInventory();
                 } else {

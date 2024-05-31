@@ -9,6 +9,10 @@ public abstract class CraftingRecipe extends BaseRecipe {
     protected UUID uuid;
     private final int priority;
 
+    
+    /**
+     * @deprecated 
+     */
     protected CraftingRecipe(String id, int priority) {
         super(id);
         this.priority = priority;
@@ -22,9 +26,17 @@ public abstract class CraftingRecipe extends BaseRecipe {
      *
      * @return the priority
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getPriority() {
         return priority;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setUUID(UUID uuid) {
         this.uuid = uuid;

@@ -14,6 +14,10 @@ import java.util.Map;
  */
 public class CompoundTagView extends CompoundTag {
     private final CompoundTag delegate;
+    /**
+     * @deprecated 
+     */
+    
 
     public CompoundTagView(CompoundTag delegate) {
         this.delegate = delegate;
@@ -25,6 +29,10 @@ public class CompoundTagView extends CompoundTag {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte getId() {
         return delegate.getId();
     }
@@ -100,66 +108,118 @@ public class CompoundTagView extends CompoundTag {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean contains(String name) {
         return delegate.contains(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsCompound(String name) {
         return delegate.containsCompound(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsString(String name) {
         return delegate.containsString(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsIntArray(String name) {
         return delegate.containsIntArray(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsByteArray(String name) {
         return delegate.containsByteArray(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsNumber(String name) {
         return delegate.containsNumber(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsList(String name) {
         return delegate.containsList(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsList(String name, byte type) {
         return delegate.containsList(name, type);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsByte(String name) {
         return delegate.containsByte(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsShort(String name) {
         return delegate.containsShort(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsInt(String name) {
         return delegate.containsInt(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsDouble(String name) {
         return delegate.containsDouble(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containsFloat(String name) {
         return delegate.containsFloat(name);
     }
@@ -175,36 +235,64 @@ public class CompoundTagView extends CompoundTag {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte getByte(String name) {
         return delegate.getByte(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public short getShort(String name) {
         return delegate.getShort(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getInt(String name) {
         return delegate.getInt(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getLong(String name) {
         return delegate.getLong(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getFloat(String name) {
         return delegate.getFloat(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getDouble(String name) {
         return delegate.getDouble(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getString(String name) {
         return delegate.getString(name);
     }
@@ -245,27 +333,47 @@ public class CompoundTagView extends CompoundTag {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean getBoolean(String name) {
         return delegate.getBoolean(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return delegate.toString();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT() {
         return delegate.toSNBT();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT(int space) {
         return delegate.toSNBT(space);
     }
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isEmpty() {
         return delegate.isEmpty();
     }
@@ -276,16 +384,28 @@ public class CompoundTagView extends CompoundTag {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         return delegate.equals(obj);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return delegate.hashCode();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean exist(String name) {
         return delegate.exist(name);
     }

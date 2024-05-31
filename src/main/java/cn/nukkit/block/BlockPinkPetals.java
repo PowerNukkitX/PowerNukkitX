@@ -20,12 +20,20 @@ import static cn.nukkit.block.property.CommonBlockProperties.*;
  */
 public class BlockPinkPetals extends BlockFlowable {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(PINK_PETALS,
+    public static final BlockProperties $1 = new BlockProperties(PINK_PETALS,
             GROWTH, MINECRAFT_CARDINAL_DIRECTION);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPinkPetals() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPinkPetals(BlockState blockState) {
         super(blockState);
@@ -37,11 +45,19 @@ public class BlockPinkPetals extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Pink Petals";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (!isSupportValid(block.down())) {
             return false;
@@ -54,6 +70,10 @@ public class BlockPinkPetals extends BlockFlowable {
         return this.getLevel().setBlock(this, this);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static boolean isSupportValid(Block block) {
         return switch (block.getId()) {
             case GRASS_BLOCK, DIRT, FARMLAND, PODZOL, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
@@ -62,11 +82,19 @@ public class BlockPinkPetals extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
             if (getPropertyValue(GROWTH) < 3) {

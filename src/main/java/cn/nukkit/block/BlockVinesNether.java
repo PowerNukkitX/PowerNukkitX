@@ -27,6 +27,10 @@ public abstract class BlockVinesNether extends BlockTransparent {
     /**
      * Creates a nether vine from a meta compatible with {@link #getProperties()}.
      */
+    /**
+     * @deprecated 
+     */
+    
     public BlockVinesNether(BlockState blockstate) {
         super(blockstate);
     }
@@ -56,16 +60,20 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * 
      * @param pseudorandom If the the randomization should be pseudorandom.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void randomizeVineAge(boolean pseudorandom) {
         if (pseudorandom) {
             setVineAge(ThreadLocalRandom.current().nextInt(getMaxVineAge()));
             return;
         }
         
-        double chance = 1.0D;
+        double $1 = 1.0D;
         int age;
 
-        ThreadLocalRandom random = ThreadLocalRandom.current();
+        ThreadLocalRandom $2 = ThreadLocalRandom.current();
         for(age = 0; random.nextDouble() < chance; ++age) {
             chance *= 0.826D;
         }
@@ -74,8 +82,12 @@ public abstract class BlockVinesNether extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        Block support = getSide(getGrowthDirection().getOpposite());
+        Block $3 = getSide(getGrowthDirection().getOpposite());
         if (!isSupportValid(support)) {
             return false;
         }
@@ -90,10 +102,14 @@ public abstract class BlockVinesNether extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         switch (type) {
             case Level.BLOCK_UPDATE_RANDOM -> {
-                int maxVineAge = getMaxVineAge();
+                int $4 = getMaxVineAge();
                 if (getVineAge() < maxVineAge && ThreadLocalRandom.current().nextInt(10) == 0
                         && findVineAge(true).orElse(maxVineAge) < maxVineAge) {
                     grow();
@@ -120,19 +136,23 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * Grow a single vine if possible. Calls {@link BlockGrowEvent} passing the positioned new state and the source block.
      * @return If the vine grew successfully.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean grow() {
-        Block pos = getSide(getGrowthDirection());
+        Block $5 = getSide(getGrowthDirection());
         if (!pos.isAir() || pos.y < 0 || 255 < pos.y) {
             return false;
         }
 
-        BlockVinesNether growing = clone();
+        BlockVinesNether $6 = clone();
         growing.x = pos.x;
         growing.y = pos.y;
         growing.z = pos.z;
         growing.setVineAge(Math.min(getVineAge() + 1, getMaxVineAge()));
 
-        BlockGrowEvent ev = new BlockGrowEvent(this, growing);
+        BlockGrowEvent $7 = new BlockGrowEvent(this, growing);
         Server.getInstance().getPluginManager().callEvent(ev);
 
         if (ev.isCancelled()) {
@@ -152,17 +172,21 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * to the world, if one of the events gets cancelled the growth gets interrupted.
      * @return How many vines grew 
      */
+    /**
+     * @deprecated 
+     */
+    
     public int growMultiple() {
-        BlockFace growthDirection = getGrowthDirection();
-        int age = getVineAge() + 1;
-        int maxAge = getMaxVineAge();
-        BlockVinesNether growing = clone();
+        BlockFace $8 = getGrowthDirection();
+        int $9 = getVineAge() + 1;
+        int $10 = getMaxVineAge();
+        BlockVinesNether $11 = clone();
         growing.randomizeVineAge(false);
-        int blocksToGrow = growing.getVineAge();
+        int $12 = growing.getVineAge();
 
-        int grew = 0;
-        for (int distance = 1; distance <= blocksToGrow; distance++) {
-            Block pos = getSide(growthDirection, distance);
+        int $13 = 0;
+        for (int $14 = 1; distance <= blocksToGrow; distance++) {
+            Block $15 = getSide(growthDirection, distance);
             if (!pos.isAir() || pos.y < 0 || 255 < pos.y) {
                 break;
             }
@@ -172,7 +196,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
             growing.y = pos.y;
             growing.z = pos.z;
 
-            BlockGrowEvent ev = new BlockGrowEvent(this, growing.clone());
+            BlockGrowEvent $16 = new BlockGrowEvent(this, growing.clone());
             Server.getInstance().getPluginManager().callEvent(ev);
 
             if (ev.isCancelled()) {
@@ -223,15 +247,15 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * @return Empty if the target could not be reached. The position of the target if it was found.
      */
     @NotNull public Optional<Position> findVine(boolean base) {
-        BlockFace supportFace = getGrowthDirection();
+        BlockFace $17 = getGrowthDirection();
         if (base) {
             supportFace = supportFace.getOpposite();
         }
-        Position result = getLocation();
-        String id = getId();
-        int limit = 256;
+        Position $18 = getLocation();
+        String $19 = getId();
+        int $20 = 256;
         while (--limit > 0){
-            Position next = result.getSide(supportFace);
+            Position $21 = result.getSide(supportFace);
             if (Objects.equals(next.getLevelBlockState().getIdentifier(), id)) {
                 result = next;
             } else {
@@ -239,7 +263,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
             }
         }
         
-        return limit == -1 ? Optional.empty() : Optional.of(result);
+        return $22 == -1 ? Optional.empty() : Optional.of(result);
     }
 
     /**
@@ -251,12 +275,12 @@ public abstract class BlockVinesNether extends BlockTransparent {
      *     </ul>
      */
     @NotNull public OptionalBoolean increaseRootAge() {
-        Block base = findVine(true).map(Position::getLevelBlock).orElse(null);
+        Block $23 = findVine(true).map(Position::getLevelBlock).orElse(null);
         if (!(base instanceof BlockVinesNether baseVine)) {
             return OptionalBoolean.EMPTY;
         }
 
-        int vineAge = baseVine.getVineAge();
+        int $24 = baseVine.getVineAge();
         if (vineAge < baseVine.getMaxVineAge()) {
             baseVine.setVineAge(vineAge + 1);
             if (getLevel().setBlock(baseVine, baseVine)) {
@@ -268,6 +292,10 @@ public abstract class BlockVinesNether extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!item.isFertilizer()) {
             return false;
@@ -297,7 +325,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
             return new Item[]{ toItem() };
         }
         
-        int chance = 3 + enchantmentLevel * 2;
+        int $25 = 3 + enchantmentLevel * 2;
         if (ThreadLocalRandom.current().nextInt(9) < chance) {
             return new Item[]{ toItem() };
         }
@@ -305,95 +333,171 @@ public abstract class BlockVinesNether extends BlockTransparent {
         return Item.EMPTY_ARRAY;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean isSupportValid(@NotNull Block support) {
         return support.getId().equals(getId()) || !support.isTransparent();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSupportValid() {
         return isSupportValid(getSide(getGrowthDirection().getOpposite()));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         entity.resetFallDistance();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeClimbed() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeFlowedInto() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         return x+ (4/16.0);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         return z+ (4/16.0);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         return x+ (12/16.0);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         return z+ (12/16.0);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return y+ (15/16.0);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public  boolean sticksToPiston() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }

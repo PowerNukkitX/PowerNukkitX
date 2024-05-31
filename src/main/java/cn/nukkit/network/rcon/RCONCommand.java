@@ -11,6 +11,10 @@ public class RCONCommand {
     private final SocketChannel sender;
     private final int id;
     private final String command;
+    /**
+     * @deprecated 
+     */
+    
 
     public RCONCommand(SocketChannel sender, int id, String command) {
         this.sender = sender;
@@ -21,10 +25,18 @@ public class RCONCommand {
     public SocketChannel getSender() {
         return this.sender;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getId() {
         return this.id;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getCommand() {
         return this.command;

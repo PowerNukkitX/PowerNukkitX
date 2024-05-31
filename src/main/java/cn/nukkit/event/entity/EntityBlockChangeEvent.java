@@ -9,7 +9,7 @@ import cn.nukkit.event.HandlerList;
  * @since 15-10-26
  */
 public class EntityBlockChangeEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -17,6 +17,10 @@ public class EntityBlockChangeEvent extends EntityEvent implements Cancellable {
 
     private final Block from;
     private final Block to;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityBlockChangeEvent(Entity entity, Block from, Block to) {
         this.entity = entity;

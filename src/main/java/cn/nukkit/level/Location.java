@@ -11,42 +11,82 @@ public class Location extends Position {
     public double yaw;
     public double pitch;
     public double headYaw;
+    /**
+     * @deprecated 
+     */
+    
 
     public Location() {
         this(0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Location(double x) {
         this(x, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Location(double x, double y) {
         this(x, y, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Location(double x, double y, double z) {
         this(x, y, z, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Location(double x, double y, double z, Level level) {
         this(x, y, z, 0, 0, level);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Location(double x, double y, double z, double yaw) {
         this(x, y, z, yaw, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Location(double x, double y, double z, double yaw, double pitch) {
         this(x, y, z, yaw, pitch, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Location(double x, double y, double z, double yaw, double pitch, Level level) {
         this(x, y, z, yaw, pitch, 0, level);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Location(double x, double y, double z, double yaw, double pitch, double headYaw) {
         this(x, y, z, yaw, pitch, headYaw, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Location(double x, double y, double z, double yaw, double pitch, double headYaw, Level level) {
         this.x = x;
@@ -80,6 +120,10 @@ public class Location extends Position {
         }
         return new Location(pos.x, pos.y, pos.z, yaw, pitch, headYaw, level);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getYaw() {
         return this.yaw;
@@ -89,6 +133,10 @@ public class Location extends Position {
         this.yaw = yaw;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getPitch() {
         return this.pitch;
@@ -98,6 +146,10 @@ public class Location extends Position {
         this.pitch = pitch;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getHeadYaw() {
         return this.headYaw;
@@ -127,6 +179,10 @@ public class Location extends Position {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "Location (level=" + (this.isValid() ? this.getLevel().getName() : "null") + ", x=" + this.x + ", y=" + this.y + ", z=" + this.z + ", yaw=" + this.yaw + ", pitch=" + this.pitch + ", headYaw=" + this.headYaw + ")";
     }
@@ -208,11 +264,11 @@ public class Location extends Position {
     }
 
     public Vector3 getDirectionVector() {
-        double pitch = ((getPitch() + 90) * Math.PI) / 180;
-        double yaw = ((getYaw() + 90) * Math.PI) / 180;
-        double x = Math.sin(pitch) * Math.cos(yaw);
-        double z = Math.sin(pitch) * Math.sin(yaw);
-        double y = Math.cos(pitch);
+        double $1 = ((getPitch() + 90) * Math.PI) / 180;
+        double $2 = ((getYaw() + 90) * Math.PI) / 180;
+        double $3 = Math.sin(pitch) * Math.cos(yaw);
+        double $4 = Math.sin(pitch) * Math.sin(yaw);
+        double $5 = Math.cos(pitch);
         return new Vector3(x, y, z).normalize();
     }
 

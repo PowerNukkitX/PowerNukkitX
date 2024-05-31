@@ -13,12 +13,20 @@ import java.util.Map;
  */
 public class BlockMetadataStore extends MetadataStore {
     private final Level owningLevel;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMetadataStore(Level owningLevel) {
         this.owningLevel = owningLevel;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected String disambiguate(Metadatable block, String metadataKey) {
         if (!(block instanceof Block b)) {
             throw new IllegalArgumentException("Argument must be a Block instance");
@@ -51,6 +59,10 @@ public class BlockMetadataStore extends MetadataStore {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasMetadata(Metadatable block, String metadataKey) {
         if (!(block instanceof Block b)) {
             throw new IllegalArgumentException("Object must be a Block");
@@ -63,6 +75,10 @@ public class BlockMetadataStore extends MetadataStore {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasMetadata(Metadatable block, String metadataKey, Plugin plugin) {
         if (!(block instanceof Block b)) {
             throw new IllegalArgumentException("Object must be a Block");
@@ -75,6 +91,10 @@ public class BlockMetadataStore extends MetadataStore {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeMetadata(Metadatable block, String metadataKey, Plugin owningPlugin) {
         if (!(block instanceof Block b)) {
             throw new IllegalArgumentException("Object must be a Block");
@@ -87,6 +107,10 @@ public class BlockMetadataStore extends MetadataStore {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setMetadata(Metadatable block, String metadataKey, MetadataValue newMetadataValue) {
         if (!(block instanceof Block b)) {
             throw new IllegalArgumentException("Object must be a Block");

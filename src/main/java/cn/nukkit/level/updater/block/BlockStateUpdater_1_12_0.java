@@ -8,9 +8,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BlockStateUpdater_1_12_0 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_12_0();
+    public static final Updater $1 = new BlockStateUpdater_1_12_0();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext context) {
         context.addUpdater(1, 12, 0)
                 .match("name", "minecraft:coral_fan")

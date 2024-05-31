@@ -1259,6 +1259,10 @@ public enum Sound {
     Sound(String sound) {
         this.sound = sound;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getSound() {
         return this.sound;

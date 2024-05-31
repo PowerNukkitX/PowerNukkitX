@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AnimateEntityPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ANIMATE_ENTITY_PACKET;
+    public static final int $1 = ProtocolInfo.ANIMATE_ENTITY_PACKET;
 
     public String animation;
     public String nextState;
@@ -27,6 +27,10 @@ public class AnimateEntityPacket extends DataPacket {
     public List<Long> entityRuntimeIds = new ArrayList<>();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.animation = byteBuf.readString();
         this.nextState = byteBuf.readString();
@@ -34,12 +38,16 @@ public class AnimateEntityPacket extends DataPacket {
         this.stopExpressionVersion = byteBuf.readInt();
         this.controller = byteBuf.readString();
         this.blendOutTime = byteBuf.readFloatLE();
-        for (int i = 0, len = (int) byteBuf.readUnsignedVarInt(); i < len; i++) {
+        for ($2nt $1 = 0, len = (int) byteBuf.readUnsignedVarInt(); i < len; i++) {
             this.entityRuntimeIds.add(byteBuf.readEntityRuntimeId());
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeString(this.animation);
@@ -55,6 +63,10 @@ public class AnimateEntityPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -62,6 +74,10 @@ public class AnimateEntityPacket extends DataPacket {
     /**
      * 从 {@link Animation} 对象中解析数据并写入到包
      */
+    /**
+     * @deprecated 
+     */
+    
     public void parseFromAnimation(Animation ani) {
         this.animation = ani.animation;
         this.nextState = ani.nextState;
@@ -77,24 +93,28 @@ public class AnimateEntityPacket extends DataPacket {
      */
     @Builder
     public static class Animation {
-        public static final float DEFAULT_BLEND_OUT_TIME = 0.0f;
-        public static final String DEFAULT_STOP_EXPRESSION = "query.any_animation_finished";
-        public static final String DEFAULT_CONTROLLER = "__runtime_controller";
-        public static final String DEFAULT_NEXT_STATE = "default";
-        public static final int DEFAULT_STOP_EXPRESSION_VERSION = 16777216;
+        public static final float $3 = 0.0f;
+        public static final String $4 = "query.any_animation_finished";
+        public static final String $5 = "__runtime_controller";
+        public static final String $6 = "default";
+        public static final int $7 = 16777216;
 
         private String animation;
         @Builder.Default
-        private String nextState = DEFAULT_NEXT_STATE;
+        private String $8 = DEFAULT_NEXT_STATE;
         @Builder.Default
-        private float blendOutTime = DEFAULT_BLEND_OUT_TIME;
+        private float $9 = DEFAULT_BLEND_OUT_TIME;
         @Builder.Default
-        private String stopExpression = DEFAULT_STOP_EXPRESSION;
+        private String $10 = DEFAULT_STOP_EXPRESSION;
         @Builder.Default
-        private String controller = DEFAULT_CONTROLLER;
+        private String $11 = DEFAULT_CONTROLLER;
         @Builder.Default
-        private int stopExpressionVersion = DEFAULT_STOP_EXPRESSION_VERSION;
+        private int $12 = DEFAULT_STOP_EXPRESSION_VERSION;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

@@ -24,30 +24,54 @@ package cn.nukkit.item;
  */
 
 public class ItemWarpedFungusOnAStick extends ItemTool {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemWarpedFungusOnAStick() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemWarpedFungusOnAStick(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemWarpedFungusOnAStick(Integer meta, int count) {
         super(WARPED_FUNGUS_ON_A_STICK, meta, count, "Warped Fungus on a Stick");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxStackSize() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxDurability() {
         return ItemTool.DURABILITY_WARPED_FUNGUS_ON_A_STICK;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean noDamageOnBreak() {
         return true;
     }

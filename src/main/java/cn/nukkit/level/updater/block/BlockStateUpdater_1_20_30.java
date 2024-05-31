@@ -8,7 +8,7 @@ import static cn.nukkit.level.updater.util.OrderedUpdater.*;
 
 public class BlockStateUpdater_1_20_30 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_20_30();
+    public static final Updater $1 = new BlockStateUpdater_1_20_30();
 
     public static final String[] COLORS = {
             "magenta",
@@ -30,6 +30,10 @@ public class BlockStateUpdater_1_20_30 implements Updater {
     };
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext ctx) {
         for (String color : COLORS) {
             if (color.equals("silver")) {
@@ -92,6 +96,10 @@ public class BlockStateUpdater_1_20_30 implements Updater {
         // TODO: Mojang added 51 updaters, I managed to do the same with less. Maybe I missed something? Need to check later.
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addColorUpdater(CompoundTagUpdaterContext context, String identifier, String color, String newIdentifier) {
         context.addUpdater(1, 20, 30)
                 .match("name", identifier)
@@ -101,12 +109,16 @@ public class BlockStateUpdater_1_20_30 implements Updater {
                 .remove("color");
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addDirectionUpdater(CompoundTagUpdaterContext ctx, String identifier, OrderedUpdater updater) {
         ctx.addUpdater(1, 20, 30)
                 .match("name", identifier)
                 .visit("states")
                 .edit(updater.getOldProperty(), helper -> {
-                    int value = (int) helper.getTag();
+                    int $2 = (int) helper.getTag();
                     helper.replaceWith(updater.getNewProperty(), updater.translate(value));
                 });
     }

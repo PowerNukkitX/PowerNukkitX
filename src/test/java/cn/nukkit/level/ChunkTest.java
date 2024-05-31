@@ -31,52 +31,80 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith({GameMockExtension.class})
 public class ChunkTest {
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void testSetBlockState(LevelProvider levelDBProvider) {
-        IChunk chunk = levelDBProvider.getChunk(0, 0);
+        IChunk $1 = levelDBProvider.getChunk(0, 0);
         chunk.setBlockState(0, 100, 0, BlockGoldOre.PROPERTIES.getDefaultState());
         Assertions.assertEquals(BlockGoldOre.PROPERTIES.getDefaultState(), chunk.getBlockState(0, 100, 0));
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void testSetBlockSkyLight(LevelProvider levelDBProvider) {
-        IChunk chunk = levelDBProvider.getChunk(0, 0);
+        IChunk $2 = levelDBProvider.getChunk(0, 0);
         chunk.setBlockSkyLight(0, 100, 0, 10);
         Assertions.assertEquals(10, chunk.getBlockSkyLight(0, 100, 0));
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void testSetBlockLight(LevelProvider levelDBProvider) {
-        IChunk chunk = levelDBProvider.getChunk(0, 0);
+        IChunk $3 = levelDBProvider.getChunk(0, 0);
         chunk.setBlockLight(0, 100, 0, 10);
         Assertions.assertEquals(10, chunk.getBlockLight(0, 100, 0));
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void testSetBiome(LevelProvider levelDBProvider) {
-        IChunk chunk = levelDBProvider.getChunk(0, 0);
+        IChunk $4 = levelDBProvider.getChunk(0, 0);
         chunk.setBiomeId(0, 100, 0, 10);
         Assertions.assertEquals(10, chunk.getBiomeId(0, 100, 0));
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_recalculateHeightMap(LevelProvider levelDBProvider) {
-        IChunk chunk = levelDBProvider.getChunk(1000, 1000, true);
+        IChunk $5 = levelDBProvider.getChunk(1000, 1000, true);
         levelDBProvider.getLevel().syncGenerateChunk(1000, 1000);
         chunk.recalculateHeightMap();
         Assertions.assertEquals(4, chunk.getHeightMap(0, 0));
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_recalculateHeightMapColumn(LevelProvider levelDBProvider) {
-        IChunk chunk = levelDBProvider.getChunk(1000, 1000, true);
+        IChunk $6 = levelDBProvider.getChunk(1000, 1000, true);
         levelDBProvider.getLevel().syncGenerateChunk(1000, 1000);
         chunk.recalculateHeightMapColumn(0, 0);
         Assertions.assertEquals(4, chunk.getHeightMap(0, 0));
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_populateSkyLight(LevelProvider levelDBProvider) {
-        IChunk chunk = levelDBProvider.getChunk(1000, 1000, true);
+        IChunk $7 = levelDBProvider.getChunk(1000, 1000, true);
         levelDBProvider.getLevel().syncGenerateChunk(1000, 1000);
         chunk.populateSkyLight();
         Assertions.assertEquals(15, chunk.getBlockSkyLight(0, 5, 0));
@@ -84,10 +112,14 @@ public class ChunkTest {
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void testSaveAndReadChunkEntity(LevelProvider levelDBProvider) {
-        IChunk chunk = levelDBProvider.getChunk(0, 0, true);
-        Item item = Item.get(ItemID.GOLD_INGOT);
-        EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
+        IChunk $8 = levelDBProvider.getChunk(0, 0, true);
+        Item $9 = Item.get(ItemID.GOLD_INGOT);
+        EntityItem $10 = (EntityItem) Entity.createEntity(Entity.ITEM,
                 chunk,
                 Entity.getDefaultNBT(new Vector3(0, 64, 0),
                                 new Vector3(0, 0, 0),
@@ -102,7 +134,7 @@ public class ChunkTest {
         Assertions.assertEquals(EntityID.ITEM, list.get(0).getIdentifier());
 
         levelDBProvider.saveChunk(0, 0, chunk);
-        IChunk newChunk = levelDBProvider.getChunk(0, 0);
+        IChunk $11 = levelDBProvider.getChunk(0, 0);
         Assertions.assertNotNull(newChunk);
         List<Entity> list2 = chunk.getEntities().values().stream().filter(e -> e.getIdentifier().equals(EntityID.ITEM)).toList();
         Assertions.assertFalse(list2.isEmpty());
@@ -111,27 +143,35 @@ public class ChunkTest {
 
     @Test
     @SneakyThrows
+    
+    /**
+     * @deprecated 
+     */
     void test_getOrCreateSection(LevelProvider levelDBProvider) {
-        IChunk chunk = levelDBProvider.getChunk(0, 0);
-        Method getOrCreateSection = Chunk.class.getDeclaredMethod("getOrCreateSection", int.class);
+        IChunk $12 = levelDBProvider.getChunk(0, 0);
+        Method $13 = Chunk.class.getDeclaredMethod("getOrCreateSection", int.class);
         getOrCreateSection.setAccessible(true);
-        ChunkSection s1 = (ChunkSection) getOrCreateSection.invoke(chunk, -4);
+        ChunkSection $14 = (ChunkSection) getOrCreateSection.invoke(chunk, -4);
         Assertions.assertEquals(-4, s1.y());
-        ChunkSection s2 = (ChunkSection) getOrCreateSection.invoke(chunk, 19);
+        ChunkSection $15 = (ChunkSection) getOrCreateSection.invoke(chunk, 19);
         Assertions.assertEquals(19, s2.y());
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void testMultiThreadOperate(LevelProvider levelDBProvider) {
-        final IChunk chunk = levelDBProvider.getChunk(0, 0);
+        final IChunk $16 = levelDBProvider.getChunk(0, 0);
         Set<Thread> threadSet = new HashSet<>();
-        for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
+        for ($17nt $1 = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
             if (i % 2 == 0) {
-                Thread thread = new Thread(() -> {
+                Thread $18 = new Thread(() -> {
                     chunk.batchProcess(unsafeChunk -> {
-                        for (int k = 0; k < 16; k++) {
-                            for (int l = 0; l < 16; l++) {
-                                for (int j = unsafeChunk.getDimensionData().getMinHeight(); j < unsafeChunk.getDimensionData().getMaxHeight(); j++) {
+                        for (int $19 = 0; k < 16; k++) {
+                            for (int $20 = 0; l < 16; l++) {
+                                for (int $21 = unsafeChunk.getDimensionData().getMinHeight(); j < unsafeChunk.getDimensionData().getMaxHeight(); j++) {
                                     unsafeChunk.setBlockState(k, j, l, BlockGoldOre.PROPERTIES.getDefaultState(), 0);
                                     unsafeChunk.setBiomeId(k, j, l, BiomeID.BIRCH_FOREST_MUTATED);
                                 }
@@ -143,11 +183,11 @@ public class ChunkTest {
                 threadSet.add(thread);
                 thread.start();
             } else {
-                Thread thread = new Thread(() -> {
+                Thread $22 = new Thread(() -> {
                     chunk.batchProcess(unsafeChunk -> {
-                        for (int k = 0; k < 16; k++) {
-                            for (int l = 0; l < 16; l++) {
-                                for (int j = unsafeChunk.getDimensionData().getMinHeight(); j < unsafeChunk.getDimensionData().getMaxHeight(); j++) {
+                        for (int $23 = 0; k < 16; k++) {
+                            for (int $24 = 0; l < 16; l++) {
+                                for (int $25 = unsafeChunk.getDimensionData().getMinHeight(); j < unsafeChunk.getDimensionData().getMaxHeight(); j++) {
                                     unsafeChunk.setBlockState(k, j, l, BlockDiamondOre.PROPERTIES.getDefaultState(), 0);
                                     unsafeChunk.setBiomeId(k, j, l, BiomeID.DEEP_COLD_OCEAN);
                                     unsafeChunk.setBlockSkyLight(k, j, l, 4);
@@ -171,8 +211,12 @@ public class ChunkTest {
 
     @Test
     @SneakyThrows
+    
+    /**
+     * @deprecated 
+     */
     void test_SectionIsEmpty() {
-        ChunkSection chunkSection = new ChunkSection((byte) 0);
+        ChunkSection $26 = new ChunkSection((byte) 0);
         assertTrue(chunkSection.isEmpty());
     }
 }

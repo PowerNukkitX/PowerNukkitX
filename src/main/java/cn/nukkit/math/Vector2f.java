@@ -6,31 +6,59 @@ package cn.nukkit.math;
 public class Vector2f {
     public final float x;
     public final float y;
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector2f() {
         this(0, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector2f(float x) {
         this(x, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector2f(float x, float y) {
         this.x = x;
         this.y = y;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getX() {
         return this.x;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getY() {
         return this.y;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFloorX() {
         return NukkitMath.floorFloat(this.x);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFloorY() {
         return NukkitMath.floorFloat(this.y);
@@ -83,52 +111,92 @@ public class Vector2f {
     public Vector2f divide(float number) {
         return new Vector2f(this.x / number, this.y / number);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distance(float x) {
         return this.distance(x, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distance(float x, float y) {
         return Math.sqrt(this.distanceSquared(x, y));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distance(Vector2f vector) {
         return Math.sqrt(this.distanceSquared(vector.getX(), vector.getY()));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(float x) {
         return this.distanceSquared(x, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(float x, float y) {
         return Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(Vector2f vector) {
         return this.distanceSquared(vector.getX(), vector.getY());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double length() {
         return Math.sqrt(this.lengthSquared());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float lengthSquared() {
         return this.x * this.x + this.y * this.y;
     }
 
     public Vector2f normalize() {
-        float len = this.lengthSquared();
+        float $1 = this.lengthSquared();
         if (len != 0) {
             return this.divide((float) Math.sqrt(len));
         }
         return new Vector2f(0, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float dot(Vector2f v) {
         return this.x * v.x + this.y * v.y;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "Vector2(x=" + this.x + ",y=" + this.y + ")";
     }

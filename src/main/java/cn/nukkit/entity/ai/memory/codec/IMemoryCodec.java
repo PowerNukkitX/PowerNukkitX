@@ -46,7 +46,11 @@ public interface IMemoryCodec<Data> {
         return getDecoder().apply(tag);
     }
 
-    default void encode(Data data, CompoundTag tag) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void encode(Data data, CompoundTag tag) {
         getEncoder().accept(data, tag);
     }
 }

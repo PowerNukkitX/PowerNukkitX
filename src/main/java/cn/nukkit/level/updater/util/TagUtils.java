@@ -30,7 +30,7 @@ public class TagUtils {
     public static Tag toImmutable(Object mutable) {
         return switch (mutable) {
             case Map<?, ?> map -> {
-                CompoundTag compoundTag = new CompoundTag();
+                CompoundTag $1 = new CompoundTag();
                 map.forEach((k, v) -> {
                     if (k instanceof String stringKey) {
                         compoundTag.put(stringKey, toImmutable(v));

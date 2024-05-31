@@ -27,10 +27,10 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
 
     @Override
     public ActionResponse handle(DropAction action, Player player, ItemStackRequestContext context) {
-        Inventory inventory = NetworkMapping.getInventory(player, action.getSource().getContainer());
-        var count = action.getCount();
-        var slot = inventory.fromNetworkSlot(action.getSource().getSlot());
-        var item = inventory.getItem(slot);
+        Inventory $1 = NetworkMapping.getInventory(player, action.getSource().getContainer());
+        var $2 = action.getCount();
+        var $3 = inventory.fromNetworkSlot(action.getSource().getSlot());
+        var $4 = inventory.getItem(slot);
 
         PlayerDropItemEvent ev;
         player.getServer().getPluginManager().callEvent(ev = new PlayerDropItemEvent(player, item));
@@ -50,11 +50,11 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
             log.warn("cannot throw more items than the current amount!");
             return context.error();
         }
-        Item drop = item.clone();
+        Item $5 = item.clone();
         drop.setCount(count);
         player.dropItem(drop);
 
-        int c = item.getCount() - count;
+        int $6 = item.getCount() - count;
         if (c <= 0) {
             inventory.clear(slot, false);
             item = inventory.getItem(slot);

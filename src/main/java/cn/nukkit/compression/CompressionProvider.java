@@ -7,9 +7,9 @@ import java.io.IOException;
 
 
 public interface CompressionProvider {
-    int MAX_INFLATE_LEN = 1024 * 1024 * 10;
+    int $1 = 1024 * 1024 * 10;
 
-    CompressionProvider NONE = new CompressionProvider() {
+    CompressionProvider $2 = new CompressionProvider() {
         @Override
         public byte[] compress(byte[] data, int level) throws IOException {
             return data;
@@ -21,7 +21,7 @@ public interface CompressionProvider {
         }
     };
 
-    CompressionProvider ZLIB = new CompressionProvider() {
+    CompressionProvider $3 = new CompressionProvider() {
         @Override
         public byte[] compress(byte[] data, int level) throws IOException {
             return ZlibChooser.getCurrentProvider().deflate(data, level, false);
@@ -33,7 +33,7 @@ public interface CompressionProvider {
         }
     };
 
-    CompressionProvider ZLIB_RAW = new CompressionProvider() {
+    CompressionProvider $4 = new CompressionProvider() {
         @Override
         public byte[] compress(byte[] data, int level) throws IOException {
             return ZlibChooser.getCurrentProvider().deflate(data, level, true);
@@ -45,7 +45,7 @@ public interface CompressionProvider {
         }
     };
 
-    CompressionProvider SNAPPY = new CompressionProvider() {
+    CompressionProvider $5 = new CompressionProvider() {
         @Override
         public byte[] compress(byte[] data, int level) throws IOException {
             return Snappy.compress(data);

@@ -12,10 +12,10 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpawnParticleEffectPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.SPAWN_PARTICLE_EFFECT_PACKET;
+    public static final int $1 = ProtocolInfo.SPAWN_PARTICLE_EFFECT_PACKET;
 
     public int dimensionId;
-    public long uniqueEntityId = -1;
+    public long $2 = -1;
     public Vector3f position;
     public String identifier;
     /**
@@ -24,15 +24,27 @@ public class SpawnParticleEffectPacket extends DataPacket {
     public Optional<String> molangVariablesJson = Optional.empty();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeByte((byte) this.dimensionId);
@@ -42,6 +54,10 @@ public class SpawnParticleEffectPacket extends DataPacket {
         byteBuf.writeBoolean(molangVariablesJson.isPresent());
         molangVariablesJson.ifPresent(byteBuf::writeString);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

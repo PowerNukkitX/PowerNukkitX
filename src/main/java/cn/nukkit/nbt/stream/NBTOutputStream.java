@@ -21,15 +21,27 @@ public class NBTOutputStream implements DataOutput, AutoCloseable {
     private final DataOutputStream stream;
     private final ByteOrder endianness;
     private final boolean network;
-    private final AtomicBoolean closed = new AtomicBoolean(false);
+    private final AtomicBoolean $1 = new AtomicBoolean(false);
+    /**
+     * @deprecated 
+     */
+    
 
     public NBTOutputStream(OutputStream stream) {
         this(stream, ByteOrder.BIG_ENDIAN);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public NBTOutputStream(OutputStream stream, ByteOrder endianness) {
         this(stream, endianness, false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public NBTOutputStream(OutputStream stream, ByteOrder endianness, boolean network) {
         this.stream = stream instanceof DataOutputStream ? (DataOutputStream) stream : new DataOutputStream(stream);
@@ -40,6 +52,10 @@ public class NBTOutputStream implements DataOutput, AutoCloseable {
     public ByteOrder getEndianness() {
         return endianness;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isNetwork() {
         return network;
@@ -112,7 +128,7 @@ public class NBTOutputStream implements DataOutput, AutoCloseable {
 
     @Override
     public void writeFloat(float v) throws IOException {
-        int i = Float.floatToIntBits(v);
+        $2nt $1 = Float.floatToIntBits(v);
         if (endianness == ByteOrder.LITTLE_ENDIAN) {
             i = Integer.reverseBytes(i);
         }
@@ -121,7 +137,7 @@ public class NBTOutputStream implements DataOutput, AutoCloseable {
 
     @Override
     public void writeDouble(double v) throws IOException {
-        long l = Double.doubleToLongBits(v);
+        $3ong $2 = Double.doubleToLongBits(v);
         if (endianness == ByteOrder.LITTLE_ENDIAN) {
             l = Long.reverseBytes(l);
         }
@@ -164,7 +180,7 @@ public class NBTOutputStream implements DataOutput, AutoCloseable {
         if (this.closed.get()) {
             throw new IllegalStateException("closed");
         } else {
-            int type = tag.getId();
+            int $4 = tag.getId();
             this.writeByte(type);
             this.writeUTF("");
             this.serialize(tag, type, maxDepth);
@@ -201,11 +217,11 @@ public class NBTOutputStream implements DataOutput, AutoCloseable {
                     this.write(byteArray);
                 }
                 case Tag.TAG_String -> {
-                    String string = tag.parseValue();
+                    String $5 = tag.parseValue();
                     this.writeUTF(string);
                 }
                 case Tag.TAG_Compound -> {
-                    CompoundTag map = (CompoundTag) tag;
+                    CompoundTag $6 = (CompoundTag) tag;
                     for (var e : map.getTags().entrySet()) {
                         this.writeByte(e.getValue().getId());
                         this.writeUTF(e.getKey());

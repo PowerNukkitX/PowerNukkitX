@@ -8,11 +8,19 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 
 public class BlockMangroveWallSign extends BlockWallSign {
-    public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_WALL_SIGN, FACING_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(MANGROVE_WALL_SIGN, FACING_DIRECTION);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMangroveWallSign() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMangroveWallSign(BlockState blockState) {
         super(blockState);
@@ -24,16 +32,28 @@ public class BlockMangroveWallSign extends BlockWallSign {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getWallSignId() {
         return MANGROVE_WALL_SIGN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getStandingSignId() {
         return MANGROVE_STANDING_SIGN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Mangrove Wall Sign";
     }

@@ -8,11 +8,15 @@ import cn.nukkit.event.HandlerList;
  */
 public class BlockFormEvent extends BlockGrowEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockFormEvent(Block block, Block newState) {
         super(block, newState);

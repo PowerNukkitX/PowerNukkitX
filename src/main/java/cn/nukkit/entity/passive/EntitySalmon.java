@@ -11,9 +11,17 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntitySalmon extends EntityFish {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return SALMON;
     }
+    /**
+     * @deprecated 
+     */
+    
     
 
     public EntitySalmon(IChunk chunk, CompoundTag nbt) {
@@ -24,11 +32,19 @@ public class EntitySalmon extends EntityFish {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Salmon";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.25f;
@@ -39,6 +55,10 @@ public class EntitySalmon extends EntityFish {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.isBaby()) {
             return 0.25f;
@@ -49,6 +69,10 @@ public class EntitySalmon extends EntityFish {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(3);
         super.initEntity();
@@ -56,7 +80,7 @@ public class EntitySalmon extends EntityFish {
 
     @Override
     public Item[] getDrops() {
-        int rand = Utils.rand(0, 3);
+        int $1 = Utils.rand(0, 3);
         if (this.isLarge()) {
             //只有25%获得骨头 来自wiki https://zh.minecraft.wiki/w/%E9%B2%91%E9%B1%BC
             if (rand == 1) {
@@ -72,6 +96,10 @@ public class EntitySalmon extends EntityFish {
     }
 
     //巨型体系
+    /**
+     * @deprecated 
+     */
+    
     public boolean isLarge() {
         return this.namedTag.getBoolean("isLarge");
     }

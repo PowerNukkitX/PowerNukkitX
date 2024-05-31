@@ -28,7 +28,11 @@ public interface EnergyHolder {
      * @param face       The face the energy is coming from.
      * @return If this energy holder can accept inout from the given face, usually used by blocks.
      */
-    default boolean canAcceptInput(EnergyType energyType, BlockFace face) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean canAcceptInput(EnergyType energyType, BlockFace face) {
         return canAcceptInput(energyType);
     }
 
@@ -43,7 +47,11 @@ public interface EnergyHolder {
      * @param face       The face the energy is going to.
      * @return If this energy holder can provide output to the given face, usually used by blocks.
      */
-    default boolean canProvideOutput(EnergyType energyType, BlockFace face) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean canProvideOutput(EnergyType energyType, BlockFace face) {
         return canProvideOutput(energyType);
     }
 

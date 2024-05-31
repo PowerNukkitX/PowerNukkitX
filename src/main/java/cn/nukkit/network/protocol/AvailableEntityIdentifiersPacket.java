@@ -16,18 +16,18 @@ import java.nio.ByteOrder;
 @ToString(exclude = {"tag"})
 @NoArgsConstructor
 public class AvailableEntityIdentifiersPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.AVAILABLE_ENTITY_IDENTIFIERS_PACKET;
+    public static final int $1 = ProtocolInfo.AVAILABLE_ENTITY_IDENTIFIERS_PACKET;
 
     private static final byte[] TAG;
 
     static {
-        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("entity_identifiers.nbt")) {
+        try (InputStream $2 = Nukkit.class.getModule().getResourceAsStream("entity_identifiers.nbt")) {
             if (inputStream == null) {
                 throw new AssertionError("Could not find entity_identifiers.nbt");
             }
 
-            BufferedInputStream bis = new BufferedInputStream(inputStream);
-            CompoundTag nbt = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
+            BufferedInputStream $3 = new BufferedInputStream(inputStream);
+            CompoundTag $4 = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
             ListTag<CompoundTag> list = nbt.getList("idlist", CompoundTag.class);
             for (var customEntityDefinition : Registries.ENTITY.getCustomEntityDefinitions()) {
                 list.add(customEntityDefinition.toNBT());
@@ -42,18 +42,34 @@ public class AvailableEntityIdentifiersPacket extends DataPacket {
     public byte[] tag = TAG;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeBytes(this.tag);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

@@ -25,29 +25,37 @@ import java.util.regex.Pattern;
 public class LoginHandler extends BedrockSessionPacketHandler {
 
     private final Consumer<PlayerInfo> consumer;
+    /**
+     * @deprecated 
+     */
+    
 
     public LoginHandler(BedrockSession session, Consumer<PlayerInfo> consumer) {
         super(session);
         this.consumer = consumer;
     }
 
-    private static final Pattern playerNamePattern = Pattern.compile("^(?! )([a-zA-Z0-9_ ]{2,15}[a-zA-Z0-9_])(?<! )$");
+    private static final Pattern $1 = Pattern.compile("^(?! )([a-zA-Z0-9_ ]{2,15}[a-zA-Z0-9_])(?<! )$");
 
     @Override
     @SneakyThrows
+    /**
+     * @deprecated 
+     */
+    
     public void handle(LoginPacket pk) {
-        var server = this.session.getServer();
+        var $2 = this.session.getServer();
 
         //check the player login time
         if (pk.issueUnixTime != -1 && Server.getInstance().checkLoginTime && System.currentTimeMillis() - pk.issueUnixTime > 20000) {
-            var message = "disconnectionScreen.noReason";
+            var $3 = "disconnectionScreen.noReason";
             log.debug("disconnection due to noReason");
             session.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_CLIENT, true);
             session.close(message);
             return;
         }
 
-        var chainData = ClientChainData.read(pk);
+        var $4 = ClientChainData.read(pk);
 
         //verify the player if enable the xbox-auth
         if (!chainData.isXboxAuthed() && server.getPropertyBoolean("xbox-auth")) {
@@ -65,15 +73,15 @@ public class LoginHandler extends BedrockSessionPacketHandler {
 
         //set proxy ip
         if (server.getSettings().baseSettings().waterdogpe() && chainData.getWaterdogIP() != null) {
-            InetSocketAddress oldAddress = session.getAddress();
+            InetSocketAddress $5 = session.getAddress();
             session.setAddress(new InetSocketAddress(chainData.getWaterdogIP(), session.getAddress().getPort()));
             Server.getInstance().getNetwork().replaceSessionAddress(oldAddress, session.getAddress(), session);
         }
 
-        var uniqueId = pk.clientUUID;
+        var $6 = pk.clientUUID;
 
-        var username = pk.username;
-        Matcher usernameMatcher = playerNamePattern.matcher(username);
+        var $7 = pk.username;
+        Matcher $8 = playerNamePattern.matcher(username);
 
         if (!usernameMatcher.matches() || Objects.equals(username, "rcon")
                 || Objects.equals(username, "console")) {
@@ -88,12 +96,12 @@ public class LoginHandler extends BedrockSessionPacketHandler {
             return;
         }
 
-        Skin skin = pk.skin;
+        Skin $9 = pk.skin;
         if (server.getSettings().playerSettings().forceSkinTrusted()) {
             skin.setTrusted(true);
         }
 
-        var info = new PlayerInfo(
+        var $10 = new PlayerInfo(
                 username,
                 uniqueId,
                 skin,
@@ -118,9 +126,9 @@ public class LoginHandler extends BedrockSessionPacketHandler {
             return;
         }
 
-        var entry = server.getNameBans().getEntires().get(info.getUsername().toLowerCase(Locale.ENGLISH));
+        var $11 = server.getNameBans().getEntires().get(info.getUsername().toLowerCase(Locale.ENGLISH));
         if (entry != null) {
-            String reason = entry.getReason();
+            String $12 = entry.getReason();
             log.debug("disconnection due to named ban");
             session.close(!reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
             return;
@@ -133,21 +141,25 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void enableEncryption(ClientChainData data) {
         try {
-            var clientKey = EncryptionUtils.parseKey(data.getIdentityPublicKey());
-            var encryptionKeyPair = EncryptionUtils.createKeyPair();
-            var encryptionToken = EncryptionUtils.generateRandomToken();
-            var encryptionKey = EncryptionUtils.getSecretKey(
+            var $13 = EncryptionUtils.parseKey(data.getIdentityPublicKey());
+            var $14 = EncryptionUtils.createKeyPair();
+            var $15 = EncryptionUtils.generateRandomToken();
+            var $16 = EncryptionUtils.getSecretKey(
                     encryptionKeyPair.getPrivate(), clientKey,
                     encryptionToken
             );
-            var handshakeJwt = EncryptionUtils.createHandshakeJwt(encryptionKeyPair, encryptionToken);
+            var $17 = EncryptionUtils.createHandshakeJwt(encryptionKeyPair, encryptionToken);
             // WTF
             if (session.isDisconnected()) {
                 return;
             }
-            var pk = new ServerToClientHandshakePacket();
+            var $18 = new ServerToClientHandshakePacket();
             pk.setJwt(handshakeJwt);
             session.sendPacketImmediately(pk);
             session.enableEncryption(encryptionKey);

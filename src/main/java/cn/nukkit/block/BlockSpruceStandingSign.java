@@ -6,22 +6,34 @@ import cn.nukkit.item.ItemSpruceSign;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSpruceStandingSign extends BlockStandingSign {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SPRUCE_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(SPRUCE_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSpruceStandingSign() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSpruceStandingSign(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getWallSignId() {
         return BlockSpruceWallSign.PROPERTIES.getIdentifier();
     }

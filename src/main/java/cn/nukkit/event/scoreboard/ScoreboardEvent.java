@@ -12,13 +12,17 @@ import lombok.Getter;
 @Getter
 public abstract class ScoreboardEvent extends Event implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final IScoreboard scoreboard;
+    /**
+     * @deprecated 
+     */
+    
 
     public ScoreboardEvent(IScoreboard scoreboard) {
         this.scoreboard = scoreboard;

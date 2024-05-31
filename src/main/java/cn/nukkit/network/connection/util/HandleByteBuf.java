@@ -75,26 +75,46 @@ public class HandleByteBuf extends ByteBuf {
         return new HandleByteBuf(buf);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected HandleByteBuf(ByteBuf buf) {
         this.buf = ObjectUtil.checkNotNull(buf, "buf");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final boolean hasMemoryAddress() {
         return buf.hasMemoryAddress();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isContiguous() {
         return buf.isContiguous();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final long memoryAddress() {
         return buf.memoryAddress();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final int capacity() {
         return buf.capacity();
     }
@@ -106,6 +126,10 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final int maxCapacity() {
         return buf.maxCapacity();
     }
@@ -136,16 +160,28 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isReadOnly() {
         return buf.isReadOnly();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final boolean isDirect() {
         return buf.isDirect();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final int readerIndex() {
         return buf.readerIndex();
     }
@@ -157,6 +193,10 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final int writerIndex() {
         return buf.writerIndex();
     }
@@ -174,31 +214,55 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final int readableBytes() {
         return buf.readableBytes();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final int writableBytes() {
         return buf.writableBytes();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final int maxWritableBytes() {
         return buf.maxWritableBytes();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int maxFastWritableBytes() {
         return buf.maxFastWritableBytes();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final boolean isReadable() {
         return buf.isReadable();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final boolean isWritable() {
         return buf.isWritable();
     }
@@ -252,106 +316,190 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int ensureWritable(int minWritableBytes, boolean force) {
         return buf.ensureWritable(minWritableBytes, force);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean getBoolean(int index) {
         return buf.getBoolean(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte getByte(int index) {
         return buf.getByte(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public short getUnsignedByte(int index) {
         return buf.getUnsignedByte(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public short getShort(int index) {
         return buf.getShort(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public short getShortLE(int index) {
         return buf.getShortLE(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getUnsignedShort(int index) {
         return buf.getUnsignedShort(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getUnsignedShortLE(int index) {
         return buf.getUnsignedShortLE(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMedium(int index) {
         return buf.getMedium(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMediumLE(int index) {
         return buf.getMediumLE(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getUnsignedMedium(int index) {
         return buf.getUnsignedMedium(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getUnsignedMediumLE(int index) {
         return buf.getUnsignedMediumLE(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getInt(int index) {
         return buf.getInt(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getIntLE(int index) {
         return buf.getIntLE(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getUnsignedInt(int index) {
         return buf.getUnsignedInt(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getUnsignedIntLE(int index) {
         return buf.getUnsignedIntLE(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getLong(int index) {
         return buf.getLong(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getLongLE(int index) {
         return buf.getLongLE(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public char getChar(int index) {
         return buf.getChar(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getFloat(int index) {
         return buf.getFloat(index);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getDouble(int index) {
         return buf.getDouble(index);
     }
@@ -549,106 +697,190 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int setCharSequence(int index, CharSequence sequence, Charset charset) {
         return buf.setCharSequence(index, sequence, charset);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean readBoolean() {
         return buf.readBoolean();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte readByte() {
         return buf.readByte();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public short readUnsignedByte() {
         return buf.readUnsignedByte();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public short readShort() {
         return buf.readShort();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public short readShortLE() {
         return buf.readShortLE();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int readUnsignedShort() {
         return buf.readUnsignedShort();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int readUnsignedShortLE() {
         return buf.readUnsignedShortLE();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int readMedium() {
         return buf.readMedium();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int readMediumLE() {
         return buf.readMediumLE();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int readUnsignedMedium() {
         return buf.readUnsignedMedium();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int readUnsignedMediumLE() {
         return buf.readUnsignedMediumLE();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int readInt() {
         return buf.readInt();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int readIntLE() {
         return buf.readIntLE();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long readUnsignedInt() {
         return buf.readUnsignedInt();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long readUnsignedIntLE() {
         return buf.readUnsignedIntLE();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long readLong() {
         return buf.readLong();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long readLongLE() {
         return buf.readLongLE();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public char readChar() {
         return buf.readChar();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float readFloat() {
         return buf.readFloat();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double readDouble() {
         return buf.readDouble();
     }
@@ -867,9 +1099,17 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int writeCharSequence(CharSequence sequence, Charset charset) {
         return buf.writeCharSequence(sequence, charset);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String readString() {
         byte[] bytes = new byte[this.readUnsignedVarInt()];
@@ -883,16 +1123,24 @@ public class HandleByteBuf extends ByteBuf {
         return buf.writeBytes(bytes);
     }
 
-    public <T> void writeNotNull(T data, Consumer<T> consumer) {
-        boolean present = data != null;
+    public <T> 
+    /**
+     * @deprecated 
+     */
+    void writeNotNull(T data, Consumer<T> consumer) {
+        boolean $1 = data != null;
         writeBoolean(present);
         if (present) {
             consumer.accept(data);
         }
     }
 
-    public <T> void writeOptional(OptionalValue<T> data, Consumer<T> consumer) {
-        boolean present = data.isPresent();
+    public <T> 
+    /**
+     * @deprecated 
+     */
+    void writeOptional(OptionalValue<T> data, Consumer<T> consumer) {
+        boolean $2 = data.isPresent();
         writeBoolean(present);
         if (present) {
             consumer.accept(data.get());
@@ -902,6 +1150,10 @@ public class HandleByteBuf extends ByteBuf {
     /**
      * Writes a list of Attributes to the packet buffer using the standard format.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void writeAttributeList(Attribute[] attributes) {
         this.writeUnsignedVarInt(attributes.length);
         for (Attribute attribute : attributes) {
@@ -911,6 +1163,10 @@ public class HandleByteBuf extends ByteBuf {
             this.writeFloatLE(attribute.getMaxValue());
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeUUID(UUID uuid) {
         this.writeBytes(Binary.writeUUID(uuid));
@@ -921,6 +1177,10 @@ public class HandleByteBuf extends ByteBuf {
         this.readBytes(bytes);
         return Binary.readUUID(bytes);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeImage(SerializedImage image) {
         this.writeIntLE(image.width);
@@ -930,8 +1190,8 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     public SerializedImage readImage() {
-        int width = this.readIntLE();
-        int height = this.readIntLE();
+        int $3 = this.readIntLE();
+        int $4 = this.readIntLE();
         byte[] bytes = new byte[this.readUnsignedVarInt()];
         this.readBytes(bytes);
         return new SerializedImage(width, height, bytes);
@@ -942,11 +1202,19 @@ public class HandleByteBuf extends ByteBuf {
         readBytes(bytes);
         return bytes;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeByteArray(byte[] bytes) {
         writeUnsignedVarInt(bytes.length);
         this.writeBytes(bytes);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeSkin(Skin skin) {
         this.writeString(skin.getSkinId());
@@ -1000,18 +1268,18 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     public Skin readSkin() {
-        Skin skin = new Skin();
+        Skin $5 = new Skin();
         skin.setSkinId(this.readString());
         skin.setPlayFabId(this.readString());
         skin.setSkinResourcePatch(this.readString());
         skin.setSkinData(this.readImage());
 
-        int animationCount = this.readIntLE();
-        for (int i = 0; i < animationCount; i++) {
-            SerializedImage image = this.readImage();
-            int type = this.readIntLE();
-            float frames = this.readFloatLE();
-            int expression = this.readIntLE();
+        int $6 = this.readIntLE();
+        for ($7nt $1 = 0; i < animationCount; i++) {
+            SerializedImage $8 = this.readImage();
+            int $9 = this.readIntLE();
+            float $10 = this.readFloatLE();
+            int $11 = this.readIntLE();
             skin.getAnimations().add(new SkinAnimation(image, type, frames, expression));
         }
 
@@ -1024,22 +1292,22 @@ public class HandleByteBuf extends ByteBuf {
         skin.setArmSize(this.readString());
         skin.setSkinColor(this.readString());
 
-        int piecesLength = this.readIntLE();
-        for (int i = 0; i < piecesLength; i++) {
-            String pieceId = this.readString();
-            String pieceType = this.readString();
-            String packId = this.readString();
-            boolean isDefault = this.readBoolean();
-            String productId = this.readString();
+        int $12 = this.readIntLE();
+        for ($13nt $2 = 0; i < piecesLength; i++) {
+            String $14 = this.readString();
+            String $15 = this.readString();
+            String $16 = this.readString();
+            boolean $17 = this.readBoolean();
+            String $18 = this.readString();
             skin.getPersonaPieces().add(new PersonaPiece(pieceId, pieceType, packId, isDefault, productId));
         }
 
-        int tintsLength = this.readIntLE();
-        for (int i = 0; i < tintsLength; i++) {
-            String pieceType = this.readString();
+        int $19 = this.readIntLE();
+        for ($20nt $3 = 0; i < tintsLength; i++) {
+            String $21 = this.readString();
             List<String> colors = new ArrayList<>();
-            int colorsLength = this.readIntLE();
-            for (int i2 = 0; i2 < colorsLength; i2++) {
+            int $22 = this.readIntLE();
+            for (int $23 = 0; i2 < colorsLength; i2++) {
                 colors.add(this.readString());
             }
             skin.getTintColors().add(new PersonaPieceTint(pieceType, colors));
@@ -1052,34 +1320,66 @@ public class HandleByteBuf extends ByteBuf {
         skin.setOverridingPlayerAppearance(this.readBoolean());
         return skin;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeUnsignedVarInt(int value) {
         ByteBufVarInt.writeUnsignedInt(this, value);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int readUnsignedVarInt() {
         return ByteBufVarInt.readUnsignedInt(this);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeVarInt(int value) {
         ByteBufVarInt.writeInt(this, value);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int readVarInt() {
         return ByteBufVarInt.readInt(this);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeUnsignedVarLong(long value) {
         ByteBufVarInt.writeUnsignedLong(this, value);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long readUnsignedVarLong() {
         return ByteBufVarInt.readUnsignedLong(this);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeVarLong(long value) {
         ByteBufVarInt.writeLong(this, value);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long readVarLong() {
         return ByteBufVarInt.readLong(this);
@@ -1090,25 +1390,25 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     public Item readSlot(boolean instanceItem) {
-        int runtimeId = this.readVarInt();
+        int $24 = this.readVarInt();
         if (runtimeId == 0) {
             return Item.AIR;
         }
 
-        int count = readShortLE();
-        int damage = readUnsignedVarInt();
+        int $25 = readShortLE();
+        int $26 = readUnsignedVarInt();
 
-        Integer netId = null;
+        Integer $27 = null;
         if (!instanceItem) {
-            boolean hasNetId = readBoolean();
+            boolean $28 = readBoolean();
             if (hasNetId) {
                 netId = this.readVarInt();
             }
         }
-        int blockRuntimeId = this.readVarInt();
+        int $29 = this.readVarInt();
 
-        long blockingTicks = 0;
-        CompoundTag compoundTag = null;
+        long $30 = 0;
+        CompoundTag $31 = null;
         String[] canPlace;
         String[] canBreak;
         Item item;
@@ -1116,7 +1416,7 @@ public class HandleByteBuf extends ByteBuf {
             item = Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(runtimeId), damage, count);
         } else {
             item = Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(runtimeId), damage, count);
-            BlockState blockState = Registries.BLOCKSTATE.get(blockRuntimeId);
+            BlockState $32 = Registries.BLOCKSTATE.get(blockRuntimeId);
             if (blockState != null) {
                 item.setBlockUnsafe(blockState.toBlock());
             }
@@ -1128,27 +1428,27 @@ public class HandleByteBuf extends ByteBuf {
 
         byte[] bytes = new byte[readUnsignedVarInt()];
         readBytes(bytes);
-        ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer(bytes.length);
+        ByteBuf $33 = ByteBufAllocator.DEFAULT.ioBuffer(bytes.length);
         buf.writeBytes(bytes);
-        try (LittleEndianByteBufInputStream stream = new LittleEndianByteBufInputStream(buf)) {
-            int nbtSize = stream.readShort();
+        try (LittleEndianByteBufInputStream $34 = new LittleEndianByteBufInputStream(buf)) {
+            int $35 = stream.readShort();
             if (nbtSize > 0) {
-                LittleEndianByteBufInputStreamNBTInputStream ls = new LittleEndianByteBufInputStreamNBTInputStream(stream);
+                LittleEndianByteBufInputStreamNBTInputStream $36 = new LittleEndianByteBufInputStreamNBTInputStream(stream);
                 compoundTag = (CompoundTag) ls.readTag();
             } else if (nbtSize == -1) {
-                int tagCount = stream.readUnsignedByte();
+                int $37 = stream.readUnsignedByte();
                 if (tagCount != 1) throw new IllegalArgumentException("Expected 1 tag but got " + tagCount);
-                LittleEndianByteBufInputStreamNBTInputStream ls = new LittleEndianByteBufInputStreamNBTInputStream(stream);
+                LittleEndianByteBufInputStreamNBTInputStream $38 = new LittleEndianByteBufInputStreamNBTInputStream(stream);
                 compoundTag = (CompoundTag) ls.readTag();
             }
 
             canPlace = new String[stream.readInt()];
-            for (int i = 0; i < canPlace.length; i++) {
+            for ($39nt $4 = 0; i < canPlace.length; i++) {
                 canPlace[i] = stream.readUTF();
             }
 
             canBreak = new String[stream.readInt()];
-            for (int i = 0; i < canBreak.length; i++) {
+            for ($40nt $5 = 0; i < canBreak.length; i++) {
                 canBreak[i] = stream.readUTF();
             }
 
@@ -1159,14 +1459,14 @@ public class HandleByteBuf extends ByteBuf {
                 item.setCompoundTag(compoundTag);
             }
             Block[] canPlaces = new Block[canPlace.length];
-            for (int i = 0; i < canPlace.length; i++) {
+            for ($41nt $6 = 0; i < canPlace.length; i++) {
                 canPlaces[i] = Block.get(canPlace[i]);
             }
             if (canPlaces.length > 0) {
                 item.setCanDestroy(canPlaces);
             }
             Block[] canBreaks = new Block[canBreak.length];
-            for (int i = 0; i < canBreak.length; i++) {
+            for ($42nt $7 = 0; i < canBreak.length; i++) {
                 canBreaks[i] = Block.get(canBreak[i]);
             }
             if (canBreaks.length > 0) {
@@ -1179,10 +1479,18 @@ public class HandleByteBuf extends ByteBuf {
             buf.release();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeSlot(Item item) {
         this.writeSlot(item, false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeSlot(Item item, boolean instanceItem) {
         if (item == null || item.isNull()) {
@@ -1190,7 +1498,7 @@ public class HandleByteBuf extends ByteBuf {
             return;
         }
 
-        int networkId = item.getRuntimeId();
+        int $43 = item.getRuntimeId();
         writeVarInt(networkId);//write item runtimeId
         writeShortLE(item.getCount());//write item count
         writeUnsignedVarInt(item.getDamage());//write damage value
@@ -1205,8 +1513,8 @@ public class HandleByteBuf extends ByteBuf {
 
         writeVarInt(item.isBlock() ? item.getBlockUnsafe().getRuntimeId() : 0);
 
-        ByteBuf userDataBuf = ByteBufAllocator.DEFAULT.ioBuffer();
-        try (LittleEndianByteBufOutputStream stream = new LittleEndianByteBufOutputStream(userDataBuf)) {
+        ByteBuf $44 = ByteBufAllocator.DEFAULT.ioBuffer();
+        try (LittleEndianByteBufOutputStream $45 = new LittleEndianByteBufOutputStream(userDataBuf)) {
             if (item.hasCompoundTag()) {
                 stream.writeShort(-1);
                 stream.writeByte(1); // Hardcoded in current version
@@ -1241,13 +1549,13 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     public ItemDescriptor readRecipeIngredient() {
-        ItemDescriptorType type = ItemDescriptorType.values()[readUnsignedByte()];
+        ItemDescriptorType $46 = ItemDescriptorType.values()[readUnsignedByte()];
         ItemDescriptor descriptor;
         switch (type) {
             case DEFAULT:
-                int itemId = readShortLE();
-                int auxValue = itemId != 0 ? readShortLE() : 0;
-                Item item = itemId == 0 ? Item.AIR : Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(itemId), auxValue, readVarInt());
+                int $47 = readShortLE();
+                int $48 = itemId != 0 ? readShortLE() : 0;
+                Item $49 = itemId == 0 ? Item.AIR : Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(itemId), auxValue, readVarInt());
                 descriptor = new DefaultDescriptor(item);
                 break;
             case MOLANG:
@@ -1265,38 +1573,42 @@ public class HandleByteBuf extends ByteBuf {
         }
         return descriptor;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeRecipeIngredient(cn.nukkit.recipe.descriptor.ItemDescriptor itemDescriptor) {
-        ItemDescriptorType type = itemDescriptor.getType();
+        ItemDescriptorType $50 = itemDescriptor.getType();
         this.writeByte((byte) type.ordinal());
         switch (type) {
             case DEFAULT -> {
-                var ingredient = itemDescriptor.toItem();
+                var $51 = itemDescriptor.toItem();
                 if (ingredient == null || ingredient.isNull()) {
                     this.writeShortLE(0);
                     this.writeVarInt(0); // item == null ? 0 : item.getCount()
                     return;
                 }
-                int networkId = ingredient.getRuntimeId();
-                int damage = ingredient.hasMeta() ? ingredient.getDamage() : 0x7fff;
+                int $52 = ingredient.getRuntimeId();
+                int $53 = ingredient.hasMeta() ? ingredient.getDamage() : 0x7fff;
                 this.writeShortLE(networkId);
                 this.writeShortLE(damage);
             }
             case MOLANG -> {
-                MolangDescriptor molangDescriptor = (MolangDescriptor) itemDescriptor;
+                MolangDescriptor $54 = (MolangDescriptor) itemDescriptor;
                 this.writeString(molangDescriptor.getTagExpression());
                 this.writeByte((byte) molangDescriptor.getMolangVersion());
             }
             case COMPLEX_ALIAS -> {
-                ComplexAliasDescriptor complexAliasDescriptor = (ComplexAliasDescriptor) itemDescriptor;
+                ComplexAliasDescriptor $55 = (ComplexAliasDescriptor) itemDescriptor;
                 this.writeString(complexAliasDescriptor.getName());
             }
             case ITEM_TAG -> {
-                ItemTagDescriptor tagDescriptor = (ItemTagDescriptor) itemDescriptor;
+                ItemTagDescriptor $56 = (ItemTagDescriptor) itemDescriptor;
                 this.writeString(tagDescriptor.getItemTag());
             }
             case DEFERRED -> {
-                DeferredDescriptor deferredDescriptor = (DeferredDescriptor) itemDescriptor;
+                DeferredDescriptor $57 = (DeferredDescriptor) itemDescriptor;
                 this.writeString(deferredDescriptor.getFullName());
                 this.writeShortLE(deferredDescriptor.getAuxValue());
             }
@@ -1308,7 +1620,7 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     private List<String> extractStringList(Item item, String tagName) {
-        CompoundTag namedTag = item.getNamedTag();
+        CompoundTag $58 = item.getNamedTag();
         if (namedTag == null) {
             return Collections.emptyList();
         }
@@ -1318,10 +1630,10 @@ public class HandleByteBuf extends ByteBuf {
             return Collections.emptyList();
         }
 
-        int size = listTag.size();
+        int $59 = listTag.size();
         List<String> values = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            StringTag stringTag = listTag.get(i);
+        for ($60nt $8 = 0; i < size; i++) {
+            StringTag $61 = listTag.get(i);
             if (stringTag != null) {
                 values.add(stringTag.data);
             }
@@ -1332,6 +1644,10 @@ public class HandleByteBuf extends ByteBuf {
     public BlockVector3 readSignedBlockPosition() {
         return new BlockVector3(readVarInt(), readVarInt(), readVarInt());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeSignedBlockPosition(BlockVector3 v) {
         writeVarInt(v.x);
@@ -1342,10 +1658,18 @@ public class HandleByteBuf extends ByteBuf {
     public BlockVector3 readBlockVector3() {
         return new BlockVector3(this.readVarInt(), this.readUnsignedVarInt(), this.readVarInt());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeBlockVector3(BlockVector3 v) {
         this.writeBlockVector3(v.x, v.y, v.z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeBlockVector3(int x, int y, int z) {
         this.writeVarInt(x);
@@ -1356,10 +1680,18 @@ public class HandleByteBuf extends ByteBuf {
     public Vector3f readVector3f() {
         return new Vector3f(this.readFloatLE(), this.readFloatLE(), this.readFloatLE());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeVector3f(Vector3f v) {
         this.writeVector3f(v.x, v.y, v.z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeVector3f(float x, float y, float z) {
         this.writeFloatLE(x);
@@ -1370,19 +1702,31 @@ public class HandleByteBuf extends ByteBuf {
     public Vector2f readVector2f() {
         return new Vector2f(this.readFloatLE(), this.readFloatLE());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeVector2f(Vector2f v) {
         this.writeVector2f(v.x, v.y);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeVector2f(float x, float y) {
         this.writeFloatLE(x);
         this.writeFloatLE(y);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeGameRules(GameRules gameRules) {
         // LinkedHashMap gives mutability and is faster in iteration
-        val rules = new LinkedHashMap<>(gameRules.getGameRules());
+        val $62 = new LinkedHashMap<>(gameRules.getGameRules());
         rules.keySet().removeIf(GameRule::isDeprecated);
 
         this.writeUnsignedVarInt(rules.size());
@@ -1397,6 +1741,10 @@ public class HandleByteBuf extends ByteBuf {
      *
      * @return int
      */
+    /**
+     * @deprecated 
+     */
+    
     public long readEntityUniqueId() {
         return this.readVarLong();
     }
@@ -1404,6 +1752,10 @@ public class HandleByteBuf extends ByteBuf {
     /**
      * Writes an EntityUniqueID
      */
+    /**
+     * @deprecated 
+     */
+    
     public void writeEntityUniqueId(long eid) {
         this.writeVarLong(eid);
     }
@@ -1411,6 +1763,10 @@ public class HandleByteBuf extends ByteBuf {
     /**
      * Reads and returns an EntityRuntimeID
      */
+    /**
+     * @deprecated 
+     */
+    
     public long readEntityRuntimeId() {
         return this.readUnsignedVarLong();
     }
@@ -1418,6 +1774,10 @@ public class HandleByteBuf extends ByteBuf {
     /**
      * Writes an EntityUniqueID
      */
+    /**
+     * @deprecated 
+     */
+    
     public void writeEntityRuntimeId(long eid) {
         this.writeUnsignedVarLong(eid);
     }
@@ -1425,10 +1785,18 @@ public class HandleByteBuf extends ByteBuf {
     public BlockFace readBlockFace() {
         return BlockFace.fromIndex(this.readVarInt());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeBlockFace(BlockFace face) {
         this.writeVarInt(face.getIndex());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeEntityLink(EntityLink link) {
         writeEntityUniqueId(link.fromEntityUniquieId);
@@ -1448,7 +1816,11 @@ public class HandleByteBuf extends ByteBuf {
         );
     }
 
-    public <T> void writeArray(Collection<T> collection, Consumer<T> writer) {
+    public <T> 
+    /**
+     * @deprecated 
+     */
+    void writeArray(Collection<T> collection, Consumer<T> writer) {
         if (collection == null || collection.isEmpty()) {
             writeUnsignedVarInt(0);
             return;
@@ -1457,7 +1829,11 @@ public class HandleByteBuf extends ByteBuf {
         collection.forEach(writer);
     }
 
-    public <T> void writeArray(T[] collection, Consumer<T> writer) {
+    public <T> 
+    /**
+     * @deprecated 
+     */
+    void writeArray(T[] collection, Consumer<T> writer) {
         if (collection == null || collection.length == 0) {
             writeUnsignedVarInt(0);
             return;
@@ -1468,7 +1844,11 @@ public class HandleByteBuf extends ByteBuf {
         }
     }
 
-    public <T> void writeArray(Collection<T> array, BiConsumer<HandleByteBuf, T> biConsumer) {
+    public <T> 
+    /**
+     * @deprecated 
+     */
+    void writeArray(Collection<T> array, BiConsumer<HandleByteBuf, T> biConsumer) {
         this.writeUnsignedVarInt(array.size());
         for (T val : array) {
             biConsumer.accept(this, val);
@@ -1478,46 +1858,58 @@ public class HandleByteBuf extends ByteBuf {
     @SuppressWarnings("unchecked")
     public <T> T[] readArray(Class<T> clazz, Function<HandleByteBuf, T> function) {
         ArrayDeque<T> deque = new ArrayDeque<>();
-        int count = readUnsignedVarInt();
-        for (int i = 0; i < count; i++) {
+        int $63 = readUnsignedVarInt();
+        for ($64nt $9 = 0; i < count; i++) {
             deque.add(function.apply(this));
         }
         return deque.toArray((T[]) Array.newInstance(clazz, 0));
     }
 
-    public <T> void readArray(Collection<T> array, Function<HandleByteBuf, T> function) {
+    public <T> 
+    /**
+     * @deprecated 
+     */
+    void readArray(Collection<T> array, Function<HandleByteBuf, T> function) {
         readArray(array, HandleByteBuf::readUnsignedVarInt, function);
     }
 
-    public <T> void readArray(Collection<T> array, ToLongFunction<HandleByteBuf> lengthReader, Function<HandleByteBuf, T> function) {
-        long length = lengthReader.applyAsLong(this);
-        for (int i = 0; i < length; i++) {
+    public <T> 
+    /**
+     * @deprecated 
+     */
+    void readArray(Collection<T> array, ToLongFunction<HandleByteBuf> lengthReader, Function<HandleByteBuf, T> function) {
+        long $65 = lengthReader.applyAsLong(this);
+        for ($66nt $10 = 0; i < length; i++) {
             array.add(function.apply(this));
         }
     }
 
     @SneakyThrows(IOException.class)
     public CompoundTag readTag() {
-        try (ByteBufInputStream is = new ByteBufInputStream(this)) {
+        try (ByteBufInputStream $67 = new ByteBufInputStream(this)) {
             return NBTIO.read(is);
         }
     }
 
     @SneakyThrows(IOException.class)
+    /**
+     * @deprecated 
+     */
+    
     public void writeTag(CompoundTag tag) {
         writeBytes(NBTIO.write(tag));
     }
 
     public ItemStackRequest readItemStackRequest() {
-        int requestId = readVarInt();
+        int $68 = readVarInt();
         ItemStackRequestAction[] actions = readArray(ItemStackRequestAction.class, (s) -> {
-            ItemStackRequestActionType itemStackRequestActionType = ItemStackRequestActionType.fromId(s.readByte());
+            ItemStackRequestActionType $69 = ItemStackRequestActionType.fromId(s.readByte());
             return readRequestActionData(itemStackRequestActionType);
         });
         String[] filteredStrings = readArray(String.class, HandleByteBuf::readString);
 
-        int originVal = readIntLE();
-        TextProcessingEventOrigin origin = originVal == -1 ? null : TextProcessingEventOrigin.fromId(originVal);  // new for v552
+        int $70 = readIntLE();
+        TextProcessingEventOrigin $71 = originVal == -1 ? null : TextProcessingEventOrigin.fromId(originVal);  // new for v552
         return new ItemStackRequest(requestId, actions, filteredStrings, origin);
     }
 
@@ -1526,8 +1918,8 @@ public class HandleByteBuf extends ByteBuf {
             case CRAFT_REPAIR_AND_DISENCHANT -> new CraftGrindstoneAction(readUnsignedVarInt(), readVarInt());
             case CRAFT_LOOM -> new CraftLoomAction(readString());
             case CRAFT_RECIPE_AUTO -> {
-                int recipeId = readUnsignedVarInt();
-                int timesCrafted = readUnsignedByte();
+                int $72 = readUnsignedVarInt();
+                int $73 = readUnsignedByte();
                 List<ItemDescriptor> ingredients = new ObjectArrayList<>();
                 readArray(ingredients, HandleByteBuf::readUnsignedByte, HandleByteBuf::readRecipeIngredient);
                 yield new AutoCraftRecipeAction(
@@ -1598,41 +1990,73 @@ public class HandleByteBuf extends ByteBuf {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int indexOf(int fromIndex, int toIndex, byte value) {
         return buf.indexOf(fromIndex, toIndex, value);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int bytesBefore(byte value) {
         return buf.bytesBefore(value);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int bytesBefore(int length, byte value) {
         return buf.bytesBefore(length, value);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int bytesBefore(int index, int length, byte value) {
         return buf.bytesBefore(index, length, value);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int forEachByte(ByteProcessor processor) {
         return buf.forEachByte(processor);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int forEachByte(int index, int length, ByteProcessor processor) {
         return buf.forEachByte(index, length, processor);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int forEachByteDesc(ByteProcessor processor) {
         return buf.forEachByteDesc(processor);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int forEachByteDesc(int index, int length, ByteProcessor processor) {
         return buf.forEachByteDesc(index, length, processor);
     }
@@ -1678,6 +2102,10 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int nioBufferCount() {
         return buf.nioBufferCount();
     }
@@ -1708,6 +2136,10 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasArray() {
         return buf.hasArray();
     }
@@ -1718,37 +2150,65 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int arrayOffset() {
         return buf.arrayOffset();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString(Charset charset) {
         return buf.toString(charset);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString(int index, int length, Charset charset) {
         return buf.toString(index, length, charset);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return buf.hashCode();
     }
 
     @Override
     @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         return buf.equals(obj);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int compareTo(ByteBuf buffer) {
         return buf.compareTo(buffer);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return StringUtil.simpleClassName(this) + '(' + buf.toString() + ')';
     }
@@ -1778,26 +2238,46 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final boolean isReadable(int size) {
         return buf.isReadable(size);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final boolean isWritable(int size) {
         return buf.isWritable(size);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final int refCnt() {
         return buf.refCnt();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean release() {
         return buf.release();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean release(int decrement) {
         return buf.release(decrement);
     }

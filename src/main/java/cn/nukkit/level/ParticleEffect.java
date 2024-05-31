@@ -148,6 +148,10 @@ public enum ParticleEffect {
     ParticleEffect(String identifier) {
         this.identifier = identifier;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getIdentifier() {
         return this.identifier;

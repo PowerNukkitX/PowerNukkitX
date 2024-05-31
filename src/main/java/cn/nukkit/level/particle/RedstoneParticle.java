@@ -7,9 +7,17 @@ import cn.nukkit.math.Vector3;
  * @since 2015/11/21
  */
 public class RedstoneParticle extends GenericParticle {
+    /**
+     * @deprecated 
+     */
+    
     public RedstoneParticle(Vector3 pos) {
         this(pos, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public RedstoneParticle(Vector3 pos, int lifetime) {
         super(pos, Particle.TYPE_RED_DUST, lifetime);

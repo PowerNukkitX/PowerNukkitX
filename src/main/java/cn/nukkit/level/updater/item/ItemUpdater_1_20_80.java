@@ -7,9 +7,13 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class ItemUpdater_1_20_80 implements Updater {
-    public static final Updater INSTANCE = new ItemUpdater_1_20_80();
+    public static final Updater $1 = new ItemUpdater_1_20_80();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext ctx) {
         this.addTypeUpdater(ctx, "minecraft:sapling", "sapling_type", type -> "minecraft:" + type + "_sapling");
         this.addTypeUpdater(ctx, "minecraft:red_flower", "flower_type", type -> switch (type) {
@@ -38,15 +42,19 @@ public class ItemUpdater_1_20_80 implements Updater {
         });
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addTypeUpdater(CompoundTagUpdaterContext context, String identifier, String typeState, Function<String, String> rename) {
         context.addUpdater(1, 20, 80)
                 .match("Name", identifier)
                 .edit("Name", helper -> {
-                    Object block = helper.getRootTag().get("Block");
+                    Object $2 = helper.getRootTag().get("Block");
                     if (block instanceof Map map) {
-                        Object states = map.get("states");
+                        Object $3 = map.get("states");
                         if (states instanceof Map statesMap) {
-                            Object tag = statesMap.get(typeState);
+                            Object $4 = statesMap.get(typeState);
                             if (tag instanceof String string) {
                                 helper.getRootTag().put("Name", rename.apply(string));
                             }

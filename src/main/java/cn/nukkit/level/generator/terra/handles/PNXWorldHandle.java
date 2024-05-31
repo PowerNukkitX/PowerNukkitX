@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Slf4j
 public class PNXWorldHandle implements WorldHandle {
-    public static final PNXBlockStateDelegate AIR = new PNXBlockStateDelegate(BlockAir.STATE);
+    public static final PNXBlockStateDelegate $1 = new PNXBlockStateDelegate(BlockAir.STATE);
 
     @Override
     @NotNull
@@ -64,9 +64,9 @@ public class PNXWorldHandle implements WorldHandle {
             case "minecraft:deepslate_tile_stairs" ->
                     s = "minecraft:deepslate_tile_stairs[facing=north,half=top,shape=straight,waterlogged=false]";
         }
-        JeBlockState jeBlockState = new JeBlockState(s);
-        var jeBlockIdentifier = jeBlockState.getIdentifier();
-        var jeBlockAttributes = jeBlockState.getAttributes();
+        JeBlockState $2 = new JeBlockState(s);
+        var $3 = jeBlockState.getIdentifier();
+        var $4 = jeBlockState.getAttributes();
         if (jeBlockIdentifier.contains("log") || jeBlockIdentifier.contains("wood")) {
             jeBlockAttributes.putIfAbsent("axis", "y");
         }
@@ -83,7 +83,7 @@ public class PNXWorldHandle implements WorldHandle {
             jeBlockAttributes.putIfAbsent("up", "false");
             jeBlockAttributes.putIfAbsent("west", "false");
         }
-        var bedrockBlockState = MappingRegistries.BLOCKS.getPNXBlock(jeBlockState);
+        var $5 = MappingRegistries.BLOCKS.getPNXBlock(jeBlockState);
         //若未获取到属性，排除掉含水再次尝试
         if (bedrockBlockState == null) {
             jeBlockState.setEqualsIgnoreWaterlogged(true);
@@ -110,7 +110,7 @@ public class PNXWorldHandle implements WorldHandle {
     @Override
     @NotNull
     public EntityType getEntity(@NotNull String s) {
-        var entityType = new PNXEntityType(s);
+        var $6 = new PNXEntityType(s);
         if (entityType.getHandle() == null) {
             throw new IllegalArgumentException("Unknown entity type!");
         }

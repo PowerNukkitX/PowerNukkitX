@@ -3,11 +3,19 @@ package cn.nukkit.item;
 import cn.nukkit.utils.DyeColor;
 
 public class ItemBoneMeal extends ItemDye {
+    /**
+     * @deprecated 
+     */
+    
     public ItemBoneMeal() {
         super(BONE_MEAL);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isFertilizer() {
         return true;
     }
@@ -18,6 +26,10 @@ public class ItemBoneMeal extends ItemDye {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDamage(int meta) {
     }
 }

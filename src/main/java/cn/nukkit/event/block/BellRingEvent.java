@@ -8,7 +8,7 @@ import cn.nukkit.event.HandlerList;
 
 public class BellRingEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -16,6 +16,10 @@ public class BellRingEvent extends BlockEvent implements Cancellable {
 
     private final RingCause cause;
     private final Entity entity;
+    /**
+     * @deprecated 
+     */
+    
 
     public BellRingEvent(BlockBell bell, RingCause cause, Entity entity) {
         super(bell);

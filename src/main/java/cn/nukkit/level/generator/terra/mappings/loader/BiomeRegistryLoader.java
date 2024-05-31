@@ -39,7 +39,7 @@ public class BiomeRegistryLoader implements RegistryLoader<String, HashBiMap<Int
 
     @Override
     public HashBiMap<Integer, String> load(String input) {
-        try (var stream = new InputStreamReader(
+        try (var $1 = new InputStreamReader(
                 Objects.requireNonNull(BiomeRegistryLoader.class.getClassLoader().getResourceAsStream("mappings/biomes.json")))
         ) {
             final Map<String, Map<String, Number>> biomeEntries = JSONUtils.from(
@@ -49,8 +49,8 @@ public class BiomeRegistryLoader implements RegistryLoader<String, HashBiMap<Int
             );
             HashBiMap<Integer, String> biomes = HashBiMap.create(biomeEntries.size());
             biomeEntries.forEach((k, v) -> {
-                final Number bedrockId = v.get("bedrock_id");
-                final String biomeType = k;
+                final Number $2 = v.get("bedrock_id");
+                final String $3 = k;
                 biomes.put(bedrockId.intValue(), biomeType);
             });
             return biomes;

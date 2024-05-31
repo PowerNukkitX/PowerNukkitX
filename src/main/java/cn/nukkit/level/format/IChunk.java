@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  * @author Cool_Loong
  */
 public interface IChunk {
-    int VERSION = 40;
+    int $1 = 40;
 
     /**
      * Get Palette index
@@ -29,6 +29,10 @@ public interface IChunk {
      * @param y the y
      * @param z the z
      * @return the int
+     */
+    
+    /**
+     * @deprecated 
      */
     static int index(int x, int y, int z) {
         //The bedrock chunk order is xzy,the chunk order of java version is yzx
@@ -69,7 +73,11 @@ public interface IChunk {
 
     void setZ(int z);
 
-    default void setPosition(int x, int z) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void setPosition(int x, int z) {
         setX(x);
         setZ(z);
     }
@@ -105,7 +113,11 @@ public interface IChunk {
 
     void setBlockState(int x, int y, int z, BlockState blockstate, int layer);
 
-    default void setBlockState(int x, int y, int z, BlockState blockstate) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void setBlockState(int x, int y, int z, BlockState blockstate) {
         setBlockState(x, y, z, blockstate, 0);
     }
 
@@ -245,38 +257,74 @@ public interface IChunk {
 
     Stream<Block> scanBlocks(BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition);
 
-    default void reObfuscateChunk() {
+    default 
+    /**
+     * @deprecated 
+     */
+    void reObfuscateChunk() {
     }
 
-    default boolean isOverWorld() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isOverWorld() {
         return getProvider().isOverWorld();
     }
 
-    default boolean isNether() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isNether() {
         return getProvider().isNether();
     }
 
-    default boolean isTheEnd() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isTheEnd() {
         return getProvider().isTheEnd();
     }
 
-    default boolean isGenerated() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isGenerated() {
         return this.getChunkState().ordinal() >= ChunkState.GENERATED.ordinal();
     }
 
-    default boolean isPopulated() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isPopulated() {
         return this.getChunkState().ordinal() >= ChunkState.POPULATED.ordinal();
     }
 
-    default boolean isFinished() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isFinished() {
         return this.getChunkState().ordinal() == ChunkState.FINISHED.ordinal();
     }
 
-    default void setGenerated() {
+    default 
+    /**
+     * @deprecated 
+     */
+    void setGenerated() {
         setChunkState(ChunkState.GENERATED);
     }
 
-    default void setPopulated() {
+    default 
+    /**
+     * @deprecated 
+     */
+    void setPopulated() {
         setChunkState(ChunkState.POPULATED);
     }
 }

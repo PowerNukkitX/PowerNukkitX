@@ -21,6 +21,10 @@ public class RegisteredListener {
     private EventExecutor executor;
 
     private final boolean ignoreCancelled;
+    /**
+     * @deprecated 
+     */
+    
 
     public RegisteredListener(Listener listener, EventExecutor executor, EventPriority priority, Plugin plugin, boolean ignoreCancelled) {
         this.listener = listener;
@@ -57,6 +61,10 @@ public class RegisteredListener {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isIgnoringCancelled() {
         return ignoreCancelled;

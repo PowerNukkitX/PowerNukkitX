@@ -11,6 +11,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class BlockEntityTarget extends BlockEntity {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BlockEntityTarget(IChunk chunk, CompoundTag nbt) {
@@ -18,13 +22,25 @@ public class BlockEntityTarget extends BlockEntity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return getLevelBlock().getId() == BlockID.TARGET;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setActivePower(int power) {
         namedTag.putInt("activePower", power);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getActivePower() {
         return NukkitMath.clamp(namedTag.getInt("activePower"), 0, 15);

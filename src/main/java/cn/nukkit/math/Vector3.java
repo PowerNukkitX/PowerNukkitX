@@ -11,37 +11,65 @@ import javax.annotation.Nullable;
 public class Vector3 implements Cloneable {
 
 
-    public static final Vector3 ZERO = new Vector3(0, 0, 0);
+    public static final Vector3 $1 = new Vector3(0, 0, 0);
 
     public double x;
     public double y;
     public double z;
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector3() {
         this(0, 0, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector3(double x) {
         this(x, 0, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector3(double x, double y) {
         this(x, y, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector3(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getX() {
         return this.x;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getY() {
         return this.y;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getZ() {
         return this.z;
@@ -61,25 +89,49 @@ public class Vector3 implements Cloneable {
         this.z = z;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
     public int getFloorX() {
         return (int) Math.floor(this.x);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFloorY() {
         return (int) Math.floor(this.y);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFloorZ() {
         return (int) Math.floor(this.z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getChunkX() {
         return getFloorX() >> 4;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getChunkZ() {
         return getFloorZ() >> 4;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getChunkSectionY() {
         return getFloorY() >> 4;
@@ -88,22 +140,42 @@ public class Vector3 implements Cloneable {
     public ChunkVector2 getChunkVector() {
         return new ChunkVector2(getChunkX(), getChunkZ());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getRight() {
         return this.x;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getUp() {
         return this.y;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getForward() {
         return this.z;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getSouth() {
         return this.x;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getWest() {
         return this.z;
@@ -225,48 +297,88 @@ public class Vector3 implements Cloneable {
     public Vector3 west(int step) {
         return getSide(BlockFace.WEST, step);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int distanceManhattan(Vector3 pos) {
-        double x = Math.abs(pos.getX() - this.getX());
-        double y = Math.abs(pos.getY() - this.getY());
-        double z = Math.abs(pos.getZ() - this.getZ());
+        double $2 = Math.abs(pos.getX() - this.getX());
+        double $3 = Math.abs(pos.getY() - this.getY());
+        double $4 = Math.abs(pos.getZ() - this.getZ());
         return (int)(x + y + z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distance(Vector3 pos) {
         return distance(pos.x, pos.y, pos.z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(Vector3 pos) {
         return distanceSquared(pos.x, pos.y, pos.z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distance(double x, double y, double z) {
         return Math.sqrt(distanceSquared(x, y, z));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(double x, double y, double z) {
-        double ex = this.x - x;
-        double ey = this.y - y;
-        double ez = this.z - z;
+        double $5 = this.x - x;
+        double $6 = this.y - y;
+        double $7 = this.z - z;
         return ex * ex + ey * ey + ez * ez;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double maxPlainDistance() {
         return this.maxPlainDistance(0, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double maxPlainDistance(double x) {
         return this.maxPlainDistance(x, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double maxPlainDistance(double x, double z) {
         return Math.max(Math.abs(this.x - x), Math.abs(this.z - z));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double maxPlainDistance(Vector2 vector) {
         return this.maxPlainDistance(vector.x, vector.y);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double maxPlainDistance(Vector3 x) {
         return this.maxPlainDistance(x.x, x.z);
@@ -277,16 +389,24 @@ public class Vector3 implements Cloneable {
      *
      * @return The Length of this Vector.
      */
+    /**
+     * @deprecated 
+     */
+    
     public double length() {
         return Math.sqrt(this.lengthSquared());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double lengthSquared() {
         return this.x * this.x + this.y * this.y + this.z * this.z;
     }
 
     public Vector3 normalize() {
-        double len = this.lengthSquared();
+        double $8 = this.lengthSquared();
         if (len > 0) {
             return this.divide(Math.sqrt(len));
         }
@@ -299,6 +419,10 @@ public class Vector3 implements Cloneable {
      * @param v Vector to calculate the scalar product to.
      * @return Scalar Product
      */
+    /**
+     * @deprecated 
+     */
+    
     public double dot(Vector3 v) {
         return this.x * v.x + this.y * v.y + this.z * v.z;
     }
@@ -336,13 +460,13 @@ public class Vector3 implements Cloneable {
      * @return intermediate vector
      */
     public @Nullable Vector3 getIntermediateWithXValue(@NotNull Vector3 v, double x) {
-        double xDiff = v.x - this.x;
-        double yDiff = v.y - this.y;
-        double zDiff = v.z - this.z;
+        double $9 = v.x - this.x;
+        double $10 = v.y - this.y;
+        double $11 = v.z - this.z;
         if (xDiff * xDiff < 0.0000001) {
             return null;
         }
-        double f = (x - this.x) / xDiff;
+        double $12 = (x - this.x) / xDiff;
         if (f < 0 || f > 1) {
             return null;
         } else {
@@ -359,13 +483,13 @@ public class Vector3 implements Cloneable {
      * @return intermediate vector
      */
     public @Nullable Vector3 getIntermediateWithYValue(@NotNull Vector3 v, double y) {
-        double xDiff = v.x - this.x;
-        double yDiff = v.y - this.y;
-        double zDiff = v.z - this.z;
+        double $13 = v.x - this.x;
+        double $14 = v.y - this.y;
+        double $15 = v.z - this.z;
         if (yDiff * yDiff < 0.0000001) {
             return null;
         }
-        double f = (y - this.y) / yDiff;
+        double $16 = (y - this.y) / yDiff;
         if (f < 0 || f > 1) {
             return null;
         } else {
@@ -382,13 +506,13 @@ public class Vector3 implements Cloneable {
      * @return intermediate vector
      */
     public @Nullable Vector3 getIntermediateWithZValue(@NotNull Vector3 v, double z) {
-        double xDiff = v.x - this.x;
-        double yDiff = v.y - this.y;
-        double zDiff = v.z - this.z;
+        double $17 = v.x - this.x;
+        double $18 = v.y - this.y;
+        double $19 = v.z - this.z;
         if (zDiff * zDiff < 0.0000001) {
             return null;
         }
-        double f = (z - this.z) / zDiff;
+        double $20 = (z - this.z) / zDiff;
         if (f < 0 || f > 1) {
             return null;
         } else {
@@ -420,6 +544,10 @@ public class Vector3 implements Cloneable {
         this.z = pos.z;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getAxis(BlockFace.Axis axis) {
         return switch (axis) {
@@ -430,11 +558,19 @@ public class Vector3 implements Cloneable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "Vector3(x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (!(obj instanceof Vector3 other)) {
             return false;
@@ -444,9 +580,17 @@ public class Vector3 implements Cloneable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return ((int) x ^ ((int) z << 12)) ^ ((int) y << 24);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int rawHashCode() {
         return super.hashCode();

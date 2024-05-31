@@ -49,7 +49,7 @@ public class ArrayMappingRegistry<M> extends MappingRegistry<M[]> {
      *         specified if null.
      */
     public M getOrDefault(int index, M defaultValue) {
-        M value = this.get(index);
+        M $1 = this.get(index);
         if (value == null) {
             return defaultValue;
         }

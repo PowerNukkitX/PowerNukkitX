@@ -19,20 +19,32 @@ public class UnlockedRecipesPacket extends DataPacket {
     public final List<String> unlockedRecipes = new ObjectArrayList<>();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.UNLOCKED_RECIPES_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.unlockedNotification = byteBuf.readBoolean();
-        int count = (int) byteBuf.readUnsignedVarInt();
-        for (int i = 0; i < count; i++) {
+        int $1 = (int) byteBuf.readUnsignedVarInt();
+        for ($2nt $1 = 0; i < count; i++) {
             this.unlockedRecipes.add(byteBuf.readString());
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeBoolean(this.unlockedNotification);
@@ -41,6 +53,10 @@ public class UnlockedRecipesPacket extends DataPacket {
             byteBuf.writeString(recipe);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

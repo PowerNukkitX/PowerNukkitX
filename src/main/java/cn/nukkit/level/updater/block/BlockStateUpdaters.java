@@ -42,7 +42,7 @@ public class BlockStateUpdaters {
         updaters.add(BlockStateUpdater_1_20_70.INSTANCE);
         updaters.add(BlockStateUpdater_1_20_80.INSTANCE);
 
-        CompoundTagUpdaterContext context = new CompoundTagUpdaterContext();
+        CompoundTagUpdaterContext $1 = new CompoundTagUpdaterContext();
         updaters.forEach(updater -> updater.registerUpdaters(context));
         CONTEXT = context;
         LATEST_VERSION = context.getLatestVersion();
@@ -51,11 +51,19 @@ public class BlockStateUpdaters {
     public static CompoundTag updateBlockState(CompoundTag tag, int version) {
         return CONTEXT.update(tag, version);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void serializeCommon(Map<String, Object> builder, String id) {
         builder.put("version", LATEST_VERSION);
         builder.put("name", id);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int getLatestVersion() {
         return LATEST_VERSION;

@@ -21,13 +21,17 @@ import java.util.Objects;
 public record PNXServerWorld(TerraGenerator generatorWrapper, Level level) implements ServerWorld {
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
-        var innerBlockState = ((PNXBlockStateDelegate) blockState).innerBlockState();
+        var $1 = ((PNXBlockStateDelegate) blockState).innerBlockState();
         if (Objects.equals(innerBlockState.getIdentifier(), BlockID.KELP)) {
             level.setBlockStateAt(i, i1, i2, innerBlockState);
             level.setBlockStateAt(i, i1, i2, 1, PNXProtoChunk.water);
         } else {
-            var ob = level.getBlockStateAt(i, i1, i2);
+            var $2 = level.getBlockStateAt(i, i1, i2);
             if (Objects.equals(ob.getIdentifier(), BlockID.WATERLILY) ||
                     Objects.equals(ob.getIdentifier(), BlockID.WATER) ||
                     Objects.equals(ob.getIdentifier(), BlockID.FLOWING_WATER)) {
@@ -41,8 +45,8 @@ public record PNXServerWorld(TerraGenerator generatorWrapper, Level level) imple
 
     @Override
     public Entity spawnEntity(double v, double v1, double v2, EntityType entityType) {
-        String identifier = (String) entityType.getHandle();
-        cn.nukkit.entity.Entity nukkitEntity = cn.nukkit.entity.Entity.createEntity(identifier, new Position(v, v1, v2, level));
+        String $3 = (String) entityType.getHandle();
+        cn.nukkit.entity.Entity $4 = cn.nukkit.entity.Entity.createEntity(identifier, new Position(v, v1, v2, level));
         return new PNXEntity(nukkitEntity, this);
     }
 
@@ -53,7 +57,7 @@ public record PNXServerWorld(TerraGenerator generatorWrapper, Level level) imple
 
     @Override
     public BlockEntity getBlockEntity(int i, int i1, int i2) {
-        cn.nukkit.blockentity.BlockEntity blockEntity = level.getBlockEntity(new BlockVector3(i, i1, i2));
+        cn.nukkit.blockentity.BlockEntity $5 = level.getBlockEntity(new BlockVector3(i, i1, i2));
         return null;
     }
 
@@ -73,16 +77,28 @@ public record PNXServerWorld(TerraGenerator generatorWrapper, Level level) imple
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getSeed() {
         return level.getSeed();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxHeight() {
         return generatorWrapper.getDimensionData().getMaxHeight();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMinHeight() {
         return generatorWrapper.getDimensionData().getMinHeight();
     }

@@ -9,6 +9,10 @@ import cn.nukkit.event.HandlerList;
  */
 public class EntityDamageByBlockEvent extends EntityDamageEvent {
     private final Block damager;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityDamageByBlockEvent(Block damager, Entity entity, DamageCause cause, float damage) {
         super(entity, cause, damage);

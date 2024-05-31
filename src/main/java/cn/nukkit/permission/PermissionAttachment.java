@@ -12,13 +12,17 @@ import java.util.Map;
  */
 public class PermissionAttachment {
 
-    private PermissionRemovedExecutor removed = null;
+    private PermissionRemovedExecutor $1 = null;
 
     private final Map<String, Boolean> permissions = new HashMap<>();
 
     private Permissible permissible;
 
     private Plugin plugin;
+    /**
+     * @deprecated 
+     */
+    
 
     public PermissionAttachment(Plugin plugin, Permissible permissible) {
         if (!plugin.isEnabled()) {
@@ -31,6 +35,10 @@ public class PermissionAttachment {
     public Plugin getPlugin() {
         return plugin;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRemovalCallback(PermissionRemovedExecutor executor) {
         this.removed = executor;
@@ -43,20 +51,32 @@ public class PermissionAttachment {
     public Map<String, Boolean> getPermissions() {
         return permissions;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void clearPermissions() {
         this.permissions.clear();
         this.permissible.recalculatePermissions();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPermissions(Map<String, Boolean> permissions) {
         for (Map.Entry<String, Boolean> entry : permissions.entrySet()) {
-            String key = entry.getKey();
-            Boolean value = entry.getValue();
+            String $2 = entry.getKey();
+            Boolean $3 = entry.getValue();
             this.permissions.put(key, value);
         }
         this.permissible.recalculatePermissions();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void unsetPermissions(List<String> permissions) {
         for (String node : permissions) {
@@ -64,10 +84,18 @@ public class PermissionAttachment {
         }
         this.permissible.recalculatePermissions();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPermission(Permission permission, boolean value) {
         this.setPermission(permission.getName(), value);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPermission(String name, boolean value) {
         if (this.permissions.containsKey(name)) {
@@ -79,10 +107,18 @@ public class PermissionAttachment {
         this.permissions.put(name, value);
         this.permissible.recalculatePermissions();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void unsetPermission(Permission permission, boolean value) {
         this.unsetPermission(permission.getName(), value);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void unsetPermission(String name, boolean value) {
         if (this.permissions.containsKey(name)) {
@@ -90,6 +126,10 @@ public class PermissionAttachment {
             this.permissible.recalculatePermissions();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void remove() {
         this.permissible.removeAttachment(this);

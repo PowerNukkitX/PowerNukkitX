@@ -10,10 +10,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class RiderJumpProcessor extends DataPacketProcessor<RiderJumpPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RiderJumpPacket pk) {
         if (playerHandle.player.riding instanceof EntityHorse horse && horse.isAlive() && !horse.getJumping().get()) {
-            float maxMotionY = horse.getClientMaxJumpHeight();
-            double motion = maxMotionY * (Math.max(1, pk.unknown) / 100.0);
+            float $1 = horse.getClientMaxJumpHeight();
+            double $2 = maxMotionY * (Math.max(1, pk.unknown) / 100.0);
             horse.getJumping().set(true);
             horse.move(0, motion, 0);
             //避免onGround不更新
@@ -25,6 +29,10 @@ public class RiderJumpProcessor extends DataPacketProcessor<RiderJumpPacket> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return RiderJumpPacket.NETWORK_ID;
     }

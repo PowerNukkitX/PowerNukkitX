@@ -17,14 +17,26 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
 
     private float knockBack;
     private @Nullable Enchantment[] enchantments;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityDamageByEntityEvent(@NotNull Entity damager, @NotNull Entity entity, @NotNull DamageCause cause, float damage) {
         this(damager, entity, cause, damage, 0.3f);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityDamageByEntityEvent(@NotNull Entity damager, @NotNull Entity entity, @NotNull DamageCause cause, Map<DamageModifier, Float> modifiers) {
         this(damager, entity, cause, modifiers, 0.3f);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityDamageByEntityEvent(@NotNull Entity damager, @NotNull Entity entity, @NotNull DamageCause cause, float damage, float knockBack) {
         super(entity, cause, damage);
@@ -32,10 +44,18 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         this.knockBack = knockBack;
         this.addAttackerModifiers(damager);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityDamageByEntityEvent(@NotNull Entity damager, @NotNull Entity entity, @NotNull DamageCause cause, @NotNull Map<DamageModifier, Float> modifiers, float knockBack) {
         this(damager, entity, cause, modifiers, knockBack, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityDamageByEntityEvent(@NotNull Entity damager, @NotNull Entity entity, @NotNull DamageCause cause, @NotNull Map<DamageModifier, Float> modifiers, float knockBack, @Nullable Enchantment[] enchantments) {
         super(entity, cause, modifiers);
@@ -45,6 +65,10 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         this.addAttackerModifiers(damager);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void addAttackerModifiers(Entity damager) {
         if (damager.hasEffect(EffectType.STRENGTH)) {
             this.setDamage((float) (this.getDamage(DamageModifier.BASE) * 0.3 * damager.getEffect(EffectType.STRENGTH).getLevel()), DamageModifier.STRENGTH);
@@ -58,10 +82,18 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     @NotNull public Entity getDamager() {
         return damager;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getKnockBack() {
         return knockBack;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setKnockBack(float knockBack) {
         this.knockBack = knockBack;

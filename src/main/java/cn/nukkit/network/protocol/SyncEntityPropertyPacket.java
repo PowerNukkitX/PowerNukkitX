@@ -17,18 +17,26 @@ import java.nio.ByteOrder;
 @AllArgsConstructor
 @Slf4j
 public class SyncEntityPropertyPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.SYNC_ENTITY_PROPERTY_PACKET;
+    public static final int $1 = ProtocolInfo.SYNC_ENTITY_PROPERTY_PACKET;
 
     public CompoundTag data;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
-        try (ByteBufInputStream stream = new ByteBufInputStream(byteBuf)) {
+        try (ByteBufInputStream $2 = new ByteBufInputStream(byteBuf)) {
             this.data = NBTIO.read(stream, ByteOrder.BIG_ENDIAN, true);
         } catch (Exception e) {
             log.error("", e);
@@ -36,6 +44,10 @@ public class SyncEntityPropertyPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         try {
             byteBuf.writeBytes(NBTIO.write(data, ByteOrder.BIG_ENDIAN, true));
@@ -43,6 +55,10 @@ public class SyncEntityPropertyPacket extends DataPacket {
             log.error("", e);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

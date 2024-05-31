@@ -8,6 +8,10 @@ package cn.nukkit.command.tree.node;
  */
 public class FloatNode extends ParamNode<Float> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         try {
             this.value = Float.parseFloat(arg);

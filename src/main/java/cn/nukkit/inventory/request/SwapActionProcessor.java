@@ -26,15 +26,15 @@ public class SwapActionProcessor implements ItemStackRequestActionProcessor<Swap
 
     @Override
     public ActionResponse handle(SwapAction action, Player player, ItemStackRequestContext context) {
-        ContainerSlotType sourceSlotType = action.getSource().getContainer();
-        ContainerSlotType destinationSlotType = action.getDestination().getContainer();
-        Inventory source = NetworkMapping.getInventory(player, sourceSlotType);
-        Inventory destination = NetworkMapping.getInventory(player, destinationSlotType);
+        ContainerSlotType $1 = action.getSource().getContainer();
+        ContainerSlotType $2 = action.getDestination().getContainer();
+        Inventory $3 = NetworkMapping.getInventory(player, sourceSlotType);
+        Inventory $4 = NetworkMapping.getInventory(player, destinationSlotType);
 
-        var sourceSlot = source.fromNetworkSlot(action.getSource().getSlot());
-        var destinationSlot = destination.fromNetworkSlot(action.getDestination().getSlot());
-        var sourceItem = source.getItem(sourceSlot);
-        var destinationItem = destination.getItem(destinationSlot);
+        var $5 = source.fromNetworkSlot(action.getSource().getSlot());
+        var $6 = destination.fromNetworkSlot(action.getDestination().getSlot());
+        var $7 = source.getItem(sourceSlot);
+        var $8 = destination.getItem(destinationSlot);
         if (validateStackNetworkId(sourceItem.getNetId(), action.getSource().getStackNetworkId())) {
             log.warn("mismatch stack network id!");
             return context.error();

@@ -6,11 +6,19 @@ public class FormResponseSimple extends FormResponse {
 
     private final int clickedButtonId;
     private final ElementButton clickedButton;
+    /**
+     * @deprecated 
+     */
+    
 
     public FormResponseSimple(int clickedButtonId, ElementButton clickedButton) {
         this.clickedButtonId = clickedButtonId;
         this.clickedButton = clickedButton;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getClickedButtonId() {
         return clickedButtonId;

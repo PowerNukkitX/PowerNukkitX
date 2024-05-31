@@ -12,6 +12,10 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 public class DestroyBlockParticle extends Particle {
 
     protected final int data;
+    /**
+     * @deprecated 
+     */
+    
 
     public DestroyBlockParticle(Vector3 pos, Block block) {
         super(pos.x, pos.y, pos.z);
@@ -20,7 +24,7 @@ public class DestroyBlockParticle extends Particle {
 
     @Override
     public DataPacket[] encode() {
-        LevelEventPacket pk = new LevelEventPacket();
+        LevelEventPacket $1 = new LevelEventPacket();
         pk.evid = LevelEventPacket.EVENT_PARTICLE_DESTROY_BLOCK;
         pk.x = (float) this.x;
         pk.y = (float) this.y;

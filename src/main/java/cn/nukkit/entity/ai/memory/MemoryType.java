@@ -30,22 +30,42 @@ public final class MemoryType<Data> {
     @Getter
     @Nullable
     private IMemoryCodec<Data> codec;
+    /**
+     * @deprecated 
+     */
+    
 
     public MemoryType(Identifier identifier) {
         this(identifier, () -> null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public MemoryType(Identifier identifier, Data defaultData) {
         this(identifier, () -> defaultData);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public MemoryType(String identifier) {
         this(new Identifier(identifier), () -> null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public MemoryType(String identifier, Data defaultData) {
         this(new Identifier(identifier), () -> defaultData);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public MemoryType(String identifier, Supplier<Data> defaultData) {
         this(new Identifier(identifier), defaultData);
@@ -55,6 +75,10 @@ public final class MemoryType<Data> {
      * @param identifier  此记忆类型的命名空间标识符
      * @param defaultData 记忆未在实体记忆存储器中找到时返回的默认值
      */
+    /**
+     * @deprecated 
+     */
+    
     public MemoryType(Identifier identifier, Supplier<Data> defaultData) {
         this.identifier = identifier;
         this.defaultData = defaultData;
@@ -73,6 +97,10 @@ public final class MemoryType<Data> {
         PERSISTENT_MEMORIES.add(this);
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void encode(Entity entity, Data data) {
         if (codec != null) {
@@ -87,6 +115,10 @@ public final class MemoryType<Data> {
      * @param entity 目标实体
      * @param data   数据
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public void forceEncode(Entity entity, Object data) {
         if (codec != null) {
@@ -99,11 +131,19 @@ public final class MemoryType<Data> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return identifier.hashCode();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj instanceof MemoryType<?> anotherType) {

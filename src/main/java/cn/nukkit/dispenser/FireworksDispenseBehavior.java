@@ -11,6 +11,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public FireworksDispenseBehavior() {
@@ -19,12 +23,12 @@ public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
-        BlockFace opposite = face.getOpposite();
-        Vector3 pos = block.getSide(face).add(0.5 + opposite.getXOffset()*0.2, 0.5 + opposite.getYOffset()*0.2, 0.5 + opposite.getZOffset()*0.2);
+        BlockFace $1 = face.getOpposite();
+        Vector3 $2 = block.getSide(face).add(0.5 + opposite.getXOffset()*0.2, 0.5 + opposite.getYOffset()*0.2, 0.5 + opposite.getZOffset()*0.2);
 
-        CompoundTag nbt = Entity.getDefaultNBT(pos);
+        CompoundTag $3 = Entity.getDefaultNBT(pos);
         nbt.putCompound("FireworkItem", NBTIO.putItemHelper(item));
-        EntityFireworksRocket firework = new EntityFireworksRocket(block.level.getChunk(pos.getChunkX(), pos.getChunkZ()), nbt);
+        EntityFireworksRocket $4 = new EntityFireworksRocket(block.level.getChunk(pos.getChunkX(), pos.getChunkZ()), nbt);
         firework.spawnToAll();
 
         return null;

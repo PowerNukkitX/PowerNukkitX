@@ -5,18 +5,26 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
 public class PlayerToggleSprintEvent extends PlayerEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     protected final boolean isSprinting;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerToggleSprintEvent(Player player, boolean isSprinting) {
         this.player = player;
         this.isSprinting = isSprinting;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSprinting() {
         return this.isSprinting;

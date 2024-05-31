@@ -21,17 +21,25 @@ import static cn.nukkit.block.property.CommonBlockProperties.LIT;
 
 
 public class BlockCandle extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CANDLE, CANDLES, LIT);
+    public static final BlockProperties $1 = new BlockProperties(CANDLE, CANDLES, LIT);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCandle() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCandle(BlockState blockstate) {
         super(blockstate);
@@ -42,6 +50,10 @@ public class BlockCandle extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (target.getId().equals(BlockID.CAKE) && target.isDefaultState()) {//必须是完整的蛋糕才能插蜡烛
             target.getLevel().setBlock(target, toCakeForm(), true, true);
@@ -68,6 +80,10 @@ public class BlockCandle extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL) && !item.isNull()) {
             return false;
@@ -96,26 +112,46 @@ public class BlockCandle extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Candle";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return getPropertyValue(LIT) ? getPropertyValue(CANDLES) * 3 : 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0.1;
     }

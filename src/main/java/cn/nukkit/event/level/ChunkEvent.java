@@ -8,6 +8,10 @@ import cn.nukkit.level.format.IChunk;
 public abstract class ChunkEvent extends LevelEvent {
 
     private final IChunk chunk;
+    /**
+     * @deprecated 
+     */
+    
 
     public ChunkEvent(IChunk chunk) {
         super(chunk.getProvider().getLevel());

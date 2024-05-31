@@ -16,22 +16,38 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
     protected float speed;
     protected Vector3 oldTarget;
     protected boolean updateRouteImmediatelyWhenTargetChange;
-    protected boolean enableRangeTest = false;
+    protected boolean $1 = false;
     protected float maxFollowRangeSquared;
     protected float minFollowRangeSquared;
     protected boolean clearDataWhenLose;
+    /**
+     * @deprecated 
+     */
+    
 
     public MoveToTargetExecutor(MemoryType<? extends Vector3> memory, float speed) {
         this(memory, speed, false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public MoveToTargetExecutor(MemoryType<? extends Vector3> memory, float speed, boolean updateRouteImmediatelyWhenTargetChange) {
         this(memory, speed, updateRouteImmediatelyWhenTargetChange, -1, -1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public MoveToTargetExecutor(MemoryType<? extends Vector3> memory, float speed, boolean updateRouteImmediatelyWhenTargetChange, float maxFollowRange, float minFollowRange) {
         this(memory, speed, updateRouteImmediatelyWhenTargetChange, maxFollowRange, minFollowRange, false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public MoveToTargetExecutor(MemoryType<? extends Vector3> memory, float speed, boolean updateRouteImmediatelyWhenTargetChange, float maxFollowRange, float minFollowRange, boolean clearDataWhenLose) {
         this.memory = memory;
@@ -46,19 +62,23 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(@NotNull EntityIntelligent entity) {
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) {
             return false;
         }
         //获取目标位置（这个clone很重要）
-        Vector3 target = entity.getBehaviorGroup().getMemoryStorage().get(memory).clone();
+        Vector3 $2 = entity.getBehaviorGroup().getMemoryStorage().get(memory).clone();
 
         if (target instanceof Position position && !position.level.getName().equals(entity.level.getName()))
             return false;
 
         if (enableRangeTest) {
-            var distanceSquared = target.distanceSquared(entity);
+            var $3 = target.distanceSquared(entity);
             if (distanceSquared > maxFollowRangeSquared || distanceSquared < minFollowRangeSquared) {
                 return false;
             }
@@ -70,7 +90,7 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
         setLookTarget(entity, target);
 
         if (updateRouteImmediatelyWhenTargetChange) {
-            var floor = target.floor();
+            var $4 = target.floor();
 
             if (oldTarget == null || oldTarget.equals(floor))
                 entity.getBehaviorGroup().setForceUpdateRoute(true);
@@ -85,6 +105,10 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         //目标丢失
         removeRouteTarget(entity);
@@ -97,6 +121,10 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         //目标丢失
         removeRouteTarget(entity);

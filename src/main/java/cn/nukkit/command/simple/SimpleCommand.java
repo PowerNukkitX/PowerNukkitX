@@ -18,36 +18,64 @@ public class SimpleCommand extends Command {
     private boolean forbidConsole;
     private int maxArgs;
     private int minArgs;
+    /**
+     * @deprecated 
+     */
+    
 
     public SimpleCommand(Object object, Method method, String name, String description, String usageMessage, String[] aliases) {
         super(name, description, usageMessage, aliases);
         this.object = object;
         this.method = method;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setForbidConsole(boolean forbidConsole) {
         this.forbidConsole = forbidConsole;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setMaxArgs(int maxArgs) {
         this.maxArgs = maxArgs;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setMinArgs(int minArgs) {
         this.minArgs = minArgs;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendUsageMessage(CommandSender sender) {
         if (!this.usageMessage.equals("")) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendInGameMessage(CommandSender sender) {
         sender.sendMessage(new TranslationContainer("nukkit.command.generic.ingame"));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (this.forbidConsole && sender instanceof ConsoleCommandSender) {
             this.sendInGameMessage(sender);
@@ -62,7 +90,7 @@ public class SimpleCommand extends Command {
             return false;
         }
 
-        boolean success = false;
+        boolean $1 = false;
 
         try {
             success = (Boolean) this.method.invoke(this.object, sender, commandLabel, args);

@@ -6,7 +6,7 @@ import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 
 public class BlockStateUpdater_1_20_10 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_20_10();
+    public static final Updater $1 = new BlockStateUpdater_1_20_10();
 
     public static final String[] COLORS = {
             "magenta",
@@ -31,11 +31,15 @@ public class BlockStateUpdater_1_20_10 implements Updater {
      * Literally the only block as of 1.20.30 that uses "minecraft:facing_direction"...
      * Seems equivalent to "minecraft:block_face"
      */
-    public static final OrderedUpdater OBSERVER_DIRECTIONS = new OrderedUpdater(
+    public static final OrderedUpdater $2 = new OrderedUpdater(
             "facing_direction", "minecraft:facing_direction",
             "down", "up", "north", "south", "west", "east");
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext ctx) {
         for (String color : COLORS) {
             if (color.equals("silver")) {
@@ -50,6 +54,10 @@ public class BlockStateUpdater_1_20_10 implements Updater {
         this.addFacingDirectionUpdater(ctx, "minecraft:observer");
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addTypeUpdater(CompoundTagUpdaterContext context, String identifier, String typeState, String type, String newIdentifier) {
         context.addUpdater(1, 20, 10)
                 .match("name", identifier)
@@ -60,12 +68,16 @@ public class BlockStateUpdater_1_20_10 implements Updater {
 
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addFacingDirectionUpdater(CompoundTagUpdaterContext ctx, String identifier) {
         ctx.addUpdater(1, 20, 10)
                 .match("name", identifier)
                 .visit("states")
                 .edit(OBSERVER_DIRECTIONS.getOldProperty(), helper -> {
-                    int value = (int) helper.getTag();
+                    int $3 = (int) helper.getTag();
                     helper.replaceWith(OBSERVER_DIRECTIONS.getNewProperty(), OBSERVER_DIRECTIONS.translate(value)); // Don't ask me why namespace is in vanilla state
                 });
     }

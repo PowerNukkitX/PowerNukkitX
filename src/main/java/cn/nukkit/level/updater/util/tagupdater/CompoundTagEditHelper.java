@@ -12,6 +12,10 @@ public class CompoundTagEditHelper {
     private final Deque<String> tagName = new ArrayDeque<>();
     private Map<String, Object> rootTag;
     private Object tag;
+    /**
+     * @deprecated 
+     */
+    
 
     public CompoundTagEditHelper(Map<String, Object> tag) {
         this.rootTag = tag;
@@ -32,17 +36,25 @@ public class CompoundTagEditHelper {
 
     public Map<String, Object> getParent() {
         if (!this.parentTag.isEmpty()) {
-            Object tag = this.parentTag.peekLast();
+            Object $1 = this.parentTag.peekLast();
             if (tag instanceof Map) {
                 return (Map<String, Object>) tag;
             }
         }
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canPopChild() {
         return !this.parentTag.isEmpty();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void popChild() {
         if (!this.parentTag.isEmpty()) {
@@ -50,6 +62,10 @@ public class CompoundTagEditHelper {
             this.tagName.pollLast();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void pushChild(String name) {
         requireNonNull(name, "name");
@@ -58,6 +74,10 @@ public class CompoundTagEditHelper {
         this.tagName.addLast(name);
         this.tag = ((Map<String, Object>) this.tag).get(name);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void replaceWith(String name, Object newTag) {
         this.tag = newTag;
@@ -65,7 +85,7 @@ public class CompoundTagEditHelper {
             this.rootTag = ((Map<String, Object>) tag);
             return;
         }
-        Object tag = this.parentTag.getLast();
+        Object $2 = this.parentTag.getLast();
         if (tag instanceof Map) {
             Map<String, Object> map = (Map<String, Object>) tag;
             map.remove(this.tagName.pollLast());

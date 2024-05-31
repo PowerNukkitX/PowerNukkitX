@@ -4,9 +4,17 @@ import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 
 public abstract class MixRecipe extends BaseRecipe {
+    /**
+     * @deprecated 
+     */
+    
     public MixRecipe(Item input, Item ingredient, Item output) {
         this(null, input, ingredient, output);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public MixRecipe(String recipeId, Item input, Item ingredient, Item output) {
         super(recipeId);
@@ -28,6 +36,10 @@ public abstract class MixRecipe extends BaseRecipe {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean match(Input input) {
         return true;
     }

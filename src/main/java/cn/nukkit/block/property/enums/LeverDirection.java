@@ -36,6 +36,10 @@ public enum LeverDirection {
         this.name = name;
         this.facing = face;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getMetadata() {
         return this.meta;
@@ -46,6 +50,10 @@ public enum LeverDirection {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return this.name;
     }
@@ -77,6 +85,10 @@ public enum LeverDirection {
             case EAST -> EAST;
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return this.name;

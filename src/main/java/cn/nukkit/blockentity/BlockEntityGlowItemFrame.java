@@ -9,15 +9,27 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityGlowItemFrame(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.hasName() ? this.namedTag.getString("CustomName") : "Glow Item Frame";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasName() {
         return namedTag.contains("CustomName");
@@ -28,13 +40,13 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
         if (!this.namedTag.contains("Item")) {
             this.setItem(new ItemBlock(Block.get(BlockID.AIR)), false);
         }
-        Item item = getItem();
-        CompoundTag tag = super.getSpawnCompound();
+        Item $1 = getItem();
+        CompoundTag $2 = super.getSpawnCompound();
 
         if (!item.isNull()) {
-            CompoundTag itemTag = NBTIO.putItemHelper(item);
-            int networkDamage = item.getDamage();
-            String namespacedId = item.getId();
+            CompoundTag $3 = NBTIO.putItemHelper(item);
+            int $4 = item.getDamage();
+            String $5 = item.getId();
             if (namespacedId != null) {
                 itemTag.remove("id");
                 itemTag.putShort("Damage", networkDamage);

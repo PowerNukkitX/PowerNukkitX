@@ -8,19 +8,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BlockStateUpdater_1_13_0 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_13_0();
+    public static final Updater $1 = new BlockStateUpdater_1_13_0();
 
     private static final String[] LEVER_DIRECTIONS =
             {"down_east_west", "east", "west", "south", "north", "up_north_south", "up_east_west", "down_north_south"};
     private static final String[] PILLAR_DIRECTION = {"y", "x", "z"};
 
+    
+    /**
+     * @deprecated 
+     */
     private static void registerLogUpdater(String name, String replace, CompoundTagUpdaterContext context) {
         context.addUpdater(1, 13, 0)
                 .match("name", name)
                 .visit("states")
                 .regex("direction", "[0-2]")
                 .edit("direction", helper -> {
-                    int value = (int) helper.getTag();
+                    int $2 = (int) helper.getTag();
                     helper.replaceWith("pillar_axis", PILLAR_DIRECTION[value % 3]);
                 });
 
@@ -30,7 +34,7 @@ public class BlockStateUpdater_1_13_0 implements Updater {
                 .regex("direction", "[3]")
                 .rename(replace, "wood_type")
                 .edit("direction", helper -> {
-                    int value = (int) helper.getTag();
+                    int $3 = (int) helper.getTag();
                     helper.replaceWith("pillar_axis", PILLAR_DIRECTION[value % 3]);
                 })
                 .addByte("stripped_bit", (byte) 0)
@@ -40,12 +44,16 @@ public class BlockStateUpdater_1_13_0 implements Updater {
                 });
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void registerPillarUpdater(String name, CompoundTagUpdaterContext context) {
         context.addUpdater(1, 13, 0)
                 .match("name", name)
                 .visit("states")
                 .edit("direction", helper -> {
-                    int value = (int) helper.getTag();
+                    int $4 = (int) helper.getTag();
                     helper.replaceWith("pillar_axis", PILLAR_DIRECTION[value % 3]);
                 });
 
@@ -56,12 +64,16 @@ public class BlockStateUpdater_1_13_0 implements Updater {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext context) {
         context.addUpdater(1, 13, 0)
                 .match("name", "minecraft:lever")
                 .visit("states")
                 .edit("facing_direction", helper -> {
-                    int value = (int) helper.getTag();
+                    int $5 = (int) helper.getTag();
                     helper.replaceWith("lever_direction", LEVER_DIRECTIONS[value]);
                 });
 
@@ -95,7 +107,7 @@ public class BlockStateUpdater_1_13_0 implements Updater {
                 .regex("name", "minecraft:.+")
                 .visit("states")
                 .edit("facing_direction", helper -> {
-                    int value = (int) helper.getTag();
+                    int $6 = (int) helper.getTag();
                     if (value >= 6) {
                         helper.replaceWith("facing_direction", 0);
                     }
@@ -105,7 +117,7 @@ public class BlockStateUpdater_1_13_0 implements Updater {
                 .regex("name", "minecraft:.+")
                 .visit("states")
                 .edit("fill_level", helper -> {
-                    int value = (int) helper.getTag();
+                    int $7 = (int) helper.getTag();
                     if (value >= 7) {
                         helper.replaceWith("fill_level", 6);
                     }

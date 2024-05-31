@@ -8,7 +8,7 @@ import cn.nukkit.event.HandlerList;
 
 public class SignWaxedEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -16,6 +16,10 @@ public class SignWaxedEvent extends BlockEvent implements Cancellable {
 
     private final Player player;
     private final boolean waxed;
+    /**
+     * @deprecated 
+     */
+    
 
     public SignWaxedEvent(Block block, Player player, boolean waxed) {
         super(block);
@@ -26,6 +30,10 @@ public class SignWaxedEvent extends BlockEvent implements Cancellable {
     public Player getPlayer() {
         return player;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isWaxed() {
         return waxed;

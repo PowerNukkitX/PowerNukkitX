@@ -19,22 +19,42 @@ import java.util.Set;
 
 public class Position extends NamedPosition {
     public Level level;
+    /**
+     * @deprecated 
+     */
+    
 
     public Position() {
         this(0, 0, 0, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Position(double x) {
         this(x, 0, 0, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Position(double x, double y) {
         this(x, y, 0, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Position(double x, double y, double z) {
         this(x, y, z, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Position(double x, double y, double z, Level level) {
         this.x = x;
@@ -59,14 +79,26 @@ public class Position extends NamedPosition {
         this.level = level;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isValid() {
         return this.level != null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setStrong() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setWeak() {
         return false;
@@ -90,6 +122,10 @@ public class Position extends NamedPosition {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "Position(level=" + (this.isValid() ? this.getLevel().getName() : "null") + ",x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
     }
@@ -113,7 +149,7 @@ public class Position extends NamedPosition {
     }
 
     public @Nullable final <T extends BlockEntity> T getTypedBlockEntity(@NotNull Class<T> type) {
-        BlockEntity blockEntity = getValidLevel().getBlockEntity(this);
+        BlockEntity $1 = getValidLevel().getBlockEntity(this);
         return type.isInstance(blockEntity) ? type.cast(blockEntity) : null;
     }
 
@@ -162,12 +198,16 @@ public class Position extends NamedPosition {
     }
 
     @Override
-    @NotNull public String getLevelName() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getLevelName() {
         return getValidLevel().getName();
     }
 
     @NotNull public final Level getValidLevel() {
-        Level level = this.level;
+        Level $2 = this.level;
         if (level == null) {
             throw new LevelException("Undefined Level reference");
         }

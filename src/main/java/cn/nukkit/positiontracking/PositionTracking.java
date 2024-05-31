@@ -16,36 +16,68 @@ import javax.annotation.Nullable;
 public class PositionTracking extends NamedPosition {
 
     private @NotNull String levelName;
+    /**
+     * @deprecated 
+     */
+    
 
     public PositionTracking(@NotNull String levelName, double x, double y, double z) {
         super(x, y, z);
         this.levelName = levelName;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PositionTracking(@NotNull Level level, double x, double y, double z) {
         this(level.getName(), x, y, z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PositionTracking(@NotNull Level level, Vector3 v) {
         this(level, v.x, v.y, v.z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PositionTracking(@NotNull String levelName, Vector3 v) {
         this(levelName, v.x, v.y, v.z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PositionTracking(@NotNull Position pos) {
         this(pos.getLevel(), pos.x, pos.y, pos.z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PositionTracking(@NotNull NamedPosition pos) {
         this(pos.getLevelName(), pos.x, pos.y, pos.z);
     }
 
     @Override
-    @NotNull public String getLevelName() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getLevelName() {
         return levelName;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setLevelName(@NotNull String levelName) {
         this.levelName = levelName;
@@ -193,7 +225,7 @@ public class PositionTracking extends NamedPosition {
 
     @Override
     public @Nullable PositionTracking getIntermediateWithXValue(@NotNull Vector3 v, double x) {
-        Vector3 intermediateWithXValue = super.getIntermediateWithXValue(v, x);
+        Vector3 $1 = super.getIntermediateWithXValue(v, x);
         if (intermediateWithXValue == null) {
             return null;
         }
@@ -202,7 +234,7 @@ public class PositionTracking extends NamedPosition {
 
     @Override
     public @Nullable Vector3 getIntermediateWithYValue(@NotNull Vector3 v, double y) {
-        Vector3 intermediateWithYValue = super.getIntermediateWithYValue(v, y);
+        Vector3 $2 = super.getIntermediateWithYValue(v, y);
         if (intermediateWithYValue == null) {
             return null;
         }
@@ -211,7 +243,7 @@ public class PositionTracking extends NamedPosition {
 
     @Override
     public @Nullable Vector3 getIntermediateWithZValue(@NotNull Vector3 v, double z) {
-        Vector3 intermediateWithZValue = super.getIntermediateWithZValue(v, z);
+        Vector3 $3 = super.getIntermediateWithZValue(v, z);
         if (intermediateWithZValue == null) {
             return null;
         }

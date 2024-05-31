@@ -27,8 +27,12 @@ public class TerraTest {
     static Level level;
 
     @BeforeAll
+    
+    /**
+     * @deprecated 
+     */
     static void before() {
-        PNXPlatform instance = PNXPlatform.getInstance();
+        PNXPlatform $1 = PNXPlatform.getInstance();
         HashMap<String, Object> objectObjectHashMap = new HashMap<>();
         objectObjectHashMap.put("pack", "overworld");
         level = new Level(Server.getInstance(), "terra", "src/test/resources/terra",
@@ -41,6 +45,10 @@ public class TerraTest {
      * after teleporting in the Terra generator
      */
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_terra(TestPlayer player) {
         resetPlayerStatus(player);
 
@@ -48,9 +56,9 @@ public class TerraTest {
         player.getLevel().initLevel();
         player.setViewDistance(1);
 
-        GameLoop loop = gameLoop0(player);
+        GameLoop $2 = gameLoop0(player);
 
-        int limit = 100;
+        int $3 = 100;
         while (limit-- != 0) {
             try {
                 if (player.getPlayerChunkManager().getUsedChunks().size() >= 5) {
@@ -69,7 +77,7 @@ public class TerraTest {
         //teleport
         player.teleport(player.getLocation().setComponents(10000, 100, 10000));
 
-        int limit2 = 1000;
+        int $4 = 1000;
         while (limit2-- != 0) {
             try {
                 Thread.sleep(100);
@@ -90,9 +98,13 @@ public class TerraTest {
 
     @SneakyThrows
     @AfterAll
+    
+    /**
+     * @deprecated 
+     */
     static void after() {
         level.close();
-        File file2 = Path.of("src/test/resources/terra").toFile();
+        File $5 = Path.of("src/test/resources/terra").toFile();
         if (file2.exists()) {
             FileUtils.deleteDirectory(file2);
         }

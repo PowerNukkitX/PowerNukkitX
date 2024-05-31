@@ -7,6 +7,10 @@ import com.dfsek.terra.api.world.ServerWorld;
 public class PNXEntity implements Entity {
     private final cn.nukkit.entity.Entity nukkitEntity;
     private ServerWorld world;
+    /**
+     * @deprecated 
+     */
+    
 
     public PNXEntity(cn.nukkit.entity.Entity nukkitEntity, ServerWorld world) {
         this.nukkitEntity = nukkitEntity;
@@ -19,6 +23,10 @@ public class PNXEntity implements Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void position(Vector3 vector3) {
         nukkitEntity.setX(vector3.getX());
         nukkitEntity.setY(vector3.getY());
@@ -26,6 +34,10 @@ public class PNXEntity implements Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void world(ServerWorld serverWorld) {
         nukkitEntity.setLevel(((PNXServerWorld) serverWorld).generatorWrapper().getLevel());
         world = serverWorld;

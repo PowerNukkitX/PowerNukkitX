@@ -11,6 +11,10 @@ public class SimpleAxisAlignedBB implements AxisAlignedBB {
     private double maxX;
     private double maxY;
     private double maxZ;
+    /**
+     * @deprecated 
+     */
+    
 
     public SimpleAxisAlignedBB(Vector3 pos1, Vector3 pos2) {
         this.minX = Math.min(pos1.x, pos2.x);
@@ -20,6 +24,10 @@ public class SimpleAxisAlignedBB implements AxisAlignedBB {
         this.maxY = Math.max(pos1.y, pos2.y);
         this.maxZ = Math.max(pos1.z, pos2.z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SimpleAxisAlignedBB(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
         this.minX = minX;
@@ -31,66 +39,118 @@ public class SimpleAxisAlignedBB implements AxisAlignedBB {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "AxisAlignedBB(" + this.getMinX() + ", " + this.getMinY() + ", " + this.getMinZ() + ", " + this.getMaxX() + ", " + this.getMaxY() + ", " + this.getMaxZ() + ")";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         return minX;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setMinX(double minX) {
         this.minX = minX;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinY() {
         return minY;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setMinY(double minY) {
         this.minY = minY;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         return minZ;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setMinZ(double minZ) {
         this.minZ = minZ;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         return maxX;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setMaxX(double maxX) {
         this.maxX = maxX;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return maxY;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setMaxY(double maxY) {
         this.maxY = maxY;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         return maxZ;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setMaxZ(double maxZ) {
         this.maxZ = maxZ;
     }

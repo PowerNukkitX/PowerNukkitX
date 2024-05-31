@@ -16,9 +16,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
     private static final Object2IntOpenHashMap<String> REGISTRY = new Object2IntOpenHashMap<>();
-    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static final AtomicBoolean $1 = new AtomicBoolean(false);
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         if (isLoad.getAndSet(true)) return;
         register0(BlockID.COAL_BLOCK, 16000);
@@ -287,7 +291,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
     public Integer get(Item key) {
         String hash;
         if (key.isBlock()) hash = String.valueOf(key.getBlockUnsafe().getRuntimeId());
-        else hash = key.getId() + "#" + key.getDamage();
+        else $2 = key.getId() + "#" + key.getDamage();
         return REGISTRY.getInt(hash);
     }
 
@@ -295,16 +299,24 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
      * @param item item
      * @return fuel duration, if it cannot be used as fuel, return -1.
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getFuelDuration(@NotNull Item item) {
-        int id = REGISTRY.getInt(item.getId() + "#" + item.getDamage());
+        int $3 = REGISTRY.getInt(item.getId() + "#" + item.getDamage());
         if (id == 0 && item.isBlock()) {
             id = REGISTRY.getInt(item.getBlockId() + "#" + item.getDamage());
         }
         return id;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isFuel(@NotNull Item item) {
-        boolean b = REGISTRY.containsKey(item.getId() + "#" + item.getDamage());
+        $4oolean $1 = REGISTRY.containsKey(item.getId() + "#" + item.getDamage());
         if (!b && item.isBlock()) {
             b = REGISTRY.containsKey(item.getBlockId() + "#" + item.getDamage());
         }
@@ -312,11 +324,19 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void trim() {
         REGISTRY.trim();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reload() {
         isLoad.set(false);
         REGISTRY.clear();
@@ -327,13 +347,17 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
     public void register(Item key, Integer value) throws RegisterException {
         String hash;
         if (key.isBlock()) hash = String.valueOf(key.getBlockUnsafe().getRuntimeId());
-        else hash = key.getId() + "#" + key.getDamage();
+        else $5 = key.getId() + "#" + key.getDamage();
         if (REGISTRY.putIfAbsent(hash, value.intValue()) == 0) {
         } else {
             throw new RegisterException("This Fuel has already been registered with the key: " + key);
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void register0(Item key, Integer value) {
         try {
             register(key, value);
@@ -342,6 +366,10 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void register0(String key, Integer value) {
         try {
             if (REGISTRY.putIfAbsent(key + "#0", value.intValue()) == 0) {
@@ -353,6 +381,10 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void register1(String key, int meta, Integer value) {
         try {
             if (REGISTRY.putIfAbsent(key + "#" + meta, value.intValue()) == 0) {

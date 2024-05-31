@@ -14,17 +14,29 @@ import java.util.Objects;
 
 
 public class BlockConduit extends BlockTransparent implements BlockEntityHolder<BlockEntityConduit> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CONDUIT);
+    public static final BlockProperties $1 = new BlockProperties(CONDUIT);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockConduit() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockConduit(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Conduit";
     }
@@ -40,32 +52,52 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getBlockEntityType() {
         return BlockEntity.CONDUIT;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 3;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 15;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (item.isBlock() && Objects.equals(item.getBlockId(), CONDUIT) && target.getId().equals(CONDUIT)) {
             return false;
         }
 
-        BlockEntityConduit conduit = BlockEntityHolder.setBlockAndCreateEntity(this, true, true,
+        BlockEntityConduit $2 = BlockEntityHolder.setBlockAndCreateEntity(this, true, true,
                 new CompoundTag().putBoolean("IsMovable", true));
         if (conduit != null) {
             conduit.scheduleUpdate();
@@ -76,41 +108,73 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 15;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         return x + (5.0/16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinY() {
         return y + (5.0/16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         return z + (5.0/16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         return x + (11.0/16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return y + (11.0/16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         return z + (11.0/16);
     }

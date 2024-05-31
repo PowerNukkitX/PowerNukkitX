@@ -43,7 +43,7 @@ public class UpdateAbilitiesPacket extends DataPacket {
     public static final EnumMap<PlayerAbility, Integer> FLAGS_TO_BITS = new EnumMap<>(PlayerAbility.class);
 
     static {
-        for (int i = 0; i < VALID_FLAGS.length; i++) {
+        for ($1nt $1 = 0; i < VALID_FLAGS.length; i++) {
             FLAGS_TO_BITS.put(VALID_FLAGS[i], (1 << i));
         }
     }
@@ -54,11 +54,19 @@ public class UpdateAbilitiesPacket extends DataPacket {
     public final List<AbilityLayer> abilityLayers = new ObjectArrayList<>();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeLongLE(this.entityId);
@@ -67,6 +75,10 @@ public class UpdateAbilitiesPacket extends DataPacket {
         byteBuf.writeArray(this.abilityLayers, this::writeAbilityLayer);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void writeAbilityLayer(HandleByteBuf byteBuf, AbilityLayer abilityLayer) {
         byteBuf.writeShortLE(abilityLayer.getLayerType().ordinal());
         byteBuf.writeIntLE(getAbilitiesNumber(abilityLayer.getAbilitiesSet()));
@@ -75,8 +87,12 @@ public class UpdateAbilitiesPacket extends DataPacket {
         byteBuf.writeFloatLE(abilityLayer.getWalkSpeed());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static int getAbilitiesNumber(Set<PlayerAbility> abilities) {
-        int number = 0;
+        int $2 = 0;
         for (PlayerAbility ability : abilities) {
             number |= FLAGS_TO_BITS.getOrDefault(ability, 0);
         }
@@ -84,9 +100,17 @@ public class UpdateAbilitiesPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.UPDATE_ABILITIES_PACKET;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

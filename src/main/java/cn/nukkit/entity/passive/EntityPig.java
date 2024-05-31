@@ -30,9 +30,17 @@ import java.util.Set;
  */
 public class EntityPig extends EntityAnimal implements EntityWalkable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return PIG;
     }
+    /**
+     * @deprecated 
+     */
+    
     
 
     public EntityPig(IChunk chunk, CompoundTag nbt) {
@@ -79,6 +87,10 @@ public class EntityPig extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.45f;
@@ -87,6 +99,10 @@ public class EntityPig extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.isBaby()) {
             return 0.45f;
@@ -95,12 +111,20 @@ public class EntityPig extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Pig";
     }
@@ -113,8 +137,12 @@ public class EntityPig extends EntityAnimal implements EntityWalkable {
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBreedingItem(Item item) {
-        String id = item.getId();
+        String $1 = item.getId();
 
         return Objects.equals(id, Item.CARROT) || Objects.equals(id, Item.POTATO) || Objects.equals(id, BlockID.BEETROOT);
     }

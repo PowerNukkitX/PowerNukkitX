@@ -49,7 +49,11 @@ public interface VibrationListener {
      *
      * @return boolean
      */
-    default boolean isEntity() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isEntity() {
         return this instanceof Entity;
     }
 

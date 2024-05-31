@@ -8,9 +8,13 @@ import static cn.nukkit.level.updater.util.OrderedUpdater.FACING_TO_CARDINAL;
 
 public class BlockStateUpdater_1_20_40 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_20_40();
+    public static final Updater $1 = new BlockStateUpdater_1_20_40();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext ctx) {
         this.addDirectionUpdater(ctx, "minecraft:chest", FACING_TO_CARDINAL);
         this.addDirectionUpdater(ctx, "minecraft:ender_chest", FACING_TO_CARDINAL);
@@ -18,12 +22,16 @@ public class BlockStateUpdater_1_20_40 implements Updater {
         this.addDirectionUpdater(ctx, "minecraft:trapped_chest", FACING_TO_CARDINAL);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addDirectionUpdater(CompoundTagUpdaterContext ctx, String identifier, OrderedUpdater updater) {
         ctx.addUpdater(1, 20, 40)
                 .match("name", identifier)
                 .visit("states")
                 .edit(updater.getOldProperty(), helper -> {
-                    int value = (int) helper.getTag();
+                    int $2 = (int) helper.getTag();
                     helper.replaceWith(updater.getNewProperty(), updater.translate(value));
                 });
     }

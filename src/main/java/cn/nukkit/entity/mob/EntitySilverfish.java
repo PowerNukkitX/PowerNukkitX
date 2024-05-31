@@ -13,9 +13,17 @@ import org.jetbrains.annotations.NotNull;
 public class EntitySilverfish extends EntityMob implements EntityWalkable, EntityArthropod {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return SILVERFISH;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntitySilverfish(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -25,27 +33,47 @@ public class EntitySilverfish extends EntityMob implements EntityWalkable, Entit
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Silverfish";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.4f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.3f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(8);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPreventingSleep(Player player) {
         return true;
     }

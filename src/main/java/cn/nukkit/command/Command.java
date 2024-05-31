@@ -65,18 +65,34 @@ public abstract class Command {
     protected CommandData commandData;
 
     protected boolean serverSideOnly;
+    /**
+     * @deprecated 
+     */
+    
 
     public Command(String name) {
         this(name, "", null, EmptyArrays.EMPTY_STRINGS);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Command(String name, String description) {
         this(name, description, null, EmptyArrays.EMPTY_STRINGS);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Command(String name, String description, String usageMessage) {
         this(name, description, usageMessage, EmptyArrays.EMPTY_STRINGS);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Command(String name, String description, String usageMessage, String[] aliases) {
         this.commandData = new CommandData();
@@ -106,10 +122,18 @@ public abstract class Command {
     public Map<String, CommandParameter[]> getCommandParameters() {
         return commandParameters;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCommandParameters(Map<String, CommandParameter[]> commandParameters) {
         this.commandParameters = commandParameters;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addCommandParameters(String key, CommandParameter[] parameters) {
         this.commandParameters.put(key, parameters);
@@ -127,9 +151,9 @@ public abstract class Command {
             return null;
         }
 
-        var plugin = this instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE;
+        var $1 = this instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE;
 
-        CommandData customData = this.commandData.clone();
+        CommandData $2 = this.commandData.clone();
 
         if (getAliases().length > 0) {
             List<String> aliases = new ArrayList<>(Arrays.asList(getAliases()));
@@ -143,7 +167,7 @@ public abstract class Command {
         if (plugin == InternalPlugin.INSTANCE) {
             customData.description = player.getServer().getLanguage().tr(this.getDescription(), CommandOutputContainer.EMPTY_STRING, "commands.", false);
         } else if (plugin instanceof PluginBase pluginBase) {
-            var i18n = PluginI18nManager.getI18n(pluginBase);
+            var $3 = PluginI18nManager.getI18n(pluginBase);
             if (i18n != null) {
                 customData.description = i18n.tr(player.getLanguageCode(), this.getDescription());
             } else {
@@ -152,7 +176,7 @@ public abstract class Command {
         }
 
         this.commandParameters.forEach((key, params) -> {
-            CommandOverload overload = new CommandOverload();
+            CommandOverload $4 = new CommandOverload();
             overload.input.parameters = params;
             customData.overloads.put(key, overload);
         });
@@ -161,7 +185,7 @@ public abstract class Command {
             customData.overloads.put("default", new CommandOverload());
         }
 
-        CommandDataVersions versions = new CommandDataVersions();
+        CommandDataVersions $5 = new CommandDataVersions();
         versions.versions.add(customData);
         return versions;
     }
@@ -169,6 +193,10 @@ public abstract class Command {
     public Map<String, CommandOverload> getOverloads() {
         return commandData.overloads;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         throw new UnsupportedOperationException();
@@ -183,21 +211,41 @@ public abstract class Command {
      * @param log          命令输出工具
      * @return int 返回0代表执行失败, 返回大于等于1代表执行成功
      */
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         throw new UnsupportedOperationException();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return name;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getPermission() {
         return permission;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPermission(String permission) {
         this.permission = permission;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean testPermission(CommandSender target) {
         if (this.testPermissionSilent(target)) {
@@ -212,6 +260,10 @@ public abstract class Command {
 
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean testPermissionSilent(CommandSender target) {
         if (this.permission == null || this.permission.isEmpty()) {
@@ -227,10 +279,18 @@ public abstract class Command {
 
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getLabel() {
         return label;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setLabel(String name) {
         this.nextLabel = name;
@@ -240,6 +300,10 @@ public abstract class Command {
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean register(CommandMap commandMap) {
         if (this.allowChangesFrom(commandMap)) {
@@ -248,6 +312,10 @@ public abstract class Command {
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean unregister(CommandMap commandMap) {
         if (this.allowChangesFrom(commandMap)) {
@@ -258,10 +326,18 @@ public abstract class Command {
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean allowChangesFrom(CommandMap commandMap) {
         return commandMap != null && !commandMap.equals(this.commandMap);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isRegistered() {
         return this.commandMap != null;
@@ -270,25 +346,45 @@ public abstract class Command {
     public String[] getAliases() {
         return this.activeAliases;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getPermissionMessage() {
         return permissionMessage;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getDescription() {
         return description;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getUsage() {
         return usageMessage;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isServerSideOnly() {
         return serverSideOnly;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getCommandFormatTips() {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder $6 = new StringBuilder();
         for (String form : this.getCommandParameters().keySet()) {
             CommandParameter[] commandParameters = this.getCommandParameters().get(form);
             builder.append("- /" + this.getName());
@@ -311,6 +407,10 @@ public abstract class Command {
         }
         return builder.toString();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAliases(String[] aliases) {
         this.aliases = aliases;
@@ -318,18 +418,34 @@ public abstract class Command {
             this.activeAliases = aliases;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDescription(String description) {
         this.description = description;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPermissionMessage(String permissionMessage) {
         this.permissionMessage = permissionMessage;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setUsage(String usageMessage) {
         this.usageMessage = usageMessage;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasParamTree() {
         return this.paramTree != null;
@@ -338,6 +454,10 @@ public abstract class Command {
     /**
      * 若调用此方法，则将启用ParamTree用于解析命令参数
      */
+    /**
+     * @deprecated 
+     */
+    
     public void enableParamTree() {
         this.paramTree = new ParamTree(this);
     }
@@ -345,17 +465,25 @@ public abstract class Command {
     public ParamTree getParamTree() {
         return paramTree;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void broadcastCommandMessage(CommandSender source, String message) {
         broadcastCommandMessage(source, message, true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void broadcastCommandMessage(CommandSender source, String message, boolean sendToSource) {
         Set<Permissible> users = source.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
 
-        TranslationContainer result = new TranslationContainer("chat.type.admin", source.getName(), message);
+        TranslationContainer $7 = new TranslationContainer("chat.type.admin", source.getName(), message);
 
-        TranslationContainer colored = new TranslationContainer(TextFormat.GRAY + "" + TextFormat.ITALIC + "%chat.type.admin", source.getName(), message);
+        TranslationContainer $8 = new TranslationContainer(TextFormat.GRAY + "" + TextFormat.ITALIC + "%chat.type.admin", source.getName(), message);
 
         if (sendToSource && !(source instanceof ConsoleCommandSender)) {
             source.sendMessage(message);
@@ -371,10 +499,18 @@ public abstract class Command {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void broadcastCommandMessage(CommandSender source, TextContainer message) {
         broadcastCommandMessage(source, message, true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void broadcastCommandMessage(CommandSender source, TextContainer message, boolean sendToSource) {
         if ((source instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT)) ||
@@ -382,17 +518,17 @@ public abstract class Command {
             return;
         }
 
-        TextContainer m = message.clone();
-        String resultStr = "[" + source.getName() + ": " + (!m.getText().equals(source.getServer().getLanguage().get(m.getText())) ? "%" : "") + m.getText() + "]";
+        TextContainer $9 = message.clone();
+        String $10 = "[" + source.getName() + ": " + (!m.getText().equals(source.getServer().getLanguage().get(m.getText())) ? "%" : "") + m.getText() + "]";
 
         Set<Permissible> users = source.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
 
-        String coloredStr = TextFormat.GRAY + "" + TextFormat.ITALIC + resultStr;
+        String $11 = TextFormat.GRAY + "" + TextFormat.ITALIC + resultStr;
 
         m.setText(resultStr);
-        TextContainer result = m.clone();
+        TextContainer $12 = m.clone();
         m.setText(coloredStr);
-        TextContainer colored = m.clone();
+        TextContainer $13 = m.clone();
 
         if (sendToSource && !(source instanceof ConsoleCommandSender)) {
             source.sendMessage(message);
@@ -410,6 +546,10 @@ public abstract class Command {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return this.name;
     }

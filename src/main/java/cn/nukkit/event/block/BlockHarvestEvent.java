@@ -7,7 +7,7 @@ import cn.nukkit.item.Item;
 
 public class BlockHarvestEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -15,6 +15,10 @@ public class BlockHarvestEvent extends BlockEvent implements Cancellable {
 
     private Block newState;
     private Item[] drops;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockHarvestEvent(Block block, Block newState, Item[] drops) {
         super(block);
@@ -25,6 +29,10 @@ public class BlockHarvestEvent extends BlockEvent implements Cancellable {
     public Block getNewState() {
         return newState;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setNewState(Block newState) {
         this.newState = newState;
@@ -33,6 +41,10 @@ public class BlockHarvestEvent extends BlockEvent implements Cancellable {
     public Item[] getDrops() {
         return drops;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDrops(Item[] drops) {
         this.drops = drops;

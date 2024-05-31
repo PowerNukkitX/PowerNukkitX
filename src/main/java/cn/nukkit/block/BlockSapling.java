@@ -33,26 +33,46 @@ import static cn.nukkit.block.property.CommonBlockProperties.AGE_BIT;
  * @author Angelic47 (Nukkit Project)
  */
 public abstract class BlockSapling extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+    /**
+     * @deprecated 
+     */
+    
     public BlockSapling(BlockState blockstate) {
         super(blockstate);
     }
 
     public abstract WoodType getWoodType();
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isAged() {
         return getPropertyValue(AGE_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAged(boolean aged) {
         setPropertyValue(AGE_BIT, aged);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return getWoodType().name() + " Sapling";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (BlockFlower.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true, true);
@@ -63,11 +83,19 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal
             if (player != null && !player.isCreative()) {
@@ -87,6 +115,10 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!BlockFlower.isSupportValid(down())) {
@@ -109,11 +141,15 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
         return Level.BLOCK_UPDATE_NORMAL;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void grow() {
-        ObjectGenerator generator = null;
-        boolean bigTree = false;
+        ObjectGenerator $1 = null;
+        boolean $2 = false;
 
-        Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
+        Vector3 $3 = new Vector3(this.x, this.y - 1, this.z);
 
         switch (getWoodType()) {
             case JUNGLE:
@@ -152,8 +188,12 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
                     vector3 = this.add(vector2.getFloorX(), 0, vector2.getFloorY());
                     generator = new HugeTreesGenerator(0, 0, null, null) {
                         @Override
+    /**
+     * @deprecated 
+     */
+    
                         public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
-                            var object = new LegacyBigSpruceTree(0.75f, 4);
+                            var $4 = new LegacyBigSpruceTree(0.75f, 4);
                             object.setRandomTreeHeight(rand);
                             if (!this.ensureGrowable(level, rand, position, object.getTreeHeight())) {
                                 return false;
@@ -169,9 +209,9 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
                     break;
                 }
             default:
-                BlockManager blockManager = new BlockManager(this.level);
+                BlockManager $5 = new BlockManager(this.level);
                 LegacyTreeGenerator.growTree(blockManager, this.getFloorX(), this.getFloorY(), this.getFloorZ(), RandomSourceProvider.create(), getWoodType(), false);
-                StructureGrowEvent ev = new StructureGrowEvent(this, blockManager.getBlocks());
+                StructureGrowEvent $6 = new StructureGrowEvent(this, blockManager.getBlocks());
                 this.level.getServer().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     return;
@@ -195,9 +235,9 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
             this.level.setBlock(this, get(AIR), true, false);
         }
 
-        BlockManager blockManager = new BlockManager(this.level);
-        boolean success = generator.generate(blockManager, RandomSourceProvider.create(), vector3);
-        StructureGrowEvent ev = new StructureGrowEvent(this, blockManager.getBlocks());
+        BlockManager $7 = new BlockManager(this.level);
+        boolean $8 = generator.generate(blockManager, RandomSourceProvider.create(), vector3);
+        StructureGrowEvent $9 = new StructureGrowEvent(this, blockManager.getBlocks());
         this.level.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled() || !success) {
             if (bigTree) {
@@ -224,14 +264,14 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
         validVectorsList.add(Arrays.asList(new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, -1), new Vector2(1, -1)));
         validVectorsList.add(Arrays.asList(new Vector2(0, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(-1, 1)));
         for (List<Vector2> validVectors : validVectorsList) {
-            boolean correct = true;
+            boolean $10 = true;
             for (Vector2 vector2 : validVectors) {
                 if (!this.isSameType(this.add(vector2.x, 0, vector2.y), type))
                     correct = false;
             }
             if (correct) {
-                int lowestX = 0;
-                int lowestZ = 0;
+                int $11 = 0;
+                int $12 = 0;
                 for (Vector2 vector2 : validVectors) {
                     if (vector2.getFloorX() < lowestX)
                         lowestX = vector2.getFloorX();
@@ -243,13 +283,21 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
         }
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isSameType(Vector3 pos, WoodType type) {
-        Block block = this.level.getBlock(pos);
+        Block $13 = this.level.getBlock(pos);
         return block.getId().equals(this.getId()) && ((BlockSapling) block).getWoodType() == type;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isFertilizable() {
         return true;
     }

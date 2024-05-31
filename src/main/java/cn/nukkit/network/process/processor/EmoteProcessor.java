@@ -11,6 +11,10 @@ import org.jetbrains.annotations.NotNull;
 @Slf4j
 public class EmoteProcessor extends DataPacketProcessor<EmotePacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull EmotePacket pk) {
         if (!playerHandle.player.spawned) {
             return;
@@ -25,6 +29,10 @@ public class EmoteProcessor extends DataPacketProcessor<EmotePacket> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.EMOTE_PACKET;
     }

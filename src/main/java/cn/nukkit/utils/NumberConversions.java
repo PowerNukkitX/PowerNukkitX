@@ -6,26 +6,50 @@ package cn.nukkit.utils;
 
 
 public final class NumberConversions {
+    
+    /**
+     * @deprecated 
+     */
     private NumberConversions() {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int floor(double num) {
-        final int floor = (int) num;
-        return floor == num ? floor : floor - (int) (Double.doubleToRawLongBits(num) >>> 63);
+        final int $1 = (int) num;
+        return $2 == num ? floor : floor - (int) (Double.doubleToRawLongBits(num) >>> 63);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int ceil(final double num) {
-        final int floor = (int) num;
-        return floor == num ? floor : floor + (int) (~Double.doubleToRawLongBits(num) >>> 63);
+        final int $3 = (int) num;
+        return $4 == num ? floor : floor + (int) (~Double.doubleToRawLongBits(num) >>> 63);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int round(double num) {
         return floor(num + 0.5d);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static double square(double num) {
         return num * num;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int toInt(Object object) {
         if (object instanceof Number) {
@@ -38,6 +62,10 @@ public final class NumberConversions {
         }
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static float toFloat(Object object) {
         if (object instanceof Number) {
@@ -50,6 +78,10 @@ public final class NumberConversions {
         }
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static double toDouble(Object object) {
         if (object instanceof Number) {
@@ -62,6 +94,10 @@ public final class NumberConversions {
         }
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static long toLong(Object object) {
         if (object instanceof Number) {
@@ -74,6 +110,10 @@ public final class NumberConversions {
         }
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static short toShort(Object object) {
         if (object instanceof Number) {
@@ -86,6 +126,10 @@ public final class NumberConversions {
         }
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static byte toByte(Object object) {
         if (object instanceof Number) {

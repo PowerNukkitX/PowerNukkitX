@@ -9,8 +9,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class CraftingEventProcessor extends DataPacketProcessor<CraftingEventPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull CraftingEventPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         //todo check craft
         /*if (player.craftingType == Player.CRAFTING_BIG && pk.type == CraftingEventPacket.TYPE_WORKBENCH
                 || player.craftingType == Player.CRAFTING_SMALL && pk.type == CraftingEventPacket.TYPE_INVENTORY) {
@@ -24,6 +28,10 @@ public class CraftingEventProcessor extends DataPacketProcessor<CraftingEventPac
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.CRAFTING_EVENT_PACKET;
     }

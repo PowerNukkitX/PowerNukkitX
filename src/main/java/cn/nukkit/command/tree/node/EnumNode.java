@@ -18,6 +18,10 @@ public class EnumNode extends ParamNode<String> {
     protected Set<String> enums;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         if (commandEnum.isSoft()) {
             this.value = arg;

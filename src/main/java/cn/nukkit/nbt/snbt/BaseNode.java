@@ -19,6 +19,10 @@ public class BaseNode implements Node {
         }
         return tokenSource;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTokenSource(SNBTLexer tokenSource) {
         this.tokenSource = tokenSource;
@@ -34,6 +38,10 @@ public class BaseNode implements Node {
      *
      * @param listClass the #java.util.List implementation to use internally
      *                  for the child nodes. By default #java.util.ArrayList is used.
+     */
+    
+    /**
+     * @deprecated 
      */
     static public void setListClass(Class<? extends List<?>> listClass) {
         BaseNode.listClass = listClass;
@@ -61,14 +69,26 @@ public class BaseNode implements Node {
     private List<Node> children = newList();
     private int beginOffset, endOffset;
     private boolean unparsed;
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isUnparsed() {
         return this.unparsed;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setUnparsed(boolean unparsed) {
         this.unparsed = unparsed;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setParent(Node n) {
         parent = n;
@@ -77,11 +97,19 @@ public class BaseNode implements Node {
     public Node getParent() {
         return parent;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addChild(Node n) {
         children.add(n);
         n.setParent(this);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addChild(int i, Node n) {
         children.add(i, n);
@@ -91,6 +119,10 @@ public class BaseNode implements Node {
     public Node getChild(int i) {
         return children.get(i);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setChild(int i, Node n) {
         children.set(i, n);
@@ -100,10 +132,18 @@ public class BaseNode implements Node {
     public Node removeChild(int i) {
         return children.remove(i);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void clearChildren() {
         children.clear();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getChildCount() {
         return children.size();
@@ -112,25 +152,45 @@ public class BaseNode implements Node {
     public List<Node> children() {
         return Collections.unmodifiableList(children);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getBeginOffset() {
         return beginOffset;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBeginOffset(int beginOffset) {
         this.beginOffset = beginOffset;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getEndOffset() {
         return endOffset;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setEndOffset(int endOffset) {
         this.endOffset = endOffset;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String toString() {
-        StringBuilder buf = new StringBuilder();
+        StringBuilder $1 = new StringBuilder();
         for (Token t : getRealTokens()) {
             buf.append(t);
         }
@@ -146,6 +206,10 @@ public class BaseNode implements Node {
         }
         return namedChildMap.get(name);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setNamedChild(String name, Node node) {
         if (namedChildMap == null) {
@@ -153,7 +217,7 @@ public class BaseNode implements Node {
         }
         if (namedChildMap.containsKey(name)) {
             // Can't have duplicates
-            String msg = String.format("Duplicate named child not allowed: {0}", name);
+            String $2 = String.format("Duplicate named child not allowed: {0}", name);
             throw new RuntimeException(msg);
         }
         namedChildMap.put(name, node);
@@ -165,6 +229,10 @@ public class BaseNode implements Node {
         }
         return namedChildListMap.get(name);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addToNamedChildList(String name, Node node) {
         if (namedChildListMap == null) {

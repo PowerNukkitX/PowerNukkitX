@@ -22,13 +22,21 @@ public class LangTest {
     static PluginI18n i18n;
 
     @BeforeAll
+    
+    /**
+     * @deprecated 
+     */
     static void test_LoadLang() {
-        PluginBase mock = Mockito.mock(PluginBase.class);
+        PluginBase $1 = Mockito.mock(PluginBase.class);
         Mockito.when(mock.getFile()).thenReturn(new File("test"));
         i18n = PluginI18nManager.register(mock, "src/test/resources/language");
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_tr() {
         assertEquals("hhdaosidhja", i18n.tr(LangCode.en_US, "test1", "hhdaosidhja"));
         assertEquals("hello \n world", i18n.tr(LangCode.en_US, "test2"));
@@ -37,6 +45,10 @@ public class LangTest {
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_placeholders() {
         assertEquals("Test placeholders 1 2", i18n.tr(LangCode.en_US, "test3", "1","2"));
         assertEquals("测试 placeholders 1 2", i18n.tr(LangCode.zh_CN, "test3", "1","2"));
@@ -44,6 +56,10 @@ public class LangTest {
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_addLang() {
         i18n.addLang(LangCode.zh_TW, "src/test/resources/language_extra/zh_TW.json");
         assertEquals("hhdaosidhja", i18n.tr(LangCode.zh_TW, "test1", "hhdaosidhja"));
@@ -51,6 +67,10 @@ public class LangTest {
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_reload() {
         try {
             Files.copy(Path.of("src/test/resources/en_GB.json"), Path.of("src/test/resources/language/en_GB.json"));
@@ -62,14 +82,22 @@ public class LangTest {
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_TextContainer() {
-        TextContainer textContainer = new TextContainer("test");
+        TextContainer $2 = new TextContainer("test");
         assertEquals("test", textContainer.getText());
         textContainer.setText("test1");
         assertEquals("test1", textContainer.getText());
     }
 
     @AfterAll
+    
+    /**
+     * @deprecated 
+     */
     static void clean() {
         try {
             Files.deleteIfExists(Path.of("src/test/resources/language/en_GB.json"));

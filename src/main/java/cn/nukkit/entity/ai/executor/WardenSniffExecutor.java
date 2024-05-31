@@ -11,6 +11,10 @@ public class WardenSniffExecutor implements IBehaviorExecutor {
     protected int angerAddition;
     protected int duration;//gt
     protected int endTime;
+    /**
+     * @deprecated 
+     */
+    
 
     public WardenSniffExecutor(int duration, int angerAddition) {
         this.duration = duration;
@@ -18,6 +22,10 @@ public class WardenSniffExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
         if (Server.getInstance().getTick() >= this.endTime) {
             sniff(entity);
@@ -28,6 +36,10 @@ public class WardenSniffExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStart(EntityIntelligent entity) {
         this.endTime = Server.getInstance().getTick() + this.duration;
         entity.setDataFlag(EntityFlag.SNIFFING, true);
@@ -36,17 +48,29 @@ public class WardenSniffExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         entity.setDataFlag(EntityFlag.SNIFFING, false);
         entity.setDataFlagExtend(EntityFlag.SNIFFING, false);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         entity.setDataFlag(EntityFlag.SNIFFING, false);
         entity.setDataFlagExtend(EntityFlag.SNIFFING, false);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void sniff(EntityIntelligent entity) {
         if (!(entity instanceof EntityWarden warden)) return;
         for (var other : entity.level.getEntities()) {

@@ -5,9 +5,13 @@ import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 
 public class BlockStateUpdater_1_18_30 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_18_30();
+    public static final Updater $1 = new BlockStateUpdater_1_18_30();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext context) {
         this.renameIdentifier(context, "minecraft:concretePowder", "minecraft:concrete_powder");
         this.renameIdentifier(context, "minecraft:frog_egg", "minecraft:frog_spawn");
@@ -23,12 +27,20 @@ public class BlockStateUpdater_1_18_30 implements Updater {
         this.addPillarAxis(context, "minecraft:verdant_froglight");
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void renameIdentifier(CompoundTagUpdaterContext context, String from, String to) {
         context.addUpdater(1, 18, 10, true) // Here we go again Mojang
                 .match("name", from)
                 .edit("name", helper -> helper.replaceWith("name", to));
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addPillarAxis(CompoundTagUpdaterContext context, String from) {
         context.addUpdater(1, 18, 10, true) // Here we go again Mojang
                 .match("name", from)

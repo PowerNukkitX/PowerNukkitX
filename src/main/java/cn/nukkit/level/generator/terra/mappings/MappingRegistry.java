@@ -71,6 +71,10 @@ public abstract class MappingRegistry<M> implements IRegistry<M> {
      * @param mappings the underlying value held by this registry
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void set(M mappings) {
         this.mappings = mappings;
     }
@@ -82,6 +86,10 @@ public abstract class MappingRegistry<M> implements IRegistry<M> {
      * @param consumer the consumer
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void register(Consumer<M> consumer) {
         consumer.accept(this.mappings);
     }

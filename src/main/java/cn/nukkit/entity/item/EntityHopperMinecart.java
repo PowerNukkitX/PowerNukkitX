@@ -24,15 +24,23 @@ import org.jetbrains.annotations.NotNull;
 public class EntityHopperMinecart extends EntityMinecartAbstract implements InventoryHolder, BlockHopper.IHopper {
 
     @Override
-    public @NotNull String getIdentifier() {
+    public @NotNull 
+    /**
+     * @deprecated 
+     */
+    String getIdentifier() {
         return HOPPER_MINECART;
     }
-    private final BlockVector3 temporalVector = new BlockVector3();
+    private final BlockVector3 $1 = new BlockVector3();
     public int transferCooldown;
 
     protected MinecartHopperInventory inventory;
     private boolean disabled;
     private AxisAlignedBB pickupArea;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityHopperMinecart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -40,6 +48,10 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (!super.onUpdate(currentTick)) return false;
 
@@ -54,14 +66,14 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
             return false;
         }
 
-        HopperSearchItemEvent event = new HopperSearchItemEvent(this, true);
+        HopperSearchItemEvent $2 = new HopperSearchItemEvent(this, true);
         this.server.getPluginManager().callEvent(event);
         if (event.isCancelled()) return false;
 
         this.updatePickupArea();
 
-        Block blockSide = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
-        BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
+        Block $3 = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
+        BlockEntity $4 = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
         boolean changed;
 
@@ -79,16 +91,28 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
 
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isOnTransferCooldown() {
         return this.transferCooldown > 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTransferCooldown(int transferCooldown) {
         this.transferCooldown = transferCooldown;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return getType().getName();
     }
@@ -99,17 +123,25 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isRideable() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void dropItem() {
         for (Item item : this.inventory.getContents().values()) {
             this.level.dropItem(this, item);
         }
         if (this.lastDamageCause instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
-            Entity damager = entityDamageByEntityEvent.getDamager();
+            Entity $5 = entityDamageByEntityEvent.getDamager();
             if (damager instanceof Player player && player.isCreative()) {
                 return;
             }
@@ -118,17 +150,29 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void kill() {
         super.kill();
         this.inventory.clearAll();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean mountEntity(Entity entity, EntityLink.Type mode) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         player.addWindow(this.inventory);
         return false; // If true, the count of items player has in hand decreases
@@ -140,6 +184,10 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.inventory = new MinecartHopperInventory(this);
         if (this.namedTag.contains("Items") && this.namedTag.get("Items") instanceof ListTag) {
@@ -161,32 +209,52 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
 
         checkDisabled();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void updatePickupArea() {
         this.pickupArea = new SimpleAxisAlignedBB(this.x - 0.5, this.y - 0.5, this.z - 0.5, this.x + 1, this.y + 2.5, this.z + 1).expand(0.25, 0, 0.25);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void checkDisabled() {
         if (getLevelBlock() instanceof BlockActivatorRail rail) {
             setDisabled(rail.isActive());
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isDisabled() {
         return disabled;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putList("Items",new ListTag<CompoundTag>());
         if (this.inventory != null) {
-            for (int slot = 0; slot < 5; ++slot) {
-                Item item = this.inventory.getItem(slot);
+            for (int $6 = 0; slot < 5; ++slot) {
+                Item $7 = this.inventory.getItem(slot);
                 if (item != null && !item.isNull()) {
                     this.namedTag.getList("Items", CompoundTag.class)
                             .add(NBTIO.putItemHelper(item, slot));

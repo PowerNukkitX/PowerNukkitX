@@ -13,11 +13,19 @@ import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;
 
 public class BlockCherryLeaves extends BlockLeaves {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_LEAVES,PERSISTENT_BIT, UPDATE_BIT);
+    public static final BlockProperties $1 = new BlockProperties(CHERRY_LEAVES,PERSISTENT_BIT, UPDATE_BIT);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCherryLeaves() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCherryLeaves(BlockState blockState) {
         super(blockState);
@@ -30,6 +38,10 @@ public class BlockCherryLeaves extends BlockLeaves {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Cherry Leaves";
     }

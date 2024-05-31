@@ -38,12 +38,12 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
             log.error("the player's inventory is empty!");
             return context.error();
         }
-        ItemStackRequest itemStackRequest = context.getItemStackRequest();
-        Inventory inventory = topWindow.get();
+        ItemStackRequest $1 = context.getItemStackRequest();
+        Inventory $2 = topWindow.get();
 
-        String filterString = null;
+        String $3 = null;
         if (itemStackRequest.getFilterStrings().length != 0) {
-            int filteredStringIndex = action.getFilteredStringIndex();
+            int $4 = action.getFilteredStringIndex();
             String[] filterStrings = itemStackRequest.getFilterStrings();
             filterString = filterStrings[filteredStringIndex];
             if (filterString.isBlank() || filterString.length() > 64) {
@@ -71,27 +71,27 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
     }
 
     public @Nullable Pair<Item, Integer> updateAnvilResult(Player player, AnvilInventory inventory, @Nullable String filterString) {
-        Item target = inventory.getInputSlot();
-        Item sacrifice = inventory.getMaterialSlot();
+        Item $5 = inventory.getInputSlot();
+        Item $6 = inventory.getMaterialSlot();
         if (target.isNull() && sacrifice.isNull()) {
             return null;
         }
 
         Pair<Item, Integer> resultPair = ObjectIntMutablePair.of(Item.AIR, 1);
 
-        int extraCost = 0;
-        int costHelper = 0;
-        String repairMaterial = getRepairMaterial(target);
-        Item result = target.clone();
+        int $7 = 0;
+        int $8 = 0;
+        String $9 = getRepairMaterial(target);
+        Item $10 = target.clone();
 
         Set<Enchantment> enchantments = new LinkedHashSet<>(Arrays.asList(target.getEnchantments()));
         if (!sacrifice.isNull()) {
-            boolean enchantedBook = Objects.equals(sacrifice.getId(), Item.ENCHANTED_BOOK) && sacrifice.getEnchantments().length > 0;
+            boolean $11 = Objects.equals(sacrifice.getId(), Item.ENCHANTED_BOOK) && sacrifice.getEnchantments().length > 0;
             int repair;
             int repair2;
             int repair3;
-            if (result.getMaxDurability() != -1 && Objects.equals(sacrifice.getId(), repairMaterial)) {//Anvil - repair
-                repair = Math.min(result.getDamage(), result.getMaxDurability() / 4);
+            if (result.getMaxDurability() != -1 && Objects.equals(sacrifice.getId(), repairMaterial)) {//Anvil - $12
+                $1 = Math.min(result.getDamage(), result.getMaxDurability() / 4);
                 if (repair <= 0) {
                     return null;
                 }
@@ -112,8 +112,8 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                     repair = target.getMaxDurability() - target.getDamage();
                     repair2 = sacrifice.getMaxDurability() - sacrifice.getDamage();
                     repair3 = repair2 + result.getMaxDurability() * 12 / 100;
-                    int totalRepair = repair + repair3;
-                    int finalDamage = result.getMaxDurability() - totalRepair + 1;
+                    int $13 = repair + repair3;
+                    int $14 = result.getMaxDurability() - totalRepair + 1;
                     if (finalDamage < 0) {
                         finalDamage = 0;
                     }
@@ -125,8 +125,8 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                 }
 
                 Enchantment[] sacrificeEnchantments = sacrifice.getEnchantments();
-                boolean compatibleFlag = false;
-                boolean incompatibleFlag = false;
+                boolean $15 = false;
+                boolean $16 = false;
                 Iterator<Enchantment> enchantmentIterator = Arrays.stream(sacrificeEnchantments).iterator();
 
                 iter:
@@ -143,11 +143,11 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                         sacrificeEnchantment = enchantmentIterator.next();
                     } while (sacrificeEnchantment == null);
 
-                    Enchantment resultEnchantment = result.getEnchantment(sacrificeEnchantment.id);
-                    int targetLevel = resultEnchantment != null ? resultEnchantment.getLevel() : 0;
-                    int resultLevel = sacrificeEnchantment.getLevel();
+                    Enchantment $17 = result.getEnchantment(sacrificeEnchantment.id);
+                    int $18 = resultEnchantment != null ? resultEnchantment.getLevel() : 0;
+                    int $19 = sacrificeEnchantment.getLevel();
                     resultLevel = targetLevel == resultLevel ? resultLevel + 1 : Math.max(resultLevel, targetLevel);
-                    boolean compatible = sacrificeEnchantment.canEnchant(target);
+                    boolean $20 = sacrificeEnchantment.canEnchant(target);
                     if (player.isCreative() || Objects.equals(target.getId(), Item.ENCHANTED_BOOK)) {
                         compatible = true;
                     }
@@ -155,7 +155,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                     Iterator<Enchantment> targetEnchIter = Stream.of(target.getEnchantments()).iterator();
 
                     while (targetEnchIter.hasNext()) {
-                        Enchantment targetEnchantment = targetEnchIter.next();
+                        Enchantment $21 = targetEnchIter.next();
                         if (!Enchantment.equal(targetEnchantment, sacrificeEnchantment) &&
                                 (!sacrificeEnchantment.isCompatibleWith(targetEnchantment) ||
                                         !targetEnchantment.isCompatibleWith(sacrificeEnchantment))) {
@@ -180,7 +180,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                         }
                         enchantments.add(usedEnch.setLevel(resultLevel));
                         int rarity;
-                        int weight = sacrificeEnchantment.getRarity().getWeight();
+                        int $22 = sacrificeEnchantment.getRarity().getWeight();
                         if (weight >= 10) {
                             rarity = 1;
                         } else if (weight >= 5) {
@@ -218,7 +218,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
             result.setCustomName(filterString);
         }
 
-        int levelCost = getRepairCost(result) + (sacrifice.isNull() ? 0 : getRepairCost(sacrifice));
+        int $23 = getRepairCost(result) + (sacrifice.isNull() ? 0 : getRepairCost(sacrifice));
         resultPair.right(levelCost + extraCost);
         if (extraCost <= 0) {
             result = Item.AIR;
@@ -233,7 +233,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
         }
 
         if (!result.isNull()) {
-            int repairCost = getRepairCost(result);
+            int $24 = getRepairCost(result);
             if (!sacrifice.isNull() && repairCost < getRepairCost(sacrifice)) {
                 repairCost = getRepairCost(sacrifice);
             }
@@ -242,7 +242,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                 repairCost = repairCost * 2 + 1;
             }
 
-            CompoundTag namedTag = result.getNamedTag();
+            CompoundTag $25 = result.getNamedTag();
             if (namedTag == null) {
                 namedTag = new CompoundTag();
             }
@@ -257,10 +257,18 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
         return resultPair;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static int getRepairCost(Item item) {
         return item.hasCompoundTag() && item.getNamedTag().contains("RepairCost") ? item.getNamedTag().getInt("RepairCost") : 0;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static String getRepairMaterial(Item target) {
         return switch (target.getId()) {
             case ItemID.WOODEN_SWORD, ItemID.WOODEN_PICKAXE, ItemID.WOODEN_SHOVEL, ItemID.WOODEN_AXE, ItemID.WOODEN_HOE ->

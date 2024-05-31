@@ -23,15 +23,27 @@ public class CameraInstructionPacket extends DataPacket {
     public ClearInstruction clearInstruction;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.CAMERA_INSTRUCTION_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeNotNull(setInstruction, (s) -> {
             byteBuf.writeIntLE(s.getPreset().getId());
@@ -52,6 +64,10 @@ public class CameraInstructionPacket extends DataPacket {
             byteBuf.writeNotNull(f.getColor(), c -> this.writeColor(byteBuf, c));
         });
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setInstruction(CameraInstruction instruction) {
         if (instruction instanceof SetInstruction se) {
@@ -63,22 +79,38 @@ public class CameraInstructionPacket extends DataPacket {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void writeEase(HandleByteBuf byteBuf, Ease ease) {
         byteBuf.writeByte((byte) ease.easeType().ordinal());
         byteBuf.writeFloatLE(ease.time());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void writeTimeData(HandleByteBuf byteBuf, Time time) {
         byteBuf.writeFloatLE(time.fadeIn());
         byteBuf.writeFloatLE(time.hold());
         byteBuf.writeFloatLE(time.fadeOut());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void writeColor(HandleByteBuf byteBuf, Color color) {
         byteBuf.writeFloatLE(color.getRed() / 255F);
         byteBuf.writeFloatLE(color.getGreen() / 255F);
         byteBuf.writeFloatLE(color.getBlue() / 255F);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

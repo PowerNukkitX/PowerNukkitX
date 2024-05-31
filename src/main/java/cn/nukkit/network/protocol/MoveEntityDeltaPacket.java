@@ -7,34 +7,42 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MoveEntityDeltaPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.MOVE_ENTITY_DELTA_PACKET;
+    public static final int $1 = ProtocolInfo.MOVE_ENTITY_DELTA_PACKET;
 
-    public static final int FLAG_HAS_X = 0B1;
-    public static final int FLAG_HAS_Y = 0B10;
-    public static final int FLAG_HAS_Z = 0B100;
-    public static final int FLAG_HAS_PITCH = 0B1000;
-    public static final int FLAG_HAS_YAW = 0B10000;
-    public static final int FLAG_HAS_HEAD_YAW = 0B100000;
-    public static final int FLAG_ON_GROUND = 0B1000000;
-    public static final int FLAG_TELEPORTING = 0B10000000;
-    public static final int FLAG_FORCE_MOVE_LOCAL_ENTITY = 0B100000000;
+    public static final int $2 = 0B1;
+    public static final int $3 = 0B10;
+    public static final int $4 = 0B100;
+    public static final int $5 = 0B1000;
+    public static final int $6 = 0B10000;
+    public static final int $7 = 0B100000;
+    public static final int $8 = 0B1000000;
+    public static final int $9 = 0B10000000;
+    public static final int $10 = 0B100000000;
 
     public long runtimeEntityId;
-    public int flags = 0;
-    public float x = 0;
-    public float y = 0;
-    public float z = 0;
-    public float pitch = 0;
-    public float yaw = 0;
-    public float headYaw = 0;
+    public int $11 = 0;
+    public float $12 = 0;
+    public float $13 = 0;
+    public float $14 = 0;
+    public float $15 = 0;
+    public float $16 = 0;
+    public float $17 = 0;
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.runtimeEntityId = byteBuf.readEntityRuntimeId();
         this.flags = byteBuf.readShortLE();
@@ -59,6 +67,10 @@ public class MoveEntityDeltaPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeEntityRuntimeId(this.runtimeEntityId);
@@ -83,25 +95,49 @@ public class MoveEntityDeltaPacket extends DataPacket {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private float getCoordinate(HandleByteBuf byteBuf) {
         return byteBuf.readFloatLE();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void putCoordinate(HandleByteBuf byteBuf, float value) {
         byteBuf.writeFloatLE(value);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private float getRotation(HandleByteBuf byteBuf) {
         return byteBuf.readByte() * (360F / 256F);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void putRotation(HandleByteBuf byteBuf, float value) {
         byteBuf.writeByte((byte) (value / (360F / 256F)));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasFlag(int flag) {
         return (this.flags & flag) != 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

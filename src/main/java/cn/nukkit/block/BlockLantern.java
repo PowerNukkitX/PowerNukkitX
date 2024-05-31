@@ -12,28 +12,44 @@ import static cn.nukkit.block.property.CommonBlockProperties.HANGING;
 
 
 public class BlockLantern extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(LANTERN, HANGING);
+    public static final BlockProperties $1 = new BlockProperties(LANTERN, HANGING);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockLantern() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockLantern(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Lantern";
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isBlockAboveValid() {
-        Block support = up();
+        Block $2 = up();
         switch (support.getId()) {
             case CHAIN, IRON_BARS, HOPPER -> {
                 return true;
@@ -53,8 +69,12 @@ public class BlockLantern extends BlockFlowable {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isBlockUnderValid() {
-        Block support = down();
+        Block $3 = down();
         if (support.getId().equals(HOPPER)) {
             return true;
         }
@@ -65,8 +85,12 @@ public class BlockLantern extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        boolean hanging = face != BlockFace.UP && isBlockAboveValid() && (!isBlockUnderValid() || face == BlockFace.DOWN);
+        boolean $4 = face != BlockFace.UP && isBlockAboveValid() && (!isBlockUnderValid() || face == BlockFace.DOWN);
         if (!isBlockUnderValid() && !hanging) {
             return false;
         }
@@ -78,6 +102,10 @@ public class BlockLantern extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isHanging()) {
@@ -93,61 +121,109 @@ public class BlockLantern extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 15;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 3.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 3.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         return x + (5.0 / 16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinY() {
         return y + (!isHanging() ? 0 : 1. / 16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         return z + (5.0 / 16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         return x + (11.0 / 16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return y + (!isHanging() ? 7.0 / 16 : 8.0 / 16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         return z + (11.0 / 16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return false;
     }
@@ -158,19 +234,35 @@ public class BlockLantern extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isHanging() {
         return getPropertyValue(HANGING);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setHanging(boolean hanging) {
         setPropertyValue(HANGING, hanging);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }

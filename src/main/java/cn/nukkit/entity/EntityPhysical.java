@@ -22,9 +22,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     /**
      * 移动精度阈值，绝对值小于此阈值的移动被视为没有移动
      */
-    public static final float PRECISION = 0.00001f;
+    public static final float $1 = 0.00001f;
 
-    public static final AtomicInteger globalCycleTickSpread = new AtomicInteger();
+    public static final AtomicInteger $2 = new AtomicInteger();
     /**
      * 时间泛播延迟，用于缓解在同一时间大量提交任务挤占cpu的情况
      */
@@ -38,9 +38,13 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     /**
      * 实体自由落体运动的时间
      */
-    protected int fallingTick = 0;
-    protected boolean needsRecalcMovement = true;
-    private boolean needsCollisionDamage = false;
+    protected int $3 = 0;
+    protected boolean $4 = true;
+    private boolean $5 = false;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityPhysical(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -51,6 +55,10 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void asyncPrepare(int currentTick) {
         // 计算是否需要重新计算高开销实体运动
         this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
@@ -71,6 +79,10 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         // 记录最大高度，用于计算坠落伤害
         if (!this.onGround && this.y > highestPosition) {
@@ -84,18 +96,26 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean entityBaseTick() {
         return this.entityBaseTick(1);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean entityBaseTick(int tickDiff) {
-        boolean hasUpdate = super.entityBaseTick(tickDiff);
+        boolean $6 = super.entityBaseTick(tickDiff);
         //handle human entity freeze
-        var collidedWithPowderSnow = this.getTickCachedCollisionBlocks().stream().anyMatch(block -> block.getId() == Block.POWDER_SNOW);
+        var $7 = this.getTickCachedCollisionBlocks().stream().anyMatch(block -> block.getId() == Block.POWDER_SNOW);
         if (this.getFreezingTicks() < 140 && collidedWithPowderSnow) {
             this.addFreezingTicks(1);
-            EntityFreezeEvent event = new EntityFreezeEvent(this);
+            EntityFreezeEvent $8 = new EntityFreezeEvent(this);
             this.server.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 //this.setMovementSpeed(); //todo 给物理实体添加freeze减速
@@ -111,11 +131,19 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeMovedByCurrents() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void updateMovement() {
         // 检测自由落体时间
         if (isFalling()) {
@@ -124,22 +152,38 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         super.updateMovement();
         this.move(this.motionX, this.motionY, this.motionZ);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isFalling() {
         return !this.onGround && this.y < this.highestPosition;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public final void addTmpMoveMotion(Vector3 tmpMotion) {
         this.motionX += tmpMotion.x;
         this.motionY += tmpMotion.y;
         this.motionZ += tmpMotion.z;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public final void addTmpMoveMotionXZ(Vector3 tmpMotion) {
         this.motionX += tmpMotion.x;
         this.motionZ += tmpMotion.z;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void handleGravity() {
         //重力一直存在
         this.motionY -= this.getGravity();
@@ -153,13 +197,17 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      * 计算地面摩擦力
      */
 
+    
+    /**
+     * @deprecated 
+     */
     protected void handleGroundFrictionMovement() {
         //未在地面就没有地面阻力
         if (!this.onGround) return;
         //小于精度
         if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION) return;
         // 减少移动向量（计算摩擦系数，在冰上滑得更远）
-        final double factor = getGroundFrictionFactor();
+        final double $9 = getGroundFrictionFactor();
         this.motionX *= factor;
         this.motionZ *= factor;
         if (Math.abs(this.motionX) < PRECISION) this.motionX = 0;
@@ -170,11 +218,15 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      * 计算流体阻力（空气/液体）
      */
 
+    
+    /**
+     * @deprecated 
+     */
     protected void handlePassableBlockFrictionMovement() {
         //小于精度
         if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION && Math.abs(this.motionY) < PRECISION)
             return;
-        final double factor = getPassableBlockFrictionFactor();
+        final double $10 = getPassableBlockFrictionFactor();
         this.motionX *= factor;
         this.motionY *= factor;
         this.motionZ *= factor;
@@ -188,6 +240,10 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      *
      * @return 当前位置的地面摩擦因子
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public double getGroundFrictionFactor() {
         if (!this.onGround) return 1.0;
@@ -199,9 +255,13 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      *
      * @return 当前位置的流体阻力因子
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public double getPassableBlockFrictionFactor() {
-        var block = this.getTickCachedLevelBlock();
+        var $11 = this.getTickCachedLevelBlock();
         if (block.collidesWithBB(this.getBoundingBox(), true)) return block.getPassableBlockFrictionFactor();
         return Block.DEFAULT_AIR_FLUID_FRICTION;
     }
@@ -209,20 +269,24 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     /**
      * 默认使用nk内置实现，这只是个后备算法
      */
+    
+    /**
+     * @deprecated 
+     */
     protected void handleLiquidMovement() {
-        final var tmp = new Vector3();
-        BlockLiquid blockLiquid = null;
+        final var $12 = new Vector3();
+        BlockLiquid $13 = null;
         for (final var each : this.getLevel().getCollisionBlocks(getOffsetBoundingBox(),
                 false, true, block -> block instanceof BlockLiquid)) {
             blockLiquid = (BlockLiquid) each;
-            final var flowVector = blockLiquid.getFlowVector();
+            final var $14 = blockLiquid.getFlowVector();
             tmp.x += flowVector.x;
             tmp.y += flowVector.y;
             tmp.z += flowVector.z;
         }
         if (blockLiquid != null) {
-            final var len = tmp.length();
-            final var speed = getLiquidMovementSpeed(blockLiquid) * 0.3f;
+            final var $15 = tmp.length();
+            final var $16 = getLiquidMovementSpeed(blockLiquid) * 0.3f;
             if (len > 0) {
                 this.motionX += tmp.x / len * speed;
                 this.motionY += tmp.y / len * speed;
@@ -231,11 +295,19 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void addPreviousLiquidMovement() {
         if (previousCurrentMotion != null)
             addTmpMoveMotion(previousCurrentMotion);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void handleFloatingMovement() {
         if (this.hasWaterAt(0)) {
             this.motionY += this.getGravity() * getFloatingForceFactor();
@@ -255,6 +327,10 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      *
      * @return the floating force factor
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public double getFloatingForceFactor() {
         if (hasWaterAt(this.getFloatingHeight())) {
@@ -269,15 +345,23 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      *
      * @return the float
      */
+    /**
+     * @deprecated 
+     */
+    
     public float getFloatingHeight() {
         return this.getEyeHeight();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void handleCollideMovement(int currentTick) {
-        var selfAABB = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);
-        var collidingEntities = this.level.fastCollidingEntities(selfAABB, this);
+        var $17 = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);
+        var $18 = this.level.fastCollidingEntities(selfAABB, this);
         collidingEntities.removeIf(entity -> !(entity.canCollide() && (entity instanceof EntityPhysical || entity instanceof Player)));
-        var size = collidingEntities.size();
+        var $19 = collidingEntities.size();
         if (size == 0) {
             this.previousCollideMotion.setX(0);
             this.previousCollideMotion.setZ(0);
@@ -287,12 +371,12 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                 return;
             }
         }
-        var dxPositives = new DoubleArrayList(size);
-        var dxNegatives = new DoubleArrayList(size);
-        var dzPositives = new DoubleArrayList(size);
-        var dzNegatives = new DoubleArrayList(size);
+        var $20 = new DoubleArrayList(size);
+        var $21 = new DoubleArrayList(size);
+        var $22 = new DoubleArrayList(size);
+        var $23 = new DoubleArrayList(size);
 
-        var stream = collidingEntities.stream();
+        var $24 = collidingEntities.stream();
         if (size > 4) {
             stream = stream.parallel();
         }
@@ -306,8 +390,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                 return;
             }
             // 计算碰撞箱
-            double centerXWidth = (targetAABB.getMaxX() + targetAABB.getMinX() - selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5;
-            double centerZWidth = (targetAABB.getMaxZ() + targetAABB.getMinZ() - selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5;
+            double $25 = (targetAABB.getMaxX() + targetAABB.getMinX() - selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5;
+            double $26 = (targetAABB.getMaxZ() + targetAABB.getMinZ() - selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5;
             if (centerXWidth > 0) {
                 dxPositives.add((targetAABB.getMaxX() - targetAABB.getMinX()) + (selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5 - centerXWidth);
             } else {
@@ -319,9 +403,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                 dzNegatives.add((targetAABB.getMaxZ() - targetAABB.getMinZ()) + (selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5 + centerZWidth);
             }
         });
-        double resultX = (size > 4 ? dxPositives.doubleParallelStream() : dxPositives.doubleStream()).max().orElse(0) - (size > 4 ? dxNegatives.doubleParallelStream() : dxNegatives.doubleStream()).max().orElse(0);
-        double resultZ = (size > 4 ? dzPositives.doubleParallelStream() : dzPositives.doubleStream()).max().orElse(0) - (size > 4 ? dzNegatives.doubleParallelStream() : dzNegatives.doubleStream()).max().orElse(0);
-        double len = Math.sqrt(resultX * resultX + resultZ * resultZ);
+        double $27 = (size > 4 ? dxPositives.doubleParallelStream() : dxPositives.doubleStream()).max().orElse(0) - (size > 4 ? dxNegatives.doubleParallelStream() : dxNegatives.doubleStream()).max().orElse(0);
+        double $28 = (size > 4 ? dzPositives.doubleParallelStream() : dzPositives.doubleStream()).max().orElse(0) - (size > 4 ? dzNegatives.doubleParallelStream() : dzNegatives.doubleStream()).max().orElse(0);
+        double $29 = Math.sqrt(resultX * resultX + resultZ * resultZ);
         this.previousCollideMotion.setX(-(resultX / len * 0.2 * 0.32));
         this.previousCollideMotion.setZ(-(resultZ / len * 0.2 * 0.32));
     }
@@ -329,6 +413,10 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     /**
      * @param collidingEntities 碰撞的实体
      * @return false以拦截实体碰撞运动计算
+     */
+    
+    /**
+     * @deprecated 
      */
     protected boolean onCollide(int currentTick, List<Entity> collidingEntities) {
         if (currentTick % 10 == 0) {
@@ -339,22 +427,34 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected final float getLiquidMovementSpeed(BlockLiquid liquid) {
         if (liquid instanceof BlockFlowingLava) {
             return 0.02f;
         }
         return 0.05f;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getFootHeight() {
         return getCurrentHeight() / 2 - 0.1f;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void calculateOffsetBoundingBox() {
         //由于是asyncPrepare,this.offsetBoundingBox有几率为null，需要判空
         if (this.offsetBoundingBox == null) return;
-        final double dx = this.getWidth() * 0.5;
-        final double dz = this.getHeight() * 0.5;
+        final double $30 = this.getWidth() * 0.5;
+        final double $31 = this.getHeight() * 0.5;
         this.offsetBoundingBox.setMinX(this.x - dx);
         this.offsetBoundingBox.setMaxX(this.x + dz);
         this.offsetBoundingBox.setMinY(this.y);
@@ -366,6 +466,10 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     public AxisAlignedBB getOffsetBoundingBox() {
         return Objects.requireNonNullElseGet(this.offsetBoundingBox, () -> new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void resetFallDistance() {
         this.fallingTick = 0;
@@ -373,9 +477,17 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getGravity() {
         return super.getGravity();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFallingTick() {
         return this.fallingTick;

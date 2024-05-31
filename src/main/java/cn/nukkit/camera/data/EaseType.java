@@ -49,6 +49,10 @@ public enum EaseType {
     EaseType(String type) {
         this.type = type;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String toString() {
         return "EaseType(type=" + this.type + ")";

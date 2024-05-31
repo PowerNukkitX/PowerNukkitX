@@ -4,24 +4,36 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockAcaciaDoubleSlab extends BlockDoubleWoodenSlab {
-     public static final BlockProperties PROPERTIES = new BlockProperties(ACACIA_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+     public static final BlockProperties $1 = new BlockProperties(ACACIA_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
      @Override
      @NotNull
      public BlockProperties getProperties() {
         return PROPERTIES;
      }
+    /**
+     * @deprecated 
+     */
+    
 
      public BlockAcaciaDoubleSlab(BlockState blockstate) {
          super(blockstate);
      }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getSlabName() {
         return "Acacia";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getSingleSlabId() {
         return ACACIA_SLAB;
     }

@@ -28,6 +28,10 @@ public enum EnchantmentType {
     WEARABLE,
     TRIDENT,
     CROSSBOW;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean canEnchantItem(@NotNull Item item) {

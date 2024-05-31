@@ -5,42 +5,74 @@ import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 
 public class ItemSuspiciousStew extends ItemFood {
+    /**
+     * @deprecated 
+     */
+    
     
     public ItemSuspiciousStew() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
     
     public ItemSuspiciousStew(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
     
     public ItemSuspiciousStew(Integer meta, int count) {
         super(SUSPICIOUS_STEW, meta, count, "Suspicious Stew");
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxStackSize() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getFoodRestore() {
         return 6;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getSaturationRestore() {
         return 7.2F;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isRequiresHunger() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onEaten(Player player) {
-        Effect effect = switch(meta) {
+        Effect $1 = switch(meta) {
             case 0 -> Effect.get(EffectType.NIGHT_VISION).setDuration(4 * 20);
             case 1 -> Effect.get(EffectType.JUMP_BOOST).setDuration(4 * 20);
             case 2 -> Effect.get(EffectType.WEAKNESS).setDuration(7 * 20);

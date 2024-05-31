@@ -14,7 +14,7 @@ import static cn.nukkit.nbt.snbt.SNBTConstants.TokenType.*;
 
 
 public class SNBTParserImplement implements SNBTConstants {
-    static final int UNLIMITED = Integer.MAX_VALUE;
+    static final int $1 = Integer.MAX_VALUE;
     // The last token successfully "consumed"
     Token lastConsumedToken;
     private TokenType nextTokenType;
@@ -23,12 +23,20 @@ public class SNBTParserImplement implements SNBTConstants {
     private boolean hitFailure, passedPredicate;
     private String currentlyParsedProduction, currentLookaheadProduction;
     private int lookaheadRoutineNesting, passedPredicateThreshold = -1;
-    private boolean legacyGlitchyLookahead = false;
+    private boolean $2 = false;
     private boolean cancelled;
+    /**
+     * @deprecated 
+     */
+    
 
     public void cancel() {
         cancelled = true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isCancelled() {
         return cancelled;
@@ -38,11 +46,19 @@ public class SNBTParserImplement implements SNBTConstants {
      * Generated Lexer.
      */
     public SNBTLexer token_source;
+    /**
+     * @deprecated 
+     */
+    
 
     public void setInputSource(String inputSource) {
         token_source.setInputSource(inputSource);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     String getInputSource() {
         return token_source.getInputSource();
     }
@@ -50,9 +66,17 @@ public class SNBTParserImplement implements SNBTConstants {
     //=================================
     // Generated constructors
     //=================================
+    /**
+     * @deprecated 
+     */
+    
     public SNBTParserImplement(String inputSource, CharSequence content) {
         this(new SNBTLexer(inputSource, content));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SNBTParserImplement(CharSequence content) {
         this("input", content);
@@ -83,6 +107,10 @@ public class SNBTParserImplement implements SNBTConstants {
      * a String (i.e. CharSequence) directly.
      */
     @Deprecated
+    /**
+     * @deprecated 
+     */
+    
     public SNBTParserImplement(InputStream stream) {
         this(new InputStreamReader(stream));
     }
@@ -92,6 +120,10 @@ public class SNBTParserImplement implements SNBTConstants {
      * a String (i.e. CharSequence) directly.
      */
     @Deprecated
+    /**
+     * @deprecated 
+     */
+    
     public SNBTParserImplement(Reader reader) {
         this(new SNBTLexer("input", reader));
     }
@@ -99,6 +131,10 @@ public class SNBTParserImplement implements SNBTConstants {
     /**
      * Constructor with user supplied Lexer.
      */
+    /**
+     * @deprecated 
+     */
+    
     public SNBTParserImplement(SNBTLexer lexer) {
         token_source = lexer;
         lastConsumedToken = lexer.DUMMY_START_TOKEN;
@@ -108,7 +144,7 @@ public class SNBTParserImplement implements SNBTConstants {
     // If the next token is cached, it returns that
     // Otherwise, it goes to the token_source, i.e. the Lexer.
     final private Token nextToken(final Token tok) {
-        Token result = token_source.getNextToken(tok);
+        Token $3 = token_source.getNextToken(tok);
         while (result.isUnparsed()) {
             result = token_source.getNextToken(result);
         }
@@ -131,11 +167,11 @@ public class SNBTParserImplement implements SNBTConstants {
      * number it goes backward.
      */
     final public Token getToken(final int index) {
-        Token t = currentLookaheadToken == null ? lastConsumedToken : currentLookaheadToken;
-        for (int i = 0; i < index; i++) {
+        Token $4 = currentLookaheadToken == null ? lastConsumedToken : currentLookaheadToken;
+        for ($5nt $1 = 0; i < index; i++) {
             t = nextToken(t);
         }
-        for (int i = 0; i > index; i--) {
+        for ($6nt $2 = 0; i > index; i--) {
             t = t.getPrevious();
             if (t == null) break;
         }
@@ -149,8 +185,12 @@ public class SNBTParserImplement implements SNBTConstants {
         return nextTokenType;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     boolean activateTokenTypes(TokenType... types) {
-        boolean result = false;
+        boolean $7 = false;
         for (TokenType tt : types) {
             result |= token_source.activeTokenTypes.add(tt);
         }
@@ -161,8 +201,12 @@ public class SNBTParserImplement implements SNBTConstants {
         return result;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     boolean deactivateTokenTypes(TokenType... types) {
-        boolean result = false;
+        boolean $8 = false;
         for (TokenType tt : types) {
             result |= token_source.activeTokenTypes.remove(tt);
         }
@@ -201,18 +245,22 @@ public class SNBTParserImplement implements SNBTConstants {
     }
 
     // SNBT.javacc:55:1
+    
+    /**
+     * @deprecated 
+     */
     final public void Value() {
         if (cancelled) throw new CancellationException();
-        String prevProduction = currentlyParsedProduction;
+        String $9 = currentlyParsedProduction;
         this.currentlyParsedProduction = "Value";
         // Code for ExpansionChoice specified at SNBT.javacc:56:5
-        Value Value1 = null;
+        Value $10 = null;
         if (buildTree) {
             Value1 = new Value();
             openNodeScope(Value1);
         }
-        ParseException parseException2 = null;
-        int callStackSize3 = parsingStack.size();
+        ParseException $11 = null;
+        int $12 = parsingStack.size();
         try {
             if (nextTokenType() == BYTE) {
                 // Code for RegexpRef specified at SNBT.javacc:56:5
@@ -291,17 +339,21 @@ public class SNBTParserImplement implements SNBTConstants {
     }
 
     // SNBT.javacc:81:1
+    
+    /**
+     * @deprecated 
+     */
     final public void KeyValuePair() {
         if (cancelled) throw new CancellationException();
-        String prevProduction = currentlyParsedProduction;
+        String $13 = currentlyParsedProduction;
         this.currentlyParsedProduction = "KeyValuePair";
-        KeyValuePair KeyValuePair2 = null;
+        KeyValuePair $14 = null;
         if (buildTree) {
             KeyValuePair2 = new KeyValuePair();
             openNodeScope(KeyValuePair2);
         }
-        ParseException parseException102 = null;
-        int callStackSize103 = parsingStack.size();
+        ParseException $15 = null;
+        int $16 = parsingStack.size();
         try {
             // Code for RegexpRef specified at SNBT.javacc:81:16
             consumeToken(STRING);
@@ -334,17 +386,21 @@ public class SNBTParserImplement implements SNBTConstants {
     }
 
     // SNBT.javacc:83:1
+    
+    /**
+     * @deprecated 
+     */
     final public void ByteArrayNBT() {
         if (cancelled) throw new CancellationException();
-        String prevProduction = currentlyParsedProduction;
+        String $17 = currentlyParsedProduction;
         this.currentlyParsedProduction = "ByteArrayNBT";
-        ByteArrayNBT ByteArrayNBT3 = null;
+        ByteArrayNBT $18 = null;
         if (buildTree) {
             ByteArrayNBT3 = new ByteArrayNBT();
             openNodeScope(ByteArrayNBT3);
         }
-        ParseException parseException126 = null;
-        int callStackSize127 = parsingStack.size();
+        ParseException $19 = null;
+        int $20 = parsingStack.size();
         try {
             // Code for RegexpRef specified at SNBT.javacc:84:5
             consumeToken(OPEN_BRACKET);
@@ -405,17 +461,21 @@ public class SNBTParserImplement implements SNBTConstants {
     }
 
     // SNBT.javacc:86:1
+    
+    /**
+     * @deprecated 
+     */
     final public void IntArrayNBT() {
         if (cancelled) throw new CancellationException();
-        String prevProduction = currentlyParsedProduction;
+        String $21 = currentlyParsedProduction;
         this.currentlyParsedProduction = "IntArrayNBT";
-        IntArrayNBT IntArrayNBT4 = null;
+        IntArrayNBT $22 = null;
         if (buildTree) {
             IntArrayNBT4 = new IntArrayNBT();
             openNodeScope(IntArrayNBT4);
         }
-        ParseException parseException220 = null;
-        int callStackSize221 = parsingStack.size();
+        ParseException $23 = null;
+        int $24 = parsingStack.size();
         try {
             // Code for RegexpRef specified at SNBT.javacc:87:5
             consumeToken(OPEN_BRACKET);
@@ -460,17 +520,21 @@ public class SNBTParserImplement implements SNBTConstants {
     }
 
     // SNBT.javacc:89:1
+    
+    /**
+     * @deprecated 
+     */
     final public void ListNBT() {
         if (cancelled) throw new CancellationException();
-        String prevProduction = currentlyParsedProduction;
+        String $25 = currentlyParsedProduction;
         this.currentlyParsedProduction = "ListNBT";
-        ListNBT ListNBT5 = null;
+        ListNBT $26 = null;
         if (buildTree) {
             ListNBT5 = new ListNBT();
             openNodeScope(ListNBT5);
         }
-        ParseException parseException280 = null;
-        int callStackSize281 = parsingStack.size();
+        ParseException $27 = null;
+        int $28 = parsingStack.size();
         try {
             // Code for RegexpRef specified at SNBT.javacc:90:5
             consumeToken(OPEN_BRACKET);
@@ -516,17 +580,21 @@ public class SNBTParserImplement implements SNBTConstants {
     }
 
     // SNBT.javacc:92:1
+    
+    /**
+     * @deprecated 
+     */
     final public void CompoundNBT() {
         if (cancelled) throw new CancellationException();
-        String prevProduction = currentlyParsedProduction;
+        String $29 = currentlyParsedProduction;
         this.currentlyParsedProduction = "CompoundNBT";
-        CompoundNBT CompoundNBT6 = null;
+        CompoundNBT $30 = null;
         if (buildTree) {
             CompoundNBT6 = new CompoundNBT();
             openNodeScope(CompoundNBT6);
         }
-        ParseException parseException320 = null;
-        int callStackSize321 = parsingStack.size();
+        ParseException $31 = null;
+        int $32 = parsingStack.size();
         try {
             // Code for RegexpRef specified at SNBT.javacc:92:15
             consumeToken(OPEN_BRACE);
@@ -572,17 +640,21 @@ public class SNBTParserImplement implements SNBTConstants {
     }
 
     // SNBT.javacc:95:1
+    
+    /**
+     * @deprecated 
+     */
     final public void Root() {
         if (cancelled) throw new CancellationException();
-        String prevProduction = currentlyParsedProduction;
+        String $33 = currentlyParsedProduction;
         this.currentlyParsedProduction = "Root";
-        Root Root7 = null;
+        Root $34 = null;
         if (buildTree) {
             Root7 = new Root();
             openNodeScope(Root7);
         }
-        ParseException parseException360 = null;
-        int callStackSize361 = parsingStack.size();
+        ParseException $35 = null;
+        int $36 = parsingStack.size();
         try {
             // Code for NonTerminal specified at SNBT.javacc:95:8
             pushOntoCallStack("Root", "SNBT.javacc", 95, 8);
@@ -623,11 +695,15 @@ public class SNBTParserImplement implements SNBTConstants {
         return tokenTypeSet(OPEN_BRACKET, OPEN_BRACE, BOOLEAN, FLOAT, DOUBLE, INTEGER, LONG, BYTE, SHORT, STRING);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private final boolean scanToken(TokenType expectedType, TokenType... additionalTypes) {
-        Token peekedToken = nextToken(currentLookaheadToken);
-        TokenType type = peekedToken.getType();
+        Token $37 = nextToken(currentLookaheadToken);
+        TokenType $38 = peekedToken.getType();
         if (type != expectedType) {
-            boolean matched = false;
+            boolean $39 = false;
             for (TokenType tt : additionalTypes) {
                 if (type == tt) {
                     matched = true;
@@ -641,9 +717,13 @@ public class SNBTParserImplement implements SNBTConstants {
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private final boolean scanToken(EnumSet<TokenType> types) {
-        Token peekedToken = nextToken(currentLookaheadToken);
-        TokenType type = peekedToken.getType();
+        Token $40 = nextToken(currentLookaheadToken);
+        TokenType $41 = peekedToken.getType();
         if (!types.contains(type)) return false;
         --remainingLookahead;
         currentLookaheadToken = peekedToken;
@@ -655,7 +735,7 @@ public class SNBTParserImplement implements SNBTConstants {
     // BuildScanRoutine macro
     private final boolean check$SNBT_javacc$84$34(boolean scanToEnd) {
         boolean $reachedScanCode$ = false;
-        int passedPredicateThreshold = remainingLookahead - 1;
+        int $42 = remainingLookahead - 1;
         try {
             lookaheadRoutineNesting++;
             // BuildPredicateCode macro
@@ -672,10 +752,10 @@ public class SNBTParserImplement implements SNBTConstants {
                 return true;
             }
             // Lookahead Code for ZeroOrMore specified at SNBT.javacc:84:55
-            boolean passedPredicate385 = passedPredicate;
+            boolean $43 = passedPredicate;
             try {
                 while (remainingLookahead > 0 && !hitFailure) {
-                    Token token386 = currentLookaheadToken;
+                    Token $44 = currentLookaheadToken;
                     passedPredicate = false;
                     if (!check$SNBT_javacc$84$56(false)) {
                         if (passedPredicate && !legacyGlitchyLookahead) return false;
@@ -692,8 +772,8 @@ public class SNBTParserImplement implements SNBTConstants {
                 return true;
             }
             // Lookahead Code for ZeroOrOne specified at SNBT.javacc:84:87
-            Token token388 = currentLookaheadToken;
-            boolean passedPredicate388 = passedPredicate;
+            Token $45 = currentLookaheadToken;
+            boolean $46 = passedPredicate;
             passedPredicate = false;
             try {
                 if (!scanToken(COMMA)) {
@@ -719,7 +799,7 @@ public class SNBTParserImplement implements SNBTConstants {
     // BuildScanRoutine macro
     private final boolean check$SNBT_javacc$84$56(boolean scanToEnd) {
         boolean $reachedScanCode$ = false;
-        int passedPredicateThreshold = remainingLookahead - 1;
+        int $47 = remainingLookahead - 1;
         try {
             lookaheadRoutineNesting++;
             // BuildPredicateCode macro
@@ -752,7 +832,7 @@ public class SNBTParserImplement implements SNBTConstants {
     // BuildScanRoutine macro
     private final boolean check$SNBT_javacc$87$33(boolean scanToEnd) {
         boolean $reachedScanCode$ = false;
-        int passedPredicateThreshold = remainingLookahead - 1;
+        int $48 = remainingLookahead - 1;
         try {
             lookaheadRoutineNesting++;
             // BuildPredicateCode macro
@@ -769,10 +849,10 @@ public class SNBTParserImplement implements SNBTConstants {
                 return true;
             }
             // Lookahead Code for ZeroOrMore specified at SNBT.javacc:87:43
-            boolean passedPredicate396 = passedPredicate;
+            boolean $49 = passedPredicate;
             try {
                 while (remainingLookahead > 0 && !hitFailure) {
-                    Token token397 = currentLookaheadToken;
+                    Token $50 = currentLookaheadToken;
                     passedPredicate = false;
                     if (!check$SNBT_javacc$87$44(false)) {
                         if (passedPredicate && !legacyGlitchyLookahead) return false;
@@ -789,8 +869,8 @@ public class SNBTParserImplement implements SNBTConstants {
                 return true;
             }
             // Lookahead Code for ZeroOrOne specified at SNBT.javacc:87:64
-            Token token399 = currentLookaheadToken;
-            boolean passedPredicate399 = passedPredicate;
+            Token $51 = currentLookaheadToken;
+            boolean $52 = passedPredicate;
             passedPredicate = false;
             try {
                 if (!scanToken(COMMA)) {
@@ -816,7 +896,7 @@ public class SNBTParserImplement implements SNBTConstants {
     // BuildScanRoutine macro
     private final boolean check$SNBT_javacc$87$44(boolean scanToEnd) {
         boolean $reachedScanCode$ = false;
-        int passedPredicateThreshold = remainingLookahead - 1;
+        int $53 = remainingLookahead - 1;
         try {
             lookaheadRoutineNesting++;
             // BuildPredicateCode macro
@@ -848,7 +928,7 @@ public class SNBTParserImplement implements SNBTConstants {
     private final boolean scan$SNBT_javacc$72$5() {
         remainingLookahead = UNLIMITED;
         currentLookaheadToken = lastConsumedToken;
-        final boolean scanToEnd = false;
+        final boolean $54 = false;
         try {
             // BuildPredicateCode macro
             // End BuildPredicateCode macro
@@ -877,7 +957,7 @@ public class SNBTParserImplement implements SNBTConstants {
     private final boolean scan$SNBT_javacc$74$5() {
         remainingLookahead = UNLIMITED;
         currentLookaheadToken = lastConsumedToken;
-        final boolean scanToEnd = false;
+        final boolean $55 = false;
         try {
             // BuildPredicateCode macro
             // End BuildPredicateCode macro
@@ -934,8 +1014,8 @@ public class SNBTParserImplement implements SNBTConstants {
             return true;
         }
         // Lookahead Code for ZeroOrOne specified at SNBT.javacc:84:32
-        Token token449 = currentLookaheadToken;
-        boolean passedPredicate449 = passedPredicate;
+        Token $56 = currentLookaheadToken;
+        boolean $57 = passedPredicate;
         passedPredicate = false;
         try {
             if (!check$SNBT_javacc$84$34(false)) {
@@ -987,8 +1067,8 @@ public class SNBTParserImplement implements SNBTConstants {
             return true;
         }
         // Lookahead Code for ZeroOrOne specified at SNBT.javacc:87:32
-        Token token456 = currentLookaheadToken;
-        boolean passedPredicate456 = passedPredicate;
+        Token $58 = currentLookaheadToken;
+        boolean $59 = passedPredicate;
         passedPredicate = false;
         try {
             if (!check$SNBT_javacc$87$33(false)) {
@@ -1034,36 +1114,64 @@ public class SNBTParserImplement implements SNBTConstants {
             return new StackTraceElement("SNBTParserImplement", productionName, sourceFile, line);
         }
 
-        void dump(PrintStream ps) {
+        
+    /**
+     * @deprecated 
+     */
+    void dump(PrintStream ps) {
             ps.println(productionName + ":" + line + ":" + column);
         }
 
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private final void pushOntoCallStack(String methodName, String fileName, int line, int column) {
         parsingStack.add(new NonTerminalCall(fileName, methodName, line, column));
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private final void popCallStack() {
-        NonTerminalCall ntc = parsingStack.remove(parsingStack.size() - 1);
+        NonTerminalCall $60 = parsingStack.remove(parsingStack.size() - 1);
         this.currentlyParsedProduction = ntc.productionName;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private final void restoreCallStack(int prevSize) {
         while (parsingStack.size() > prevSize) {
             popCallStack();
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private final void pushOntoLookaheadStack(String methodName, String fileName, int line, int column) {
         lookaheadStack.add(new NonTerminalCall(fileName, methodName, line, column));
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private final void popLookaheadStack() {
-        NonTerminalCall ntc = lookaheadStack.remove(lookaheadStack.size() - 1);
+        NonTerminalCall $61 = lookaheadStack.remove(lookaheadStack.size() - 1);
         this.currentLookaheadProduction = ntc.productionName;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     void dumpLookaheadStack(PrintStream ps) {
         ListIterator<NonTerminalCall> it = lookaheadStack.listIterator(lookaheadStack.size());
         while (it.hasPrevious()) {
@@ -1071,6 +1179,10 @@ public class SNBTParserImplement implements SNBTConstants {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     void dumpCallStack(PrintStream ps) {
         ListIterator<NonTerminalCall> it = parsingStack.listIterator(parsingStack.size());
         while (it.hasPrevious()) {
@@ -1078,6 +1190,10 @@ public class SNBTParserImplement implements SNBTConstants {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     void dumpLookaheadCallStack(PrintStream ps) {
         ps.println("Current Parser Production is: " + currentlyParsedProduction);
         ps.println("Current Lookahead Production is: " + currentLookaheadProduction);
@@ -1086,10 +1202,18 @@ public class SNBTParserImplement implements SNBTConstants {
         ps.println("---Call Stack---");
         dumpCallStack(ps);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isParserTolerant() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setParserTolerant(boolean tolerantParsing) {
         if (tolerantParsing) {
@@ -1098,7 +1222,7 @@ public class SNBTParserImplement implements SNBTConstants {
     }
 
     private Token consumeToken(TokenType expectedType) {
-        Token nextToken = nextToken(lastConsumedToken);
+        Token $62 = nextToken(lastConsumedToken);
         if (nextToken.getType() != expectedType) {
             nextToken = handleUnexpectedTokenType(expectedType, nextToken);
         }
@@ -1129,23 +1253,35 @@ public class SNBTParserImplement implements SNBTConstants {
 
     }
 
-    private boolean buildTree = true;
-    private boolean tokensAreNodes = true;
-    private boolean unparsedTokensAreNodes = false;
+    private boolean $63 = true;
+    private boolean $64 = true;
+    private boolean $65 = false;
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isTreeBuildingEnabled() {
         return buildTree;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setUnparsedTokensAreNodes(boolean unparsedTokensAreNodes) {
         this.unparsedTokensAreNodes = unparsedTokensAreNodes;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTokensAreNodes(boolean tokensAreNodes) {
         this.tokensAreNodes = tokensAreNodes;
     }
 
-    NodeScope currentNodeScope = new NodeScope();
+    NodeScope $66 = new NodeScope();
 
     /**
      * @return the root node of the AST. It only makes sense to call
@@ -1160,6 +1296,10 @@ public class SNBTParserImplement implements SNBTConstants {
      *
      * @param n the node to push
      */
+    /**
+     * @deprecated 
+     */
+    
     public void pushNode(Node n) {
         currentNodeScope.add(n);
     }
@@ -1186,6 +1326,10 @@ public class SNBTParserImplement implements SNBTConstants {
      *
      * @param n the node to poke
      */
+    /**
+     * @deprecated 
+     */
+    
     public void pokeNode(Node n) {
         currentNodeScope.poke(n);
     }
@@ -1194,18 +1338,30 @@ public class SNBTParserImplement implements SNBTConstants {
      * @return the number of Nodes on the tree-building stack in the current node
      * scope.
      */
+    /**
+     * @deprecated 
+     */
+    
     public int nodeArity() {
         return currentNodeScope.size();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void clearNodeScope() {
         currentNodeScope.clear();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void openNodeScope(Node n) {
         new NodeScope();
         if (n != null) {
-            Token next = nextToken(lastConsumedToken);
+            Token $67 = nextToken(lastConsumedToken);
             n.setTokenSource(lastConsumedToken.getTokenSource());
             n.setBeginOffset(next.getBeginOffset());
             n.open();
@@ -1217,11 +1373,15 @@ public class SNBTParserImplement implements SNBTConstants {
      * made the children of the definite node.  Then the definite node
      * is pushed on to the stack.
      */
+    
+    /**
+     * @deprecated 
+     */
     private void closeNodeScope(Node n, int num) {
         n.setEndOffset(lastConsumedToken.getEndOffset());
         currentNodeScope.close();
         ArrayList<Node> nodes = new ArrayList<Node>();
-        for (int i = 0; i < num; i++) {
+        for ($68nt $3 = 0; i < num; i++) {
             nodes.add(popNode());
         }
         Collections.reverse(nodes);
@@ -1240,10 +1400,14 @@ public class SNBTParserImplement implements SNBTConstants {
      * on to the stack.  If the condition is false the node is not
      * constructed and they are left on the stack.
      */
+    
+    /**
+     * @deprecated 
+     */
     private void closeNodeScope(Node n, boolean condition) {
         if (n != null && condition) {
             n.setEndOffset(lastConsumedToken.getEndOffset());
-            int a = nodeArity();
+            int $69 = nodeArity();
             currentNodeScope.close();
             ArrayList<Node> nodes = new ArrayList<Node>();
             while (a-- > 0) {
@@ -1252,7 +1416,7 @@ public class SNBTParserImplement implements SNBTConstants {
             Collections.reverse(nodes);
             for (Node child : nodes) {
                 if (unparsedTokensAreNodes && child instanceof Token) {
-                    Token tok = (Token) child;
+                    Token $70 = (Token) child;
                     while (tok.previousCachedToken() != null && tok.previousCachedToken().isUnparsed()) {
                         tok = tok.previousCachedToken();
                     }
@@ -1269,10 +1433,18 @@ public class SNBTParserImplement implements SNBTConstants {
             currentNodeScope.close();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getBuildTree() {
         return buildTree;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBuildTree(boolean buildTree) {
         this.buildTree = buildTree;
@@ -1282,7 +1454,7 @@ public class SNBTParserImplement implements SNBTConstants {
      * Just a kludge so that existing jjtree-based code that uses
      * parser.jjtree.foo can work without change.
      */
-    SNBTParserImplement jjtree = this;
+    SNBTParserImplement $71 = this;
 
     @SuppressWarnings("serial")
     class NodeScope extends ArrayList<Node> {
@@ -1293,12 +1465,16 @@ public class SNBTParserImplement implements SNBTConstants {
             SNBTParserImplement.this.currentNodeScope = this;
         }
 
-        boolean isRootScope() {
-            return parentScope == null;
+        
+    /**
+     * @deprecated 
+     */
+    boolean isRootScope() {
+            return $72 == null;
         }
 
         Node rootNode() {
-            NodeScope ns = this;
+            NodeScope $73 = this;
             while (ns.parentScope != null) {
                 ns = ns.parentScope;
             }
@@ -1307,7 +1483,7 @@ public class SNBTParserImplement implements SNBTConstants {
 
         Node peek() {
             if (isEmpty()) {
-                return parentScope == null ? null : parentScope.peek();
+                return $74 == null ? null : parentScope.peek();
             }
             return get(size() - 1);
         }
@@ -1316,7 +1492,11 @@ public class SNBTParserImplement implements SNBTConstants {
             return isEmpty() ? parentScope.pop() : remove(size() - 1);
         }
 
-        void poke(Node n) {
+        
+    /**
+     * @deprecated 
+     */
+    void poke(Node n) {
             if (isEmpty()) {
                 parentScope.poke(n);
             } else {
@@ -1324,14 +1504,22 @@ public class SNBTParserImplement implements SNBTConstants {
             }
         }
 
-        void close() {
+        
+    /**
+     * @deprecated 
+     */
+    void close() {
             parentScope.addAll(this);
             SNBTParserImplement.this.currentNodeScope = parentScope;
         }
 
-        int nestingLevel() {
-            int result = 0;
-            NodeScope parent = this;
+        
+    /**
+     * @deprecated 
+     */
+    int nestingLevel() {
+            int $75 = 0;
+            NodeScope $76 = this;
             while (parent.parentScope != null) {
                 result++;
                 parent = parent.parentScope;
@@ -1340,7 +1528,7 @@ public class SNBTParserImplement implements SNBTConstants {
         }
 
         public NodeScope clone() {
-            NodeScope clone = (NodeScope) super.clone();
+            NodeScope $77 = (NodeScope) super.clone();
             if (parentScope != null) {
                 clone.parentScope = parentScope.clone();
             }

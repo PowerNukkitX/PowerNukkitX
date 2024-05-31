@@ -13,18 +13,26 @@ import lombok.ToString;
 @AllArgsConstructor
 public class TakeItemEntityPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.TAKE_ITEM_ENTITY_PACKET;
+    public static final int $1 = ProtocolInfo.TAKE_ITEM_ENTITY_PACKET;
 
     public long entityId;
     public long target;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.target = byteBuf.readEntityRuntimeId();
         this.entityId = byteBuf.readEntityRuntimeId();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeEntityRuntimeId(this.target);
@@ -32,9 +40,17 @@ public class TakeItemEntityPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

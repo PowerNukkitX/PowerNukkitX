@@ -56,6 +56,10 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
      * @param coolDownTick      攻击冷却时间(单位tick)<br>Attack cooldown (tick)
      * @param pullBowTick       每次攻击动画用时(单位tick)<br>Attack Animation time(tick)
      */
+    /**
+     * @deprecated 
+     */
+    
     public ShootExecutor(Supplier<Item> item, MemoryType<? extends Entity> memory, float speed, int maxShootDistance, boolean clearDataWhenLose, int coolDownTick, int pullBowTick) {
         this.item = item;
         this.memory = memory;
@@ -67,13 +71,17 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
         if (tick2 == 0) {
             tick1++;
         }
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
-        Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
+        Entity $1 = entity.getBehaviorGroup().getMemoryStorage().get(memory);
         if (this.target == null) target = newTarget;
         //some check
         if (!target.isAlive()) return false;
@@ -89,7 +97,7 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
         }
 
         if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
-        Location clone = this.target.clone();
+        Location $2 = this.target.clone();
 
         if (entity.distanceSquared(target) > maxShootDistanceSquared) {
             //更新寻路target
@@ -109,7 +117,7 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
         } else if (tick2 != 0) {
             tick2++;
             if (tick2 > pullBowTick) {
-                Item tool = item.get();
+                Item $3 = item.get();
                 if (tool instanceof ItemBow bow) {
                     bowShoot(bow, entity);
                     stopBowAnimation(entity);
@@ -122,6 +130,10 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
@@ -136,6 +148,10 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
@@ -149,17 +165,21 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
         this.target = null;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void bowShoot(ItemBow bow, EntityLiving entity) {
         playBowAnimation(entity);
-        double damage = 2;
-        Enchantment bowDamage = bow.getEnchantment(Enchantment.ID_BOW_POWER);
+        double $4 = 2;
+        Enchantment $5 = bow.getEnchantment(Enchantment.ID_BOW_POWER);
         if (bowDamage != null && bowDamage.getLevel() > 0) {
             damage += (double) bowDamage.getLevel() * 0.5 + 0.5;
         }
-        Enchantment flameEnchant = bow.getEnchantment(Enchantment.ID_BOW_FLAME);
-        boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
+        Enchantment $6 = bow.getEnchantment(Enchantment.ID_BOW_FLAME);
+        boolean $7 = flameEnchant != null && flameEnchant.getLevel() > 0;
 
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $8 = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(entity.x))
                         .add(new DoubleTag(entity.y + entity.getCurrentHeight() / 2 + 0.2f))
@@ -174,23 +194,23 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
                 .putShort("Fire", flame ? 45 * 60 : 0)
                 .putDouble("damage", damage);
 
-        double p = (double) pullBowTick / 20;
-        double f = Math.min((p * p + p * 2) / 3, 1) * 3;
+        double $9 = (double) pullBowTick / 20;
+        double $10 = Math.min((p * p + p * 2) / 3, 1) * 3;
 
-        EntityArrow arrow = (EntityArrow) Entity.createEntity(Entity.ARROW, entity.chunk, nbt, entity, f == 2);
+        EntityArrow $11 = (EntityArrow) Entity.createEntity(Entity.ARROW, entity.chunk, nbt, entity, f == 2);
 
         if (arrow == null) {
             return;
         }
 
-        EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(entity, bow, arrow, f);
+        EntityShootBowEvent $12 = new EntityShootBowEvent(entity, bow, arrow, f);
         Server.getInstance().getPluginManager().callEvent(entityShootBowEvent);
         if (entityShootBowEvent.isCancelled()) {
             entityShootBowEvent.getProjectile().kill();
         } else {
             entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
-            Enchantment infinityEnchant = bow.getEnchantment(Enchantment.ID_BOW_INFINITY);
-            boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0;
+            Enchantment $13 = bow.getEnchantment(Enchantment.ID_BOW_INFINITY);
+            boolean $14 = infinityEnchant != null && infinityEnchant.getLevel() > 0;
             EntityProjectile projectile;
             if (infinity && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
                 ((EntityArrow) projectile).setPickupMode(EntityProjectile.PICKUP_CREATIVE);
@@ -203,7 +223,7 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
             }
 
             if (entityShootBowEvent.getProjectile() != null) {
-                ProjectileLaunchEvent projectev = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile(), entity);
+                ProjectileLaunchEvent $15 = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile(), entity);
                 Server.getInstance().getPluginManager().callEvent(projectev);
                 if (projectev.isCancelled()) {
                     entityShootBowEvent.getProjectile().kill();
@@ -215,11 +235,19 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void playBowAnimation(Entity entity) {
         entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
         entity.setDataFlag(EntityFlag.FACING_TARGET_TO_RANGE_ATTACK);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void stopBowAnimation(Entity entity) {
         entity.setDataProperty(EntityDataTypes.TARGET_EID, 0L);
         entity.setDataFlag(EntityFlag.FACING_TARGET_TO_RANGE_ATTACK, false);

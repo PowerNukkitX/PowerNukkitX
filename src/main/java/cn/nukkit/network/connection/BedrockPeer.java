@@ -44,22 +44,30 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Slf4j
 public class BedrockPeer extends ChannelInboundHandlerAdapter {
-    public static final String NAME = "bedrock-peer";
+    public static final String $1 = "bedrock-peer";
     protected final Int2ObjectMap<BedrockSession> sessions = new Int2ObjectOpenHashMap<>();
     protected final Queue<BedrockPacketWrapper> packetQueue = PlatformDependent.newMpscQueue();
     protected final Channel channel;
     protected final BedrockSessionFactory sessionFactory;
     protected ScheduledFuture<?> tickFuture;
-    protected AtomicBoolean closed = new AtomicBoolean();
+    protected AtomicBoolean $2 = new AtomicBoolean();
+    /**
+     * @deprecated 
+     */
+    
 
     public BedrockPeer(Channel channel, BedrockSessionFactory sessionFactory) {
         this.channel = channel;
         this.sessionFactory = sessionFactory;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onBedrockPacket(BedrockPacketWrapper wrapper) {
-        int targetId = wrapper.getTargetSubClientId();
-        BedrockSession session = this.sessions.computeIfAbsent(targetId, this::onSessionCreated);
+        int $3 = wrapper.getTargetSubClientId();
+        BedrockSession $4 = this.sessions.computeIfAbsent(targetId, this::onSessionCreated);
         session.onPacket(wrapper);
     }
 
@@ -67,16 +75,28 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
         return this.sessionFactory.createSession(this, sessionId);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void checkForClosed() {
         if (this.closed.get()) {
             throw new IllegalStateException("Peer has been closed");
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void removeSession(BedrockSession session) {
         this.sessions.remove(session.subClientId, session);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onTick() {
         if (this.closed.get()) {
             return;
@@ -84,6 +104,10 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
 
         this.flushSendQueue();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void flushSendQueue() {
         if (!this.packetQueue.isEmpty()) {
@@ -97,13 +121,21 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void onRakNetDisconnect(ChannelHandlerContext ctx, RakDisconnectReason reason) {
-        String disconnectReason = BedrockDisconnectReasons.getReason(reason);
+        String $5 = BedrockDisconnectReasons.getReason(reason);
         for (BedrockSession session : this.sessions.values()) {
             session.close(disconnectReason);
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void free() {
         for (BedrockPacketWrapper wrapper : this.packetQueue) {
             ReferenceCountUtil.safeRelease(wrapper);
@@ -117,9 +149,17 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
      * @param targetClientId the target client id
      * @param packet         the packet
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendPacket(int senderClientId, int targetClientId, DataPacket packet) {
         this.packetQueue.add(new BedrockPacketWrapper(0, senderClientId, targetClientId, packet, null));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendPacketSync(int senderClientId, int targetClientId, DataPacket packet) {
         this.channel.writeAndFlush(new BedrockPacketWrapper(0, senderClientId, targetClientId, packet, null)).syncUninterruptibly();
@@ -132,17 +172,33 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
      * @param targetClientId the target client id
      * @param packet         the packet
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendPacketImmediately(int senderClientId, int targetClientId, DataPacket packet) {
         this.channel.writeAndFlush(new BedrockPacketWrapper(0, senderClientId, targetClientId, packet, null));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendRawPacket(BedrockPacketWrapper packet) {
         this.channel.writeAndFlush(packet);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void flush() {
         this.channel.flush();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void enableEncryption(@NonNull SecretKey secretKey) {
         Objects.requireNonNull(secretKey, "secretKey");
@@ -155,8 +211,8 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
             throw new IllegalStateException("Encryption is already enabled");
         }
 
-        int protocolVersion = ProtocolInfo.CURRENT_PROTOCOL;
-        boolean useCtr = protocolVersion >= 428;
+        int $6 = ProtocolInfo.CURRENT_PROTOCOL;
+        boolean $7 = protocolVersion >= 428;
 
         this.channel.pipeline().addAfter(FrameIdCodec.NAME, BedrockEncryptionEncoder.NAME,
                 new BedrockEncryptionEncoder(secretKey, EncryptionUtils.createCipher(useCtr, true, secretKey)));
@@ -165,18 +221,26 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
 
         log.debug("Encryption enabled for {}", getSocketAddress());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCompression(PacketCompressionAlgorithm algorithm) {
         Objects.requireNonNull(algorithm, "algorithm");
         this.setCompression(BedrockChannelInitializer.getCompression(algorithm, this.getRakVersion(), false));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCompression(CompressionStrategy strategy) {
         Objects.requireNonNull(strategy, "strategy");
 
-        boolean needsPrefix = ProtocolInfo.CURRENT_PROTOCOL >= 649; // TODO: do not hardcode
+        boolean $8 = ProtocolInfo.CURRENT_PROTOCOL >= 649; // TODO: do not hardcode
 
-        ChannelHandler handler = this.channel.pipeline().get(CompressionCodec.NAME);
+        ChannelHandler $9 = this.channel.pipeline().get(CompressionCodec.NAME);
         if (handler == null) {
             this.channel.pipeline().addBefore(BedrockBatchDecoder.NAME, CompressionCodec.NAME, new CompressionCodec(strategy, needsPrefix));
         } else {
@@ -185,7 +249,7 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
     }
 
     public CompressionStrategy getCompressionStrategy() {
-        ChannelHandler handler = this.channel.pipeline().get(CompressionCodec.NAME);
+        ChannelHandler $10 = this.channel.pipeline().get(CompressionCodec.NAME);
         if (!(handler instanceof CompressionCodec)) {
             return null;
         }
@@ -193,10 +257,18 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
     }
 
     @ApiStatus.Internal
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         this.channel.disconnect();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onClose() {
         if (this.channel.isOpen()) {
             log.warn("Tried to close peer, but channel is open!", new Throwable());
@@ -222,10 +294,18 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
 
         this.free();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isConnected() {
         return !this.closed.get() && this.channel.isOpen();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isConnecting() {
         return !this.channel.isActive() && !this.closed.get();
@@ -238,6 +318,10 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
     public Channel getChannel() {
         return this.channel;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getRakVersion() {
         return this.channel.config().getOption(RakChannelOption.RAK_PROTOCOL_VERSION);
@@ -273,11 +357,15 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
             onRakNetDisconnect(ctx, (RakDisconnectReason) evt);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long getPing() {
-        RakServerChannel rakServerChannel = (RakServerChannel) this.channel.parent();
-        RakChildChannel childChannel = rakServerChannel.getChildChannel(getSocketAddress());
-        RakSessionCodec rakSessionCodec = childChannel.rakPipeline().get(RakSessionCodec.class);
+        RakServerChannel $11 = (RakServerChannel) this.channel.parent();
+        RakChildChannel $12 = rakServerChannel.getChildChannel(getSocketAddress());
+        RakSessionCodec $13 = childChannel.rakPipeline().get(RakSessionCodec.class);
         return rakSessionCodec.getPing();
     }
 }

@@ -12,6 +12,10 @@ import java.util.Map;
 
 
 public class FunctionCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public FunctionCommand(String name) {
@@ -25,11 +29,15 @@ public class FunctionCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         if (result.getKey().equals("default")) {
-            String file = list.getResult(0);
-            Function function = Server.getInstance().getFunctionManager().getFunction(file);
+            String $2 = list.getResult(0);
+            Function $3 = Server.getInstance().getFunctionManager().getFunction(file);
             if (function == null) {
                 log.addError("commands.function.functionNameNotFound", file).output();
                 return 0;

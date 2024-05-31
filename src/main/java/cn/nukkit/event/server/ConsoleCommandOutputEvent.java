@@ -7,7 +7,7 @@ import cn.nukkit.event.HandlerList;
 
 
 public class ConsoleCommandOutputEvent extends ServerEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -15,6 +15,10 @@ public class ConsoleCommandOutputEvent extends ServerEvent implements Cancellabl
 
     protected final CommandSender sender;
     protected String message;
+    /**
+     * @deprecated 
+     */
+    
 
     public ConsoleCommandOutputEvent(CommandSender sender, String message) {
         this.sender = sender;
@@ -24,10 +28,18 @@ public class ConsoleCommandOutputEvent extends ServerEvent implements Cancellabl
     public CommandSender getSender() {
         return sender;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getMessage() {
         return message;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setMessage(String message) {
         this.message = message;

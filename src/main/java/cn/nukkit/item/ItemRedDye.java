@@ -3,6 +3,10 @@ package cn.nukkit.item;
 import cn.nukkit.utils.DyeColor;
 
 public class ItemRedDye extends ItemDye {
+    /**
+     * @deprecated 
+     */
+    
     public ItemRedDye() {
         super(RED_DYE);
     }
@@ -13,6 +17,10 @@ public class ItemRedDye extends ItemDye {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDamage(int meta) {
     }
 }

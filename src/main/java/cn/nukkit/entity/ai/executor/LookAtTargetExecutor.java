@@ -11,6 +11,10 @@ public class LookAtTargetExecutor implements EntityControl, IBehaviorExecutor {
     protected MemoryType<? extends Vector3> memory;
     protected int duration;
     protected int currentTick;
+    /**
+     * @deprecated 
+     */
+    
 
     public LookAtTargetExecutor(MemoryType<? extends Vector3> memory, int duration) {
         this.memory = memory;
@@ -18,10 +22,14 @@ public class LookAtTargetExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
         currentTick++;
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
-        var vector3Memory = entity.getMemoryStorage().get(memory);
+        var $1 = entity.getMemoryStorage().get(memory);
         if (vector3Memory != null) {
             setLookTarget(entity, vector3Memory);
         }
@@ -29,12 +37,20 @@ public class LookAtTargetExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         currentTick = 0;
         entity.setEnablePitch(false);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         currentTick = 0;
         entity.setEnablePitch(false);

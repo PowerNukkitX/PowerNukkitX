@@ -8,11 +8,19 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 
 public class BlockCrimsonWallSign extends BlockWallSign {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_WALL_SIGN, FACING_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(CRIMSON_WALL_SIGN, FACING_DIRECTION);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCrimsonWallSign() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCrimsonWallSign(BlockState blockState) {
         super(blockState);
@@ -24,11 +32,19 @@ public class BlockCrimsonWallSign extends BlockWallSign {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getWallSignId() {
         return CRIMSON_WALL_SIGN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getStandingSignId() {
         return CRIMSON_STANDING_SIGN;
     }

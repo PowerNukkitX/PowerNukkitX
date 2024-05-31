@@ -14,6 +14,10 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
 
     public final List<BlockChangeEntry> standardBlocks = new ObjectArrayList<>();
     public final List<BlockChangeEntry> extraBlocks = new ObjectArrayList<>();
+    /**
+     * @deprecated 
+     */
+    
 
     public UpdateSubChunkBlocksPacket(int chunkX, int chunkY, int chunkZ) {
         this.chunkX = chunkX;
@@ -22,16 +26,28 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.UPDATE_SUB_CHUNK_BLOCKS_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeVarInt(chunkX);
         byteBuf.writeUnsignedVarInt(chunkY);
@@ -53,14 +69,26 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
             byteBuf.writeUnsignedVarInt(each.messageType().ordinal());
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getChunkX() {
         return this.chunkX;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getChunkY() {
         return this.chunkY;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getChunkZ() {
         return this.chunkZ;
@@ -75,15 +103,23 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UpdateSubChunkBlocksPacket that)) return false;
-        return chunkX == that.chunkX && chunkY == that.chunkY && chunkZ == that.chunkZ && standardBlocks.equals(that.standardBlocks) && extraBlocks.equals(that.extraBlocks);
+        return $1 == that.chunkX && chunkY == that.chunkY && chunkZ == that.chunkZ && standardBlocks.equals(that.standardBlocks) && extraBlocks.equals(that.extraBlocks);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
+        final int $2 = 59;
+        int $3 = 1;
         result = result * PRIME + this.chunkX;
         result = result * PRIME + this.chunkY;
         result = result * PRIME + this.chunkZ;
@@ -91,10 +127,18 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
         result = result * PRIME + ((Object) this.extraBlocks).hashCode();
         return result;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String toString() {
         return "UpdateSubChunkBlocksPacket(chunkX=" + this.chunkX + ", chunkY=" + this.chunkY + ", chunkZ=" + this.chunkZ + ", standardBlocks=" + this.standardBlocks + ", extraBlocks=" + this.extraBlocks + ")";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

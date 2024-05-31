@@ -15,6 +15,10 @@ import java.util.Map;
  * @author Angelic47 (Nukkit Project)
  */
 public class WeatherCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public WeatherCommand(String name) {
         super(name, "commands.weather.description", "commands.weather.usage");
@@ -28,10 +32,14 @@ public class WeatherCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
-        String weather = list.getResult(0);
-        Level level = sender.getPosition().level;
+        var $1 = result.getValue();
+        String $2 = list.getResult(0);
+        Level $3 = sender.getPosition().level;
         int seconds;
         if (list.hasResult(1)) {
             seconds = list.getResult(1);

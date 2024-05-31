@@ -19,47 +19,87 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public abstract class EntityVehicle extends Entity implements EntityRideable, EntityInteractable {
 
-    protected boolean rollingDirection = true;
+    protected boolean $1 = true;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityVehicle(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getRollingAmplitude() {
         return this.getDataProperty(HURT_TICKS);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRollingAmplitude(int time) {
         this.setDataProperty(HURT_TICKS, time);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getRollingDirection() {
         return this.getDataProperty(HURT_DIRECTION);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRollingDirection(int direction) {
         this.setDataProperty(HURT_DIRECTION, direction);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getDamage() {
         return this.getDataProperty(STRUCTURAL_INTEGRITY); // false data name (should be DATA_DAMAGE_TAKEN)
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDamage(int damage) {
         this.setDataProperty(STRUCTURAL_INTEGRITY, damage);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getInteractButtonText(Player player) {
         return "action.interact.mount";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canDoInteraction() {
         return passengers.isEmpty();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         // The rolling amplitude
         if (getRollingAmplitude() > 0) {
@@ -88,6 +128,10 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean performHurtAnimation() {
         setRollingAmplitude(9);
         setRollingDirection(rollingDirection ? 1 : -1);
@@ -96,14 +140,18 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
 
-        boolean instantKill = false;
+        boolean $2 = false;
 
         if (source instanceof EntityDamageByEntityEvent) {
-            final Entity damagingEntity = ((EntityDamageByEntityEvent) source).getDamager();
+            final Entity $3 = ((EntityDamageByEntityEvent) source).getDamager();
 
-            final VehicleDamageByEntityEvent byEvent = new VehicleDamageByEntityEvent(this, damagingEntity, source.getFinalDamage());
+            final VehicleDamageByEntityEvent $4 = new VehicleDamageByEntityEvent(this, damagingEntity, source.getFinalDamage());
 
             getServer().getPluginManager().callEvent(byEvent);
 
@@ -113,7 +161,7 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
             instantKill = damagingEntity instanceof Player && ((Player) damagingEntity).isCreative();
         } else {
 
-            final VehicleDamageEvent damageEvent = new VehicleDamageEvent(this, source.getFinalDamage());
+            final VehicleDamageEvent $5 = new VehicleDamageEvent(this, source.getFinalDamage());
 
             getServer().getPluginManager().callEvent(damageEvent);
 
@@ -123,8 +171,8 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
 
         if (instantKill || getHealth() - source.getFinalDamage() < 1) {
             if (source instanceof EntityDamageByEntityEvent) {
-                final Entity damagingEntity = ((EntityDamageByEntityEvent) source).getDamager();
-                final VehicleDestroyByEntityEvent byDestroyEvent = new VehicleDestroyByEntityEvent(this, damagingEntity);
+                final Entity $6 = ((EntityDamageByEntityEvent) source).getDamager();
+                final VehicleDestroyByEntityEvent $7 = new VehicleDestroyByEntityEvent(this, damagingEntity);
 
                 getServer().getPluginManager().callEvent(byDestroyEvent);
 
@@ -132,7 +180,7 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
                     return false;
             } else {
 
-                final VehicleDestroyEvent destroyEvent = new VehicleDestroyEvent(this);
+                final VehicleDestroyEvent $8 = new VehicleDestroyEvent(this);
 
                 getServer().getPluginManager().callEvent(destroyEvent);
 

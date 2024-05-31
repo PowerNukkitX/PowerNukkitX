@@ -14,58 +14,98 @@ import org.jetbrains.annotations.NotNull;
  * @since 2015/12/8
  */
 public class BlockLadder extends BlockTransparent implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(LADDER, CommonBlockProperties.FACING_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(LADDER, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockLadder() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockLadder(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Ladder";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeClimbed() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.4;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 2;
     }
@@ -75,8 +115,12 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     private double offMaxX;
     private double offMaxZ;
 
+    
+    /**
+     * @deprecated 
+     */
     private void calculateOffsets() {
-        double f = 0.1875;
+        double $2 = 0.1875;
         switch (this.getBlockFace()) {
             case NORTH -> {
                 this.offMinX = 0;
@@ -112,35 +156,55 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         calculateOffsets();
         return this.x + offMinX;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         calculateOffsets();
         return this.z + offMinZ;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         calculateOffsets();
         return this.x + offMaxX;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         calculateOffsets();
         return this.z + offMaxZ;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (target instanceof BlockLadder) {
-            var opposite = face.getOpposite();
-            var oppositeB = this.getLevel().getBlock(target.add(face.getUnitVector()));
-            var targetBlock = this.getLevel().getBlock(target.add(face.getUnitVector().multiply(2)));
+            var $3 = face.getOpposite();
+            var $4 = this.getLevel().getBlock(target.add(face.getUnitVector()));
+            var $5 = this.getLevel().getBlock(target.add(face.getUnitVector().multiply(2)));
             if (isSupportValid(targetBlock, opposite)) {
                 //不设置damage是因为level#useItemOn中有逻辑设置
                 this.getLevel().setBlock(oppositeB, this, true, false);
@@ -155,6 +219,10 @@ public class BlockLadder extends BlockTransparent implements Faceable {
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isSupportValid(Block support, BlockFace face) {
         if (support instanceof BlockGlassStained || support instanceof BlockBlackStainedGlassPane
                 || support instanceof BlockLeaves
@@ -164,17 +232,21 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         //debug
-        /*for (double x = getMinX(); x <= getMaxX(); x += 0.2) {
-            for (double y = getMinY(); y <= getMaxY(); y += 0.2) {
-                for (double z = getMinZ(); z <= getMaxZ(); z += 0.2) {
+        /*for (double $6 = getMinX(); x <= getMaxX(); x += 0.2) {
+            for (double $7 = getMinY(); y <= getMaxY(); y += 0.2) {
+                for (double $8 = getMinZ(); z <= getMaxZ(); z += 0.2) {
                     level.addParticleEffect(new Vector3(x, y, z), ParticleEffect.ENDROD);
                 }
             }
         }*/
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            BlockFace face = getBlockFace();
+            BlockFace $9 = getBlockFace();
             if (!isSupportValid(this.getSide(face), face.getOpposite())) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
@@ -184,6 +256,10 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
@@ -201,17 +277,29 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
         calculateOffsets();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean sticksToPiston() {
         return false;
     }

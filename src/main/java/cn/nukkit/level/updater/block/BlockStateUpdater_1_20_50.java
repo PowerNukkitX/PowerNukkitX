@@ -5,15 +5,19 @@ import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 
 public class BlockStateUpdater_1_20_50 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_20_50();
+    public static final Updater $1 = new BlockStateUpdater_1_20_50();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext ctx) {
         ctx.addUpdater(1, 20, 50)
                 .match("name", "minecraft:planks")
                 .visit("states")
                 .edit("wood_type", helper -> {
-                    String type = (String) helper.getTag();
+                    String $2 = (String) helper.getTag();
                     helper.getRootTag().put("name", "minecraft:" + type + "_planks");
                 })
                 .remove("wood_type");
@@ -22,7 +26,7 @@ public class BlockStateUpdater_1_20_50 implements Updater {
                 .match("name", "minecraft:stone")
                 .visit("states")
                 .edit("stone_type", helper -> {
-                    String type = (String) helper.getTag();
+                    String $3 = (String) helper.getTag();
                     switch (type) {
                         case "andesite_smooth":
                             type = "polished_andesite";

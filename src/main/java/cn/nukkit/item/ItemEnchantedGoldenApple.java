@@ -6,26 +6,46 @@ import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.math.Vector3;
 
 public class ItemEnchantedGoldenApple extends ItemFood {
+    /**
+     * @deprecated 
+     */
+    
     public ItemEnchantedGoldenApple() {
         super(ENCHANTED_GOLDEN_APPLE);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getFoodRestore() {
         return 4;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getSaturationRestore() {
         return 2.4F;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onEaten(Player player) {
         player.addEffect(Effect.get(EffectType.ABSORPTION)
                 .setAmplifier(3)

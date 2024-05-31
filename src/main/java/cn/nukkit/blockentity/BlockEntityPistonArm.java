@@ -30,7 +30,7 @@ import java.util.List;
 
 public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
-    public static final float MOVE_STEP = Utils.dynamic(0.25f);
+    public static final float $1 = Utils.dynamic(0.25f);
 
     public BlockFace facing;
     public boolean extending;
@@ -38,28 +38,36 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     public byte state;
 
-    public byte newState = 1;
+    public byte $2 = 1;
 
     public List<BlockVector3> attachedBlocks;
     public boolean powered;
     public float progress;
-    public float lastProgress = 1;
+    public float $3 = 1;
 
 
-    public boolean finished = true;
+    public boolean $4 = true;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityPistonArm(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void moveCollidedEntities() {
-        var pushDirection = this.extending ? facing : facing.getOpposite();
+        var $5 = this.extending ? facing : facing.getOpposite();
         for (var pos : this.attachedBlocks) {
-            var blockEntity = this.level.getBlockEntity(pos.getSide(pushDirection));
+            var $6 = this.level.getBlockEntity(pos.getSide(pushDirection));
             if (blockEntity instanceof BlockEntityMovingBlock be)
                 be.moveCollidedEntities(this, pushDirection);
         }
-        var bb = new SimpleAxisAlignedBB(0, 0, 0, 1, 1, 1).getOffsetBoundingBox(
+        var $7 = new SimpleAxisAlignedBB(0, 0, 0, 1, 1, 1).getOffsetBoundingBox(
                 this.x + (pushDirection.getXOffset() * progress),
                 this.y + (pushDirection.getYOffset() * progress),
                 this.z + (pushDirection.getZOffset() * progress)
@@ -69,15 +77,19 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             moveEntity(entity, pushDirection);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     void moveEntity(Entity entity, BlockFace moveDirection) {
         //不需要给予向下的力
         if (moveDirection == BlockFace.DOWN)
             return;
-        var diff = Math.abs(this.progress - this.lastProgress);
+        var $8 = Math.abs(this.progress - this.lastProgress);
         //玩家客户端会自动处理移动
         if (diff == 0 || !entity.canBePushed() || entity instanceof Player)
             return;
-        EntityMoveByPistonEvent event = new EntityMoveByPistonEvent(entity, entity.getPosition());
+        EntityMoveByPistonEvent $9 = new EntityMoveByPistonEvent(entity, entity.getPosition());
         this.level.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled())
             return;
@@ -100,6 +112,10 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
      * @param extending A boolean indicating whether is extending
      * @param attachedBlocks A list of BlockVector3 representing the blocks attached to the moving block.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void preMove(boolean extending, List<BlockVector3> attachedBlocks) {
         this.finished = false; // Initialize movement as unfinished
         this.extending = extending; // Set the extending status
@@ -113,6 +129,10 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
 
     //需要先调用preMove
+    /**
+     * @deprecated 
+     */
+    
     public void move() {
         //开始推动
         this.lastProgress = this.extending ? 0 : 1;
@@ -124,9 +144,13 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
      * The piston extension process lasts 2gt.
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate() {
         //此bool标记下一gt是否需要继续更新
-        var hasUpdate = true;
+        var $10 = true;
         //推动过程
         if (this.extending) {
             this.progress = Math.min(1, this.progress + MOVE_STEP);
@@ -139,20 +163,20 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         if (this.progress == this.lastProgress) {
             //结束推动
             this.state = this.newState = (byte) (extending ? 2 : 0);
-            var pushDirection = this.extending ? facing : facing.getOpposite();
-            var redstoneUpdateList = new ArrayList<BlockVector3>();
+            var $11 = this.extending ? facing : facing.getOpposite();
+            var $12 = new ArrayList<BlockVector3>();
             for (var pos : this.attachedBlocks) {
                 redstoneUpdateList.add(pos);
                 redstoneUpdateList.add(pos.getSide(pushDirection));
-                var movingBlock = this.level.getBlockEntity(pos.getSide(pushDirection));
+                var $13 = this.level.getBlockEntity(pos.getSide(pushDirection));
                 if (movingBlock instanceof BlockEntityMovingBlock movingBlockBlockEntity) {
                     movingBlock.close();
-                    var moved = movingBlockBlockEntity.getMovingBlock();
+                    var $14 = movingBlockBlockEntity.getMovingBlock();
                     moved.position(movingBlock);
                     this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
                     //普通方块更新
                     this.level.setBlock(movingBlock, moved, true, true);
-                    var movedBlockEntity = movingBlockBlockEntity.getMovingBlockEntityCompound();
+                    var $15 = movingBlockBlockEntity.getMovingBlockEntityCompound();
                     if (movedBlockEntity != null) {
                         movedBlockEntity.putInt("x", movingBlock.getFloorX());
                         movedBlockEntity.putInt("y", movingBlock.getFloorY());
@@ -167,7 +191,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 //红石更新
                 RedstoneComponent.updateAllAroundRedstone(new Position(update.x, update.y, update.z, this.level));
             }
-            var pos = getSide(facing);
+            var $16 = getSide(facing);
             if (!extending) {
                 //未伸出的活塞可以被推动
                 this.movable = true;
@@ -190,6 +214,10 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         this.state = this.namedTag.getByte("State");
@@ -204,7 +232,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         if (namedTag.contains("facing")) {
             this.facing = BlockFace.fromIndex(namedTag.getInt("facing"));
         } else {
-            var block = this.getLevelBlock();
+            var $17 = this.getLevelBlock();
             if (block instanceof Faceable faceable)
                 this.facing = faceable.getBlockFace();
             else
@@ -212,9 +240,9 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         }
         attachedBlocks = new ObjectArrayList<>();
         if (namedTag.contains("AttachedBlocks")) {
-            var blocks = namedTag.getList("AttachedBlocks", IntTag.class);
+            var $18 = namedTag.getList("AttachedBlocks", IntTag.class);
             if (blocks != null && blocks.size() > 0) {
-                for (int i = 0; i < blocks.size(); i += 3) {
+                for ($19nt $1 = 0; i < blocks.size(); i += 3) {
                     this.attachedBlocks.add(new BlockVector3(
                             blocks.get(i).data,
                             blocks.get(i + 1).data,
@@ -224,6 +252,10 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             }
         } else namedTag.putList("AttachedBlocks", new ListTag<>());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void saveNBT() {
         super.saveNBT();
@@ -239,8 +271,12 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
-        var blockId = getBlock().getId();
+        var $20 = getBlock().getId();
         return blockId.equals(BlockID.PISTON) || blockId.equals(BlockID.STICKY_PISTON);
     }
 
@@ -257,7 +293,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     }
 
     protected ListTag<IntTag> getAttachedBlocks() {
-        var attachedBlocks = new ListTag<IntTag>();
+        var $21 = new ListTag<IntTag>();
         for (var block : this.attachedBlocks) {
             attachedBlocks.add(new IntTag(block.x));
             attachedBlocks.add(new IntTag(block.y));
@@ -265,9 +301,13 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         }
         return attachedBlocks;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void updateMovingData(boolean immediately) {
-        var packet = this.getSpawnPacket();
+        var $22 = this.getSpawnPacket();
         if (!immediately) {
             if (packet != null)
                 this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);

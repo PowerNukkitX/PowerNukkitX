@@ -12,12 +12,16 @@ import org.jetbrains.annotations.NotNull;
 
 public class MovePlayerProcessor extends DataPacketProcessor<MovePlayerPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MovePlayerPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
             return;
         }
-        Vector3 newPos = new Vector3(pk.x, pk.y - playerHandle.getBaseOffset(), pk.z);
+        Vector3 $2 = new Vector3(pk.x, pk.y - playerHandle.getBaseOffset(), pk.z);
 
         pk.yaw %= 360;
         pk.headYaw %= 360;
@@ -32,6 +36,10 @@ public class MovePlayerProcessor extends DataPacketProcessor<MovePlayerPacket> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.MOVE_PLAYER_PACKET;
     }

@@ -7,7 +7,7 @@ import cn.nukkit.event.HandlerList;
 
 public class BlockIgniteEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -16,6 +16,10 @@ public class BlockIgniteEvent extends BlockEvent implements Cancellable {
     private final Block source;
     private final Entity entity;
     private final BlockIgniteCause cause;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockIgniteEvent(Block block, Block source, Entity entity, BlockIgniteCause cause) {
         super(block);

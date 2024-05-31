@@ -8,6 +8,10 @@ import cn.nukkit.entity.Entity;
 public class EntityMetadataStore extends MetadataStore {
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected String disambiguate(Metadatable entity, String metadataKey) {
         if (!(entity instanceof Entity)) {
             throw new IllegalArgumentException("Argument must be an Entity instance");

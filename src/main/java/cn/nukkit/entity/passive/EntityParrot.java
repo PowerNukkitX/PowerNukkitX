@@ -11,9 +11,17 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityParrot extends EntityAnimal implements EntityFlyable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return PARROT;
     }
+    /**
+     * @deprecated 
+     */
+    
     
 
     public EntityParrot(IChunk chunk, CompoundTag nbt) {
@@ -24,21 +32,37 @@ public class EntityParrot extends EntityAnimal implements EntityFlyable {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Parrot";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.5f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 1.0f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(6);
         super.initEntity();

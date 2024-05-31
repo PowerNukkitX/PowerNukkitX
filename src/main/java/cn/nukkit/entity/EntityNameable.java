@@ -24,7 +24,11 @@ public interface EntityNameable {
 
     void setPersistent(boolean persistent);
 
-    default boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (item.getId() == Item.NAME_TAG) {
             if (!player.isSpectator()) {
                 return playerApplyNameTag(player, item);
@@ -33,11 +37,19 @@ public interface EntityNameable {
         return false;
     }
 
-    default boolean playerApplyNameTag(@NotNull Player player, @NotNull Item item) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean playerApplyNameTag(@NotNull Player player, @NotNull Item item) {
         return playerApplyNameTag(player, item, true);
     }
 
-    default boolean playerApplyNameTag(@NotNull Player player, @NotNull Item item, boolean consume) {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean playerApplyNameTag(@NotNull Player player, @NotNull Item item, boolean consume) {
         if (item.hasCustomName()) {
             this.setNameTag(item.getCustomName());
             this.setNameTagVisible(true);

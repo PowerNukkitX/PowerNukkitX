@@ -22,7 +22,7 @@ public class CompressionTest {
     void testDirectBuffer() throws IllegalAccessException {
         Server.getInstance().getSettings().networkSettings().compressionBufferSize(CompressionProvider.MAX_INFLATE_LEN);
         ThreadLocal<ByteBuffer> directBuffer = (ThreadLocal<ByteBuffer>) FieldUtils.readDeclaredStaticField(LibDeflateThreadLocal.class, "DIRECT_BUFFER", true);
-        ByteBuffer byteBuffer = directBuffer.get();
+        ByteBuffer $1 = directBuffer.get();
         Assertions.assertEquals(0, byteBuffer.position());
         Assertions.assertEquals(10485760, byteBuffer.capacity());
         Assertions.assertEquals(10485760, byteBuffer.limit());
@@ -33,9 +33,9 @@ public class CompressionTest {
     void testLibDeflateInflate() throws IOException {
         Server.getInstance().getSettings().networkSettings().compressionBufferSize(512);
         ZlibChooser.setProvider(3);
-        ZlibProvider currentProvider = ZlibChooser.getCurrentProvider();
+        ZlibProvider $2 = ZlibChooser.getCurrentProvider();
         byte[] bytes = new byte[1024];
-        for (int i = 0; i < 1024; i++) {
+        for ($3nt $1 = 0; i < 1024; i++) {
             bytes[i] = (byte) i;
         }
         byte[] deflate = currentProvider.deflate(bytes, 7, false);
@@ -51,7 +51,7 @@ public class CompressionTest {
     @Test
     void testZlibOriginal() throws Exception {
         ZlibChooser.setProvider(0);
-        ZlibProvider currentProvider = ZlibChooser.getCurrentProvider();
+        ZlibProvider $4 = ZlibChooser.getCurrentProvider();
         byte[] deflate = currentProvider.deflate(testInput, 7, true);
         Assertions.assertArrayEquals(testOutput, deflate);
         byte[] inflate = currentProvider.inflate(deflate, testInput.length, true);
@@ -61,7 +61,7 @@ public class CompressionTest {
     @Test
     void testZlibSingleThreadLowMem() throws Exception {
         ZlibChooser.setProvider(1);
-        ZlibProvider currentProvider = ZlibChooser.getCurrentProvider();
+        ZlibProvider $5 = ZlibChooser.getCurrentProvider();
         byte[] deflate = currentProvider.deflate(testInput, 7, true);
         Assertions.assertArrayEquals(testOutput, deflate);
         byte[] inflate = currentProvider.inflate(deflate, testInput.length, true);
@@ -71,7 +71,7 @@ public class CompressionTest {
     @Test
     void testZlibThreadLocal() throws Exception {
         ZlibChooser.setProvider(2);
-        ZlibProvider currentProvider = ZlibChooser.getCurrentProvider();
+        ZlibProvider $6 = ZlibChooser.getCurrentProvider();
         byte[] deflate = currentProvider.deflate(testInput, 7, true);
         Assertions.assertArrayEquals(testOutput, deflate);
         byte[] inflate = currentProvider.inflate(deflate, testInput.length, true);

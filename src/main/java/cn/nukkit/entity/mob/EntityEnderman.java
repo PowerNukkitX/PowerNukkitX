@@ -14,9 +14,17 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return ENDERMAN;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityEnderman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -24,27 +32,47 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
 
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(40);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 2.9f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Enderman";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPreventingSleep(Player player) {
         return this.getDataFlag(EntityFlag.ANGRY);
     }

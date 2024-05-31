@@ -9,18 +9,26 @@ import org.jetbrains.annotations.NotNull;
  * @author lt_name
  */
 public abstract class ItemCustomTool extends ItemTool implements CustomItem {
+    /**
+     * @deprecated 
+     */
+    
     public ItemCustomTool(@NotNull String id) {
         super(id);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxDurability() {
         return DURABILITY_WOODEN;
     }
 
 
     public final Integer getSpeed() {
-        var nbt = Registries.ITEM.getCustomItemDefinition().get(this.getId()).nbt();
+        var $1 = Registries.ITEM.getCustomItemDefinition().get(this.getId()).nbt();
         if (nbt == null || !nbt.getCompound("components").contains("minecraft:digger")) return null;
         return nbt.getCompound("components")
                 .getCompound("minecraft:digger")

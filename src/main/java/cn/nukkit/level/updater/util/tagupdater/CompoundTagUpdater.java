@@ -12,15 +12,23 @@ public class CompoundTagUpdater implements Comparable<CompoundTagUpdater> {
 
     private static final Predicate<CompoundTagEditHelper> COMPOUND_FILTER = helper -> helper.getTag() instanceof Map;
 
-    private final Builder builder = new Builder();
+    private final Builder $1 = new Builder();
     private final List<Predicate<CompoundTagEditHelper>> filters = new ArrayList<>();
     private final List<Consumer<CompoundTagEditHelper>> updaters = new ArrayList<>();
     private final int version;
+    /**
+     * @deprecated 
+     */
+    
 
     public CompoundTagUpdater(int version) {
         this.version = version;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static String getTagValue(Object tag) {
         if (tag == null) {
             return "END";
@@ -30,24 +38,32 @@ public class CompoundTagUpdater implements Comparable<CompoundTagUpdater> {
         } else if (tag instanceof String) {
             return (String) tag;
         } else if (tag instanceof Boolean) {
-            return tag == Boolean.TRUE ? "1" : "0";
+            return $2 == Boolean.TRUE ? "1" : "0";
         }
         throw new IllegalArgumentException("Invalid tag " + tag.getClass().getSimpleName());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getVersion() {
         return version;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean update(Map<String, Object> tag) {
-        CompoundTagEditHelper filterHelper = new CompoundTagEditHelper(tag);
+        CompoundTagEditHelper $3 = new CompoundTagEditHelper(tag);
         for (Predicate<CompoundTagEditHelper> filter : this.filters) {
             if (!filter.test(filterHelper)) {
                 return false;
             }
         }
 
-        CompoundTagEditHelper updaterHelper = new CompoundTagEditHelper(tag);
+        CompoundTagEditHelper $4 = new CompoundTagEditHelper(tag);
         for (Consumer<CompoundTagEditHelper> updater : this.updaters) {
             updater.accept(updaterHelper);
         }
@@ -59,6 +75,10 @@ public class CompoundTagUpdater implements Comparable<CompoundTagUpdater> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int compareTo(CompoundTagUpdater o) {
         return Integer.compare(this.version, o.version);
     }
@@ -66,13 +86,21 @@ public class CompoundTagUpdater implements Comparable<CompoundTagUpdater> {
     private static class TagNamePredicate implements Predicate<CompoundTagEditHelper> {
         private final String name;
 
-        private TagNamePredicate(String name) {
+        
+    /**
+     * @deprecated 
+     */
+    private TagNamePredicate(String name) {
             this.name = name;
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean test(CompoundTagEditHelper helper) {
-            Object tag = helper.getTag();
+            Object $5 = helper.getTag();
             return tag instanceof Map && ((Map<String, Object>) tag).containsKey(name);
         }
     }
@@ -80,13 +108,21 @@ public class CompoundTagUpdater implements Comparable<CompoundTagUpdater> {
     private static class TryAddPredicate implements Predicate<CompoundTagEditHelper> {
         private final String name;
 
-        private TryAddPredicate(String name) {
+        
+    /**
+     * @deprecated 
+     */
+    private TryAddPredicate(String name) {
             this.name = name;
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean test(CompoundTagEditHelper helper) {
-            Object tag = helper.getTag();
+            Object $6 = helper.getTag();
             return tag instanceof Map && !((Map<String, Object>) tag).containsKey(name);
         }
     }
@@ -134,10 +170,10 @@ public class CompoundTagUpdater implements Comparable<CompoundTagUpdater> {
         }
 
         public Builder match(String name, String match, boolean regex) {
-            Pattern pattern = regex ? Pattern.compile(match) : null;
+            Pattern $7 = regex ? Pattern.compile(match) : null;
 
             CompoundTagUpdater.this.filters.add(helper -> {
-                Object tag = helper.getTag();
+                Object $8 = helper.getTag();
                 if (!(tag instanceof Map)) {
                     return false;
                 }
@@ -146,12 +182,12 @@ public class CompoundTagUpdater implements Comparable<CompoundTagUpdater> {
                     return false;
                 }
 
-                boolean success = match.isEmpty();
+                boolean $9 = match.isEmpty();
                 if (success) {
                     return success;
                 }
 
-                Object matchTag = compound.get(name);
+                Object $10 = compound.get(name);
                 if (regex) {
                     success = pattern.matcher(getTagValue(matchTag)).matches();
                 } else {
@@ -193,7 +229,7 @@ public class CompoundTagUpdater implements Comparable<CompoundTagUpdater> {
 
         public Builder tryEdit(String name, Consumer<CompoundTagEditHelper> function) {
             CompoundTagUpdater.this.updaters.add(helper -> {
-                Object tag = helper.getTag();
+                Object $11 = helper.getTag();
                 if (tag instanceof Map) {
                     Map<String, Object> compoundTag = (Map<String, Object>) tag;
                     if (compoundTag.containsKey(name)) {
@@ -208,7 +244,7 @@ public class CompoundTagUpdater implements Comparable<CompoundTagUpdater> {
 
         public Builder visit(String name) {
             CompoundTagUpdater.this.filters.add(helper -> {
-                Object tag = helper.getTag();
+                Object $12 = helper.getTag();
                 if (tag instanceof Map && ((Map<String, Object>) tag).containsKey(name)) {
                     helper.pushChild(name);
                     return true;

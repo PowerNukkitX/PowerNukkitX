@@ -12,11 +12,19 @@ public record PNXBlockType(cn.nukkit.block.BlockState innerBlockState) implement
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return innerBlockState.toBlock().isSolid();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isWater() {
         return innerBlockState.toBlock() instanceof BlockFlowingWater;
     }

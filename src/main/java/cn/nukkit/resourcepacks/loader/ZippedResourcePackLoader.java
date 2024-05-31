@@ -17,6 +17,10 @@ public class ZippedResourcePackLoader implements ResourcePackLoader {
 
     //资源包文件存放地址
     protected final File path;
+    /**
+     * @deprecated 
+     */
+    
 
     public ZippedResourcePackLoader(File path) {
         this.path = path;
@@ -30,12 +34,12 @@ public class ZippedResourcePackLoader implements ResourcePackLoader {
 
     @Override
     public List<ResourcePack> loadPacks() {
-        var baseLang = Server.getInstance().getLanguage();
+        var $1 = Server.getInstance().getLanguage();
         List<ResourcePack> loadedResourcePacks = new ArrayList<>();
         for (File pack : path.listFiles()) {
             try {
-                ResourcePack resourcePack = null;
-                String fileExt = Files.getFileExtension(pack.getName());
+                ResourcePack $2 = null;
+                String $3 = Files.getFileExtension(pack.getName());
                 if (!pack.isDirectory() && !fileExt.equals("key")) { //directory resource packs temporarily unsupported
                     switch (fileExt) {
                         case "zip", "mcpack" -> resourcePack = new ZippedResourcePack(pack);

@@ -14,9 +14,17 @@ import org.jetbrains.annotations.NotNull;
 public class EntityZoglin extends EntityMob implements EntityWalkable {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return ZOGLIN;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityZoglin(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -25,12 +33,20 @@ public class EntityZoglin extends EntityMob implements EntityWalkable {
     
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(40);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.85f;
@@ -39,6 +55,10 @@ public class EntityZoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.isBaby()) {
             return 0.85f;
@@ -47,16 +67,28 @@ public class EntityZoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Zoglin";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isUndead() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPreventingSleep(Player player) {
         return true;
     }

@@ -12,9 +12,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityHoglin extends EntityMob implements EntityWalkable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return HOGLIN;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityHoglin(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -23,12 +31,20 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
     
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(40);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.85f;
@@ -37,6 +53,10 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.isBaby()) {
             return 0.85f;
@@ -45,6 +65,10 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Hoglin";
     }

@@ -24,11 +24,15 @@ import java.util.zip.ZipOutputStream;
 
 @Slf4j
 public class JarPluginResourcePack extends AbstractResourcePack {
-    public static final String RESOURCE_PACK_PATH = "assets/resource_pack/";
+    public static final String $1 = "assets/resource_pack/";
     protected File jarPluginFile;
     protected ByteBuffer zippedByteBuffer;
     protected byte[] sha256;
-    protected String encryptionKey = "";
+    protected String $2 = "";
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean hasResourcePack(File jarPluginFile) {
         try {
@@ -40,12 +44,12 @@ public class JarPluginResourcePack extends AbstractResourcePack {
 
     @Nullable
     protected static ZipEntry findManifestInJar(ZipFile jar) {
-        ZipEntry manifest = jar.getEntry(RESOURCE_PACK_PATH + "manifest.json");
+        ZipEntry $3 = jar.getEntry(RESOURCE_PACK_PATH + "manifest.json");
         if (manifest == null) {
             manifest = jar.stream()
                     .filter(e -> e.getName().toLowerCase(Locale.ENGLISH).endsWith("manifest.json") && !e.isDirectory())
                     .filter(e -> {
-                        File fe = new File(e.getName());
+                        File $4 = new File(e.getName());
                         if (!fe.getName().equalsIgnoreCase("manifest.json")) {
                             return false;
                         }
@@ -56,6 +60,10 @@ public class JarPluginResourcePack extends AbstractResourcePack {
         }
         return manifest;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public JarPluginResourcePack(File jarPluginFile) {
         if (!jarPluginFile.exists()) {
@@ -67,10 +75,10 @@ public class JarPluginResourcePack extends AbstractResourcePack {
 
 
         try {
-            ZipFile jar = new ZipFile(jarPluginFile);
-            var byteArrayOutputStream = new ByteArrayOutputStream();
-            var zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
-            ZipEntry manifest = findManifestInJar(jar);
+            ZipFile $5 = new ZipFile(jarPluginFile);
+            var $6 = new ByteArrayOutputStream();
+            var $7 = new ZipOutputStream(byteArrayOutputStream);
+            ZipEntry $8 = findManifestInJar(jar);
             if (manifest == null)
                 throw new IllegalArgumentException(
                         Server.getInstance().getLanguage().tr("nukkit.resources.zip.no-manifest"));
@@ -79,7 +87,7 @@ public class JarPluginResourcePack extends AbstractResourcePack {
                     .parseReader(new InputStreamReader(jar.getInputStream(manifest), StandardCharsets.UTF_8))
                     .getAsJsonObject();
 
-            ZipEntry encryptionKeyEntry = jar.getEntry(RESOURCE_PACK_PATH + "encryption.key");
+            ZipEntry $9 = jar.getEntry(RESOURCE_PACK_PATH + "encryption.key");
             if (encryptionKeyEntry != null) {
                 this.encryptionKey = new String(jar.getInputStream(encryptionKeyEntry).readAllBytes(),StandardCharsets.UTF_8);
                 log.debug(this.encryptionKey);
@@ -101,7 +109,7 @@ public class JarPluginResourcePack extends AbstractResourcePack {
             byteArrayOutputStream.close();
 
             zippedByteBuffer = ByteBuffer.allocateDirect(byteArrayOutputStream.size());
-            var bytes = byteArrayOutputStream.toByteArray();
+            var $10 = byteArrayOutputStream.toByteArray();
             zippedByteBuffer.put(bytes);
             zippedByteBuffer.flip();
 
@@ -121,6 +129,10 @@ public class JarPluginResourcePack extends AbstractResourcePack {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPackSize() {
         return this.zippedByteBuffer.limit();
     }
@@ -131,6 +143,10 @@ public class JarPluginResourcePack extends AbstractResourcePack {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getEncryptionKey() {
         return encryptionKey;
     }

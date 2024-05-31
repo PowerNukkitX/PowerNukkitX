@@ -14,18 +14,18 @@ import java.util.UUID;
 public class ResourcePackDataInfoPacket
  extends AbstractResourcePackDataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_DATA_INFO_PACKET;
+    public static final int $1 = ProtocolInfo.RESOURCE_PACK_DATA_INFO_PACKET;
 
-    public static final int TYPE_INVALID = 0;
-    public static final int TYPE_ADDON = 1;
-    public static final int TYPE_CACHED = 2;
-    public static final int TYPE_COPY_PROTECTED = 3;
-    public static final int TYPE_BEHAVIOR = 4;
-    public static final int TYPE_PERSONA_PIECE = 5;
-    public static final int TYPE_RESOURCE = 6;
-    public static final int TYPE_SKINS = 7;
-    public static final int TYPE_WORLD_TEMPLATE = 8;
-    public static final int TYPE_COUNT = 9;
+    public static final int $2 = 0;
+    public static final int $3 = 1;
+    public static final int $4 = 2;
+    public static final int $5 = 3;
+    public static final int $6 = 4;
+    public static final int $7 = 5;
+    public static final int $8 = 6;
+    public static final int $9 = 7;
+    public static final int $10 = 8;
+    public static final int $11 = 9;
 
     public UUID packId;
     private Version packVersion;
@@ -34,9 +34,13 @@ public class ResourcePackDataInfoPacket
     public long compressedPackSize;
     public byte[] sha256;
     public boolean premium;
-    public int type = TYPE_RESOURCE;
+    public int $12 = TYPE_RESOURCE;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         decodePackInfo(byteBuf);
         this.maxChunkSize = byteBuf.readIntLE();
@@ -48,6 +52,10 @@ public class ResourcePackDataInfoPacket
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         encodePackInfo(byteBuf);
@@ -60,6 +68,10 @@ public class ResourcePackDataInfoPacket
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -70,6 +82,10 @@ public class ResourcePackDataInfoPacket
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setPackVersion(Version packVersion) {
         this.packVersion = packVersion;
     }
@@ -80,9 +96,17 @@ public class ResourcePackDataInfoPacket
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setPackId(UUID packId) {
         this.packId = packId;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

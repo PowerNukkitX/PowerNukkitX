@@ -8,8 +8,12 @@ import org.graalvm.polyglot.Value;
 public abstract class JSExternal {
     protected final Context sourceContext;
     protected final Value value;
-    private boolean alive = true;
+    private boolean $1 = true;
 
+    
+    /**
+     * @deprecated 
+     */
     protected final void checkAlive() {
         if(!alive) {
             throw new ReferenceNotAliveException("Reference targeting " + value.getMetaQualifiedName() + " has already be disposed.");
@@ -17,6 +21,10 @@ public abstract class JSExternal {
     }
 
     public static final class ReferenceNotAliveException extends RuntimeException {
+    /**
+     * @deprecated 
+     */
+    
         public ReferenceNotAliveException(String message) {
             super(message);
         }

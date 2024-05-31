@@ -17,6 +17,10 @@ import java.util.Map;
 
 
 public class TellrawCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public TellrawCommand(String name) {
         super(name, "commands.tellraw.description");
@@ -30,15 +34,19 @@ public class TellrawCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         try {
             List<Player> players = list.getResult(0);
             if (players.isEmpty()) {
                 log.addNoTargetMatch().output();
                 return 0;
             }
-            RawText rawTextObject = list.getResult(1);
+            RawText $2 = list.getResult(1);
             rawTextObject.preParse(sender);
             for (Player player : players) {
                 player.sendRawTextMessage(rawTextObject);

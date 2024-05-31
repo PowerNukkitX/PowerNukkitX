@@ -5,15 +5,19 @@ import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 
 public class BlockStateUpdater_1_20_60 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_20_60();
+    public static final Updater $1 = new BlockStateUpdater_1_20_60();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext ctx) {
         ctx.addUpdater(1, 20, 60)
                 .match("name", "minecraft:hard_stained_glass")
                 .visit("states")
                 .edit("color", helper -> {
-                    String color = (String) helper.getTag();
+                    String $2 = (String) helper.getTag();
                     if (color.equals("silver")) {
                         color = "light_gray";
                     }
@@ -25,7 +29,7 @@ public class BlockStateUpdater_1_20_60 implements Updater {
                 .match("name", "minecraft:hard_stained_glass_pane")
                 .visit("states")
                 .edit("color", helper -> {
-                    String color = (String) helper.getTag();
+                    String $3 = (String) helper.getTag();
                     if (color.equals("silver")) {
                         color = "light_gray";
                     }

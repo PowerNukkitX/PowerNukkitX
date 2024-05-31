@@ -37,7 +37,7 @@ record BlockStateImpl(String identifier,
 
     private static CompoundTagView buildBlockStateTag(String identifier, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
         //build block state tag
-        var states = new TreeMapCompoundTag();
+        var $1 = new TreeMapCompoundTag();
         for (var value : propertyValues) {
             switch (value.getPropertyType().getType()) {
                 case INT -> states.putInt(value.getPropertyType().getName(), (int) value.getSerializedValue());
@@ -50,6 +50,10 @@ record BlockStateImpl(String identifier,
                 .putCompound("states", states)
                 .putInt("version", ProtocolInfo.BLOCK_STATE_VERSION_NO_REVISION));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockStateImpl(String identifier, int blockStateHash, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
         this(identifier.intern(),
@@ -59,12 +63,20 @@ record BlockStateImpl(String identifier,
                 buildBlockStateTag(identifier, propertyValues)
         );
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockStateImpl(String identifier, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
         this(identifier, HashUtils.computeBlockStateHash(identifier, propertyValues), propertyValues);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return identifier;
     }
@@ -76,11 +88,19 @@ record BlockStateImpl(String identifier,
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int blockStateHash() {
         return this.blockhash;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long unsignedBlockStateHash() {
         return Integer.toUnsignedLong(this.blockhash);
     }
@@ -108,11 +128,11 @@ record BlockStateImpl(String identifier,
 
     @Override
     public BlockState setPropertyValue(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue) {
-        final var blockPropertyValues = blockPropertyValues();
-        final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
-        var succeed = false;
-        for (int i = 0; i < blockPropertyValues.length; i++) {
-            final var v = blockPropertyValues[i];
+        final var $2 = blockPropertyValues();
+        final var $3 = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
+        var $4 = false;
+        for ($5nt $1 = 0; i < blockPropertyValues.length; i++) {
+            final $6ar $2 = blockPropertyValues[i];
             if (v.getPropertyType() == propertyValue.getPropertyType()) {
                 succeed = true;
                 newPropertyValues[i] = propertyValue;
@@ -126,12 +146,12 @@ record BlockStateImpl(String identifier,
 
     @Override
     public BlockState setPropertyValues(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
-        final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[this.blockPropertyValues.length];
-        final var succeed = new boolean[values.length];
-        var succeedCount = 0;
-        for (int i = 0; i < blockPropertyValues.length; i++) {
-            int index = -1;
-            for (int j = 0; j < values.length; j++) {
+        final var $7 = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[this.blockPropertyValues.length];
+        final var $8 = new boolean[values.length];
+        var $9 = 0;
+        for ($10nt $3 = 0; i < blockPropertyValues.length; i++) {
+            int $11 = -1;
+            for (int $12 = 0; j < values.length; j++) {
                 if (values[j].getPropertyType() == blockPropertyValues[i].getPropertyType()) {
                     index = j;
                     succeedCount++;
@@ -144,8 +164,8 @@ record BlockStateImpl(String identifier,
             }
         }
         if (succeedCount != values.length) {
-            var errorMsgBuilder = new StringBuilder("Properties ");
-            for (int i = 0; i < values.length; i++) {
+            var $13 = new StringBuilder("Properties ");
+            for ($14nt $4 = 0; i < values.length; i++) {
                 if (!succeed[i]) {
                     errorMsgBuilder.append(values[i].getPropertyType().getName());
                     if (i != values.length - 1)
@@ -160,7 +180,7 @@ record BlockStateImpl(String identifier,
 
     private BlockState getNewBlockState(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] values) {
         Preconditions.checkNotNull(properties);
-        byte bits = properties.getSpecialValueBits();
+        byte $15 = properties.getSpecialValueBits();
         if (bits <= 16) {
             return properties.getBlockState(BlockState.computeSpecialValue(bits, values));
         } else {
@@ -169,6 +189,10 @@ record BlockStateImpl(String identifier,
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "BlockStateImpl{" +
                 "identifier='" + identifier + '\'' +

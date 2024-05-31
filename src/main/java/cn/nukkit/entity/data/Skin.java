@@ -22,21 +22,21 @@ import java.util.UUID;
 @ToString(exclude = {"geometryData", "animationData"})
 @EqualsAndHashCode(exclude = {"trusted"})
 public class Skin {
-    public static final String GEOMETRY_CUSTOM = convertLegacyGeometryName("geometry.humanoid.custom");
-    public static final String GEOMETRY_CUSTOM_SLIM = convertLegacyGeometryName("geometry.humanoid.customSlim");
-    private static final int PIXEL_SIZE = 4;
-    public static final int SINGLE_SKIN_SIZE = 64 * 32 * PIXEL_SIZE;
-    public static final int DOUBLE_SKIN_SIZE = 64 * 64 * PIXEL_SIZE;
-    public static final int SKIN_128_64_SIZE = 128 * 64 * PIXEL_SIZE;
-    public static final int SKIN_128_128_SIZE = 128 * 128 * PIXEL_SIZE;
+    public static final String $1 = convertLegacyGeometryName("geometry.humanoid.custom");
+    public static final String $2 = convertLegacyGeometryName("geometry.humanoid.customSlim");
+    private static final int $3 = 4;
+    public static final int $4 = 64 * 32 * PIXEL_SIZE;
+    public static final int $5 = 64 * 64 * PIXEL_SIZE;
+    public static final int $6 = 128 * 64 * PIXEL_SIZE;
+    public static final int $7 = 128 * 128 * PIXEL_SIZE;
     private final List<SkinAnimation> animations = new ArrayList<>();
     private final List<PersonaPiece> personaPieces = new ArrayList<>();
     private final List<PersonaPieceTint> tintColors = new ArrayList<>();
     private String skinId;
     private String fullSkinId;
 
-    private String playFabId = "";
-    private String skinResourcePatch = GEOMETRY_CUSTOM;
+    private String $8 = "";
+    private String $9 = GEOMETRY_CUSTOM;
     private SerializedImage skinData;
     private SerializedImage capeData;
     private String geometryData;
@@ -44,19 +44,19 @@ public class Skin {
     private boolean premium;
     private boolean persona;
     private boolean capeOnClassic;
-    private boolean primaryUser = true;
+    private boolean $10 = true;
     private String capeId;
-    private String skinColor = "#0";
-    private String armSize = "wide";
-    private boolean trusted = true;
-    private String geometryDataEngineVersion = "";
-    private boolean overridingPlayerAppearance = true;
+    private String $11 = "#0";
+    private String $12 = "wide";
+    private boolean $13 = true;
+    private String $14 = "";
+    private boolean $15 = true;
 
     private static SerializedImage parseBufferedImage(BufferedImage image) {
-        FastByteArrayOutputStream outputStream = new FastByteArrayOutputStream();
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                Color color = new Color(image.getRGB(x, y), true);
+        FastByteArrayOutputStream $16 = new FastByteArrayOutputStream();
+        for (int $17 = 0; y < image.getHeight(); y++) {
+            for (int $18 = 0; x < image.getWidth(); x++) {
+                Color $19 = new Color(image.getRGB(x, y), true);
                 outputStream.write(color.getRed());
                 outputStream.write(color.getGreen());
                 outputStream.write(color.getBlue());
@@ -67,14 +67,26 @@ public class Skin {
         return new SerializedImage(image.getWidth(), image.getHeight(), outputStream.toByteArray());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static String convertLegacyGeometryName(String geometryName) {
         return "{\"geometry\" : {\"default\" : \"" + geometryName + "\"}}";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isValid() {
         return isValidSkin() && isValidResourcePatch();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isValidSkin() {
         return skinId != null && !skinId.trim().isEmpty() && skinId.length() < 100 &&
                 skinData != null && skinData.width >= 64 && skinData.height >= 32 &&
@@ -87,13 +99,17 @@ public class Skin {
                 (geometryDataEngineVersion == null || geometryDataEngineVersion.length() < 100);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isValidResourcePatch() {
         if (skinResourcePatch == null || skinResourcePatch.length() > 1000) {
             return false;
         }
         try {
-            JSONObject object = (JSONObject) JSONValue.parse(skinResourcePatch);
-            JSONObject geometry = (JSONObject) object.get("geometry");
+            JSONObject $20 = (JSONObject) JSONValue.parse(skinResourcePatch);
+            JSONObject $21 = (JSONObject) object.get("geometry");
             return geometry.containsKey("default") && geometry.get("default") instanceof String;
         } catch (ClassCastException | NullPointerException e) {
             return false;
@@ -106,19 +122,35 @@ public class Skin {
         }
         return skinData;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSkinData(byte[] skinData) {
         setSkinData(SerializedImage.fromLegacy(skinData));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSkinData(BufferedImage image) {
         setSkinData(parseBufferedImage(image));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSkinData(SerializedImage skinData) {
         Objects.requireNonNull(skinData, "skinData");
         this.skinData = skinData;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getSkinId() {
         if (this.skinId == null) {
@@ -126,6 +158,10 @@ public class Skin {
         }
         return skinId;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSkinId(String skinId) {
         if (skinId == null || skinId.trim().isEmpty()) {
@@ -133,11 +169,19 @@ public class Skin {
         }
         this.skinId = skinId;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void generateSkinId(String name) {
         byte[] data = Binary.appendBytes(getSkinData().data, getSkinResourcePatch().getBytes(StandardCharsets.UTF_8));
         this.skinId = UUID.nameUUIDFromBytes(data) + "." + name;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setGeometryName(String geometryName) {
         if (geometryName == null || geometryName.trim().isEmpty()) {
@@ -147,6 +191,10 @@ public class Skin {
 
         this.skinResourcePatch = "{\"geometry\" : {\"default\" : \"" + geometryName + "\"}}";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getSkinResourcePatch() {
         if (this.skinResourcePatch == null) {
@@ -154,6 +202,10 @@ public class Skin {
         }
         return skinResourcePatch;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSkinResourcePatch(String skinResourcePatch) {
         if (skinResourcePatch == null || skinResourcePatch.trim().isEmpty()) {
@@ -168,21 +220,37 @@ public class Skin {
         }
         return capeData;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCapeData(byte[] capeData) {
         Objects.requireNonNull(capeData, "capeData");
         Preconditions.checkArgument(capeData.length == SINGLE_SKIN_SIZE || capeData.length == 0, "Invalid legacy cape");
         setCapeData(new SerializedImage(64, 32, capeData));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCapeData(BufferedImage image) {
         setCapeData(parseBufferedImage(image));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCapeData(SerializedImage capeData) {
         Objects.requireNonNull(capeData, "capeData");
         this.capeData = capeData;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getCapeId() {
         if (capeId == null) {
@@ -190,6 +258,10 @@ public class Skin {
         }
         return capeId;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCapeId(String capeId) {
         if (capeId == null || capeId.trim().isEmpty()) {
@@ -197,6 +269,10 @@ public class Skin {
         }
         this.capeId = capeId;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getGeometryData() {
         if (geometryData == null) {
@@ -204,6 +280,10 @@ public class Skin {
         }
         return geometryData;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setGeometryData(String geometryData) {
         Preconditions.checkNotNull(geometryData, "geometryData");
@@ -211,6 +291,10 @@ public class Skin {
             this.geometryData = geometryData;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getAnimationData() {
         if (animationData == null) {
@@ -218,6 +302,10 @@ public class Skin {
         }
         return animationData;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAnimationData(String animationData) {
         Preconditions.checkNotNull(animationData, "animationData");
@@ -237,79 +325,155 @@ public class Skin {
     public List<PersonaPieceTint> getTintColors() {
         return tintColors;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPremium() {
         return premium;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPremium(boolean premium) {
         this.premium = premium;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPersona() {
         return persona;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPersona(boolean persona) {
         this.persona = persona;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isCapeOnClassic() {
         return capeOnClassic;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCapeOnClassic(boolean capeOnClassic) {
         this.capeOnClassic = capeOnClassic;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPrimaryUser() {
         return primaryUser;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPrimaryUser(boolean primaryUser) {
         this.primaryUser = primaryUser;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getGeometryDataEngineVersion() {
         return geometryDataEngineVersion;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setGeometryDataEngineVersion(String geometryDataEngineVersion) {
         this.geometryDataEngineVersion = geometryDataEngineVersion;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isTrusted() {
         return trusted;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTrusted(boolean trusted) {
         this.trusted = trusted;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getSkinColor() {
         return skinColor;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSkinColor(String skinColor) {
         this.skinColor = skinColor;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getArmSize() {
         return armSize;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setArmSize(String armSize) {
         this.armSize = armSize;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getFullSkinId() {
         if (fullSkinId == null) fullSkinId = skinId + (capeId != null ? capeId : "");
         return fullSkinId;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFullSkinId(String fullSkinId) {
         this.fullSkinId = fullSkinId;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getPlayFabId() {
         if (this.persona && (this.playFabId == null || this.playFabId.isEmpty())) {
@@ -321,14 +485,26 @@ public class Skin {
         }
         return this.playFabId;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPlayFabId(String playFabId) {
         this.playFabId = playFabId;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isOverridingPlayerAppearance() {
         return this.overridingPlayerAppearance;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setOverridingPlayerAppearance(boolean override) {
         this.overridingPlayerAppearance = override;

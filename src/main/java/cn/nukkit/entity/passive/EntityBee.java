@@ -14,12 +14,20 @@ import org.jetbrains.annotations.NotNull;
 public class EntityBee extends EntityAnimal implements EntityFlyable {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return BEE;
     }
     
 
-    private final int beehiveTimer = 600;
+    private final int $1 = 600;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public EntityBee(IChunk chunk, CompoundTag nbt) {
@@ -29,6 +37,10 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.275f;
@@ -37,47 +49,75 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.isBaby()) {
             return 0.25f;
         }
         return 0.5f;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getHasNectar() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setHasNectar(boolean hasNectar) {
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isAngry() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAngry(boolean angry) {
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAngry(Player player) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         return super.onUpdate(currentTick);
         //todo: 属于实体AI范畴，应迁移到实体AI部分实现，此方法开销巨大
 //        if (--beehiveTimer <= 0) {
-//            BlockEntityBeehive closestBeehive = null;
-//            double closestDistance = Double.MAX_VALUE;
+//            BlockEntityBeehive $2 = null;
+//            double $3 = Double.MAX_VALUE;
 //            Optional<Block> flower = Arrays.stream(level.getCollisionBlocks(getBoundingBox().grow(4, 4, 4), false, true))
 //                    .filter(block -> block instanceof BlockFlower)
 //                    .findFirst();
 //
 //            for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(1.5, 1.5, 1.5))) {
 //                if (collisionBlock instanceof BlockBeehive) {
-//                    BlockEntityBeehive beehive = ((BlockBeehive) collisionBlock).getOrCreateBlockEntity();
+//                    BlockEntityBeehive $4 = ((BlockBeehive) collisionBlock).getOrCreateBlockEntity();
 //                    double distance;
 //                    if (beehive.getOccupantsCount() < 4 && (distance = beehive.distanceSquared(this)) < closestDistance) {
 //                        closestBeehive = beehive;
@@ -87,7 +127,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
 //            }
 //
 //            if (closestBeehive != null) {
-//                BlockEntityBeehive.Occupant occupant = closestBeehive.addOccupant(this);
+//                BlockEntityBeehive.Occupant $5 = closestBeehive.addOccupant(this);
 //                if (flower.isPresent()) {
 //                    occupant.setTicksLeftToStay(2400);
 //                    occupant.setHasNectar(true);
@@ -98,20 +138,36 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void nectarDelivered(BlockEntityBeehive blockEntityBeehive) {
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void leftBeehive(BlockEntityBeehive blockEntityBeehive) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Bee";
     }

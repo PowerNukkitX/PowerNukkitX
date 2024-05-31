@@ -12,7 +12,7 @@ import cn.nukkit.item.Item;
 
 public class CampfireSmeltEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -22,6 +22,10 @@ public class CampfireSmeltEvent extends BlockEvent implements Cancellable {
     private final Item source;
     private Item result;
     private boolean keepItem;
+    /**
+     * @deprecated 
+     */
+    
 
     public CampfireSmeltEvent(BlockEntityCampfire campfire, Item source, Item result) {
         super(campfire.getBlock());
@@ -42,14 +46,26 @@ public class CampfireSmeltEvent extends BlockEvent implements Cancellable {
     public Item getResult() {
         return result;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setResult(Item result) {
         this.result = result;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getKeepItem() {
         return keepItem;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setKeepItem(boolean keepItem) {
         this.keepItem = keepItem;

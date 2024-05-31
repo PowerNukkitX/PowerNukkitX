@@ -13,6 +13,10 @@ import java.util.stream.Collectors;
 
 
 public class TestForCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public TestForCommand(String name) {
         super(name, "commands.testfor.description");
@@ -25,6 +29,10 @@ public class TestForCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         List<Entity> targets = result.getValue().getResult(0);
         if (targets.isEmpty()) {
@@ -32,7 +40,7 @@ public class TestForCommand extends VanillaCommand {
             return 0;
         } else {
             log.addSuccess("commands.testfor.success", targets.stream().map(entity -> {
-                var name = entity.getName();
+                var $1 = entity.getName();
                 if (name.isBlank()) name = entity.getOriginalName();
                 return name;
             }).collect(Collectors.joining(","))).output();

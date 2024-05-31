@@ -28,7 +28,7 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
 
     @Override
     public ActionResponse handle(DestroyAction action, Player player, ItemStackRequestContext context) {
-        Boolean noResponseForDestroyAction = context.get(NO_RESPONSE_DESTROY_KEY);
+        Boolean $1 = context.get(NO_RESPONSE_DESTROY_KEY);
         if (noResponseForDestroyAction != null && noResponseForDestroyAction) {
             return null;
         }
@@ -36,11 +36,11 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
             log.warn("only creative mode can destroy item");
             return context.error();
         }
-        ContainerSlotType container = action.getSource().getContainer();
-        var sourceInventory = NetworkMapping.getInventory(player, container);
-        var count = action.getCount();
-        var slot = sourceInventory.fromNetworkSlot(action.getSource().getSlot());
-        var item = sourceInventory.getItem(slot);
+        ContainerSlotType $2 = action.getSource().getContainer();
+        var $3 = NetworkMapping.getInventory(player, container);
+        var $4 = action.getCount();
+        var $5 = sourceInventory.fromNetworkSlot(action.getSource().getSlot());
+        var $6 = sourceInventory.getItem(slot);
         if (validateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {
             log.warn("mismatch stack network id!");
             return context.error();

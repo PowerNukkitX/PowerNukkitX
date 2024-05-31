@@ -12,9 +12,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GenerateStageRegistry implements IRegistry<String, GenerateStage, Class<? extends GenerateStage>> {
     private static final Object2ObjectOpenHashMap<String, Class<? extends GenerateStage>> REGISTRY = new Object2ObjectOpenHashMap<>();
-    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static final AtomicBoolean $1 = new AtomicBoolean(false);
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         if (isLoad.getAndSet(true)) return;
         try {
@@ -55,11 +59,19 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void trim() {
         REGISTRY.trim();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reload() {
         isLoad.set(false);
         REGISTRY.clear();

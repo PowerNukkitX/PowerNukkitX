@@ -7,14 +7,26 @@ import cn.nukkit.block.BlockID;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemRedstone extends Item {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemRedstone() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemRedstone(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemRedstone(Integer meta, int count) {
         super(REDSTONE, meta, count, "Redstone Dust");

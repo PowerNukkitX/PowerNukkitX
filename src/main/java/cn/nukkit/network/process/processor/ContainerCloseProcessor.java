@@ -11,8 +11,12 @@ import org.jetbrains.annotations.NotNull;
 public class ContainerCloseProcessor extends DataPacketProcessor<ContainerClosePacket> {
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ContainerClosePacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         if (!player.spawned || pk.windowId == SpecialWindowId.PLAYER.getId() && !playerHandle.getInventoryOpen()) {
             return;
         }
@@ -32,7 +36,7 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
         if (pk.windowId == -1) {
             player.addWindow(player.getCraftingGrid(), SpecialWindowId.NONE.getId());
         }
-        ContainerClosePacket pk2 = new ContainerClosePacket();
+        ContainerClosePacket $2 = new ContainerClosePacket();
         pk2.wasServerInitiated = false;
         pk2.windowId = pk.windowId;
         player.dataPacket(pk2);
@@ -40,6 +44,10 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.CONTAINER_CLOSE_PACKET;
     }

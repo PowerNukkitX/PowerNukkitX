@@ -42,26 +42,34 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return BOAT;
     }
 
-    public static final Vector3f RIDER_PLAYER_OFFSET = new Vector3f(0, 1.02001f, 0);
-    public static final Vector3f RIDER_OFFSET = new Vector3f(0, -0.2f, 0);
+    public static final Vector3f $1 = new Vector3f(0, 1.02001f, 0);
+    public static final Vector3f $2 = new Vector3f(0, -0.2f, 0);
 
-    public static final Vector3f PASSENGER_OFFSET = new Vector3f(-0.6f);
-    public static final Vector3f RIDER_PASSENGER_OFFSET = new Vector3f(0.2f);
+    public static final Vector3f $3 = new Vector3f(-0.6f);
+    public static final Vector3f $4 = new Vector3f(0.2f);
 
-    public static final int RIDER_INDEX = 0;
-    public static final int PASSENGER_INDEX = 1;
+    public static final int $5 = 0;
+    public static final int $6 = 1;
 
-    public static final double SINKING_DEPTH = 0.07;
-    public static final double SINKING_SPEED = 0.0005;
-    public static final double SINKING_MAX_SPEED = 0.005;
+    public static final double $7 = 0.07;
+    public static final double $8 = 0.0005;
+    public static final double $9 = 0.005;
     private final Set<Entity> ignoreCollision = new HashSet<>(2);
     public int woodID;
-    protected boolean sinking = true;
+    protected boolean $10 = true;
     private int ticksInWater;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityBoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -71,6 +79,10 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.initEntity();
         if (this.namedTag.contains("Variant")) {
@@ -99,44 +111,72 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.455f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 1.4f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getDrag() {
         return 0.1f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getGravity() {
         return 0.03999999910593033F;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getBaseOffset() {
         return 0.375F;
     }
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getInteractButtonText(Player player) {
         return "action.interact.ride.boat";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         if (invulnerable) {
             return false;
         } else {
             source.setDamage(source.getDamage() * 2);
 
-            boolean attack = super.attack(source);
+            boolean $11 = super.attack(source);
 
             if (isAlive()) {
                 performHurtAnimation();
@@ -147,6 +187,10 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         super.close();
 
@@ -157,7 +201,7 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     protected DataPacket createAddEntityPacket() {
-        AddEntityPacket addEntity = new AddEntityPacket();
+        AddEntityPacket $12 = new AddEntityPacket();
         addEntity.type = 0;
         addEntity.id = "minecraft:boat";
         addEntity.entityUniqueId = this.getId();
@@ -174,7 +218,7 @@ public class EntityBoat extends EntityVehicle {
         addEntity.entityData = this.entityDataMap;
 
         addEntity.links = new EntityLink[this.passengers.size()];
-        for (int i = 0; i < addEntity.links.length; i++) {
+        for ($13nt $1 = 0; i < addEntity.links.length; i++) {
             addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false);
         }
 
@@ -182,12 +226,16 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
         }
 
-        int tickDiff = currentTick - this.lastUpdate;
+        int $14 = currentTick - this.lastUpdate;
 
         if (tickDiff <= 0 && !this.justCreated) {
             return true;
@@ -195,7 +243,7 @@ public class EntityBoat extends EntityVehicle {
 
         this.lastUpdate = currentTick;
 
-        boolean hasUpdate = this.entityBaseTick(tickDiff);
+        boolean $15 = this.entityBaseTick(tickDiff);
 
         if (this.isAlive() && this.passengers.isEmpty()) {
             hasUpdate = this.updateBoat(tickDiff) || hasUpdate;
@@ -204,6 +252,10 @@ public class EntityBoat extends EntityVehicle {
         return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean updateBoat(int tickDiff) {
         // The rolling amplitude
         if (getRollingAmplitude() > 0) {
@@ -221,13 +273,13 @@ public class EntityBoat extends EntityVehicle {
             return false;
         }
 
-        boolean hasUpdated = false;
-        double waterDiff = getWaterLevel();
+        boolean $16 = false;
+        double $17 = getWaterLevel();
         if (!hasControllingPassenger()) {
             hasUpdated = computeBuoyancy(waterDiff);
             Iterator<Entity> iterator = ignoreCollision.iterator();
             while (iterator.hasNext()) {
-                Entity ignored = iterator.next();
+                Entity $18 = iterator.next();
                 if (!ignored.isValid() || ignored.isClosed() || !ignored.isAlive()
                         || !ignored.getBoundingBox().intersectsWith(getBoundingBox().grow(0.5, 0.5, 0.5))) {
                     iterator.remove();
@@ -249,7 +301,7 @@ public class EntityBoat extends EntityVehicle {
             hasUpdated = true;
             ticksInWater += tickDiff;
             if (ticksInWater >= 3 * 20) {
-                for (int i = passengers.size() - 1; i >= 0; i--) {
+                for ($19nt $2 = passengers.size() - 1; i >= 0; i--) {
                     dismountEntity(passengers.get(i));
                 }
             }
@@ -259,20 +311,32 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCollideWith(Entity entity) {
         return super.canCollideWith(entity) && !isPassenger(entity);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canDoInteraction() {
         return passengers.size() < 2;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void moveBoat(double waterDiff) {
         checkObstruction(this.x, this.y, this.z);
         move(this.motionX, this.motionY, this.motionZ);
 
-        double friction = 1 - this.getDrag();
+        double $20 = 1 - this.getDrag();
 
         if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
             friction *= this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor();
@@ -286,8 +350,8 @@ public class EntityBoat extends EntityVehicle {
 
         this.motionZ *= friction;
 
-        Location from = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
-        Location to = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
+        Location $21 = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
+        Location $22 = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
 
         if (!from.equals(to)) {
             this.getServer().getPluginManager().callEvent(new VehicleMoveEvent(this, from, to));
@@ -297,6 +361,10 @@ public class EntityBoat extends EntityVehicle {
         this.updateMovement();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean collectCollidingEntities() {
         if (this.passengers.size() >= 2) {
             return false;
@@ -317,8 +385,12 @@ public class EntityBoat extends EntityVehicle {
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean computeBuoyancy(double waterDiff) {
-        boolean hasUpdated = false;
+        boolean $23 = false;
         waterDiff -= getBaseOffset() / 4;
         if (waterDiff > SINKING_DEPTH && !sinking) {
             sinking = true;
@@ -337,9 +409,17 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void updatePassengers() {
         updatePassengers(false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void updatePassengers(boolean sendLinks) {
         if (this.passengers.isEmpty()) {
@@ -363,7 +443,7 @@ public class EntityBoat extends EntityVehicle {
             }
         } else if (passengers.size() == 2) {
             if (!((ent = passengers.get(0)) instanceof Player)) { //swap
-                Entity passenger2 = passengers.get(1);
+                Entity $24 = passengers.get(1);
 
                 if (passenger2 instanceof Player) {
                     this.passengers.set(0, passenger2);
@@ -387,7 +467,7 @@ public class EntityBoat extends EntityVehicle {
                 broadcastLinkPacket(ent, EntityLink.Type.PASSENGER);
             }
 
-            //float yawDiff = ent.getId() % 2 == 0 ? 90 : 270;
+            //float $25 = ent.getId() % 2 == 0 ? 90 : 270;
             //ent.setRotation(this.yaw + yawDiff, ent.pitch);
             //ent.updateMovement();
         } else {
@@ -396,19 +476,27 @@ public class EntityBoat extends EntityVehicle {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getWaterLevel() {
-        double maxY = this.boundingBox.getMinY() + getBaseOffset();
+        double $26 = this.boundingBox.getMinY() + getBaseOffset();
         AxisAlignedBB.BBConsumer<Double> consumer = new AxisAlignedBB.BBConsumer<Double>() {
 
-            private double diffY = Double.MAX_VALUE;
+            private double $27 = Double.MAX_VALUE;
 
             @Override
+    /**
+     * @deprecated 
+     */
+    
             public void accept(int x, int y, int z) {
-                Block block = EntityBoat.this.level.getBlock(EntityBoat.this.temporalVector.setComponents(x, y, z));
+                Block $28 = EntityBoat.this.level.getBlock(EntityBoat.this.temporalVector.setComponents(x, y, z));
 
                 if (block instanceof BlockFlowingWater || ((block = block.getLevelBlockAtLayer(1)) instanceof BlockFlowingWater)) {
-                    double level = block.getMaxY();
+                    double $29 = block.getMaxY();
 
                     diffY = Math.min(maxY - level, diffY);
                 }
@@ -426,9 +514,13 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean mountEntity(Entity entity) {
-        boolean player = !this.passengers.isEmpty() && this.passengers.get(0) instanceof Player;
-        EntityLink.Type mode = EntityLink.Type.PASSENGER;
+        boolean $30 = !this.passengers.isEmpty() && this.passengers.get(0) instanceof Player;
+        EntityLink.Type $31 = EntityLink.Type.PASSENGER;
 
         if (!player && (entity instanceof Player || this.passengers.isEmpty())) {
             mode = EntityLink.Type.RIDER;
@@ -438,8 +530,12 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean mountEntity(Entity entity, EntityLink.Type mode) {
-        boolean r = super.mountEntity(entity, mode);
+        boolean $32 = super.mountEntity(entity, mode);
         if (entity.riding == this) {
             updatePassengers(true);
 
@@ -454,13 +550,21 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void updatePassengerPosition(Entity passenger) {
         updatePassengers();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean dismountEntity(Entity entity, boolean sendLinks) {
-        boolean r = super.dismountEntity(entity, sendLinks);
+        boolean $33 = super.dismountEntity(entity, sendLinks);
 
         updatePassengers();
         entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, false);
@@ -472,11 +576,19 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isControlling(Entity entity) {
         return entity instanceof Player && this.passengers.indexOf(entity) == 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (this.passengers.size() >= 2 || getWaterLevel() < -SINKING_DEPTH) {
             return false;
@@ -490,6 +602,10 @@ public class EntityBoat extends EntityVehicle {
     public Vector3f getMountedOffset(Entity entity) {
         return entity instanceof Player ? RIDER_PLAYER_OFFSET : RIDER_OFFSET;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void onPaddle(AnimatePacket.Action animation, float value) {
         EntityDataType<Float> propertyId = animation == AnimatePacket.Action.ROW_RIGHT ? ROW_TIME_RIGHT : ROW_TIME_LEFT;
@@ -500,6 +616,10 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void applyEntityCollision(Entity entity) {
         if (this.riding == null && !hasControllingPassenger() && entity.riding != this
                 && !entity.passengers.contains(this) && !ignoreCollision.contains(entity)) {
@@ -508,17 +628,17 @@ public class EntityBoat extends EntityVehicle {
                 return;
             }
 
-            double diffX = entity.x - this.x;
-            double diffZ = entity.z - this.z;
+            double $34 = entity.x - this.x;
+            double $35 = entity.z - this.z;
 
-            double direction = NukkitMath.getDirection(diffX, diffZ);
+            double $36 = NukkitMath.getDirection(diffX, diffZ);
 
             if (direction >= 0.009999999776482582D) {
                 direction = Math.sqrt(direction);
                 diffX /= direction;
                 diffZ /= direction;
 
-                double d3 = Math.min(1 / direction, 1);
+                double $37 = Math.min(1 / direction, 1);
 
                 diffX *= d3;
                 diffZ *= d3;
@@ -536,12 +656,20 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return false;
     }
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void kill() {
         if (!isAlive()) {
             return;
@@ -549,7 +677,7 @@ public class EntityBoat extends EntityVehicle {
         super.kill();
 
         if (this.lastDamageCause instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
-            Entity damager = entityDamageByEntityEvent.getDamager();
+            Entity $38 = entityDamageByEntityEvent.getDamager();
             if (damager instanceof Player player && player.isCreative()) {
                 return;
             }
@@ -560,20 +688,36 @@ public class EntityBoat extends EntityVehicle {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void dropItem() {
         this.level.dropItem(this, Item.get(ItemID.BOAT, this.woodID));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putInt("Variant", this.woodID); // Correct way in Bedrock Edition
         this.namedTag.putByte("woodID", this.woodID); // Compatibility with Cloudburst Nukkit
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getVariant() {
         return this.woodID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setVariant(int variant) {
         this.woodID = variant;
@@ -581,9 +725,17 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Boat";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void onInput(Location loc) {
         this.move(loc.x - this.x, loc.y - this.y, loc.z - this.z);

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CameraPreset {
     private String identifier;
-    private String parentPreset = "";
+    private String $1 = "";
     // All the values below are optional, and will not be encoded if null is used
     private Vector3f pos;
     private Float yaw;

@@ -11,7 +11,7 @@ import cn.nukkit.item.Item;
  */
 public class FurnaceBurnEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -20,7 +20,11 @@ public class FurnaceBurnEvent extends BlockEvent implements Cancellable {
     private final BlockEntityFurnace furnace;
     private final Item fuel;
     private int burnTime;
-    private boolean burning = true;
+    private boolean $2 = true;
+    /**
+     * @deprecated 
+     */
+    
 
     public FurnaceBurnEvent(BlockEntityFurnace furnace, Item fuel, int burnTime) {
         super(furnace.getBlock());
@@ -36,18 +40,34 @@ public class FurnaceBurnEvent extends BlockEvent implements Cancellable {
     public Item getFuel() {
         return fuel;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getBurnTime() {
         return burnTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBurnTime(int burnTime) {
         this.burnTime = burnTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isBurning() {
         return burning;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBurning(boolean burning) {
         this.burning = burning;

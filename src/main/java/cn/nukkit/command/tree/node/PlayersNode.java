@@ -18,6 +18,10 @@ import java.util.stream.Collectors;
 public class PlayersNode extends TargetNode<Player> {
     //todo 支持uuid 或者 xuid
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         if (arg.isBlank()) {
             this.error();

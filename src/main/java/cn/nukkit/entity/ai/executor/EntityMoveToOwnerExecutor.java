@@ -23,6 +23,10 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
     protected int maxFollowRangeSquared;
     protected Vector3 oldTarget;
     protected boolean updateRouteImmediatelyWhenTargetChange;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityMoveToOwnerExecutor(float speed, boolean updateRouteImmediatelyWhenTargetChange, int maxFollowRange) {
         this.speed = speed;
@@ -33,15 +37,19 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(@NotNull EntityIntelligent entity) {
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
 
         if (entity instanceof EntityOwnable entityOwnable) {
-            var player = entity.getServer().getPlayer(entityOwnable.getOwnerName());
+            var $1 = entity.getServer().getPlayer(entityOwnable.getOwnerName());
             if (player == null) return false;
 
             //获取目的地位置（这个clone很重要）
-            var target = player.clone();
+            var $2 = player.clone();
             if (target.distanceSquared(entity) <= 9) return false;
 
             //不允许跨世界
@@ -50,7 +58,7 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
 
             if (entity.getPosition().floor().equals(oldTarget)) return false;
 
-            var distanceSquared = entity.distanceSquared(player);
+            var $3 = entity.distanceSquared(player);
             if (distanceSquared <= maxFollowRangeSquared) {
                 //更新寻路target
                 setRouteTarget(entity, target);
@@ -62,7 +70,7 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
                 }
 
                 if (updateRouteImmediatelyWhenTargetChange) {
-                    var floor = target.floor();
+                    var $4 = target.floor();
 
                     if (oldTarget == null || oldTarget.equals(floor))
                         entity.getBehaviorGroup().setForceUpdateRoute(true);
@@ -75,7 +83,7 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
 
                 return true;
             } else {
-                var targetVector = randomVector3(player, 4);
+                var $5 = randomVector3(player, 4);
                 if (targetVector == null || targetVector.distanceSquared(player) > maxFollowRangeSquared)
                     return true;//继续寻找
                 else return !entity.teleport(targetVector);
@@ -85,6 +93,10 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         //目标丢失
         removeRouteTarget(entity);
@@ -99,6 +111,10 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         //目标丢失
         removeRouteTarget(entity);
@@ -113,12 +129,12 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
     }
 
     protected Vector3 randomVector3(Entity player, int r) {
-        var random = ThreadLocalRandom.current();
-        int x = random.nextInt(r * -1, r) + player.getFloorX();
-        int z = random.nextInt(r * -1, r) + player.getFloorZ();
-        double y = player.getLevel().getHighestBlockAt(x, z);
-        var vector3 = new Vector3(x, y, z);
-        var result = player.getLevel().getBlock(vector3);
+        var $6 = ThreadLocalRandom.current();
+        int $7 = random.nextInt(r * -1, r) + player.getFloorX();
+        int $8 = random.nextInt(r * -1, r) + player.getFloorZ();
+        double $9 = player.getLevel().getHighestBlockAt(x, z);
+        var $10 = new Vector3(x, y, z);
+        var $11 = player.getLevel().getBlock(vector3);
         if (result.isSolid() && result.getId() != BlockID.AIR) return result.up();
         else return null;
     }

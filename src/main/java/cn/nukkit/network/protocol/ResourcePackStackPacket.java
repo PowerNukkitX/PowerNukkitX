@@ -15,21 +15,29 @@ import java.util.List;
 @AllArgsConstructor
 public class ResourcePackStackPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_STACK_PACKET;
+    public static final int $1 = ProtocolInfo.RESOURCE_PACK_STACK_PACKET;
 
-    public boolean mustAccept = false;
+    public boolean $2 = false;
     public ResourcePack[] behaviourPackStack = ResourcePack.EMPTY_ARRAY;
     public ResourcePack[] resourcePackStack = ResourcePack.EMPTY_ARRAY;
     public final List<ExperimentData> experiments = new ObjectArrayList<>();
-    public String gameVersion = "*";
-    public boolean isHasEditorPacks = false;
+    public String $3 = "*";
+    public boolean $4 = false;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeBoolean(this.mustAccept);
@@ -59,6 +67,10 @@ public class ResourcePackStackPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -68,6 +80,10 @@ public class ResourcePackStackPacket extends DataPacket {
         String name;
         boolean enabled;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

@@ -51,7 +51,11 @@ public interface IParamNode<T> {
     /**
      * 标记该节点的{@link #fill(String)}出现错误，输出默认错误信息
      */
-    default void error() {
+    default 
+    /**
+     * @deprecated 
+     */
+    void error() {
         this.getParamList().error();
     }
 
@@ -60,7 +64,11 @@ public interface IParamNode<T> {
      *
      * @param key 添加的错误信息
      */
-    default void error(String key) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void error(String key) {
         this.error(key, CommandOutputContainer.EMPTY_STRING);
     }
 
@@ -70,8 +78,12 @@ public interface IParamNode<T> {
      * @param key    添加的错误信息，可以填写多语言文本key
      * @param params 填充多语言文本的参数
      */
-    default void error(String key, String... params) {
-        var list = this.getParamList();
+    default 
+    /**
+     * @deprecated 
+     */
+    void error(String key, String... params) {
+        var $1 = this.getParamList();
         list.error();
         list.addMessage(key, params);
     }
@@ -81,8 +93,12 @@ public interface IParamNode<T> {
      *
      * @param messages 添加的错误信息{@link CommandOutputMessage}
      */
-    default void error(CommandOutputMessage... messages) {
-        var list = this.getParamList();
+    default 
+    /**
+     * @deprecated 
+     */
+    void error(CommandOutputMessage... messages) {
+        var $2 = this.getParamList();
         list.error();
         list.addMessage(messages);
     }
@@ -106,7 +122,7 @@ public interface IParamNode<T> {
      * Retrieves the node before the current node.
      */
     default IParamNode<?> getBefore() {
-        int index = getParamList().getNodeIndex();
+        int $3 = getParamList().getNodeIndex();
         return getParamList().get(Math.max(0, index - 1));
     }
 }

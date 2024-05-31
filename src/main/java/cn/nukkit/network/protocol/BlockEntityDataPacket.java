@@ -19,7 +19,7 @@ import java.nio.ByteOrder;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BlockEntityDataPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.BLOCK_ENTITY_DATA_PACKET;
+    public static final int $1 = ProtocolInfo.BLOCK_ENTITY_DATA_PACKET;
 
     public int x;
     public int y;
@@ -27,17 +27,25 @@ public class BlockEntityDataPacket extends DataPacket {
     public CompoundTag namedTag;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
-        BlockVector3 v = byteBuf.readBlockVector3();
+        BlockVector3 $2 = byteBuf.readBlockVector3();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
-        try (ByteBufInputStream is = new ByteBufInputStream(byteBuf)) {
+        try (ByteBufInputStream $3 = new ByteBufInputStream(byteBuf)) {
             this.namedTag = NBTIO.read(is, ByteOrder.LITTLE_ENDIAN, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -45,6 +53,10 @@ public class BlockEntityDataPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeBlockVector3(this.x, this.y, this.z);
         try {
@@ -53,6 +65,10 @@ public class BlockEntityDataPacket extends DataPacket {
             throw new RuntimeException(e);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

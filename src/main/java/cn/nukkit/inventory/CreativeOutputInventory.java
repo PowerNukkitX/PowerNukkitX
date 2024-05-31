@@ -15,6 +15,10 @@ import java.util.Set;
 public class CreativeOutputInventory implements Inventory {
     private Item item;
     private Player player;
+    /**
+     * @deprecated 
+     */
+    
 
     public CreativeOutputInventory(Player player) {
         this.player = player;
@@ -35,16 +39,28 @@ public class CreativeOutputInventory implements Inventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getSize() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxStackSize() {
         return 64;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setMaxStackSize(int size) {
     }
 
@@ -54,10 +70,18 @@ public class CreativeOutputInventory implements Inventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean setItem(int index, @NotNull Item item, boolean send) {
         this.item = item;
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setItem(@NotNull Item item) {
         return setItem(0, item, false);
@@ -71,6 +95,10 @@ public class CreativeOutputInventory implements Inventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canAddItem(Item item) {
         return false;
     }
@@ -87,46 +115,82 @@ public class CreativeOutputInventory implements Inventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setContents(Map<Integer, Item> items) {
         item = items.get(0);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendContents(Player player) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendContents(Player... players) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendContents(Collection<Player> players) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendSlot(int index, Player player) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendSlot(int index, Player... players) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendSlot(int index, Collection<Player> players) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getFreeSpace(Item item) {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean contains(Item item) {
         return false;
     }
@@ -137,42 +201,74 @@ public class CreativeOutputInventory implements Inventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int first(Item item, boolean exact) {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int firstEmpty(Item item) {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decreaseCount(int slot) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void remove(Item item) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean clear(int index, boolean send) {
         item = Item.AIR;
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void clearAll() {
         item = Item.AIR;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isFull() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isEmpty() {
         return false;
     }
@@ -193,36 +289,64 @@ public class CreativeOutputInventory implements Inventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onOpen(Player who) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean open(Player who) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onClose(Player who) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close(Player who) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onSlotChange(int index, Item before, boolean send) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void addListener(InventoryListener listener) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeListener(InventoryListener listener) {
 
     }

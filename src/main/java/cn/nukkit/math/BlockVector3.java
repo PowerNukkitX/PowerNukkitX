@@ -6,12 +6,20 @@ public class BlockVector3 implements Cloneable {
     public int x;
     public int y;
     public int z;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockVector3(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockVector3() {
     }
@@ -29,14 +37,26 @@ public class BlockVector3 implements Cloneable {
         this.z = pos.getFloorZ() + face.getZOffset();
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getX() {
         return this.x;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getY() {
         return this.y;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getZ() {
         return this.z;
@@ -188,38 +208,74 @@ public class BlockVector3 implements Cloneable {
     public BlockVector3 west(int step) {
         return getSide(BlockFace.WEST, step);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distance(Vector3 pos) {
         return Math.sqrt(this.distanceSquared(pos));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distance(BlockVector3 pos) {
         return Math.sqrt(this.distanceSquared(pos));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(Vector3 pos) {
         return distanceSquared(pos.x, pos.y, pos.z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(BlockVector3 pos) {
         return distanceSquared(pos.x, pos.y, pos.z);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(double x, double y, double z) {
         return Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2) + Math.pow(this.z - z, 2);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getChunkX() {
         return x >> 4;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getChunkZ() {
         return z >> 4;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getChunkSectionY() {
         return y >> 4;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getChunkSectionY(boolean is384World) {
         return (y >> 4) + (is384World ? 4 : 0);
@@ -228,6 +284,10 @@ public class BlockVector3 implements Cloneable {
     public ChunkVector2 getChunkVector() {
         return new ChunkVector2(getChunkX(), getChunkZ());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getAxis(BlockFace.Axis axis) {
         return switch (axis) {
@@ -238,6 +298,10 @@ public class BlockVector3 implements Cloneable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object o) {
         if (o == null) return false;
         if (o == this) return true;
@@ -250,11 +314,19 @@ public class BlockVector3 implements Cloneable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final int hashCode() {
         return (x ^ (z << 12)) ^ (y << 24);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "BlockPosition(level=" + ",x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
     }

@@ -23,6 +23,10 @@ import static cn.nukkit.TestUtils.resetPlayerStatus;
 public class LevelTest {
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_getRedstonePower(Level level) {
         level.setBlockStateAt(0, 0, 0, BlockObserver.PROPERTIES.getBlockState(
                         CommonBlockProperties.POWERED_BIT.createValue(true),
@@ -40,20 +44,24 @@ public class LevelTest {
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void test_regenerateChunk(TestPlayer player) {
-        final TestPlayer p = player;
+        final TestPlayer $1 = player;
         resetPlayerStatus(p);
 
         p.level.setAutoSave(true);
         p.setPosition(new Vector3(0, 100, 0));
-        IChunk chunk = p.getChunk();
+        IChunk $2 = p.getChunk();
         chunk.setBlockState(0, 3, 0, BlockDirt.PROPERTIES.getDefaultState());
         Assertions.assertEquals(chunk.getBlockState(0, 3, 0), BlockDirt.PROPERTIES.getDefaultState());
         chunk.setBlockState(0, 3, 0, BlockDiamondBlock.PROPERTIES.getDefaultState());
         Assertions.assertEquals(chunk.getBlockState(0, 3, 0), BlockDiamondBlock.PROPERTIES.getDefaultState());
 
-        GameLoop gameLoop = gameLoop0(p);
-        int limit1 = 100;
+        GameLoop $3 = gameLoop0(p);
+        int $4 = 100;
         while (limit1-- != 0) {
             try {
                 if (49 == p.getUsedChunks().size()) {
@@ -71,7 +79,7 @@ public class LevelTest {
         }
         p.getLevel().regenerateChunk(0, 0);
 
-        int limit = 100;
+        int $5 = 100;
         while (limit-- != 0) {
             try {
                 if (p.getUsedChunks().contains(Level.chunkHash(0, 0))) {

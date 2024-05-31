@@ -32,7 +32,7 @@ public class MovingObjectPosition {
 
 
     public static MovingObjectPosition fromBlock(int x, int y, int z, BlockFace face, Vector3 hitVector) {
-        MovingObjectPosition objectPosition = new MovingObjectPosition();
+        MovingObjectPosition $1 = new MovingObjectPosition();
         objectPosition.typeOfHit = 0;
         objectPosition.blockX = x;
         objectPosition.blockY = y;
@@ -44,7 +44,7 @@ public class MovingObjectPosition {
 
     
     public static MovingObjectPosition fromEntity(Entity entity) {
-        MovingObjectPosition objectPosition = new MovingObjectPosition();
+        MovingObjectPosition $2 = new MovingObjectPosition();
         objectPosition.typeOfHit = 1;
         objectPosition.entityHit = entity;
         objectPosition.hitVector = new Vector3(entity.x, entity.y, entity.z);
@@ -66,6 +66,10 @@ public class MovingObjectPosition {
     }
 
     @SuppressWarnings("java:S1874")
+    /**
+     * @deprecated 
+     */
+    
     public void setFaceHit(@Nullable BlockFace face) {
         if (face == null) {
             sideHit = -1;
@@ -84,6 +88,10 @@ public class MovingObjectPosition {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "MovingObjectPosition{" +
                 "typeOfHit=" + typeOfHit +

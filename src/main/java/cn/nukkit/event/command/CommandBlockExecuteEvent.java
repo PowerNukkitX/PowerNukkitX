@@ -8,22 +8,34 @@ import cn.nukkit.event.block.BlockEvent;
 
 public class CommandBlockExecuteEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private String command;
+    /**
+     * @deprecated 
+     */
+    
 
     public CommandBlockExecuteEvent(Block block, String command) {
         super(block);
         this.command = command;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getCommand() {
         return command;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCommand(String command) {
         this.command = command;

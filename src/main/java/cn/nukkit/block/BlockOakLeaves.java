@@ -6,13 +6,17 @@ import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockOakLeaves extends BlockLeaves {
-     public static final BlockProperties PROPERTIES = new BlockProperties(OAK_LEAVES, CommonBlockProperties.PERSISTENT_BIT, CommonBlockProperties.UPDATE_BIT);
+     public static final BlockProperties $1 = new BlockProperties(OAK_LEAVES, CommonBlockProperties.PERSISTENT_BIT, CommonBlockProperties.UPDATE_BIT);
 
      @Override
      @NotNull
      public BlockProperties getProperties() {
         return PROPERTIES;
      }
+    /**
+     * @deprecated 
+     */
+    
 
      public BlockOakLeaves(BlockState blockstate) {
          super(blockstate);

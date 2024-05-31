@@ -8,14 +8,18 @@ import org.jetbrains.annotations.NotNull;
 
 public class TextProcessor extends DataPacketProcessor<TextPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull TextPacket pk) {
         if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
             return;
         }
 
         if (pk.type == TextPacket.TYPE_CHAT) {
-            String chatMessage = pk.message;
-            int breakLine = chatMessage.indexOf('\n');
+            String $1 = pk.message;
+            int $2 = chatMessage.indexOf('\n');
             // Chat messages shouldn't contain break lines so ignore text afterwards
             if (breakLine != -1) {
                 chatMessage = chatMessage.substring(0, breakLine);
@@ -25,6 +29,10 @@ public class TextProcessor extends DataPacketProcessor<TextPacket> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.TEXT_PACKET;
     }

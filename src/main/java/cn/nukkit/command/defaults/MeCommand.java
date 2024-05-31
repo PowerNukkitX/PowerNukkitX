@@ -15,6 +15,10 @@ import java.util.Map;
  * @since 2015/11/12
  */
 public class MeCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public MeCommand(String name) {
         super(name, "commands.me.description", "nukkit.command.me.usage");
@@ -28,9 +32,13 @@ public class MeCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        String name = sender.getName();
-        String message = "";
+        String $1 = sender.getName();
+        String $2 = "";
         if (result.getKey().equals("message")) {
             message = result.getValue().getResult(0);
         }

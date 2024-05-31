@@ -22,14 +22,22 @@ public interface BlockState {
         return BlockStateImpl.makeUnknownBlockState(hash, blockTag);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     static short computeSpecialValue(BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
-        byte specialValueBits = 0;
+        byte $1 = 0;
         for (var value : propertyValues) specialValueBits += value.getPropertyType().getBitSize();
         return computeSpecialValue(specialValueBits, propertyValues);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     static short computeSpecialValue(byte specialValueBits, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
-        short specialValue = 0;
+        short $2 = 0;
         for (var value : propertyValues) {
             specialValue |= (short) (((short) value.getIndex()) << (specialValueBits - value.getPropertyType().getBitSize()));
             specialValueBits -= value.getPropertyType().getBitSize();
@@ -59,7 +67,11 @@ public interface BlockState {
 
     BlockState setPropertyValues(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?>... values);
 
-    default boolean isDefaultState() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isDefaultState() {
         return Registries.BLOCK.getBlockProperties(getIdentifier()).getDefaultState() == this;
     }
 

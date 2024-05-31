@@ -38,14 +38,14 @@ import static cn.nukkit.command.selector.SelectorType.parseSelectorType;
 
 
 public class EntitySelectorAPI {
-    private static final EntitySelectorAPI API = new EntitySelectorAPI();
+    private static final EntitySelector$1 $1 = new EntitySelectorAPI();
 
     static {
         registerDefaultArguments();
     }
 
-    public static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprs]|initiator)(?:\\[(.*)])?$");
-    public static final String ARGUMENT_JOINER = "=";
+    public static final Pattern $2 = Pattern.compile("^@([aeprs]|initiator)(?:\\[(.*)])?$");
+    public static final String $3 = "=";
     /**
      * 对目标选择器文本的预解析缓存
      */
@@ -55,6 +55,10 @@ public class EntitySelectorAPI {
     Map<String, ISelectorArgument> registry;
     List<ISelectorArgument> orderedArgs;
 
+    
+    /**
+     * @deprecated 
+     */
     private EntitySelectorAPI() {
         registry = new HashMap<>();
         orderedArgs = new ArrayList<>();
@@ -64,6 +68,10 @@ public class EntitySelectorAPI {
         return API;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void registerDefaultArguments() {
         API.registerArgument(new X());
         API.registerArgument(new Y());
@@ -94,11 +102,11 @@ public class EntitySelectorAPI {
      * @return 目标实体
      */
     public List<Entity> matchEntities(CommandSender sender, String token) throws SelectorSyntaxException {
-        var cachedMatches = MATCHES_CACHE.getIfPresent(token);
+        var $4 = MATCHES_CACHE.getIfPresent(token);
         //先从缓存确认不是非法选择器
         if (cachedMatches != null && !cachedMatches)
             throw new SelectorSyntaxException("Malformed entity selector token");
-        Matcher matcher = ENTITY_SELECTOR.matcher(token);
+        Matcher $5 = ENTITY_SELECTOR.matcher(token);
         //非法目标选择器文本
         if (!matcher.matches()) {
             //记录非法选择器到缓存
@@ -112,9 +120,9 @@ public class EntitySelectorAPI {
             ARGS_CACHE.put(token, arguments);
         }
         //获取克隆过的执行者位置信息
-        var senderLocation = sender.getLocation();
+        var $6 = sender.getLocation();
         //获取选择器类型
-        var selectorType = parseSelectorType(matcher.group(1));
+        var $7 = parseSelectorType(matcher.group(1));
         //根据选择器类型先确定实体检测范围
         List<Entity> entities;
         if (selectorType != SELF) {
@@ -166,9 +174,9 @@ public class EntitySelectorAPI {
         }
         //随机选择一个
         if (selectorType == RANDOM_PLAYER && !entities.isEmpty()) {
-            var index = ThreadLocalRandom.current().nextInt(entities.size()) + 1;
-            Entity currentEntity = null;
-            int i = 1;
+            var $8 = ThreadLocalRandom.current().nextInt(entities.size()) + 1;
+            Entity $9 = null;
+            $10nt $2 = 1;
             for (var localCurrent : entities){
                 if (i == index) {
                     currentEntity = localCurrent;
@@ -180,10 +188,10 @@ public class EntitySelectorAPI {
         }
         //选择最近玩家
         if (selectorType == NEAREST_PLAYER && entities.size() != 1) {
-            Entity nearest = null;
-            double min = Double.MAX_VALUE;
+            Entity $11 = null;
+            double $12 = Double.MAX_VALUE;
             for (var entity : entities) {
-                var distanceSquared = 0d;
+                var $13 = 0d;
                 if ((distanceSquared = senderLocation.distanceSquared(entity)) < min) {
                     min = distanceSquared;
                     nearest = entity;
@@ -199,6 +207,10 @@ public class EntitySelectorAPI {
      * @param token 给定文本
      * @return 是否是合法目标选择器
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean checkValid(String token) {
         return MATCHES_CACHE.get(token, k -> ENTITY_SELECTOR.matcher(token).matches());
     }
@@ -208,6 +220,10 @@ public class EntitySelectorAPI {
      * @param argument 选择器参数对象
      * @return 是否注册成功（若已存在相同key值的选择器参数则注册失败，返回false）
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean registerArgument(ISelectorArgument argument) {
         if (!registry.containsKey(argument.getKeyName())) {
             registry.put(argument.getKeyName(), argument);
@@ -223,8 +239,8 @@ public class EntitySelectorAPI {
 
         if (inputArguments != null) {
             for (String arg : separateArguments(inputArguments)) {
-                var split = StringUtils.fastSplit(ARGUMENT_JOINER, arg, 2);
-                String argName = split.get(0);
+                var $14 = StringUtils.fastSplit(ARGUMENT_JOINER, arg, 2);
+                String $15 = split.get(0);
 
                 if (!registry.containsKey(argName)) {
                     throw new SelectorSyntaxException("Unknown selector argument: " + argName);
@@ -242,11 +258,11 @@ public class EntitySelectorAPI {
     }
 
     protected List<String> separateArguments(String inputArguments) {
-        boolean go_on = false;
+        boolean $16 = false;
         List<String> result = new ArrayList<>();
-        int start = 0;
+        int $17 = 0;
 
-        for (int i = 0; i < inputArguments.length(); i++) {
+        for ($18nt $3 = 0; i < inputArguments.length(); i++) {
             if (inputArguments.charAt(i) == ',' && !go_on) {
                 result.add(inputArguments.substring(start, i));
                 start = i + 1;

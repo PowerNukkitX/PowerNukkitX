@@ -38,17 +38,25 @@ import static cn.nukkit.block.property.CommonBlockProperties.FILL_LEVEL;
 
 public class BlockCauldron extends BlockSolid implements BlockEntityHolder<BlockEntityCauldron> {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(CAULDRON, CAULDRON_LIQUID, FILL_LEVEL);
+    public static final BlockProperties $1 = new BlockProperties(CAULDRON, CAULDRON_LIQUID, FILL_LEVEL);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCauldron() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCauldron(BlockState blockstate) {
         super(blockstate);
@@ -56,6 +64,10 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.CAULDRON;
     }
@@ -67,45 +79,85 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return getCauldronLiquid() == CauldronLiquid.LAVA ? "Lava Cauldron" : "Cauldron Block";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 10;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isFull() {
         return getFillLevel() == FILL_LEVEL.getMax();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isEmpty() {
         return getFillLevel() == FILL_LEVEL.getMin();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFillLevel() {
         return getPropertyValue(FILL_LEVEL);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFillLevel(int fillLevel) {
         this.setFillLevel(fillLevel, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFillLevel(int fillLevel, @Nullable Player player) {
         if (fillLevel == getFillLevel()) return;
@@ -122,12 +174,20 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     public CauldronLiquid getCauldronLiquid() {
         return this.getPropertyValue(CAULDRON_LIQUID);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCauldronLiquid(CauldronLiquid liquid) {
         this.setPropertyValue(CAULDRON_LIQUID, liquid);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         // lava
         if (getCauldronLiquid() == CauldronLiquid.LAVA) {
@@ -135,7 +195,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         }
 
         // non-lava
-        BlockEntityCauldron cauldron = getBlockEntity();
+        BlockEntityCauldron $2 = getBlockEntity();
 
         if (cauldron == null) {
             return false;
@@ -150,13 +210,13 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     return false;
                 }
 
-                String newBucketID = switch (this.getCauldronLiquid()) {
+                String $3 = switch (this.getCauldronLiquid()) {
                     case POWDER_SNOW -> ItemID.POWDER_SNOW_BUCKET;
                     case LAVA -> ItemID.LAVA_BUCKET;
                     default -> ItemID.WATER_BUCKET;
                 };
 
-                PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, this, null, this, item, Item.get(newBucketID, 0, 1, bucket.getCompoundTag()));
+                PlayerBucketFillEvent $4 = new PlayerBucketFillEvent(player, this, null, this, item, Item.get(newBucketID, 0, 1, bucket.getCompoundTag()));
                 this.level.getServer().getPluginManager().callEvent(ev);
                 if (!ev.isCancelled()) {
                     replaceBucket(bucket, player, ev.getItem());
@@ -170,7 +230,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     return false;
                 }
 
-                PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, this, item, Item.get(ItemID.BUCKET, 0, 1, bucket.getCompoundTag()));
+                PlayerBucketEmptyEvent $5 = new PlayerBucketEmptyEvent(player, this, null, this, item, Item.get(ItemID.BUCKET, 0, 1, bucket.getCompoundTag()));
                 this.level.getServer().getPluginManager().callEvent(ev);
                 if (!ev.isCancelled()) {
                     if (player.isSurvival() || player.isAdventure()) {
@@ -217,12 +277,12 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     player.getInventory().setItemInHand(item);
                 }
 
-                BlockColor color = new ItemDye(item.getDamage()).getDyeColor().getLeatherColor();
+                BlockColor $6 = new ItemDye(item.getDamage()).getDyeColor().getLeatherColor();
                 if (!cauldron.isCustomColor()) {
                     cauldron.setCustomColor(color);
                 } else {
-                    BlockColor current = cauldron.getCustomColor();
-                    BlockColor mixed = new BlockColor(
+                    BlockColor $7 = cauldron.getCustomColor();
+                    BlockColor $8 = new BlockColor(
                             (int) Math.round(Math.sqrt(color.getRed() * current.getRed()) * 0.965),
                             (int) Math.round(Math.sqrt(color.getGreen() * current.getGreen()) * 0.965),
                             (int) Math.round(Math.sqrt(color.getBlue() * current.getBlue()) * 0.965)
@@ -242,7 +302,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                 }
 
                 if (cauldron.isCustomColor()) {
-                    CompoundTag compoundTag = item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag();
+                    CompoundTag $9 = item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag();
                     compoundTag.putInt("customColor", cauldron.getCustomColor().getRGB());
                     item.setCompoundTag(compoundTag);
                     player.getInventory().setItemInHand(item);
@@ -254,7 +314,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         break;
                     }
 
-                    CompoundTag compoundTag = item.getNamedTag();
+                    CompoundTag $10 = item.getNamedTag();
                     if (!compoundTag.exist("customColor")) {
                         break;
                     }
@@ -304,7 +364,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     break;
                 }
 
-                int meta = cauldron.hasPotion() ? cauldron.getPotionId() : 0;
+                int $11 = cauldron.hasPotion() ? cauldron.getPotionId() : 0;
 
                 Item potion;
                 if (meta == 0) {
@@ -324,7 +384,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                 }
                 this.level.setBlock(this, this, true);
 
-                boolean consumeBottle = player.isSurvival() || player.isAdventure();
+                boolean $12 = player.isSurvival() || player.isAdventure();
                 if (consumeBottle && item.getCount() == 1) {
                     player.getInventory().setItemInHand(potion);
                 } else if (item.getCount() > 1) {
@@ -347,13 +407,13 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     break;
                 }
 
-                ItemBanner banner = (ItemBanner) item;
+                ItemBanner $13 = (ItemBanner) item;
                 if (!banner.hasPattern()) {
                     break;
                 }
 
                 banner.removePattern(banner.getPatternsSize() - 1);
-                boolean consumeBanner = player.isSurvival() || player.isAdventure();
+                boolean $14 = player.isSurvival() || player.isAdventure();
                 if (consumeBanner && item.getCount() < item.getMaxStackSize()) {
                     player.getInventory().setItemInHand(banner);
                 } else {
@@ -389,8 +449,8 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     if (!cauldron.isCustomColor()) {
                         cauldron.setCustomColor(color);
                     } else {
-                        BlockColor current = cauldron.getCustomColor();
-                        BlockColor mixed = new BlockColor(
+                        BlockColor $15 = cauldron.getCustomColor();
+                        BlockColor $16 = new BlockColor(
                                 current.getRed() + (color.getRed() - current.getRed()) / 2,
                                 current.getGreen() + (color.getGreen() - current.getGreen()) / 2,
                                 current.getBlue() + (color.getBlue() - current.getBlue()) / 2
@@ -406,9 +466,13 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         this.level.updateComparatorOutputLevel(this);
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean onLavaActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        BlockEntity be = this.level.getBlockEntity(this);
+        BlockEntity $17 = this.level.getBlockEntity(this);
 
         if (!(be instanceof BlockEntityCauldron cauldron)) {
             return false;
@@ -416,7 +480,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
         switch (item.getId()) {
             case Item.BUCKET:
-                ItemBucket bucket = (ItemBucket) item;
+                ItemBucket $18 = (ItemBucket) item;
                 if (bucket.getFishEntityId() != null) {
                     break;
                 }
@@ -425,7 +489,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         break;
                     }
 
-                    PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, this, null, this, item, Item.get(ItemID.LAVA_BUCKET, 0, 1, bucket.getCompoundTag()));
+                    PlayerBucketFillEvent $19 = new PlayerBucketFillEvent(player, this, null, this, item, Item.get(ItemID.LAVA_BUCKET, 0, 1, bucket.getCompoundTag()));
                     this.level.getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         replaceBucket(bucket, player, ev.getItem());
@@ -439,7 +503,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         break;
                     }
 
-                    PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, this, item, Item.get(ItemID.BUCKET, 0, 1, bucket.getCompoundTag()));
+                    PlayerBucketEmptyEvent $20 = new PlayerBucketEmptyEvent(player, this, null, this, item, Item.get(ItemID.BUCKET, 0, 1, bucket.getCompoundTag()));
                     this.level.getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         replaceBucket(bucket, player, ev.getItem());
@@ -453,7 +517,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                             this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_EMPTY_LAVA);
                         } else {
                             if (isEmpty()) {
-                                BlockCauldron blockCauldron = new BlockCauldron();
+                                BlockCauldron $21 = new BlockCauldron();
                                 blockCauldron.setFillLevel(6);
                                 this.level.setBlock(this, blockCauldron, true, true);
                                 cauldron.clearCustomColor();
@@ -485,6 +549,10 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void replaceBucket(Item oldBucket, Player player, Item newBucket) {
         if (player.isSurvival() || player.isAdventure()) {
             if (oldBucket.getCount() == 1) {
@@ -500,6 +568,10 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void consumePotion(Item item, Player player) {
         if (player.isSurvival() || player.isAdventure()) {
             if (item.getCount() == 1) {
@@ -508,7 +580,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                 item.setCount(item.getCount() - 1);
                 player.getInventory().setItemInHand(item);
 
-                Item bottle = new ItemGlassBottle();
+                Item $22 = new ItemGlassBottle();
                 if (player.getInventory().canAddItem(bottle)) {
                     player.getInventory().addItem(bottle);
                 } else {
@@ -517,10 +589,18 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void clearWithFizz(BlockEntityCauldron cauldron) {
         clearWithFizz(cauldron, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void clearWithFizz(BlockEntityCauldron cauldron, @Nullable Player player) {
         this.setFillLevel(FILL_LEVEL.getMin(), player);//empty
@@ -529,14 +609,18 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         cauldron.clearCustomColor();
         this.level.setBlock(this, new BlockCauldron(), true);
         this.level.addSound(this.add(0.5, 0, 0.5), Sound.RANDOM_FIZZ);
-        for (int i = 0; i < 8; ++i) {
+        for ($23nt $1 = 0; i < 8; ++i) {
             this.getLevel().addParticle(new SmokeParticle(add(Math.random(), 1.2, Math.random())));
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $24 = new CompoundTag()
                 .putShort("PotionId", -1)
                 .putByte("SplashPotion", 0);
 
@@ -551,46 +635,82 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasComparatorInputOverride() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getComparatorInputOverride() {
         return getFillLevel();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isTransparent() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightFilter() {
         return 3;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return getCauldronLiquid() == CauldronLiquid.LAVA ? 15 : 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
@@ -601,8 +721,12 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
-        EntityCombustByBlockEvent ev = new EntityCombustByBlockEvent(this, entity, 15);
+        EntityCombustByBlockEvent $25 = new EntityCombustByBlockEvent(this, entity, 15);
         Server.getInstance().getPluginManager().callEvent(ev);
         if (!ev.isCancelled()) {
             // Making sure the entity is actually alive and not invulnerable.

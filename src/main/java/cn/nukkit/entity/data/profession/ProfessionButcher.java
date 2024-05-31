@@ -9,6 +9,10 @@ import cn.nukkit.utils.TradeRecipeBuildUtils;
 import static cn.nukkit.item.ItemID.SWEET_BERRIES;
 
 public class ProfessionButcher extends Profession {
+    /**
+     * @deprecated 
+     */
+    
 
     public ProfessionButcher() {
         super(11, BlockID.SMOKER, "entity.villager.butcher");

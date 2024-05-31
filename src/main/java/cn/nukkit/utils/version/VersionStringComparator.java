@@ -40,6 +40,10 @@ public class VersionStringComparator implements Comparator<String> {
      * @since 0.1.0
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int compare(@Nonnull String o1, @Nonnull String o2) {
         return new Version(o1).compareTo(new Version(o2));
     }

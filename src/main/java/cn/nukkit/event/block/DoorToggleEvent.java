@@ -10,18 +10,26 @@ import cn.nukkit.event.HandlerList;
  */
 public class DoorToggleEvent extends BlockUpdateEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private Player player;
+    /**
+     * @deprecated 
+     */
+    
 
     public DoorToggleEvent(Block block, Player player) {
         super(block);
         this.player = player;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPlayer(Player player) {
         this.player = player;

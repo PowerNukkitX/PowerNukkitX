@@ -15,7 +15,7 @@ import cn.nukkit.math.Vector3;
 
 public class PlayerFishEvent extends PlayerEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -25,6 +25,10 @@ public class PlayerFishEvent extends PlayerEvent implements Cancellable {
     private Item loot;
     private int experience;
     private Vector3 motion;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerFishEvent(Player player, EntityFishingHook hook, Item loot, int experience, Vector3 motion) {
         this.player = player;
@@ -41,14 +45,26 @@ public class PlayerFishEvent extends PlayerEvent implements Cancellable {
     public Item getLoot() {
         return loot;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setLoot(Item loot) {
         this.loot = loot;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getExperience() {
         return experience;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setExperience(int experience) {
         this.experience = experience;
@@ -57,6 +73,10 @@ public class PlayerFishEvent extends PlayerEvent implements Cancellable {
     public Vector3 getMotion() {
         return motion;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setMotion(Vector3 motion) {
         this.motion = motion;

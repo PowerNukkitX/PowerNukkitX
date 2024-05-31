@@ -12,6 +12,10 @@ import java.util.Map;
  * @since 2015/11/13
  */
 public class SaveOnCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public SaveOnCommand(String name) {
         super(name, "Enable auto saving");//no translation in client
@@ -22,6 +26,10 @@ public class SaveOnCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         sender.getServer().setAutoSave(true);
         log.addSuccess("commands.save.enabled").output(true);

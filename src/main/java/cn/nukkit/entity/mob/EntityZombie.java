@@ -31,9 +31,17 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmite {
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return ZOMBIE;
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public EntityZombie(IChunk chunk, CompoundTag nbt) {
@@ -52,7 +60,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) {
                                         return false;
                                     } else {
-                                        Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                        Player $1 = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                         return player.isSurvival() || player.isAdventure();
                                     }
                                 }, 2, 1),
@@ -67,6 +75,10 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
 
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(20);
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
@@ -74,31 +86,55 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 1.9f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Zombie";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isUndead() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPreventingSleep(Player player) {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         //husk not burn
         if (this instanceof EntityHusk) {
@@ -109,6 +145,10 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getFloatingForceFactor() {
         return 0.7;
     }
@@ -116,7 +156,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
     @Override
     public Item[] getDrops() {
         //使用dorps判断概率,在0.83%概率下会给土豆或者马铃薯以及铁锭任意一个物品
-        float drops = ThreadLocalRandom.current().nextFloat(100);
+        float $2 = ThreadLocalRandom.current().nextFloat(100);
         if (drops < 0.83) {
             return switch (Utils.rand(0, 2)) {
                 case 0 -> new Item[]{Item.get(Item.IRON_INGOT, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};

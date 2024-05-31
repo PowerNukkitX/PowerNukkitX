@@ -12,17 +12,33 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.MinecraftVerticalHalf;
 
 public class ItemWoodenSlab extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemWoodenSlab() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemWoodenSlab(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemWoodenSlab(Integer meta, int count) {
         super(WOODEN_SLAB, meta, count);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void internalAdjust() {
         switch (getDamage()) {

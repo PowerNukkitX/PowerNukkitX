@@ -8,9 +8,17 @@ import java.util.List;
 
 
 public class CampfireRecipe extends SmeltingRecipe {
+    /**
+     * @deprecated 
+     */
+    
     public CampfireRecipe(Item result, Item ingredient) {
         this(null, result, ingredient);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public CampfireRecipe(String recipeId, Item result, Item ingredient) {
         super(recipeId == null ?
@@ -22,6 +30,10 @@ public class CampfireRecipe extends SmeltingRecipe {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean match(Input input) {
         return false;
     }

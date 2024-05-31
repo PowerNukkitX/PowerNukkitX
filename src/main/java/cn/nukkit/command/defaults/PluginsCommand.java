@@ -15,6 +15,10 @@ import java.util.Map;
  * @since 2015/11/12
  */
 public class PluginsCommand extends Command implements CoreCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public PluginsCommand(String name) {
         super(name,
@@ -29,13 +33,21 @@ public class PluginsCommand extends Command implements CoreCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         this.sendPluginList(sender, log);
         return 1;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void sendPluginList(CommandSender sender, CommandLogger log) {
-        StringBuilder list = new StringBuilder();
+        StringBuilder $1 = new StringBuilder();
         Map<String, Plugin> plugins = sender.getServer().getPluginManager().getPlugins();
         for (Plugin plugin : plugins.values()) {
             if (list.length() > 0) {

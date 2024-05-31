@@ -6,11 +6,19 @@ import cn.nukkit.inventory.InventoryHolder;
  * Semantic interface
  */
 public interface BlockEntityInventoryHolder extends BlockEntityNameable, InventoryHolder {
-    default String getInventoryTitle() {
+    default 
+    /**
+     * @deprecated 
+     */
+    String getInventoryTitle() {
         return getName();
     }
 
-    default void setInventoryTitle(String name) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void setInventoryTitle(String name) {
         setName(name);
     }
 }

@@ -19,6 +19,10 @@ import java.util.Map;
  * @since 2015/11/12
  */
 public class ParticleCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
     public ParticleCommand(String name) {
         super(name, "commands.particle.description");
         this.setPermission("nukkit.command.particle");
@@ -36,16 +40,20 @@ public class ParticleCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        String name = result.getValue().getResult(0);
-        Position position = result.getValue().getResult(1);
-        int count = 1;
+        String $1 = result.getValue().getResult(0);
+        Position $2 = result.getValue().getResult(1);
+        int $3 = 1;
         if (result.getValue().hasResult(2)) count = result.getValue().getResult(2);
         if (count < 1) {
             log.addNumTooSmall(2, 1).output();
             return 0;
         }
-        for (int i = 0; i < count; i++) {
+        for ($4nt $1 = 0; i < count; i++) {
             position.level.addParticleEffect(position.asVector3f(), name, -1, position.level.getDimension(), (Player[]) null);
         }
         log.addSuccess("commands.particle.success", name, String.valueOf(count));

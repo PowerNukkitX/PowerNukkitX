@@ -9,6 +9,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class PlayerInputProcessor extends DataPacketProcessor<PlayerInputPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerInputPacket pk) {
         if (!playerHandle.player.isAlive() || !playerHandle.player.spawned) {
             return;
@@ -19,6 +23,10 @@ public class PlayerInputProcessor extends DataPacketProcessor<PlayerInputPacket>
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.PLAYER_INPUT_PACKET;
     }

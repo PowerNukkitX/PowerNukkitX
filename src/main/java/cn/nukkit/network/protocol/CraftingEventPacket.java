@@ -17,16 +17,16 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CraftingEventPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.CRAFTING_EVENT_PACKET;
+    public static final int $1 = ProtocolInfo.CRAFTING_EVENT_PACKET;
 
 
-    public static final int TYPE_INVENTORY = 0;
+    public static final int $2 = 0;
 
 
-    public static final int TYPE_CRAFTING = 1;
+    public static final int $3 = 1;
 
 
-    public static final int TYPE_WORKBENCH = 2;
+    public static final int $4 = 2;
 
     public int windowId;
     public int type;
@@ -36,6 +36,10 @@ public class CraftingEventPacket extends DataPacket {
     public Item[] output;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.windowId = byteBuf.readByte();
         this.type = byteBuf.readVarInt();
@@ -46,6 +50,10 @@ public class CraftingEventPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeByte((byte) (windowId & 0xFF));
         byteBuf.writeVarInt(type);
@@ -56,9 +64,17 @@ public class CraftingEventPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

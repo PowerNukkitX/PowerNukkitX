@@ -8,13 +8,17 @@ import cn.nukkit.event.HandlerList;
  */
 public class BlockSpreadEvent extends BlockFormEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final Block source;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSpreadEvent(Block block, Block source, Block newState) {
         super(block, newState);

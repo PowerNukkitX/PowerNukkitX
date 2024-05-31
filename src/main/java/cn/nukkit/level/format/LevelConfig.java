@@ -13,8 +13,8 @@ import java.util.Map;
 @Data
 @Accessors(fluent = true)
 public class LevelConfig {
-    String format = "leveldb";
-    boolean enable = true;
+    String $1 = "leveldb";
+    boolean $2 = true;
     Map<Integer, GeneratorConfig> generators;
 
     @AllArgsConstructor
@@ -23,10 +23,10 @@ public class LevelConfig {
     @Accessors(fluent = true)
     public static class GeneratorConfig {
         String name;
-        long seed = 0L;
-        boolean enableAntiXray = false;
-        AntiXrayMode antiXrayMode = AntiXrayMode.LOW;
-        boolean preDeobfuscate = true;
+        long $3 = 0L;
+        boolean $4 = false;
+        AntiXrayMode $5 = AntiXrayMode.LOW;
+        boolean $6 = true;
         DimensionData dimensionData;
         Map<String, Object> preset;
     }

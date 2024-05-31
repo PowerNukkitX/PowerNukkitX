@@ -13,32 +13,52 @@ import cn.nukkit.utils.BlockColor;
 public class SpellParticle extends Particle {
 
     protected final int data;
+    /**
+     * @deprecated 
+     */
+    
 
     public SpellParticle(Vector3 pos) {
         this(pos, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SpellParticle(Vector3 pos, int data) {
         super(pos.x, pos.y, pos.z);
         this.data = data;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SpellParticle(Vector3 pos, BlockColor blockColor) {
         //alpha is ignored
         this(pos, blockColor.getRed(), blockColor.getGreen(), blockColor.getBlue());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SpellParticle(Vector3 pos, int r, int g, int b) {
         this(pos, r, g, b, 0x00);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected SpellParticle(Vector3 pos, int r, int g, int b, int a) {
         this(pos, ((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff));
     }
 
     @Override
     public DataPacket[] encode() {
-        LevelEventPacket pk = new LevelEventPacket();
+        LevelEventPacket $1 = new LevelEventPacket();
         pk.evid = LevelEventPacket.EVENT_PARTICLE_POTION_SPLASH;
         pk.x = (float) this.x;
         pk.y = (float) this.y;

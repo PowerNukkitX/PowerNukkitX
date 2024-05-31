@@ -7,11 +7,15 @@ import cn.nukkit.event.entity.EntityEvent;
 
 public class EntityFreezeEvent extends EntityEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityFreezeEvent(Entity human) {
         this.entity = human;

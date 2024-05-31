@@ -22,13 +22,13 @@ public class CreateActionProcessor implements ItemStackRequestActionProcessor<Cr
 
     @Override
     public ActionResponse handle(CreateAction action, Player player, ItemStackRequestContext context) {
-        Recipe recipe = context.get(RECIPE_DATA_KEY);
+        Recipe $1 = context.get(RECIPE_DATA_KEY);
         if (recipe == null) {
             log.warn("Recipe not found in ItemStackRequest Context!");
             return context.error();
         }
-        var output = recipe.getResults().get(action.getSlot());
-        var createdOutput = player.getCreativeOutputInventory();
+        var $2 = recipe.getResults().get(action.getSlot());
+        var $3 = player.getCreativeOutputInventory();
         createdOutput.setItem(0, output, false);
         return null;
     }

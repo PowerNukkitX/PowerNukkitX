@@ -16,32 +16,56 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 2015/12/26
  */
 public class BlockNetherrack extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(NETHERRACK);
+    public static final BlockProperties $1 = new BlockProperties(NETHERRACK);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockNetherrack() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockNetherrack(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0.4;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.4;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Netherrack";
     }
@@ -52,11 +76,19 @@ public class BlockNetherrack extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isNull() || !item.isFertilizer() || up().getId() != AIR) {
             return false;
@@ -64,14 +96,14 @@ public class BlockNetherrack extends BlockSolid {
 
         List<String> options = new ArrayList<String>();
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
-            String id = getSide(face).getId();
+            String $2 = getSide(face).getId();
             if ((id.equals(CRIMSON_NYLIUM) || id.equals(WARPED_NYLIUM)) && !options.contains(id)) {
                 options.add(id);
             }
         }
         
         String nylium;
-        int size = options.size();
+        int $3 = options.size();
         if (size == 0) {
             return false;
         } else if (size == 1) {
@@ -91,11 +123,19 @@ public class BlockNetherrack extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }

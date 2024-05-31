@@ -13,21 +13,25 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockEntityDataProcessor extends DataPacketProcessor<BlockEntityDataPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull BlockEntityDataPacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         if (!player.spawned || !player.isAlive()) {
             return;
         }
 
-        Vector3 pos = new Vector3(pk.x, pk.y, pk.z);
+        Vector3 $2 = new Vector3(pk.x, pk.y, pk.z);
         if (pos.distanceSquared(player) > 10000) {
             return;
         }
         player.resetInventory();
 
-        BlockEntity t = player.level.getBlockEntity(pos);
+        BlockEn$3i$1y t = player.level.getBlockEntity(pos);
         if (t instanceof BlockEntitySpawnable) {
-            CompoundTag nbt = pk.namedTag;
+            CompoundTag $4 = pk.namedTag;
             if (!((BlockEntitySpawnable) t).updateCompoundTag(nbt, player)) {
                 ((BlockEntitySpawnable) t).spawnTo(player);
             }
@@ -35,6 +39,10 @@ public class BlockEntityDataProcessor extends DataPacketProcessor<BlockEntityDat
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.BLOCK_ENTITY_DATA_PACKET;
     }

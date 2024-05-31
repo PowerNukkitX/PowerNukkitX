@@ -11,21 +11,25 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LevelSoundEventPacketV1 extends LevelSoundEventPacket {
-    public static final int NETWORK_ID = ProtocolInfo.LEVEL_SOUND_EVENT_PACKET_V1;
+    public static final int $1 = ProtocolInfo.LEVEL_SOUND_EVENT_PACKET_V1;
 
     public int sound;
     public float x;
     public float y;
     public float z;
-    public int extraData = -1; //TODO: Check name
-    public int pitch = 1; //TODO: Check name
+    public int $2 = -1; //TODO: Check name
+    public int $3 = 1; //TODO: Check name
     public boolean isBabyMob;
     public boolean isGlobal;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.sound = byteBuf.readByte();
-        Vector3f v = byteBuf.readVector3f();
+        Vector3f $4 = byteBuf.readVector3f();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
@@ -36,6 +40,10 @@ public class LevelSoundEventPacketV1 extends LevelSoundEventPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeByte((byte) this.sound);
@@ -47,9 +55,17 @@ public class LevelSoundEventPacketV1 extends LevelSoundEventPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

@@ -11,6 +11,10 @@ public class SkinAnimation {
     public final float frames;
 
     public final int expression;
+    /**
+     * @deprecated 
+     */
+    
 
     public SkinAnimation(SerializedImage image, int type, float frames, int expression) {
         this.image = image;

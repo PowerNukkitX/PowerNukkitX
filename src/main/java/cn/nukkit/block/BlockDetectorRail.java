@@ -19,52 +19,88 @@ import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DATA_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DIRECTION_6;
 
 public class BlockDetectorRail extends BlockRail implements RedstoneComponent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(DETECTOR_RAIL, RAIL_DATA_BIT, CommonBlockProperties.RAIL_DIRECTION_6);
+    public static final BlockProperties $1 = new BlockProperties(DETECTOR_RAIL, RAIL_DATA_BIT, CommonBlockProperties.RAIL_DIRECTION_6);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDetectorRail() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDetectorRail(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Detector Rail";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPowerSource() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasComparatorInputOverride() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getComparatorInputOverride() {
         return findMinecart() instanceof InventoryHolder inventoryHolder ? ContainerInventory.calculateRedstone(inventoryHolder.getInventory()) : 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWeakPower(BlockFace side) {
         return isActive() ? 15 : 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getStrongPower(BlockFace side) {
         return isActive() ? (side == BlockFace.UP ? 15 : 0) : 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_NORMAL) {
             checkMinecart();
@@ -72,6 +108,10 @@ public class BlockDetectorRail extends BlockRail implements RedstoneComponent {
         }
         return super.onUpdate(type);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void checkMinecart() {
         updateState(findMinecart() != null);
@@ -90,9 +130,13 @@ public class BlockDetectorRail extends BlockRail implements RedstoneComponent {
         }
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void updateState(boolean powered) {
-        var wasPowered = isActive();
+        var $2 = isActive();
         if (powered != wasPowered) {
             this.setActive(powered);
             updateAroundRedstone();
@@ -107,6 +151,10 @@ public class BlockDetectorRail extends BlockRail implements RedstoneComponent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isActive() {
         return getPropertyValue(RAIL_DATA_BIT);
     }
@@ -117,6 +165,10 @@ public class BlockDetectorRail extends BlockRail implements RedstoneComponent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setRailActive(boolean active) {
         setPropertyValue(RAIL_DATA_BIT, active);
     }
@@ -126,6 +178,10 @@ public class BlockDetectorRail extends BlockRail implements RedstoneComponent {
      *
      * @param orientation The new orientation
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setRailDirection(Rail.Orientation orientation) {
         setPropertyValue(RAIL_DIRECTION_6, orientation.metadata());
     }

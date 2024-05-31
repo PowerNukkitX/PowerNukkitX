@@ -14,11 +14,19 @@ import java.util.Arrays;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_BLOCK_FACE;
 
 public abstract class BlockAmethystBud extends BlockTransparent implements Faceable {
+    /**
+     * @deprecated 
+     */
+    
     public BlockAmethystBud(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return getNamePrefix() + " Amethyst Bud";
     }
@@ -26,16 +34,28 @@ public abstract class BlockAmethystBud extends BlockTransparent implements Facea
     protected abstract String getNamePrefix();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 1.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 1.5;
     }
@@ -44,11 +64,19 @@ public abstract class BlockAmethystBud extends BlockTransparent implements Facea
     public abstract int getLightLevel();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_IRON;
     }
@@ -59,6 +87,10 @@ public abstract class BlockAmethystBud extends BlockTransparent implements Facea
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
@@ -69,11 +101,19 @@ public abstract class BlockAmethystBud extends BlockTransparent implements Facea
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(MINECRAFT_BLOCK_FACE, face);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (!target.isSolid()) {
             return false;
@@ -85,6 +125,10 @@ public abstract class BlockAmethystBud extends BlockTransparent implements Facea
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
         if (item.isPickaxe()) {
             Arrays.stream(this.getDrops(item)).forEach(item1 -> this.level.dropItem(this.add(0.5,0,0.5), item1));
@@ -97,6 +141,10 @@ public abstract class BlockAmethystBud extends BlockTransparent implements Facea
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if ((this.getSide(this.getBlockFace().getOpposite()).isAir())) {
             this.onBreak(Item.get(ItemID.DIAMOND_PICKAXE));

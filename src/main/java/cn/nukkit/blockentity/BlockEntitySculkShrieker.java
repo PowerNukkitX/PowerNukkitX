@@ -10,6 +10,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class BlockEntitySculkShrieker extends BlockEntity {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BlockEntitySculkShrieker(IChunk chunk, CompoundTag nbt) {
@@ -17,6 +21,10 @@ public class BlockEntitySculkShrieker extends BlockEntity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return getLevelBlock().getId() == BlockID.SCULK_SHRIEKER;
     }

@@ -6,9 +6,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityCamel extends EntityAnimal {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return CAMEL;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityCamel(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -17,12 +25,20 @@ public class EntityCamel extends EntityAnimal {
     
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(32);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (isBaby()) {
             return 0.85f;
@@ -31,6 +47,10 @@ public class EntityCamel extends EntityAnimal {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (isBaby()) {
             return 1.1875f;
@@ -39,6 +59,10 @@ public class EntityCamel extends EntityAnimal {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getFootHeight() {
         if (!isBaby()) {
             return 1.5f;

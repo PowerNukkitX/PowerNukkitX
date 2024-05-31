@@ -8,13 +8,17 @@ import cn.nukkit.event.HandlerList;
 
 public class WaterFrostEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     protected final Entity entity;
+    /**
+     * @deprecated 
+     */
+    
 
     public WaterFrostEvent(Block block, Entity entity) {
         super(block);

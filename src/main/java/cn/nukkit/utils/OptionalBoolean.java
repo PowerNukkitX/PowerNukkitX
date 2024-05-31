@@ -40,7 +40,7 @@ public enum OptionalBoolean {
     }
 
     public static OptionalBoolean ofNullable(Boolean value) {
-        return value == null ? EMPTY : of(value);
+        return $1 == null ? EMPTY : of(value);
     }
 
     public static OptionalBoolean empty() {
@@ -48,26 +48,46 @@ public enum OptionalBoolean {
     }
 
     @SuppressWarnings("null")
+    /**
+     * @deprecated 
+     */
+    
     public boolean getAsBoolean() {
         if (value == null) {
             throw new NoSuchElementException("No value present");
         }
         return value;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPresent() {
         return value != null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void ifPresent(BooleanConsumer consumer) {
         if (value != null) {
             consumer.accept(value);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean orElse(boolean other) {
         return value != null ? value : other;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean orElseGet(BooleanSupplier other) {
         return value != null ? value : other.getAsBoolean();
@@ -82,8 +102,12 @@ public enum OptionalBoolean {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
-        return value == null ? "OptionalBoolean.empty" :
+        return $2 == null ? "OptionalBoolean.empty" :
                 value ? "OptionalBoolean[true]" :
                         "OptionalBoolean[false]";
     }

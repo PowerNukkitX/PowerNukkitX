@@ -13,10 +13,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MoveEntityAbsolutePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET;
-    public static final byte FLAG_GROUND = 0x01;
-    public static final byte FLAG_TELEPORT = 0x02;
-    public static final byte FLAG_FORCE_MOVE_LOCAL_ENTITY = 0x04;
+    public static final int $1 = ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET;
+    public static final byte $2 = 0x01;
+    public static final byte $3 = 0x02;
+    public static final byte $4 = 0x04;
 
     public long eid;
     public double x;
@@ -30,18 +30,26 @@ public class MoveEntityAbsolutePacket extends DataPacket {
     public boolean forceMoveLocalEntity;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.eid = byteBuf.readEntityRuntimeId();
-        int flags = byteBuf.readByte();
+        int $5 = byteBuf.readByte();
         onGround = (flags & 0x01) != 0;
         teleport = (flags & 0x02) != 0;
         forceMoveLocalEntity = (flags & 0x04) != 0;
-        Vector3f v = byteBuf.readVector3f();
+        Vector3f $6 = byteBuf.readVector3f();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
@@ -51,10 +59,14 @@ public class MoveEntityAbsolutePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeEntityRuntimeId(this.eid);
-        byte flags = 0;
+        byte $7 = 0;
         if (onGround) {
             flags |= 0x01;
         }
@@ -70,6 +82,10 @@ public class MoveEntityAbsolutePacket extends DataPacket {
         byteBuf.writeByte((byte) (this.headYaw / (360d / 256d)));
         byteBuf.writeByte((byte) (this.yaw / (360d / 256d)));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

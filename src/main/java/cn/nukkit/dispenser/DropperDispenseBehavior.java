@@ -10,6 +10,10 @@ import cn.nukkit.math.BlockFace;
 
 
 public class DropperDispenseBehavior extends DefaultDispenseBehavior {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public DropperDispenseBehavior() {
@@ -18,12 +22,12 @@ public class DropperDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
-        Block target = block.getSide(face);
+        Block $1 = block.getSide(face);
 
         if (block.level.getBlockEntityIfLoaded(target) instanceof InventoryHolder) {
-            InventoryHolder invHolder = (InventoryHolder) block.level.getBlockEntityIfLoaded(target);
-            Inventory inv = invHolder.getInventory();
-            Item clone = item.clone();
+            InventoryHolder $2 = (InventoryHolder) block.level.getBlockEntityIfLoaded(target);
+            Inventory $3 = invHolder.getInventory();
+            Item $4 = item.clone();
             clone.count = 1;
 
             if (inv.canAddItem(clone)) {

@@ -14,11 +14,15 @@ import static cn.nukkit.block.property.CommonBlockProperties.LIQUID_DEPTH;
 
 
 public abstract class BlockCoral extends BlockFlowable {
-    public static final int TYPE_TUBE = 0;
-    public static final int TYPE_BRAIN = 1;
-    public static final int TYPE_BUBBLE = 2;
-    public static final int TYPE_FIRE = 3;
-    public static final int TYPE_HORN = 4;
+    public static final int $1 = 0;
+    public static final int $2 = 1;
+    public static final int $3 = 2;
+    public static final int $4 = 3;
+    public static final int $5 = 4;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCoral(BlockState blockstate) {
         super(blockstate);
@@ -27,20 +31,32 @@ public abstract class BlockCoral extends BlockFlowable {
     public abstract boolean isDead();
 
     public abstract Block getDeadCoral();
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDead(Block deadBlock) {
         this.getLevel().setBlock(this, deadBlock, true, true);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            Block down = down();
+            Block $6 = down();
             if (!down.isSolid()) {
                 this.getLevel().useBreakOn(this);
             } else if (!isDead()) {
@@ -49,7 +65,7 @@ public abstract class BlockCoral extends BlockFlowable {
             return type;
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (!isDead() && !(getLevelBlockAtLayer(1) instanceof BlockFlowingWater) && !(getLevelBlockAtLayer(1) instanceof BlockFrostedIce)) {
-                BlockFadeEvent event = new BlockFadeEvent(this, getDeadCoral());
+                BlockFadeEvent $7 = new BlockFadeEvent(this, getDeadCoral());
                 if (!event.isCancelled()) {
                     setDead(event.getNewState());
                 }
@@ -60,10 +76,14 @@ public abstract class BlockCoral extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        Block down = down();
-        Block layer1 = block.getLevelBlockAtLayer(1);
-        boolean hasWater = layer1 instanceof BlockFlowingWater;
+        Block $8 = down();
+        Block $9 = block.getLevelBlockAtLayer(1);
+        boolean $10 = layer1 instanceof BlockFlowingWater;
         int waterDamage;
         if (!layer1.isAir() && (!hasWater || ((waterDamage = layer1.getPropertyValue(LIQUID_DEPTH)) != 0) && waterDamage != 8)) {
             return false;
@@ -81,6 +101,10 @@ public abstract class BlockCoral extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }

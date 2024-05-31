@@ -7,7 +7,7 @@ import cn.nukkit.event.HandlerList;
 
 public class CauldronFilledByDrippingLiquidEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -16,6 +16,10 @@ public class CauldronFilledByDrippingLiquidEvent extends BlockEvent implements C
     private CauldronLiquid liquid;
 
     private int liquidLevelIncrement;
+    /**
+     * @deprecated 
+     */
+    
 
     public CauldronFilledByDrippingLiquidEvent(Block cauldron, CauldronLiquid liquid, int liquidLevelIncrement) {
         super(cauldron);
@@ -26,14 +30,26 @@ public class CauldronFilledByDrippingLiquidEvent extends BlockEvent implements C
     public CauldronLiquid getLiquid() {
         return liquid;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setLiquid(CauldronLiquid liquid) {
         this.liquid = liquid;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getLiquidLevelIncrement() {
         return liquidLevelIncrement;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setLiquidLevelIncrement(int liquidLevelIncrement) {
         this.liquidLevelIncrement = liquidLevelIncrement;

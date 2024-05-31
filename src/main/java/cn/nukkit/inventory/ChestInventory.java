@@ -22,15 +22,23 @@ import java.util.Map;
 public class ChestInventory extends ContainerInventory implements BlockEntityInventoryNameable {
     @Nullable
     protected DoubleChestInventory doubleInventory;
+    /**
+     * @deprecated 
+     */
+    
 
     public ChestInventory(BlockEntityChest chest) {
         super(chest, InventoryType.CONTAINER, 27);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-        for (int i = 0; i < getSize(); i++) {
+        for ($1nt $1 = 0; i < getSize(); i++) {
             map.put(i, ContainerSlotType.LEVEL_ENTITY);
         }
     }
@@ -42,18 +50,22 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onOpen(Player who) {
         super.onOpen(who);
 
         if (this.getViewers().size() == 1) {
-            BlockEventPacket pk = new BlockEventPacket();
+            BlockEventPacket $2 = new BlockEventPacket();
             pk.x = (int) this.getHolder().getX();
             pk.y = (int) this.getHolder().getY();
             pk.z = (int) this.getHolder().getZ();
             pk.case1 = 1;
             pk.case2 = 2;
 
-            Level level = this.getHolder().getLevel();
+            Level $3 = this.getHolder().getLevel();
             if (level != null) {
                 level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTOPEN);
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);
@@ -61,7 +73,7 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
         }
         try {
             if (this.getHolder().getBlock() instanceof BlockTrappedChest trappedChest) {
-                RedstoneUpdateEvent event = new RedstoneUpdateEvent(trappedChest);
+                RedstoneUpdateEvent $4 = new RedstoneUpdateEvent(trappedChest);
                 this.getHolder().level.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
                     RedstoneComponent.updateAllAroundRedstone(this.getHolder());
@@ -72,16 +84,20 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onClose(Player who) {
         if (this.getViewers().size() == 1) {
-            BlockEventPacket pk = new BlockEventPacket();
+            BlockEventPacket $5 = new BlockEventPacket();
             pk.x = (int) this.getHolder().getX();
             pk.y = (int) this.getHolder().getY();
             pk.z = (int) this.getHolder().getZ();
             pk.case1 = 1;
             pk.case2 = 0;
 
-            Level level = this.getHolder().getLevel();
+            Level $6 = this.getHolder().getLevel();
             if (level != null) {
                 level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTCLOSED);
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);
@@ -90,7 +106,7 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
 
         try {
             if (this.getHolder().getBlock() instanceof BlockTrappedChest trappedChest) {
-                RedstoneUpdateEvent event = new RedstoneUpdateEvent(trappedChest);
+                RedstoneUpdateEvent $7 = new RedstoneUpdateEvent(trappedChest);
                 this.getHolder().level.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
                     RedstoneComponent.updateAllAroundRedstone(this.getHolder());
@@ -100,6 +116,10 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
         }
         super.onClose(who);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDoubleInventory(@NotNull DoubleChestInventory doubleInventory) {
         this.doubleInventory = doubleInventory;
@@ -111,6 +131,10 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendSlot(int index, Player... players) {
         if (this.doubleInventory != null) {
             this.doubleInventory.sendSlot(this, index, players);
@@ -120,6 +144,10 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCauseVibration() {
         return true;
     }

@@ -27,11 +27,19 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityTntMinecart extends EntityMinecartAbstract implements EntityExplosive {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return TNT_MINECART;
     }
     
     private int fuse;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityTntMinecart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -39,11 +47,19 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isRideable() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         super.initEntity();
 
@@ -56,13 +72,17 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         // 记录最大高度，用于计算坠落伤害
         if (!this.onGround && this.y > highestPosition) {
             this.highestPosition = this.y;
         }
         if (fuse < 80) {
-            int tickDiff = currentTick - lastUpdate;
+            int $1 = currentTick - lastUpdate;
 
             lastUpdate = currentTick;
 
@@ -85,6 +105,10 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void updateFallState(boolean onGround) {
         if (onGround) {
             fallDistance = (float) (this.highestPosition - this.y);
@@ -100,29 +124,41 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void activate(int x, int y, int z, boolean flag) {
         level.addSound(this, Sound.FIRE_IGNITE);
         this.fuse = 79;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void explode() {
         explode(0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void explode(double square) {
-        double root = Math.sqrt(square);
+        double $2 = Math.sqrt(square);
 
         if (root > 5.0D) {
             root = 5.0D;
         }
 
-        EntityExplosionPrimeEvent event = new EntityExplosionPrimeEvent(this, (4.0D + ThreadLocalRandom.current().nextDouble() * 1.5D * root));
+        EntityExplosionPrimeEvent $3 = new EntityExplosionPrimeEvent(this, (4.0D + ThreadLocalRandom.current().nextDouble() * 1.5D * root));
         server.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
         }
-        Explosion explosion = new Explosion(this, event.getForce(), this);
+        Explosion $4 = new Explosion(this, event.getForce(), this);
         explosion.setFireChance(event.getFireChance());
         if (event.isBlockBreaking()) {
             explosion.explodeA();
@@ -132,9 +168,13 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void dropItem() {
         if (this.lastDamageCause instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
-            Entity damager = entityDamageByEntityEvent.getDamager();
+            Entity $5 = entityDamageByEntityEvent.getDamager();
             if (damager instanceof Player player && player.isCreative()) {
                 return;
             }
@@ -143,6 +183,10 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return getType().getName();
     }
@@ -153,6 +197,10 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
 
@@ -161,8 +209,12 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
 
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        boolean interact = super.onInteract(player, item, clickedPos);
+        boolean $6 = super.onInteract(player, item, clickedPos);
         if (item.getId().equals(Item.FLINT_AND_STEEL) || item.getId().equals(Item.FIRE_CHARGE)) {
             level.addSound(this, Sound.FIRE_IGNITE);
             this.fuse = 79;
@@ -173,6 +225,10 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean mountEntity(Entity entity, EntityLink.Type mode) {
         return false;
     }

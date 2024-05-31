@@ -15,8 +15,8 @@ import java.util.List;
 
 public abstract class BedrockPacketCodec extends MessageToMessageCodec<ByteBuf, BedrockPacketWrapper> {
 
-    public static final String NAME = "bedrock-packet-codec";
-    private static final InternalLogger log = InternalLoggerFactory.getInstance(BedrockPacketCodec.class);
+    public static final String $1 = "bedrock-packet-codec";
+    private static final InternalLogger $2 = InternalLoggerFactory.getInstance(BedrockPacketCodec.class);
 
     @Override
     protected final void encode(ChannelHandlerContext ctx, BedrockPacketWrapper msg, List<Object> out) throws Exception {
@@ -24,9 +24,9 @@ public abstract class BedrockPacketCodec extends MessageToMessageCodec<ByteBuf, 
             // We have a pre-encoded packet buffer, just use that.
             out.add(msg.retain());
         } else {
-            ByteBuf buf = ctx.alloc().buffer(128);
+            ByteBuf $3 = ctx.alloc().buffer(128);
             try {
-                DataPacket packet = msg.getPacket();
+                DataPacket $4 = msg.getPacket();
                 msg.setPacketId(packet.pid());
                 encodeHeader(buf, msg);
                 packet.encode(HandleByteBuf.of(buf));
@@ -42,13 +42,13 @@ public abstract class BedrockPacketCodec extends MessageToMessageCodec<ByteBuf, 
 
     @Override
     protected final void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
-        BedrockPacketWrapper wrapper = new BedrockPacketWrapper();
+        BedrockPacketWrapper $5 = new BedrockPacketWrapper();
         wrapper.setPacketBuffer(msg.retainedSlice());
         try {
-            int index = msg.readerIndex();
+            int $6 = msg.readerIndex();
             this.decodeHeader(msg, wrapper);
             wrapper.setHeaderLength(msg.readerIndex() - index);
-            DataPacket dataPacket = Registries.PACKET.get(wrapper.getPacketId());
+            DataPacket $7 = Registries.PACKET.get(wrapper.getPacketId());
             if (dataPacket == null) {
                 log.info("Failed to decode packet for packetId {}", wrapper.getPacketId());
                 return;

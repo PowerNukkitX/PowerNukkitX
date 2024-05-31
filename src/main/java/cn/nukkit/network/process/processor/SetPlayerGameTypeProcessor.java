@@ -11,6 +11,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class SetPlayerGameTypeProcessor extends DataPacketProcessor<SetPlayerGameTypePacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull SetPlayerGameTypePacket pk) {
         if (pk.gamemode != playerHandle.player.gamemode && playerHandle.player.hasPermission("nukkit.command.gamemode")) {
             playerHandle.player.setGamemode(switch (pk.gamemode) {
@@ -24,6 +28,10 @@ public class SetPlayerGameTypeProcessor extends DataPacketProcessor<SetPlayerGam
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.SET_PLAYER_GAME_TYPE_PACKET;
     }

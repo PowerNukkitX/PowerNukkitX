@@ -17,11 +17,11 @@ import java.nio.ByteOrder;
 @AllArgsConstructor
 public class UpdateTradePacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.UPDATE_TRADE_PACKET;
+    public static final int $1 = ProtocolInfo.UPDATE_TRADE_PACKET;
 
     public byte containerId;
-    public byte containerType = 15; //trading id
-    public int size = 0; // hardcoded to 0
+    public byte $2 = 15; //trading id
+    public int $3 = 0; // hardcoded to 0
     public int tradeTier;//交易等级
     public long traderUniqueEntityId;//村民id
     public long playerUniqueEntityId;//村民id
@@ -32,16 +32,28 @@ public class UpdateTradePacket extends DataPacket {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeByte(containerId);
         byteBuf.writeByte(containerType);
@@ -58,6 +70,10 @@ public class UpdateTradePacket extends DataPacket {
             log.error("", e);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

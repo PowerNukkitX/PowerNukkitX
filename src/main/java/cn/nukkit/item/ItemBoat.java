@@ -18,24 +18,44 @@ import cn.nukkit.utils.Identifier;
  * @since 2016/2/13
  */
 public class ItemBoat extends Item {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemBoat() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemBoat(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemBoat(Integer meta, int count) {
         super(BOAT, meta, count);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemBoat(String id) {
         super(id);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void internalAdjust() {
         switch (getDamage()) {
             case 0:
@@ -87,18 +107,30 @@ public class ItemBoat extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getBoatId() {
         return this.meta;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (face != BlockFace.UP || block instanceof BlockFlowingWater) return false;
-        EntityBoat boat = (EntityBoat) Entity.createEntity(Entity.BOAT,
+        EntityBoat $1 = (EntityBoat) Entity.createEntity(Entity.BOAT,
                 level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag()
                         .putList("Pos", new ListTag<DoubleTag>()
                                 .add(new DoubleTag(block.getX() + 0.5))
@@ -119,7 +151,7 @@ public class ItemBoat extends Item {
         }
 
         if (player.isSurvival() || player.isAdventure()) {
-            Item item = player.getInventory().getItemInHand();
+            Item $2 = player.getInventory().getItemInHand();
             item.setCount(item.getCount() - 1);
             player.getInventory().setItemInHand(item);
         }
@@ -129,6 +161,10 @@ public class ItemBoat extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxStackSize() {
         return 1;
     }

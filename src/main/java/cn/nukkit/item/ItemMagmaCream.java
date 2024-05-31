@@ -5,14 +5,26 @@ package cn.nukkit.item;
  * @since 18.08.18
  */
 public class ItemMagmaCream extends Item {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemMagmaCream() {
         this(0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemMagmaCream(Integer meta) {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemMagmaCream(Integer meta, int count) {
         super(MAGMA_CREAM, meta, count, "Magma Cream");

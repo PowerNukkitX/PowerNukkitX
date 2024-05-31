@@ -15,9 +15,13 @@ import org.jetbrains.annotations.NotNull;
 @Slf4j
 public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RequestAbilityPacket pk) {
-        Player player = playerHandle.player;
-        PlayerAbility ability = pk.ability;
+        Player $1 = playerHandle.player;
+        PlayerAbility $2 = pk.ability;
         if (ability != PlayerAbility.FLYING) {
             log.info("[" + player.getName() + "] has tried to trigger " + ability + " ability " + (pk.boolValue ? "on" : "off"));
             return;
@@ -28,7 +32,7 @@ public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityP
             return;
         }
 
-        PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, pk.boolValue);
+        PlayerToggleFlightEvent $3 = new PlayerToggleFlightEvent(player, pk.boolValue);
         player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
         if (playerToggleFlightEvent.isCancelled()) {
             player.getAdventureSettings().update();
@@ -38,6 +42,10 @@ public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityP
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.REQUEST_ABILITY_PACKET;
     }

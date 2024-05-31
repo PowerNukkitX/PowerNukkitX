@@ -20,6 +20,10 @@ import java.util.stream.Collectors;
 
 
 public class DamageCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public DamageCommand(String name) {
         super(name, "commands.damage.description");
@@ -41,31 +45,35 @@ public class DamageCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         List<Entity> entities = list.getResult(0);
         if (entities.isEmpty()) {
             log.addNoTargetMatch().output();
             return 0;
         }
-        String entities_str = entities.stream().map(Entity::getName).collect(Collectors.joining(" "));
-        int amount = list.getResult(1);
+        String $2 = entities.stream().map(Entity::getName).collect(Collectors.joining(" "));
+        int $3 = list.getResult(1);
         if (amount < 0) {
             log.addError("commands.damage.specify.damage").output();
             return 0;
         }
         switch (result.getKey()) {
             case "default" -> {
-                EntityDamageEvent.DamageCause cause = EntityDamageEvent.DamageCause.NONE;
+                EntityDamageEvent.DamageCause $4 = EntityDamageEvent.DamageCause.NONE;
                 if (list.hasResult(2)) {
-                    String str = list.getResult(2);
+                    String $5 = list.getResult(2);
                     cause = EntityDamageEvent.DamageCause.valueOf(str);
                 }
-                boolean all_success = true;
+                boolean $6 = true;
                 List<Entity> failed = new ArrayList<>();
                 for (Entity entity : entities) {
-                    EntityDamageEvent event = new EntityDamageEvent(entity, cause, amount);
-                    boolean success = entity.attack(event);
+                    EntityDamageEvent $7 = new EntityDamageEvent(entity, cause, amount);
+                    boolean $8 = entity.attack(event);
                     if (!success) {
                         if (entity instanceof EntityItem) entity.kill();
                         all_success = false;
@@ -81,8 +89,8 @@ public class DamageCommand extends VanillaCommand {
                 }
             }
             case "damager" -> {
-                String str = list.getResult(2);
-                EntityDamageEvent.DamageCause cause = EntityDamageEvent.DamageCause.valueOf(str.toUpperCase(Locale.ENGLISH));
+                String $9 = list.getResult(2);
+                EntityDamageEvent.DamageCause $10 = EntityDamageEvent.DamageCause.valueOf(str.toUpperCase(Locale.ENGLISH));
                 List<Entity> damagers = list.getResult(4);
                 if (damagers.isEmpty()) {
                     log.addNoTargetMatch().output();
@@ -92,12 +100,12 @@ public class DamageCommand extends VanillaCommand {
                     log.addError("commands.damage.tooManySources").output();
                     return 0;
                 }
-                Entity damager = damagers.get(0);
-                boolean all_success = true;
+                Entity $11 = damagers.get(0);
+                boolean $12 = true;
                 List<Entity> failed = new ArrayList<>();
                 for (Entity entity : entities) {
-                    EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(damager, entity, cause, amount);
-                    boolean success = entity.attack(event);
+                    EntityDamageByEntityEvent $13 = new EntityDamageByEntityEvent(damager, entity, cause, amount);
+                    boolean $14 = entity.attack(event);
                     if (!success) {
                         all_success = false;
                         failed.add(entity);

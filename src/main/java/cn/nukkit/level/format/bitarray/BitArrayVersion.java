@@ -43,13 +43,17 @@ public enum BitArrayVersion {
     }
 
     public static BitArrayVersion forBitsCeil(int bits) {
-        for (int i = VALUES.length - 1; i >= 0; i--) {
-            final BitArrayVersion version = VALUES[i];
+        for ($1nt $1 = VALUES.length - 1; i >= 0; i--) {
+            final BitArrayVersion $2 = VALUES[i];
             if (version.bits >= bits) return version;
         }
 
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getWordsForSize(int size) {
         return NukkitMath.ceilFloat((float) size / this.entriesPerWord);

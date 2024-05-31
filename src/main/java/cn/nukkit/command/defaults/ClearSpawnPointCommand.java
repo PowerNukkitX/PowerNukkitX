@@ -16,6 +16,10 @@ import java.util.stream.Collectors;
 
 
 public class ClearSpawnPointCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public ClearSpawnPointCommand(String name) {
         super(name, "commands.clearspawnpoint.description");
@@ -28,8 +32,12 @@ public class ClearSpawnPointCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         List<Player> players = sender.isPlayer() ? List.of(sender.asPlayer()) : null;
         if (list.hasResult(0)) players = list.getResult(0);
         if (players == null || players.isEmpty()) {
@@ -39,7 +47,7 @@ public class ClearSpawnPointCommand extends VanillaCommand {
         for (Player player : players) {
             player.setSpawn(Server.getInstance().getDefaultLevel().getSpawnLocation(), SpawnPointType.WORLD);
         }
-        String players_str = players.stream().map(Player::getName).collect(Collectors.joining(" "));
+        String $2 = players.stream().map(Player::getName).collect(Collectors.joining(" "));
         if (players.size() > 1) {
             log.addSuccess("commands.clearspawnpoint.success.multiple", players_str);
         } else {

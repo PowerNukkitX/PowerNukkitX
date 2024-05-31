@@ -31,11 +31,15 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class SimulationTypePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
+    public static final int $1 = ProtocolInfo.NPC_DIALOGUE_PACKET;
 
     private static final SimulationType[] TYPES = SimulationType.values();
 
     public SimulationType type;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public SimulationTypePacket() {
@@ -43,16 +47,28 @@ public class SimulationTypePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         type = TYPES[byteBuf.readByte()];
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeByte((byte) type.ordinal());
     }
@@ -62,6 +78,10 @@ public class SimulationTypePacket extends DataPacket {
         EDITOR,
         TEST
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

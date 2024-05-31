@@ -12,37 +12,61 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
  * @since 26.12.2015
  */
 public class BlockWallSign extends BlockStandingSign {
-    public static final BlockProperties PROPERTIES = new BlockProperties(WALL_SIGN, FACING_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(WALL_SIGN, FACING_DIRECTION);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockWallSign() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockWallSign(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getWallSignId() {
         return getId();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getStandingSignId() {
         return STANDING_SIGN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Wall Sign";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.getSide(getBlockFace().getOpposite()).isAir()) {
@@ -54,6 +78,10 @@ public class BlockWallSign extends BlockStandingSign {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
@@ -64,6 +92,10 @@ public class BlockWallSign extends BlockStandingSign {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setSignDirection(CompassRoseDirection direction) {
         setBlockFace(direction.getClosestBlockFace());
     }

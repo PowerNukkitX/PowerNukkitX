@@ -16,6 +16,10 @@ public enum InputMode {
     InputMode(int ordinal) {
         this.ordinal = ordinal;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getOrdinal() {
         return ordinal;

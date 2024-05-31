@@ -20,6 +20,10 @@ public class Y extends CoordinateArgument {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getKeyName() {
         return "y";
     }

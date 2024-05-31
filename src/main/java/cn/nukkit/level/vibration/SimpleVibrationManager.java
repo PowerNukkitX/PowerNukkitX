@@ -22,14 +22,22 @@ public class SimpleVibrationManager implements VibrationManager {
 
     protected Set<VibrationListener> listeners = new CopyOnWriteArraySet<>();
     protected Level level;
+    /**
+     * @deprecated 
+     */
+    
 
     public SimpleVibrationManager(Level level) {
         this.level = level;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void callVibrationEvent(VibrationEvent event) {
-        VibrationOccurEvent vibrationOccurPluginEvent = new VibrationOccurEvent(event);
+        VibrationOccurEvent $1 = new VibrationOccurEvent(event);
         this.level.getServer().getPluginManager().callEvent(vibrationOccurPluginEvent);
         if (vibrationOccurPluginEvent.isCancelled()) {
             return;
@@ -38,7 +46,7 @@ public class SimpleVibrationManager implements VibrationManager {
             if (!listener.getListenerVector().equals(event.source()) && listener.getListenerVector().distanceSquared(event.source()) <= Math.pow(listener.getListenRange(), 2) && canVibrationArrive(level, event.source(), listener.getListenerVector()) && listener.onVibrationOccur(event)) {
                 this.createVibration(listener, event);
                 Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
-                    VibrationArriveEvent vibrationArrivePluginEvent = new VibrationArriveEvent(event, listener);
+                    VibrationArriveEvent $2 = new VibrationArriveEvent(event, listener);
                     this.level.getServer().getPluginManager().callEvent(vibrationArrivePluginEvent);
                     if (vibrationArrivePluginEvent.isCancelled()) {
                         return;
@@ -50,24 +58,36 @@ public class SimpleVibrationManager implements VibrationManager {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void addListener(VibrationListener listener) {
         this.listeners.add(listener);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeListener(VibrationListener listener) {
         this.listeners.remove(listener);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void createVibration(VibrationListener listener, VibrationEvent event) {
-        var listenerPos = listener.getListenerVector().asVector3f();
-        var sourcePos = event.source().asVector3f();
-        var tag = new CompoundTag()
+        var $3 = listener.getListenerVector().asVector3f();
+        var $4 = event.source().asVector3f();
+        var $5 = new CompoundTag()
                 .putCompound("origin", createVec3fTag(sourcePos))
                 .putFloat("speed", 20.0f)
                 .putCompound("target", listener.isEntity() ? createEntityTargetTag(listener.asEntity()) : createVec3fTag(listenerPos))
                 .putFloat("timeToLive", (float) (listenerPos.distance(sourcePos) / 20.0));
-        LevelEventGenericPacket packet = new LevelEventGenericPacket();
+        LevelEventGenericPacket $6 = new LevelEventGenericPacket();
         packet.eventId = LevelEventPacket.EVENT_PARTICLE_VIBRATION_SIGNAL;
         packet.tag = tag;
         //todo: 只对在视野范围内的玩家发包
@@ -89,6 +109,10 @@ public class SimpleVibrationManager implements VibrationManager {
                 .putInt("attachPos", 3);//todo: check the use of this value :)
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean canVibrationArrive(Level level, Vector3 from, Vector3 to) {
         return VectorMath.getPassByVector3(from, to)
                 .stream()

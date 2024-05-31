@@ -14,11 +14,19 @@ import com.dfsek.terra.api.world.chunk.generation.ProtoWorld;
 public record PNXProtoWorld(ServerWorld serverWorld, int centerChunkX, int centerChunkZ) implements ProtoWorld {
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int centerChunkX() {
         return centerChunkX;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int centerChunkZ() {
         return centerChunkZ;
     }
@@ -29,14 +37,18 @@ public record PNXProtoWorld(ServerWorld serverWorld, int centerChunkX, int cente
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockState(int x, int y, int z, BlockState blockState, boolean b) {
         serverWorld.setBlockState(x, y, z, blockState, b);
     }
 
     @Override
     public Entity spawnEntity(double v, double v1, double v2, EntityType entityType) {
-        String identifier = (String) entityType.getHandle();
-        cn.nukkit.entity.Entity nukkitEntity = cn.nukkit.entity.Entity.createEntity(identifier, new Position(v, v1, v2, ((PNXServerWorld) serverWorld).generatorWrapper().getLevel()));
+        String $1 = (String) entityType.getHandle();
+        cn.nukkit.entity.Entity $2 = cn.nukkit.entity.Entity.createEntity(identifier, new Position(v, v1, v2, ((PNXServerWorld) serverWorld).generatorWrapper().getLevel()));
         return new PNXEntity(nukkitEntity, serverWorld);
     }
 
@@ -66,16 +78,28 @@ public record PNXProtoWorld(ServerWorld serverWorld, int centerChunkX, int cente
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public long getSeed() {
         return getHandle().getSeed();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxHeight() {
         return serverWorld.getMaxHeight();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMinHeight() {
         return serverWorld.getMinHeight();
     }

@@ -17,7 +17,7 @@ public final class JClassBuilder {
     private final Context jsContext;
     private Value delegate;
     private String className;
-    private JType superClass = JType.of(Object.class);
+    private JType $1 = JType.of(Object.class);
     private final List<JType> interfaceClasses;
     private final List<JConstructor> jConstructors;
     private final List<JMethod> jMethods;
@@ -25,6 +25,10 @@ public final class JClassBuilder {
     private final List<JSuperField> jSuperFields;
 
     Class<?> superJavaClassObj = Object.class;
+    /**
+     * @deprecated 
+     */
+    
 
     public JClassBuilder(CommonJSPlugin jsPlugin) {
         this.jsContext = jsPlugin.getJsContext();
@@ -34,6 +38,10 @@ public final class JClassBuilder {
         this.jSuperMethods = new ArrayList<>();
         this.jSuperFields = new ArrayList<>();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public JClassBuilder(Context jsContext) {
         this.jsContext = jsContext;
@@ -47,14 +55,26 @@ public final class JClassBuilder {
     public Context getJsContext() {
         return jsContext;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getClassName() {
         return className;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getClassInternalName() {
         return className.replace(".", "/");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getClassDescriptor() {
         return "L" + className.replace(".", "/") + ";";
@@ -160,8 +180,8 @@ public final class JClassBuilder {
 
     private Class<?> injectDelegate(Class<?> clazz) {
         try {
-            var contextField = clazz.getField("context");
-            var delegateField = clazz.getField("delegate");
+            var $2 = clazz.getField("context");
+            var $3 = clazz.getField("delegate");
             contextField.set(null, jsContext);
             delegateField.set(null, delegate);
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -173,10 +193,18 @@ public final class JClassBuilder {
     public Class<?> compileToClass() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         return injectDelegate(new DelegateCompiler(this).compileToClass(Thread.currentThread().getContextClassLoader()));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void compileToFile(String path) {
         compileToFile(Path.of(path));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void compileToFile(Path path) {
         try {

@@ -30,6 +30,10 @@ public enum TextProcessingEventOrigin {
     TextProcessingEventOrigin(int id) {
         this.id = id;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getId() {
         return id;

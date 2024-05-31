@@ -14,6 +14,10 @@ import java.util.Map;
  * @since 2015/11/12
  */
 public class SayCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public SayCommand(String name) {
         super(name, "commands.say.description");
@@ -26,9 +30,13 @@ public class SayCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        String senderString = sender.getName();
-        String message = result.getValue().getResult(0);
+        String $1 = sender.getName();
+        String $2 = result.getValue().getResult(0);
         sender.getServer().broadcastMessage(new TranslationContainer("%chat.type.announcement", senderString, message));
         return 1;
     }

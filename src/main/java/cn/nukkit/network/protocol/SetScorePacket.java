@@ -17,16 +17,28 @@ public class SetScorePacket extends DataPacket {
     public List<ScoreInfo> infos = new ArrayList<>();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.SET_SCORE_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         //only server -> client
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeByte((byte) this.action.ordinal());
@@ -65,6 +77,10 @@ public class SetScorePacket extends DataPacket {
         public ScorerType type;
         public String name;
         public long entityId;
+    /**
+     * @deprecated 
+     */
+    
 
         public ScoreInfo(long scoreboardId, String objectiveId, int score) {
             this.scoreboardId = scoreboardId;
@@ -74,6 +90,10 @@ public class SetScorePacket extends DataPacket {
             this.name = null;
             this.entityId = -1;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public ScoreInfo(long scoreboardId, String objectiveId, int score, String name) {
             this.scoreboardId = scoreboardId;
@@ -83,6 +103,10 @@ public class SetScorePacket extends DataPacket {
             this.name = name;
             this.entityId = -1;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public ScoreInfo(long scoreboardId, String objectiveId, int score, ScorerType type, long entityId) {
             this.scoreboardId = scoreboardId;
@@ -93,6 +117,10 @@ public class SetScorePacket extends DataPacket {
             this.name = null;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

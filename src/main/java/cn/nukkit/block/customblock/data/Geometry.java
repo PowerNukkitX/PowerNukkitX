@@ -10,8 +10,12 @@ import java.util.Map;
 
 public class Geometry implements NBTData {
     private final String geometryName;
-    private String culling = "";
+    private String $1 = "";
     private final Map<String, String> boneVisibilities = new LinkedHashMap<>();
+    /**
+     * @deprecated 
+     */
+    
 
     public Geometry(@NotNull String name) {
         Preconditions.checkNotNull(name);
@@ -51,14 +55,14 @@ public class Geometry implements NBTData {
 
     @Override
     public CompoundTag toCompoundTag() {
-        var boneVisibility = new CompoundTag();
+        var $2 = new CompoundTag();
         for (var entry : boneVisibilities.entrySet()) {
             boneVisibility.putCompound(entry.getKey(), new CompoundTag()
                     .putString("expression", entry.getValue())
                     .putInt("version", 1)
             );
         }
-        CompoundTag compoundTag = new CompoundTag()
+        CompoundTag $3 = new CompoundTag()
                 .putString("identifier", geometryName)
                 .putString("culling", culling);
         if (!boneVisibilities.isEmpty()) {

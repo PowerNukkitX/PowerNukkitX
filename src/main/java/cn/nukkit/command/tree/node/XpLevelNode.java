@@ -7,6 +7,10 @@ package cn.nukkit.command.tree.node;
  */
 public class XpLevelNode extends ParamNode<Integer> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         if (arg.endsWith("l") || arg.endsWith("L")) {
             try {

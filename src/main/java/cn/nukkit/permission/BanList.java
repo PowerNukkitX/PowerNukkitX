@@ -27,15 +27,27 @@ public class BanList {
 
     private final String file;
 
-    private boolean enable = true;
+    private boolean $1 = true;
+    /**
+     * @deprecated 
+     */
+    
 
     public BanList(String file) {
         this.file = file;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isEnable() {
         return enable;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setEnable(boolean enable) {
         this.enable = enable;
@@ -45,6 +57,10 @@ public class BanList {
         removeExpired();
         return this.list;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isBanned(String name) {
         if (!this.isEnable() || name == null) {
@@ -55,6 +71,10 @@ public class BanList {
             return this.list.containsKey(name.toLowerCase(Locale.ENGLISH));
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void add(BanEntry entry) {
         this.list.put(entry.getName(), entry);
@@ -74,7 +94,7 @@ public class BanList {
     }
 
     public BanEntry addBan(String target, String reason, Date expireDate, String source) {
-        BanEntry entry = new BanEntry(target);
+        BanEntry $2 = new BanEntry(target);
         entry.setSource(source != null ? source : entry.getSource());
         entry.setExpirationDate(expireDate);
         entry.setReason(reason != null ? reason : entry.getReason());
@@ -83,6 +103,10 @@ public class BanList {
 
         return entry;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void remove(String name) {
         name = name.toLowerCase(Locale.ENGLISH);
@@ -91,19 +115,27 @@ public class BanList {
             this.save();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removeExpired() {
         for (String name : new ArrayList<>(this.list.keySet())) {
-            BanEntry entry = this.list.get(name);
+            BanEntry $3 = this.list.get(name);
             if (entry.hasExpired()) {
                 list.remove(name);
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void load() {
         this.list = new LinkedHashMap<>();
-        File file = new File(this.file);
+        File $4 = new File(this.file);
         try {
             if (!file.exists()) {
                 file.createNewFile();
@@ -113,7 +145,7 @@ public class BanList {
                 LinkedList<TreeMap<String, String>> list = new Gson().fromJson(Utils.readFile(this.file), new TypeToken<LinkedList<TreeMap<String, String>>>() {
                 }.getType());
                 for (TreeMap<String, String> map : list) {
-                    BanEntry entry = BanEntry.fromMap(map);
+                    BanEntry $5 = BanEntry.fromMap(map);
                     this.list.put(entry.getName(), entry);
                 }
             }
@@ -122,12 +154,16 @@ public class BanList {
         }
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void save() {
         this.removeExpired();
 
         try {
-            File file = new File(this.file);
+            File $6 = new File(this.file);
             if (!file.exists()) {
                 file.createNewFile();
             }

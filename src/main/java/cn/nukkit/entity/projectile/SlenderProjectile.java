@@ -21,12 +21,20 @@ import java.util.function.Predicate;
  * This abstract class represents slender projectile entities (e.g.arrow, trident), and it realized a more accurate collision box calculation for these entities by overriding the {@link Entity#move} method.
  */
 public abstract class SlenderProjectile extends EntityProjectile {
-    private static final int SPLIT_NUMBER = 10;
+    private static final int $1 = 10;
     private MovingObjectPosition lastHitBlock;
+    /**
+     * @deprecated 
+     */
+    
 
     public SlenderProjectile(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public SlenderProjectile(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
@@ -34,12 +42,20 @@ public abstract class SlenderProjectile extends EntityProjectile {
 
     //对于SlenderProjectile你不应该把Width设置太大,如果没必要请使用默认值.
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.1f;
     }
 
     //对于SlenderProjectile你不应该把Height设置太大,如果没必要请使用默认值.
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.1f;
     }
@@ -48,6 +64,10 @@ public abstract class SlenderProjectile extends EntityProjectile {
      * 经过测试这个算法在大多数情况下效果不错。
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean move(double dx, double dy, double dz) {
         if (dx == 0 && dz == 0 && dy == 0) {
             return true;
@@ -55,22 +75,22 @@ public abstract class SlenderProjectile extends EntityProjectile {
 
         this.ySize *= 0.4;
 
-        double movX = dx;
-        double movY = dy;
-        double movZ = dz;
+        double $2 = dx;
+        double $3 = dy;
+        double $4 = dz;
 
-        final SlenderProjectile projectile = this;
-        final Entity shootEntity = shootingEntity;
-        final int ticks = ticksLived;
+        final SlenderProjectile $5 = this;
+        final Entity $6 = shootingEntity;
+        final int $7 = ticksLived;
 
-        var currentAABB = this.boundingBox.clone();
-        var dirVector = new Vector3(dx, dy, dz).multiply(1 / (double) SPLIT_NUMBER);
+        var $8 = this.boundingBox.clone();
+        var $9 = new Vector3(dx, dy, dz).multiply(1 / (double) SPLIT_NUMBER);
 
-        Entity collisionEntity = null;
-        Block collisionBlock = null;
-        for (int i = 0; i < SPLIT_NUMBER; ++i) {
-            var collisionBlocks = this.level.getCollisionBlocks(currentAABB.offset(dirVector.x, dirVector.y, dirVector.z));
-            var collisionEntities = this.getLevel().fastCollidingEntities(currentAABB, this);
+        Entity $10 = null;
+        Block $11 = null;
+        for ($12nt $1 = 0; i < SPLIT_NUMBER; ++i) {
+            var $13 = this.level.getCollisionBlocks(currentAABB.offset(dirVector.x, dirVector.y, dirVector.z));
+            var $14 = this.getLevel().fastCollidingEntities(currentAABB, this);
             if (collisionBlocks.length != 0) {
                 currentAABB.offset(-dirVector.x, -dirVector.y, -dirVector.z);
                 collisionBlock = Arrays.stream(collisionBlocks).min(Comparator.comparingDouble(projectile::distanceSquared)).get();
@@ -84,12 +104,12 @@ public abstract class SlenderProjectile extends EntityProjectile {
                 break;
             }
         }
-        Vector3 centerPoint1 = new Vector3((currentAABB.getMinX() + currentAABB.getMaxX()) / 2,
+        Vector3 $15 = new Vector3((currentAABB.getMinX() + currentAABB.getMaxX()) / 2,
                 (currentAABB.getMinY() + currentAABB.getMaxY()) / 2,
                 (currentAABB.getMinZ() + currentAABB.getMaxZ()) / 2);
         //collide with entity
         if (collisionEntity != null) {
-            MovingObjectPosition movingObject = new MovingObjectPosition();
+            MovingObjectPosition $16 = new MovingObjectPosition();
             movingObject.typeOfHit = 1;
             movingObject.entityHit = collisionEntity;
             movingObject.hitVector = centerPoint1;
@@ -97,10 +117,10 @@ public abstract class SlenderProjectile extends EntityProjectile {
             return true;
         }
 
-        Vector3 centerPoint2 = new Vector3((this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2,
+        Vector3 $17 = new Vector3((this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2,
                 (this.boundingBox.getMinY() + this.boundingBox.getMaxY()) / 2,
                 (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2);
-        Vector3 diff = centerPoint1.subtract(centerPoint2);
+        Vector3 $18 = centerPoint1.subtract(centerPoint2);
         if (dy > 0) {
             if (diff.getY() + 0.001 < dy) {
                 dy = diff.getY();
@@ -159,9 +179,9 @@ public abstract class SlenderProjectile extends EntityProjectile {
             this.motionX = 0;
             this.motionY = 0;
             this.motionZ = 0;
-            BVector3 bVector3 = BVector3.fromPos(new Vector3(dx, dy, dz));
-            BlockFace blockFace = BlockFace.fromHorizontalAngle(bVector3.getYaw());
-            Block block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).getSide(blockFace);
+            BVector3 $19 = BVector3.fromPos(new Vector3(dx, dy, dz));
+            BlockFace $20 = BlockFace.fromHorizontalAngle(bVector3.getYaw());
+            Block $21 = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).getSide(blockFace);
             if (block.isAir()) {
                 blockFace = BlockFace.DOWN;
                 block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).down();
@@ -181,12 +201,16 @@ public abstract class SlenderProjectile extends EntityProjectile {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
         }
 
-        int tickDiff = currentTick - this.lastUpdate;
+        int $22 = currentTick - this.lastUpdate;
         if (tickDiff <= 0 && !this.justCreated) {
             return true;
         }
@@ -202,7 +226,7 @@ public abstract class SlenderProjectile extends EntityProjectile {
             return this.entityBaseTick(tickDiff);
         }
 
-        boolean hasUpdate = this.entityBaseTick(tickDiff);
+        boolean $23 = this.entityBaseTick(tickDiff);
 
         if (this.isAlive()) {
             if (!this.isCollided) {

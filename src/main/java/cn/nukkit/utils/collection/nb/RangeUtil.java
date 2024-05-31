@@ -2,6 +2,10 @@ package cn.nukkit.utils.collection.nb;
 
 
 public final class RangeUtil {
+    /**
+     * @deprecated 
+     */
+    
     public static int checkPositiveOrZero(int n, String name) {
         if (n < 0) {
             throw new IllegalArgumentException(name + ": " + n + " (expected: >= 0)");

@@ -10,11 +10,19 @@ import org.jetbrains.annotations.NotNull;
  * Alias still water
  */
 public class BlockWater extends BlockFlowingWater {
-    public static final BlockProperties PROPERTIES = new BlockProperties(WATER, CommonBlockProperties.LIQUID_DEPTH);
+    public static final BlockProperties $1 = new BlockProperties(WATER, CommonBlockProperties.LIQUID_DEPTH);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockWater() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockWater(BlockState blockstate) {
         super(blockstate);
@@ -26,11 +34,19 @@ public class BlockWater extends BlockFlowingWater {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         return this.getLevel().setBlock(this, this, true, false);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Still Water";
     }

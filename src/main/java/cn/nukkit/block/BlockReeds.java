@@ -15,22 +15,34 @@ import java.util.Objects;
 import static cn.nukkit.block.property.CommonBlockProperties.AGE_16;
 
 public class BlockReeds extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(REEDS, AGE_16);
+    public static final BlockProperties $1 = new BlockProperties(REEDS, AGE_16);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockReeds() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockReeds(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Reeds";
     }
@@ -41,25 +53,41 @@ public class BlockReeds extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getAge() {
         return getPropertyValue(AGE_16);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAge(int age) {
         setPropertyValue(AGE_16, age);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { //Bonemeal
-            int count = 1;
+            int $2 = 1;
 
-            for (int i = 1; i <= 2; i++) {
-                String id = this.level.getBlockIdAt(this.getFloorX(), this.getFloorY() - i, this.getFloorZ());
+            for ($3nt $1 = 1; i <= 2; i++) {
+                String $4 = this.level.getBlockIdAt(this.getFloorX(), this.getFloorY() - i, this.getFloorZ());
 
                 if (Objects.equals(id, REEDS)) {
                     count++;
@@ -67,13 +95,13 @@ public class BlockReeds extends BlockFlowable {
             }
 
             if (count < 3) {
-                boolean success = false;
-                int toGrow = 3 - count;
+                boolean $5 = false;
+                int $6 = 3 - count;
 
-                for (int i = 1; i <= toGrow; i++) {
-                    Block block = this.up(i);
+                for ($7nt $2 = 1; i <= toGrow; i++) {
+                    Block $8 = this.up(i);
                     if (block.isAir()) {
-                        BlockGrowEvent ev = new BlockGrowEvent(block, Block.get(BlockID.REEDS));
+                        BlockGrowEvent $9 = new BlockGrowEvent(block, Block.get(BlockID.REEDS));
                         Server.getInstance().getPluginManager().callEvent(ev);
 
                         if (!ev.isCancelled()) {
@@ -100,8 +128,12 @@ public class BlockReeds extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
-        Level level = getLevel();
+        Level $10 = getLevel();
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             level.scheduleUpdate(this, 0);
             return type;
@@ -124,20 +156,20 @@ public class BlockReeds extends BlockFlowable {
                 level.setBlock(this, this, false);
                 return type;
             }
-            Block up = up();
+            Block $11 = up();
             if (!up.isAir()) {
                 return type;
             }
 
-            int height = 0;
-            for (Block current = this; height < 3 && current.getId().equals(REEDS); height++) {
+            int $12 = 0;
+            for (Block $13 = this; height < 3 && current.getId().equals(REEDS); height++) {
                 current = current.down();
             }
             if (height >= 3) {
                 return type;
             }
 
-            BlockGrowEvent ev = new BlockGrowEvent(up, Block.get(BlockID.REEDS));
+            BlockGrowEvent $14 = new BlockGrowEvent(up, Block.get(BlockID.REEDS));
             Server.getInstance().getPluginManager().callEvent(ev);
 
             if (ev.isCancelled()) {
@@ -156,6 +188,10 @@ public class BlockReeds extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!block.isAir()) {
             return false;
@@ -167,9 +203,13 @@ public class BlockReeds extends BlockFlowable {
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean isSupportValid() {
-        Block down = this.down();
-        String downId = down.getId();
+        Block $15 = this.down();
+        String $16 = down.getId();
         if (downId.equals(REEDS)) {
             return true;
         }
@@ -177,7 +217,7 @@ public class BlockReeds extends BlockFlowable {
             return false;
         }
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
-            Block possibleWater = down.getSide(face);
+            Block $17 = down.getSide(face);
             if (possibleWater instanceof BlockFlowingWater
                     || possibleWater instanceof BlockFrostedIce
                     || possibleWater.getLevelBlockAtLayer(1) instanceof BlockFlowingWater) {

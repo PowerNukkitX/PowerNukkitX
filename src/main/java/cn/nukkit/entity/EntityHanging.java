@@ -9,12 +9,20 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public abstract class EntityHanging extends Entity {
     protected int direction;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityHanging(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.initEntity();
 
@@ -24,7 +32,7 @@ public abstract class EntityHanging extends Entity {
         if (this.namedTag.contains("Direction")) {
             this.direction = this.namedTag.getByte("Direction");
         } else if (this.namedTag.contains("Dir")) {
-            int d = this.namedTag.getByte("Dir");
+            int $1 = this.namedTag.getByte("Dir");
             if (d == 2) {
                 this.direction = 0;
             } else if (d == 0) {
@@ -35,6 +43,10 @@ public abstract class EntityHanging extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
 
@@ -50,6 +62,10 @@ public abstract class EntityHanging extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
@@ -84,6 +100,10 @@ public abstract class EntityHanging extends Entity {
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean isSurfaceValid() {
         return true;
     }

@@ -12,6 +12,10 @@ import java.util.Map;
 @Slf4j
 public abstract class LevelProviderManager {
     protected static final Map<String, Class<? extends LevelProvider>> providers = new HashMap<>();
+    /**
+     * @deprecated 
+     */
+    
 
     public static void addProvider(String name, Class<? extends LevelProvider> clazz) {
         if (providers.putIfAbsent(name.trim().toLowerCase(Locale.ENGLISH), clazz) != null) {
@@ -31,6 +35,10 @@ public abstract class LevelProviderManager {
         }
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static String getProviderName(Class<? extends LevelProvider> clazz) {
         for (var entry : providers.entrySet()) {

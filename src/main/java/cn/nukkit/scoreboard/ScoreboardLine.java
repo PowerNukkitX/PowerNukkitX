@@ -9,16 +9,24 @@ import lombok.Getter;
 @Getter
 public class ScoreboardLine implements IScoreboardLine{
 
-    protected static long staticLineId = 0;
+    protected static long $1 = 0;
 
     protected final IScoreboard scoreboard;
     protected final IScorer scorer;
     protected final long lineId;
     protected int score;
+    /**
+     * @deprecated 
+     */
+    
 
     public ScoreboardLine(IScoreboard scoreboard, IScorer scorer) {
         this(scoreboard, scorer, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ScoreboardLine(IScoreboard scoreboard, IScorer scorer, int score) {
         this.scoreboard = scoreboard;
@@ -28,9 +36,13 @@ public class ScoreboardLine implements IScoreboardLine{
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean setScore(int score) {
         if (scoreboard.shouldCallEvent()) {
-            var event = new ScoreboardLineChangeEvent(scoreboard, this, score, this.score, ScoreboardLineChangeEvent.ActionType.SCORE_CHANGE);
+            var $2 = new ScoreboardLineChangeEvent(scoreboard, this, score, this.score, ScoreboardLineChangeEvent.ActionType.SCORE_CHANGE);
             Server.getInstance().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 return false;

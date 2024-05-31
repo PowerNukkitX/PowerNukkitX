@@ -10,6 +10,10 @@ import cn.nukkit.recipe.SmeltingRecipe;
 
 
 public class BlockEntityBlastFurnace extends BlockEntityFurnace {
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityBlastFurnace(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -17,24 +21,40 @@ public class BlockEntityBlastFurnace extends BlockEntityFurnace {
 
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected String getFurnaceName() {
         return "Blast Furnace";
     }
 
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected String getClientName() {
         return BLAST_FURNACE;
     }
 
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected String getIdleBlockId() {
         return Block.BLAST_FURNACE;
     }
 
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected String getBurningBlockId() {
         return Block.LIT_BLAST_FURNACE;
     }
@@ -51,6 +71,10 @@ public class BlockEntityBlastFurnace extends BlockEntityFurnace {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected int getSpeedMultiplier() {
         return 2;
     }

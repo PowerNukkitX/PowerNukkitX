@@ -5,7 +5,7 @@ import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 
 public class BlockStateUpdater_1_19_80 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_19_80();
+    public static final Updater $1 = new BlockStateUpdater_1_19_80();
 
     private static final String[] WOOD = {
             "birch",
@@ -17,10 +17,14 @@ public class BlockStateUpdater_1_19_80 implements Updater {
     };
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext ctx) {
         // It could be done the more clever way, but Mojang added 12 updaters, and so we do.
-        for (int i = 0; i < WOOD.length; i++) {
-            String type = WOOD[i];
+        for ($2nt $1 = 0; i < WOOD.length; i++) {
+            String $3 = WOOD[i];
             this.addTypeUpdater(ctx, "minecraft:fence", "wood_type", type, "minecraft:" + type + "_fence");
             if (i < 4) {
                 this.addTypeUpdater(ctx, "minecraft:log", "old_log_type", type, "minecraft:" + type + "_log");
@@ -30,6 +34,10 @@ public class BlockStateUpdater_1_19_80 implements Updater {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addTypeUpdater(CompoundTagUpdaterContext context, String identifier, String typeState, String type, String newIdentifier) {
         context.addUpdater(1, 19, 80)
                 .match("name", identifier)

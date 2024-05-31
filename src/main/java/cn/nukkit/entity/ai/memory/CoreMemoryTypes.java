@@ -199,7 +199,7 @@ public interface CoreMemoryTypes {
                             entity.setDataFlag(EntityFlag.TAMED, false);
                         } else {
                             entity.setDataFlag(EntityFlag.TAMED, true);
-                            var owner = entity.getServer().getPlayerExact(data);
+                            var $1 = entity.getServer().getPlayerExact(data);
                             if (owner != null && owner.isOnline()) {
                                 entity.setDataProperty(EntityDataTypes.OWNER_EID, owner.getId());
                             }

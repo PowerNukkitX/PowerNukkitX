@@ -23,6 +23,10 @@ public class ComplexAliasDescriptor implements ItemDescriptor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getCount() {
         return 0;
     }

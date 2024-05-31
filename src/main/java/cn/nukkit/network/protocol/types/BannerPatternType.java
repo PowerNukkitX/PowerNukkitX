@@ -64,14 +64,26 @@ public enum BannerPatternType {
             typeId2PatternType.put(value.typeId, value);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getTypeId() {
         return typeId;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getCode() {
         return code;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return name;

@@ -16,6 +16,10 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
     private static final Int2ObjectOpenHashMap<BlockState> REGISTRY = new Int2ObjectOpenHashMap<>();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         //register from Block Registry
     }
@@ -35,11 +39,19 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void trim() {
         REGISTRY.trim();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reload() {
         REGISTRY.clear();
     }
@@ -61,6 +73,10 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
     }
 
     @ApiStatus.Internal
+    /**
+     * @deprecated 
+     */
+    
     public void registerInternal(BlockState value) {
         try {
             register(value);

@@ -13,7 +13,7 @@ import cn.nukkit.item.Item;
  */
 public class InventoryMoveItemEvent extends InventoryEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -23,6 +23,10 @@ public class InventoryMoveItemEvent extends InventoryEvent implements Cancellabl
     private final InventoryHolder source;
     private final Action action;
     private Item item;
+    /**
+     * @deprecated 
+     */
+    
 
     public InventoryMoveItemEvent(Inventory from, Inventory targetInventory, InventoryHolder source, Item item, Action action) {
         super(from);
@@ -43,6 +47,10 @@ public class InventoryMoveItemEvent extends InventoryEvent implements Cancellabl
     public Item getItem() {
         return item;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setItem(Item item) {
         this.item = item;

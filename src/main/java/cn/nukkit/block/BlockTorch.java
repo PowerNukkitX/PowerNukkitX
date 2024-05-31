@@ -17,37 +17,57 @@ import static cn.nukkit.block.property.CommonBlockProperties.TORCH_FACING_DIRECT
  * @since 2015/12/2
  */
 public class BlockTorch extends BlockFlowable implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(TORCH, TORCH_FACING_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(TORCH, TORCH_FACING_DIRECTION);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTorch() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTorch(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Torch";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 14;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            TorchFacingDirection torchAttachment = getTorchAttachment();
+            TorchFacingDirection $2 = getTorchAttachment();
 
-            Block support = this.getSide(torchAttachment.getAttachedFace());
+            Block $3 = this.getSide(torchAttachment.getAttachedFace());
             if (!BlockLever.isSupportValid(support, torchAttachment.getTorchDirection())) {
                 this.getLevel().useBreakOn(this);
 
@@ -72,6 +92,10 @@ public class BlockTorch extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (target.canBeReplaced()) {
             target = target.down();
@@ -79,7 +103,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         }
 
         if (face == BlockFace.DOWN || !BlockLever.isSupportValid(target, face)) {
-            BlockFace valid = findValidSupport();
+            BlockFace $4 = findValidSupport();
             if (valid == null) {
                 return false;
             }
@@ -100,8 +124,12 @@ public class BlockTorch extends BlockFlowable implements Faceable {
      * Sets the direction that the flame is pointing.
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
-        TorchFacingDirection torchAttachment = TorchFacingDirection.getByTorchDirection(face);
+        TorchFacingDirection $5 = TorchFacingDirection.getByTorchDirection(face);
         if (torchAttachment == null) {
             throw new IllegalArgumentException("The give BlockFace can't be mapped to TorchFace");
         }
@@ -111,6 +139,10 @@ public class BlockTorch extends BlockFlowable implements Faceable {
     public TorchFacingDirection getTorchAttachment() {
         return getPropertyValue(TORCH_FACING_DIRECTION);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTorchAttachment(TorchFacingDirection face) {
         setPropertyValue(TORCH_FACING_DIRECTION, face);

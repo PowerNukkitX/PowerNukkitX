@@ -9,6 +9,10 @@ import cn.nukkit.network.protocol.LevelEventPacket;
  * @since 15.4.2017
  */
 public class BoneMealParticle extends Particle {
+    /**
+     * @deprecated 
+     */
+    
 
     public BoneMealParticle(Vector3 pos) {
         super(pos.x, pos.y, pos.z);
@@ -16,7 +20,7 @@ public class BoneMealParticle extends Particle {
 
     @Override
     public DataPacket[] encode() {
-        LevelEventPacket pk = new LevelEventPacket();
+        LevelEventPacket $1 = new LevelEventPacket();
         pk.evid = LevelEventPacket.EVENT_PARTICLE_CROP_GROWTH;
         pk.x = (float) this.x;
         pk.y = (float) this.y;

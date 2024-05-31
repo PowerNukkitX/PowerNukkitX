@@ -13,6 +13,10 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class AsyncPool extends ThreadPoolExecutor {
     private final Server server;
+    /**
+     * @deprecated 
+     */
+    
 
     public AsyncPool(Server server, int size) {
         super(size, Integer.MAX_VALUE, 60, TimeUnit.MILLISECONDS, new SynchronousQueue<>());
@@ -24,6 +28,10 @@ public class AsyncPool extends ThreadPoolExecutor {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void afterExecute(Runnable runnable, Throwable throwable) {
         if (throwable != null) {
             log.error("Exception in asynchronous task", throwable);

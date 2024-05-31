@@ -15,22 +15,34 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SMALL_DRIPLEAF_BLOCK, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.UPPER_BLOCK_BIT);
+    public static final BlockProperties $1 = new BlockProperties(SMALL_DRIPLEAF_BLOCK, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.UPPER_BLOCK_BIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSmallDripleafBlock() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSmallDripleafBlock(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Small Dripleaf";
     }
@@ -41,34 +53,58 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isUpperBlock() {
         return this.getPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setUpperBlock(boolean isUpperBlock) {
         this.setPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT, isUpperBlock);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_SHEARS;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        BlockSmallDripleafBlock dripleaf = new BlockSmallDripleafBlock();
-        BlockSmallDripleafBlock dripleafTop = new BlockSmallDripleafBlock();
+        BlockSmallDripleafBlock $2 = new BlockSmallDripleafBlock();
+        BlockSmallDripleafBlock $3 = new BlockSmallDripleafBlock();
         dripleafTop.setUpperBlock(true);
-        BlockFace direction = player != null ? player.getDirection().getOpposite() : BlockFace.SOUTH;
+        BlockFace $4 = player != null ? player.getDirection().getOpposite() : BlockFace.SOUTH;
         dripleaf.setBlockFace(direction);
         dripleafTop.setBlockFace(direction);
         if (canKeepAlive(block)) {
@@ -89,6 +125,10 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(@NotNull Item item) {
         this.level.setBlock(this, new BlockAir(), true, true);
         if (item.isShears())
@@ -103,6 +143,10 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (!canKeepAlive(this)) {
             this.level.setBlock(this, new BlockAir(), true, true);
@@ -112,29 +156,37 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
-            NukkitRandom random = new NukkitRandom();
-            int height = random.nextInt(4) + 2;
+            NukkitRandom $5 = new NukkitRandom();
+            int $6 = random.nextInt(4) + 2;
 
-            BlockBigDripleaf blockBigDripleafDown = new BlockBigDripleaf();
-            BlockBigDripleaf blockBigDripleafHead = new BlockBigDripleaf();
-            BlockFace direction = player != null ? player.getDirection().getOpposite() : BlockFace.SOUTH;
+            BlockBigDripleaf $7 = new BlockBigDripleaf();
+            BlockBigDripleaf $8 = new BlockBigDripleaf();
+            BlockFace $9 = player != null ? player.getDirection().getOpposite() : BlockFace.SOUTH;
             blockBigDripleafDown.setBlockFace(direction);
             blockBigDripleafHead.setBlockFace(direction);
             blockBigDripleafHead.setHead(true);
 
-            Block buttom = this.clone();
+            Block $10 = this.clone();
             while (buttom.getSide(BlockFace.DOWN).getId().equals(BlockID.SMALL_DRIPLEAF_BLOCK)) {
                 buttom = buttom.getSide(BlockFace.DOWN);
             }
 
-            for (int i = 0; i < height; i++) {
+            for ($11nt $1 = 0; i < height; i++) {
                 this.level.setBlock(buttom.add(0, i, 0), blockBigDripleafDown, true, true);
             }
             this.level.setBlock(buttom.add(0, height, 0), blockBigDripleafHead, true, true);
@@ -145,11 +197,15 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canKeepAlive(Position pos) {
-        Block blockDown = this.level.getBlock(pos.getSide(BlockFace.DOWN));
-        Block blockHere = this.level.getBlock(pos, 1);
-        Block blockUp = this.level.getBlock(pos.getSide(BlockFace.UP));
+        Block $12 = this.level.getBlock(pos.getSide(BlockFace.DOWN));
+        Block $13 = this.level.getBlock(pos, 1);
+        Block $14 = this.level.getBlock(pos.getSide(BlockFace.UP));
         if (this.level.getBlock(blockDown) instanceof BlockClay) {
             return true;
         }

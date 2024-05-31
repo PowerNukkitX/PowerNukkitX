@@ -9,11 +9,15 @@ import cn.nukkit.item.Item;
  */
 public class ItemNode extends ParamNode<Item> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         if (arg.indexOf(':') == -1) {
             arg = "minecraft:" + arg;
         }
-        Item item = Item.get(arg);
+        Item $1 = Item.get(arg);
         if (item.isNull()) {
             error();
             return;

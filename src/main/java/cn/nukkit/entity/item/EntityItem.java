@@ -23,6 +23,10 @@ import org.jetbrains.annotations.NotNull;
 public class EntityItem extends Entity {
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return ITEM;
     }
@@ -31,6 +35,10 @@ public class EntityItem extends Entity {
     protected String thrower;
     protected Item item;
     protected int pickupDelay;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityItem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -38,41 +46,73 @@ public class EntityItem extends Entity {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getLength() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getGravity() {
         return 0.04f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getDrag() {
         return 0.02f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getBaseOffset() {
         return 0.125f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCollide() {
         return false;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.initEntity();
 
@@ -112,6 +152,10 @@ public class EntityItem extends Entity {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         if (item != null && item.isLavaResistant() && (
                 source.getCause() == DamageCause.LAVA ||
@@ -130,12 +174,16 @@ public class EntityItem extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
         }
 
-        int tickDiff = currentTick - this.lastUpdate;
+        int $1 = currentTick - this.lastUpdate;
 
         if (tickDiff <= 0 && !this.justCreated) {
             return true;
@@ -150,20 +198,20 @@ public class EntityItem extends Entity {
                         if (!entity.isAlive()) {
                             continue;
                         }
-                        Item closeItem = ((EntityItem) entity).getItem();
+                        Item $2 = ((EntityItem) entity).getItem();
                         if (!closeItem.equals(getItem(), true, true)) {
                             continue;
                         }
                         if (!entity.isOnGround()) {
                             continue;
                         }
-                        int newAmount = this.getItem().getCount() + closeItem.getCount();
+                        int $3 = this.getItem().getCount() + closeItem.getCount();
                         if (newAmount > this.getItem().getMaxStackSize()) {
                             continue;
                         }
                         entity.close();
                         this.getItem().setCount(newAmount);
-                        EntityEventPacket packet = new EntityEventPacket();
+                        EntityEventPacket $4 = new EntityEventPacket();
                         packet.eid = getId();
                         packet.data = newAmount;
                         packet.event = EntityEventPacket.MERGE_ITEMS;
@@ -173,9 +221,9 @@ public class EntityItem extends Entity {
             }
         }
 
-        boolean hasUpdate = this.entityBaseTick(tickDiff);
+        boolean $5 = this.entityBaseTick(tickDiff);
 
-        boolean lavaResistant = fireProof || item != null && item.isLavaResistant();
+        boolean $6 = fireProof || item != null && item.isLavaResistant();
 
         if (!lavaResistant && (isInsideOfFire() || isInsideOfLava())) {
             this.kill();
@@ -197,7 +245,7 @@ public class EntityItem extends Entity {
                 }
             }*/
 
-            String bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0);
+            String $7 = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0);
             if (bid == BlockID.FLOWING_WATER || bid == BlockID.WATER
                     || (bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1)) == BlockID.FLOWING_WATER
                     || bid == BlockID.WATER
@@ -224,7 +272,7 @@ public class EntityItem extends Entity {
 
             this.move(this.motionX, this.motionY, this.motionZ);
 
-            double friction = 1 - this.getDrag();
+            double $8 = 1 - this.getDrag();
 
             if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
                 friction *= this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor();
@@ -241,7 +289,7 @@ public class EntityItem extends Entity {
             this.updateMovement();
 
             if (this.age > 6000) {
-                ItemDespawnEvent ev = new ItemDespawnEvent(this);
+                ItemDespawnEvent $9 = new ItemDespawnEvent(this);
                 this.server.getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     this.age = 0;
@@ -256,6 +304,10 @@ public class EntityItem extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setOnFire(int seconds) {
         if (item != null && item.isLavaResistant()) {
             return;
@@ -264,6 +316,10 @@ public class EntityItem extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         if (this.item != null) { // Yes, a item can be null... I don't know what causes this, but it can happen.
@@ -282,12 +338,20 @@ public class EntityItem extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Item";
     }
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         if (this.hasCustomName()) {
             return getNameTag();
@@ -303,29 +367,57 @@ public class EntityItem extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCollideWith(Entity entity) {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getPickupDelay() {
         return pickupDelay;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPickupDelay(int pickupDelay) {
         this.pickupDelay = pickupDelay;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getOwner() {
         return owner;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setOwner(String owner) {
         this.owner = owner;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getThrower() {
         return thrower;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setThrower(String thrower) {
         this.thrower = thrower;
@@ -333,7 +425,7 @@ public class EntityItem extends Entity {
 
     @Override
     public DataPacket createAddEntityPacket() {
-        AddItemEntityPacket addEntity = new AddItemEntityPacket();
+        AddItemEntityPacket $10 = new AddItemEntityPacket();
         addEntity.entityUniqueId = this.getId();
         addEntity.entityRuntimeId = this.getId();
         addEntity.x = (float) this.x;
@@ -348,6 +440,10 @@ public class EntityItem extends Entity {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean doesTriggerPressurePlate() {
         return true;
     }

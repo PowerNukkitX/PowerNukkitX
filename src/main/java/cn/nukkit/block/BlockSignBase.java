@@ -27,39 +27,67 @@ import java.util.Objects;
 
 
 public abstract class BlockSignBase extends BlockTransparent implements Faceable {
+    /**
+     * @deprecated 
+     */
+    
     public BlockSignBase(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
         if(action== PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK){
-            var blockEntity = this.getLevel().getBlockEntity(this);
+            var $1 = this.getLevel().getBlockEntity(this);
             if (!(blockEntity instanceof BlockEntitySign sign)) {
                 return;
             }
@@ -68,7 +96,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
                 level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_WAXED_SIGN_INTERACT_FAIL);
                 return;
             }
-            boolean front = switch (getSignDirection()) {
+            boolean $2 = switch (getSignDirection()) {
                 case EAST -> face == BlockFace.EAST;
                 case SOUTH -> face == BlockFace.SOUTH;
                 case WEST -> face == BlockFace.WEST;
@@ -79,12 +107,12 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
                 case SOUTH_WEST, SOUTH_SOUTH_WEST, WEST_SOUTH_WEST -> face == BlockFace.WEST || face == BlockFace.SOUTH;
             };
             if (item instanceof ItemDye dye) {
-                BlockColor color = dye.getDyeColor().getColor();
+                BlockColor $3 = dye.getDyeColor().getColor();
                 if (color.equals(sign.getColor(front)) || sign.isEmpty(front)) {
                     player.openSignEditor(this, front);
                     return;
                 }
-                SignColorChangeEvent event = new SignColorChangeEvent(this, player, color);
+                SignColorChangeEvent $4 = new SignColorChangeEvent(this, player, color);
                 this.level.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) {
                     sign.spawnTo(player);
@@ -102,7 +130,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
                     player.openSignEditor(this, front);
                     return;
                 }
-                SignGlowEvent event = new SignGlowEvent(this, player, true);
+                SignGlowEvent $5 = new SignGlowEvent(this, player, true);
                 this.level.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) {
                     sign.spawnTo(player);
@@ -116,7 +144,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
                 }
                 return;
             } else if (item instanceof ItemHoneycomb) {
-                SignWaxedEvent event = new SignWaxedEvent(this, player, true);
+                SignWaxedEvent $6 = new SignWaxedEvent(this, player, true);
                 this.level.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) {
                     sign.spawnTo(player);
@@ -135,6 +163,10 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
@@ -142,6 +174,10 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
     public CompassRoseDirection getSignDirection() {
         return CompassRoseDirection.from(getPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSignDirection(CompassRoseDirection direction) {
         setPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION, direction.getIndex());
@@ -153,16 +189,28 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setSignDirection(face.getCompassRoseDirection());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }

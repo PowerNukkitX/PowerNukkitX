@@ -10,13 +10,17 @@ import cn.nukkit.level.Level;
  * @author funcraft (Nukkit Project)
  */
 public class LightningStrikeEvent extends WeatherEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final EntityLightningStrike bolt;
+    /**
+     * @deprecated 
+     */
+    
 
     public LightningStrikeEvent(Level level, final EntityLightningStrike bolt) {
         super(level);

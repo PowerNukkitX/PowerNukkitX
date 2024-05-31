@@ -9,6 +9,10 @@ import cn.nukkit.utils.TradeRecipeBuildUtils;
 import java.util.Random;
 
 public class ProfessionCartographer extends Profession {
+    /**
+     * @deprecated 
+     */
+    
 
     public ProfessionCartographer() {
         super(6, BlockID.CARTOGRAPHY_TABLE, "entity.villager.cartographer");
@@ -17,7 +21,7 @@ public class ProfessionCartographer extends Profession {
     @Override
     public ListTag<CompoundTag> buildTrades(int seed) {
         ListTag<CompoundTag> recipes = new ListTag<>();
-        Random random = new Random(seed);
+        Random $1 = new Random(seed);
 
         recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.PAPER, 0, 24), Item.get(Item.EMERALD))
                         .setMaxUses(16)

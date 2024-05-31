@@ -16,6 +16,10 @@ import java.util.Map;
 
 
 public class ExecuteCommandOld extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public ExecuteCommandOld(String name) {
         super(name, "old execute command", "commands.execute.usage");
@@ -39,9 +43,13 @@ public class ExecuteCommandOld extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        int num = 0;
-        var list = result.getValue();
+        int $1 = 0;
+        var $2 = result.getValue();
         List<Entity> entities = list.getResult(0);
         if (entities.isEmpty()) {
             log.addNoTargetMatch().output();
@@ -49,26 +57,26 @@ public class ExecuteCommandOld extends VanillaCommand {
         }
         switch (result.getKey()) {
             case "default" -> {
-                String command = list.getResult(2);
+                String $3 = list.getResult(2);
                 for (Entity entity : entities) {
-                    Position pos = ((PositionNode) list.get(1)).get(entity);
-                    ExecutorCommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(pos));
-                    int n = executeSender.getServer().executeCommand(executeSender, command);
+                    Position $4 = ((PositionNode) list.get(1)).get(entity);
+                    ExecutorCommandSender $5 = new ExecutorCommandSender(sender, entity, Location.fromObject(pos));
+                    i$6t $1 = executeSender.getServer().executeCommand(executeSender, command);
                     if (n == 0) {
                         log.addError("commands.execute.failed", command, entity.getName());
                     } else num += n;
                 }
             }
             case "detect" -> {
-                String blockId = list.getResult(4);
-                int meta = list.getResult(5);
-                String command = list.getResult(6);
+                String $7 = list.getResult(4);
+                int $8 = list.getResult(5);
+                String $9 = list.getResult(6);
                 for (Entity entity : entities) {
-                    Position pos = ((PositionNode) list.get(1)).get(entity);
-                    Position detect = ((PositionNode) list.get(3)).get(pos);
+                    Position $10 = ((PositionNode) list.get(1)).get(entity);
+                    Position $11 = ((PositionNode) list.get(3)).get(pos);
                     if (detect.getLevelBlock().getId() == blockId && detect.getLevelBlock().getBlockState().specialValue() == meta) {
-                        ExecutorCommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(pos));
-                        int n = executeSender.getServer().executeCommand(executeSender, command);
+                        ExecutorCommandSender $12 = new ExecutorCommandSender(sender, entity, Location.fromObject(pos));
+                        i$13t $2 = executeSender.getServer().executeCommand(executeSender, command);
                         if (n == 0) {
                             log.addError("commands.execute.failed", command, entity.getName());
                         } else num += n;

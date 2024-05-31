@@ -11,9 +11,17 @@ import org.jetbrains.annotations.NotNull;
 public class EntityStrider extends EntityAnimal implements EntityWalkable {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return STRIDER;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityStrider(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -22,27 +30,47 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.9f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 1.7f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getFrostbiteInjury() {
         return 5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Strider";
     }

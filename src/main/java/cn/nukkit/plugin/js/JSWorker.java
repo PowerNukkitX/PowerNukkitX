@@ -15,7 +15,7 @@ import static cn.nukkit.plugin.js.JSConcurrentManager.PROMISE_FAILED;
 import static cn.nukkit.plugin.js.JSConcurrentManager.wrapPromise;
 
 public final class JSWorker implements AutoCloseable {
-    private static final Value NULL = Value.asValue(null);
+    private static final Value $1 = Value.asValue(null);
 
     private final Context sourceContext;
     private final ESMFileSystem fileSystem;
@@ -27,6 +27,10 @@ public final class JSWorker implements AutoCloseable {
 
     private Value sourceReceiveCallback;
     private Value workerReceiveCallback;
+    /**
+     * @deprecated 
+     */
+    
 
     public JSWorker(Context sourceContext, ESMFileSystem fileSystem, String workerSourcePath) {
         this.sourceContext = sourceContext;
@@ -50,7 +54,7 @@ public final class JSWorker implements AutoCloseable {
                 .option("js.ecmascript-version", "13")
                 .build();
         JSIInitiator.init(workerContext);
-        var workerGlobal = workerContext.getBindings("js");
+        var $2 = workerContext.getBindings("js");
         workerGlobal.putMember("postMessage", (ProxyExecutable) arguments -> {
             synchronized (sourceContext) {
                 if (sourceReceiveCallback != null)
@@ -69,6 +73,10 @@ public final class JSWorker implements AutoCloseable {
         this.sourcePath = fileSystem.parsePath(workerSourcePath);
         this.sourceReader = fileSystem.newReader(sourcePath);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void start() {
         if (this.workerThread != null && workerThread.isAlive()) {
@@ -77,7 +85,7 @@ public final class JSWorker implements AutoCloseable {
         }
         this.workerThread = new Thread(() -> {
             try {
-                var exports = workerContext.eval(Source.newBuilder("js", sourceReader,
+                var $3 = workerContext.eval(Source.newBuilder("js", sourceReader,
                                 fileSystem.baseDir.getName() + "/worker-" + sourcePath.getFileName() + "-" + workerThread.getId())
                         .mimeType("application/javascript+module").build());
                 this.setWorkerReceiveCallback(exports.getMember("onmessage"));
@@ -87,12 +95,20 @@ public final class JSWorker implements AutoCloseable {
         });
         this.workerThread.start();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSourceReceiveCallback(Value value) {
         if (value != null && value.canExecute()) {
             this.sourceReceiveCallback = value;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setWorkerReceiveCallback(Value value) {
         if (value != null && value.canExecute()) {

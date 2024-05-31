@@ -9,16 +9,24 @@ public abstract class Effect implements Cloneable {
 
     private final EffectType type;
     private final String name;
-    private int duration = 600;
+    private int $1 = 600;
     private int amplifier;
-    private boolean visible = true;
-    private boolean ambient = false;
+    private boolean $2 = true;
+    private boolean $3 = false;
     private final boolean bad;
     private Color color;
+    /**
+     * @deprecated 
+     */
+    
 
     public Effect(EffectType type, String name, Color color) {
         this(type, name, color, false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Effect(EffectType type, String name, Color color, boolean bad) {
         this.type = type;
@@ -46,20 +54,28 @@ public abstract class Effect implements Cloneable {
     public Integer getId() {
         return type.id();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return name;
     }
 
     /**
-     * get the duration of this potion in 1 tick = 0.05 s
+     * get the duration of this potion in 1 $4 = 0.05 s
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getDuration() {
         return duration;
     }
 
     /**
-     * set the duration of this potion , 1 tick = 0.05 s
+     * set the duration of this potion , 1 $5 = 0.05 s
      *
      * @param duration the duration
      * @return the duration
@@ -72,6 +88,10 @@ public abstract class Effect implements Cloneable {
     /**
      * Get amplifier.
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getAmplifier() {
         return amplifier;
     }
@@ -92,9 +112,17 @@ public abstract class Effect implements Cloneable {
      *
      * @return the level
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getLevel() {
         return amplifier + 1;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isVisible() {
         return visible;
@@ -104,6 +132,10 @@ public abstract class Effect implements Cloneable {
         this.visible = visible;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isAmbient() {
         return ambient;
@@ -113,6 +145,10 @@ public abstract class Effect implements Cloneable {
         this.ambient = ambient;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isBad() {
         return bad;
@@ -126,18 +162,34 @@ public abstract class Effect implements Cloneable {
         this.color = color;
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canTick() {
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void apply(Entity entity, double tickCount) {
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void add(Entity entity) {
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void remove(Entity entity) {
 

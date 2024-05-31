@@ -17,6 +17,10 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     private int direction;
     private int ticks;
     public final List<Player> spawnExceptions = new ArrayList<>(2);
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BlockEntityBell(IChunk chunk, CompoundTag nbt) {
@@ -24,12 +28,20 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initBlockEntity() {
         super.initBlockEntity();
         scheduleUpdate();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         if (!namedTag.contains("Ringing") || !(namedTag.get("Ringing") instanceof ByteTag)) {
@@ -52,6 +64,10 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         namedTag.putBoolean("Ringing", ringing);
@@ -60,6 +76,10 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate() {
         if (ringing) {
             if (ticks == 0) {
@@ -85,6 +105,10 @@ public class BlockEntityBell extends BlockEntitySpawnable {
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void spawnToAllWithExceptions() {
         if (this.closed) {
             return;
@@ -96,10 +120,18 @@ public class BlockEntityBell extends BlockEntitySpawnable {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isRinging() {
         return ringing;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRinging(boolean ringing) {
         if (this.level != null && this.ringing != ringing) {
@@ -107,18 +139,34 @@ public class BlockEntityBell extends BlockEntitySpawnable {
             scheduleUpdate();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getDirection() {
         return direction;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDirection(int direction) {
         this.direction = direction;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getTicks() {
         return ticks;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTicks(int ticks) {
         this.ticks = ticks;
@@ -134,6 +182,10 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return getBlock().getId() == Block.BELL;
     }

@@ -5,14 +5,26 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class BlockEntityHangingSign extends BlockEntitySign {
+    /**
+     * @deprecated 
+     */
+    
     public BlockEntityHangingSign(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.hasName() ? this.namedTag.getString("CustomName") : "Hanging Sign";
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasName() {
         return namedTag.contains("CustomName");

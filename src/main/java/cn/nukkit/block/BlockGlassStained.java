@@ -8,6 +8,10 @@ import org.jetbrains.annotations.NotNull;
  * @since 7.8.2017
  */
 public abstract class BlockGlassStained extends BlockGlass {
+    /**
+     * @deprecated 
+     */
+    
     public BlockGlassStained(BlockState blockState) {
         super(blockState);
     }

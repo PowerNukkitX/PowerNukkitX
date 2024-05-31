@@ -20,6 +20,10 @@ public class BedrockPacketWrapper extends AbstractReferenceCounted {
     private int headerLength;
     private DataPacket packet;
     private ByteBuf packetBuffer;
+    /**
+     * @deprecated 
+     */
+    
 
     public BedrockPacketWrapper(int packetId, int senderSubClientId, int targetSubClientId, DataPacket packet, ByteBuf packetBuffer) {
         this.packetId = packetId;
@@ -30,6 +34,10 @@ public class BedrockPacketWrapper extends AbstractReferenceCounted {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void deallocate() {
         ReferenceCountUtil.safeRelease(this.packetBuffer);
         this.packet=null;

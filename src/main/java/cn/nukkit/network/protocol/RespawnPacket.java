@@ -12,21 +12,25 @@ import lombok.*;
 @AllArgsConstructor
 public class RespawnPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.RESPAWN_PACKET;
+    public static final int $1 = ProtocolInfo.RESPAWN_PACKET;
 
-    public static final int STATE_SEARCHING_FOR_SPAWN = 0;
-    public static final int STATE_READY_TO_SPAWN = 1;
-    public static final int STATE_CLIENT_READY_TO_SPAWN = 2;
+    public static final int $2 = 0;
+    public static final int $3 = 1;
+    public static final int $4 = 2;
 
     public float x;
     public float y;
     public float z;
-    public int respawnState = STATE_SEARCHING_FOR_SPAWN;
+    public int $5 = STATE_SEARCHING_FOR_SPAWN;
     public long runtimeEntityId;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
-        Vector3f v = byteBuf.readVector3f();
+        Vector3f $6 = byteBuf.readVector3f();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
@@ -35,6 +39,10 @@ public class RespawnPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeVector3f(this.x, this.y, this.z);
@@ -43,9 +51,17 @@ public class RespawnPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

@@ -33,7 +33,7 @@ import java.util.Set;
 
 public class BlockExplodeEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -45,6 +45,10 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
     protected double yield;
     protected Set<Block> blocks;
     protected Set<Block> ignitions;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockExplodeEvent(Block block, Position position, Set<Block> blocks, Set<Block> ignitions, double yield, double fireChance) {
         super(block);
@@ -62,14 +66,26 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
     public Set<Block> getAffectedBlocks() {
         return this.blocks;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAffectedBlocks(Set<Block> blocks) {
         this.blocks = blocks;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getYield() {
         return this.yield;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setYield(double yield) {
         this.yield = yield;
@@ -78,10 +94,18 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
     public Set<Block> getIgnitions() {
         return ignitions;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setIgnitions(Set<Block> ignitions) {
         this.ignitions = ignitions;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getFireChance() {
         return fireChance;

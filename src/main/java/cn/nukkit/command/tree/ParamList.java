@@ -9,16 +9,24 @@ import java.util.ArrayList;
 
 
 public class ParamList extends ArrayList<IParamNode<?>> {
-    private int error = Integer.MIN_VALUE;
-    private int index = 0;
-    protected int nodeIndex = 0;
+    private int $1 = Integer.MIN_VALUE;
+    private int $2 = 0;
+    protected int $3 = 0;
     private final CommandOutputContainer messageContainer;
     private final ParamTree paramTree;
+    /**
+     * @deprecated 
+     */
+    
 
     public ParamList(ParamTree parent) {
         this.paramTree = parent;
         this.messageContainer = new CommandOutputContainer();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void reset() {
         this.error = Integer.MIN_VALUE;
@@ -29,10 +37,18 @@ public class ParamList extends ArrayList<IParamNode<?>> {
             node.reset();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getIndexAndIncrement() {
         return index++;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void error() {
         this.error = index - 1;
@@ -43,6 +59,10 @@ public class ParamList extends ArrayList<IParamNode<?>> {
      *
      * @return the error index
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getError() {
         return error;
     }
@@ -52,6 +72,10 @@ public class ParamList extends ArrayList<IParamNode<?>> {
      *
      * @return the index
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getIndex() {
         return index;
     }
@@ -59,6 +83,10 @@ public class ParamList extends ArrayList<IParamNode<?>> {
     /**
      * Get the current {@link ParamList} parses several {@link IParamNode} (start at 0)
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getNodeIndex() {
         return nodeIndex;
     }
@@ -77,14 +105,26 @@ public class ParamList extends ArrayList<IParamNode<?>> {
     public CommandOutputContainer getMessageContainer() {
         return messageContainer;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addMessage(String key) {
         this.messageContainer.getMessages().add(new CommandOutputMessage(key, CommandOutputContainer.EMPTY_STRING));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addMessage(String key, String... params) {
         this.messageContainer.getMessages().add(new CommandOutputMessage(key, params));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addMessage(CommandOutputMessage... messages) {
         for (var message : messages) {
@@ -102,13 +142,17 @@ public class ParamList extends ArrayList<IParamNode<?>> {
      *
      * @return 指定索引处的参数节点是否存在值
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasResult(int index) {
         return index < this.size() && index > -1 && this.get(index).hasResult();
     }
 
     @Override
     public ParamList clone() {
-        ParamList v = (ParamList) super.clone();
+        ParamList $4 = (ParamList) super.clone();
         v.error = this.error;
         v.index = this.index;
         return v;

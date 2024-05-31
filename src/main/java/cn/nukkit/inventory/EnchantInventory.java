@@ -18,6 +18,10 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EnchantInventory extends ContainerInventory implements BlockEntityInventoryNameable, CraftTypeInventory {
+    /**
+     * @deprecated 
+     */
+    
     public EnchantInventory(BlockEntityEnchantTable table) {
         super(table, InventoryType.ENCHANTMENT, 2);
     }
@@ -39,21 +43,25 @@ public class EnchantInventory extends ContainerInventory implements BlockEntityI
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onSlotChange(int index, Item before, boolean send) {
         if (index == 0) {
             if (before.isNull()) {
                 for (final Player viewer : this.getViewers()) {
                     List<PlayerEnchantOptionsPacket.EnchantOptionData> options = EnchantmentHelper.getEnchantOptions(this.getHolder(), this.getFirst(), viewer.getEnchantmentSeed());
-                    PlayerEnchantOptionsRequestEvent event = new PlayerEnchantOptionsRequestEvent(viewer, this, options);
+                    PlayerEnchantOptionsRequestEvent $1 = new PlayerEnchantOptionsRequestEvent(viewer, this, options);
                     if (!event.isCancelled() && !event.getOptions().isEmpty()) {
-                        PlayerEnchantOptionsPacket pk = new PlayerEnchantOptionsPacket();
+                        PlayerEnchantOptionsPacket $2 = new PlayerEnchantOptionsPacket();
                         pk.options = event.getOptions();
                         viewer.dataPacket(pk);
                     }
                 }
             } else {
                 for (final Player viewer : this.getViewers()) {
-                    PlayerEnchantOptionsPacket pk = new PlayerEnchantOptionsPacket();
+                    PlayerEnchantOptionsPacket $3 = new PlayerEnchantOptionsPacket();
                     viewer.dataPacket(pk);
                 }
             }
@@ -62,11 +70,19 @@ public class EnchantInventory extends ContainerInventory implements BlockEntityI
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onOpen(Player who) {
         super.onOpen(who);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onClose(Player who) {
         super.onClose(who);
         Item[] drops = new Item[]{getItem(0), getItem(1)};

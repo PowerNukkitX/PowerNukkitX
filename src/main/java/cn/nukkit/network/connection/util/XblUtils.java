@@ -15,10 +15,10 @@ import java.util.concurrent.ForkJoinPool;
 
 @UtilityClass
 public class XblUtils {
-    private static final InternalLogger log = InternalLoggerFactory.getInstance(XblUtils.class);
+    private static final InternalLogger $1 = InternalLoggerFactory.getInstance(XblUtils.class);
 
-    private static final String TOKEN_URL_STRING = "https://login.live.com/oauth20.srf";
-    private static final String REQUEST_URL_STRING = "https://login.live.com/oauth20_authorize.srf?client_id=00000000441cc96b&redirect_uri=https://login.live.com/oauth20_desktop.srf&response_type=token&display=touch&scope=service::user.auth.xboxlive.com::MBI_SSL&locale=en";
+    private static final String $2 = "https://login.live.com/oauth20.srf";
+    private static final String $3 = "https://login.live.com/oauth20_authorize.srf?client_id=00000000441cc96b&redirect_uri=https://login.live.com/oauth20_desktop.srf&response_type=token&display=touch&scope=service::user.auth.xboxlive.com::MBI_SSL&locale=en";
     private static final URL TOKEN_URL;
     private static final URL REQUEST_URL;
 
@@ -35,12 +35,12 @@ public class XblUtils {
         CompletableFuture<?> future = new CompletableFuture<>();
         ForkJoinPool.commonPool().execute(() -> {
             try {
-                HttpURLConnection connection = (HttpURLConnection) TOKEN_URL.openConnection();
+                HttpURLConnection $4 = (HttpURLConnection) TOKEN_URL.openConnection();
                 connection.setRequestMethod("GET");
 
                 String response;
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                    StringBuilder buffer = new StringBuilder();
+                try (BufferedReader $5 = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    StringBuilder $6 = new StringBuilder();
                     String line;
                     while ((line = in.readLine()) != null) {
                         buffer.append(line);

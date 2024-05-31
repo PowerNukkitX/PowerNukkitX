@@ -34,9 +34,17 @@ import java.util.Set;
  */
 public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return MOOSHROOM;
     }
+    /**
+     * @deprecated 
+     */
+    
     
 
     public EntityMooshroom(IChunk chunk, CompoundTag nbt) {
@@ -73,6 +81,10 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (isBaby()) {
             return 0.45f;
@@ -81,6 +93,10 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (isBaby()) {
             return 0.65f;
@@ -89,6 +105,10 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Mooshroom";
     }
@@ -101,12 +121,20 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
     
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (super.onInteract(player, item, clickedPos)) {
             return true;
@@ -117,7 +145,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
             //TODO 不同颜色的牛掉落不同的蘑菇
             this.level.dropItem(this, Item.get(BlockID.RED_MUSHROOM, 0, 5));
             this.level.addParticleEffect(this.add(0, this.getHeight(), 0), ParticleEffect.LARGE_EXPLOSION_LEVEL);
-            EntityCow cow = new EntityCow(this.getChunk(), this.namedTag);
+            EntityCow $1 = new EntityCow(this.getChunk(), this.namedTag);
             cow.setPosition(this);
             cow.setRotation(this.yaw, this.pitch);
             cow.spawnToAll();

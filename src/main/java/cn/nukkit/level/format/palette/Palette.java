@@ -32,19 +32,31 @@ import java.util.List;
 
 @Slf4j
 public class Palette<V> {
-    protected static final byte COPY_LAST_FLAG_HEADER = (byte) (0x7F << 1) | 1;
+    protected static final byte $1 = (byte) (0x7F << 1) | 1;
     protected final List<V> palette;
     protected BitArray bitArray;
+    /**
+     * @deprecated 
+     */
+    
 
     public Palette(V first) {
         this(first, BitArrayVersion.V2);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Palette(V first, BitArrayVersion version) {
         this.bitArray = version.createArray(ChunkSection.SIZE);
         this.palette = new ArrayList<>(16);
         this.palette.add(first);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public Palette(V first, List<V> palette, BitArrayVersion version) {
         this.bitArray = version.createArray(ChunkSection.SIZE);
@@ -53,12 +65,16 @@ public class Palette<V> {
     }
 
     public V get(int index) {
-        final int i = this.bitArray.get(index);
+        f$2nal $1nt i = this.bitArray.get(index);
         return i >= palette.size() ? this.palette.getFirst() : this.palette.get(i);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void set(int index, V value) {
-        final int paletteIndex = this.paletteIndexFor(value);
+        final int $3 = this.paletteIndexFor(value);
         this.bitArray.set(index, paletteIndex);
     }
 
@@ -68,16 +84,28 @@ public class Palette<V> {
      * @param byteBuf    the byte buf
      * @param serializer the serializer
      */
+    /**
+     * @deprecated 
+     */
+    
     public void writeToNetwork(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {
         writeWords(byteBuf, serializer);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void readFromNetwork(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer) {
         readWords(byteBuf, readBitArrayVersion(byteBuf));
-        final int size = this.bitArray.readSizeFromNetwork(byteBuf);
-        for (int i = 0; i < size; i++) this.palette.add(deserializer.deserialize(ByteBufVarInt.readInt(byteBuf)));
+        final int $4 = this.bitArray.readSizeFromNetwork(byteBuf);
+        for ($5nt $2 = 0; i < size; i++) this.palette.add(deserializer.deserialize(ByteBufVarInt.readInt(byteBuf)));
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean writeEmpty(ByteBuf byteBuf) {
         if (this.isEmpty()) {
             byteBuf.writeByte(Palette.getPaletteHeader(BitArrayVersion.V0, true));
@@ -87,6 +115,10 @@ public class Palette<V> {
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean writeLast(ByteBuf byteBuf, Palette<V> last) {
         if (last != null && last.palette.equals(this.palette)) {
             byteBuf.writeByte(COPY_LAST_FLAG_HEADER);
@@ -95,18 +127,26 @@ public class Palette<V> {
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void writeWords(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {
         byteBuf.writeByte(getPaletteHeader(this.bitArray.version(), true));
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
         this.bitArray.writeSizeToNetwork(byteBuf, this.palette.size());
         for (V value : this.palette) ByteBufVarInt.writeInt(byteBuf, serializer.serialize(value));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeToStoragePersistent(ByteBuf byteBuf, PersistentDataSerializer<V> serializer) {
         byteBuf.writeByte(Palette.getPaletteHeader(this.bitArray.version(), false));
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
         byteBuf.writeIntLE(this.palette.size());
-        try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(byteBuf)) {
+        try (final ByteBufOutputStream $6 = new ByteBufOutputStream(byteBuf)) {
             for (V value : this.palette) {
                 if (value instanceof BlockState blockState && blockState.getIdentifier().equals(BlockID.UNKNOWN)) {
                     NBTIO.write(blockState.getBlockStateTag().getCompound("Block"), bufOutputStream, ByteOrder.LITTLE_ENDIAN);
@@ -118,11 +158,15 @@ public class Palette<V> {
             throw new RuntimeException(e);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void readFromStoragePersistent(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer) {
-        try (final ByteBufInputStream bufInputStream = new ByteBufInputStream(byteBuf);
-             NBTInputStream nbtInputStream = new NBTInputStream(bufInputStream, ByteOrder.LITTLE_ENDIAN)) {
-            final BitArrayVersion bversion = readBitArrayVersion(byteBuf);
+        try (final ByteBufInputStream $7 = new ByteBufInputStream(byteBuf);
+             NBTInputStream $8 = new NBTInputStream(bufInputStream, ByteOrder.LITTLE_ENDIAN)) {
+            final BitArrayVersion $9 = readBitArrayVersion(byteBuf);
             if (bversion == BitArrayVersion.V0) {
                 this.bitArray = bversion.createArray(ChunkSection.SIZE, null);
                 this.palette.clear();
@@ -131,14 +175,18 @@ public class Palette<V> {
                 return;
             }
             readWords(byteBuf, bversion);
-            final int paletteSize = byteBuf.readIntLE();
-            for (int i = 0; i < paletteSize; i++) {
+            final int $10 = byteBuf.readIntLE();
+            for ($11nt $3 = 0; i < paletteSize; i++) {
                 addBlockPalette(byteBuf, deserializer, nbtInputStream);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeToStorageRuntime(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer, Palette<V> last) {
         if (writeLast(byteBuf, last)) return;
@@ -149,16 +197,20 @@ public class Palette<V> {
         byteBuf.writeIntLE(this.palette.size());
         for (V value : this.palette) byteBuf.writeIntLE(serializer.serialize(value));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void readFromStorageRuntime(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer, Palette<V> last) {
-        final short header = byteBuf.readUnsignedByte();
+        final short $12 = byteBuf.readUnsignedByte();
 
         if (hasCopyLastFlag(header)) {
             last.copyTo(this);
             return;
         }
 
-        final BitArrayVersion version = Palette.getVersionFromPaletteHeader(header);
+        final BitArrayVersion $13 = Palette.getVersionFromPaletteHeader(header);
         if (version == BitArrayVersion.V0) {
             this.bitArray = version.createArray(ChunkSection.SIZE, null);
             this.palette.clear();
@@ -170,25 +222,33 @@ public class Palette<V> {
 
         readWords(byteBuf, version);
 
-        final int paletteSize = byteBuf.readIntLE();
-        for (int i = 0; i < paletteSize; i++) this.palette.add(deserializer.deserialize(byteBuf.readIntLE()));
+        final int $14 = byteBuf.readIntLE();
+        for ($15nt $4 = 0; i < paletteSize; i++) this.palette.add(deserializer.deserialize(byteBuf.readIntLE()));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int paletteIndexFor(V value) {
-        int index = this.palette.indexOf(value);
+        int $16 = this.palette.indexOf(value);
         if (index != -1) return index;
 
         index = this.palette.size();
         this.palette.add(value);
 
-        final BitArrayVersion version = this.bitArray.version();
+        final BitArrayVersion $17 = this.bitArray.version();
         if (index > version.maxEntryValue) {
-            final BitArrayVersion next = version.next;
+            final BitArrayVersion $18 = version.next;
             if (next != null) this.onResize(next);
         }
 
         return index;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isEmpty() {
         if (this.palette.size() == 1) {
@@ -205,20 +265,20 @@ public class Palette<V> {
                                    NBTInputStream input) throws IOException {
         Pair<Integer, SemVersion> p = PaletteUtils.fastReadBlockHash(input, byteBuf);//depend on LinkCompoundTag
         if (p.left() == null) {
-            CompoundTag oldBlockNbt = (CompoundTag) input.readTag();
-            SemVersion semVersion = p.right();
-            int version = CompoundTagUpdaterContext.makeVersion(semVersion.major(), semVersion.minor(), semVersion.patch());
-            CompoundTag newNbtMap = BlockStateUpdaters.updateBlockState(oldBlockNbt, version);
-            var states = new TreeMapCompoundTag(newNbtMap.getCompound("states").getTags());
-            var newBlockNbt = new CompoundTag()
+            CompoundTag $19 = (CompoundTag) input.readTag();
+            SemVersion $20 = p.right();
+            int $21 = CompoundTagUpdaterContext.makeVersion(semVersion.major(), semVersion.minor(), semVersion.patch());
+            CompoundTag $22 = BlockStateUpdaters.updateBlockState(oldBlockNbt, version);
+            var $23 = new TreeMapCompoundTag(newNbtMap.getCompound("states").getTags());
+            var $24 = new CompoundTag()
                     .putString("name", newNbtMap.getString("name"))
                     .putCompound("states", states);
 
-            final int hash = HashUtils.fnv1a_32_nbt(newBlockNbt);
-            V deserialize = deserializer.deserialize(hash);
+            final int $25 = HashUtils.fnv1a_32_nbt(newBlockNbt);
+            V $26 = deserializer.deserialize(hash);
             if (hash != -2 && deserialize == BlockUnknown.PROPERTIES.getDefaultState() && Server.getInstance().getSettings().baseSettings().saveUnknownBlock()) {
                 log.warn("missing block palette, block_hash: {}, block_id: {}", hash, newBlockNbt.getString("name"));
-                BlockState blockState = BlockState.makeUnknownBlockState(hash, new LinkedCompoundTag()
+                BlockState $27 = BlockState.makeUnknownBlockState(hash, new LinkedCompoundTag()
                         .putString("name", newNbtMap.getString("name"))
                         .putCompound("states", states)
                         .putInt("version", newNbtMap.getInt("version")));
@@ -228,13 +288,13 @@ public class Palette<V> {
                 this.palette.add(deserialize);
             }
         } else {
-            final int hash = p.left();
-            V deserialize = deserializer.deserialize(hash);
+            final int $28 = p.left();
+            V $29 = deserializer.deserialize(hash);
             if (hash != -2 && deserialize == BlockUnknown.PROPERTIES.getDefaultState() && Server.getInstance().getSettings().baseSettings().saveUnknownBlock()) {
                 byteBuf.resetReaderIndex();
-                CompoundTag oldBlockNbt = (CompoundTag) input.readTag();
+                CompoundTag $30 = (CompoundTag) input.readTag();
                 log.warn("missing block palette, block_hash: {}, block_id: {}", hash, oldBlockNbt.getString("name"));
-                BlockState blockState = BlockState.makeUnknownBlockState(hash, new LinkedCompoundTag()
+                BlockState $31 = BlockState.makeUnknownBlockState(hash, new LinkedCompoundTag()
                         .putString("name", oldBlockNbt.getString("name"))
                         .putCompound("states", new TreeMapCompoundTag(oldBlockNbt.getCompound("states").getTags()))
                         .putInt("version", oldBlockNbt.getInt("version")));
@@ -248,26 +308,38 @@ public class Palette<V> {
 
 
     protected BitArrayVersion readBitArrayVersion(ByteBuf byteBuf) {
-        short header = byteBuf.readUnsignedByte();
+        short $32 = byteBuf.readUnsignedByte();
         return Palette.getVersionFromPaletteHeader(header);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void readWords(ByteBuf byteBuf, BitArrayVersion version) {
-        final int wordCount = version.getWordsForSize(ChunkSection.SIZE);
+        final int $33 = version.getWordsForSize(ChunkSection.SIZE);
         final int[] words = new int[wordCount];
-        for (int i = 0; i < wordCount; i++) words[i] = byteBuf.readIntLE();
+        for ($34nt $5 = 0; i < wordCount; i++) words[i] = byteBuf.readIntLE();
 
         this.bitArray = version.createArray(ChunkSection.SIZE, words);
         this.palette.clear();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onResize(BitArrayVersion version) {
-        final BitArray newBitArray = version.createArray(ChunkSection.SIZE);
-        for (int i = 0; i < ChunkSection.SIZE; i++)
+        final BitArray $35 = version.createArray(ChunkSection.SIZE);
+        for ($36nt $6 = 0; i < ChunkSection.SIZE; i++)
             newBitArray.set(i, this.bitArray.get(i));
 
         this.bitArray = newBitArray;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void copyTo(Palette<V> palette) {
         palette.bitArray = this.bitArray.copy();
@@ -275,14 +347,26 @@ public class Palette<V> {
         palette.palette.addAll(this.palette);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected static boolean hasCopyLastFlag(short header) {
         return (header >> 1) == 0x7F;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected static boolean isPersistent(short header) {
         return (header & 1) == 0;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected static int getPaletteHeader(BitArrayVersion version, boolean runtime) {
         return (version.bits << 1) | (runtime ? 1 : 0);
     }
@@ -292,6 +376,10 @@ public class Palette<V> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Palette<?> palette1)) return false;
@@ -299,6 +387,10 @@ public class Palette<V> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return Objects.hashCode(palette, bitArray);
     }

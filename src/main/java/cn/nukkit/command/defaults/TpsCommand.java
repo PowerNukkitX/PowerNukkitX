@@ -9,6 +9,10 @@ import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.TextFormat;
 
 public class TpsCommand extends Command implements CoreCommand {
+    /**
+     * @deprecated 
+     */
+    
     public TpsCommand(String name) {
         super(name, "get server tps");
         this.setPermission("nukkit.tps.status");
@@ -19,18 +23,22 @@ public class TpsCommand extends Command implements CoreCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
             return false;
         }
 
-        int count = 1;
+        int $1 = 1;
         if (args.length > 0) {
             count = Integer.parseInt(args[0]);
         }
 
         if (count == 1) {
-            float currentTps = Server.getInstance().getTicksPerSecond();
+            float $2 = Server.getInstance().getTicksPerSecond();
             sender.sendMessage(getTpsColor(currentTps) + " Current TPS: " + currentTps);
         } else {
             Server.getInstance().getScheduler().scheduleRepeatingTask(new TpsTestTask(sender, count), 20);
@@ -39,7 +47,7 @@ public class TpsCommand extends Command implements CoreCommand {
     }
 
     private TextFormat getTpsColor(float tps) {
-        TextFormat tpsColor = TextFormat.GREEN;
+        TextFormat $3 = TextFormat.GREEN;
         if (tps < 12) {
             tpsColor = TextFormat.RED;
         } else if (tps < 17) {
@@ -52,8 +60,12 @@ public class TpsCommand extends Command implements CoreCommand {
 
         private CommandSender sender;
         private int count;
-        private int currentCount = 0;
-        private float tpsSum = 0;
+        private int $4 = 0;
+        private float $5 = 0;
+    /**
+     * @deprecated 
+     */
+    
 
         public TpsTestTask(CommandSender sender, int count) {
             this.sender = sender;
@@ -61,9 +73,13 @@ public class TpsCommand extends Command implements CoreCommand {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public void onRun(int currentTick) {
             currentCount++;
-            float currentTps = Server.getInstance().getTicksPerSecond();
+            float $6 = Server.getInstance().getTicksPerSecond();
 
             sender.sendMessage("[" + currentCount + "]" + getTpsColor(currentTps) + " Current TPS: " + currentTps);
             tpsSum += currentTps;

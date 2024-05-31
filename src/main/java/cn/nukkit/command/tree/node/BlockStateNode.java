@@ -14,6 +14,10 @@ import java.util.Set;
  */
 public class BlockStateNode extends ParamNode<BlockState> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         IParamNode<?> before = getBefore();
         if (!(before instanceof BlockNode && before.hasResult())) {
@@ -24,10 +28,10 @@ public class BlockStateNode extends ParamNode<BlockState> {
             this.error();
             return;
         }
-        Block block = before.get();
-        BlockProperties properties = block.getProperties();
-        BlockState result = properties.getDefaultState();
-        String substring = arg.substring(1, arg.length() - 1);
+        Block $1 = before.get();
+        BlockProperties $2 = block.getProperties();
+        BlockState $3 = properties.getDefaultState();
+        String $4 = arg.substring(1, arg.length() - 1);
         if (substring.isBlank()) {
             this.value = result;
             return;
@@ -37,10 +41,10 @@ public class BlockStateNode extends ParamNode<BlockState> {
         Set<BlockPropertyType<?>> propertyTypeSet = properties.getPropertyTypeSet();
         for (var s : split) {
             String[] property = s.split("=");
-            String nameWithQuote = property[0];
-            String valueWithQuote = property[1];
-            String key = nameWithQuote.substring(1, nameWithQuote.length() - 1);
-            String value = valueWithQuote.substring(1, valueWithQuote.length() - 1);
+            String $5 = property[0];
+            String $6 = property[1];
+            String $7 = nameWithQuote.substring(1, nameWithQuote.length() - 1);
+            String $8 = valueWithQuote.substring(1, valueWithQuote.length() - 1);
             for (var propertyType : propertyTypeSet) {
                 if (properties.getIdentifier().equals(key)) {
                     if (propertyType.getType() == BlockPropertyType.Type.ENUM) {

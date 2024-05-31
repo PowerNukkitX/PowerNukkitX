@@ -7,16 +7,24 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 
 public class BlockOrangeWool extends BlockWool {
-    public static final BlockProperties PROPERTIES = new BlockProperties(ORANGE_WOOL, Set.of(BlockTags.PNX_WOOL));
+    public static final BlockProperties $1 = new BlockProperties(ORANGE_WOOL, Set.of(BlockTags.PNX_WOOL));
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockOrangeWool() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockOrangeWool(BlockState blockstate) {
         super(blockstate);

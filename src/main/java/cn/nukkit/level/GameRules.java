@@ -23,11 +23,15 @@ public class GameRules {
     private final @Nonnull EnumMap<GameRule, Value<?>> gameRules = new EnumMap<>(GameRule.class);
     private boolean stale;
 
+    
+    /**
+     * @deprecated 
+     */
     private GameRules() {
     }
 
     public static GameRules getDefault() {
-        GameRules gameRules = new GameRules();
+        GameRules $1 = new GameRules();
 
         gameRules.gameRules.put(COMMAND_BLOCKS_ENABLED, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(COMMAND_BLOCK_OUTPUT, new Value<>(Type.BOOLEAN, true));
@@ -55,7 +59,7 @@ public class GameRules {
         gameRules.gameRules.put(SHOW_COORDINATES, new Value<>(Type.BOOLEAN, false));
         gameRules.gameRules.put(SHOW_DEATH_MESSAGES, new Value<>(Type.BOOLEAN, true));
 
-        @SuppressWarnings("deprecation") GameRule deprecated = SHOW_DEATH_MESSAGE;
+        @SuppressWarnings("deprecation") GameRule $2 = SHOW_DEATH_MESSAGE;
         gameRules.gameRules.put(deprecated, gameRules.gameRules.get(SHOW_DEATH_MESSAGES));
 
         gameRules.gameRules.put(SPAWN_RADIUS, new Value<>(Type.INTEGER, 5));
@@ -73,30 +77,54 @@ public class GameRules {
     public Map<GameRule, Value<?>> getGameRules() {
         return ImmutableMap.copyOf(gameRules);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isStale() {
         return stale;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void refresh() {
         stale = false;
     }
 
-    public <V> void setGameRule(GameRule gameRule, V value, Type type) {
+    public <V> 
+    /**
+     * @deprecated 
+     */
+    void setGameRule(GameRule gameRule, V value, Type type) {
         if (!gameRules.containsKey(gameRule)) {
             throw new IllegalArgumentException("Gamerule does not exist");
         }
         ((Value<V>) gameRules.get(gameRule)).setValue(value, type);
         stale = true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setGameRule(GameRule gameRule, boolean value) {
         setGameRule(gameRule, value, Type.BOOLEAN);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setGameRule(GameRule gameRule, int value) {
         setGameRule(gameRule, value, Type.INTEGER);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setGameRule(GameRule gameRule, float value) {
         setGameRule(gameRule, value, Type.FLOAT);
@@ -120,20 +148,36 @@ public class GameRules {
             case FLOAT -> setGameRule(gameRule, Float.parseFloat(value));
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getBoolean(GameRule gameRule) {
         return gameRules.get(gameRule).getValueAsBoolean();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getInteger(GameRule gameRule) {
         Preconditions.checkNotNull(gameRule, "gameRule");
         return gameRules.get(gameRule).getValueAsInteger();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getFloat(GameRule gameRule) {
         Preconditions.checkNotNull(gameRule, "gameRule");
         return gameRules.get(gameRule).getValueAsFloat();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getString(GameRule gameRule) {
         Preconditions.checkNotNull(gameRule, "gameRule");
@@ -144,6 +188,10 @@ public class GameRules {
         Preconditions.checkNotNull(gameRule, "gameRule");
         return gameRules.get(gameRule).getType();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasRule(GameRule gameRule) {
         return gameRules.containsKey(gameRule);
@@ -155,7 +203,7 @@ public class GameRules {
 
     // TODO: This needs to be moved out since there is not a separate compound tag in the LevelDB format for Game Rules.
     public CompoundTag writeNBT() {
-        CompoundTag nbt = new CompoundTag();
+        CompoundTag $3 = new CompoundTag();
 
         for (Entry<GameRule, Value<?>> entry : gameRules.entrySet()) {
             nbt.putString(entry.getKey().getName(), entry.getValue().value.toString());
@@ -163,6 +211,10 @@ public class GameRules {
 
         return nbt;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void readNBT(CompoundTag nbt) {
         Preconditions.checkNotNull(nbt);
@@ -179,24 +231,40 @@ public class GameRules {
     public enum Type {
         UNKNOWN {
             @Override
-            void write(HandleByteBuf pk, Value<?> value) {
+            
+    /**
+     * @deprecated 
+     */
+    void write(HandleByteBuf pk, Value<?> value) {
             }
         },
         BOOLEAN {
             @Override
-            void write(HandleByteBuf pk, Value<?> value) {
+            
+    /**
+     * @deprecated 
+     */
+    void write(HandleByteBuf pk, Value<?> value) {
                 pk.writeBoolean(value.getValueAsBoolean());
             }
         },
         INTEGER {
             @Override
-            void write(HandleByteBuf pk, Value<?> value) {
+            
+    /**
+     * @deprecated 
+     */
+    void write(HandleByteBuf pk, Value<?> value) {
                 pk.writeUnsignedVarInt(value.getValueAsInteger());
             }
         },
         FLOAT {
             @Override
-            void write(HandleByteBuf pk, Value<?> value) {
+            
+    /**
+     * @deprecated 
+     */
+    void write(HandleByteBuf pk, Value<?> value) {
                 pk.writeFloatLE(value.getValueAsFloat());
             }
         };
@@ -208,22 +276,38 @@ public class GameRules {
         private final Type type;
         private T value;
         private boolean canBeChanged;
+    /**
+     * @deprecated 
+     */
+    
 
         public Value(Type type, T value) {
             this.type = type;
             this.value = value;
         }
 
-        private void setValue(T value, Type type) {
+        
+    /**
+     * @deprecated 
+     */
+    private void setValue(T value, Type type) {
             if (this.type != type) {
                 throw new UnsupportedOperationException("Rule not of type " + type.name().toLowerCase(Locale.ENGLISH));
             }
             this.value = value;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean isCanBeChanged() {
             return this.canBeChanged;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void setCanBeChanged(boolean canBeChanged) {
             this.canBeChanged = canBeChanged;
@@ -242,26 +326,42 @@ public class GameRules {
             };
         }
 
-        private boolean getValueAsBoolean() {
+        
+    /**
+     * @deprecated 
+     */
+    private boolean getValueAsBoolean() {
             if (type != Type.BOOLEAN) {
                 throw new UnsupportedOperationException("Rule not of type boolean");
             }
             return (Boolean) value;
         }
 
-        private int getValueAsInteger() {
+        
+    /**
+     * @deprecated 
+     */
+    private int getValueAsInteger() {
             if (type != Type.INTEGER) {
                 throw new UnsupportedOperationException("Rule not of type integer");
             }
             return (Integer) value;
         }
 
-        private float getValueAsFloat() {
+        
+    /**
+     * @deprecated 
+     */
+    private float getValueAsFloat() {
             if (type != Type.FLOAT) {
                 throw new UnsupportedOperationException("Rule not of type float");
             }
             return (Float) value;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public void write(HandleByteBuf stream) {
             stream.writeBoolean(this.canBeChanged);

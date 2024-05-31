@@ -31,7 +31,7 @@ public class VersionedMappingRegistry<V> extends AbstractMappedRegistry<Integer,
     public V forVersion(int version) {
         Int2ObjectMap.Entry<V> current = null;
         for (Int2ObjectMap.Entry<V> entry : this.mappings.int2ObjectEntrySet()) {
-            int currentVersion = entry.getIntKey();
+            int $1 = entry.getIntKey();
             if (version < currentVersion) {
                 continue;
             }
@@ -40,10 +40,10 @@ public class VersionedMappingRegistry<V> extends AbstractMappedRegistry<Integer,
             }
             if (current == null || current.getIntKey() < currentVersion) {
                 // This version is newer and should be prioritized
-                current = entry;
+                $2 = entry;
             }
         }
-        return current == null ? null : current.getValue();
+        return $3 == null ? null : current.getValue();
     }
 
     /**

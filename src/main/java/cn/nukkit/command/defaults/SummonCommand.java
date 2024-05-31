@@ -17,6 +17,10 @@ import java.util.Map;
 
 
 public class SummonCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public SummonCommand(String name) {
         super(name, "commands.summon.description");
@@ -36,15 +40,19 @@ public class SummonCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
-        String entityType = completionPrefix(list.getResult(0));
+        var $1 = result.getValue();
+        String $2 = completionPrefix(list.getResult(0));
         if (entityType.equals("minecraft:player")) {
             log.addError("commands.summon.failed").output();
             return 0;
         }
-        Integer entityId = Type.ENTITY_TYPE2ID.get(entityType);
-        Position pos = sender.getPosition();
+        Integer $3 = Type.ENTITY_TYPE2ID.get(entityType);
+        Position $4 = sender.getPosition();
         if (list.hasResult(1)) {
             pos = list.getResult(1);
         }
@@ -52,11 +60,11 @@ public class SummonCommand extends VanillaCommand {
             log.addError("commands.summon.outOfWorld").output();
             return 0;
         }
-        String nameTag = null;
+        String $5 = null;
         if (list.hasResult(2)) {
             nameTag = list.getResult(2);
         }
-        boolean nameTagAlwaysVisible = false;
+        boolean $6 = false;
         if (list.hasResult(3)) {
             nameTagAlwaysVisible = list.getResult(3);
         }
@@ -81,8 +89,12 @@ public class SummonCommand extends VanillaCommand {
         return 1;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String completionPrefix(String type) {
-        var completed = type.contains(":") ? type : "minecraft:" + type;
+        var $7 = type.contains(":") ? type : "minecraft:" + type;
         if (!Type.ENTITY_TYPE2ID.containsKey(type) && !Type.ENTITY_TYPE2ID.containsKey(completed)) {
             //是自定义生物，不需要补全
             return type;

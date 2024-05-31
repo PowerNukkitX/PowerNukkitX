@@ -13,10 +13,18 @@ import java.util.Set;
 
 public abstract class MultiBehaviorEvaluator implements IBehaviorEvaluator {
     protected Set<IBehaviorEvaluator> evaluators;
+    /**
+     * @deprecated 
+     */
+    
 
     public MultiBehaviorEvaluator(@NotNull Set<IBehaviorEvaluator> evaluators) {
         this.evaluators = evaluators;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public MultiBehaviorEvaluator(@NotNull IBehaviorEvaluator... evaluators) {
         this.evaluators = Set.of(evaluators);

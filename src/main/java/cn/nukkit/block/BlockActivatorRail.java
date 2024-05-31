@@ -11,27 +11,43 @@ import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DATA_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DIRECTION_6;
 
 public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(ACTIVATOR_RAIL, RAIL_DATA_BIT, RAIL_DIRECTION_6);
+    public static final BlockProperties $1 = new BlockProperties(ACTIVATOR_RAIL, RAIL_DATA_BIT, RAIL_DIRECTION_6);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockActivatorRail() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockActivatorRail(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Activator Rail";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (super.onUpdate(type) == Level.BLOCK_UPDATE_NORMAL) {
@@ -42,8 +58,8 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
                 return 0;
             }
 
-            boolean wasPowered = isActive();
-            boolean isPowered = this.isGettingPower()
+            boolean $2 = isActive();
+            boolean $3 = this.isGettingPower()
                     || checkSurrounding(this, true, 0)
                     || checkSurrounding(this, false, 0);
 
@@ -68,17 +84,21 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
      * @param power    The count of the rail that had been counted
      * @return Boolean of the surrounding area. Where the powered rail on!
      */
+    
+    /**
+     * @deprecated 
+     */
     protected boolean checkSurrounding(Vector3 pos, boolean relative, int power) {
         if (power >= 8) {
             return false;
         }
 
-        int dx = pos.getFloorX();
-        int dy = pos.getFloorY();
-        int dz = pos.getFloorZ();
+        int $4 = pos.getFloorX();
+        int $5 = pos.getFloorY();
+        int $6 = pos.getFloorZ();
 
         BlockRail block;
-        Block block2 = level.getBlock(new Vector3(dx, dy, dz));
+        Block $7 = level.getBlock(new Vector3(dx, dy, dz));
 
         if (Rail.isRailBlock(block2)) {
             block = (BlockRail) block2;
@@ -86,8 +106,8 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
             return false;
         }
 
-        Rail.Orientation base = null;
-        boolean onStraight = true;
+        Rail.Orientation $8 = null;
+        boolean $9 = true;
 
         switch (block.getOrientation()) {
             case STRAIGHT_NORTH_SOUTH -> {
@@ -153,14 +173,18 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
                 || onStraight && canPowered(new Vector3(dx, dy - 1., dz), base, power, relative);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean canPowered(Vector3 pos, Rail.Orientation state, int power, boolean relative) {
-        Block block = level.getBlock(pos);
+        Block $10 = level.getBlock(pos);
 
         if (!(block instanceof BlockActivatorRail)) {
             return false;
         }
 
-        Rail.Orientation base = ((BlockActivatorRail) block).getOrientation();
+        Rail.Orientation $11 = ((BlockActivatorRail) block).getOrientation();
 
         return (state != Rail.Orientation.STRAIGHT_EAST_WEST
                 || base != Rail.Orientation.STRAIGHT_NORTH_SOUTH
@@ -174,6 +198,10 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isActive() {
         return getPropertyValue(RAIL_DATA_BIT);
     }
@@ -184,11 +212,19 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setRailActive(boolean active) {
         setPropertyValue(RAIL_DATA_BIT, active);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.5;
     }
@@ -198,6 +234,10 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
      *
      * @param orientation The new orientation
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setRailDirection(Rail.Orientation orientation) {
         setPropertyValue(RAIL_DIRECTION_6, orientation.metadata());
     }

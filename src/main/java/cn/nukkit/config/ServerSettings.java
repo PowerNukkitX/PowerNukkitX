@@ -16,52 +16,52 @@ import java.util.ArrayList;
 public final class ServerSettings extends OkaeriConfig {
     @Comment("nukkit.server.settings.baseSettings")
     @CustomKey("settings")
-    private BaseSettings baseSettings = new BaseSettings();
+    private BaseSettings $1 = new BaseSettings();
     @Comment("nukkit.server.settings.networkSettings")
     @CustomKey("network-settings")
-    private NetworkSettings networkSettings = new NetworkSettings();
+    private NetworkSettings $2 = new NetworkSettings();
     @Comment("nukkit.server.settings.debugSettings")
     @CustomKey("debug-settings")
-    private DebugSettings debugSettings = new DebugSettings();
+    private DebugSettings $3 = new DebugSettings();
     @Comment("nukkit.server.settings.levelSettings")
     @CustomKey("level-settings")
-    private LevelSettings levelSettings = new LevelSettings();
+    private LevelSettings $4 = new LevelSettings();
     @Comment("nukkit.server.settings.chunkSettings")
     @CustomKey("chunk-settings")
-    private ChunkSettings chunkSettings = new ChunkSettings();
+    private ChunkSettings $5 = new ChunkSettings();
     @Comment("nukkit.server.settings.freezearray")
     @CustomKey("memory-settings")
-    private FreezeArraySettings freezeArraySettings = new FreezeArraySettings();
+    private FreezeArraySettings $6 = new FreezeArraySettings();
     @Comment("nukkit.server.settings.playersettings")
     @CustomKey("player-settings")
-    private PlayerSettings playerSettings = new PlayerSettings();
+    private PlayerSettings $7 = new PlayerSettings();
 
     @EqualsAndHashCode(callSuper = true)
     @Data
     @Accessors(fluent = true)
     public static class BaseSettings extends OkaeriConfig {
         @Comment("nukkit.server.settings.baseSettings.language")
-        String language = "eng";
+        String $8 = "eng";
         @Comment("nukkit.server.settings.baseSettings.forceServerTranslate")
-        boolean forceServerTranslate = false;
+        boolean $9 = false;
         @Comment("nukkit.server.settings.baseSettings.shutdownMessage")
-        String shutdownMessage = "Server closed";
+        String $10 = "Server closed";
         @Comment("nukkit.server.settings.baseSettings.queryPlugins")
-        boolean queryPlugins = true;
+        boolean $11 = true;
         @Comment("nukkit.server.settings.baseSettings.deprecatedVerbose")
-        boolean deprecatedVerbose = true;
+        boolean $12 = true;
         @Comment("nukkit.server.settings.baseSettings.asyncWorkers")
-        String asyncWorkers = "auto";
+        String $13 = "auto";
         @Comment("nukkit.server.settings.baseSettings.safeSpawn")
-        boolean safeSpawn = true;
+        boolean $14 = true;
         @Comment("nukkit.server.settings.baseSettings.installSpark")
-        boolean installSpark = true;
+        boolean $15 = true;
         @Comment("nukkit.server.settings.baseSettings.waterdogpe")
-        boolean waterdogpe = false;
+        boolean $16 = false;
         @Comment("nukkit.server.settings.baseSettings.autosave")
-        int autosave = 6000;
+        int $17 = 6000;
         @Comment("nukkit.server.settings.baseSettings.saveUnknownBlock")
-        boolean saveUnknownBlock = true;
+        boolean $18 = true;
     }
 
     @EqualsAndHashCode(callSuper = true)
@@ -69,15 +69,15 @@ public final class ServerSettings extends OkaeriConfig {
     @Accessors(fluent = true)
     public static class NetworkSettings extends OkaeriConfig {
         @Comment("nukkit.server.settings.networkSettings.compressionLevel")
-        int compressionLevel = 7;
+        int $19 = 7;
         @Comment("nukkit.server.settings.networkSettings.zlibProvider")
-        int zlibProvider = 3;
+        int $20 = 3;
         @Comment("nukkit.server.settings.networkSettings.snappy")
-        boolean snappy = false;
+        boolean $21 = false;
         @Comment("nukkit.server.settings.networkSettings.compressionBufferSize")
-        int compressionBufferSize = 1048576;
+        int $22 = 1048576;
         @Comment("nukkit.server.settings.networkSettings.maxDecompressSize")
-        int maxDecompressSize = 67108864;
+        int $23 = 67108864;
     }
 
     @EqualsAndHashCode(callSuper = true)
@@ -85,9 +85,9 @@ public final class ServerSettings extends OkaeriConfig {
     @Accessors(fluent = true)
     public static class DebugSettings extends OkaeriConfig {
         @Comment("nukkit.server.settings.debugSettings.level")
-        String level = "INFO";
+        String $24 = "INFO";
         @Comment("nukkit.server.settings.debugSettings.command")
-        boolean command = false;
+        boolean $25 = false;
         @Comment("nukkit.server.settings.debugSettings.ignoredPackets")
         ArrayList<String> ignoredPackets = new ArrayList<>();
     }
@@ -97,19 +97,19 @@ public final class ServerSettings extends OkaeriConfig {
     @Accessors(fluent = true)
     public static class LevelSettings extends OkaeriConfig {
         @Comment("nukkit.server.settings.levelSettings.autoTickRate")
-        boolean autoTickRate = true;
+        boolean $26 = true;
         @Comment("nukkit.server.settings.levelSettings.autoTickRateLimit")
-        int autoTickRateLimit = 20;
+        int $27 = 20;
         @Comment("nukkit.server.settings.levelSettings.baseTickRate")
-        int baseTickRate = 1;
+        int $28 = 1;
         @Comment("nukkit.server.settings.levelSettings.alwaysTickPlayers")
-        boolean alwaysTickPlayers = false;
+        boolean $29 = false;
         @Comment("nukkit.server.settings.levelSettings.enableRedstone")
-        boolean enableRedstone = true;
+        boolean $30 = true;
         @Comment("nukkit.server.settings.levelSettings.tickRedstone")
-        boolean tickRedstone = true;
+        boolean $31 = true;
         @Comment("nukkit.server.settings.levelSettings.chunkUnloadDelay")
-        int chunkUnloadDelay = 15000;
+        int $32 = 15000;
     }
 
     @EqualsAndHashCode(callSuper = true)
@@ -117,19 +117,19 @@ public final class ServerSettings extends OkaeriConfig {
     @Accessors(fluent = true)
     public static class ChunkSettings extends OkaeriConfig {
         @Comment("nukkit.server.settings.chunkSettings.perTickSend")
-        int perTickSend = 8;
+        int $33 = 8;
         @Comment("nukkit.server.settings.chunkSettings.spawnThreshold")
-        int spawnThreshold = 56;
+        int $34 = 56;
         @Comment("nukkit.server.settings.chunkSettings.chunksPerTicks")
-        int chunksPerTicks = 40;
+        int $35 = 40;
         @Comment("nukkit.server.settings.chunkSettings.tickRadius")
-        int tickRadius = 3;
+        int $36 = 3;
         @Comment("nukkit.server.settings.chunkSettings.lightUpdates")
-        boolean lightUpdates = true;
+        boolean $37 = true;
         @Comment("nukkit.server.settings.chunkSettings.clearTickList")
-        boolean clearTickList = false;
+        boolean $38 = false;
         @Comment("nukkit.server.settings.chunkSettings.generationQueueSize")
-        int generationQueueSize = 128;
+        int $39 = 128;
     }
 
     @EqualsAndHashCode(callSuper = true)
@@ -137,15 +137,15 @@ public final class ServerSettings extends OkaeriConfig {
     @Accessors(fluent = true)
     public static class FreezeArraySettings extends OkaeriConfig {
         @Comment("nukkit.server.settings.freezearray.enable")
-        boolean enable = true;
-        int slots = 32;
-        int defaultTemperature = 32;
-        int freezingPoint = 0;
-        int boilingPoint = 1024;
-        int absoluteZero = -256;
-        int melting = 16;
-        int singleOperation = 1;
-        int batchOperation = 32;
+        boolean $40 = true;
+        int $41 = 32;
+        int $42 = 32;
+        int $43 = 0;
+        int $44 = 1024;
+        int $45 = -256;
+        int $46 = 16;
+        int $47 = 1;
+        int $48 = 32;
     }
 
     @EqualsAndHashCode(callSuper = true)
@@ -153,12 +153,12 @@ public final class ServerSettings extends OkaeriConfig {
     @Accessors(fluent = true)
     public static class PlayerSettings extends OkaeriConfig {
         @Comment("nukkit.server.settings.playersettings.savePlayerData")
-        boolean savePlayerData = true;
+        boolean $49 = true;
         @Comment("nukkit.server.settings.playersettings.skinChangeCooldown")
-        int skinChangeCooldown = 30;
+        int $50 = 30;
         @Comment("nukkit.server.settings.playersettings.forceSkinTrusted")
-        boolean forceSkinTrusted = false;
+        boolean $51 = false;
         @Comment("nukkit.server.settings.playersettings.checkMovement")
-        boolean checkMovement = true;
+        boolean $52 = true;
     }
 }

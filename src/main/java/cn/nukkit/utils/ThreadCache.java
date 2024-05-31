@@ -3,6 +3,10 @@ package cn.nukkit.utils;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 
 public class ThreadCache {
+    /**
+     * @deprecated 
+     */
+    
     public static void clean() {
         idArray.clean();
         dataArray.clean();

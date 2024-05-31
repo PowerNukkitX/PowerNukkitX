@@ -31,10 +31,10 @@ public class Type extends CachedSimpleSelectorArgument {
 
     @Override
     protected Predicate<Entity> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
-        final var have = new ArrayList<String>();
-        final var dontHave = new ArrayList<String>();
+        final var $1 = new ArrayList<String>();
+        final var $2 = new ArrayList<String>();
         for (var type : arguments) {
-            boolean reversed = ParseUtils.checkReversed(type);
+            boolean $3 = ParseUtils.checkReversed(type);
             if (reversed) {
                 type = completionPrefix(type.substring(1));
                 dontHave.add(type);
@@ -44,22 +44,38 @@ public class Type extends CachedSimpleSelectorArgument {
     }
 
     @Override
-    public @Nullable String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
-        return selectorType == SelectorType.RANDOM_PLAYER ? "minecraft:player" : null;
+    public @Nullable 
+    /**
+     * @deprecated 
+     */
+    String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
+        return $4 == SelectorType.RANDOM_PLAYER ? "minecraft:player" : null;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getKeyName() {
         return "type";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPriority() {
         return 4;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String completionPrefix(String type) {
-        var completed = type.startsWith("minecraft:") ? type : "minecraft:" + type;
+        var $5 = type.startsWith("minecraft:") ? type : "minecraft:" + type;
         if (!ENTITY_TYPE2ID.containsKey(type) && !ENTITY_TYPE2ID.containsKey(completed)) {
             //是自定义生物，不需要补全
             return type;
@@ -67,6 +83,10 @@ public class Type extends CachedSimpleSelectorArgument {
         return completed;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean isType(Entity entity, String type) {
         if (entity instanceof Player)
             //player需要特判，因为EntityHuman的getNetworkId()返回-1

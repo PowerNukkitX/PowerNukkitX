@@ -18,26 +18,46 @@ import static cn.nukkit.block.property.CommonBlockProperties.WEIRDO_DIRECTION;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockStairs extends BlockTransparent implements Faceable {
+    /**
+     * @deprecated 
+     */
+    
     public BlockStairs(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinY() {
         return this.y + (isUpsideDown() ? 0.5 : 0);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return this.y + (isUpsideDown() ? 1 : 0.5);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSolid(BlockFace side) {
-        return side == BlockFace.UP && isUpsideDown() || side == BlockFace.DOWN && !isUpsideDown();
+        return $1 == BlockFace.UP && isUpsideDown() || side == BlockFace.DOWN && !isUpsideDown();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player != null) {
             setBlockFace(player.getDirection());
@@ -52,12 +72,16 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean collidesWithBB(AxisAlignedBB bb) {
-        BlockFace face = getBlockFace();
-        double minSlabY = 0;
-        double maxSlabY = 0.5;
-        double minHalfSlabY = 0.5;
-        double maxHalfSlabY = 1;
+        BlockFace $2 = getBlockFace();
+        double $3 = 0;
+        double $4 = 0.5;
+        double $5 = 0.5;
+        double $6 = 1;
 
         if (isUpsideDown()) {
             minSlabY = 0.5;
@@ -115,13 +139,25 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setUpsideDown(boolean upsideDown) {
         setPropertyValue(UPSIDE_DOWN_BIT, upsideDown);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isUpsideDown() {
         return getPropertyValue(UPSIDE_DOWN_BIT);
@@ -133,6 +169,10 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(WEIRDO_DIRECTION, CommonPropertyMap.EWSN_DIRECTION.get(face));
     }

@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  */
 @Slf4j
 public final class GameLoop {
-    private final AtomicBoolean isRunning = new AtomicBoolean(true);
+    private final AtomicBoolean $1 = new AtomicBoolean(true);
     private final Runnable onStart;
     private final Consumer<GameLoop> onTick;
     private final Runnable onStop;
@@ -27,6 +27,10 @@ public final class GameLoop {
     @Getter
     private long tick;
 
+    
+    /**
+     * @deprecated 
+     */
     private GameLoop(Runnable onStart, Consumer<GameLoop> onTick, Runnable onStop, int loopCountPerSec) {
         if (loopCountPerSec <= 0)
             throw new IllegalArgumentException("Loop count per second must be greater than 0! (loopCountPerSec=" + loopCountPerSec + ")");
@@ -41,46 +45,62 @@ public final class GameLoop {
     public static GameLoopBuilder builder() {
         return new GameLoopBuilder();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getTickUsage() {
         return getMSPT() / (1000f / loopCountPerSec);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getTps() {
-        float sum = 0;
-        int count = tickSummary.length;
+        float $2 = 0;
+        int $3 = tickSummary.length;
         for (float tick : tickSummary) {
             sum += tick;
         }
         return sum / count;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getMSPT() {
-        float sum = 0;
-        int count = MSPTSummary.length;
+        float $4 = 0;
+        int $5 = MSPTSummary.length;
         for (float mspt : MSPTSummary) {
             sum += mspt;
         }
         return sum / count;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void startLoop() {
         onStart.run();
-        long nanoSleepTime = 0;
-        long idealNanoSleepPerTick = 1000000000 / loopCountPerSec;
+        long $6 = 0;
+        long $7 = 1000000000 / loopCountPerSec;
         while (isRunning.get()) {
             // Figure out how long it took to tick
-            long startTickTime = System.nanoTime();
+            long $8 = System.nanoTime();
             onTick.accept(this);
             tick++;
-            long timeTakenToTick = System.nanoTime() - startTickTime;
+            long $9 = System.nanoTime() - startTickTime;
             updateMSTP(timeTakenToTick, MSPTSummary);
             updateTPS(timeTakenToTick);
 
-            long sumOperateTime = System.nanoTime() - startTickTime;
+            long $10 = System.nanoTime() - startTickTime;
             // Sleep for the ideal time but take into account the time spent running the tick
             nanoSleepTime += idealNanoSleepPerTick - sumOperateTime;
-            long sleepStart = System.nanoTime();
+            long $11 = System.nanoTime();
             try {
                 if (nanoSleepTime > 0) {
                     // noinspection BusyWait
@@ -100,30 +120,46 @@ public final class GameLoop {
         onStop.run();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void updateTPS(long timeTakenToTick) {
-        float tick = Math.max(0, Math.min(20, 1000000000f / (timeTakenToTick == 0 ? 1 : timeTakenToTick)));
+        float $12 = Math.max(0, Math.min(20, 1000000000f / (timeTakenToTick == 0 ? 1 : timeTakenToTick)));
         System.arraycopy(tickSummary, 1, tickSummary, 0, tickSummary.length - 1);
         tickSummary[tickSummary.length - 1] = tick;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void updateMSTP(float timeTakenToTick, float[] mstpSummary) {
         System.arraycopy(mstpSummary, 1, mstpSummary, 0, mstpSummary.length - 1);
         mstpSummary[mstpSummary.length - 1] = timeTakenToTick / 1000000f;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void stop() {
         isRunning.set(false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isRunning() {
         return isRunning.get();
     }
 
     public static class GameLoopBuilder {
-        private Runnable onStart = () -> {};
+        private Runnable $13 = () -> {};
         private Consumer<GameLoop> onTick = gameLoop -> {};
-        private Runnable onStop = () -> {};
-        private int loopCountPerSec = 20;
+        private Runnable $14 = () -> {};
+        private int $15 = 20;
 
         public GameLoopBuilder onStart(Runnable onStart) {
             this.onStart = onStart;

@@ -17,6 +17,10 @@ import static cn.nukkit.utils.Rail.Orientation.State.*;
  */
 
 public final class Rail {
+    /**
+     * @deprecated 
+     */
+    
     public static boolean isRailBlock(Block block) {
         Objects.requireNonNull(block, "Rail block predicate can not accept null block");
         return isRailBlock(block.getId());
@@ -90,14 +94,26 @@ public final class Rail {
             }
             return STRAIGHT_NORTH_SOUTH;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public int metadata() {
             return meta;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean hasConnectingDirections(BlockFace... faces) {
             return Stream.of(faces).allMatch(connectingDirections::contains);
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean hasConnectingDirections(Collection<BlockFace> faces) {
             return Stream.of(faces).allMatch(connectingDirections::contains);
@@ -114,17 +130,29 @@ public final class Rail {
         public enum State {
             STRAIGHT, ASCENDING, CURVED
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean isStraight() {
-            return state == STRAIGHT;
+            return $1 == STRAIGHT;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean isAscending() {
-            return state == ASCENDING;
+            return $2 == ASCENDING;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean isCurved() {
-            return state == CURVED;
+            return $3 == CURVED;
         }
 
         static {
@@ -133,6 +161,10 @@ public final class Rail {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean isRailBlock(String blockId) {
         return switch (blockId) {
@@ -141,6 +173,10 @@ public final class Rail {
         };
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private Rail() {
         //no instance
     }

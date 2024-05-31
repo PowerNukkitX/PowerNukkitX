@@ -14,9 +14,17 @@ import java.util.concurrent.ThreadLocalRandom;
  * The default is red flower, but there are other flower variants
  */
 public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+    /**
+     * @deprecated 
+     */
+    
     public BlockFlower(BlockState blockstate) {
         super(blockstate);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean isSupportValid(Block block) {
         return switch (block.getId()) {
@@ -24,14 +32,22 @@ public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPo
             default -> false;
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canPlantOn(Block block) {
         return isSupportValid(block);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        Block down = this.down();
+        Block $1 = this.down();
         if (canPlantOn(down)) {
             this.getLevel().setBlock(block, this, true);
 
@@ -41,6 +57,10 @@ public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPo
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!canPlantOn(down())) {
@@ -54,11 +74,19 @@ public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPo
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { //Bone meal
             if (player != null && (player.gamemode & 0x01) == 0) {
@@ -67,8 +95,8 @@ public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPo
 
             this.level.addParticle(new BoneMealParticle(this));
 
-            for (int i = 0; i < 8; i++) {
-                Vector3 vec = this.add(
+            for ($2nt $1 = 0; i < 8; i++) {
+                Vector3 $3 = this.add(
                         ThreadLocalRandom.current().nextInt(-3, 4),
                         ThreadLocalRandom.current().nextInt(-1, 2),
                         ThreadLocalRandom.current().nextInt(-3, 4));

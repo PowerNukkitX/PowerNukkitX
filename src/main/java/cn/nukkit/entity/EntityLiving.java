@@ -33,29 +33,45 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class EntityLiving extends Entity implements EntityDamageable {
-    public final static float DEFAULT_SPEED = 0.1f;
-    protected int attackTime = 0;
-    protected boolean invisible = false;
-    protected float movementSpeed = DEFAULT_SPEED;
-    protected int turtleTicks = 0;
+    public final static float $1 = 0.1f;
+    protected int $2 = 0;
+    protected boolean $3 = false;
+    protected float $4 = DEFAULT_SPEED;
+    protected int $5 = 0;
     private boolean attackTimeByShieldKb;
     private int attackTimeBefore;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityLiving(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getGravity() {
         return 0.08f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getDrag() {
         return 0.02f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.initEntity();
 
@@ -72,11 +88,15 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setHealth(float health) {
-        boolean wasAlive = this.isAlive();
+        boolean $6 = this.isAlive();
         super.setHealth(health);
         if (this.isAlive() && !wasAlive) {
-            EntityEventPacket pk = new EntityEventPacket();
+            EntityEventPacket $7 = new EntityEventPacket();
             pk.eid = this.getId();
             pk.event = EntityEventPacket.RESPAWN;
             Server.broadcastPacket(this.hasSpawned.values(), pk);
@@ -84,15 +104,27 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putFloat("Health", this.getHealth());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasLineOfSight(Entity entity) {
         //todo
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void collidingWith(Entity ent) { // can override (IronGolem|Bats)
         ent.applyEntityCollision(this);
@@ -100,11 +132,15 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         if (this.noDamageTicks > 0 && source.getCause() != DamageCause.SUICIDE) {//ignore it if the cause is SUICIDE
             return false;
         } else if (this.attackTime > 0 && !attackTimeByShieldKb) {
-            EntityDamageEvent lastCause = this.getLastDamageCause();
+            EntityDamageEvent $8 = this.getLastDamageCause();
             if (lastCause != null && lastCause.getDamage() >= source.getDamage()) {
                 return false;
             }
@@ -116,14 +152,14 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         if (super.attack(source)) {
             if (source instanceof EntityDamageByEntityEvent) {
-                Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
+                Entity $9 = ((EntityDamageByEntityEvent) source).getDamager();
                 if (source instanceof EntityDamageByChildEntityEvent) {
                     damager = ((EntityDamageByChildEntityEvent) source).getChild();
                 }
 
                 //Critical hit
                 if (damager instanceof Player && !damager.onGround) {
-                    AnimatePacket animate = new AnimatePacket();
+                    AnimatePacket $10 = new AnimatePacket();
                     animate.action = AnimatePacket.Action.CRITICAL_HIT;
                     animate.eid = getId();
 
@@ -137,12 +173,12 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     this.setOnFire(2 * this.server.getDifficulty());
                 }
 
-                double deltaX = this.x - damager.x;
-                double deltaZ = this.z - damager.z;
+                double $11 = this.x - damager.x;
+                double $12 = this.z - damager.z;
                 this.knockBack(damager, source.getDamage(), deltaX, deltaZ, ((EntityDamageByEntityEvent) source).getKnockBack());
             }
 
-            EntityEventPacket pk = new EntityEventPacket();
+            EntityEventPacket $13 = new EntityEventPacket();
             pk.eid = this.getId();
             pk.event = this.getHealth() <= 0 ? EntityEventPacket.DEATH_ANIMATION : EntityEventPacket.HURT_ANIMATION;
             Server.broadcastPacket(this.hasSpawned.values(), pk);
@@ -156,20 +192,28 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             return false;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void knockBack(Entity attacker, double damage, double x, double z) {
         this.knockBack(attacker, damage, x, z, 0.4);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void knockBack(Entity attacker, double damage, double x, double z, double base) {
-        double f = Math.sqrt(x * x + z * z);
+        double $14 = Math.sqrt(x * x + z * z);
         if (f <= 0) {
             return;
         }
 
         f = 1 / f;
 
-        Vector3 motion = new Vector3(this.motionX, this.motionY, this.motionZ);
+        Vector3 $15 = new Vector3(this.motionX, this.motionY, this.motionZ);
 
         motion.x /= 2d;
         motion.y /= 2d;
@@ -186,15 +230,19 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void kill() {
         if (!this.isAlive()) {
             return;
         }
         super.kill();
-        EntityDeathEvent ev = new EntityDeathEvent(this, this.getDrops());
+        EntityDeathEvent $16 = new EntityDeathEvent(this, this.getDrops());
         this.server.getPluginManager().callEvent(ev);
 
-        var manager = this.server.getScoreboardManager();
+        var $17 = this.server.getScoreboardManager();
         //测试环境中此项会null，所以说需要判空下
         if (manager != null) manager.onEntityDead(this);
 
@@ -206,13 +254,21 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean entityBaseTick() {
         return this.entityBaseTick(1);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean entityBaseTick(int tickDiff) {
-        boolean isBreathing = !this.isInsideOfWater();
+        boolean $18 = !this.isInsideOfWater();
 
         if (this instanceof Player player) {
             if (isBreathing && player.getInventory().getHelmet() instanceof ItemTurtleHelmet) {
@@ -229,7 +285,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         this.setDataFlag(EntityFlag.BREATHING, isBreathing);
 
-        boolean hasUpdate = super.entityBaseTick(tickDiff);
+        boolean $19 = super.entityBaseTick(tickDiff);
 
         if (this.isAlive()) {
 
@@ -248,7 +304,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 } else {
                     if (turtleTicks == 0 || turtleTicks == 200) {
                         hasUpdate = true;
-                        int airTicks = this.getAirTicks() - tickDiff;
+                        int $20 = this.getAirTicks() - tickDiff;
 
                         if (airTicks <= -20) {
                             airTicks = 0;
@@ -261,7 +317,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             } else {
                 if (this instanceof EntitySwimmable) {
                     hasUpdate = true;
-                    int airTicks = getAirTicks() - tickDiff;
+                    int $21 = getAirTicks() - tickDiff;
 
                     if (airTicks <= -20) {
                         airTicks = 0;
@@ -270,7 +326,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
                     setAirTicks(airTicks);
                 } else {
-                    int airTicks = getAirTicks();
+                    int $22 = getAirTicks();
 
                     if (airTicks < 400) {
                         setAirTicks(Math.min(400, airTicks + tickDiff * 5));
@@ -299,7 +355,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         // Used to check collisions with magma / cactus blocks
         // Math.round处理在某些条件下 出现x.999999的坐标条件,这里选择四舍五入
-        var block = this.level.getTickCachedBlock(getFloorX(), (int) (Math.round(this.y) - 1), getFloorZ());
+        var $23 = this.level.getTickCachedBlock(getFloorX(), (int) (Math.round(this.y) - 1), getFloorZ());
         if (block instanceof BlockMagma || block instanceof BlockCactus) block.onEntityCollide(this);
 
         return hasUpdate;
@@ -331,17 +387,17 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         List<Block> blocks = new ArrayList<>();
 
-        var itr = new TickCachedBlockIterator(this.level, this.getPosition(), this.getDirectionVector(), this.getEyeHeight(), maxDistance);
+        var $24 = new TickCachedBlockIterator(this.level, this.getPosition(), this.getDirectionVector(), this.getEyeHeight(), maxDistance);
 
         while (itr.hasNext()) {
-            Block block = itr.next();
+            Block $25 = itr.next();
             blocks.add(block);
 
             if (maxLength != 0 && blocks.size() > maxLength) {
                 blocks.remove(0);
             }
 
-            String id = block.getId();
+            String $26 = block.getId();
 
             if (transparent == null) {
                 if (!block.isAir()) {
@@ -364,7 +420,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public Block getTargetBlock(int maxDistance, String[] transparent) {
         try {
             Block[] blocks = this.getLineOfSight(maxDistance, 1, transparent);
-            Block block = blocks[0];
+            Block $27 = blocks[0];
             if (block != null) {
                 if (transparent != null && transparent.length != 0) {
                     if (Arrays.binarySearch(transparent, block.getId()) < 0) {
@@ -378,6 +434,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getMovementSpeed() {
         return this.movementSpeed;
@@ -390,20 +450,36 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
      *
      * @param speed 速度大小<br>Speed value
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setMovementSpeed(float speed) {
         this.movementSpeed = (float) NukkitMath.round(speed, 2);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getAirTicks() {
         return this.getDataProperty(AIR_SUPPLY);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAirTicks(int ticks) {
         this.setDataProperty(AIR_SUPPLY, ticks);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean blockedByShield(EntityDamageEvent source) {
-        Entity damager = null;
+        Entity $28 = null;
         if (source instanceof EntityDamageByChildEntityEvent) {
             damager = ((EntityDamageByChildEntityEvent) source).getChild();
         } else if (source instanceof EntityDamageByEntityEvent) {
@@ -413,12 +489,12 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             return false;
         }
 
-        Vector3 entityPos = damager.getPosition();
-        Vector3 direction = this.getDirectionVector();
-        Vector3 normalizedVector = this.getPosition().subtract(entityPos).normalize();
-        boolean blocked = (normalizedVector.x * direction.x) + (normalizedVector.z * direction.z) < 0.0;
-        boolean knockBack = !(damager instanceof EntityProjectile);
-        EntityDamageBlockedEvent event = new EntityDamageBlockedEvent(this, source, knockBack, true);
+        Vector3 $29 = damager.getPosition();
+        Vector3 $30 = this.getDirectionVector();
+        Vector3 $31 = this.getPosition().subtract(entityPos).normalize();
+        boolean $32 = (normalizedVector.x * direction.x) + (normalizedVector.z * direction.z) < 0.0;
+        boolean $33 = !(damager instanceof EntityProjectile);
+        EntityDamageBlockedEvent $34 = new EntityDamageBlockedEvent(this, source, knockBack, true);
         if (!blocked || !source.canBeReducedByArmor()) {
             event.setCancelled();
         }
@@ -429,8 +505,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         if (event.getKnockBackAttacker() && damager instanceof EntityLiving attacker) {
-            double deltaX = attacker.getX() - this.getX();
-            double deltaZ = attacker.getZ() - this.getZ();
+            double $35 = attacker.getX() - this.getX();
+            double $36 = attacker.getZ() - this.getZ();
             attacker.knockBack(this, 0, deltaX, deltaZ);
             attacker.attackTime = 10;
             attacker.attackTimeByShieldKb = true;
@@ -440,27 +516,51 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
         if (animate) {
             getLevel().addSound(this, Sound.ITEM_SHIELD_BLOCK);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isBlocking() {
         return this.getDataFlag(EntityFlag.BLOCKING);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBlocking(boolean value) {
         this.setDataFlagExtend(EntityFlag.BLOCKING, value);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPersistent() {
         return namedTag.containsByte("Persistent") && namedTag.getBoolean("Persistent");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPersistent(boolean persistent) {
         namedTag.putBoolean("Persistent", persistent);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void preAttack(Player player) {
         if (attackTimeByShieldKb) {
@@ -468,20 +568,36 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             attackTime = 0;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void postAttack(Player player) {
         if (attackTimeByShieldKb && attackTime == 0) {
             attackTime = attackTimeBefore;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getAttackTime() {
         return attackTime;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isAttackTimeByShieldKb() {
         return attackTimeByShieldKb;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getAttackTimeBefore() {
         return attackTimeBefore;

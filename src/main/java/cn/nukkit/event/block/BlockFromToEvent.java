@@ -6,13 +6,17 @@ import cn.nukkit.event.HandlerList;
 
 public class BlockFromToEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private Block to;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockFromToEvent(Block block, Block to) {
         super(block);
@@ -26,6 +30,10 @@ public class BlockFromToEvent extends BlockEvent implements Cancellable {
     public Block getTo() {
         return to;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setTo(Block newTo) {
         to = newTo;

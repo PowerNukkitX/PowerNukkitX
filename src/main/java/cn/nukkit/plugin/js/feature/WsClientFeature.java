@@ -9,6 +9,10 @@ import java.util.*;
 
 public class WsClientFeature implements JSFeature {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "WsClient";
     }
@@ -21,7 +25,7 @@ public class WsClientFeature implements JSFeature {
     @Override
     public Map<String, Proxy> generateModule(String moduleName, Context context) {
         if ("WsClient".equals(moduleName)) {
-            var map = new HashMap<String, Proxy>(1, 1);
+            var $1 = new HashMap<String, Proxy>(1, 1);
             map.put("WsClientBuilder", new WsClientBuilder(context));
             return map;
         }

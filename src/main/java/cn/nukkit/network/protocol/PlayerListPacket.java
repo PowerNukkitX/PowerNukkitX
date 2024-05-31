@@ -14,20 +14,28 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PlayerListPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.PLAYER_LIST_PACKET;
+    public static final int $1 = ProtocolInfo.PLAYER_LIST_PACKET;
 
-    public static final byte TYPE_ADD = 0;
-    public static final byte TYPE_REMOVE = 1;
+    public static final byte $2 = 0;
+    public static final byte $3 = 1;
 
     public byte type;
     public Entry[] entries = Entry.EMPTY_ARRAY;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeByte(this.type);
@@ -59,6 +67,10 @@ public class PlayerListPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -68,25 +80,37 @@ public class PlayerListPacket extends DataPacket {
         public static final Entry[] EMPTY_ARRAY = new Entry[0];
 
         public final UUID uuid;
-        public long entityId = 0;
-        public String name = "";
-        public String xboxUserId = ""; //TODO
-        public String platformChatId = ""; //TODO
-        public int buildPlatform = -1;
+        public long $4 = 0;
+        public String $5 = "";
+        public String $6 = ""; //TODO
+        public String $7 = ""; //TODO
+        public int $8 = -1;
         public Skin skin;
         public boolean isTeacher;
         public boolean isHost;
         private boolean subClient;
 
         public boolean trustedSkin;
+    /**
+     * @deprecated 
+     */
+    
 
         public Entry(UUID uuid) {
             this.uuid = uuid;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public Entry(UUID uuid, long entityId, String name, Skin skin) {
             this(uuid, entityId, name, skin, "");
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public Entry(UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
             this.uuid = uuid;
@@ -97,6 +121,10 @@ public class PlayerListPacket extends DataPacket {
             this.xboxUserId = xboxUserId == null ? "" : xboxUserId;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

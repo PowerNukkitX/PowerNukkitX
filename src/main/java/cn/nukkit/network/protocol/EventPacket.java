@@ -15,16 +15,28 @@ public class EventPacket extends DataPacket {
     public EventData eventData;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.EVENT_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeVarLong(this.eid);
@@ -32,6 +44,10 @@ public class EventPacket extends DataPacket {
         byteBuf.writeByte(this.usePlayerId);
         eventData.write(byteBuf);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

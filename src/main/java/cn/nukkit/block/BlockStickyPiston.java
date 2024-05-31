@@ -5,17 +5,25 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockStickyPiston extends BlockPistonBase {
-    public static final BlockProperties PROPERTIES = new BlockProperties(STICKY_PISTON, CommonBlockProperties.FACING_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(STICKY_PISTON, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockStickyPiston() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockStickyPiston(BlockState blockstate) {
         super(blockstate);
@@ -28,6 +36,10 @@ public class BlockStickyPiston extends BlockPistonBase {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Sticky Piston";
     }

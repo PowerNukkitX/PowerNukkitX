@@ -17,42 +17,70 @@ import org.jetbrains.annotations.Nullable;
  * Alias NetherPortal
  */
 public class BlockPortal extends BlockFlowable implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(PORTAL, CommonBlockProperties.PORTAL_AXIS);
+    public static final BlockProperties $1 = new BlockProperties(PORTAL, CommonBlockProperties.PORTAL_AXIS);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPortal() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPortal(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Nether Portal Block";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeFlowedInto() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return -1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 11;
     }
@@ -63,20 +91,32 @@ public class BlockPortal extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePushed() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePulled() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
-        boolean result = super.onBreak(item);
+        boolean $2 = super.onBreak(item);
         for (BlockFace face : BlockFace.values()) {
-            Block b = this.getSide(face);
+            Block $3 = this.getSide(face);
             if (b != null) {
                 if (b instanceof BlockPortal) {
                     result &= b.onBreak(item);
@@ -87,11 +127,19 @@ public class BlockPortal extends BlockFlowable implements Faceable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }

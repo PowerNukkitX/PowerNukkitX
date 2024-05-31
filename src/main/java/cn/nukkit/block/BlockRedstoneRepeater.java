@@ -12,14 +12,22 @@ import static cn.nukkit.block.property.CommonBlockProperties.REPEATER_DELAY;
 
 
 public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
+    /**
+     * @deprecated 
+     */
+    
     public BlockRedstoneRepeater(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
-        int repeaterDelay = getPropertyValue(REPEATER_DELAY);
+        int $1 = getPropertyValue(REPEATER_DELAY);
         if (repeaterDelay == 3) {
             setPropertyValue(REPEATER_DELAY, 0);
         } else {
@@ -31,11 +39,15 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!isSupportValid(down())) {
             return false;
         }
-        BlockFace blockFace = player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH;
+        BlockFace $2 = player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH;
         setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(blockFace));
         if (!this.level.setBlock(block, this, true, true)) {
             return false;
@@ -55,6 +67,10 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected boolean isAlternateInput(Block block) {
         return isDiode(block);
     }
@@ -65,11 +81,19 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected int getDelay() {
         return (1 + getPropertyValue(REPEATER_DELAY)) * 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isLocked() {
         return this.getPowerOnSides() > 0;
     }

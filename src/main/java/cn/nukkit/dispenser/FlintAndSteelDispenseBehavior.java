@@ -10,6 +10,10 @@ import cn.nukkit.math.BlockFace;
 
 
 public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
+    /**
+     * @deprecated 
+     */
+    
 
 
     public FlintAndSteelDispenseBehavior() {
@@ -18,10 +22,10 @@ public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
-        Block target = block.getSide(face);
+        Block $1 = block.getSide(face);
         item = item.clone();
 
-        var down = target.down();
+        var $2 = target.down();
         if (down.getId() == BlockID.OBSIDIAN) {
             if (down.level.getDimension() != Level.DIMENSION_THE_END) {
                 if (down.level.createPortal(down)) {

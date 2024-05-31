@@ -12,8 +12,8 @@ public class SnappyCompression implements BatchCompression {
 
     @Override
     public ByteBuf encode(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
-        int readableBytes = msg.readableBytes();
-        ByteBuf output = ctx.alloc().ioBuffer(readableBytes);
+        int $1 = msg.readableBytes();
+        ByteBuf $2 = ctx.alloc().ioBuffer(readableBytes);
         try {
             byte[] data = new byte[readableBytes];
             msg.readBytes(data);
@@ -27,8 +27,8 @@ public class SnappyCompression implements BatchCompression {
 
     @Override
     public ByteBuf decode(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
-        int readableBytes = msg.readableBytes();
-        ByteBuf output = ctx.alloc().ioBuffer(readableBytes);
+        int $3 = msg.readableBytes();
+        ByteBuf $4 = ctx.alloc().ioBuffer(readableBytes);
         try {
             byte[] data = new byte[readableBytes];
             msg.readBytes(data);
@@ -46,10 +46,18 @@ public class SnappyCompression implements BatchCompression {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setLevel(int level) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLevel() {
         return -1;
     }

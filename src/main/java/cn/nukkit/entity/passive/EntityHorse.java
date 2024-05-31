@@ -68,7 +68,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityRideable, EntityOwnable, InventoryHolder {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return HORSE;
     }
     
@@ -76,7 +80,11 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4};
     private Map<String, Attribute> attributeMap;
     private HorseInventory horseInventory;
-    private final AtomicBoolean jumping = new AtomicBoolean(false);
+    private final AtomicBoolean $1 = new AtomicBoolean(false);
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -85,6 +93,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.7f;
@@ -93,6 +105,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.isBaby()) {
             return 0.8f;
@@ -101,6 +117,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         attributeMap = new HashMap<>();
         if (this.namedTag.containsList("Attributes")) {
@@ -119,7 +139,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         ListTag<CompoundTag> inventoryTag;
         if (this.namedTag.containsList("Inventory")) {
             inventoryTag = this.namedTag.getList("Inventory", CompoundTag.class);
-            Item item0 = NBTIO.getItemHelper(inventoryTag.get(0));
+            Item $2 = NBTIO.getItemHelper(inventoryTag.get(0));
             if (item0.isNull()) {
                 this.setDataFlag(EntityFlag.SADDLED, false);
                 this.setDataFlag(EntityFlag.WASD_CONTROLLED, false);
@@ -146,12 +166,16 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         ListTag<CompoundTag> inventoryTag = new ListTag<>();
         if (this.getInventory() != null) {
-            Item item0 = this.getInventory().getItem(0);
-            Item item1 = this.getInventory().getItem(1);
+            Item $3 = this.getInventory().getItem(0);
+            Item $4 = this.getInventory().getItem(1);
             inventoryTag.add(NBTIO.putItemHelper(item0, 0));
             inventoryTag.add(NBTIO.putItemHelper(item1, 1));
         }
@@ -165,14 +189,18 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setHealth(float health) {
         super.setHealth(health);
         if (this.isAlive()) {
-            Attribute attr = this.attributeMap.get("minecraft:health")
+            Attribute $5 = this.attributeMap.get("minecraft:health")
                     .setDefaultValue(this.getMaxHealth())
                     .setMaxValue(this.getMaxHealth())
                     .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
-            UpdateAttributesPacket pk = new UpdateAttributesPacket();
+            UpdateAttributesPacket $6 = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attr};
             pk.entityId = this.getId();
             Server.broadcastPacket(this.getViewers().values().toArray(Player.EMPTY_ARRAY), pk);
@@ -180,14 +208,18 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setMaxHealth(int maxHealth) {
         super.setMaxHealth(maxHealth);
-        Attribute attr = this.attributeMap.get("minecraft:health")
+        Attribute $7 = this.attributeMap.get("minecraft:health")
                 .setMaxValue(maxHealth)
                 .setDefaultValue(maxHealth)
                 .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
         if (this.isAlive()) {
-            UpdateAttributesPacket pk = new UpdateAttributesPacket();
+            UpdateAttributesPacket $8 = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attr};
             pk.entityId = this.getId();
             Server.broadcastPacket(this.getViewers().values().toArray(Player.EMPTY_ARRAY), pk);
@@ -200,6 +232,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Horse";
     }
@@ -250,11 +286,15 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void asyncPrepare(int currentTick) {
         if (this.getRider() == null || this.getOwner() == null || this.getSaddle().isNull()) {
             isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
             if (!this.isImmobile()) {
-                var behaviorGroup = getBehaviorGroup();
+                var $9 = getBehaviorGroup();
                 if (behaviorGroup == null) return;
                 behaviorGroup.collectSensorData(this);
                 behaviorGroup.evaluateCoreBehaviors(this);
@@ -281,15 +321,19 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fall(float fallDistance) {
         if (this.hasEffect(EffectType.SLOW_FALLING)) {
             return;
         }
 
-        Location floorLocation = this.floor();
-        Block down = this.level.getBlock(floorLocation.down());
+        Location $10 = this.floor();
+        Block $11 = this.level.getBlock(floorLocation.down());
 
-        EntityFallEvent event = new EntityFallEvent(this, down, fallDistance);
+        EntityFallEvent $12 = new EntityFallEvent(this, down, fallDistance);
         this.server.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
@@ -297,8 +341,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         fallDistance = event.getFallDistance();
 
         if ((!this.isPlayer || level.getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
-            int jumpBoost = this.hasEffect(EffectType.JUMP_BOOST) ? getEffect(EffectType.JUMP_BOOST).getLevel() : 0;
-            float damage = fallDistance - 3 - jumpBoost - getClientMaxJumpHeight();
+            int $13 = this.hasEffect(EffectType.JUMP_BOOST) ? getEffect(EffectType.JUMP_BOOST).getLevel() : 0;
+            float $14 = fallDistance - 3 - jumpBoost - getClientMaxJumpHeight();
 
             if (damage > 0) {
                 this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.FALL, damage));
@@ -312,14 +356,14 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                 if (onPhysicalInteraction(down, false)) {
                     return;
                 }
-                var farmEvent = new FarmLandDecayEvent(this, down);
+                var $15 = new FarmLandDecayEvent(this, down);
                 this.server.getPluginManager().callEvent(farmEvent);
                 if (farmEvent.isCancelled()) return;
                 this.level.setBlock(down, new BlockDirt(), false, true);
                 return;
             }
 
-            Block floor = this.level.getTickCachedBlock(floorLocation);
+            Block $16 = this.level.getTickCachedBlock(floorLocation);
             if (floor instanceof BlockTurtleEgg) {
                 if (onPhysicalInteraction(floor, ThreadLocalRandom.current().nextInt(10) >= 3)) {
                     return;
@@ -330,8 +374,12 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
-        boolean b = super.onUpdate(currentTick);
+        $17oolean $1 = super.onUpdate(currentTick);
         if (currentTick % 2 == 0) {
             if (this.jumping!=null && this.jumping.get() && this.isOnGround()) {
                 this.setDataFlag(EntityFlag.STANDING, false);
@@ -342,9 +390,17 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCollideWith(Entity entity) {
         return super.canCollideWith(entity) && entity != this.getRider();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void onInput(Location clientLoc) {
         if (this.getRider() == null || this.getOwner() == null || this.getSaddle().isNull()) return;
@@ -361,8 +417,12 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
-    public @Nullable String getOwnerName() {
-        String ownerName = EntityOwnable.super.getOwnerName();
+    public @Nullable 
+    /**
+     * @deprecated 
+     */
+    String getOwnerName() {
+        String $18 = EntityOwnable.super.getOwnerName();
         if (ownerName == null) {
             this.setDataProperty(Entity.CONTAINER_TYPE, 0);
             this.setDataProperty(Entity.CONTAINER_SIZE, 0);
@@ -375,12 +435,20 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         mountEntity(player);
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean mountEntity(Entity entity) {
         this.getMemoryStorage().put(CoreMemoryTypes.RIDER_NAME, entity.getName());
         super.mountEntity(entity, EntityLink.Type.RIDER);
@@ -388,6 +456,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean dismountEntity(Entity entity) {
         this.getMemoryStorage().clear(CoreMemoryTypes.RIDER_NAME);
         return super.dismountEntity(entity);
@@ -404,11 +476,15 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     public @Nullable Entity getRider() {
-        String name = getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
+        String $19 = getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
         if (name != null) {
             return Server.getInstance().getPlayerExact(name);
         } else return null;//todo other entity
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float getClientMaxJumpHeight() {
         return attributeMap.get("minecraft:horse.jump_strength").getValue();
@@ -417,6 +493,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     /**
      * @see HorseInventory#setSaddle(Item)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setSaddle(Item item) {
         this.getInventory().setSaddle(item);
     }
@@ -424,6 +504,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     /**
      * @see HorseInventory#setHorseArmor(Item)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setHorseArmor(Item item) {
         this.getInventory().setHorseArmor(item);
     }
@@ -447,6 +531,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * <p>
      * Play an animation of a failed tamer
      */
+    /**
+     * @deprecated 
+     */
+    
     public void playTameFailAnimation() {
         this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_MAD, -1, "minecraft:horse", this.isBaby(), false);
         this.setDataFlag(EntityFlag.STANDING);
@@ -457,32 +545,52 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * <p>
      * Stop playing the animation that failed to tame
      */
+    /**
+     * @deprecated 
+     */
+    
     public void stopTameFailAnimation() {
         this.setDataFlag(EntityFlag.STANDING, false);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void spawnTo(Player player) {
         super.spawnTo(player);
         //确保第一次生成时血量更新，单纯在AddEntityPacket中发送属性似乎还不够，还需要UpdateAttributesPacket
-        Attribute attr = this.attributeMap.get("minecraft:health")
+        Attribute $20 = this.attributeMap.get("minecraft:health")
                 .setDefaultValue(this.getMaxHealth())
                 .setMaxValue(this.getMaxHealth())
                 .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
-        UpdateAttributesPacket pk = new UpdateAttributesPacket();
+        UpdateAttributesPacket $21 = new UpdateAttributesPacket();
         pk.entries = new Attribute[]{attr};
         pk.entityId = this.getId();
         player.dataPacket(pk);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected float generateRandomMaxHealth() {
         return 15.0F + (float) Utils.rand(0, 8) + (float) Utils.rand(0, 9);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected float generateRandomJumpStrength() {
         return (float) (0.4F + Utils.random.nextDouble() * 0.2D + Utils.random.nextDouble() * 0.2D + Utils.random.nextDouble() * 0.2D);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected float generateRandomSpeed() {
         return (float) ((0.45F + Utils.random.nextDouble() * 0.3D + Utils.random.nextDouble() * 0.3D + Utils.random.nextDouble() * 0.3D) * 0.25D);
     }
@@ -490,7 +598,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     protected Attribute[] randomizeAttributes() {
         Attribute[] attributes = new Attribute[3];
         attributes[0] = Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(generateRandomSpeed());
-        float maxHealth = generateRandomMaxHealth();
+        float $22 = generateRandomMaxHealth();
         attributes[1] = Attribute.getAttribute(Attribute.MAX_HEALTH).setMinValue(0).setMaxValue(maxHealth).setDefaultValue(maxHealth).setValue(maxHealth);
         attributes[2] = Attribute.getAttribute(Attribute.HORSE_JUMP_STRENGTH).setValue(generateRandomJumpStrength());
         ListTag<CompoundTag> compoundTagListTag = new ListTag<>();
@@ -501,7 +609,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
     @Override
     protected DataPacket createAddEntityPacket() {
-        AddEntityPacket addEntity = new AddEntityPacket();
+        AddEntityPacket $23 = new AddEntityPacket();
         addEntity.type = this.getNetworkId();
         addEntity.entityUniqueId = this.getId();
         if (this instanceof CustomEntity) {
@@ -520,7 +628,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         addEntity.entityData = this.entityDataMap;
         addEntity.attributes = this.attributeMap.values().toArray(Attribute.EMPTY_ARRAY);
         addEntity.links = new EntityLink[this.passengers.size()];
-        for (int i = 0; i < addEntity.links.length; i++) {
+        for ($24nt $2 = 0; i < addEntity.links.length; i++) {
             addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false);
         }
 

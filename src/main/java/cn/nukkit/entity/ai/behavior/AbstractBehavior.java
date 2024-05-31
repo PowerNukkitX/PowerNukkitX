@@ -13,5 +13,5 @@ import lombok.Setter;
 public abstract class AbstractBehavior implements IBehavior {
     @Getter
     @Setter
-    protected BehaviorState behaviorState = BehaviorState.STOP;
+    protected BehaviorState $1 = BehaviorState.STOP;
 }

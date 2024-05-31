@@ -26,22 +26,34 @@ import java.util.List;
  */
 public class BlockTarget extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntityTarget> {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(TARGET);
+    public static final BlockProperties $1 = new BlockProperties(TARGET);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTarget() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTarget(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Target";
     }
@@ -52,27 +64,47 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getBlockEntityType() {
         return BlockEntity.TARGET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPowerSource() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWeakPower(BlockFace face) {
-        BlockEntityTarget target = getBlockEntity();
-        return target == null? 0 : target.getActivePower();
+        BlockEntityTarget $2 = getBlockEntity();
+        return $3 == null? 0 : target.getActivePower();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean activatePower(int power) {
         return activatePower(power, 4 * 2);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean activatePower(int power, int ticks) {
-        Level level = getLevel();
+        Level $4 = getLevel();
         if (power <= 0 || ticks <= 0) {
             return deactivatePower();
         }
@@ -81,8 +113,8 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
             return false;
         }
 
-        BlockEntityTarget target = getOrCreateBlockEntity();
-        int previous = target.getActivePower();
+        BlockEntityTarget $5 = getOrCreateBlockEntity();
+        int $6 = target.getActivePower();
         level.cancelSheduledUpdate(this, this);
         level.scheduleUpdate(this, ticks);
         target.setActivePower(power);
@@ -91,11 +123,15 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         }
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean deactivatePower() {
-        BlockEntityTarget target = getBlockEntity();
+        BlockEntityTarget $7 = getBlockEntity();
         if (target != null) {
-            int currentPower = target.getActivePower();
+            int $8 = target.getActivePower();
             target.setActivePower(0);
             target.close();
             if (currentPower != 0 && level.getServer().getSettings().levelSettings().enableRedstone()) {
@@ -107,6 +143,10 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             deactivatePower();
@@ -116,29 +156,33 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
-        int ticks = 8;
+        int $9 = 8;
         if (projectile instanceof EntityArrow || projectile instanceof EntityThrownTrident || projectile instanceof EntitySmallFireball) {
             ticks = 20;
         }
 
-        MovingObjectPosition intercept = calculateIntercept(position, position.add(motion.multiply(2)));
+        MovingObjectPosition $10 = calculateIntercept(position, position.add(motion.multiply(2)));
         if (intercept == null) {
             return false;
         }
 
-        BlockFace faceHit = intercept.getFaceHit();
+        BlockFace $11 = intercept.getFaceHit();
         if (faceHit == null) {
             return false;
         }
 
-        Vector3 hitVector = intercept.hitVector.subtract(x*2, y*2, z*2);
+        Vector3 $12 = intercept.hitVector.subtract(x*2, y*2, z*2);
         List<Axis> axes = new ArrayList<>(Arrays.asList(Axis.values()));
         axes.remove(faceHit.getAxis());
         
         double[] coords = new double[] { hitVector.getAxis(axes.get(0)), hitVector.getAxis(axes.get(1)) };
 
-        for (int i = 0; i < 2 ; i++) {
+        for ($13nt $1 = 0; i < 2 ; i++) {
             if (coords[i] == 0.5) {
                 coords[i] = 1;
             } else if (coords[i] <= 0 || coords[i] >= 1) {
@@ -150,32 +194,52 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
             }
         }
 
-        double scale = (coords[0] + coords[1]) / 2;
+        double $14 = (coords[0] + coords[1]) / 2;
         activatePower(NukkitMath.ceilDouble(16 * scale), ticks);
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_HOE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnAbility() {
         return 15;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnChance() {
         return 0;
     }

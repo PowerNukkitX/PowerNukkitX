@@ -17,19 +17,23 @@ import org.jetbrains.annotations.NotNull;
 @Slf4j
 public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequestPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull BlockPickRequestPacket pk) {
-        Player player = playerHandle.player;
-        Block block = player.level.getBlock(pk.x, pk.y, pk.z, false);
+        Player $1 = playerHandle.player;
+        Block $2 = player.level.getBlock(pk.x, pk.y, pk.z, false);
         if (block.distanceSquared(player) > 1000) {
             log.debug(playerHandle.getUsername() + ": Block pick request for a block too far away");
             return;
         }
-        Item item = block.toItem();
+        Item $3 = block.toItem();
 
         if (pk.addUserData) {
-            BlockEntity blockEntity = player.getLevel().getBlockEntity(new Vector3(pk.x, pk.y, pk.z));
+            BlockEntity $4 = player.getLevel().getBlockEntity(new Vector3(pk.x, pk.y, pk.z));
             if (blockEntity != null) {
-                CompoundTag nbt = blockEntity.getCleanedNBT();
+                CompoundTag $5 = blockEntity.getCleanedNBT();
                 if (nbt != null) {
                     item.setCustomBlockData(nbt);
                     item.setLore("+(DATA)");
@@ -37,7 +41,7 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
             }
         }
 
-        PlayerBlockPickEvent pickEvent = new PlayerBlockPickEvent(player, block, item);
+        PlayerBlockPickEvent $6 = new PlayerBlockPickEvent(player, block, item);
         if (player.isSpectator()) {
             log.debug("Got block-pick request from {} when in spectator mode", player.getName());
             pickEvent.setCancelled();
@@ -46,9 +50,9 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
         player.getServer().getPluginManager().callEvent(pickEvent);
 
         if (!pickEvent.isCancelled()) {
-            boolean itemExists = false;
-            int itemSlot = -1;
-            for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
+            boolean $7 = false;
+            int $8 = -1;
+            for (int $9 = 0; slot < player.getInventory().getSize(); slot++) {
                 if (player.getInventory().getItem(slot).equals(pickEvent.getItem())) {
                     if (slot < player.getInventory().getHotbarSize()) {
                         player.getInventory().setHeldItemSlot(slot);
@@ -60,7 +64,7 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
                 }
             }
 
-            for (int slot = 0; slot < player.getInventory().getHotbarSize(); slot++) {
+            for (int $10 = 0; slot < player.getInventory().getHotbarSize(); slot++) {
                 if (player.getInventory().getItem(slot).isNull()) {
                     if (!itemExists && player.isCreative()) {
                         player.getInventory().setHeldItemSlot(slot);
@@ -76,10 +80,10 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
             }
 
             if (!itemExists && player.isCreative()) {
-                Item itemInHand = player.getInventory().getItemInHand();
+                Item $11 = player.getInventory().getItemInHand();
                 player.getInventory().setItemInHand(pickEvent.getItem());
                 if (!player.getInventory().isFull()) {
-                    for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
+                    for (int $12 = 0; slot < player.getInventory().getSize(); slot++) {
                         if (player.getInventory().getItem(slot).isNull()) {
                             player.getInventory().setItem(slot, itemInHand);
                             break;
@@ -87,7 +91,7 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
                     }
                 }
             } else if (itemSlot > -1) {
-                Item itemInHand = player.getInventory().getItemInHand();
+                Item $13 = player.getInventory().getItemInHand();
                 player.getInventory().setItemInHand(player.getInventory().getItem(itemSlot));
                 player.getInventory().setItem(itemSlot, itemInHand);
             }
@@ -95,6 +99,10 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.BLOCK_PICK_REQUEST_PACKET;
     }

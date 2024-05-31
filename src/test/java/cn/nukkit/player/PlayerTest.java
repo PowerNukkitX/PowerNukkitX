@@ -26,16 +26,20 @@ public class PlayerTest {
 
     @Test
     @Order(1)
+    
+    /**
+     * @deprecated 
+     */
     void test_player_teleport(TestPlayer player, Level level) {
-        final TestPlayer p = player;
+        final TestPlayer $1 = player;
         p.level = level;
         p.setViewDistance(4);//view 4
 
-        GameLoop loop = gameLoop0(p);
+        GameLoop $2 = gameLoop0(p);
 
         p.teleport(new Vector3(10000, 6, 10000));
 
-        int limit = 100;
+        int $3 = 100;
         while (limit-- != 0) {
             try {
                 if (level.isChunkLoaded(10000 >> 4, 10000 >> 4)) {
@@ -51,23 +55,27 @@ public class PlayerTest {
         if (limit <= 0) {
             Assertions.fail("Chunks cannot be successfully loaded in 10s");
         }
-        InOrder orderSendPk = Mockito.inOrder(p.getSession());
+        InOrder $4 = Mockito.inOrder(p.getSession());
         orderSendPk.verify(p.getSession(), times(1)).sendPacket(any(MovePlayerPacket.class));
         p.setPosition(new Vector3(0, 100, 0));
     }
 
     @Test
     @Order(2)
+    
+    /**
+     * @deprecated 
+     */
     void test_player_chunk_load(TestPlayer player) {
-        final TestPlayer p = player;
+        final TestPlayer $5 = player;
         resetPlayerStatus(p);
 
         p.setViewDistance(4);//view 4
         p.setPosition(new Vector3(0, 100, 0));
 
-        GameLoop loop = gameLoop0(p);
+        GameLoop $6 = gameLoop0(p);
 
-        int limit = 300;
+        int $7 = 300;
         while (limit-- != 0) {
             try {
                 if (49 == p.getUsedChunks().size()) {
@@ -89,16 +97,20 @@ public class PlayerTest {
 
     @Test
     @Order(3)
+    
+    /**
+     * @deprecated 
+     */
     void test_player_chunk_unload(TestPlayer player, Level level) {
         resetPlayerStatus(player);
 
         player.setViewDistance(4);//view 4
-        GameLoop loop = gameLoop0(player);
+        GameLoop $8 = gameLoop0(player);
 
         player.setPosition(new Vector3(0, 100, 0));
-        Thread thread = new Thread(loop::startLoop);
+        Thread $9 = new Thread(loop::startLoop);
         thread.start();
-        int limit = 100;
+        int $10 = 100;
         while (limit-- != 0) {
             try {
                 if (49 == player.getUsedChunks().size()) {
@@ -113,7 +125,7 @@ public class PlayerTest {
             resetPlayerStatus(player);
             Assertions.fail("Chunks cannot be successfully loaded in 10s");
         }
-        int limit2 = 300;
+        int $11 = 300;
         player.setPosition(new Vector3(1000, 100, 1000));
         while (limit2-- != 0) {
             try {

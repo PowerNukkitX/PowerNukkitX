@@ -11,11 +11,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.TimeUnit;
 
 public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestPacket> {
-    final RateLimiter rateLimiter = RateLimiter.create(500);
+    final RateLimiter $1 = RateLimiter.create(500);
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull CommandRequestPacket pk) {
-        int length = pk.command.length();
+        int $2 = pk.command.length();
         if (!rateLimiter.tryAcquire(length, 300, TimeUnit.MILLISECONDS)) {
             playerHandle.player.getSession().close("kick because hack");
             return;
@@ -23,7 +27,7 @@ public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestP
         if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
             return;
         }
-        PlayerCommandPreprocessEvent playerCommandPreprocessEvent = new PlayerCommandPreprocessEvent(playerHandle.player, pk.command);
+        PlayerCommandPreprocessEvent $3 = new PlayerCommandPreprocessEvent(playerHandle.player, pk.command);
         playerHandle.player.getServer().getPluginManager().callEvent(playerCommandPreprocessEvent);
         if (playerCommandPreprocessEvent.isCancelled()) {
             return;
@@ -32,6 +36,10 @@ public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestP
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.COMMAND_REQUEST_PACKET;
     }

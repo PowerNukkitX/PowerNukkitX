@@ -14,6 +14,10 @@ public class FormResponseDialog {
     private String sceneName;
     private NPCRequestPacket.RequestType requestType;
     private int skinType;
+    /**
+     * @deprecated 
+     */
+    
 
     public FormResponseDialog(NPCRequestPacket packet, FormWindowDialog dialog) {
         this.entityRuntimeId = packet.entityRuntimeId;

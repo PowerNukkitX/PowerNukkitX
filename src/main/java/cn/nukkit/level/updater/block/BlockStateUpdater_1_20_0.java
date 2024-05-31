@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class BlockStateUpdater_1_20_0 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_20_0();
+    public static final Updater $1 = new BlockStateUpdater_1_20_0();
 
     public static final String[] COLORS = {
             "magenta",
@@ -30,6 +30,10 @@ public class BlockStateUpdater_1_20_0 implements Updater {
     };
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext ctx) {
         for (String color : COLORS) {
             if (color.equals("silver")) {
@@ -80,6 +84,10 @@ public class BlockStateUpdater_1_20_0 implements Updater {
         this.addCauldronUpdater(ctx, "powder_snow");
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addTypeUpdater(CompoundTagUpdaterContext context, String identifier, String typeState, String type, String newIdentifier) {
         context.addUpdater(1, 20, 0)
                 .match("name", identifier)
@@ -90,17 +98,25 @@ public class BlockStateUpdater_1_20_0 implements Updater {
 
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addPumpkinUpdater(CompoundTagUpdaterContext ctx, String identifier) {
-        OrderedUpdater updater = OrderedUpdater.DIRECTION_TO_CARDINAL;
+        OrderedUpdater $2 = OrderedUpdater.DIRECTION_TO_CARDINAL;
         ctx.addUpdater(1, 20, 0)
                 .match("name", identifier)
                 .visit("states")
                 .edit(updater.getOldProperty(), helper -> {
-                    int value = (int) helper.getTag();
+                    int $3 = (int) helper.getTag();
                     helper.replaceWith(updater.getNewProperty(), updater.translate(value)); // Don't ask me why namespace is in vanilla state
                 });
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addCauldronUpdater(CompoundTagUpdaterContext ctx, String type) {
         ctx.addUpdater(1, 20, 0)
                 .match("name", "minecraft:lava_cauldron")
@@ -114,6 +130,10 @@ public class BlockStateUpdater_1_20_0 implements Updater {
                 });
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addCoralUpdater(CompoundTagUpdaterContext context, String type, String newIdentifier) {
         // Two updates to match final version
         context.addUpdater(1, 20, 0)

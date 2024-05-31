@@ -31,9 +31,17 @@ public class EntityHusk extends EntityZombie {
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return HUSK;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityHusk(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -55,7 +63,7 @@ public class EntityHusk extends EntityZombie {
                                 entity -> {
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER))
                                         return true;
-                                    Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                    Player $1 = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                     return player.isSurvival() || player.isAdventure();
                                 }
                         ), 2, 1),
@@ -69,6 +77,10 @@ public class EntityHusk extends EntityZombie {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(20);
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
@@ -82,26 +94,46 @@ public class EntityHusk extends EntityZombie {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return this.isBaby() ? 0.3f : 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return this.isBaby() ? 0.95f : 1.9f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Husk";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isUndead() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPreventingSleep(Player player) {
         return true;
     }

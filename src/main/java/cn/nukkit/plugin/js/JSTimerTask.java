@@ -10,6 +10,10 @@ public final class JSTimerTask extends TimerTask {
     private final Context jsContext;
     private final Value callback;
     private final Object[] args;
+    /**
+     * @deprecated 
+     */
+    
 
     public JSTimerTask(long id, Context jsContext, Value callback, Object... args) {
         this.id = id;
@@ -19,6 +23,10 @@ public final class JSTimerTask extends TimerTask {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void run() {
         synchronized (jsContext) {
             if (callback != null && callback.canExecute()) {
@@ -26,6 +34,10 @@ public final class JSTimerTask extends TimerTask {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long getId() {
         return id;

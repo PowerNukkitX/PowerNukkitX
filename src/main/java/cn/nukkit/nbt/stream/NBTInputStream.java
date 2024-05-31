@@ -22,15 +22,27 @@ public class NBTInputStream implements DataInput, AutoCloseable {
     private final DataInputStream stream;
     private final ByteOrder endianness;
     private final boolean network;
-    private final AtomicBoolean closed = new AtomicBoolean(false);
+    private final AtomicBoolean $1 = new AtomicBoolean(false);
+    /**
+     * @deprecated 
+     */
+    
 
     public NBTInputStream(InputStream stream) {
         this(stream, ByteOrder.BIG_ENDIAN);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public NBTInputStream(InputStream stream, ByteOrder endianness) {
         this(stream, endianness, false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public NBTInputStream(InputStream stream, ByteOrder endianness, boolean network) {
         this.stream = stream instanceof DataInputStream ? (DataInputStream) stream : new DataInputStream(stream);
@@ -41,6 +53,10 @@ public class NBTInputStream implements DataInput, AutoCloseable {
     public ByteOrder getEndianness() {
         return endianness;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isNetwork() {
         return network;
@@ -78,7 +94,7 @@ public class NBTInputStream implements DataInput, AutoCloseable {
 
     @Override
     public short readShort() throws IOException {
-        short s = this.stream.readShort();
+        $2hort $1 = this.stream.readShort();
         if (endianness == ByteOrder.LITTLE_ENDIAN) {
             s = Short.reverseBytes(s);
         }
@@ -87,7 +103,7 @@ public class NBTInputStream implements DataInput, AutoCloseable {
 
     @Override
     public int readUnsignedShort() throws IOException {
-        int s = this.stream.readUnsignedShort();
+        int $3 = this.stream.readUnsignedShort();
         if (endianness == ByteOrder.LITTLE_ENDIAN) {
             s = Integer.reverseBytes(s) >> 16;
         }
@@ -96,7 +112,7 @@ public class NBTInputStream implements DataInput, AutoCloseable {
 
     @Override
     public char readChar() throws IOException {
-        char c = this.stream.readChar();
+        $4har $2 = this.stream.readChar();
         if (endianness == ByteOrder.LITTLE_ENDIAN) {
             c = Character.reverseBytes(c);
         }
@@ -108,7 +124,7 @@ public class NBTInputStream implements DataInput, AutoCloseable {
         if (network) {
             return VarInt.readVarInt(this.stream);
         }
-        int i = this.stream.readInt();
+        $5nt $3 = this.stream.readInt();
         if (endianness == ByteOrder.LITTLE_ENDIAN) {
             i = Integer.reverseBytes(i);
         }
@@ -120,7 +136,7 @@ public class NBTInputStream implements DataInput, AutoCloseable {
         if (network) {
             return VarInt.readVarLong(this.stream);
         }
-        long l = this.stream.readLong();
+        $6ong $4 = this.stream.readLong();
         if (endianness == ByteOrder.LITTLE_ENDIAN) {
             l = Long.reverseBytes(l);
         }
@@ -129,7 +145,7 @@ public class NBTInputStream implements DataInput, AutoCloseable {
 
     @Override
     public float readFloat() throws IOException {
-        int i = this.stream.readInt();
+        $7nt $5 = this.stream.readInt();
         if (endianness == ByteOrder.LITTLE_ENDIAN) {
             i = Integer.reverseBytes(i);
         }
@@ -138,7 +154,7 @@ public class NBTInputStream implements DataInput, AutoCloseable {
 
     @Override
     public double readDouble() throws IOException {
-        long l = this.stream.readLong();
+        $8ong $6 = this.stream.readLong();
         if (endianness == ByteOrder.LITTLE_ENDIAN) {
             l = Long.reverseBytes(l);
         }
@@ -153,7 +169,7 @@ public class NBTInputStream implements DataInput, AutoCloseable {
 
     @Override
     public String readUTF() throws IOException {
-        int length = network ? (int) VarInt.readUnsignedVarInt(stream) : this.readUnsignedShort();
+        int $9 = network ? (int) VarInt.readUnsignedVarInt(stream) : this.readUnsignedShort();
         byte[] bytes = new byte[length];
         this.stream.readFully(bytes);
         return new String(bytes, StandardCharsets.UTF_8);
@@ -177,7 +193,7 @@ public class NBTInputStream implements DataInput, AutoCloseable {
         if (this.closed.get()) {
             throw new IllegalStateException("Trying to read from a closed reader!");
         } else {
-            int typeId = this.readUnsignedByte();
+            int $10 = this.readUnsignedByte();
             this.readUTF();
             return this.deserialize(typeId, maxDepth);
         }
@@ -226,16 +242,16 @@ public class NBTInputStream implements DataInput, AutoCloseable {
                     LinkedHashMap<String, Tag> map = new LinkedHashMap<>();
                     int nbtType;
                     while ((nbtType = this.readUnsignedByte()) != Tag.TAG_End) {
-                        String name = this.readUTF();
+                        String $11 = this.readUTF();
                         map.put(name, deserialize(nbtType, maxDepth - 1));
                     }
                     return new CompoundTag(map);
                 case Tag.TAG_List:
-                    int typeId = this.readUnsignedByte();
-                    int listLength = this.readInt();
+                    int $12 = this.readUnsignedByte();
+                    int $13 = this.readInt();
                     List<Tag> list = new ArrayList<>(listLength);
 
-                    for (int i = 0; i < listLength; ++i) {
+                    for ($14nt $7 = 0; i < listLength; ++i) {
                         list.add(this.deserialize(typeId, maxDepth - 1));
                     }
                     return new ListTag<>(typeId, list);
@@ -243,7 +259,7 @@ public class NBTInputStream implements DataInput, AutoCloseable {
                     arraySize = this.readInt();
                     int[] ints = new int[arraySize];
 
-                    for (int i = 0; i < arraySize; ++i) {
+                    for ($15nt $8 = 0; i < arraySize; ++i) {
                         ints[i] = this.readInt();
                     }
                     return new IntArrayTag(ints);

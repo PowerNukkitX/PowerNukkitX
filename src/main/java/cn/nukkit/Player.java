@@ -176,65 +176,65 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * An empty array of static constants that host the player
      */
     public static final Player[] EMPTY_ARRAY = new Player[0];
-    public static final int SURVIVAL = 0;
-    public static final int CREATIVE = 1;
-    public static final int ADVENTURE = 2;
-    public static final int SPECTATOR = 3;
-    public static final int VIEW = SPECTATOR;
-    public static final float DEFAULT_SPEED = 0.1f;
-    public static final float DEFAULT_FLY_SPEED = 0.05f;
-    public static final float MAXIMUM_SPEED = 0.5f;
-    public static final int PERMISSION_CUSTOM = 3;
-    public static final int PERMISSION_OPERATOR = 2;
-    public static final int PERMISSION_MEMBER = 1;
-    public static final int PERMISSION_VISITOR = 0;
+    public static final int $1 = 0;
+    public static final int $2 = 1;
+    public static final int $3 = 2;
+    public static final int $4 = 3;
+    public static final int $5 = SPECTATOR;
+    public static final float $6 = 0.1f;
+    public static final float $7 = 0.05f;
+    public static final float $8 = 0.5f;
+    public static final int $9 = 3;
+    public static final int $10 = 2;
+    public static final int $11 = 1;
+    public static final int $12 = 0;
     /// static fields
     public boolean playedBefore;
-    public boolean spawned = false;
-    public volatile boolean locallyInitialized = false;
-    public boolean loggedIn = false;
+    public boolean $13 = false;
+    public volatile boolean $14 = false;
+    public boolean $15 = false;
     public final HashSet<String> achievements = new HashSet<>();
     public int gamemode;
     public long lastBreak;
-    public Vector3 speed = null;
-    public long creationTime = 0;
+    public Vector3 $16 = null;
+    public long $17 = 0;
     /**
      * 正在挖掘的方块
      * <p>
      * block being dig
      */
-    public Block breakingBlock = null;
+    public Block $18 = null;
     /**
      * 正在挖掘的方向
      * <p>
      * direction of dig
      */
-    public BlockFace breakingBlockFace = null;
-    public int pickedXPOrb = 0;
-    public EntityFishingHook fishing = null;
+    public BlockFace $19 = null;
+    public int $20 = 0;
+    public EntityFishingHook $21 = null;
     public long lastSkinChange;
-    protected long breakingBlockTime = 0;
-    protected double blockBreakProgress = 0;
+    protected long $22 = 0;
+    protected double $23 = 0;
     protected final BedrockSession session;
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
     protected final int spawnThreshold;
-    protected int messageLimitCounter = 2;
-    protected AtomicBoolean connected = new AtomicBoolean(true);
+    protected int $24 = 2;
+    protected AtomicBoolean $25 = new AtomicBoolean(true);
     protected InetSocketAddress socketAddress;
     /**
      * 是否移除改玩家聊天中的颜色字符如 §c §1
      * <p>
      * Whether to remove the color character in the chat of the changed player as §c §1
      */
-    protected boolean removeFormat = true;
+    protected boolean $26 = true;
     protected String displayName;
-    protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
-    protected Vector3 sleeping = null;
-    protected int chunkLoadCount = 0;
-    protected int nextChunkOrderRun = 1;
-    protected Vector3 newPosition = null;
+    protected static final int $27 = 8 * 1024; // 8KB
+    protected Vector3 $28 = null;
+    protected int $29 = 0;
+    protected int $30 = 1;
+    protected Vector3 $31 = null;
     protected int chunkRadius;
     protected int viewDistance;
     protected Position spawnPoint;
@@ -244,13 +244,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * <p>
      * Represents the number of ticks the player has passed through the air.
      */
-    protected int inAirTicks = 0;
-    protected int startAirTicks = 5;
+    protected int $32 = 0;
+    protected int $33 = 5;
     protected AdventureSettings adventureSettings;
-    protected boolean checkMovement = true;
-    protected PlayerFood foodData = null;
-    protected boolean enableClientCommand = true;
-    protected int formWindowCount = 0;
+    protected boolean $34 = true;
+    protected PlayerFood $35 = null;
+    protected boolean $36 = true;
+    protected int $37 = 0;
     protected Map<Integer, FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
     protected Map<Integer, FormWindow> serverSettings = new Int2ObjectOpenHashMap<>();
     /**
@@ -264,44 +264,44 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected Cache<String, FormWindowDialog> dialogWindows = Caffeine.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
-    protected double lastRightClickTime = 0.0;
-    protected Vector3 lastRightClickPos = null;
-    protected int lastInAirTick = 0;
-    private static final float ROTATION_UPDATE_THRESHOLD = 1;
-    private static final float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
+    protected double $38 = 0.0;
+    protected Vector3 $39 = null;
+    protected int $40 = 0;
+    private static final float $41 = 1;
+    private static final float $42 = 0.1f;
     private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
     private int timeSinceRest;
-    private String buttonText = "Button";
-    private PermissibleBase perm = null;
+    private String $43 = "Button";
+    private PermissibleBase $44 = null;
     private int hash;
-    private int exp = 0;
-    private int expLevel = 0;
+    private int $45 = 0;
+    private int $46 = 0;
     private int enchSeed;
     private final int loaderId;
-    private BlockVector3 lastBreakPosition = new BlockVector3();
+    private BlockVector3 $47 = new BlockVector3();
     private boolean hasSeenCredits;
     private boolean wasInSoulSandCompatible;
-    private float soulSpeedMultiplier = 1;
-    private Entity killer = null;
+    private float $48 = 1;
+    private Entity $49 = null;
     private TaskHandler delayedPosTrackingUpdate;
     protected boolean showingCredits;
-    protected static final int NO_SHIELD_DELAY = 10;
+    protected static final int $50 = 10;
     protected PlayerBlockActionData lastBlockAction;
-    protected AsyncTask preLoginEventTask = null;
+    protected AsyncTask $51 = null;
     protected LoginChainData loginChainData;
     /**
      * 玩家升级时播放音乐的时间
      * <p>
      * Time to play sound when player upgrades
      */
-    protected int lastPlayerdLevelUpSoundTime = 0;
+    protected int $52 = 0;
     /**
      * 玩家最后攻击的实体.
      * <p>
      * The entity that the player attacked last.
      */
-    protected Entity lastAttackEntity = null;
+    protected Entity $53 = null;
 
     /**
      * 玩家迷雾设置
@@ -314,20 +314,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * <p>
      * The entity that the player is attacked last.
      */
-    protected Entity lastBeAttackEntity = null;
-    private final @NotNull PlayerHandle playerHandle = new PlayerHandle(this);
+    protected Entity $54 = null;
+    private final @NotNull PlayerHandle $55 = new PlayerHandle(this);
     protected final PlayerChunkManager playerChunkManager;
-    private boolean needDimensionChangeACK = false;
-    private Boolean openSignFront = null;
-    protected Boolean flySneaking = false;
+    private boolean $56 = false;
+    private Boolean $57 = null;
+    protected Boolean $58 = false;
     /// lastUseItem System and item cooldown
     protected final HashMap<String, Integer> cooldownTickMap = new HashMap<>();
     protected final HashMap<String, Integer> lastUseItemMap = new HashMap<>(1);
     ///
 
     /// inventory system
-    protected int windowsCnt = 1;
-    protected int closingWindowId = Integer.MIN_VALUE;
+    protected int $59 = 1;
+    protected int $60 = Integer.MIN_VALUE;
     protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
     protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
     protected final Set<Integer> permanentWindows = new IntOpenHashSet();
@@ -355,6 +355,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private final @NotNull PlayerInfo info;
 
     @UsedByReflection
+    /**
+     * @deprecated 
+     */
+    
     public Player(@NotNull BedrockSession session, @NotNull PlayerInfo info) {
         super(null, new CompoundTag());
         this.info = info;
@@ -400,23 +404,31 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param gamemode 服务端侧游戏模式
      * @return 网络层游戏模式ID
      */
+    /**
+     * @deprecated 
+     */
+    
     public static int toNetworkGamemode(int gamemode) {
         return gamemode != SPECTATOR ? gamemode : GameType.SPECTATOR.ordinal();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         if (this.isBreakingBlock()) {
-            var time = System.currentTimeMillis();
-            Block block = this.level.getBlock(pos, false);
+            var $61 = System.currentTimeMillis();
+            Block $62 = this.level.getBlock(pos, false);
 
             double miningTimeRequired;
             if (this.breakingBlock instanceof CustomBlock customBlock) {
                 miningTimeRequired = customBlock.breakTime(this.inventory.getItemInHand(), this);
-            } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInHand(), this);
+            } else $63 = this.breakingBlock.calculateBreakTime(this.inventory.getItemInHand(), this);
 
             if (miningTimeRequired > 0) {
-                int breakTick = (int) Math.ceil(miningTimeRequired * 20);
-                LevelEventPacket pk = new LevelEventPacket();
+                int $64 = (int) Math.ceil(miningTimeRequired * 20);
+                LevelEventPacket $65 = new LevelEventPacket();
                 pk.evid = LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK;
                 pk.x = (float) this.breakingBlock.x;
                 pk.y = (float) this.breakingBlock.y;
@@ -425,7 +437,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
                 this.level.addParticle(new PunchBlockParticle(pos, block));
                 if (this.breakingBlock instanceof CustomBlock) {
-                    var timeDiff = time - breakingBlockTime;
+                    var $66 = time - breakingBlockTime;
                     blockBreakProgress += timeDiff / (miningTimeRequired * 1000);
                     if (blockBreakProgress > 0.99) {
                         this.onBlockBreakAbort(pos);
@@ -437,16 +449,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onBlockBreakStart(Vector3 pos, BlockFace face) {
-        BlockVector3 blockPos = pos.asBlockVector3();
-        long currentBreak = System.currentTimeMillis();
+        BlockVector3 $67 = pos.asBlockVector3();
+        long $68 = System.currentTimeMillis();
         // HACK: Client spams multiple left clicks so we need to skip them.
         if ((this.lastBreakPosition.equals(blockPos) && (currentBreak - this.lastBreak) < 10) || pos.distanceSquared(this) > 1000) {
             return;
         }
 
-        Block target = this.level.getBlock(pos);
-        PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this, this.inventory.getItemInHand(), target, face,
+        Block $69 = this.level.getBlock(pos);
+        PlayerInteractEvent $70 = new PlayerInteractEvent(this, this.inventory.getItemInHand(), target, face,
                 target.isAir() ? Action.LEFT_CLICK_AIR : Action.LEFT_CLICK_BLOCK);
         this.getServer().getPluginManager().callEvent(playerInteractEvent);
         if (playerInteractEvent.isCancelled()) {
@@ -460,7 +476,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         target.onTouch(pos, this.getInventory().getItemInHand(), face, 0, 0, 0, this, playerInteractEvent.getAction());
 
-        Block block = target.getSide(face);
+        Block $71 = target.getSide(face);
         if (block.getId().equals(Block.FIRE) || block.getId().equals(BlockID.SOUL_FIRE)) {
             this.level.setBlock(block, Block.get(BlockID.AIR), true);
             this.level.addLevelSoundEvent(block, LevelSoundEventPacket.SOUND_EXTINGUISH_FIRE);
@@ -468,8 +484,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (block.getId().equals(BlockID.SWEET_BERRY_BUSH) && block.isDefaultState()) {
-            Item oldItem = playerInteractEvent.getItem();
-            Item i = this.level.useBreakOn(block, oldItem, this, true);
+            Item $72 = playerInteractEvent.getItem();
+            Item $73 = this.level.useBreakOn(block, oldItem, this, true);
             if (this.isSurvival() || this.isAdventure()) {
                 this.getFoodData().exhaust(0.005);
                 if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
@@ -489,10 +505,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             double miningTimeRequired;
             if (target instanceof CustomBlock customBlock) {
                 miningTimeRequired = customBlock.breakTime(this.inventory.getItemInHand(), this);
-            } else miningTimeRequired = target.calculateBreakTime(this.inventory.getItemInHand(), this);
-            int breakTime = (int) Math.ceil(miningTimeRequired * 20);
+            } else $74 = target.calculateBreakTime(this.inventory.getItemInHand(), this);
+            int $75 = (int) Math.ceil(miningTimeRequired * 20);
             if (breakTime > 0) {
-                LevelEventPacket pk = new LevelEventPacket();
+                LevelEventPacket $76 = new LevelEventPacket();
                 pk.evid = LevelEventPacket.EVENT_BLOCK_START_BREAK;
                 pk.x = (float) pos.x;
                 pk.y = (float) pos.y;
@@ -512,9 +528,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastBreakPosition = blockPos;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onBlockBreakAbort(Vector3 pos) {
         if (pos.distanceSquared(this) < 1000) {// same as with ACTION_START_BREAK
-            LevelEventPacket pk = new LevelEventPacket();
+            LevelEventPacket $77 = new LevelEventPacket();
             pk.evid = LevelEventPacket.EVENT_BLOCK_STOP_BREAK;
             pk.x = (float) pos.x;
             pk.y = (float) pos.y;
@@ -527,15 +547,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.breakingBlockFace = null;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
         if (!this.spawned || !this.isAlive()) {
             return;
         }
 
-        Item handItem = this.getInventory().getItemInHand();
-        Item clone = handItem.clone();
+        Item $78 = this.getInventory().getItemInHand();
+        Item $79 = handItem.clone();
 
-        boolean canInteract = this.canInteract(blockPos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7);
+        boolean $80 = this.canInteract(blockPos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7);
         if (canInteract) {
             handItem = this.level.useBreakOn(blockPos.asVector3(), face, handItem, this, true);
             if (handItem != null && this.isSurvival()) {
@@ -559,26 +583,34 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         inventory.sendHeldItem(this);
 
         if (blockPos.distanceSquared(this) < 100) {
-            Block target = this.level.getBlock(blockPos.asVector3());
+            Block $81 = this.level.getBlock(blockPos.asVector3());
             this.level.sendBlocks(new Player[]{this}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
 
-            BlockEntity blockEntity = this.level.getBlockEntity(blockPos.asVector3());
+            BlockEntity $82 = this.level.getBlockEntity(blockPos.asVector3());
             if (blockEntity instanceof BlockEntitySpawnable) {
                 ((BlockEntitySpawnable) blockEntity).spawnTo(this);
             }
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void setTitle(String text) {
-        SetTitlePacket packet = new SetTitlePacket();
+        SetTitlePacket $83 = new SetTitlePacket();
         packet.text = text;
         packet.type = SetTitlePacket.TYPE_TITLE;
         this.dataPacket(packet);
     }
 
     //todo a lot on dimension
+    
+    /**
+     * @deprecated 
+     */
     private void setDimension(int dimension) {
-        ChangeDimensionPacket pk = new ChangeDimensionPacket();
+        ChangeDimensionPacket $84 = new ChangeDimensionPacket();
         pk.dimension = dimension;
         pk.x = (float) this.x;
         pk.y = (float) this.y;
@@ -588,8 +620,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.needDimensionChangeACK = true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void updateBlockingFlag() {
-        boolean shouldBlock = this.isItemCoolDownEnd("shield")
+        boolean $85 = this.isItemCoolDownEnd("shield")
                 && (this.isSneaking() || getRiding() != null)
                 && (this.getInventory().getItemInHand() instanceof ItemShield || this.getOffhandInventory().getItem(0) instanceof ItemShield);
 
@@ -599,12 +635,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.initEntity();
-        Level level = null;
+        Level $86 = null;
         if (this.namedTag.containsString("SpawnLevel")) {
             level = this.server.getLevelByName(this.namedTag.getString("SpawnLevel"));
-        } else level = Server.getInstance().getDefaultLevel();
+        } else $87 = Server.getInstance().getDefaultLevel();
         if (this.namedTag.containsInt("SpawnX") && this.namedTag.containsInt("SpawnY") && this.namedTag.containsInt("SpawnZ")) {
             this.spawnPoint = new Position(this.namedTag.getInt("SpawnX"), this.namedTag.getInt("SpawnY"), this.namedTag.getInt("SpawnZ"), level);
         } else {
@@ -630,6 +670,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * 完成completeLoginSequence后执行
      */
+    
+    /**
+     * @deprecated 
+     */
     protected void doFirstSpawn() {
         this.spawned = true;
 
@@ -638,15 +682,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.setEnableClientCommand(true);
 
-        SetTimePacket setTimePacket = new SetTimePacket();
+        SetTimePacket $88 = new SetTimePacket();
         setTimePacket.time = this.level.getTime();
         this.dataPacket(setTimePacket);
 
         this.noDamageTicks = 60;
 
         for (long index : playerChunkManager.getUsedChunks()) {
-            int chunkX = Level.getHashX(index);
-            int chunkZ = Level.getHashZ(index);
+            int $89 = Level.getHashX(index);
+            int $90 = Level.getHashZ(index);
             for (Entity entity : this.level.getChunkEntities(chunkX, chunkZ).values()) {
                 if (this != entity && !entity.closed && entity.isAlive()) {
                     entity.spawnTo(this);
@@ -654,12 +698,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
-        int experience = this.getExperience();
+        int $91 = this.getExperience();
         if (experience != 0) {
             this.sendExperience(experience);
         }
 
-        int level = this.getExperienceLevel();
+        int $92 = this.getExperienceLevel();
         if (level != 0) {
             this.sendExperienceLevel(this.getExperienceLevel());
         }
@@ -668,18 +712,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.getLevel().sendWeather(this);
 
         //FoodLevel
-        PlayerFood food = this.getFoodData();
+        PlayerFood $93 = this.getFoodData();
         if (food.isHungry()) {
             food.sendFood();
         }
 
-        var scoreboardManager = this.getServer().getScoreboardManager();
+        var $94 = this.getServer().getScoreboardManager();
         if (scoreboardManager != null) {//in test environment sometimes the scoreboard level is null
             scoreboardManager.onPlayerJoin(this);
         }
 
         //update compass
-        SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
+        SetSpawnPositionPacket $95 = new SetSpawnPositionPacket();
         pk.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
         pk.x = this.level.getSpawnLocation().getFloorX();
         pk.y = this.level.getSpawnLocation().getFloorY();
@@ -715,16 +759,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
         if (!this.onGround || movX != 0 || movY != 0 || movZ != 0) {
-            boolean onGround = false;
+            boolean $96 = false;
 
-            AxisAlignedBB realBB = this.boundingBox.clone();
+            AxisAlignedBB $97 = this.boundingBox.clone();
             realBB.setMaxY(realBB.getMinY());
             realBB.setMinY(realBB.getMinY() - 0.5);
 
-            Block b1 = level.getTickCachedBlock(getFloorX(), getFloorY() - 1, getFloorZ());
-            Block b2 = level.getTickCachedBlock(getFloorX(), getFloorY(), getFloorZ());
+            Block $98 = level.getTickCachedBlock(getFloorX(), getFloorY() - 1, getFloorZ());
+            Block $99 = level.getTickCachedBlock(getFloorX(), getFloorY(), getFloorZ());
             Block[] blocks = {
                     level.getTickCachedBlock(getFloorX() - 1, getFloorY() - 1, getFloorZ()),
                     level.getTickCachedBlock(getFloorX() + 1, getFloorY() - 1, getFloorZ()),
@@ -752,10 +800,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void checkBlockCollision() {
-        boolean portal = false;
-        boolean scaffolding = false;
-        boolean endPortal = false;
+        boolean $100 = false;
+        boolean $101 = false;
+        boolean $102 = false;
         for (Block block : this.getCollisionBlocks()) {
             if (this.isSpectator()) {
                 continue;
@@ -770,7 +822,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             block.onEntityCollide(this);
             block.getLevelBlockAtLayer(1).onEntityCollide(this);
         }
-        AxisAlignedBB scanBoundingBox = boundingBox.getOffsetBoundingBox(0, -0.125, 0);
+        AxisAlignedBB $103 = boundingBox.getOffsetBoundingBox(0, -0.125, 0);
         scanBoundingBox.setMaxY(boundingBox.getMinY());
         Block[] scaffoldingUnder = level.getCollisionBlocks(
                 scanBoundingBox,
@@ -787,16 +839,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (!inEndPortal) {
                 inEndPortal = true;
                 if (this.getRiding() == null && this.getPassengers().isEmpty()) {
-                    EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.END);
+                    EntityPortalEnterEvent $104 = new EntityPortalEnterEvent(this, PortalType.END);
                     getServer().getPluginManager().callEvent(ev);
 
                     if (!ev.isCancelled()) {
-                        final Position newPos = PortalHelper.moveToTheEnd(this);
+                        final Position $105 = PortalHelper.moveToTheEnd(this);
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
                                 if (teleport(newPos, TeleportCause.END_PORTAL)) {
                                     server.getScheduler().scheduleDelayedTask(new Task() {
                                         @Override
+    /**
+     * @deprecated 
+     */
+    
                                         public void onRun(int currentTick) {
                                             // dirty hack to make sure chunks are loaded and generated before spawning player
                                             teleport(newPos, TeleportCause.END_PORTAL);
@@ -806,7 +862,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                                 }
                             } else {
                                 if (!this.hasSeenCredits && !this.showingCredits) {
-                                    PlayerShowCreditsEvent playerShowCreditsEvent = new PlayerShowCreditsEvent(this);
+                                    PlayerShowCreditsEvent $106 = new PlayerShowCreditsEvent(this);
                                     this.getServer().getPluginManager().callEvent(playerShowCreditsEvent);
                                     if (!playerShowCreditsEvent.isCancelled()) {
                                         this.showCredits();
@@ -832,6 +888,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void checkNearEntities() {
         for (Entity entity : this.level.getNearbyEntities(this.boundingBox.grow(1, 0.5, 1), this)) {
             entity.scheduleUpdate();
@@ -844,16 +904,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void handleMovement(Location clientPos) {
         if (this.firstMove) this.firstMove = false;
-        boolean invalidMotion = false;
-        var revertPos = this.getLocation().clone();
-        double distance = clientPos.distanceSquared(this);
+        boolean $107 = false;
+        var $108 = this.getLocation().clone();
+        double $109 = clientPos.distanceSquared(this);
         //before check
         if (distance > 128) {
             invalidMotion = true;
         } else if (this.chunk == null || !chunk.getChunkState().canSend()) {
-            IChunk chunk = this.level.getChunk(clientPos.getChunkX(), clientPos.getChunkZ(), false);
+            IChunk $110 = this.level.getChunk(clientPos.getChunkX(), clientPos.getChunkZ(), false);
             this.chunk = chunk;
             if (this.chunk == null || !chunk.getChunkState().canSend()) {
                 invalidMotion = true;
@@ -871,21 +935,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         //update server-side position and rotation and aabb
-        double diffX = clientPos.getX() - this.x;
-        double diffY = clientPos.getY() - this.y;
-        double diffZ = clientPos.getZ() - this.z;
+        double $111 = clientPos.getX() - this.x;
+        double $112 = clientPos.getY() - this.y;
+        double $113 = clientPos.getZ() - this.z;
         this.setRotation(clientPos.getYaw(), clientPos.getPitch(), clientPos.getHeadYaw());
         this.fastMove(diffX, diffY, diffZ);
 
         //after check
-        double corrX = this.x - clientPos.getX();
-        double corrY = this.y - clientPos.getY();
-        double corrZ = this.z - clientPos.getZ();
+        double $114 = this.x - clientPos.getX();
+        double $115 = this.y - clientPos.getY();
+        double $116 = this.z - clientPos.getZ();
         if (this.checkMovement && (Math.abs(corrX) > 0.5 || Math.abs(corrY) > 0.5 || Math.abs(corrZ) > 0.5) && this.riding == null && !this.hasEffect(EffectType.LEVITATION) && !this.hasEffect(EffectType.SLOW_FALLING) && !server.getAllowFlight()) {
-            double diff = corrX * corrX + corrZ * corrZ;
+            double $117 = corrX * corrX + corrZ * corrZ;
             //这里放宽了判断，否则对角穿过脚手架会判断非法移动。
             if (diff > 1.2) {
-                PlayerInvalidMoveEvent event = new PlayerInvalidMoveEvent(this, true);
+                PlayerInvalidMoveEvent $118 = new PlayerInvalidMoveEvent(this, true);
                 this.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled() && (invalidMotion = event.isRevert())) {
                     log.warn(this.getServer().getLanguage().tr("nukkit.player.invalidMove", this.getName()));
@@ -900,8 +964,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         //update server-side position and rotation and aabb
-        Location last = new Location(this.lastX, this.lastY, this.lastZ, this.lastYaw, this.lastPitch, this.lastHeadYaw, this.level);
-        Location now = this.getLocation();
+        Location $119 = new Location(this.lastX, this.lastY, this.lastZ, this.lastYaw, this.lastPitch, this.lastHeadYaw, this.level);
+        Location $120 = this.getLocation();
         this.lastX = now.x;
         this.lastY = now.y;
         this.lastZ = now.z;
@@ -921,7 +985,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.blocksAround = null;
                 this.collisionBlocks = null;
             }
-            PlayerMoveEvent ev = new PlayerMoveEvent(this, last, now);
+            PlayerMoveEvent $121 = new PlayerMoveEvent(this, last, now);
             this.server.getPluginManager().callEvent(ev);
 
             if (!(invalidMotion = ev.isCancelled())) { //Yes, this is intended
@@ -968,18 +1032,22 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void offerMovementTask(Location newPosition) {
-        var distance = newPosition.distance(this);
-        var updatePosition = distance > MOVEMENT_DISTANCE_THRESHOLD;//sqrt distance
-        var updateRotation = (float) Math.abs(this.getPitch() - newPosition.pitch) > ROTATION_UPDATE_THRESHOLD
+        var $122 = newPosition.distance(this);
+        var $123 = distance > MOVEMENT_DISTANCE_THRESHOLD;//sqrt distance
+        var $124 = (float) Math.abs(this.getPitch() - newPosition.pitch) > ROTATION_UPDATE_THRESHOLD
                 || (float) Math.abs(this.getYaw() - newPosition.yaw) > ROTATION_UPDATE_THRESHOLD
                 || (float) Math.abs(this.getHeadYaw() - newPosition.headYaw) > ROTATION_UPDATE_THRESHOLD;
-        var isHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
+        var $125 = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
         if (isHandle) {
             //todo hack for receive a error position after teleport
-            long now = System.currentTimeMillis();
+            long $126 = System.currentTimeMillis();
             if (lastTeleportMessage != null && (now - lastTeleportMessage.right()) < 200) {
-                var dis = newPosition.distance(lastTeleportMessage.left());
+                var $127 = newPosition.distance(lastTeleportMessage.left());
                 if (dis < MOVEMENT_DISTANCE_THRESHOLD) return;
             }
             this.newPosition = newPosition;
@@ -988,15 +1056,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
 
+    
+    /**
+     * @deprecated 
+     */
     protected void handleLogicInMove(boolean invalidMotion, double distance) {
         if (!invalidMotion) {
             //处理饱食度更新
             if (this.getFoodData().isEnabled() && this.getServer().getDifficulty() > 0) {
                 //UpdateFoodExpLevel
                 if (distance >= 0.05) {
-                    double jump = 0;
-                    double swimming = this.isInsideOfWater() ? 0.01 * distance : 0;
-                    double distance2 = distance;
+                    double $128 = 0;
+                    double $129 = this.isInsideOfWater() ? 0.01 * distance : 0;
+                    double $130 = distance;
                     if (swimming != 0) distance2 = 0;
                     if (this.isSprinting()) {  //Running
                         if (this.inAirTicks == 3 && swimming == 0) {
@@ -1013,13 +1085,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
 
             //处理冰霜行者附魔
-            Enchantment frostWalker = inventory.getBoots().getEnchantment(Enchantment.ID_FROST_WALKER);
+            Enchantment $131 = inventory.getBoots().getEnchantment(Enchantment.ID_FROST_WALKER);
             if (frostWalker != null && frostWalker.getLevel() > 0 && !this.isSpectator() && this.y >= 1 && this.y <= 255) {
-                int radius = 2 + frostWalker.getLevel();
-                for (int coordX = this.getFloorX() - radius; coordX < this.getFloorX() + radius + 1; coordX++) {
-                    for (int coordZ = this.getFloorZ() - radius; coordZ < this.getFloorZ() + radius + 1; coordZ++) {
-                        Block block = level.getBlock(coordX, this.getFloorY() - 1, coordZ);
-                        int layer = 0;
+                int $132 = 2 + frostWalker.getLevel();
+                for (int $133 = this.getFloorX() - radius; coordX < this.getFloorX() + radius + 1; coordX++) {
+                    for (int $134 = this.getFloorZ() - radius; coordZ < this.getFloorZ() + radius + 1; coordZ++) {
+                        Block $135 = level.getBlock(coordX, this.getFloorY() - 1, coordZ);
+                        int $136 = 0;
                         if ((!block.getId().equals(Block.WATER) && (!block.getId().equals(Block.FLOWING_WATER) ||
                                 block.getPropertyValue(CommonBlockProperties.LIQUID_DEPTH) != 0)) || !block.up().isAir()) {
                             block = block.getLevelBlockAtLayer(1);
@@ -1029,7 +1101,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                                 continue;
                             }
                         }
-                        WaterFrostEvent ev = new WaterFrostEvent(block, this);
+                        WaterFrostEvent $137 = new WaterFrostEvent(block, this);
                         server.getPluginManager().callEvent(ev);
                         if (!ev.isCancelled()) {
                             level.setBlock(block, layer, Block.get(Block.FROSTED_ICE), true, false);
@@ -1041,13 +1113,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             //处理灵魂急行附魔
             //Handling Soul Speed Enchantment
-            int soulSpeedLevel = this.getInventory().getBoots().getEnchantmentLevel(Enchantment.ID_SOUL_SPEED);
+            int $138 = this.getInventory().getBoots().getEnchantmentLevel(Enchantment.ID_SOUL_SPEED);
             if (soulSpeedLevel > 0) {
-                Block levelBlock = this.getLevelBlock();
+                Block $139 = this.getLevelBlock();
                 this.soulSpeedMultiplier = (soulSpeedLevel * 0.105f) + 1.3f;
 
                 // levelBlock check is required because of soul sand being 1 pixel shorter than normal blocks
-                boolean isSoulSandCompatible = levelBlock.isSoulSpeedCompatible() || levelBlock.down().isSoulSpeedCompatible();
+                boolean $140 = levelBlock.isSoulSpeedCompatible() || levelBlock.down().isSoulSpeedCompatible();
 
                 if (this.wasInSoulSandCompatible && !isSoulSandCompatible) {
                     this.wasInSoulSandCompatible = false;
@@ -1061,11 +1133,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void resetClientMovement() {
         this.newPosition = null;
         this.positionChanged = false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void revertClientMotion(Location originalPos) {
         this.lastX = originalPos.getX();
         this.lastY = originalPos.getY();
@@ -1073,7 +1153,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastYaw = originalPos.getYaw();
         this.lastPitch = originalPos.getPitch();
 
-        Vector3 syncPos = originalPos.add(0, 0.00001, 0);
+        Vector3 $141 = originalPos.add(0, 0.00001, 0);
         this.sendPosition(syncPos, originalPos.getYaw(), originalPos.getPitch(), MovePlayerPacket.MODE_RESET);
 
         if (this.speed == null) {
@@ -1086,6 +1166,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * 处理LOGIN_PACKET中执行
      */
+    /**
+     * @deprecated 
+     */
+    
     public void processLogin() {
         if (this.hasPermission(Server.BROADCAST_CHANNEL_USERS)) {
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_USERS, this);
@@ -1094,7 +1178,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this);
         }
 
-        Player oldPlayer = null;
+        Player $142 = null;
         for (Player p : new ArrayList<>(this.server.getOnlinePlayers().values())) {
             if (p != this && p.getName().equalsIgnoreCase(this.getName()) || this.getUniqueId().equals(p.getUniqueId())) {
                 oldPlayer = p;
@@ -1107,7 +1191,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             nbt = oldPlayer.namedTag;
             oldPlayer.close("disconnectionScreen.loggedinOtherLocation");
         } else {
-            boolean existData = Server.getInstance().hasOfflinePlayerData(this.getName());
+            boolean $143 = Server.getInstance().hasOfflinePlayerData(this.getName());
             if (existData) {
                 nbt = this.server.getOfflinePlayerData(this.getName(), false);
             } else {
@@ -1127,8 +1211,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         nbt.putString("NameTag", this.getName());
 
-        int exp = nbt.getInt("EXP");
-        int expLevel = nbt.getInt("expLevel");
+        int $144 = nbt.getInt("EXP");
+        int $145 = nbt.getInt("expLevel");
         this.setExperience(exp, expLevel);
 
         this.gamemode = nbt.getInt("playerGameType") & 0x03;
@@ -1143,7 +1227,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if ((level = this.server.getLevelByName(nbt.getString("Level"))) == null) {
             this.setLevel(this.server.getDefaultLevel());
             nbt.putString("Level", this.level.getName());
-            Position spawnLocation = this.level.getSafeSpawn();
+            Position $146 = this.level.getSafeSpawn();
             nbt.getList("Pos", DoubleTag.class)
                     .add(new DoubleTag(spawnLocation.x))
                     .add(new DoubleTag(spawnLocation.y))
@@ -1164,7 +1248,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         nbt.putLong("lastPlayed", System.currentTimeMillis() / 1000);
 
-        UUID uuid = getUniqueId();
+        UUID $147 = getUniqueId();
         nbt.putLong("UUIDLeast", uuid.getLeastSignificantBits());
         nbt.putLong("UUIDMost", uuid.getMostSignificantBits());
 
@@ -1179,11 +1263,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.namedTag.contains("foodLevel")) {
             this.namedTag.putInt("foodLevel", 20);
         }
-        int foodLevel = this.namedTag.getInt("foodLevel");
+        int $148 = this.namedTag.getInt("foodLevel");
         if (!this.namedTag.contains("foodSaturationLevel")) {
             this.namedTag.putFloat("foodSaturationLevel", 20);
         }
-        float foodSaturationLevel = this.namedTag.getFloat("foodSaturationLevel");
+        float $149 = this.namedTag.getFloat("foodSaturationLevel");
         this.foodData = new PlayerFood(this, foodLevel, foodSaturationLevel);
 
         if (this.isSpectator()) {
@@ -1214,9 +1298,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.namedTag.contains("userProvidedFogIds")) {
             this.namedTag.putList("userProvidedFogIds", new ListTag<StringTag>());
         }
-        var fogIdentifiers = this.namedTag.getList("fogIdentifiers", StringTag.class);
-        var userProvidedFogIds = this.namedTag.getList("userProvidedFogIds", StringTag.class);
-        for (int i = 0; i < fogIdentifiers.size(); i++) {
+        var $150 = this.namedTag.getList("fogIdentifiers", StringTag.class);
+        var $151 = this.namedTag.getList("userProvidedFogIds", StringTag.class);
+        for ($152nt $1 = 0; i < fogIdentifiers.size(); i++) {
             this.fogStack.add(i, new PlayerFogPacket.Fog(Identifier.tryParse(fogIdentifiers.get(i).data), userProvidedFogIds.get(i).data));
         }
 
@@ -1248,6 +1332,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * 玩家客户端初始化完成后调用
      */
+    
+    /**
+     * @deprecated 
+     */
     protected void onPlayerLocallyInitialized() {
         if (locallyInitialized) return;
         locallyInitialized = true;
@@ -1256,7 +1344,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setDataProperty(NAME, info.getUsername(), false);
         this.setDataProperty(NAMETAG_ALWAYS_SHOW, 1, false);
 
-        PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(this,
+        PlayerJoinEvent $153 = new PlayerJoinEvent(this,
                 new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.joined", new String[]{
                         this.getDisplayName()
                 })
@@ -1293,13 +1381,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param block
      * @return
      */
+    
+    /**
+     * @deprecated 
+     */
     protected boolean isValidRespawnBlock(Block block) {
         if (block.getId().equals(BlockID.RESPAWN_ANCHOR) && block.getLevel().getDimension() == Level.DIMENSION_NETHER) {
-            BlockRespawnAnchor anchor = (BlockRespawnAnchor) block;
+            BlockRespawnAnchor $154 = (BlockRespawnAnchor) block;
             return anchor.getCharge() > 0;
         }
         if (block.getId().equals(BlockID.BED) && block.getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
-            BlockBed bed = (BlockBed) block;
+            BlockBed $155 = (BlockBed) block;
             return bed.isBedValid();
         }
 
@@ -1307,10 +1399,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBanned() {
         return this.server.getNameBans().isBanned(this.getName());
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void respawn() {
         //the player cant respawn if the server is hardcore
         if (this.server.isHardcore()) {
@@ -1320,16 +1420,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.resetInventory();
 
-        //level spawn point < block spawn = self spawn
+        //level spawn point < block $156 = self spawn
         Pair<Position, SpawnPointType> spawnPair = this.getSpawn();
-        PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, spawnPair);
+        PlayerRespawnEvent $157 = new PlayerRespawnEvent(this, spawnPair);
         if (spawnPair.right() == SpawnPointType.BLOCK) {//block spawn
-            Block spawnBlock = playerRespawnEvent.getRespawnPosition().first().getLevelBlock();
+            Block $158 = playerRespawnEvent.getRespawnPosition().first().getLevelBlock();
             if (spawnBlock != null && isValidRespawnBlock(spawnBlock)) {
                 // handle RESPAWN_ANCHOR state change when consume charge is true
                 if (spawnBlock.getId().equals(BlockID.RESPAWN_ANCHOR)) {
-                    BlockRespawnAnchor respawnAnchor = (BlockRespawnAnchor) spawnBlock;
-                    int charge = respawnAnchor.getCharge();
+                    BlockRespawnAnchor $159 = (BlockRespawnAnchor) spawnBlock;
+                    int $160 = respawnAnchor.getCharge();
                     if (charge > 0) {
                         respawnAnchor.setCharge(charge - 1);
                         respawnAnchor.getLevel().setBlock(respawnAnchor, spawnBlock);
@@ -1338,7 +1438,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     }
                 }
             } else {//block not available
-                Position defaultSpawn = this.getServer().getDefaultLevel().getSpawnLocation();
+                Position $161 = this.getServer().getDefaultLevel().getSpawnLocation();
                 this.setSpawn(defaultSpawn, SpawnPointType.WORLD);
                 playerRespawnEvent.setRespawnPosition(Pair.of(defaultSpawn, SpawnPointType.WORLD));
                 // handle spawn point change when block spawn not available
@@ -1347,7 +1447,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         this.server.getPluginManager().callEvent(playerRespawnEvent);
-        Position respawnPos = playerRespawnEvent.getRespawnPosition().first();
+        Position $162 = playerRespawnEvent.getRespawnPosition().first();
 
         this.sendExperience();
         this.sendExperienceLevel();
@@ -1377,6 +1477,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void checkChunks() {
         if (this.chunk == null || (this.chunk.getX() != ((int) this.x >> 4) || this.chunk.getZ() != ((int) this.z >> 4))) {
             if (this.chunk != null) {
@@ -1411,12 +1515,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void sendPlayStatus(int status) {
         sendPlayStatus(status, false);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void sendPlayStatus(int status, boolean immediate) {
-        PlayStatusPacket pk = new PlayStatusPacket();
+        PlayStatusPacket $163 = new PlayStatusPacket();
         pk.status = status;
 
         if (immediate) {
@@ -1426,12 +1538,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void forceSendEmptyChunks() {
-        int chunkPositionX = this.getFloorX() >> 4;
-        int chunkPositionZ = this.getFloorZ() >> 4;
-        for (int x = -chunkRadius; x < chunkRadius; x++) {
-            for (int z = -chunkRadius; z < chunkRadius; z++) {
-                LevelChunkPacket chunk = new LevelChunkPacket();
+        int $164 = this.getFloorX() >> 4;
+        int $165 = this.getFloorZ() >> 4;
+        for (int $166 = -chunkRadius; x < chunkRadius; x++) {
+            for (int $167 = -chunkRadius; z < chunkRadius; z++) {
+                LevelChunkPacket $168 = new LevelChunkPacket();
                 chunk.chunkX = chunkPositionX + x;
                 chunk.chunkZ = chunkPositionZ + z;
                 chunk.data = EmptyArrays.EMPTY_BYTES;
@@ -1440,6 +1556,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void addDefaultWindows() {
         this.craftingGridInventory = new CraftingGridInventory(this);
         this.playerCursorInventory = new PlayerCursorInventory(this);
@@ -1472,11 +1592,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getBaseOffset() {
         return super.getBaseOffset();
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
         super.onBlock(entity, e, animate);
         if (e.isBreakShield()) {
@@ -1493,6 +1621,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getStepHeight() {
         return 0.6f;
     }
@@ -1516,6 +1648,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * <p>
      * Return to the speed increase multiplier brought by SOUL_SPEED Enchantment
      */
+    /**
+     * @deprecated 
+     */
+    
     public float getSoulSpeedMultiplier() {
         return this.soulSpeedMultiplier;
     }
@@ -1527,6 +1663,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return int
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getLastInAirTick() {
         return this.lastInAirTick;
     }
@@ -1539,6 +1679,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public TranslationContainer getLeaveMessage() {
         return new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.left", this.getDisplayName());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBanned(boolean value) {
         if (value) {
@@ -1550,11 +1694,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isWhitelisted() {
         return this.server.isWhitelisted(this.getName().toLowerCase(Locale.ENGLISH));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setWhitelisted(boolean value) {
         if (value) {
             this.server.addWhitelist(this.getName().toLowerCase(Locale.ENGLISH));
@@ -1579,6 +1731,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasPlayedBefore() {
         return this.playedBefore;
     }
@@ -1599,6 +1755,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param adventureSettings 玩家权限设置<br>player permissions settings
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setAdventureSettings(AdventureSettings adventureSettings) {
         this.adventureSettings = adventureSettings.clone(this);
         this.adventureSettings.update();
@@ -1610,14 +1770,26 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * <p>
      * Set {@link #inAirTicks} to 0
      */
+    /**
+     * @deprecated 
+     */
+    
     public void resetInAirTicks() {
         this.inAirTicks = 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAllowFlight(boolean value) {
         this.getAdventureSettings().set(Type.ALLOW_FLIGHT, value);
         this.getAdventureSettings().update();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getAllowFlight() {
         return this.getAdventureSettings().get(Type.ALLOW_FLIGHT);
@@ -1631,12 +1803,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param value 是否允许修改世界<br>Whether to allow modification of the world
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setAllowModifyWorld(boolean value) {
         this.getAdventureSettings().set(Type.WORLD_IMMUTABLE, !value);
         this.getAdventureSettings().set(Type.BUILD, value);
         this.getAdventureSettings().set(Type.WORLD_BUILDER, value);
         this.getAdventureSettings().update();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAllowInteract(boolean value) {
         setAllowInteract(value, value);
@@ -1648,30 +1828,46 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param value      是否允许交互世界
      * @param containers 是否允许交互容器
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setAllowInteract(boolean value, boolean containers) {
         this.getAdventureSettings().set(Type.WORLD_IMMUTABLE, !value);
         this.getAdventureSettings().set(Type.DOORS_AND_SWITCHED, value);
         this.getAdventureSettings().set(Type.OPEN_CONTAINERS, containers);
         this.getAdventureSettings().update();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setAutoJump(boolean value) {
         this.getAdventureSettings().set(Type.AUTO_JUMP, value);
         this.getAdventureSettings().update();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasAutoJump() {
         return this.getAdventureSettings().get(Type.AUTO_JUMP);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void spawnTo(Player player) {
         if (this.spawned && player.spawned && this.isAlive() && player.getLevel() == this.level && player.canSee(this)/* && !this.isSpectator()*/) {
             super.spawnTo(player);
 
             if (this.isSpectator()) {
                 //发送旁观者的游戏模式给对方，使得对方客户端正确渲染玩家实体
-                var pk = new UpdatePlayerGameTypePacket();
+                var $169 = new UpdatePlayerGameTypePacket();
                 pk.gameType = GameType.SPECTATOR;
                 pk.entityId = this.getId();
                 player.dataPacket(pk);
@@ -1691,6 +1887,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean getRemoveFormat() {
         return removeFormat;
     }
@@ -1700,9 +1900,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param remove 是否清楚格式化字符<br>Whether remove the formatting character
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setRemoveFormat(boolean remove) {
         this.removeFormat = remove;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRemoveFormat() {
         this.setRemoveFormat(true);
@@ -1712,6 +1920,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param player 玩家
      * @return 是否可以看到该玩家<br>Whether the player can be seen
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSee(Player player) {
         return !this.hiddenPlayers.containsKey(player.getUniqueId());
     }
@@ -1723,6 +1935,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param player 要隐藏的玩家<br>Players who want to hide
      */
+    /**
+     * @deprecated 
+     */
+    
     public void hidePlayer(Player player) {
         if (this == player) {
             return;
@@ -1738,6 +1954,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param player 要显示的玩家<br>Players who want to show
      */
+    /**
+     * @deprecated 
+     */
+    
     public void showPlayer(Player player) {
         if (this == player) {
             return;
@@ -1749,16 +1969,28 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCollideWith(Entity entity) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCollide() {
         return gamemode != SPECTATOR;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void resetFallDistance() {
         super.resetFallDistance();
         if (this.inAirTicks != 0) {
@@ -1769,16 +2001,28 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isOnline() {
         return this.connected.get() && this.loggedIn;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isOp() {
         return this.server.isOp(this.getName());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setOp(boolean value) {
         if (value == this.isOp()) {
             return;
@@ -1792,21 +2036,37 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPermissionSet(String name) {
         return this.perm.isPermissionSet(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPermissionSet(Permission permission) {
         return this.perm.isPermissionSet(permission);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasPermission(String name) {
         return this.perm != null && this.perm.hasPermission(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasPermission(Permission permission) {
         return this.perm.hasPermission(permission);
     }
@@ -1827,11 +2087,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeAttachment(PermissionAttachment attachment) {
         this.perm.removeAttachment(attachment);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void recalculatePermissions() {
         this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_USERS, this);
         this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this);
@@ -1854,10 +2122,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.getSession().syncAvailableCommands();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isEnableClientCommand() {
         return this.enableClientCommand;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setEnableClientCommand(boolean enable) {
         this.enableClientCommand = enable;
@@ -1870,6 +2146,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPlayer() {
         return true;
     }
@@ -1880,6 +2160,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isEntity() {
         return true;
     }
@@ -1888,14 +2172,26 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public Entity asEntity() {
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removeAchievement(String achievementId) {
         achievements.remove(achievementId);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean hasAchievement(String achievementId) {
         return achievements.contains(achievementId);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isConnected() {
         return connected.get();
@@ -1908,6 +2204,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return {@link #displayName}
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getDisplayName() {
         return this.displayName;
     }
@@ -1919,6 +2219,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param displayName 显示名称
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
         if (this.spawned) {
@@ -1927,11 +2231,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setSkin(Skin skin) {
         super.setSkin(skin);
         if (this.spawned) {
 //            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), skin, this.getLoginChainData().getXUID());
-            var skinPacket = new PlayerSkinPacket();
+            var $170 = new PlayerSkinPacket();
             skinPacket.uuid = this.getUniqueId();
             skinPacket.skin = this.getSkin();
             skinPacket.newSkinName = this.getSkin().getSkinId();
@@ -1945,6 +2253,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return {@link String}
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getRawAddress() {
         return this.rawSocketAddress.getAddress().getHostAddress();
     }
@@ -1954,6 +2266,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return int
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getRawPort() {
         return this.rawSocketAddress.getPort();
     }
@@ -1974,6 +2290,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return {@link String}
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getAddress() {
         return this.socketAddress.getAddress().getHostAddress();
     }
@@ -1981,6 +2301,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @see #getRawPort
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getPort() {
         return this.socketAddress.getPort();
     }
@@ -2014,6 +2338,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSleeping() {
         return this.sleeping != null;
     }
@@ -2022,6 +2350,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @return {@link #inAirTicks}
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getInAirTicks() {
         return this.inAirTicks;
     }
@@ -2031,6 +2363,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * <p>
      * Returns whether the player is currently using an item (right-click and hold).
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isUsingItem(String itemId) {
         return getLastUseTick(itemId) != -1 && this.getDataFlag(EntityFlag.USING_ITEM);
     }
@@ -2041,8 +2377,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param coolDownTick the cool down tick
      * @param itemId       the item id
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setItemCoolDown(int coolDownTick, Identifier itemId) {
-        var pk = new PlayerStartItemCoolDownPacket();
+        var $171 = new PlayerStartItemCoolDownPacket();
         pk.setCoolDownDuration(coolDownTick);
         pk.setItemCategory(itemId.toString());
         this.cooldownTickMap.put(itemId.toString(), this.server.getTick() + coolDownTick);
@@ -2055,26 +2395,38 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param itemId the item
      * @return the boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isItemCoolDownEnd(Identifier itemId) {
-        Integer tick = this.cooldownTickMap.getOrDefault(itemId.toString(), 0);
-        boolean result = this.getServer().getTick() - tick > 0;
+        Integer $172 = this.cooldownTickMap.getOrDefault(itemId.toString(), 0);
+        boolean $173 = this.getServer().getTick() - tick > 0;
         if (result) {
             cooldownTickMap.remove(itemId.toString());
         }
         return result;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setItemCoolDown(int coolDown, String category) {
-        var pk = new PlayerStartItemCoolDownPacket();
+        var $174 = new PlayerStartItemCoolDownPacket();
         pk.setCoolDownDuration(coolDown);
         pk.setItemCategory(category);
         this.cooldownTickMap.put(category, this.server.getTick() + coolDown);
         this.dataPacket(pk);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isItemCoolDownEnd(String category) {
-        Integer tick = this.cooldownTickMap.getOrDefault(category, 0);
-        boolean result = this.getServer().getTick() - tick > 0;
+        Integer $175 = this.cooldownTickMap.getOrDefault(category, 0);
+        boolean $176 = this.getServer().getTick() - tick > 0;
         if (result) {
             cooldownTickMap.remove(category);
         }
@@ -2086,15 +2438,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param itemId the item id
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setLastUseTick(@NotNull String itemId, int tick) {
         lastUseItemMap.put(itemId, tick);
         this.setDataFlag(EntityFlag.USING_ITEM, true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removeLastUseTick(@NotNull String itemId) {
         lastUseItemMap.remove(itemId);
         this.setDataFlag(EntityFlag.USING_ITEM, false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getLastUseTick(String itemId) {
         return lastUseItemMap.getOrDefault(itemId, -1);
@@ -2105,6 +2469,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * <p>
      * Get the language hardcoded for the interaction buttons that appear when mobile device players face the carrier.
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getButtonText() {
         return this.buttonText;
     }
@@ -2114,18 +2482,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * <p>
      * Set the language hardcoded for the interaction buttons that appear when mobile device players face the carrier.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setButtonText(String text) {
         this.buttonText = text;
         this.setDataProperty(INTERACT_TEXT, this.buttonText);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void unloadChunk(int x, int z) {
         this.unloadChunk(x, z, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void unloadChunk(int x, int z, Level level) {
         level = level == null ? this.level : level;
-        long index = Level.chunkHash(x, z);
+        long $177 = Level.chunkHash(x, z);
         if (level.unregisterChunkLoader(this, x, z, false)) {
             if (playerChunkManager.getUsedChunks().contains(index)) {
                 for (Entity entity : level.getChunkEntities(x, z).values()) {
@@ -2141,6 +2521,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @return 玩家是否在主世界(维度为0)<br>Is the player in the world(Dimension equal 0)
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isInOverWorld() {
         return this.getLevel().getDimension() == 0;
     }
@@ -2163,12 +2547,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param pos 出生点位置
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setSpawn(Position pos, SpawnPointType spawnPointType) {
         Preconditions.checkNotNull(pos);
         Preconditions.checkNotNull(pos.level);
         this.spawnPoint = new Position(pos.x, pos.y, pos.z, level);
         this.spawnPointType = spawnPointType;
-        SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
+        SetSpawnPositionPacket $178 = new SetSpawnPositionPacket();
         pk.spawnType = SetSpawnPositionPacket.TYPE_PLAYER_SPAWN;
         pk.x = (int) this.spawnPoint.x;
         pk.y = (int) this.spawnPoint.y;
@@ -2176,6 +2564,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.dimension = this.spawnPoint.level.getDimension();
         this.dataPacket(pk);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendChunk(int x, int z, DataPacket packet) {
         if (!this.isConnected()) {
@@ -2197,21 +2589,29 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.needDimensionChangeACK) {
             this.needDimensionChangeACK = false;
 
-            PlayerActionPacket playerActionPacket = new PlayerActionPacket();
+            PlayerActionPacket $179 = new PlayerActionPacket();
             playerActionPacket.action = PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK;
             playerActionPacket.entityId = this.getId();
             this.dataPacket(playerActionPacket);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public void updateTrackingPositions() {
         updateTrackingPositions(false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public void updateTrackingPositions(boolean delayed) {
-        Server server = getServer();
+        Server $180 = getServer();
         if (delayed) {
             if (delayedPosTrackingUpdate != null) {
                 delayedPosTrackingUpdate.cancel();
@@ -2219,13 +2619,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             delayedPosTrackingUpdate = server.getScheduler().scheduleDelayedTask(null, this::updateTrackingPositions, 10);
             return;
         }
-        PositionTrackingService positionTrackingService = server.getPositionTrackingService();
+        PositionTrackingService $181 = server.getPositionTrackingService();
         positionTrackingService.forceRecheck(this);
     }
 
     /**
      * @param packet 发送的数据包<br>packet to send
      */
+    /**
+     * @deprecated 
+     */
+    
     public void dataPacket(DataPacket packet) {
         this.getSession().sendPacket(packet);
     }
@@ -2237,9 +2641,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return int
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getPing() {
         return (int) this.getSession().getPing();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean sleepOn(Vector3 pos) {
         if (!this.isOnline()) {
@@ -2272,6 +2684,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void stopSleep() {
         if (this.sleeping != null) {
@@ -2284,19 +2700,23 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             this.level.sleepTicks = 0;
 
-            AnimatePacket pk = new AnimatePacket();
+            AnimatePacket $182 = new AnimatePacket();
             pk.eid = this.getId();
             pk.action = AnimatePacket.Action.WAKE_UP;
             this.dataPacket(pk);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean awardAchievement(String achievementId) {
         if (!Server.getInstance().getPropertyBoolean("achievements", true)) {
             return false;
         }
 
-        Achievement achievement = Achievement.achievements.get(achievementId);
+        Achievement $183 = Achievement.achievements.get(achievementId);
 
         if (achievement == null || hasAchievement(achievementId)) {
             return false;
@@ -2307,7 +2727,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 return false;
             }
         }
-        PlayerAchievementAwardedEvent event = new PlayerAchievementAwardedEvent(this, achievementId);
+        PlayerAchievementAwardedEvent $184 = new PlayerAchievementAwardedEvent(this, achievementId);
         this.server.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -2326,9 +2746,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return int
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getGamemode() {
         return gamemode;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setGamemode(int gamemode) {
         return this.setGamemode(gamemode, false, null);
@@ -2339,9 +2767,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @see #setGamemode(int, boolean, AdventureSettings)
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean setGamemode(int gamemode, boolean serverSide) {
         return this.setGamemode(gamemode, serverSide, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setGamemode(int gamemode, boolean serverSide, AdventureSettings newSettings) {
         return this.setGamemode(gamemode, serverSide, newSettings, false);
@@ -2356,6 +2792,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param forceUpdate Whether to force an update. If true, the check for the parameter 'gamemode' will be canceled
      * @return gamemode
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean setGamemode(int gamemode, boolean serverSide, AdventureSettings newSettings, boolean forceUpdate) {
         if (!forceUpdate && (gamemode < 0 || gamemode > 3 || this.gamemode == gamemode)) {
             return false;
@@ -2398,18 +2838,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setAdventureSettings(ev.getNewAdventureSettings());
 
         if (!serverSide) {
-            var pk = new UpdatePlayerGameTypePacket();
-            var networkGamemode = toNetworkGamemode(gamemode);
+            var $185 = new UpdatePlayerGameTypePacket();
+            var $186 = toNetworkGamemode(gamemode);
             pk.gameType = GameType.from(networkGamemode);
             pk.entityId = this.getId();
-            var players = Sets.newHashSet(Server.getInstance().getOnlinePlayers().values());
+            var $187 = Sets.newHashSet(Server.getInstance().getOnlinePlayers().values());
             //不向自身发送UpdatePlayerGameTypePacket，我们将使用SetPlayerGameTypePacket
             players.remove(this);
             //我们需要给所有玩家发送此包，来使玩家客户端能正确渲染玩家实体
             //eg: 观察者模式玩家对于gm 0 1 2的玩家不可见
             Server.broadcastPacket(players, pk);
             //对于自身，我们使用SetPlayerGameTypePacket来确保与WaterDog的兼容
-            var pk2 = new SetPlayerGameTypePacket();
+            var $188 = new SetPlayerGameTypePacket();
             pk2.gamemode = networkGamemode;
             this.dataPacket(pk2);
         }
@@ -2418,6 +2858,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendSettings() {
         this.getAdventureSettings().update();
@@ -2430,6 +2874,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSurvival() {
         return this.gamemode == SURVIVAL;
     }
@@ -2441,6 +2889,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isCreative() {
         return this.gamemode == CREATIVE;
     }
@@ -2452,6 +2904,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSpectator() {
         return this.gamemode == SPECTATOR;
     }
@@ -2463,6 +2919,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isAdventure() {
         return this.gamemode == ADVENTURE;
     }
@@ -2477,6 +2937,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @ApiStatus.Internal
+    /**
+     * @deprecated 
+     */
+    
     public boolean fastMove(double dx, double dy, double dz) {
         this.x += dx;
         this.y += dy;
@@ -2495,8 +2959,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @ApiStatus.Internal
     public AxisAlignedBB reCalcOffsetBoundingBox() {
-        float dx = this.getWidth() / 2;
-        float dz = this.getWidth() / 2;
+        float $189 = this.getWidth() / 2;
+        float $190 = this.getWidth() / 2;
         return this.offsetBoundingBox.setBounds(
                 this.x - dx, this.y, this.z - dz,
                 this.x + dx, this.y + this.getHeight(), this.z + dz
@@ -2504,6 +2968,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
         this.sendPosition(new Vector3(x, y, z), yaw, pitch, MovePlayerPacket.MODE_NORMAL, this.getViewers().values().toArray(EMPTY_ARRAY));
     }
@@ -2515,11 +2983,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return 调用是否成功
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean setMotion(Vector3 motion) {
         if (super.setMotion(motion)) {
             if (this.chunk != null) {
                 this.addMotion(this.motionX, this.motionY, this.motionZ);  //Send to others
-                SetEntityMotionPacket pk = new SetEntityMotionPacket();
+                SetEntityMotionPacket $191 = new SetEntityMotionPacket();
                 pk.eid = this.getId();
                 pk.motionX = (float) motion.x;
                 pk.motionY = (float) motion.y;
@@ -2540,8 +3012,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Send attributes to client
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendAttributes() {
-        UpdateAttributesPacket pk = new UpdateAttributesPacket();
+        UpdateAttributesPacket $192 = new UpdateAttributesPacket();
         pk.entityId = this.getId();
         pk.entries = new Attribute[]{
                 Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0),
@@ -2556,8 +3032,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Send the fog settings to the client
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendFogStack() {
-        var pk = new PlayerFogPacket();
+        var $193 = new PlayerFogPacket();
         pk.fogStack = this.fogStack;
         this.dataPacket(pk);
     }
@@ -2565,13 +3045,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Send camera presets to cilent
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendCameraPresets() {
-        var pk = new CameraPresetsPacket();
+        var $194 = new CameraPresetsPacket();
         pk.presets.addAll(CameraPreset.getPresets().values());
         dataPacket(pk);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.riding instanceof EntityHorse) {
             return 1.1f;
@@ -2580,6 +3068,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setSwimming(boolean value) {
         //Stopping a swim at a height of 1 block will still send a STOPSWIMMING ACTION from the client, but the player will still be swimming height,so skip the action
         if (!value && level.getBlock(up()).isSolid() && level.getBlock(down()).isSolid()) {
@@ -2589,12 +3081,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (!this.loggedIn) {
             return false;
         }
 
-        int tickDiff = currentTick - this.lastUpdate;
+        int $195 = currentTick - this.lastUpdate;
 
         if (tickDiff <= 0) {
             return true;
@@ -2669,12 +3165,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                             !this.getAdventureSettings().get(Type.ALLOW_FLIGHT) &&
                             this.inAirTicks > 20 && !this.isSleeping() && !this.isImmobile() && !this.isSwimming() &&
                             this.riding == null && !this.hasEffect(EffectType.LEVITATION) && !this.hasEffect(EffectType.SLOW_FALLING)) {
-                        double expectedVelocity = (-this.getGravity()) / ((double) this.getDrag()) - ((-this.getGravity()) / ((double) this.getDrag())) * Math.exp(-((double) this.getDrag()) * ((double) (this.inAirTicks - this.startAirTicks)));
-                        double diff = (this.speed.y - expectedVelocity) * (this.speed.y - expectedVelocity);
+                        double $196 = (-this.getGravity()) / ((double) this.getDrag()) - ((-this.getGravity()) / ((double) this.getDrag())) * Math.exp(-((double) this.getDrag()) * ((double) (this.inAirTicks - this.startAirTicks)));
+                        double $197 = (this.speed.y - expectedVelocity) * (this.speed.y - expectedVelocity);
 
-                        Block block = level.getBlock(this);
-                        String blockId = block.getId();
-                        boolean ignore = blockId.equals(Block.LADDER) || blockId.equals(Block.VINE) || blockId.equals(Block.WEB)
+                        Block $198 = level.getBlock(this);
+                        String $199 = block.getId();
+                        boolean $200 = blockId.equals(Block.LADDER) || blockId.equals(Block.VINE) || blockId.equals(Block.WEB)
                                 || blockId.equals(Block.SCAFFOLDING);// || (blockId == Block.SWEET_BERRY_BUSH && block.getDamage() > 0);
 
                         if (!this.hasEffect(EffectType.JUMP_BOOST) && diff > 0.6 && expectedVelocity < this.speed.y && !ignore) {
@@ -2708,13 +3204,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
                 //鞘翅检查和耐久计算
                 if (this.isGliding()) {
-                    HumanInventory playerInventory = this.getInventory();
+                    HumanInventory $201 = this.getInventory();
                     if (playerInventory != null) {
-                        Item chestplate = playerInventory.getChestplate();
+                        Item $202 = playerInventory.getChestplate();
                         if ((chestplate == null || !chestplate.getId().equals(ItemID.ELYTRA))) {
                             this.setGliding(false);
                         } else if (this.age % (20 * (chestplate.getEnchantmentLevel(Enchantment.ID_DURABILITY) + 1)) == 0 && !isCreative()) {
-                            int newDamage = chestplate.getDamage() + 1;
+                            int $203 = chestplate.getDamage() + 1;
                             if (newDamage < chestplate.getMaxDurability()) {
                                 chestplate.setDamage(newDamage);
                                 playerInventory.setChestplate(chestplate);
@@ -2754,7 +3250,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         updateBlockingFlag();
 
-        PlayerFood foodData = getFoodData();
+        PlayerFood $204 = getFoodData();
         if (this.ticksLived % 40 == 0 && foodData != null) {
             foodData.sendFood();
         }
@@ -2767,11 +3263,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * <p>
      * Check for nearby interactable entities (not generally used by plugins)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void checkInteractNearby() {
-        int interactDistance = isCreative() ? 5 : 3;
+        int $205 = isCreative() ? 5 : 3;
         if (canInteract(this, interactDistance)) {
             if (getEntityPlayerLookingAt(interactDistance) != null) {
-                EntityInteractable onInteract = getEntityPlayerLookingAt(interactDistance);
+                EntityInteractable $206 = getEntityPlayerLookingAt(interactDistance);
                 setButtonText(onInteract.getInteractButtonText(this));
             } else {
                 setButtonText("");
@@ -2801,7 +3301,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return Entity|null    如果没有找到实体，则为NULL，或者是实体的一个实例。<br>either NULL if no entity is found or an instance of the entity
      */
     public EntityInteractable getEntityPlayerLookingAt(int maxDistance) {
-        EntityInteractable entity = null;
+        EntityInteractable $207 = null;
 
         // just a fix because player MAY not be fully initialized
         if (temporalVector != null) {
@@ -2809,7 +3309,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             // get all blocks in looking direction until the max interact distance is reached (it's possible that startblock isn't found!)
             try {
-                BlockIterator itr = new BlockIterator(level, getPosition(), getDirectionVector(), getEyeHeight(), maxDistance);
+                BlockIterator $208 = new BlockIterator(level, getPosition(), getDirectionVector(), getEyeHeight(), maxDistance);
                 if (itr.hasNext()) {
                     Block block;
                     while (itr.hasNext()) {
@@ -2826,18 +3326,34 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         return entity;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getEnchantmentSeed() {
         return this.enchSeed;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setEnchantmentSeed(int seed) {
         this.enchSeed = seed;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void regenerateEnchantmentSeed() {
         this.enchSeed = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void checkNetwork() {
         if (!this.isOnline()) {
@@ -2852,19 +3368,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.getSession().notifyTerrainReady();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canInteract(Vector3 pos, double maxDistance) {
         return this.canInteract(pos, maxDistance, 6.0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canInteract(Vector3 pos, double maxDistance, double maxDiff) {
         if (this.distanceSquared(pos) > maxDistance * maxDistance) {
             return false;
         }
 
-        Vector2 dV = this.getDirectionPlane();
-        double dot = dV.dot(new Vector2(this.x, this.z));
-        double dot1 = dV.dot(new Vector2(pos.x, pos.z));
+        Vector2 $209 = this.getDirectionPlane();
+        double $210 = dV.dot(new Vector2(this.x, this.z));
+        double $211 = dV.dot(new Vector2(pos.x, pos.z));
         return (dot1 - dot) >= -maxDiff;
     }
 
@@ -2877,6 +3401,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param message 发送的信息<br>message to send
      * @return successful
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean chat(String message) {
         if (!this.spawned || !this.isAlive()) {
             return false;
@@ -2890,7 +3418,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         for (String msg : message.split("\n")) {
             if (!msg.trim().isEmpty() && msg.length() <= 512 && this.messageLimitCounter-- > 0) {
-                PlayerChatEvent chatEvent = new PlayerChatEvent(this, msg);
+                PlayerChatEvent $212 = new PlayerChatEvent(this, msg);
                 this.server.getPluginManager().callEvent(chatEvent);
                 if (!chatEvent.isCancelled()) {
                     this.server.broadcastMessage(this.getServer().getLanguage().tr(chatEvent.getFormat(), new String[]{chatEvent.getPlayer().getDisplayName(), chatEvent.getMessage()}), chatEvent.getRecipients());
@@ -2906,6 +3434,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @see #kick(PlayerKickEvent.Reason, String, boolean)
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean kick() {
         return this.kick("");
     }
@@ -2915,6 +3447,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @see #kick(PlayerKickEvent.Reason, String, boolean)
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean kick(String reason, boolean isAdmin) {
         return this.kick(PlayerKickEvent.Reason.UNKNOWN, reason, isAdmin);
     }
@@ -2924,6 +3460,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @see #kick(PlayerKickEvent.Reason, String, boolean)
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean kick(String reason) {
         return kick(PlayerKickEvent.Reason.UNKNOWN, reason);
     }
@@ -2931,6 +3471,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @see #kick(PlayerKickEvent.Reason, String, boolean)
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean kick(PlayerKickEvent.Reason reason) {
         return this.kick(reason, true);
     }
@@ -2938,6 +3482,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @see #kick(PlayerKickEvent.Reason, String, boolean)
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean kick(PlayerKickEvent.Reason reason, String reasonString) {
         return this.kick(reason, reasonString, true);
     }
@@ -2945,6 +3493,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @see #kick(PlayerKickEvent.Reason, String, boolean)
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean kick(PlayerKickEvent.Reason reason, boolean isAdmin) {
         return this.kick(reason, reason.toString(), isAdmin);
     }
@@ -2959,6 +3511,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param isAdmin      是否来自管理员踢出<br>Whether from the administrator kicked out
      * @return boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean kick(PlayerKickEvent.Reason reason, String reasonString, boolean isAdmin) {
         PlayerKickEvent ev;
         this.server.getPluginManager().callEvent(ev = new PlayerKickEvent(this, reason, this.getLeaveMessage()));
@@ -2993,10 +3549,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param distance 可视距离
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setViewDistance(int distance) {
         this.chunkRadius = distance;
 
-        ChunkRadiusUpdatedPacket pk = new ChunkRadiusUpdatedPacket();
+        ChunkRadiusUpdatedPacket $213 = new ChunkRadiusUpdatedPacket();
         pk.radius = distance;
 
         this.dataPacket(pk);
@@ -3009,19 +3569,31 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return int
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getViewDistance() {
         return this.chunkRadius;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendMessage(String message) {
-        TextPacket pk = new TextPacket();
+        TextPacket $214 = new TextPacket();
         pk.type = TextPacket.TYPE_RAW;
         pk.message = this.server.getLanguage().tr(message);
         this.dataPacket(pk);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendMessage(TextContainer message) {
         if (message instanceof TranslationContainer) {
             this.sendTranslation(message.getText(), ((TranslationContainer) message).getParameters());
@@ -3029,11 +3601,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         this.sendMessage(message.getText());
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public void sendCommandOutput(CommandOutputContainer container) {
         if (this.level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
-            var pk = new CommandOutputPacket();
+            var $215 = new CommandOutputPacket();
             pk.messages.addAll(container.getMessages());
             pk.commandOriginData = new CommandOriginData(CommandOriginData.Origin.PLAYER, this.getUniqueId(), "", null);//Only players can effect
             pk.type = CommandOutputType.ALL_OUTPUT;//Useless
@@ -3049,9 +3625,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param text JSON文本<br>Json text
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendRawTextMessage(RawText text) {
-        TextPacket pk = new TextPacket();
+        TextPacket $216 = new TextPacket();
         pk.type = TextPacket.TYPE_OBJECT;
         pk.message = text.toRawText();
         this.dataPacket(pk);
@@ -3060,29 +3640,37 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @see #sendTranslation(String, String[])
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendTranslation(String message) {
         this.sendTranslation(message, EmptyArrays.EMPTY_STRINGS);
     }
 
     /**
-     * 在玩家聊天栏发送一个多语言翻译文本，示例:<br>{@code message="Test Message {%0} {%1}" parameters=["Hello","World"]}<br>
+     * 在玩家聊天栏发送一个多语言翻译文本，示例:<br>{@code $217="Test Message {%0} {%1}" parameters=["Hello","World"]}<br>
      * 实际消息内容{@code "Test Message Hello World"}
      * <p>
-     * Send a multilingual translated text in the player chat bar, example:<br> {@code message="Test Message {%0} {%1}" parameters=["Hello", "World"]}<br>
+     * Send a multilingual translated text in the player chat bar, example:<br> {@code $218="Test Message {%0} {%1}" parameters=["Hello", "World"]}<br>
      * actual message content {@code "Test Message Hello World"}
      *
      * @param message    消息
      * @param parameters 参数
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendTranslation(String message, String[] parameters) {
-        TextPacket pk = new TextPacket();
+        TextPacket $219 = new TextPacket();
         if (this.server.getSettings().baseSettings().forceServerTranslate()) {
             pk.type = TextPacket.TYPE_RAW;
             pk.message = this.server.getLanguage().tr(message, parameters);
         } else {
             pk.type = TextPacket.TYPE_TRANSLATION;
             pk.message = this.server.getLanguage().tr(message, parameters, "nukkit.", true);
-            for (int i = 0; i < parameters.length; i++) {
+            for ($220nt $2 = 0; i < parameters.length; i++) {
                 parameters[i] = this.server.getLanguage().tr(parameters[i], parameters, "nukkit.", true);
             }
             pk.parameters = parameters;
@@ -3093,6 +3681,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @see #sendChat(String, String)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendChat(String message) {
         this.sendChat("", message);
     }
@@ -3104,8 +3696,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param message 消息
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendChat(String source, String message) {
-        TextPacket pk = new TextPacket();
+        TextPacket $221 = new TextPacket();
         pk.type = TextPacket.TYPE_CHAT;
         pk.source = source;
         pk.message = this.server.getLanguage().tr(message);
@@ -3115,6 +3711,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @see #sendPopup(String, String)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendPopup(String message) {
         this.sendPopup(message, "");
     }
@@ -3127,8 +3727,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param message 消息
      */
     // TODO: Support Translation Parameters
+    /**
+     * @deprecated 
+     */
+    
     public void sendPopup(String message, String subtitle) {
-        TextPacket pk = new TextPacket();
+        TextPacket $222 = new TextPacket();
         pk.type = TextPacket.TYPE_POPUP;
         pk.message = message;
         this.dataPacket(pk);
@@ -3141,8 +3745,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param message 消息
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendTip(String message) {
-        TextPacket pk = new TextPacket();
+        TextPacket $223 = new TextPacket();
         pk.type = TextPacket.TYPE_TIP;
         pk.message = message;
         this.dataPacket(pk);
@@ -3153,8 +3761,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * <p>
      * Clears away the title info being displayed on the player.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void clearTitle() {
-        SetTitlePacket pk = new SetTitlePacket();
+        SetTitlePacket $224 = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_CLEAR;
         this.dataPacket(pk);
     }
@@ -3164,8 +3776,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * <p>
      * Resets both title animation times and subtitle for the next shown title.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void resetTitleSettings() {
-        SetTitlePacket pk = new SetTitlePacket();
+        SetTitlePacket $225 = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_RESET;
         this.dataPacket(pk);
     }
@@ -3177,8 +3793,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param subtitle 副标题
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setSubtitle(String subtitle) {
-        SetTitlePacket pk = new SetTitlePacket();
+        SetTitlePacket $226 = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_SUBTITLE;
         pk.text = subtitle;
         this.dataPacket(pk);
@@ -3191,9 +3811,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param text JSON文本<br>JSON text
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRawTextSubTitle(RawText text) {
-        SetTitlePacket pk = new SetTitlePacket();
+        SetTitlePacket $227 = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_SUBTITLE_JSON;
         pk.text = text.toRawText();
         this.dataPacket(pk);
@@ -3208,8 +3832,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param duration 持续时间
      * @param fadeout  淡出时间
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setTitleAnimationTimes(int fadein, int duration, int fadeout) {
-        SetTitlePacket pk = new SetTitlePacket();
+        SetTitlePacket $228 = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_ANIMATION_TIMES;
         pk.fadeInTime = fadein;
         pk.stayTime = duration;
@@ -3224,9 +3852,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param text JSON文本<br>JSON text
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRawTextTitle(RawText text) {
-        SetTitlePacket pk = new SetTitlePacket();
+        SetTitlePacket $229 = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_TITLE_JSON;
         pk.text = text.toRawText();
         this.dataPacket(pk);
@@ -3234,19 +3866,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
 
     /**
-     * {@code subtitle=null,fadeIn=20,stay=20,fadeOut=5}
+     * {@code $230=null,fadeIn=20,stay=20,fadeOut=5}
      *
      * @see #sendTitle(String, String, int, int, int)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendTitle(String title) {
         this.sendTitle(title, null, 20, 20, 5);
     }
 
     /**
-     * {@code fadeIn=20,stay=20,fadeOut=5}
+     * {@code $231=20,stay=20,fadeOut=5}
      *
      * @see #sendTitle(String, String, int, int, int)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendTitle(String title, String subtitle) {
         this.sendTitle(title, subtitle, 20, 20, 5);
     }
@@ -3262,6 +3902,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param stay     持续时间<br>stay time
      * @param fadeOut  淡出时间<br>fadeOut time
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         this.setTitleAnimationTimes(fadeIn, stay, fadeOut);
         if (!Strings.isNullOrEmpty(subtitle)) {
@@ -3277,6 +3921,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @see #sendActionBar(String, int, int, int)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendActionBar(String title) {
         this.sendActionBar(title, 1, 0, 1);
     }
@@ -3291,8 +3939,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param duration 持续时间
      * @param fadeout  淡出时间
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendActionBar(String title, int fadein, int duration, int fadeout) {
-        SetTitlePacket pk = new SetTitlePacket();
+        SetTitlePacket $232 = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_ACTION_BAR;
         pk.text = title;
         pk.fadeInTime = fadein;
@@ -3306,6 +3958,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @see #setRawTextActionBar(RawText, int, int, int)
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRawTextActionBar(RawText text) {
         this.setRawTextActionBar(text, 1, 0, 1);
@@ -3321,9 +3977,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param duration 持续时间
      * @param fadeout  淡出时间
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRawTextActionBar(RawText text, int fadein, int duration, int fadeout) {
-        SetTitlePacket pk = new SetTitlePacket();
+        SetTitlePacket $233 = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_ACTIONBAR_JSON;
         pk.text = text.toRawText();
         pk.fadeInTime = fadein;
@@ -3334,28 +3994,44 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         this.close("");
     }
 
     /**
-     * {@code notify=true}
+     * {@code $234=true}
      *
      * @see #close(TextContainer, String)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void close(String reason) {
         this.close(this.getLeaveMessage(), reason);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void close(String message, String reason) {
         this.close(new TextContainer(message), reason);
     }
 
     /**
-     * {@code reason="generic",notify=true}
+     * {@code $235="generic",notify=true}
      *
      * @see #close(TextContainer, String)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void close(TextContainer message) {
         this.close(message, "generic");
     }
@@ -3368,6 +4044,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param message PlayerQuitEvent事件消息<br>PlayerQuitEvent message
      * @param reason  登出原因<br>Reason for logout
      */
+    /**
+     * @deprecated 
+     */
+    
     public void close(TextContainer message, String reason) {
         if (!this.connected.compareAndSet(true, false) && this.closed) {
             return;
@@ -3382,7 +4062,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         resetInventory();
         for (var inv : this.windows.keySet()) {
             if (this.permanentWindows.contains(windows.get(inv))) {
-                int windowId = this.getWindowId(inv);
+                int $236 = this.getWindowId(inv);
                 playerHandle.setClosingWindowId(windowId);
                 inv.close(this);
                 updateTrackingPositions(true);
@@ -3390,7 +4070,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         //handle scoreboardManager#beforePlayerQuit
-        var scoreboardManager = this.getServer().getScoreboardManager();
+        var $237 = this.getServer().getScoreboardManager();
         if (scoreboardManager != null) {
             scoreboardManager.beforePlayerQuit(this);
         }
@@ -3402,8 +4082,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         unloadAllUsedChunk();
 
-        //send disconnection packet
-        DisconnectPacket packet = new DisconnectPacket();
+        //send disconnection $238
+        DisconnectPacket $3 = new DisconnectPacket();
         if (reason == null || reason.isBlank()) {
             packet.hideDisconnectionScreen = true;
             reason = BedrockDisconnectReasons.DISCONNECTED;
@@ -3411,8 +4091,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         packet.message = reason;
         this.getSession().sendPacketSync(packet);
 
-        //call quit event
-        PlayerQuitEvent ev = null;
+        //call quit $239ent
+        PlayerQuitEvent $4 = null;
         if (this.getName() != null && !this.getName().isEmpty()) {
             this.server.getPluginManager().callEvent(ev = new PlayerQuitEvent(this, message, true, reason));
             if (this.fishing != null) {
@@ -3472,15 +4152,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         assert this.session != null;
         this.session.close(null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public synchronized void unloadAllUsedChunk() {
         //save player data
         //unload chunk for the player
-        LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
+        LongIterator $240 = this.playerChunkManager.getUsedChunks().iterator();
         while (iterator.hasNext()) {
-            long l = iterator.nextLong();
-            int chunkX = Level.getHashX(l);
-            int chunkZ = Level.getHashZ(l);
+            $241ong $5 = iterator.nextLong();
+            int $242 = Level.getHashX(l);
+            int $243 = Level.getHashZ(l);
             if (level.unregisterChunkLoader(this, chunkX, chunkZ, false)) {
                 for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
                     if (entity != this) {
@@ -3492,12 +4176,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         this.playerChunkManager.getUsedChunks().clear();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void save() {
         this.save(false);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         if (spawnPoint == null) {
@@ -3521,6 +4213,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.adventureSettings.saveNBT();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void save(boolean async) {
         if (this.closed) {
@@ -3532,7 +4228,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.level != null) {
             this.namedTag.putString("Level", this.level.getName());
 
-            CompoundTag achievements = new CompoundTag();
+            CompoundTag $244 = new CompoundTag();
             for (String achievement : this.achievements) {
                 achievements.putByte(achievement, 1);
             }
@@ -3547,8 +4243,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.namedTag.putFloat("foodSaturationLevel", this.getFoodData().getSaturation());
             this.namedTag.putInt("enchSeed", this.enchSeed);
 
-            var fogIdentifiers = new ListTag<StringTag>();
-            var userProvidedFogIds = new ListTag<StringTag>();
+            var $245 = new ListTag<StringTag>();
+            var $246 = new ListTag<StringTag>();
             this.fogStack.forEach(fog -> {
                 fogIdentifiers.add(new StringTag(fog.identifier().toString()));
                 userProvidedFogIds.add(new StringTag(fog.userProvidedId()));
@@ -3566,32 +4262,44 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Player";
     }
 
     @NotNull
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.info.getUsername();
     }
 
 
     public LangCode getLanguageCode() {
-        LangCode code = LangCode.from(this.getLoginChainData().getLanguageCode());
-        return code == null ? LangCode.en_US : code;
+        LangCode $247 = LangCode.from(this.getLoginChainData().getLanguageCode());
+        return $248 == null ? LangCode.en_US : code;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void kill() {
         if (!this.spawned) {
             return;
         }
 
-        boolean showMessages = this.level.getGameRules().getBoolean(GameRule.SHOW_DEATH_MESSAGES);
-        String message = "";
+        boolean $249 = this.level.getGameRules().getBoolean(GameRule.SHOW_DEATH_MESSAGES);
+        String $250 = "";
         List<String> params = new ArrayList<>();
-        EntityDamageEvent cause = this.getLastDamageCause();
+        EntityDamageEvent $251 = this.getLastDamageCause();
 
         if (showMessages) {
             params.add(this.getDisplayName());
@@ -3599,7 +4307,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             switch (cause == null ? DamageCause.CUSTOM : cause.getCause()) {
                 case ENTITY_ATTACK:
                     if (cause instanceof EntityDamageByEntityEvent) {
-                        Entity e = ((EntityDamageByEntityEvent) cause).getDamager();
+                        Entity $252 = ((EntityDamageByEntityEvent) cause).getDamager();
                         killer = e;
                         if (e instanceof Player) {
                             message = "death.attack.player";
@@ -3616,7 +4324,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     break;
                 case PROJECTILE:
                     if (cause instanceof EntityDamageByEntityEvent) {
-                        Entity e = ((EntityDamageByEntityEvent) cause).getDamager();
+                        Entity $253 = ((EntityDamageByEntityEvent) cause).getDamager();
                         killer = e;
                         if (e instanceof Player) {
                             message = "death.attack.arrow";
@@ -3649,7 +4357,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     message = "death.attack.lava";
 
                     if (killer instanceof EntityProjectile) {
-                        Entity shooter = ((EntityProjectile) killer).shootingEntity;
+                        Entity $254 = ((EntityProjectile) killer).shootingEntity;
                         if (shooter != null) {
                             killer = shooter;
                         }
@@ -3674,7 +4382,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
                 case CONTACT:
                     if (cause instanceof EntityDamageByBlockEvent) {
-                        String id = ((EntityDamageByBlockEvent) cause).getDamager().getId();
+                        String $255 = ((EntityDamageByBlockEvent) cause).getDamager().getId();
                         if (id == BlockID.CACTUS) {
                             message = "death.attack.cactus";
                         } else if (id == BlockID.ANVIL) {
@@ -3686,7 +4394,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 case BLOCK_EXPLOSION:
                 case ENTITY_EXPLOSION:
                     if (cause instanceof EntityDamageByEntityEvent) {
-                        Entity e = ((EntityDamageByEntityEvent) cause).getDamager();
+                        Entity $256 = ((EntityDamageByEntityEvent) cause).getDamager();
                         killer = e;
                         if (e instanceof Player) {
                             message = "death.attack.explosion.player";
@@ -3720,7 +4428,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
-        PlayerDeathEvent ev = new PlayerDeathEvent(this, this.getDrops(), new TranslationContainer(message, params.toArray(EmptyArrays.EMPTY_STRINGS)), this.expLevel);
+        PlayerDeathEvent $257 = new PlayerDeathEvent(this, this.getDrops(), new TranslationContainer(message, params.toArray(EmptyArrays.EMPTY_STRINGS)), this.expLevel);
         ev.setKeepExperience(this.level.gameRules.getBoolean(GameRule.KEEP_INVENTORY));
         ev.setKeepInventory(ev.getKeepExperience());
 
@@ -3759,7 +4467,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             if (!ev.getKeepExperience() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
                 if (this.isSurvival() || this.isAdventure()) {
-                    int exp = ev.getExperience() * 7;
+                    int $258 = ev.getExperience() * 7;
                     if (exp > 100) exp = 100;
                     this.getLevel().dropExpOrb(this, exp);
                 }
@@ -3768,7 +4476,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             this.timeSinceRest = 0;
 
-            DeathInfoPacket deathInfo = new DeathInfoPacket();
+            DeathInfoPacket $259 = new DeathInfoPacket();
             deathInfo.translation = ev.getTranslationDeathMessage();
             this.dataPacket(deathInfo);
 
@@ -3777,8 +4485,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
             this.setDataProperty(PLAYER_LAST_DEATH_POS, new BlockVector3(this.getFloorX(), this.getFloorY(), this.getFloorZ()));
 
-            RespawnPacket pk = new RespawnPacket();
-            Position pos = this.getSpawn().left();
+            RespawnPacket $260 = new RespawnPacket();
+            Position $261 = this.getSpawn().left();
             pk.x = (float) pos.x;
             pk.y = (float) pos.y;
             pk.z = (float) pos.z;
@@ -3789,15 +4497,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setHealth(float health) {
         if (health < 1) {
             health = 0;
         }
         super.setHealth(health);
-        Attribute attribute = this.attributes.computeIfAbsent(Attribute.MAX_HEALTH, Attribute::getAttribute);
+        Attribute $262 = this.attributes.computeIfAbsent(Attribute.MAX_HEALTH, Attribute::getAttribute);
         attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
         if (this.spawned) {
-            UpdateAttributesPacket pk = new UpdateAttributesPacket();
+            UpdateAttributesPacket $263 = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attribute};
             pk.entityId = this.getId();
             this.dataPacket(pk);
@@ -3805,13 +4517,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setMaxHealth(int maxHealth) {
         super.setMaxHealth(maxHealth);
 
-        Attribute attribute = this.attributes.computeIfAbsent(Attribute.MAX_HEALTH, Attribute::getAttribute);
+        Attribute $264 = this.attributes.computeIfAbsent(Attribute.MAX_HEALTH, Attribute::getAttribute);
         attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
         if (this.spawned) {
-            UpdateAttributesPacket pk = new UpdateAttributesPacket();
+            UpdateAttributesPacket $265 = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attribute};
             pk.entityId = this.getId();
             this.dataPacket(pk);
@@ -3825,6 +4541,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return int
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getExperience() {
         return this.exp;
     }
@@ -3836,6 +4556,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return int
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getExperienceLevel() {
         return this.expLevel;
     }
@@ -3846,6 +4570,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @see #addExperience(int, boolean)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void addExperience(int add) {
         addExperience(add, false);
     }
@@ -3858,13 +4586,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param add              经验值的数量
      * @param playLevelUpSound 有无升级声音
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public void addExperience(int add, boolean playLevelUpSound) {
         if (add == 0) return;
-        int now = this.getExperience();
-        int added = now + add;
-        int level = this.getExperienceLevel();
-        int most = calculateRequireExperience(level);
+        int $266 = this.getExperience();
+        int $267 = now + add;
+        int $268 = this.getExperienceLevel();
+        int $269 = calculateRequireExperience(level);
         while (added >= most) {  //Level Up!
             added = added - most;
             level++;
@@ -3881,6 +4613,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param level 等级
      * @return int
      */
+    /**
+     * @deprecated 
+     */
+    
     public static int calculateRequireExperience(int level) {
         if (level >= 30) {
             return 112 + (level - 30) * 9;
@@ -3893,10 +4629,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
 
     /**
-     * {@code level = this.getExperienceLevel(),playLevelUpSound=false}
+     * {@code $270 = this.getExperienceLevel(),playLevelUpSound=false}
      *
      * @see #setExperience(int, int, boolean)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setExperience(int exp) {
         setExperience(exp, this.getExperienceLevel());
     }
@@ -3907,6 +4647,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @see #setExperience(int, int, boolean)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setExperience(int exp, int level) {
         setExperience(exp, level, false);
     }
@@ -3921,8 +4665,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param level            等级
      */
     //todo something on performance, lots of exp orbs then lots of packets, could crash client
+    /**
+     * @deprecated 
+     */
+    
     public void setExperience(int exp, int level, boolean playLevelUpSound) {
-        var expEvent = new PlayerExperienceChangeEvent(this, this.getExperience(), this.getExperienceLevel(), exp, level);
+        var $271 = new PlayerExperienceChangeEvent(this, this.getExperience(), this.getExperienceLevel(), exp, level);
         this.server.getPluginManager().callEvent(expEvent);
         if (expEvent.isCancelled()) {
             return;
@@ -3930,7 +4678,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         exp = expEvent.getNewExperience();
         level = expEvent.getNewExperienceLevel();
 
-        int levelBefore = this.expLevel;
+        int $272 = this.expLevel;
         this.exp = exp;
         this.expLevel = level;
 
@@ -3951,6 +4699,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @see #sendExperience(int)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendExperience() {
         sendExperience(this.getExperience());
     }
@@ -3962,11 +4714,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param exp 经验值
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendExperience(int exp) {
         if (this.spawned) {
-            float percent = ((float) exp) / calculateRequireExperience(this.getExperienceLevel());
+            float $273 = ((float) exp) / calculateRequireExperience(this.getExperienceLevel());
             percent = Math.max(0f, Math.min(1f, percent));
-            Attribute attribute = this.attributes.computeIfAbsent(Attribute.EXPERIENCE, Attribute::getAttribute);
+            Attribute $274 = this.attributes.computeIfAbsent(Attribute.EXPERIENCE, Attribute::getAttribute);
             attribute.setValue(percent);
             this.syncAttribute(attribute);
         }
@@ -3976,6 +4732,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @see #sendExperienceLevel(int)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendExperienceLevel() {
         sendExperienceLevel(this.getExperienceLevel());
     }
@@ -3987,9 +4747,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param level 等级
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendExperienceLevel(int level) {
         if (this.spawned) {
-            Attribute attribute = this.attributes.computeIfAbsent(Attribute.EXPERIENCE_LEVEL, Attribute::getAttribute);
+            Attribute $275 = this.attributes.computeIfAbsent(Attribute.EXPERIENCE_LEVEL, Attribute::getAttribute);
             attribute.setValue(level);
             this.syncAttribute(attribute);
         }
@@ -4002,25 +4766,37 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param attribute the attribute
      */
+    /**
+     * @deprecated 
+     */
+    
     public void syncAttribute(Attribute attribute) {
-        UpdateAttributesPacket pk = new UpdateAttributesPacket();
+        UpdateAttributesPacket $276 = new UpdateAttributesPacket();
         pk.entries = new Attribute[]{attribute};
         pk.entityId = this.getId();
         this.dataPacket(pk);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void syncAttributes() {
-        UpdateAttributesPacket pk = new UpdateAttributesPacket();
+        UpdateAttributesPacket $277 = new UpdateAttributesPacket();
         pk.entries = this.attributes.values().stream().filter(Attribute::isSyncable).toArray(Attribute[]::new);
         pk.entityId = this.getId();
         this.dataPacket(pk);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setAbsorption(float absorption) {
         if (absorption != this.absorption) {
             this.absorption = absorption;
-            Attribute attribute = this.attributes.computeIfAbsent(Attribute.ABSORPTION, Attribute::getAttribute);
+            Attribute $278 = this.attributes.computeIfAbsent(Attribute.ABSORPTION, Attribute::getAttribute);
             attribute.setValue(absorption);
             this.syncAttribute(attribute);
         }
@@ -4032,6 +4808,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @see #setMovementSpeed(float, boolean)
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setMovementSpeed(float speed) {
         setMovementSpeed(speed, true);
     }
@@ -4044,6 +4824,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param speed 速度大小，注意默认移动速度为{@link #DEFAULT_SPEED}<br>Speed value, note that the default movement speed is {@link #DEFAULT_SPEED}
      * @param send  是否发送数据包{@link UpdateAttributesPacket}到客户端<br>Whether to send {@link UpdateAttributesPacket} to the client
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setMovementSpeed(float speed, boolean send) {
         super.setMovementSpeed(speed);
         if (this.spawned && send) {
@@ -4058,8 +4842,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param speed 属性值<br>the speed value
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendMovementSpeed(float speed) {
-        Attribute attribute = this.attributes.computeIfAbsent(Attribute.MOVEMENT_SPEED, Attribute::getAttribute);
+        Attribute $279 = this.attributes.computeIfAbsent(Attribute.MOVEMENT_SPEED, Attribute::getAttribute);
         attribute.setValue(speed);
         this.syncAttribute(attribute);
     }
@@ -4076,6 +4864,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         if (!this.isAlive()) {
             return false;
@@ -4100,14 +4892,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (super.attack(source)) { //!source.isCancelled()
             if (this.getLastDamageCause() == source && this.spawned) {
                 if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
-                    Entity damager = entityDamageByEntityEvent.getDamager();
+                    Entity $280 = entityDamageByEntityEvent.getDamager();
                     if (damager instanceof Player) {
                         ((Player) damager).getFoodData().exhaust(0.1);
                     }
                     //保存攻击玩家的实体在lastBeAttackEntity
                     this.lastBeAttackEntity = entityDamageByEntityEvent.getDamager();
                 }
-                EntityEventPacket pk = new EntityEventPacket();
+                EntityEventPacket $281 = new EntityEventPacket();
                 pk.eid = this.getId();
                 pk.event = EntityEventPacket.HURT_ANIMATION;
                 this.dataPacket(pk);
@@ -4126,6 +4918,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param item 掉落的物品<br>to drop
      * @return 一个bool值，丢弃物品成功或该物品为空<br>bool if the item was dropped or if the item was null
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean dropItem(Item item) {
         if (!this.spawned || !this.isAlive()) {
             return false;
@@ -4136,7 +4932,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return true;
         }
 
-        Vector3 motion = this.getDirectionVector().multiply(0.4);
+        Vector3 $282 = this.getDirectionVector().multiply(0.4);
 
         this.level.dropItem(this.add(0, 1.3, 0), item, motion, 40);
 
@@ -4163,7 +4959,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return null;
         }
 
-        Vector3 motion = this.getDirectionVector().multiply(0.4);
+        Vector3 $283 = this.getDirectionVector().multiply(0.4);
 
         this.setDataFlag(EntityFlag.USING_ITEM, false);
 
@@ -4173,6 +4969,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @see #sendPosition(Vector3, double, double, int, Player[])
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendPosition(Vector3 pos) {
         this.sendPosition(pos, this.yaw);
     }
@@ -4180,6 +4980,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @see #sendPosition(Vector3, double, double, int, Player[])
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendPosition(Vector3 pos, double yaw) {
         this.sendPosition(pos, yaw, this.pitch);
     }
@@ -4187,6 +4991,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @see #sendPosition(Vector3, double, double, int, Player[])
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendPosition(Vector3 pos, double yaw, double pitch) {
         this.sendPosition(pos, yaw, pitch, MovePlayerPacket.MODE_NORMAL);
     }
@@ -4194,6 +5002,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @see #sendPosition(Vector3, double, double, int, Player[])
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendPosition(Vector3 pos, double yaw, double pitch, int mode) {
         this.sendPosition(pos, yaw, pitch, mode, null);
     }
@@ -4207,8 +5019,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param mode    the mode of MovePlayerPacket
      * @param targets 接受数据包的玩家们<br>players of receive the packet
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendPosition(Vector3 pos, double yaw, double pitch, int mode, Player[] targets) {
-        MovePlayerPacket pk = new MovePlayerPacket();
+        MovePlayerPacket $284 = new MovePlayerPacket();
         pk.eid = this.getId();
         pk.x = (float) pos.x;
         pk.y = (float) (pos.y + this.getEyeHeight());
@@ -4231,17 +5047,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean teleport(Location location, TeleportCause cause) {
         if (!this.isOnline()) {
             return false;
         }
-        Location from = this.getLocation();
+        Location $285 = this.getLocation();
         this.lastTeleportMessage = Pair.of(from, System.currentTimeMillis());
 
-        Location to = location;
+        Location $286 = location;
         //event
         if (cause != null) {
-            PlayerTeleportEvent event = new PlayerTeleportEvent(this, from, to, cause);
+            PlayerTeleportEvent $287 = new PlayerTeleportEvent(this, from, to, cause);
             this.server.getPluginManager().callEvent(event);
             if (event.isCancelled()) return false;
             to = event.getTo();
@@ -4254,7 +5074,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
             this.removeWindow(window);
         }
-        final Entity currentRide = getRiding();
+        final Entity $288 = getRiding();
         if (currentRide != null && !currentRide.dismountEntity(this)) {
             return false;
         }
@@ -4262,7 +5082,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
 
-        boolean switchLevel = false;
+        boolean $289 = false;
         if (!to.getLevel().equals(from.getLevel())) {
             switchLevel = true;
             unloadAllUsedChunk();
@@ -4312,19 +5132,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.scheduleUpdate();
         return true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void refreshChunkRender() {
-        final int origin = getViewDistance();
+        final int $290 = getViewDistance();
         this.setViewDistance(1);
         this.setViewDistance(32);
         this.setViewDistance(origin);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void refreshBlockEntity(int delay) {
         Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             for (var b : this.level.getBlockEntities().values()) {
                 if (b instanceof BlockEntitySpawnable blockEntitySpawnable) {
-                    UpdateBlockPacket setAir = new UpdateBlockPacket();
+                    UpdateBlockPacket $291 = new UpdateBlockPacket();
                     setAir.blockRuntimeId = BlockAir.STATE.blockStateHash();
                     setAir.flags = UpdateBlockPacket.FLAG_NETWORK;
                     setAir.x = b.getFloorX();
@@ -4332,7 +5160,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     setAir.z = b.getFloorZ();
                     this.dataPacket(setAir);
 
-                    UpdateBlockPacket revertAir = new UpdateBlockPacket();
+                    UpdateBlockPacket $292 = new UpdateBlockPacket();
                     revertAir.blockRuntimeId = b.getBlock().getRuntimeId();
                     revertAir.flags = UpdateBlockPacket.FLAG_NETWORK;
                     revertAir.x = b.getFloorX();
@@ -4350,6 +5178,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @see #showFormWindow(FormWindow, int)
      */
+    /**
+     * @deprecated 
+     */
+    
     public int showFormWindow(FormWindow window) {
         return showFormWindow(window, this.formWindowCount++);
     }
@@ -4365,12 +5197,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param id     form id
      * @return form id to use in {@link PlayerFormRespondedEvent}
      */
+    /**
+     * @deprecated 
+     */
+    
     public int showFormWindow(FormWindow window, int id) {
         if (this.formWindows.size() > 100) {
             this.kick("Possible DoS vulnerability: More Than 10 FormWindow sent to client already.");
             return id;
         }
-        ModalFormRequestPacket packet = new ModalFormRequestPacket();
+        ModalFormRequestPacket $293 = new ModalFormRequestPacket();
         packet.formId = id;
         packet.data = window.getJSONData();
         this.formWindows.put(packet.formId, window);
@@ -4385,6 +5221,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @see #showDialogWindow(FormWindowDialog, boolean)
      */
+    /**
+     * @deprecated 
+     */
+    
     public void showDialogWindow(FormWindowDialog dialog) {
         showDialogWindow(dialog, true);
     }
@@ -4397,8 +5237,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param dialog NPC对话框<br>the dialog
      * @param book   如果为true,将会立即更新该{@link FormWindowDialog#getSceneName()}<br>If true, the {@link FormWindowDialog#getSceneName()} will be updated immediately.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void showDialogWindow(FormWindowDialog dialog, boolean book) {
-        String actionJson = dialog.getButtonJSONData();
+        String $294 = dialog.getButtonJSONData();
 
         if (book && dialogWindows.getIfPresent(dialog.getSceneName()) != null) dialog.updateSceneName();
         dialog.getBindEntity().setDataProperty(HAS_NPC, 1);
@@ -4406,7 +5250,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         dialog.getBindEntity().setDataProperty(ACTIONS, actionJson);
         dialog.getBindEntity().setDataProperty(INTERACT_TEXT, dialog.getContent());
 
-        NPCDialoguePacket packet = new NPCDialoguePacket();
+        NPCDialoguePacket $295 = new NPCDialoguePacket();
         packet.runtimeEntityId = dialog.getEntityId();
         packet.action = NPCDialoguePacket.NPCDialogAction.OPEN;
         packet.dialogue = dialog.getContent();
@@ -4427,8 +5271,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param window to show on settings page
      * @return form id to use in {@link PlayerFormRespondedEvent}
      */
+    /**
+     * @deprecated 
+     */
+    
     public int addServerSettings(FormWindow window) {
-        int id = this.formWindowCount++;
+        int $296 = this.formWindowCount++;
 
         this.serverSettings.put(id, window);
         return id;
@@ -4443,8 +5291,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param length BossBar百分比<br>The BossBar percentage
      * @return bossBarId BossBar的ID，如果你想以后删除或更新BossBar，你应该存储它。<br>bossBarId The BossBar ID, you should store it if you want to remove or update the BossBar later
      */
+    /**
+     * @deprecated 
+     */
+    
     public long createBossBar(String text, int length) {
-        DummyBossBar bossBar = new DummyBossBar.Builder(this).text(text).length(length).build();
+        DummyBossBar $297 = new DummyBossBar.Builder(this).text(text).length(length).build();
         return this.createBossBar(bossBar);
     }
 
@@ -4457,6 +5309,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return bossBarId BossBar的ID，如果你想以后删除或更新BossBar，你应该储存它。<br>bossBarId  The BossBar ID, you should store it if you want to remove or update the BossBar later
      * @see DummyBossBar.Builder
      */
+    /**
+     * @deprecated 
+     */
+    
     public long createBossBar(DummyBossBar dummyBossBar) {
         this.dummyBossBars.put(dummyBossBar.getBossBarId(), dummyBossBar);
         dummyBossBar.create();
@@ -4498,9 +5354,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param length    The new BossBar length
      * @param bossBarId The BossBar ID
      */
+    /**
+     * @deprecated 
+     */
+    
     public void updateBossBar(String text, int length, long bossBarId) {
         if (this.dummyBossBars.containsKey(bossBarId)) {
-            DummyBossBar bossBar = this.dummyBossBars.get(bossBarId);
+            DummyBossBar $298 = this.dummyBossBars.get(bossBarId);
             bossBar.setText(text);
             bossBar.setLength(length);
         }
@@ -4513,6 +5373,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param bossBarId The BossBar ID
      */
+    /**
+     * @deprecated 
+     */
+    
     public void removeBossBar(long bossBarId) {
         if (this.dummyBossBars.containsKey(bossBarId)) {
             this.dummyBossBars.get(bossBarId).destroy();
@@ -4528,6 +5392,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param inventory the inventory
      * @return the window id
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getWindowId(@NotNull Inventory inventory) {
         Preconditions.checkNotNull(inventory);
         if (this.windows.containsKey(inventory)) {
@@ -4554,6 +5422,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param inventory The Inventory object representing the window, must not be null.
      * @return The unique identifier assigned to the window if successfully added and opened; -1 if the window fails to be added.
      */
+    /**
+     * @deprecated 
+     */
+    
     public int addWindow(@NotNull Inventory inventory) {
         Preconditions.checkNotNull(inventory);
         if (this.windows.containsKey(inventory)) {
@@ -4574,6 +5446,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return -1;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int addWindow(@NotNull Inventory inventory, Integer forceId) {
         Preconditions.checkNotNull(inventory);
@@ -4619,10 +5495,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param inventory the inventory
      */
+    /**
+     * @deprecated 
+     */
+    
     public void removeWindow(Inventory inventory) {
         Preconditions.checkNotNull(inventory);
         if (!this.permanentWindows.contains(windows.get(inventory))) {
-            int windowId = this.getWindowId(inventory);
+            int $299 = this.getWindowId(inventory);
             playerHandle.setClosingWindowId(windowId);
             inventory.close(this);
             this.windows.remove(inventory);
@@ -4635,6 +5515,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * <p>
      * Commonly used for refreshing.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendAllInventories() {
         for (Inventory inv : this.windows.keySet()) {
             inv.sendContents(this);
@@ -4668,6 +5552,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @ApiStatus.Internal
+    /**
+     * @deprecated 
+     */
+    
     public void resetInventory() {
         if (spawned) {
             Map<Integer, Item> contents = this.getCraftingGrid().getContents();
@@ -4694,6 +5582,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removeAllWindows() {
         removeAllWindows(false);
@@ -4706,6 +5598,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param permanent 如果为false则会跳过删除{@link #permanentWindows}里面对应的window<br>If false, it will skip deleting the corresponding window in {@link #permanentWindows}
      */
+    /**
+     * @deprecated 
+     */
+    
     public void removeAllWindows(boolean permanent) {
         for (Entry<Integer, Inventory> entry : new ArrayList<>(this.windowIndex.entrySet())) {
             if (!permanent && this.permanentWindows.contains(entry.getKey())) {
@@ -4720,11 +5616,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * <p>
      * Get the id corresponding to the last closed window
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getClosingWindowId() {
         return this.closingWindowId;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
         this.server.getPlayerMetadata().setMetadata(this, metadataKey, newMetadataValue);
     }
@@ -4735,36 +5639,64 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasMetadata(String metadataKey) {
         return this.server.getPlayerMetadata().hasMetadata(this, metadataKey);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeMetadata(String metadataKey, Plugin owningPlugin) {
         this.server.getPlayerMetadata().removeMetadata(this, metadataKey, owningPlugin);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onChunkChanged(IChunk chunk) {
         this.playerChunkManager.addSendChunk(chunk.getX(), chunk.getZ());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onChunkLoaded(IChunk chunk) {
     }
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onChunkUnloaded(IChunk chunk) {
         this.unloadChunk(chunk.getX(), chunk.getZ(), chunk.getProvider().getLevel());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLoaderId() {
         return this.loaderId;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isLoaderActive() {
         return this.isConnected();
     }
@@ -4781,12 +5713,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean switchLevel(Level level) {
-        Level oldLevel = this.level;
+        Level $300 = this.level;
         if (super.switchLevel(level)) {
-            SetSpawnPositionPacket spawnPosition = new SetSpawnPositionPacket();
+            SetSpawnPositionPacket $301 = new SetSpawnPositionPacket();
             spawnPosition.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
-            Position spawn = level.getSpawnLocation();
+            Position $302 = level.getSpawnLocation();
             spawnPosition.x = spawn.getFloorX();
             spawnPosition.y = spawn.getFloorY();
             spawnPosition.z = spawn.getFloorZ();
@@ -4795,17 +5731,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             // Remove old chunks
             for (long index : new ArrayList<>(playerChunkManager.getUsedChunks())) {
-                int chunkX = Level.getHashX(index);
-                int chunkZ = Level.getHashZ(index);
+                int $303 = Level.getHashX(index);
+                int $304 = Level.getHashZ(index);
                 this.unloadChunk(chunkX, chunkZ, oldLevel);
             }
             playerChunkManager.getUsedChunks().clear();
 
-            SetTimePacket setTime = new SetTimePacket();
+            SetTimePacket $305 = new SetTimePacket();
             setTime.time = level.getTime();
             this.dataPacket(setTime);
 
-            GameRulesChangedPacket gameRulesChanged = new GameRulesChangedPacket();
+            GameRulesChangedPacket $306 = new GameRulesChangedPacket();
             gameRulesChanged.gameRules = level.getGameRules();
             this.dataPacket(gameRulesChanged);
 
@@ -4826,6 +5762,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param checkMovement the check movement
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setCheckMovement(boolean checkMovement) {
         this.checkMovement = checkMovement;
     }
@@ -4833,6 +5773,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * @since 1.2.1.0-PN
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isCheckingMovement() {
         return this.checkMovement;
     }
@@ -4840,6 +5784,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public synchronized Locale getLocale() {
         return this.locale.get();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public synchronized void setLocale(Locale locale) {
         this.locale.set(locale);
@@ -4851,6 +5799,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setSprinting(boolean value) {
         if (value && this.getFreezingTicks() > 0) return;
         if (isSprinting() != value) {
@@ -4858,7 +5810,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.setMovementSpeed(value ? getMovementSpeed() * 1.3f : getMovementSpeed() / 1.3f);
 
             if (this.hasEffect(EffectType.SPEED)) {
-                float movementSpeed = this.getMovementSpeed();
+                float $307 = this.getMovementSpeed();
                 this.sendMovementSpeed(value ? movementSpeed * 1.3f : movementSpeed);
             }
         }
@@ -4871,10 +5823,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param address the address
      */
+    /**
+     * @deprecated 
+     */
+    
     public void transfer(InetSocketAddress address) {
-        String hostName = address.getAddress().getHostAddress();
-        int port = address.getPort();
-        TransferPacket pk = new TransferPacket();
+        String $308 = address.getAddress().getHostAddress();
+        int $309 = address.getPort();
+        TransferPacket $310 = new TransferPacket();
         pk.address = hostName;
         pk.port = port;
         this.dataPacket(pk);
@@ -4892,15 +5848,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @ApiStatus.Internal
+    /**
+     * @deprecated 
+     */
+    
     public boolean pickupEntity(Entity entity, boolean near) {
         if (!this.spawned || !this.isAlive() || !this.isOnline() || this.isSpectator() || entity.isClosed()) {
             return false;
         }
 
         if (near) {
-            Inventory inventory = this.inventory;
+            Inventory $311 = this.inventory;
             if (entity instanceof EntityArrow entityArrow && entityArrow.hadCollision) {
-                ItemArrow item = new ItemArrow();
+                ItemArrow $312 = new ItemArrow();
                 if (!this.isCreative()) {
                     // Should only collect to the offhand slot if the item matches what is already there
                     if (Objects.equals(this.offhandInventory.getItem(0).getId(), item.getId()) && this.offhandInventory.canAddItem(item)) {
@@ -4910,9 +5870,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     }
                 }
 
-                InventoryPickupArrowEvent ev = new InventoryPickupArrowEvent(inventory, (EntityArrow) entity);
+                InventoryPickupArrowEvent $313 = new InventoryPickupArrowEvent(inventory, (EntityArrow) entity);
 
-                int pickupMode = ((EntityArrow) entity).getPickupMode();
+                int $314 = ((EntityArrow) entity).getPickupMode();
                 if (pickupMode == EntityProjectile.PICKUP_NONE || (pickupMode == EntityProjectile.PICKUP_CREATIVE && !this.isCreative())) {
                     ev.setCancelled();
                 }
@@ -4922,7 +5882,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     return false;
                 }
 
-                TakeItemEntityPacket pk = new TakeItemEntityPacket();
+                TakeItemEntityPacket $315 = new TakeItemEntityPacket();
                 pk.entityId = this.getId();
                 pk.target = entity.getId();
                 Server.broadcastPacket(entity.getViewers().values(), pk);
@@ -4949,14 +5909,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     return false;
                 }
 
-                Item item = ((EntityThrownTrident) entity).getItem();
+                Item $316 = ((EntityThrownTrident) entity).getItem();
                 if (!this.isCreative() && !this.inventory.canAddItem(item)) {
                     return false;
                 }
 
-                InventoryPickupTridentEvent ev = new InventoryPickupTridentEvent(this.inventory, (EntityThrownTrident) entity);
+                InventoryPickupTridentEvent $317 = new InventoryPickupTridentEvent(this.inventory, (EntityThrownTrident) entity);
 
-                int pickupMode = ((EntityThrownTrident) entity).getPickupMode();
+                int $318 = ((EntityThrownTrident) entity).getPickupMode();
                 if (pickupMode == EntityProjectile.PICKUP_NONE || (pickupMode == EntityProjectile.PICKUP_CREATIVE && !this.isCreative())) {
                     ev.setCancelled();
                 }
@@ -4966,7 +5926,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     return false;
                 }
 
-                TakeItemEntityPacket pk = new TakeItemEntityPacket();
+                TakeItemEntityPacket $319 = new TakeItemEntityPacket();
                 pk.entityId = this.getId();
                 pk.target = entity.getId();
                 Server.broadcastPacket(entity.getViewers().values(), pk);
@@ -4983,7 +5943,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 return true;
             } else if (entity instanceof EntityItem entityItem) {
                 if (entityItem.getPickupDelay() <= 0) {
-                    Item item = entityItem.getItem();
+                    Item $320 = entityItem.getItem();
 
                     if (item != null) {
                         if (!this.isCreative() && !this.inventory.canAddItem(item)) {
@@ -5002,7 +5962,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                             this.awardAchievement("diamond");
                         }
 
-                        TakeItemEntityPacket pk = new TakeItemEntityPacket();
+                        TakeItemEntityPacket $321 = new TakeItemEntityPacket();
                         pk.entityId = this.getId();
                         pk.target = entity.getId();
                         Server.broadcastPacket(entity.getViewers().values(), pk);
@@ -5016,17 +5976,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
-        int tick = this.getServer().getTick();
+        int $322 = this.getServer().getTick();
         if (pickedXPOrb < tick && entity instanceof EntityXpOrb xpOrb && this.boundingBox.isVectorInside(entity)) {
             if (xpOrb.getPickupDelay() <= 0) {
-                int exp = xpOrb.getExp();
+                int $323 = xpOrb.getExp();
                 entity.kill();
                 this.getLevel().addLevelEvent(LevelEventPacket.EVENT_SOUND_EXPERIENCE_ORB_PICKUP, 0, this);
                 pickedXPOrb = tick;
 
                 //Mending
                 ArrayList<Integer> itemsWithMending = new ArrayList<>();
-                for (int i = 0; i < 4; i++) {
+                for ($324nt $6 = 0; i < 4; i++) {
                     if (inventory.getArmorItem(i).getEnchantment((short) Enchantment.ID_MENDING) != null) {
                         itemsWithMending.add(inventory.getSize() + i);
                     }
@@ -5035,12 +5995,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     itemsWithMending.add(inventory.getHeldItemIndex());
                 }
                 if (itemsWithMending.size() > 0) {
-                    Random rand = new Random();
-                    Integer itemToRepair = itemsWithMending.get(rand.nextInt(itemsWithMending.size()));
-                    Item toRepair = inventory.getItem(itemToRepair);
+                    Random $325 = new Random();
+                    Integer $326 = itemsWithMending.get(rand.nextInt(itemsWithMending.size()));
+                    Item $327 = inventory.getItem(itemToRepair);
                     if (toRepair instanceof ItemTool || toRepair instanceof ItemArmor) {
                         if (toRepair.getDamage() > 0) {
-                            int dmg = toRepair.getDamage() - 2;
+                            int $328 = toRepair.getDamage() - 2;
                             if (dmg < 0) {
                                 dmg = 0;
                             }
@@ -5060,6 +6020,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         if ((this.hash == 0) || (this.hash == 485)) {
             this.hash = (485 + (getUniqueId() != null ? getUniqueId().hashCode() : 0));
@@ -5069,6 +6033,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (!(obj instanceof Player other)) {
             return false;
@@ -5083,6 +6051,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @return the boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBreakingBlock() {
         return this.breakingBlock != null;
     }
@@ -5094,8 +6066,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param xuid XUID
      */
+    /**
+     * @deprecated 
+     */
+    
     public void showXboxProfile(String xuid) {
-        ShowProfilePacket pk = new ShowProfilePacket();
+        ShowProfilePacket $329 = new ShowProfilePacket();
         pk.xuid = xuid;
         this.dataPacket(pk);
     }
@@ -5105,8 +6081,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param fishingRod fishing rod item
      */
+    /**
+     * @deprecated 
+     */
+    
     public void startFishing(Item fishingRod) {
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $330 = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(x))
                         .add(new DoubleTag(y + this.getEyeHeight()))
@@ -5118,13 +6098,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag((float) yaw))
                         .add(new FloatTag((float) pitch)));
-        double f = 1.1;
-        EntityFishingHook fishingHook = new EntityFishingHook(chunk, nbt, this);
+        double $331 = 1.1;
+        EntityFishingHook $332 = new EntityFishingHook(chunk, nbt, this);
         fishingHook.setMotion(new Vector3(-Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)) * f * f,
                 -Math.sin(Math.toRadians(pitch)) * f * f,
                 Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)) * f * f)
         );
-        ProjectileLaunchEvent ev = new ProjectileLaunchEvent(fishingHook, this);
+        ProjectileLaunchEvent $333 = new ProjectileLaunchEvent(fishingHook, this);
         this.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             fishingHook.close();
@@ -5141,6 +6121,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param click clicked or forced
      */
+    /**
+     * @deprecated 
+     */
+    
     public void stopFishing(boolean click) {
         if (this.fishing != null && click) {
             fishing.reelLine();
@@ -5152,11 +6136,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean doesTriggerPressurePlate() {
         return this.gamemode != SPECTATOR;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "Player(name='" + getName() +
                 "', location=" + super.toString() +
@@ -5170,6 +6162,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param items The items to give to the player.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void giveItem(Item... items) {
         for (Item failed : getInventory().addItem(items)) {
             getLevel().dropItem(this, failed);
@@ -5178,10 +6174,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
 
     /**
-     * How many ticks have passed since the player last sleeped, 1 tick = 0.05 s
+     * How many ticks have passed since the player last sleeped, 1 $334 = 0.05 s
      *
      * @return the ticks
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getTimeSinceRest() {
         return timeSinceRest;
     }
@@ -5192,98 +6192,154 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @see #getTimeSinceRest()
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setTimeSinceRest(int timeSinceRest) {
         this.timeSinceRest = timeSinceRest;
     }
 
     // TODO: Support Translation Parameters
+    /**
+     * @deprecated 
+     */
+    
     public void sendPopupJukebox(String message) {
-        TextPacket pk = new TextPacket();
+        TextPacket $335 = new TextPacket();
         pk.type = TextPacket.TYPE_JUKEBOX_POPUP;
         pk.message = message;
         this.dataPacket(pk);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendSystem(String message) {
-        TextPacket pk = new TextPacket();
+        TextPacket $336 = new TextPacket();
         pk.type = TextPacket.TYPE_SYSTEM;
         pk.message = message;
         this.dataPacket(pk);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public void sendWhisper(String message) {
         this.sendWhisper("", message);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public void sendWhisper(String source, String message) {
-        TextPacket pk = new TextPacket();
+        TextPacket $337 = new TextPacket();
         pk.type = TextPacket.TYPE_WHISPER;
         pk.source = source;
         pk.message = message;
         this.dataPacket(pk);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public void sendAnnouncement(String message) {
         this.sendAnnouncement("", message);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public void sendAnnouncement(String source, String message) {
-        TextPacket pk = new TextPacket();
+        TextPacket $338 = new TextPacket();
         pk.type = TextPacket.TYPE_ANNOUNCEMENT;
         pk.source = source;
         pk.message = message;
         this.dataPacket(pk);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public void completeUsingItem(int itemId, int action) {
-        CompletedUsingItemPacket pk = new CompletedUsingItemPacket();
+        CompletedUsingItemPacket $339 = new CompletedUsingItemPacket();
         pk.itemId = itemId;
         pk.action = action;
         this.dataPacket(pk);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean isShowingCredits() {
         return showingCredits;
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public void setShowingCredits(boolean showingCredits) {
         this.showingCredits = showingCredits;
         if (showingCredits) {
-            ShowCreditsPacket pk = new ShowCreditsPacket();
+            ShowCreditsPacket $340 = new ShowCreditsPacket();
             pk.eid = this.getId();
             pk.status = ShowCreditsPacket.STATUS_START_CREDITS;
             this.dataPacket(pk);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public void showCredits() {
         this.setShowingCredits(true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean hasSeenCredits() {
         return showingCredits;
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public void setHasSeenCredits(boolean hasSeenCredits) {
         this.hasSeenCredits = hasSeenCredits;
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean dataPacketImmediately(DataPacket packet) {
         if (!this.isConnected()) {
             return false;
         }
-        DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
+        DataPacketSendEvent $341 = new DataPacketSendEvent(this, packet);
         this.server.getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return false;
@@ -5302,9 +6358,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param shakeType   the shake type
      * @param shakeAction the shake action
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public void shakeCamera(float intensity, float duration, CameraShakePacket.CameraShakeType shakeType, CameraShakePacket.CameraShakeAction shakeAction) {
-        CameraShakePacket packet = new CameraShakePacket();
+        CameraShakePacket $342 = new CameraShakePacket();
         packet.intensity = intensity;
         packet.duration = duration;
         packet.shakeType = shakeType;
@@ -5320,46 +6380,62 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param title   the title
      * @param content the content
      */
+    /**
+     * @deprecated 
+     */
+    
     public void sendToast(String title, String content) {
-        ToastRequestPacket pk = new ToastRequestPacket();
+        ToastRequestPacket $343 = new ToastRequestPacket();
         pk.title = title;
         pk.content = content;
         this.dataPacket(pk);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeLine(IScoreboardLine line) {
-        SetScorePacket packet = new SetScorePacket();
+        SetScorePacket $344 = new SetScorePacket();
         packet.action = SetScorePacket.Action.REMOVE;
-        var networkInfo = line.toNetworkInfo();
+        var $345 = line.toNetworkInfo();
         if (networkInfo != null)
             packet.infos.add(networkInfo);
         this.dataPacket(packet);
 
-        var scorer = new PlayerScorer(this);
+        var $346 = new PlayerScorer(this);
         if (line.getScorer().equals(scorer) && line.getScoreboard().getViewers(DisplaySlot.BELOW_NAME).contains(this)) {
             this.setScoreTag("");
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void updateScore(IScoreboardLine line) {
-        SetScorePacket packet = new SetScorePacket();
+        SetScorePacket $347 = new SetScorePacket();
         packet.action = SetScorePacket.Action.SET;
-        var networkInfo = line.toNetworkInfo();
+        var $348 = line.toNetworkInfo();
         if (networkInfo != null)
             packet.infos.add(networkInfo);
         this.dataPacket(packet);
 
-        var scorer = new PlayerScorer(this);
+        var $349 = new PlayerScorer(this);
         if (line.getScorer().equals(scorer) && line.getScoreboard().getViewers(DisplaySlot.BELOW_NAME).contains(this)) {
             this.setScoreTag(line.getScore() + " " + line.getScoreboard().getDisplayName());
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void display(IScoreboard scoreboard, DisplaySlot slot) {
-        SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
+        SetDisplayObjectivePacket $350 = new SetDisplayObjectivePacket();
         pk.displaySlot = slot;
         pk.objectiveName = scoreboard.getObjectiveName();
         pk.displayName = scoreboard.getDisplayName();
@@ -5368,21 +6444,25 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(pk);
 
         //client won't storage the score of a scoreboard,so we should send the score to client
-        SetScorePacket pk2 = new SetScorePacket();
+        SetScorePacket $351 = new SetScorePacket();
         pk2.infos = scoreboard.getLines().values().stream().map(IScoreboardLine::toNetworkInfo).filter(Objects::nonNull).collect(Collectors.toList());
         pk2.action = SetScorePacket.Action.SET;
         this.dataPacket(pk2);
 
-        var scorer = new PlayerScorer(this);
-        var line = scoreboard.getLine(scorer);
+        var $352 = new PlayerScorer(this);
+        var $353 = scoreboard.getLine(scorer);
         if (slot == DisplaySlot.BELOW_NAME && line != null) {
             this.setScoreTag(line.getScore() + " " + scoreboard.getDisplayName());
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void hide(DisplaySlot slot) {
-        SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
+        SetDisplayObjectivePacket $354 = new SetDisplayObjectivePacket();
         pk.displaySlot = slot;
         pk.objectiveName = "";
         pk.displayName = "";
@@ -5396,8 +6476,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeScoreboard(IScoreboard scoreboard) {
-        RemoveObjectivePacket pk = new RemoveObjectivePacket();
+        RemoveObjectivePacket $355 = new RemoveObjectivePacket();
         pk.objectiveName = scoreboard.getObjectiveName();
 
         this.dataPacket(pk);
@@ -5412,6 +6496,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param frontSide true means open sign front, vice versa. If it is null, it means that the player has not opened sign
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setOpenSignFront(Boolean frontSide) {
         openSignFront = frontSide;
     }
@@ -5419,13 +6507,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Opens the player's sign editor GUI for the sign at the given position.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void openSignEditor(Vector3 position, boolean frontSide) {
         if (openSignFront == null) {
-            BlockEntity blockEntity = this.getLevel().getBlockEntity(position);
+            BlockEntity $356 = this.getLevel().getBlockEntity(position);
             if (blockEntity instanceof BlockEntitySign blockEntitySign) {
                 if (blockEntitySign.getEditorEntityRuntimeId() == -1) {
                     blockEntitySign.setEditorEntityRuntimeId(this.getId());
-                    OpenSignPacket openSignPacket = new OpenSignPacket();
+                    OpenSignPacket $357 = new OpenSignPacket();
                     openSignPacket.position = position.asBlockVector3();
                     openSignPacket.frontSide = frontSide;
                     this.dataPacket(openSignPacket);
@@ -5436,31 +6528,59 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFlySneaking(boolean sneaking) {
         this.flySneaking = sneaking;
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public boolean isFlySneaking() {
         return this.flySneaking;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getChunkSendCountPerTick() {
         return chunksPerTick;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setEnderChestOpen(boolean v) {
         this.enderChestOpen = v;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getEnderChestOpen() {
         return this.enderChestOpen;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean getFakeInventoryOpen() {
         return fakeInventoryOpen;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFakeInventoryOpen(boolean fakeInventoryOpen) {
         this.fakeInventoryOpen = fakeInventoryOpen;
@@ -5478,6 +6598,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param fogStack the fog stack
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setFogStack(List<PlayerFogPacket.Fog> fogStack) {
         this.fogStack = fogStack;
     }

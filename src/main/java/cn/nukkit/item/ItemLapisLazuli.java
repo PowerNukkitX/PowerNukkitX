@@ -3,6 +3,10 @@ package cn.nukkit.item;
 import cn.nukkit.utils.DyeColor;
 
 public class ItemLapisLazuli extends ItemDye {
+    /**
+     * @deprecated 
+     */
+    
     public ItemLapisLazuli() {
         super(LAPIS_LAZULI);
     }
@@ -13,6 +17,10 @@ public class ItemLapisLazuli extends ItemDye {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDamage(int meta) {
     }
 }

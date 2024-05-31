@@ -14,6 +14,10 @@ import java.util.Map;
  * @since 2015/11/11
  */
 public class ListCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public ListCommand(String name) {
         super(name, "commands.list.description");
@@ -24,9 +28,13 @@ public class ListCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        StringBuilder online = new StringBuilder();
-        int onlineCount = 0;
+        StringBuilder $1 = new StringBuilder();
+        int $2 = 0;
         for (Player player : sender.getServer().getOnlinePlayers().values()) {
             if (player.isOnline() && (!(sender instanceof Player) || ((Player) sender).canSee(player))) {
                 online.append(player.getDisplayName()).append(", ");

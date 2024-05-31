@@ -10,22 +10,34 @@ import cn.nukkit.event.HandlerList;
  * Cancelling this event will cause the player to be disconnected with the kick message set.
  */
 public class PlayerLoginEvent extends PlayerEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     protected String kickMessage;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerLoginEvent(Player player, String kickMessage) {
         this.player = player;
         this.kickMessage = kickMessage;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getKickMessage() {
         return kickMessage;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setKickMessage(String kickMessage) {
         this.kickMessage = kickMessage;

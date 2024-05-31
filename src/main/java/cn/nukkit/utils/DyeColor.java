@@ -74,6 +74,10 @@ public enum DyeColor {
      * The {@code minecraft:dye} meta from `0-15` that represents the source of a dye. Includes
      * ink_sac, bone_meal, cocoa_beans, and lapis_lazuli.
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getDyeData() {
         return this.dyeColorMeta;
     }
@@ -82,6 +86,10 @@ public enum DyeColor {
      * The {@code minecraft:dye} meta that actually represents the item dye for that color.
      * Uses black_dye instead of ink_sac, white_dye instead of bone_meal, and so on.
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getItemDyeMeta() {
         return itemDyeMeta;
     }
@@ -89,14 +97,26 @@ public enum DyeColor {
     public BlockColor getLeatherColor() {
         return leatherColor;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getWoolData() {
         return this.woolColorMeta;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return this.colorName;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getDyeName() {
         return this.dyeName;

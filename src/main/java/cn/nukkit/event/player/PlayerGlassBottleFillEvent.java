@@ -9,6 +9,10 @@ import cn.nukkit.item.Item;
 public class PlayerGlassBottleFillEvent extends PlayerEvent implements Cancellable {
     protected final Item item;
     protected final Block target;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerGlassBottleFillEvent(Player player, Block target, Item item) {
         this.player = player;

@@ -14,13 +14,17 @@ import static cn.nukkit.block.property.CommonBlockProperties.STRUCTURE_BLOCK_TYP
 
 public class StructureBlockUpdateProcessor extends DataPacketProcessor<StructureBlockUpdatePacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull StructureBlockUpdatePacket pk) {
         if (playerHandle.player.isOp() && playerHandle.player.isCreative()) {
-            BlockEntity blockEntity = playerHandle.player.level.getBlockEntity(new Vector3(pk.blockPosition.x,
+            BlockEntity $1 = playerHandle.player.level.getBlockEntity(new Vector3(pk.blockPosition.x,
                     pk.blockPosition.y,
                     pk.blockPosition.z));
             if (blockEntity instanceof BlockEntityStructBlock structBlock) {
-                Block sBlock = structBlock.getLevelBlock();
+                Block $2 = structBlock.getLevelBlock();
                 sBlock.setPropertyValue(STRUCTURE_BLOCK_TYPE, pk.editorData.getType());
                 structBlock.updateSetting(pk);
                 playerHandle.player.level.setBlock(structBlock, sBlock, true);
@@ -30,6 +34,10 @@ public class StructureBlockUpdateProcessor extends DataPacketProcessor<Structure
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET;
     }

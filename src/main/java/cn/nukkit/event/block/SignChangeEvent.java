@@ -9,7 +9,7 @@ import cn.nukkit.event.HandlerList;
  * @author MagicDroidX (Nukkit Project)
  */
 public class SignChangeEvent extends BlockEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -18,6 +18,10 @@ public class SignChangeEvent extends BlockEvent implements Cancellable {
     private final Player player;
 
     private String[] lines = new String[4];
+    /**
+     * @deprecated 
+     */
+    
 
     public SignChangeEvent(Block block, Player player, String[] lines) {
         super(block);
@@ -32,10 +36,18 @@ public class SignChangeEvent extends BlockEvent implements Cancellable {
     public String[] getLines() {
         return lines;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getLine(int index) {
         return this.lines[index];
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setLine(int index, String line) {
         this.lines[index] = line;

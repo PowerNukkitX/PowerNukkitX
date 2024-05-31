@@ -24,6 +24,10 @@ public class WeakConcurrentSet<V> implements Runnable, Iterable<V> {
 
     final WeakConcurrentMap<V, Boolean> target;
     final int parallelismThreshold;
+    /**
+     * @deprecated 
+     */
+    
 
     public WeakConcurrentSet(Cleaner cleaner) {
         switch (cleaner) {
@@ -38,6 +42,10 @@ public class WeakConcurrentSet<V> implements Runnable, Iterable<V> {
      * @param value The value to add to the set.
      * @return {@code true} if the value was added to the set and was not contained before.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean add(V value) {
         return target.put(value, Boolean.TRUE) == null; // is null or Boolean.TRUE
     }
@@ -46,6 +54,10 @@ public class WeakConcurrentSet<V> implements Runnable, Iterable<V> {
      * @param value The value to check if it is contained in the set.
      * @return {@code true} if the set contains the value.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean contains(V value) {
         return target.containsKey(value);
     }
@@ -54,6 +66,10 @@ public class WeakConcurrentSet<V> implements Runnable, Iterable<V> {
      * @param value The value to remove from the set.
      * @return {@code true} if the value is contained in the set.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean remove(V value) {
         return target.remove(value) != null;
     }
@@ -61,6 +77,10 @@ public class WeakConcurrentSet<V> implements Runnable, Iterable<V> {
     /**
      * Clears the set.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void clear() {
         target.clear();
     }
@@ -70,11 +90,19 @@ public class WeakConcurrentSet<V> implements Runnable, Iterable<V> {
      *
      * @return The minimum size of this set.
      */
+    /**
+     * @deprecated 
+     */
+    
     public int approximateSize() {
         return target.approximateSize();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void run() {
         target.run();
     }
@@ -94,6 +122,10 @@ public class WeakConcurrentSet<V> implements Runnable, Iterable<V> {
     /**
      * Cleans all unused references.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void expungeStaleEntries() {
         target.expungeStaleEntries();
     }
@@ -109,10 +141,18 @@ public class WeakConcurrentSet<V> implements Runnable, Iterable<V> {
     public Iterator<V> iterator() {
         return new ReducingIterator<V>(target.iterator());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void parallelForeach(@NotNull Consumer<? super V> action) {
         target.target.forEachKey(parallelismThreshold, Reference::get, action);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void clearDeadReferences() {
         target.clearDeadReferences();
@@ -122,11 +162,19 @@ public class WeakConcurrentSet<V> implements Runnable, Iterable<V> {
 
         private final Iterator<Map.Entry<V, Boolean>> iterator;
 
-        private ReducingIterator(Iterator<Map.Entry<V, Boolean>> iterator) {
+        
+    /**
+     * @deprecated 
+     */
+    private ReducingIterator(Iterator<Map.Entry<V, Boolean>> iterator) {
             this.iterator = iterator;
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public void remove() {
             iterator.remove();
         }
@@ -137,6 +185,10 @@ public class WeakConcurrentSet<V> implements Runnable, Iterable<V> {
         }
 
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean hasNext() {
             return iterator.hasNext();
         }

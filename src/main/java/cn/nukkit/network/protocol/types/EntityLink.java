@@ -10,6 +10,10 @@ public class EntityLink {
     public boolean immediate;
 
     public boolean riderInitiated;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityLink(long fromEntityUniquieId, long toEntityUniquieId, Type type, boolean immediate, boolean riderInitiated) {
         this.fromEntityUniquieId = fromEntityUniquieId;

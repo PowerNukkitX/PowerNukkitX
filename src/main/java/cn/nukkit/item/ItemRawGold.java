@@ -6,6 +6,10 @@ package cn.nukkit.item;
  */
 
 public class ItemRawGold extends Item {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemRawGold() {
         super(RAW_GOLD);

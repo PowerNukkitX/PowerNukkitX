@@ -12,6 +12,10 @@ import cn.nukkit.network.protocol.UpdateBlockPacket;
 
 
 public class FakeStructBlock extends SingleFakeBlock {
+    /**
+     * @deprecated 
+     */
+    
 
     public FakeStructBlock() {
         super(new BlockStructureBlock(), BlockEntity.STRUCTURE_BLOCK);
@@ -19,22 +23,30 @@ public class FakeStructBlock extends SingleFakeBlock {
 
     @Override
     public Vector3 getOffset(Player player) {
-        int floorX = player.getFloorX();
-        int floorZ = player.getFloorZ();
+        int $1 = player.getFloorX();
+        int $2 = player.getFloorZ();
         return new Vector3(floorX, player.getLevel().getMinHeight() + 1, floorZ);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void create(Player player) {
-        var pos = player.getPosition().floor().asBlockVector3();
+        var $3 = player.getPosition().floor().asBlockVector3();
         create(pos, pos, player);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void create(BlockVector3 targetStart, BlockVector3 targetEnd, Player player) {
         this.lastPositions.add(this.getOffset(player));
 
         lastPositions.forEach(position -> {
-            UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
+            UpdateBlockPacket $4 = new UpdateBlockPacket();
             updateBlockPacket.blockRuntimeId = block.getRuntimeId();
             updateBlockPacket.flags = UpdateBlockPacket.FLAG_NETWORK;
             updateBlockPacket.x = position.getFloorX();
@@ -42,7 +54,7 @@ public class FakeStructBlock extends SingleFakeBlock {
             updateBlockPacket.z = position.getFloorZ();
             player.dataPacket(updateBlockPacket);
 
-            BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
+            BlockEntityDataPacket $5 = new BlockEntityDataPacket();
             blockEntityDataPacket.x = position.getFloorX();
             blockEntityDataPacket.y = position.getFloorY();
             blockEntityDataPacket.z = position.getFloorZ();
@@ -53,9 +65,13 @@ public class FakeStructBlock extends SingleFakeBlock {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void remove(Player player) {
         this.lastPositions.forEach(position -> {
-            UpdateBlockPacket packet = new UpdateBlockPacket();
+            UpdateBlockPacket $6 = new UpdateBlockPacket();
             packet.blockRuntimeId = player.getLevel().getBlock(position).getRuntimeId();
             packet.flags = UpdateBlockPacket.FLAG_NETWORK;
             packet.x = position.getFloorX();
@@ -67,9 +83,9 @@ public class FakeStructBlock extends SingleFakeBlock {
     }
 
     private CompoundTag getBlockEntityDataAt(Vector3 base, BlockVector3 targetStart, BlockVector3 targetEnd) {
-        int offsetX = targetStart.x - base.getFloorX();
-        int offsetY = targetStart.y - base.getFloorY();
-        int offsetZ = targetStart.z - base.getFloorZ();
+        int $7 = targetStart.x - base.getFloorX();
+        int $8 = targetStart.y - base.getFloorY();
+        int $9 = targetStart.z - base.getFloorZ();
         int sizeX, sizeY, sizeZ;
         if (targetEnd.x - targetStart.x < 0) {
             offsetX += targetEnd.x - targetStart.x;

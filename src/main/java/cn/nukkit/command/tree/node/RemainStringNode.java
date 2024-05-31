@@ -13,6 +13,10 @@ public class RemainStringNode extends ParamNode<String> {
     private final List<String> TMP = new ArrayList<>();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         if (this.paramList.getIndex() != paramList.getParamTree().getArgs().length) TMP.add(arg);
         else {
@@ -22,6 +26,10 @@ public class RemainStringNode extends ParamNode<String> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reset() {
         super.reset();
         TMP.clear();

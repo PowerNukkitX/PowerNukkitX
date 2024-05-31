@@ -81,7 +81,7 @@ package cn.nukkit.item.customitem.data;
  * 74. GOAT_HORN
  *
  * @return The major group of the custom item in the creative inventory.
- * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
+ * @see <a $1="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
  */
 public enum CreativeGroup {
     NONE("none"),
@@ -239,6 +239,10 @@ public enum CreativeGroup {
     CreativeGroup(String groupName) {
         this.groupName = groupName;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getGroupName() {
         return groupName;

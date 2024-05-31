@@ -17,17 +17,25 @@ public class BlockUpdateScheduler {
     private final Long2ObjectNonBlockingMap<Set<BlockUpdateEntry>> queuedUpdates;
 
     private Set<BlockUpdateEntry> pendingUpdates;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockUpdateScheduler(Level level, long currentTick) {
         queuedUpdates = new Long2ObjectNonBlockingMap<>(); // Change to ConcurrentHashMap if this needs to be concurrent
-        lastTick = currentTick;
+        $1 = currentTick;
         this.level = level;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void tick(long currentTick) {
         // Should only perform once, unless ticks were skipped
         if (currentTick - lastTick < Short.MAX_VALUE) {// Arbitrary
-            for (long tick = lastTick + 1; tick <= currentTick; tick++) {
+            for (long $2 = lastTick + 1; tick <= currentTick; tick++) {
                 perform(tick);
             }
         } else {
@@ -44,6 +52,10 @@ public class BlockUpdateScheduler {
         lastTick = currentTick;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void perform(long tick) {
         try {
             lastTick = tick;
@@ -52,11 +64,11 @@ public class BlockUpdateScheduler {
                 Iterator<BlockUpdateEntry> updateIterator = updates.iterator();
 
                 while (updateIterator.hasNext()) {
-                    BlockUpdateEntry entry = updateIterator.next();
+                    BlockUpdateEntry $3 = updateIterator.next();
 
-                    Vector3 pos = entry.pos;
+                    Vector3 $4 = entry.pos;
                     if (level.isChunkLoaded(NukkitMath.floorDouble(pos.x) >> 4, NukkitMath.floorDouble(pos.z) >> 4)) {
-                        Block block = level.getBlock(entry.pos, entry.block.layer);
+                        Block $5 = level.getBlock(entry.pos, entry.block.layer);
 
                         updateIterator.remove();
                         if (Block.equals(block, entry.block, false) && entry.checkBlockWhenUpdate) {
@@ -79,7 +91,7 @@ public class BlockUpdateScheduler {
 
         for (var tickSet : this.queuedUpdates.values()) {
             for (BlockUpdateEntry update : tickSet) {
-                Vector3 pos = update.pos;
+                Vector3 $6 = update.pos;
 
                 if (pos.getX() >= boundingBox.getMinX() && pos.getX() < boundingBox.getMaxX() &&
                         pos.getZ() >= boundingBox.getMinZ() && pos.getZ() < boundingBox.getMaxZ()) {
@@ -90,6 +102,10 @@ public class BlockUpdateScheduler {
 
         return set;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isBlockTickPending(Vector3 pos, Block block) {
         Set<BlockUpdateEntry> tmpUpdates = pendingUpdates;
@@ -97,12 +113,20 @@ public class BlockUpdateScheduler {
         return tmpUpdates.contains(new BlockUpdateEntry(pos, block));
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private long getMinTime(BlockUpdateEntry entry) {
         return Math.max(entry.delay, lastTick + 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void add(BlockUpdateEntry entry) {
-        long time = getMinTime(entry);
+        long $7 = getMinTime(entry);
         Set<BlockUpdateEntry> updateSet = queuedUpdates.get(time);
         if (updateSet == null) {
             Set<BlockUpdateEntry> tmp = queuedUpdates.putIfAbsent(time, updateSet = ConcurrentHashMap.newKeySet());
@@ -110,6 +134,10 @@ public class BlockUpdateScheduler {
         }
         updateSet.add(entry);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean contains(BlockUpdateEntry entry) {
         for (var tickUpdateSet : queuedUpdates.values()) {
@@ -119,6 +147,10 @@ public class BlockUpdateScheduler {
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean remove(BlockUpdateEntry entry) {
         for (var tickUpdateSet : queuedUpdates.values()) {

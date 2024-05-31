@@ -4,17 +4,33 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 
 public class ItemFence extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ItemFence() {
         this(0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemFence(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemFence(Integer meta, int count) {
         super(FENCE, meta, count);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void internalAdjust() {
         switch (getDamage()) {

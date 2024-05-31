@@ -9,6 +9,10 @@ package cn.nukkit.command.tree.node;
 public class WildcardTargetStringNode extends StringNode {
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         //WILDCARD_TARGET不可能解析错误
         this.value = arg;

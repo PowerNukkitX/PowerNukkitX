@@ -19,12 +19,20 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     private NetherReactorState reactorState;
     private int progress;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityNetherReactor(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return getLevelBlock().getId() == BlockID.NETHERREACTOR;
     }
@@ -32,20 +40,36 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     public NetherReactorState getReactorState() {
         return reactorState;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setReactorState(NetherReactorState reactorState) {
         this.reactorState = reactorState;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getProgress() {
         return progress;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setProgress(int progress) {
         this.progress = MathHelper.clamp(progress, 0, 900);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         reactorState = NetherReactorState.READY;
@@ -63,9 +87,13 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
-        NetherReactorState reactorState = getReactorState();
+        NetherReactorState $1 = getReactorState();
         namedTag.putShort("Progress", getProgress());
         namedTag.putBoolean("HasFinished", reactorState == NetherReactorState.FINISHED);
         namedTag.putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED);
@@ -73,7 +101,7 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        NetherReactorState reactorState = getReactorState();
+        NetherReactorState $2 = getReactorState();
         return super.getSpawnCompound()
                 .putShort("Progress", getProgress())
                 .putBoolean("HasFinished", reactorState == NetherReactorState.FINISHED)

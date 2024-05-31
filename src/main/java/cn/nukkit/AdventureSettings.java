@@ -24,14 +24,14 @@ import java.util.Map;
  */
 public class AdventureSettings implements Cloneable {
 
-    public static final int PERMISSION_NORMAL = 0;
-    public static final int PERMISSION_OPERATOR = 1;
-    public static final int PERMISSION_HOST = 2;
-    public static final int PERMISSION_AUTOMATION = 3;
-    public static final int PERMISSION_ADMIN = 4;
-    public static final String KEY_ABILITIES = "Abilities";
-    public static final String KEY_PLAYER_PERMISSION = "PlayerPermission";
-    public static final String KEY_COMMAND_PERMISSION = "CommandPermission";
+    public static final int $1 = 0;
+    public static final int $2 = 1;
+    public static final int $3 = 2;
+    public static final int $4 = 3;
+    public static final int $5 = 4;
+    public static final String $6 = "Abilities";
+    public static final String $7 = "PlayerPermission";
+    public static final String $8 = "CommandPermission";
     private static final Map<PlayerAbility, Type> ability2TypeMap = new HashMap<>();
     private final Map<Type, Boolean> values = new EnumMap<>(Type.class);
     @Getter
@@ -41,21 +41,37 @@ public class AdventureSettings implements Cloneable {
     @Setter
     private CommandPermission commandPermission;
     private Player player;
+    /**
+     * @deprecated 
+     */
+    
 
     public AdventureSettings(Player player) {
         this.player = player;
         init(null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public AdventureSettings(Player player, CompoundTag nbt) {
         this.player = player;
         init(nbt);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPlayerPermission(PlayerPermission playerPermission) {
         this.playerPermission = playerPermission;
         this.player.setOp(playerPermission == PlayerPermission.OPERATOR);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void init(@Nullable CompoundTag nbt) {
         if (nbt == null || !nbt.contains(KEY_ABILITIES)) {
@@ -80,7 +96,7 @@ public class AdventureSettings implements Cloneable {
 
     public AdventureSettings clone(Player newPlayer) {
         try {
-            AdventureSettings settings = (AdventureSettings) super.clone();
+            AdventureSettings $9 = (AdventureSettings) super.clone();
             settings.values.putAll(this.values);
             settings.player = newPlayer;
             settings.playerPermission = playerPermission;
@@ -100,24 +116,36 @@ public class AdventureSettings implements Cloneable {
         this.values.put(type, value);
         return this;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean get(PlayerAbility ability) {
-        var type = ability2TypeMap.get(ability);
-        Boolean value = this.values.get(type);
+        var $10 = ability2TypeMap.get(ability);
+        Boolean $11 = this.values.get(type);
 
-        return value == null ? type.getDefaultValue() : value;
+        return $12 == null ? type.getDefaultValue() : value;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean get(Type type) {
-        Boolean value = this.values.get(type);
+        Boolean $13 = this.values.get(type);
 
-        return value == null ? type.getDefaultValue() : value;
+        return $14 == null ? type.getDefaultValue() : value;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void update() {
         //向所有玩家发送以使他们能看到彼此的权限
-        //Permission to send to all players so they can see each other
-        var players = new HashSet<>(player.getServer().getOnlinePlayers().values());
+        //Permission to send to all $15 so they can see each other
+        var $1 = new HashSet<>(player.getServer().getOnlinePlayers().values());
         //确保会发向自己（eg：玩家进服时在线玩家里没有此玩家）
         //Make sure it will be sent to yourself (eg: there is no such player among the online players when the player enters the server)
         players.add(this.player);
@@ -132,6 +160,10 @@ public class AdventureSettings implements Cloneable {
      *
      * @param op 是否是OP
      */
+    /**
+     * @deprecated 
+     */
+    
     public void onOpChange(boolean op) {
         if (op) {
             for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES)
@@ -146,14 +178,18 @@ public class AdventureSettings implements Cloneable {
         if (op && playerPermission != PlayerPermission.OPERATOR) playerPermission = PlayerPermission.OPERATOR;
         if (!op && playerPermission == PlayerPermission.OPERATOR) playerPermission = PlayerPermission.MEMBER;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void sendAbilities(Collection<Player> players) {
-        UpdateAbilitiesPacket packet = new UpdateAbilitiesPacket();
+        UpdateAbilitiesPacket $16 = new UpdateAbilitiesPacket();
         packet.entityId = player.getId();
         packet.commandPermission = commandPermission;
         packet.playerPermission = playerPermission;
 
-        AbilityLayer layer = new AbilityLayer();
+        AbilityLayer $17 = new AbilityLayer();
         layer.setLayerType(AbilityLayer.Type.BASE);
         layer.getAbilitiesSet().addAll(PlayerAbility.VALUES);
 
@@ -182,9 +218,13 @@ public class AdventureSettings implements Cloneable {
     /**
      * 保存权限到nbt
      */
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
-        var nbt = player.namedTag;
-        var abilityTag = new CompoundTag();
+        var $18 = player.namedTag;
+        var $19 = new CompoundTag();
         values.forEach((type, bool) -> {
             abilityTag.put(type.name(), new IntTag(bool ? 1 : 0));
         });
@@ -196,17 +236,25 @@ public class AdventureSettings implements Cloneable {
     /**
      * 从nbt读取权限数据
      */
+    /**
+     * @deprecated 
+     */
+    
     public void readNBT(CompoundTag nbt) {
-        var abilityTag = nbt.getCompound(KEY_ABILITIES);
+        var $20 = nbt.getCompound(KEY_ABILITIES);
         for (var e : abilityTag.getTags().entrySet()) {
             set(Type.valueOf(e.getKey()), ((IntTag) e.getValue()).getData() == 1);
         }
         playerPermission = PlayerPermission.valueOf(nbt.getString(KEY_PLAYER_PERMISSION));
         commandPermission = CommandPermission.valueOf(nbt.getString(KEY_COMMAND_PERMISSION));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void updateAdventureSettings() {
-        UpdateAdventureSettingsPacket adventurePacket = new UpdateAdventureSettingsPacket();
+        UpdateAdventureSettingsPacket $21 = new UpdateAdventureSettingsPacket();
         adventurePacket.autoJump = get(Type.AUTO_JUMP);
         adventurePacket.immutableWorld = get(Type.WORLD_IMMUTABLE);
         adventurePacket.noMvP = get(Type.NO_MVP);
@@ -250,6 +298,10 @@ public class AdventureSettings implements Cloneable {
             this.defaultValue = defaultValue;
             if (this.ability != null) ability2TypeMap.put(this.ability, this);
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean getDefaultValue() {
             return this.defaultValue;
@@ -258,6 +310,10 @@ public class AdventureSettings implements Cloneable {
         public PlayerAbility getAbility() {
             return this.ability;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public boolean isAbility() {
             return this.ability != null;

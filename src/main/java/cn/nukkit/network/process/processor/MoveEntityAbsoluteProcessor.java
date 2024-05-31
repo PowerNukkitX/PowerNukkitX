@@ -13,12 +13,16 @@ import org.jetbrains.annotations.NotNull;
 
 public class MoveEntityAbsoluteProcessor extends DataPacketProcessor<MoveEntityAbsolutePacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MoveEntityAbsolutePacket pk) {
-        Player player = playerHandle.player;
+        Player $1 = playerHandle.player;
         if (!player.isAlive() || !player.spawned || player.getRiding() == null) {
             return;
         }
-        Entity movedEntity = player.getLevel().getEntity(pk.eid);
+        Entity $2 = player.getLevel().getEntity(pk.eid);
         if (!(movedEntity instanceof EntityBoat)) {
             return;
         }
@@ -30,15 +34,19 @@ public class MoveEntityAbsoluteProcessor extends DataPacketProcessor<MoveEntityA
             return;
         }
 
-        Location from = movedEntity.getLocation();
+        Location $3 = movedEntity.getLocation();
         movedEntity.setPositionAndRotation(player.temporalVector, pk.headYaw, 0);
-        Location to = movedEntity.getLocation();
+        Location $4 = movedEntity.getLocation();
         if (!from.equals(to)) {
             player.getServer().getPluginManager().callEvent(new VehicleMoveEvent(player, from, to));
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET;
     }

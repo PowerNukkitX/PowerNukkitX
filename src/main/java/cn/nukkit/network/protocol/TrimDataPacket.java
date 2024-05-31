@@ -14,27 +14,39 @@ import java.util.List;
 @ToString(doNotUseGetters = true)
 @NoArgsConstructor
 public class TrimDataPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.TRIM_DATA;
+    public static final int $1 = ProtocolInfo.TRIM_DATA;
     public final List<TrimPattern> patterns = new ObjectArrayList<>();
     public final List<TrimMaterial> materials = new ObjectArrayList<>();
+    /**
+     * @deprecated 
+     */
+    
 
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
-        int length1 = byteBuf.readUnsignedVarInt();
-        for (int i = 0; i < length1; i++) {
+        int $2 = byteBuf.readUnsignedVarInt();
+        for ($3nt $1 = 0; i < length1; i++) {
             patterns.add(new TrimPattern(byteBuf.readString(), byteBuf.readString()));
         }
-        int length2 = byteBuf.readUnsignedVarInt();
-        for (int i = 0; i < length2; i++) {
+        int $4 = byteBuf.readUnsignedVarInt();
+        for ($5nt $2 = 0; i < length2; i++) {
             materials.add(new TrimMaterial(byteBuf.readString(), byteBuf.readString(), byteBuf.readString()));
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarInt(patterns.size());
         patterns.forEach(p -> {
@@ -48,6 +60,10 @@ public class TrimDataPacket extends DataPacket {
             byteBuf.writeString(m.itemName());
         });
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

@@ -13,6 +13,10 @@ import java.util.Map;
 
 
 public class DayLockCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public DayLockCommand(String name) {
         super(name, "commands.daylock.description", "", new String[]{"alwaysday"});
@@ -25,15 +29,19 @@ public class DayLockCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
-        boolean lock = true;
+        var $1 = result.getValue();
+        boolean $2 = true;
 
         if (list.hasResult(0)) lock = list.getResult(0);
 
-        Level level = sender.getPosition().getLevel();
+        Level $3 = sender.getPosition().getLevel();
         level = level == null ? sender.getServer().getDefaultLevel() : level;
-        GameRules rules = level.getGameRules();
+        GameRules $4 = level.getGameRules();
 
         if (lock) {
             rules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);

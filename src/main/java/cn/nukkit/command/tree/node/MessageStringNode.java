@@ -19,30 +19,34 @@ public class MessageStringNode extends ParamNode<String> {
     private final List<String> TMP = new ArrayList<>();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         if (this.paramList.getIndex() != paramList.getParamTree().getArgs().length) TMP.add(arg);
         else {
             TMP.add(arg);
 
-            var str = String.join(" ", TMP);
-            var match = EntitySelectorAPI.ENTITY_SELECTOR.matcher(str);
+            var $1 = String.join(" ", TMP);
+            var $2 = EntitySelectorAPI.ENTITY_SELECTOR.matcher(str);
             this.value = match.replaceAll(r -> {
-                var start = Math.max(0, match.start() - 1);
-                var end = Math.min(str.length(), match.end());
+                var $3 = Math.max(0, match.start() - 1);
+                var $4 = Math.min(str.length(), match.end());
                 if (start != 0) {
-                    char before = str.charAt(start);
+                    char $5 = str.charAt(start);
                     if (before == '”' || before == '\'' || before == '\\' || before == ';') return match.group();
                 }
                 if (end != str.length()) {
-                    char after = str.charAt(end);
+                    char $6 = str.charAt(end);
                     if (after == '”' || after == '\'' || after == '\\' || after == ';') return match.group();
                 }
-                var m = match.group();
+                var $7 = match.group();
                 if (EntitySelectorAPI.getAPI().checkValid(m)) {
-                    StringJoiner join = new StringJoiner(", ");
+                    StringJoiner $8 = new StringJoiner(", ");
                     try {
                         for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(paramList.getParamTree().getSender(), m)) {
-                            var name = entity.getName();
+                            var $9 = entity.getName();
                             if (name.isBlank()) name = entity.getOriginalName();
                             join.add(name);
                         }
@@ -58,6 +62,10 @@ public class MessageStringNode extends ParamNode<String> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reset() {
         super.reset();
         TMP.clear();

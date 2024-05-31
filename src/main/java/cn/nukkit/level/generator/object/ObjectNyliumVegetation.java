@@ -5,15 +5,19 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class ObjectNyliumVegetation {
+    /**
+     * @deprecated 
+     */
+    
     public static void growVegetation(BlockManager level, Vector3 pos, RandomSourceProvider random) {
-        for (int i = 0; i < 128; ++i) {
-            int num = 0;
+        for ($1nt $1 = 0; i < 128; ++i) {
+            int $2 = 0;
 
-            int x = pos.getFloorX();
-            int y = pos.getFloorY() + 1;
-            int z = pos.getFloorZ();
+            int $3 = pos.getFloorX();
+            int $4 = pos.getFloorY() + 1;
+            int $5 = pos.getFloorZ();
 
-            boolean crimson = level.getBlockIdAt(x, y - 1, z) == BlockID.CRIMSON_NYLIUM;
+            boolean $6 = level.getBlockIdAt(x, y - 1, z) == BlockID.CRIMSON_NYLIUM;
 
             while (true) {
                 if (num >= i / 16) {
@@ -52,7 +56,7 @@ public class ObjectNyliumVegetation {
                 y += random.nextInt(-1, 1) * random.nextInt(3) / 2;
                 z += random.nextInt(-1, 1);
 
-                String id = level.getBlockIdAt(x, y - 1, z);
+                String $7 = level.getBlockIdAt(x, y - 1, z);
                 crimson = id == BlockID.CRIMSON_NYLIUM;
                 if ((!crimson && id != BlockID.WARPED_NYLIUM) || y > 255 || y < 0) {
                     break;

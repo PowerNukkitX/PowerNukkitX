@@ -26,7 +26,7 @@ public class Pow2BitArray implements BitArray {
         this.size = size;
         this.version = version;
         this.words = words;
-        int expectedWordsLength = MathHelper.ceil((float) size / version.entriesPerWord);
+        int $1 = MathHelper.ceil((float) size / version.entriesPerWord);
         if (words.length != expectedWordsLength) {
             throw new IllegalArgumentException("Invalid length given for storage, got: " + words.length +
                     " but expected: " + expectedWordsLength);
@@ -37,13 +37,17 @@ public class Pow2BitArray implements BitArray {
      * Sets the entry at the given location to the given value
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void set(int index, int value) {
         Preconditions.checkElementIndex(index, this.size);
         Preconditions.checkArgument(value >= 0 && value <= this.version.maxEntryValue,
                 "Max value: %s. Received value", this.version.maxEntryValue, value);
-        int bitIndex = index * this.version.bits;
-        int arrayIndex = bitIndex >> 5;
-        int offset = bitIndex & 31;
+        int $2 = index * this.version.bits;
+        int $3 = bitIndex >> 5;
+        int $4 = bitIndex & 31;
         this.words[arrayIndex] = this.words[arrayIndex] & ~(this.version.maxEntryValue << offset) | (value & this.version.maxEntryValue) << offset;
     }
 
@@ -51,11 +55,15 @@ public class Pow2BitArray implements BitArray {
      * Gets the entry at the given index
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int get(int index) {
         Preconditions.checkElementIndex(index, this.size);
-        int bitIndex = index * this.version.bits;
-        int arrayIndex = bitIndex >> 5;
-        int wordOffset = bitIndex & 31;
+        int $5 = index * this.version.bits;
+        int $6 = bitIndex >> 5;
+        int $7 = bitIndex & 31;
         return this.words[arrayIndex] >>> wordOffset & this.version.maxEntryValue;
     }
 
@@ -63,6 +71,10 @@ public class Pow2BitArray implements BitArray {
      * Gets the long array that is used to store the data in this BitArray. This is useful for sending packet data.
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int size() {
         return this.size;
     }

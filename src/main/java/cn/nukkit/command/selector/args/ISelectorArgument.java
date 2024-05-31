@@ -71,7 +71,11 @@ public interface ISelectorArgument extends Comparable<ISelectorArgument>{
      * 对于部分参数（例如"c"），需要启用此功能
      * @return 是否启用过滤器模式
      */
-    default boolean isFilter() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isFilter() {
         return false;
     }
 
@@ -84,12 +88,20 @@ public interface ISelectorArgument extends Comparable<ISelectorArgument>{
      * @return 此参数的默认值
      */
     @Nullable
-    default String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
+    default 
+    /**
+     * @deprecated 
+     */
+    String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
         return null;
     }
 
     @Override
-    default int compareTo(@NotNull ISelectorArgument o) {
+    default 
+    /**
+     * @deprecated 
+     */
+    int compareTo(@NotNull ISelectorArgument o) {
         return Integer.compare(this.getPriority(), o.getPriority());
     }
 }

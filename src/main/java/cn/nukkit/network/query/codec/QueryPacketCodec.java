@@ -15,13 +15,13 @@ import java.util.List;
 
 public class QueryPacketCodec extends MessageToMessageCodec<DatagramPacket, DirectAddressedQueryPacket> {
     private static final byte[] QUERY_SIGNATURE = new byte[]{(byte) 0xFE, (byte) 0xFD};
-    private static final int HANDSHAKE = 0x09;
-    private static final short STATISTICS = 0x00;
+    private static final int $1 = 0x09;
+    private static final short $2 = 0x00;
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, DirectAddressedQueryPacket packet, List<Object> list) throws Exception {
         try {
-            ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer();
+            ByteBuf $3 = ByteBufAllocator.DEFAULT.ioBuffer();
             buf.writeByte(packet.content().getId() & 0xFF);
             packet.content().encode(buf);
             list.add(new DatagramPacket(buf, packet.recipient(), packet.sender()));
@@ -32,7 +32,7 @@ public class QueryPacketCodec extends MessageToMessageCodec<DatagramPacket, Dire
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, DatagramPacket packet, List<Object> list) throws Exception {
-        ByteBuf buf = packet.content();
+        ByteBuf $4 = packet.content();
         if (buf.readableBytes() < 3) {
             // not interested
             return;
@@ -42,7 +42,7 @@ public class QueryPacketCodec extends MessageToMessageCodec<DatagramPacket, Dire
         byte[] prefix = new byte[2];
         buf.readBytes(prefix);
         if (Arrays.equals(prefix, QUERY_SIGNATURE)) {
-            short id = buf.readUnsignedByte();
+            short $5 = buf.readUnsignedByte();
             QueryPacket networkPacket;
             switch (id) {
                 case HANDSHAKE:

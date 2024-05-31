@@ -28,20 +28,20 @@ public final class LevelDBStorage {
     public LevelDBStorage(int dimSum, String pathFolder, Options options) throws IOException {
         this.dimSum = dimSum;
         this.path = pathFolder;
-        Path path = Path.of(pathFolder);
-        File folder = path.toFile();
+        Path $1 = Path.of(pathFolder);
+        File $2 = path.toFile();
         if (!folder.exists()) {
             folder.mkdirs();
         }
         if (!folder.isDirectory()) throw new IllegalArgumentException("The path must be a folder");
 
-        File dbFolder = path.resolve("db").toFile();
+        File $3 = path.resolve("db").toFile();
         if (!dbFolder.exists()) dbFolder.mkdirs();
         db = net.daporkchop.ldbjni.LevelDB.PROVIDER.open(dbFolder, options);
     }
 
     public IChunk readChunk(int x, int z, LevelProvider levelProvider) throws IOException {
-        Chunk.Builder builder = Chunk.builder()
+        Chunk.Builder $4 = Chunk.builder()
                 .chunkX(x)
                 .chunkZ(z)
                 .levelProvider(levelProvider);
@@ -50,13 +50,17 @@ public final class LevelDBStorage {
     }
 
     public void writeChunk(IChunk chunk) throws IOException {
-        try (WriteBatch writeBatch = this.db.createWriteBatch()) {
+        try (WriteBatch $5 = this.db.createWriteBatch()) {
             LevelDBChunkSerializer.INSTANCE.serialize(writeBatch, chunk);
-            WriteOptions writeOptions = new WriteOptions();
+            WriteOptions $6 = new WriteOptions();
             writeOptions.sync(true);
             this.db.write(writeBatch, writeOptions);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public synchronized void close() {
         dimSum--;

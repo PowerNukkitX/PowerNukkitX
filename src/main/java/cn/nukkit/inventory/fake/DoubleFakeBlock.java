@@ -10,13 +10,25 @@ import java.util.List;
 
 
 public class DoubleFakeBlock extends SingleFakeBlock {
+    /**
+     * @deprecated 
+     */
+    
     public DoubleFakeBlock(String blockId) {
         super(Block.get(blockId), "default");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public DoubleFakeBlock(String blockId, String tileId) {
         super(Block.get(blockId), tileId);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public DoubleFakeBlock(Block block, String tileId) {
         super(block, tileId);
@@ -24,7 +36,7 @@ public class DoubleFakeBlock extends SingleFakeBlock {
 
     @Override
     public List<Vector3> getPlacePositions(Player player) {
-        Vector3 blockPosition = this.getOffset(player);
+        Vector3 $1 = this.getOffset(player);
         if ((blockPosition.getFloorX() & 1) == 1) {
             return Lists.newArrayList(blockPosition, blockPosition.east());
         }

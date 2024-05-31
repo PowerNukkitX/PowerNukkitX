@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 public class RiderJumpPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.RIDER_JUMP_PACKET;
+    public static final int $1 = ProtocolInfo.RIDER_JUMP_PACKET;
 
     /**
      * This is jumpStrength.
@@ -19,20 +19,36 @@ public class RiderJumpPacket extends DataPacket {
     public int unknown;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.unknown = byteBuf.readVarInt();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeVarInt(this.unknown);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

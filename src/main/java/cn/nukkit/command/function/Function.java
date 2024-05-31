@@ -16,6 +16,10 @@ public class Function {
     private final Path fullPath;
     private List<String> commands;
 
+    
+    /**
+     * @deprecated 
+     */
     private Function(Path fullPath) {
         this.fullPath = fullPath;
         try {
@@ -29,9 +33,13 @@ public class Function {
     public static Function fromPath(Path path) {
         return new Function(path);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean dispatch(CommandSender sender) {
-        boolean success = true;
+        boolean $1 = true;
         for (String command : commands) {
             if (Server.getInstance().executeCommand(sender, command) <= 0)
                 success = false;

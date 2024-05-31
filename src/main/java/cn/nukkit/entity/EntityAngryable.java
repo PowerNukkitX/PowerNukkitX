@@ -9,11 +9,19 @@ import cn.nukkit.entity.data.EntityFlag;
 
 
 public interface EntityAngryable extends EntityComponent {
-    default boolean isAngry() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isAngry() {
         return getMemoryStorage().get(CoreMemoryTypes.IS_ANGRY);
     }
 
-    default void setAngry(boolean angry) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void setAngry(boolean angry) {
         getMemoryStorage().put(CoreMemoryTypes.IS_ANGRY, angry);
         asEntity().setDataFlag(EntityFlag.ANGRY, angry);
     }

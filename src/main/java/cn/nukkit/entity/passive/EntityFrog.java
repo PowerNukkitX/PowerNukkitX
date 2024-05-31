@@ -7,9 +7,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityFrog extends EntityAnimal implements EntityWalkable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return FROG;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityFrog(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -18,22 +26,38 @@ public class EntityFrog extends EntityAnimal implements EntityWalkable {
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.55f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.5f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Frog";
     }

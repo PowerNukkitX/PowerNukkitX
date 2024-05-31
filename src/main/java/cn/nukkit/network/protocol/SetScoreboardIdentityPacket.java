@@ -18,16 +18,28 @@ public class SetScoreboardIdentityPacket extends DataPacket {
     public Action action;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.SET_SCOREBOARD_IDENTITY_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         //only server -> client
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeByte((byte) this.action.ordinal());
@@ -47,6 +59,10 @@ public class SetScoreboardIdentityPacket extends DataPacket {
         public long scoreboardId;
         public UUID uuid;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

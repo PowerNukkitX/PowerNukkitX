@@ -10,6 +10,10 @@ import cn.nukkit.entity.effect.PotionType;
 public abstract class PotionEvent extends Event {
 
     private PotionType potion;
+    /**
+     * @deprecated 
+     */
+    
 
     public PotionEvent(PotionType potion) {
         this.potion = potion;
@@ -18,6 +22,10 @@ public abstract class PotionEvent extends Event {
     public PotionType getPotion() {
         return potion;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPotion(PotionType potion) {
         this.potion = potion;

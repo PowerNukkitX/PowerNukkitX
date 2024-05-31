@@ -15,12 +15,20 @@ import cn.nukkit.plugin.Plugin;
  * 下面是一个插件创建任务的例子：<br>An example for plugin create a task:
  * <pre>
  *     public class ExampleTask extends PluginTask&lt;ExamplePlugin&gt;{
- *         public ExampleTask(ExamplePlugin plugin){
+ *
+    /**
+     * @deprecated 
+     */
+             public ExampleTask(ExamplePlugin plugin){
  *             super(plugin);
  *         }
  *
  *        {@code @Override}
- *         public void onRun(int currentTick){
+ *
+    /**
+     * @deprecated 
+     */
+             public void onRun(int currentTick){
  *             getOwner().getLogger().info("Task is executed in tick "+currentTick);
  *         }
  *     }
@@ -44,6 +52,10 @@ public abstract class PluginTask<T extends Plugin> extends Task {
      * @param owner 这个任务的所有者插件。<br>The plugin object that owns this task.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public PluginTask(T owner) {
         this.owner = owner;
     }

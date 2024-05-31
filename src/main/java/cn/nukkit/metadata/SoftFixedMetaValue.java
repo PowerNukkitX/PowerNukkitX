@@ -16,12 +16,20 @@ public class SoftFixedMetaValue extends LazyMetadataValue {
      * @param owningPlugin the {@link Plugin} that created this metadata value
      * @param value        the value assigned to this metadata value
      */
+    /**
+     * @deprecated 
+     */
+    
     public SoftFixedMetaValue(Plugin owningPlugin, final Object value) {
         super(owningPlugin);
         this.internalValue = new SoftReference<>(value);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void invalidate() {
         internalValue.clear();
     }

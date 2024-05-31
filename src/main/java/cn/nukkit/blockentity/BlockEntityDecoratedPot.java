@@ -6,11 +6,19 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
+    /**
+     * @deprecated 
+     */
+    
     public BlockEntityDecoratedPot(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return getBlock().getId() == Block.DECORATED_POT;
     }

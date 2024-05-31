@@ -40,15 +40,23 @@ import java.util.Set;
 
 public class EntityWarden extends EntityMob implements EntityWalkable, VibrationListener {
 
-    protected int lastDetectTime = Server.getInstance().getTick();
-    protected int lastCollideTime = Server.getInstance().getTick();
-    protected boolean waitForVibration = false;
+    protected int $1 = Server.getInstance().getTick();
+    protected int $2 = Server.getInstance().getTick();
+    protected boolean $3 = false;
+    /**
+     * @deprecated 
+     */
+    
     public EntityWarden(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return WARDEN;
     }
@@ -70,18 +78,18 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                         }, (entity) -> true, 1, 1, 20),
                         new Behavior((entity) -> {
                             //刷新anger数值
-                            var angerValueMap = this.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE);
-                            var iterator = angerValueMap.entrySet().iterator();
+                            var $4 = this.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE);
+                            var $5 = angerValueMap.entrySet().iterator();
                             while (iterator.hasNext()) {
                                 Map.Entry<Entity, Integer> next = iterator.next();
                                 if (!entity.level.getName().equals(this.level.getName()) || !isValidAngerEntity(next.getKey())) {
                                     iterator.remove();
-                                    var attackTarget = this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
+                                    var $6 = this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
                                     if (attackTarget != null && attackTarget.equals(next.getKey()))
                                         this.getMemoryStorage().clear(CoreMemoryTypes.ATTACK_TARGET);
                                     continue;
                                 }
-                                var newAnger = next.getValue() - 1;
+                                var $7 = next.getValue() - 1;
                                 if (newAnger == 0) iterator.remove();
                                 else next.setValue(newAnger);
                             }
@@ -92,7 +100,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                             for (var player : entity.level.getPlayers().values()) {
                                 if (!player.isCreative() && !player.isSpectator()
                                         && entity.distanceSquared(player) <= 400) {
-                                    var effect = player.getEffect(EffectType.DARKNESS);
+                                    var $8 = player.getEffect(EffectType.DARKNESS);
                                     if (effect == null) {
                                         effect = Effect.get(EffectType.DARKNESS);
                                         effect.setDuration(260);
@@ -135,7 +143,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
                                         return false;
                                     } else {
-                                        Entity e = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
+                                        Entity $9 = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
                                         if (e instanceof Player player) {
                                             return player.isSurvival() || player.isAdventure();
                                         }
@@ -155,21 +163,37 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 2.9f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getFloatingHeight() {
         return 0.8f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.9f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         this.setMaxHealth(500);
         super.initEntity();
@@ -184,6 +208,10 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Warden";
     }
@@ -194,6 +222,10 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onVibrationOccur(VibrationEvent event) {
         if (Server.getInstance().getTick() - this.lastDetectTime >= 40 && !waitForVibration && !(event.initiator() instanceof EntityWarden)) {
             this.waitForVibration = true;
@@ -204,19 +236,23 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onVibrationArrive(VibrationEvent event) {
         this.waitForVibration = false;
         this.lastDetectTime = Server.getInstance().getTick();
-        EntityEventPacket pk = new EntityEventPacket();
+        EntityEventPacket $10 = new EntityEventPacket();
         pk.eid = this.getId();
         pk.event = EntityEventPacket.VIBRATION_DETECTED;
         Server.broadcastPacket(this.getViewers().values(), pk);
 
         //handle anger value
-        var initiator = event.initiator();
+        var $11 = event.initiator();
         if (initiator instanceof Entity entity) {
             if (isValidAngerEntity(entity)) {
-                var addition = entity instanceof EntityProjectile ? 10 : 35;
+                var $12 = entity instanceof EntityProjectile ? 10 : 35;
                 addEntityAngerValue((Entity) initiator, addition);
             }
         }
@@ -227,22 +263,38 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getListenRange() {
         return 16;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         super.close();
         this.level.getVibrationManager().removeListener(this);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void knockBack(Entity attacker, double damage, double x, double z, double base) {
         //anti-kb
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected boolean onCollide(int currentTick, List<Entity> collidingEntities) {
         if (Server.getInstance().getTick() - this.lastCollideTime > 20) {
             for (Entity collidingEntity : collidingEntities) {
@@ -255,8 +307,12 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
-        var cause = source.getCause();
+        var $13 = source.getCause();
         if (cause == EntityDamageEvent.DamageCause.LAVA
                 || cause == EntityDamageEvent.DamageCause.HOT_FLOOR
                 || cause == EntityDamageEvent.DamageCause.FIRE
@@ -264,24 +320,28 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                 || cause == EntityDamageEvent.DamageCause.DROWNING)
             return false;
         if (source instanceof EntityDamageByEntityEvent damageByEntity && isValidAngerEntity(damageByEntity.getDamager())) {
-            var damager = damageByEntity.getDamager();
-            var realDamager = damager instanceof EntityProjectile projectile ? projectile.shootingEntity : damager;
+            var $14 = damageByEntity.getDamager();
+            var $15 = damager instanceof EntityProjectile projectile ? projectile.shootingEntity : damager;
             addEntityAngerValue(realDamager, 100);
         }
         return super.attack(source);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addEntityAngerValue(Entity entity, int addition) {
-        var angerValueMap = this.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE);
-        var attackTarget = this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
-        var origin = angerValueMap.getOrDefault(entity, 0);
-        int added = NukkitMath.clamp(origin + addition, 0, 150);
+        var $16 = this.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE);
+        var $17 = this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
+        var $18 = angerValueMap.getOrDefault(entity, 0);
+        int $19 = NukkitMath.clamp(origin + addition, 0, 150);
         if (added == 0) angerValueMap.remove(entity);
         else if (added >= 80) {
             added += 20;
             added = NukkitMath.clamp(added, 0, 150);
             angerValueMap.put(entity, added);
-            boolean changed = attackTarget == null ||
+            boolean $20 = attackTarget == null ||
                     (entity instanceof Player && !(attackTarget instanceof Player));
             if (changed) {
                 this.getMemoryStorage().put(CoreMemoryTypes.IS_ATTACK_TARGET_CHANGED, true);
@@ -289,10 +349,18 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
             }
         } else angerValueMap.put(entity, added);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isValidAngerEntity(Entity entity) {
         return isValidAngerEntity(entity, false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isValidAngerEntity(Entity entity, boolean sniff) {
         if (entity.isClosed()) return false;
@@ -302,38 +370,58 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
         if (entity instanceof Player player && (!player.isSurvival() && !player.isAdventure())) return false;
         return !(entity instanceof EntityWarden);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isInSniffRange(Entity entity) {
-        double deltaX = this.x - entity.x;
-        double deltaZ = this.z - entity.z;
-        var distanceXZSqrt = deltaX * deltaX + deltaZ * deltaZ;
-        var deltaY = Math.abs(this.y - entity.y);
+        double $21 = this.x - entity.x;
+        double $22 = this.z - entity.z;
+        var $23 = deltaX * deltaX + deltaZ * deltaZ;
+        var $24 = Math.abs(this.y - entity.y);
         return distanceXZSqrt <= 36
                 && deltaY <= 400;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isInRangedAttackRange(Entity entity) {
-        double deltaX = this.x - entity.x;
-        double deltaZ = this.z - entity.z;
-        var distanceXZSqrt = deltaX * deltaX + deltaZ * deltaZ;
-        var deltaY = Math.abs(this.y - entity.y);
+        double $25 = this.x - entity.x;
+        double $26 = this.z - entity.z;
+        var $27 = deltaX * deltaX + deltaZ * deltaZ;
+        var $28 = Math.abs(this.y - entity.y);
         return distanceXZSqrt <= 225
                 && deltaY <= 400;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isInAngerRange(Entity entity) {
-        var distanceSqrt = this.distanceSquared(entity);
+        var $29 = this.distanceSquared(entity);
         return distanceSqrt <= 625;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int calHeartBeatDelay() {
-        var target = this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
+        var $30 = this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
         if (target == null) return 40;
-        var anger = this.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE).getOrDefault(target, 0);
+        var $31 = this.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE).getOrDefault(target, 0);
         return (int) (40 - NukkitMath.clamp((anger / 80f), 0, 1) * 30f);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setOnFire(int seconds) {
         //against fire
     }

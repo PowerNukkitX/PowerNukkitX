@@ -6,11 +6,15 @@ import cn.nukkit.event.HandlerList;
 
 public class VehicleUpdateEvent extends VehicleEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public VehicleUpdateEvent(Entity vehicle) {
         super(vehicle);

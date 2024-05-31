@@ -11,6 +11,10 @@ import cn.nukkit.nbt.tag.ListTag;
 
 public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
     protected ContainerInventory inventory;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public BlockEntitySpawnableContainer(IChunk chunk, CompoundTag nbt) {
@@ -18,6 +22,10 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void loadNBT() {
         super.loadNBT();
         this.inventory = requireContainerInventory();
@@ -27,12 +35,16 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
 
         ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
         for (CompoundTag compound : list.getAll()) {
-            Item item = NBTIO.getItemHelper(compound);
+            Item $1 = NBTIO.getItemHelper(compound);
             this.inventory.setItemInternal(compound.getByte("Slot"), item);
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         if (!closed) {
             this.getInventory().getViewers().forEach(p -> p.removeWindow(this.getInventory()));
@@ -41,6 +53,10 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onBreak(boolean isSilkTouch) {
         for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
@@ -49,17 +65,25 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putList("Items", new ListTag<CompoundTag>());
-        for (int index = 0; index < this.getInventory().getSize(); index++) {
+        for (int $2 = 0; index < this.getInventory().getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected int getSlotIndex(int index) {
         ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
-        for (int i = 0; i < list.size(); i++) {
+        for ($3nt $1 = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
             }
@@ -69,19 +93,23 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     }
 
     public Item getItem(int index) {
-        int i = this.getSlotIndex(index);
+        $4nt $2 = this.getSlotIndex(index);
         if (i < 0) {
             return new ItemBlock(new BlockAir(), 0, 0);
         } else {
-            CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
+            CompoundTag $5 = (CompoundTag) this.namedTag.getList("Items").get(i);
             return NBTIO.getItemHelper(data);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setItem(int index, Item item) {
-        int i = this.getSlotIndex(index);
+        $6nt $3 = this.getSlotIndex(index);
 
-        CompoundTag d = NBTIO.putItemHelper(item, index);
+        Compoun$7Tag $4 = NBTIO.putItemHelper(item, index);
 
         // If item is air or count less than 0, remove the item from the "Items" list
         if (item.isNull() || item.getCount() <= 0) {

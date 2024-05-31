@@ -12,9 +12,17 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityTurtle extends EntityAnimal implements EntitySwimmable, EntityWalkable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return TURTLE;
     }
+    /**
+     * @deprecated 
+     */
+    
     
 
     public EntityTurtle(IChunk chunk, CompoundTag nbt) {
@@ -22,11 +30,19 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Turtle";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         if (this.isBaby()) {
             return 0.6f;
@@ -35,6 +51,10 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         if (this.isBaby()) {
             return 0.2f;
@@ -43,14 +63,26 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(30);
         super.initEntity();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBreedingAge(int ticks) {
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setHomePos(Vector3 pos) {
 

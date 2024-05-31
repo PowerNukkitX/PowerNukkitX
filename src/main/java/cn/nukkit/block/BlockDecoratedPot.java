@@ -19,28 +19,44 @@ import java.util.Objects;
 
 public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockEntityHolder<BlockEntityDecoratedPot> {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(DECORATED_POT, CommonBlockProperties.DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(DECORATED_POT, CommonBlockProperties.DIRECTION);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDecoratedPot() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDecoratedPot(BlockState blockState) {
         super(blockState);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return "Decorated Pot";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        CompoundTag nbt = new CompoundTag();
+        CompoundTag $2 = new CompoundTag();
 
         nbt.putString("id", BlockEntity.DECORATED_POT);
         nbt.putByte("isMovable", 1);
@@ -66,11 +82,19 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getBlockEntityType() {
         return BlockEntity.DECORATED_POT;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.DIRECTION, Objects.requireNonNullElse(face, BlockFace.SOUTH).getHorizontalIndex());
     }
@@ -81,11 +105,19 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeFlowedInto() {
         return false;
     }
@@ -95,6 +127,10 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }

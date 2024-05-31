@@ -9,13 +9,17 @@ import javax.annotation.Nullable;
 
 
 public class FarmLandDecayEvent extends BlockEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final Entity entity;
+    /**
+     * @deprecated 
+     */
+    
 
     public FarmLandDecayEvent(@Nullable Entity entity, Block farm) {
         super(farm);

@@ -45,18 +45,34 @@ public enum TerracottaColor {
     public BlockColor getColor() {
         return this.blockColor;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getDyeData() {
         return this.dyeColorMeta;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getTerracottaData() {
         return this.terracottaColorMeta;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return this.colorName;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getDyeName() {
         return this.dyeName;

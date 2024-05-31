@@ -6,24 +6,44 @@ import cn.nukkit.math.Vector3;
 public class Vector3WithRuntimeId extends Vector3 {
     private int runtimeIdLayer0;
     private int runtimeIdLayer1;
+    /**
+     * @deprecated 
+     */
+    
 
     public Vector3WithRuntimeId(double x, double y, double z, int runtimeIdLayer0, int runtimeIdLayer1) {
         super(x, y, z);
         this.runtimeIdLayer0 = runtimeIdLayer0;
         this.runtimeIdLayer1 = runtimeIdLayer1;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getRuntimeIdLayer0() {
         return runtimeIdLayer0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRuntimeIdLayer0(int runtimeIdLayer0) {
         this.runtimeIdLayer0 = runtimeIdLayer0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getRuntimeIdLayer1() {
         return runtimeIdLayer1;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setRuntimeIdLayer1(int runtimeIdLayer1) {
         this.runtimeIdLayer1 = runtimeIdLayer1;

@@ -23,25 +23,41 @@ import static cn.nukkit.block.property.CommonBlockProperties.GROUND_SIGN_DIRECTI
  */
 @Slf4j
 public class BlockStandingSign extends BlockSignBase implements BlockEntityHolder<BlockEntitySign> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(STANDING_SIGN, GROUND_SIGN_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(STANDING_SIGN, GROUND_SIGN_DIRECTION);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockStandingSign() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockStandingSign(BlockState blockstate) {
         super(blockstate);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected String getStandingSignId() {
         return getId();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getWallSignId() {
         return WALL_SIGN;
@@ -55,6 +71,10 @@ public class BlockStandingSign extends BlockSignBase implements BlockEntityHolde
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.SIGN;
     }
@@ -64,6 +84,10 @@ public class BlockStandingSign extends BlockSignBase implements BlockEntityHolde
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (down().isAir()) {
@@ -80,6 +104,10 @@ public class BlockStandingSign extends BlockSignBase implements BlockEntityHolde
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (face == BlockFace.DOWN) {
             return false;
@@ -88,18 +116,18 @@ public class BlockStandingSign extends BlockSignBase implements BlockEntityHolde
             return false;
         }
 
-        Block layer0 = level.getBlock(this, 0);
-        Block layer1 = level.getBlock(this, 1);
+        Block $2 = level.getBlock(this, 0);
+        Block $3 = level.getBlock(this, 1);
 
-        CompoundTag nbt = new CompoundTag();
+        CompoundTag $4 = new CompoundTag();
 
         if (face == BlockFace.UP) {
-            CompassRoseDirection direction = CompassRoseDirection.from((int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f);
-            Block post = Block.get(getStandingSignId());
+            CompassRoseDirection $5 = CompassRoseDirection.from((int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f);
+            Block $6 = Block.get(getStandingSignId());
             post.setPropertyValue(GROUND_SIGN_DIRECTION, direction.getIndex());
             getLevel().setBlock(block, post, true);
         } else {
-            Block wall = Block.get(getWallSignId());
+            Block $7 = Block.get(getWallSignId());
             wall.setPropertyValue(FACING_DIRECTION, face.getIndex());
             getLevel().setBlock(block, wall, true);
         }

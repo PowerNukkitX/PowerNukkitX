@@ -20,6 +20,10 @@ import java.util.Map;
 
 
 public class ReplaceItemCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
     public ReplaceItemCommand(String name) {
         super(name, "commands.replaceitem.description");
         this.setPermission("nukkit.command.replaceitem");
@@ -84,16 +88,20 @@ public class ReplaceItemCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         switch (result.getKey()) {
             case "entity", "entity-oldItemHandling" -> {
                 return entity(sender, result.getKey(), list, log);
             }
             case "block", "block-oldItemHandling" -> {
-                Position pos = list.getResult(1);
-                Block block = pos.getLevelBlock();
-                InventoryHolder holder = null;
+                Position $2 = list.getResult(1);
+                Block $3 = pos.getLevelBlock();
+                InventoryHolder $4 = null;
                 if (block instanceof BlockEntityHolder<?> h) {
                     if (h.getBlockEntity() instanceof InventoryHolder ct) {
                         holder = ct;
@@ -103,30 +111,30 @@ public class ReplaceItemCommand extends VanillaCommand {
                     log.addError("commands.replaceitem.noContainer", block.asBlockVector3().toString()).output();
                     return 0;
                 }
-                int slotId = list.getResult(3);
+                int $5 = list.getResult(3);
                 if (slotId < 0 || slotId >= holder.getInventory().getSize()) {
                     log.addError("commands.replaceitem.badSlotNumber", "slot.container", "0", String.valueOf(holder.getInventory().getSize() - 1)).output();
                     return 0;
                 }
-                String oldItemHandling = result.getKey().equals("block") ? "destroy" : list.getResult(4);
-                Item old = holder.getInventory().getItem(slotId);
+                String $6 = result.getKey().equals("block") ? "destroy" : list.getResult(4);
+                Item $7 = holder.getInventory().getItem(slotId);
                 if (oldItemHandling.equals("keep") && !old.isNull()) {
                     log.addError("commands.replaceitem.keepFailed", "slot.container", String.valueOf(slotId)).output();
                     return 0;
                 }
-                var notOldItemHandling = result.getKey().equals("block");
-                Item item = list.getResult(notOldItemHandling ? 4 : 5);
+                var $8 = result.getKey().equals("block");
+                Item $9 = list.getResult(notOldItemHandling ? 4 : 5);
                 item.setCount(1);
                 if (list.hasResult(notOldItemHandling ? 5 : 6)) {
-                    int amount = list.getResult(notOldItemHandling ? 5 : 6);
+                    int $10 = list.getResult(notOldItemHandling ? 5 : 6);
                     item.setCount(amount);
                 }
                 if (list.hasResult(notOldItemHandling ? 6 : 7)) {
-                    int data = list.getResult(notOldItemHandling ? 6 : 7);
+                    int $11 = list.getResult(notOldItemHandling ? 6 : 7);
                     item.setDamage(data);
                 }
                 if (list.hasResult(notOldItemHandling ? 7 : 8)) {
-                    String components = list.getResult(notOldItemHandling ? 7 : 8);
+                    String $12 = list.getResult(notOldItemHandling ? 7 : 8);
                     item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(components));
                 }
                 if (holder.getInventory().setItem(slotId, item)) {
@@ -143,36 +151,40 @@ public class ReplaceItemCommand extends VanillaCommand {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int entity(CommandSender sender, String key, ParamList list, CommandLogger log) {
         List<Entity> entities = list.getResult(1);
         if (entities.isEmpty()) {
             log.addNoTargetMatch().output();
             return 0;
         }
-        var notOldItemHandling = key.equals("entity");
-        String slotType = list.getResult(2);
-        int slotId = list.getResult(3);
-        String oldItemHandling = notOldItemHandling ? "destroy" : list.getResult(4);
-        Item item = list.getResult(notOldItemHandling ? 4 : 5);
+        var $13 = key.equals("entity");
+        String $14 = list.getResult(2);
+        int $15 = list.getResult(3);
+        String $16 = notOldItemHandling ? "destroy" : list.getResult(4);
+        Item $17 = list.getResult(notOldItemHandling ? 4 : 5);
         item.setCount(1);
         if (list.hasResult(notOldItemHandling ? 5 : 6)) {
-            int amount = list.getResult(notOldItemHandling ? 5 : 6);
+            int $18 = list.getResult(notOldItemHandling ? 5 : 6);
             item.setCount(amount);
         }
         if (list.hasResult(notOldItemHandling ? 6 : 7)) {
-            int data = list.getResult(notOldItemHandling ? 6 : 7);
+            int $19 = list.getResult(notOldItemHandling ? 6 : 7);
             item.setDamage(data);
         }
         if (list.hasResult(notOldItemHandling ? 7 : 8)) {
-            String components = list.getResult(notOldItemHandling ? 7 : 8);
+            String $20 = list.getResult(notOldItemHandling ? 7 : 8);
             item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(components));
         }
-        int successCount = 0;
+        int $21 = 0;
         for (Entity entity : entities) {
             switch (slotType) {
                 case "slot.weapon.mainhand" -> {
                     if (entity instanceof Player player) {
-                        Item old = player.getInventory().getItemInHand();
+                        Item $22 = player.getInventory().getItemInHand();
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -184,7 +196,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                             log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     } else if (entity instanceof EntityInventoryHolder entityMob) {
-                        Item old = entityMob.getItemInHand();
+                        Item $23 = entityMob.getItemInHand();
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -199,7 +211,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                 }
                 case "slot.weapon.offhand" -> {
                     if (entity instanceof Player player) {
-                        Item old = player.getOffhandInventory().getItem(0);
+                        Item $24 = player.getOffhandInventory().getItem(0);
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -211,7 +223,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                             log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     } else if (entity instanceof EntityInventoryHolder entityMob) {
-                        Item old = entityMob.getItemInOffhand();
+                        Item $25 = entityMob.getItemInOffhand();
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -226,7 +238,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                 }
                 case "slot.armor.head" -> {
                     if (entity instanceof Player player) {
-                        Item old = player.getInventory().getHelmet();
+                        Item $26 = player.getInventory().getHelmet();
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -240,7 +252,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                         }
                     }
                     if (entity instanceof EntityInventoryHolder entityMob) {
-                        Item old = entityMob.getHelmet();
+                        Item $27 = entityMob.getHelmet();
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -255,7 +267,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                 }
                 case "slot.armor.chest" -> {
                     if (entity instanceof Player player) {
-                        Item old = player.getInventory().getChestplate();
+                        Item $28 = player.getInventory().getChestplate();
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -269,7 +281,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                         }
                     }
                     if (entity instanceof EntityInventoryHolder entityMob) {
-                        Item old = entityMob.getChestplate();
+                        Item $29 = entityMob.getChestplate();
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -284,7 +296,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                 }
                 case "slot.armor.legs" -> {
                     if (entity instanceof Player player) {
-                        Item old = player.getInventory().getLeggings();
+                        Item $30 = player.getInventory().getLeggings();
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -298,7 +310,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                         }
                     }
                     if (entity instanceof EntityInventoryHolder entityMob) {
-                        Item old = entityMob.getLeggings();
+                        Item $31 = entityMob.getLeggings();
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -313,7 +325,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                 }
                 case "slot.armor.feet" -> {
                     if (entity instanceof Player player) {
-                        Item old = player.getInventory().getBoots();
+                        Item $32 = player.getInventory().getBoots();
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -327,7 +339,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                         }
                     }
                     if (entity instanceof EntityInventoryHolder entityMob) {
-                        Item old = entityMob.getBoots();
+                        Item $33 = entityMob.getBoots();
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -346,7 +358,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                         continue;
                     }
                     if (entity instanceof Player player) {
-                        Item old = player.getEnderChestInventory().getItem(slotId);
+                        Item $34 = player.getEnderChestInventory().getItem(slotId);
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -367,7 +379,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                         continue;
                     }
                     if (entity instanceof Player player) {
-                        Item old = player.getInventory().getItem(slotId);
+                        Item $35 = player.getInventory().getItem(slotId);
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -384,7 +396,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                 }
                 case "slot.inventory" -> {
                     if (entity instanceof Player player) {
-                        Item old = player.getInventory().getItem(slotId);
+                        Item $36 = player.getInventory().getItem(slotId);
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
@@ -400,7 +412,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                             log.addError("commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     } else if (entity instanceof EntityInventoryHolder entityMob) {
-                        Item old = entityMob.getInventory().getItem(slotId);
+                        Item $37 = entityMob.getInventory().getItem(slotId);
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;

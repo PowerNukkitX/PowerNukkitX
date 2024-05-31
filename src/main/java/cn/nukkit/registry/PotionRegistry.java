@@ -10,9 +10,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class PotionRegistry implements IRegistry<String, PotionType, PotionType> {
     private static final Object2ObjectOpenHashMap<String, PotionType> REGISTRY = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectOpenHashMap<Integer, PotionType> ID_2_POTION = new Object2ObjectOpenHashMap<>();
-    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static final AtomicBoolean $1 = new AtomicBoolean(false);
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         if (isLoad.getAndSet(true)) return;
         register0(PotionType.WATER);
@@ -78,9 +82,17 @@ public class PotionRegistry implements IRegistry<String, PotionType, PotionType>
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void trim() {
         REGISTRY.trim();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void reload() {
         isLoad.set(false);
@@ -98,6 +110,10 @@ public class PotionRegistry implements IRegistry<String, PotionType, PotionType>
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void register0(PotionType value) {
         try {
             register(value.stringId(), value);

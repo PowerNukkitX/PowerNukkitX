@@ -40,22 +40,34 @@ import static cn.nukkit.block.property.enums.TurtleEggCount.FOUR_EGG;
 
 
 public class BlockTurtleEgg extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(TURTLE_EGG, CRACKED_STATE, TURTLE_EGG_COUNT);
+    public static final BlockProperties $1 = new BlockProperties(TURTLE_EGG, CRACKED_STATE, TURTLE_EGG_COUNT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTurtleEgg() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockTurtleEgg(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Turtle Egg";
     }
@@ -63,17 +75,29 @@ public class BlockTurtleEgg extends BlockFlowable {
     public CrackedState getCracks() {
         return getPropertyValue(CRACKED_STATE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCracks(@Nullable CrackedState cracks) {
         setPropertyValue(CRACKED_STATE, cracks);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 2.5;
     }
@@ -81,26 +105,38 @@ public class BlockTurtleEgg extends BlockFlowable {
     public TurtleEggCount getEggCount() {
         return getPropertyValue(TURTLE_EGG_COUNT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setEggCount(TurtleEggCount eggCount) {
         setPropertyValue(TURTLE_EGG_COUNT, eggCount);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.getBlock() != null && Objects.equals(item.getBlockId(), TURTLE_EGG) && (player == null || !player.isSneaking())) {
-            TurtleEggCount eggCount = getEggCount();
+            TurtleEggCount $2 = getEggCount();
             if (eggCount == FOUR_EGG) {
                 return false;
             }
-            BlockTurtleEgg newState = new BlockTurtleEgg();
+            BlockTurtleEgg $3 = new BlockTurtleEgg();
             newState.setEggCount(eggCount.next());
-            BlockPlaceEvent placeEvent = new BlockPlaceEvent(
+            BlockPlaceEvent $4 = new BlockPlaceEvent(
                     player,
                     newState,
                     this,
@@ -113,7 +149,7 @@ public class BlockTurtleEgg extends BlockFlowable {
             if (!this.level.setBlock(this, placeEvent.getBlock(), true, true)) {
                 return false;
             }
-            Block placeBlock = placeEvent.getBlock();
+            Block $5 = placeEvent.getBlock();
             this.level.addLevelSoundEvent(this,
                     LevelSoundEventPacket.SOUND_PLACE,
                     placeBlock.getRuntimeId());
@@ -130,31 +166,55 @@ public class BlockTurtleEgg extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinX() {
         return x + (3.0 / 16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMinZ() {
         return z + (3.0 / 16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxX() {
         return x + (12.0 / 16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxZ() {
         return z + (12.0 / 16);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getMaxY() {
         return y + (7.0 / 16);
     }
@@ -165,17 +225,21 @@ public class BlockTurtleEgg extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (down().getId().equals(BlockID.SAND)) {
-                float celestialAngle = level.calculateCelestialAngle(level.getTime(), 1);
-                ThreadLocalRandom random = ThreadLocalRandom.current();
+                float $6 = level.calculateCelestialAngle(level.getTime(), 1);
+                ThreadLocalRandom $7 = ThreadLocalRandom.current();
                 if (0.70 > celestialAngle && celestialAngle > 0.65 || random.nextInt(500) == 0) {
-                    CrackedState crackState = getCracks();
+                    CrackedState $8 = getCracks();
                     if (crackState != CrackedState.MAX_CRACKED) {
-                        BlockTurtleEgg newState = clone();
+                        BlockTurtleEgg $9 = clone();
                         newState.setCracks(crackState.next());
-                        BlockGrowEvent event = new BlockGrowEvent(this, newState);
+                        BlockGrowEvent $10 = new BlockGrowEvent(this, newState);
                         this.level.getServer().getPluginManager().callEvent(event);
                         if (!event.isCancelled()) {
                             level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK, 0.7f, 0.9f + random.nextFloat() * 0.2f);
@@ -190,30 +254,42 @@ public class BlockTurtleEgg extends BlockFlowable {
         }
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void hatch() {
         hatch(getEggCount());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void hatch(TurtleEggCount eggs) {
         hatch(eggs, new BlockAir());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void hatch(TurtleEggCount eggs, Block newState) {
-        TurtleEggHatchEvent turtleEggHatchEvent = new TurtleEggHatchEvent(this, eggs.ordinal() + 1, newState);
+        TurtleEggHatchEvent $11 = new TurtleEggHatchEvent(this, eggs.ordinal() + 1, newState);
         //TODO Cancelled by default because EntityTurtle doesn't have AI yet, remove it when AI is added
         turtleEggHatchEvent.setCancelled(true);
         this.level.getServer().getPluginManager().callEvent(turtleEggHatchEvent);
-        int eggsHatching = turtleEggHatchEvent.getEggsHatching();
+        int $12 = turtleEggHatchEvent.getEggsHatching();
         if (!turtleEggHatchEvent.isCancelled()) {
             level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
 
-            boolean hasFailure = false;
-            for (int i = 0; i < eggsHatching; i++) {
+            boolean $13 = false;
+            for ($14nt $1 = 0; i < eggsHatching; i++) {
 
                 this.level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
 
-                CreatureSpawnEvent creatureSpawnEvent = new CreatureSpawnEvent(
+                CreatureSpawnEvent $15 = new CreatureSpawnEvent(
                         Registries.ENTITY.getEntityNetworkId(EntityID.TURTLE),
                         add(0.3 + i * 0.2,
                                 0,
@@ -223,7 +299,7 @@ public class BlockTurtleEgg extends BlockFlowable {
                 this.level.getServer().getPluginManager().callEvent(creatureSpawnEvent);
 
                 if (!creatureSpawnEvent.isCancelled()) {
-                    EntityTurtle turtle = (EntityTurtle) Entity.createEntity(
+                    EntityTurtle $16 = (EntityTurtle) Entity.createEntity(
                             creatureSpawnEvent.getEntityNetworkId(),
                             creatureSpawnEvent.getPosition());
                     if (turtle != null) {
@@ -251,6 +327,10 @@ public class BlockTurtleEgg extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         if (entity instanceof EntityLiving
                 && !(entity instanceof EntityChicken)
@@ -280,8 +360,12 @@ public class BlockTurtleEgg extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onBreak(Item item) {
-        TurtleEggCount eggCount = getEggCount();
+        TurtleEggCount $17 = getEggCount();
         if (item.getEnchantment(Enchantment.ID_SILK_TOUCH) == null) {
             this.level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
         }
@@ -294,6 +378,10 @@ public class BlockTurtleEgg extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!isValidSupport(block.down(1, 0))) {
             return false;
@@ -308,6 +396,10 @@ public class BlockTurtleEgg extends BlockFlowable {
             return false;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isValidSupport(Block support) {
         return support.isSolid(BlockFace.UP) || support instanceof BlockWallBase;
@@ -319,21 +411,37 @@ public class BlockTurtleEgg extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canPassThrough() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeFlowedInto() {
         return false;
     }

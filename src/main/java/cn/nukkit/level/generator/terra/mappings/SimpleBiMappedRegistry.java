@@ -25,6 +25,10 @@ public class SimpleBiMappedRegistry<LEFT, RIGHT> implements BiMappedRegistry<LEF
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setContent(BiMap<LEFT, RIGHT> mappings) {
         this.mappings = mappings;
     }

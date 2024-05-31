@@ -23,27 +23,47 @@ import java.util.Map;
 public class ConsoleCommandSender implements CommandSender {
 
     private final PermissibleBase perm;
+    /**
+     * @deprecated 
+     */
+    
 
     public ConsoleCommandSender() {
         this.perm = new PermissibleBase(this);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPermissionSet(String name) {
         return this.perm.isPermissionSet(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPermissionSet(Permission permission) {
         return this.perm.isPermissionSet(permission);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasPermission(String name) {
         return this.perm.hasPermission(name);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasPermission(Permission permission) {
         return this.perm.hasPermission(permission);
     }
@@ -64,11 +84,19 @@ public class ConsoleCommandSender implements CommandSender {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeAttachment(PermissionAttachment attachment) {
         this.perm.removeAttachment(attachment);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void recalculatePermissions() {
         this.perm.recalculatePermissions();
     }
@@ -79,6 +107,10 @@ public class ConsoleCommandSender implements CommandSender {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPlayer() {
         return false;
     }
@@ -89,6 +121,10 @@ public class ConsoleCommandSender implements CommandSender {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendMessage(String message) {
         for (String line : message.trim().split("\n")) {
             log.info(line);
@@ -96,16 +132,24 @@ public class ConsoleCommandSender implements CommandSender {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendMessage(TextContainer message) {
         this.sendMessage(this.getServer().getLanguage().tr(message));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendCommandOutput(CommandOutputContainer container) {
         if (this.getLocation().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
             for (var msg : container.getMessages()) {
-                var text = this.getServer().getLanguage().tr(new TranslationContainer(msg.getMessageId(), msg.getParameters()));
-                ConsoleCommandOutputEvent event = new ConsoleCommandOutputEvent(this, text);
+                var $1 = this.getServer().getLanguage().tr(new TranslationContainer(msg.getMessageId(), msg.getParameters()));
+                ConsoleCommandOutputEvent $2 = new ConsoleCommandOutputEvent(this, text);
                 this.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) continue;
                 text = event.getMessage();
@@ -115,16 +159,28 @@ public class ConsoleCommandSender implements CommandSender {
     }
 
     @Override
-    @NotNull public String getName() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getName() {
         return "CONSOLE";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isOp() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setOp(boolean value) {
 
     }

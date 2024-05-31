@@ -6,12 +6,20 @@ public interface BlockEntityInventoryNameable extends InventoryNameable{
     BlockEntityNameable getBlockEntityInventoryHolder();
 
     @Override
-    default String getInventoryTitle() {
+    default 
+    /**
+     * @deprecated 
+     */
+    String getInventoryTitle() {
         return getBlockEntityInventoryHolder().getName();
     }
 
     @Override
-    default void setInventoryTitle(String name) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void setInventoryTitle(String name) {
         getBlockEntityInventoryHolder().setName(name);
     }
 }

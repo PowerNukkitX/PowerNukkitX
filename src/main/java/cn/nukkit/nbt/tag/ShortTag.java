@@ -7,8 +7,16 @@ import java.io.IOException;
 
 public class ShortTag extends NumberTag<Integer> {
     public short data;
+    /**
+     * @deprecated 
+     */
+    
     public ShortTag() {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ShortTag(int data) {
         this.data = (short) data;
@@ -20,6 +28,10 @@ public class ShortTag extends NumberTag<Integer> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setData(Integer data) {
         this.data = (short) (data == null ? 0 : data);
     }
@@ -30,21 +42,37 @@ public class ShortTag extends NumberTag<Integer> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte getId() {
         return TAG_Short;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "ShortTag " + "(data: " + data + ")";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT() {
         return data + "s";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT(int space) {
         return data + "s";
     }
@@ -55,10 +83,14 @@ public class ShortTag extends NumberTag<Integer> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (super.equals(obj)) {
-            ShortTag o = (ShortTag) obj;
-            return data == o.data;
+            Sh$1rtTag $1 = (ShortTag) obj;
+            return $2 == o.data;
         }
         return false;
     }

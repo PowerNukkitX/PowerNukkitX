@@ -34,8 +34,8 @@ public abstract class PluginBase implements Plugin {
     private PluginLoader loader;
     private ClassLoader classLoader;
     private Server server;
-    private boolean isEnabled = false;
-    private boolean initialized = false;
+    private boolean $1 = false;
+    private boolean $2 = false;
     private PluginDescription description;
     private File dataFolder;
     private Config config;
@@ -45,21 +45,37 @@ public abstract class PluginBase implements Plugin {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onLoad() {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEnable() {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onDisable() {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final boolean isEnabled() {
         return isEnabled;
     }
@@ -73,6 +89,10 @@ public abstract class PluginBase implements Plugin {
      *
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public final void setEnabled() {
         this.setEnabled(true);
     }
@@ -87,6 +107,10 @@ public abstract class PluginBase implements Plugin {
      * @param value {@code true}为加载，{@code false}为卸载。<br>{@code true} for enable, {@code false} for disable.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public final void setEnabled(boolean value) {
         if (isEnabled != value) {
@@ -103,6 +127,10 @@ public abstract class PluginBase implements Plugin {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final boolean isDisabled() {
         return !isEnabled;
     }
@@ -136,6 +164,10 @@ public abstract class PluginBase implements Plugin {
      *                    The {@code File} object of this plugin itself. For jar-packed plugins, it is the jar file itself.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public final void init(PluginLoader loader, ClassLoader classLoader, Server server, PluginDescription description, File dataFolder, File file) {
         if (!initialized) {
             initialized = true;
@@ -162,6 +194,10 @@ public abstract class PluginBase implements Plugin {
      * @return 这个插件是否已初始化。<br>if this plugin is initialized.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public final boolean isInitialized() {
         return initialized;
     }
@@ -171,7 +207,7 @@ public abstract class PluginBase implements Plugin {
      */
     @Nullable
     public PluginIdentifiableCommand getCommand(String name) {
-        PluginIdentifiableCommand command = this.getServer().getPluginCommand(name);
+        PluginIdentifiableCommand $3 = this.getServer().getPluginCommand(name);
         if (command == null || !command.getPlugin().equals(this)) {
             command = this.getServer().getPluginCommand(this.description.getName().toLowerCase(Locale.ENGLISH) + ":" + name);
         }
@@ -184,7 +220,7 @@ public abstract class PluginBase implements Plugin {
     }
 
     public @Nullable PluginCommand<?> getPluginCommand(@NotNull String name) {
-        PluginIdentifiableCommand command = getCommand(name);
+        PluginIdentifiableCommand $4 = getCommand(name);
         if (command instanceof PluginCommand<?>) {
             return (PluginCommand<?>) command;
         }
@@ -192,6 +228,10 @@ public abstract class PluginBase implements Plugin {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         return false;
     }
@@ -206,25 +246,37 @@ public abstract class PluginBase implements Plugin {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean saveResource(String filename) {
         return saveResource(filename, false);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean saveResource(String filename, boolean replace) {
         return saveResource(filename, filename, replace);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean saveResource(String filename, String outputName, boolean replace) {
         Preconditions.checkArgument(filename != null && outputName != null, "Filename can not be null!");
         Preconditions.checkArgument(!filename.trim().isEmpty() && !outputName.trim().isEmpty(), "Filename can not be empty!");
 
-        File out = new File(dataFolder, outputName);
+        File $5 = new File(dataFolder, outputName);
         if (!out.exists() || replace) {
-            try (InputStream resource = getResource(filename)) {
+            try (InputStream $6 = getResource(filename)) {
                 if (resource != null) {
-                    File outFolder = out.getParentFile();
+                    File $7 = out.getParentFile();
                     if (!outFolder.exists()) {
                         outFolder.mkdirs();
                     }
@@ -248,6 +300,10 @@ public abstract class PluginBase implements Plugin {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveConfig() {
         if (!this.getConfig().save()) {
             this.getLogger().critical("Could not save config to " + this.configFile.toString());
@@ -255,6 +311,10 @@ public abstract class PluginBase implements Plugin {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveDefaultConfig() {
         if (!this.configFile.exists()) {
             this.saveResource("config.yml", false);
@@ -262,13 +322,17 @@ public abstract class PluginBase implements Plugin {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reloadConfig() {
         this.config = new Config(this.configFile);
-        try (InputStream configStream = this.getResource("config.yml")){
+        try (InputStream $8 = this.getResource("config.yml")){
             if (configStream != null) {
-                DumperOptions dumperOptions = new DumperOptions();
+                DumperOptions $9 = new DumperOptions();
                 dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-                Yaml yaml = new Yaml(dumperOptions);
+                Yaml $10 = new Yaml(dumperOptions);
                 try {
                     this.config.setDefault(yaml.loadAs(Utils.readFile(this.configFile), ConfigSection.class));
                 } catch (IOException e) {
@@ -286,6 +350,10 @@ public abstract class PluginBase implements Plugin {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.description.getName();
     }
@@ -302,6 +370,10 @@ public abstract class PluginBase implements Plugin {
      * @see cn.nukkit.plugin.PluginDescription#getFullName
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public final String getFullName() {
         return this.description.getFullName();
     }

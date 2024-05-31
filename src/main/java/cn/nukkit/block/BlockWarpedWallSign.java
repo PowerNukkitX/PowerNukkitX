@@ -8,11 +8,19 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 
 public class BlockWarpedWallSign extends BlockWallSign {
-    public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_WALL_SIGN, FACING_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(WARPED_WALL_SIGN, FACING_DIRECTION);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockWarpedWallSign() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockWarpedWallSign(BlockState blockState) {
         super(blockState);
@@ -24,16 +32,28 @@ public class BlockWarpedWallSign extends BlockWallSign {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getWallSignId() {
         return WARPED_WALL_SIGN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getStandingSignId() {
         return WARPED_STANDING_SIGN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Warped Wall Sign";
     }

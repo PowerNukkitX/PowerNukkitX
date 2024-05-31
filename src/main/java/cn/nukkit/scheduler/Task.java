@@ -21,15 +21,23 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public abstract class Task implements Runnable {
-    private TaskHandler taskHandler = null;
+    private TaskHandler $1 = null;
 
     public final TaskHandler getHandler() {
         return this.taskHandler;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public final int getTaskId() {
         return this.taskHandler != null ? this.taskHandler.getTaskId() : -1;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public final void setHandler(TaskHandler taskHandler) {
         if (this.taskHandler == null || taskHandler == null) {
@@ -48,13 +56,25 @@ public abstract class Task implements Runnable {
     public abstract void onRun(int currentTick);
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public final void run() {
         this.onRun(taskHandler.getLastRunTick());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void onCancel() {
 
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void cancel() {
         try {

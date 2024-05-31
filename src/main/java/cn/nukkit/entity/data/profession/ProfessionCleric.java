@@ -7,6 +7,10 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 
 public class ProfessionCleric extends Profession {
+    /**
+     * @deprecated 
+     */
+    
 
     public ProfessionCleric() {
         super(7, BlockID.BREWING_STAND, "entity.villager.cleric");

@@ -15,6 +15,10 @@ import java.util.regex.Pattern;
  * @author MagicDroidX (Nukkit Project)
  */
 public class PardonIpCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public PardonIpCommand(String name) {
         super(name, "unban an IP");
@@ -28,8 +32,12 @@ public class PardonIpCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        String value = result.getValue().getResult(0);
+        String $1 = result.getValue().getResult(0);
         if (Pattern.matches("^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$", value)) {
             sender.getServer().getIPBans().remove(value);
             try {

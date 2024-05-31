@@ -3,249 +3,249 @@ package cn.nukkit.entity;
 import java.lang.String;
 
 public interface EntityID {
-  String CHICKEN = "minecraft:chicken";
+  String $1 = "minecraft:chicken";
 
-  String COW = "minecraft:cow";
+  String $2 = "minecraft:cow";
 
-  String PIG = "minecraft:pig";
+  String $3 = "minecraft:pig";
 
-  String SHEEP = "minecraft:sheep";
+  String $4 = "minecraft:sheep";
 
-  String WOLF = "minecraft:wolf";
+  String $5 = "minecraft:wolf";
 
-  String VILLAGER = "minecraft:villager";
+  String $6 = "minecraft:villager";
 
-  String MOOSHROOM = "minecraft:mooshroom";
+  String $7 = "minecraft:mooshroom";
 
-  String SQUID = "minecraft:squid";
+  String $8 = "minecraft:squid";
 
-  String RABBIT = "minecraft:rabbit";
+  String $9 = "minecraft:rabbit";
 
-  String BAT = "minecraft:bat";
+  String $10 = "minecraft:bat";
 
-  String IRON_GOLEM = "minecraft:iron_golem";
+  String $11 = "minecraft:iron_golem";
 
-  String SNOW_GOLEM = "minecraft:snow_golem";
+  String $12 = "minecraft:snow_golem";
 
-  String OCELOT = "minecraft:ocelot";
+  String $13 = "minecraft:ocelot";
 
-  String HORSE = "minecraft:horse";
+  String $14 = "minecraft:horse";
 
-  String DONKEY = "minecraft:donkey";
+  String $15 = "minecraft:donkey";
 
-  String MULE = "minecraft:mule";
+  String $16 = "minecraft:mule";
 
-  String SKELETON_HORSE = "minecraft:skeleton_horse";
+  String $17 = "minecraft:skeleton_horse";
 
-  String ZOMBIE_HORSE = "minecraft:zombie_horse";
+  String $18 = "minecraft:zombie_horse";
 
-  String POLAR_BEAR = "minecraft:polar_bear";
+  String $19 = "minecraft:polar_bear";
 
-  String LLAMA = "minecraft:llama";
+  String $20 = "minecraft:llama";
 
-  String PARROT = "minecraft:parrot";
+  String $21 = "minecraft:parrot";
 
-  String DOLPHIN = "minecraft:dolphin";
+  String $22 = "minecraft:dolphin";
 
-  String ZOMBIE = "minecraft:zombie";
+  String $23 = "minecraft:zombie";
 
-  String CREEPER = "minecraft:creeper";
+  String $24 = "minecraft:creeper";
 
-  String SKELETON = "minecraft:skeleton";
+  String $25 = "minecraft:skeleton";
 
-  String SPIDER = "minecraft:spider";
+  String $26 = "minecraft:spider";
 
-  String ZOMBIE_PIGMAN = "minecraft:zombie_pigman";
+  String $27 = "minecraft:zombie_pigman";
 
-  String SLIME = "minecraft:slime";
+  String $28 = "minecraft:slime";
 
-  String ENDERMAN = "minecraft:enderman";
+  String $29 = "minecraft:enderman";
 
-  String SILVERFISH = "minecraft:silverfish";
+  String $30 = "minecraft:silverfish";
 
-  String CAVE_SPIDER = "minecraft:cave_spider";
+  String $31 = "minecraft:cave_spider";
 
-  String GHAST = "minecraft:ghast";
+  String $32 = "minecraft:ghast";
 
-  String MAGMA_CUBE = "minecraft:magma_cube";
+  String $33 = "minecraft:magma_cube";
 
-  String BLAZE = "minecraft:blaze";
+  String $34 = "minecraft:blaze";
 
-  String ZOMBIE_VILLAGER = "minecraft:zombie_villager";
+  String $35 = "minecraft:zombie_villager";
 
-  String WITCH = "minecraft:witch";
+  String $36 = "minecraft:witch";
 
-  String STRAY = "minecraft:stray";
+  String $37 = "minecraft:stray";
 
-  String HUSK = "minecraft:husk";
+  String $38 = "minecraft:husk";
 
-  String WITHER_SKELETON = "minecraft:wither_skeleton";
+  String $39 = "minecraft:wither_skeleton";
 
-  String GUARDIAN = "minecraft:guardian";
+  String $40 = "minecraft:guardian";
 
-  String ELDER_GUARDIAN = "minecraft:elder_guardian";
+  String $41 = "minecraft:elder_guardian";
 
-  String NPC = "minecraft:npc";
+  String $42 = "minecraft:npc";
 
-  String WITHER = "minecraft:wither";
+  String $43 = "minecraft:wither";
 
-  String ENDER_DRAGON = "minecraft:ender_dragon";
+  String $44 = "minecraft:ender_dragon";
 
-  String SHULKER = "minecraft:shulker";
+  String $45 = "minecraft:shulker";
 
-  String ENDERMITE = "minecraft:endermite";
+  String $46 = "minecraft:endermite";
 
-  String AGENT = "minecraft:agent";
+  String $47 = "minecraft:agent";
 
-  String VINDICATOR = "minecraft:vindicator";
+  String $48 = "minecraft:vindicator";
 
-  String PHANTOM = "minecraft:phantom";
+  String $49 = "minecraft:phantom";
 
-  String RAVAGER = "minecraft:ravager";
+  String $50 = "minecraft:ravager";
 
-  String ARMOR_STAND = "minecraft:armor_stand";
+  String $51 = "minecraft:armor_stand";
 
-  String TRIPOD_CAMERA = "minecraft:tripod_camera";
+  String $52 = "minecraft:tripod_camera";
 
-  String ITEM = "minecraft:item";
+  String $53 = "minecraft:item";
 
-  String TNT = "minecraft:tnt";
+  String $54 = "minecraft:tnt";
 
-  String FALLING_BLOCK = "minecraft:falling_block";
+  String $55 = "minecraft:falling_block";
 
-  String XP_BOTTLE = "minecraft:xp_bottle";
+  String $56 = "minecraft:xp_bottle";
 
-  String XP_ORB = "minecraft:xp_orb";
+  String $57 = "minecraft:xp_orb";
 
-  String EYE_OF_ENDER_SIGNAL = "minecraft:eye_of_ender_signal";
+  String $58 = "minecraft:eye_of_ender_signal";
 
-  String ENDER_CRYSTAL = "minecraft:ender_crystal";
+  String $59 = "minecraft:ender_crystal";
 
-  String FIREWORKS_ROCKET = "minecraft:fireworks_rocket";
+  String $60 = "minecraft:fireworks_rocket";
 
-  String THROWN_TRIDENT = "minecraft:thrown_trident";
+  String $61 = "minecraft:thrown_trident";
 
-  String TURTLE = "minecraft:turtle";
+  String $62 = "minecraft:turtle";
 
-  String CAT = "minecraft:cat";
+  String $63 = "minecraft:cat";
 
-  String SHULKER_BULLET = "minecraft:shulker_bullet";
+  String $64 = "minecraft:shulker_bullet";
 
-  String FISHING_HOOK = "minecraft:fishing_hook";
+  String $65 = "minecraft:fishing_hook";
 
-  String DRAGON_FIREBALL = "minecraft:dragon_fireball";
+  String $66 = "minecraft:dragon_fireball";
 
-  String ARROW = "minecraft:arrow";
+  String $67 = "minecraft:arrow";
 
-  String SNOWBALL = "minecraft:snowball";
+  String $68 = "minecraft:snowball";
 
-  String EGG = "minecraft:egg";
+  String $69 = "minecraft:egg";
 
-  String PAINTING = "minecraft:painting";
+  String $70 = "minecraft:painting";
 
-  String MINECART = "minecraft:minecart";
+  String $71 = "minecraft:minecart";
 
-  String FIREBALL = "minecraft:fireball";
+  String $72 = "minecraft:fireball";
 
-  String SPLASH_POTION = "minecraft:splash_potion";
+  String $73 = "minecraft:splash_potion";
 
-  String ENDER_PEARL = "minecraft:ender_pearl";
+  String $74 = "minecraft:ender_pearl";
 
-  String LEASH_KNOT = "minecraft:leash_knot";
+  String $75 = "minecraft:leash_knot";
 
-  String WITHER_SKULL = "minecraft:wither_skull";
+  String $76 = "minecraft:wither_skull";
 
-  String BOAT = "minecraft:boat";
+  String $77 = "minecraft:boat";
 
-  String WITHER_SKULL_DANGEROUS = "minecraft:wither_skull_dangerous";
+  String $78 = "minecraft:wither_skull_dangerous";
 
-  String LIGHTNING_BOLT = "minecraft:lightning_bolt";
+  String $79 = "minecraft:lightning_bolt";
 
-  String SMALL_FIREBALL = "minecraft:small_fireball";
+  String $80 = "minecraft:small_fireball";
 
-  String AREA_EFFECT_CLOUD = "minecraft:area_effect_cloud";
+  String $81 = "minecraft:area_effect_cloud";
 
-  String HOPPER_MINECART = "minecraft:hopper_minecart";
+  String $82 = "minecraft:hopper_minecart";
 
-  String TNT_MINECART = "minecraft:tnt_minecart";
+  String $83 = "minecraft:tnt_minecart";
 
-  String CHEST_MINECART = "minecraft:chest_minecart";
+  String $84 = "minecraft:chest_minecart";
 
-  String COMMAND_BLOCK_MINECART = "minecraft:command_block_minecart";
+  String $85 = "minecraft:command_block_minecart";
 
-  String LINGERING_POTION = "minecraft:lingering_potion";
+  String $86 = "minecraft:lingering_potion";
 
-  String LLAMA_SPIT = "minecraft:llama_spit";
+  String $87 = "minecraft:llama_spit";
 
-  String EVOCATION_FANG = "minecraft:evocation_fang";
+  String $88 = "minecraft:evocation_fang";
 
-  String EVOCATION_ILLAGER = "minecraft:evocation_illager";
+  String $89 = "minecraft:evocation_illager";
 
-  String VEX = "minecraft:vex";
+  String $90 = "minecraft:vex";
 
-  String ICE_BOMB = "minecraft:ice_bomb";
+  String $91 = "minecraft:ice_bomb";
 
-  String BALLOON = "minecraft:balloon";
+  String $92 = "minecraft:balloon";
 
-  String PUFFERFISH = "minecraft:pufferfish";
+  String $93 = "minecraft:pufferfish";
 
-  String SALMON = "minecraft:salmon";
+  String $94 = "minecraft:salmon";
 
-  String DROWNED = "minecraft:drowned";
+  String $95 = "minecraft:drowned";
 
-  String TROPICALFISH = "minecraft:tropicalfish";
+  String $96 = "minecraft:tropicalfish";
 
-  String COD = "minecraft:cod";
+  String $97 = "minecraft:cod";
 
-  String PANDA = "minecraft:panda";
+  String $98 = "minecraft:panda";
 
-  String PILLAGER = "minecraft:pillager";
+  String $99 = "minecraft:pillager";
 
-  String VILLAGER_V2 = "minecraft:villager_v2";
+  String $100 = "minecraft:villager_v2";
 
-  String ZOMBIE_VILLAGER_V2 = "minecraft:zombie_villager_v2";
+  String $101 = "minecraft:zombie_villager_v2";
 
-  String WANDERING_TRADER = "minecraft:wandering_trader";
+  String $102 = "minecraft:wandering_trader";
 
-  String ELDER_GUARDIAN_GHOST = "minecraft:elder_guardian_ghost";
+  String $103 = "minecraft:elder_guardian_ghost";
 
-  String FOX = "minecraft:fox";
+  String $104 = "minecraft:fox";
 
-  String BEE = "minecraft:bee";
+  String $105 = "minecraft:bee";
 
-  String PIGLIN = "minecraft:piglin";
+  String $106 = "minecraft:piglin";
 
-  String HOGLIN = "minecraft:hoglin";
+  String $107 = "minecraft:hoglin";
 
-  String STRIDER = "minecraft:strider";
+  String $108 = "minecraft:strider";
 
-  String ZOGLIN = "minecraft:zoglin";
+  String $109 = "minecraft:zoglin";
 
-  String PIGLIN_BRUTE = "minecraft:piglin_brute";
+  String $110 = "minecraft:piglin_brute";
 
-  String GOAT = "minecraft:goat";
+  String $111 = "minecraft:goat";
 
-  String GLOW_SQUID = "minecraft:glow_squid";
+  String $112 = "minecraft:glow_squid";
 
-  String AXOLOTL = "minecraft:axolotl";
+  String $113 = "minecraft:axolotl";
 
-  String WARDEN = "minecraft:warden";
+  String $114 = "minecraft:warden";
 
-  String FROG = "minecraft:frog";
+  String $115 = "minecraft:frog";
 
-  String TADPOLE = "minecraft:tadpole";
+  String $116 = "minecraft:tadpole";
 
-  String ALLAY = "minecraft:allay";
+  String $117 = "minecraft:allay";
 
-  String CAMEL = "minecraft:camel";
+  String $118 = "minecraft:camel";
 
-  String SNIFFER = "minecraft:sniffer";
+  String $119 = "minecraft:sniffer";
 
-  String ARMADILLO = "minecraft:armadillo";
+  String $120 = "minecraft:armadillo";
 
-  String TRADER_LLAMA = "minecraft:trader_llama";
+  String $121 = "minecraft:trader_llama";
 
-  String CHEST_BOAT = "minecraft:chest_boat";
+  String $122 = "minecraft:chest_boat";
 
-  String PLAYER = "minecraft:player";
+  String $123 = "minecraft:player";
 }

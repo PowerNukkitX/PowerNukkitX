@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 public class PlayerInputPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.PLAYER_INPUT_PACKET;
+    public static final int $1 = ProtocolInfo.PLAYER_INPUT_PACKET;
 
     public float motionX;
     public float motionY;
@@ -22,6 +22,10 @@ public class PlayerInputPacket extends DataPacket {
     public boolean sneaking;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.motionX = byteBuf.readFloatLE();
         this.motionY = byteBuf.readFloatLE();
@@ -30,14 +34,26 @@ public class PlayerInputPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

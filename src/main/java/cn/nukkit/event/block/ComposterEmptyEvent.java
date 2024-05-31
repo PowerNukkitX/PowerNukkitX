@@ -9,13 +9,17 @@ import cn.nukkit.math.Vector3;
 
 
 public class ComposterEmptyEvent extends BlockEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     private final Player player;
     private Item drop;
     private Item itemUsed;
     private int newLevel;
     private Vector3 motion;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public ComposterEmptyEvent(Block block, Player player, Item itemUsed, Item drop, int newLevel) {
@@ -33,6 +37,10 @@ public class ComposterEmptyEvent extends BlockEvent implements Cancellable {
     public Item getDrop() {
         return drop.clone();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDrop(Item drop) {
         if (drop == null) {
@@ -46,14 +54,26 @@ public class ComposterEmptyEvent extends BlockEvent implements Cancellable {
     public Item getItemUsed() {
         return itemUsed;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setItemUsed(Item itemUsed) {
         this.itemUsed = itemUsed;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getNewLevel() {
         return newLevel;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setNewLevel(int newLevel) {
         this.newLevel = Math.max(0, Math.min(newLevel, 8));
@@ -62,6 +82,10 @@ public class ComposterEmptyEvent extends BlockEvent implements Cancellable {
     public Vector3 getMotion() {
         return motion;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setMotion(Vector3 motion) {
         this.motion = motion;

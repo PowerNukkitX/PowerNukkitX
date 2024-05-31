@@ -37,12 +37,20 @@ public class SimpleCommandMap implements CommandMap {
     protected final Map<String, Command> knownCommands = new HashMap<>();
 
     private final Server server;
+    /**
+     * @deprecated 
+     */
+    
 
     public SimpleCommandMap(Server server) {
         this.server = server;
         this.setDefaultCommands();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void setDefaultCommands() {
         this.register("nukkit", new ExecuteCommand("execute"));
         this.register("nukkit", new CameraCommand("camera"));
@@ -124,6 +132,10 @@ public class SimpleCommandMap implements CommandMap {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerAll(String fallbackPrefix, List<? extends Command> commands) {
         for (Command command : commands) {
             this.register(fallbackPrefix, command);
@@ -131,11 +143,19 @@ public class SimpleCommandMap implements CommandMap {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean register(String fallbackPrefix, Command command) {
         return this.register(fallbackPrefix, command, null);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean register(String fallbackPrefix, Command command, String label) {
         if (label == null) {
             label = command.getName();
@@ -143,12 +163,12 @@ public class SimpleCommandMap implements CommandMap {
         label = label.trim().toLowerCase(Locale.ENGLISH);
         fallbackPrefix = fallbackPrefix.trim().toLowerCase(Locale.ENGLISH);
 
-        boolean registered = this.registerAlias(command, false, fallbackPrefix, label);
+        boolean $1 = this.registerAlias(command, false, fallbackPrefix, label);
 
         List<String> aliases = new ArrayList<>(Arrays.asList(command.getAliases()));
 
         for (Iterator<String> iterator = aliases.iterator(); iterator.hasNext(); ) {
-            String alias = iterator.next();
+            String $2 = iterator.next();
             if (!this.registerAlias(command, true, fallbackPrefix, alias)) {
                 iterator.remove();
             }
@@ -165,19 +185,23 @@ public class SimpleCommandMap implements CommandMap {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerSimpleCommands(Object object) {
         for (Method method : object.getClass().getDeclaredMethods()) {
-            cn.nukkit.command.simple.Command def = method.getAnnotation(cn.nukkit.command.simple.Command.class);
+            cn.nukkit.command.simple.Command $3 = method.getAnnotation(cn.nukkit.command.simple.Command.class);
             if (def != null) {
-                SimpleCommand sc = new SimpleCommand(object, method, def.name(), def.description(), def.usageMessage(), def.aliases());
+                SimpleCommand $4 = new SimpleCommand(object, method, def.name(), def.description(), def.usageMessage(), def.aliases());
 
-                Arguments args = method.getAnnotation(Arguments.class);
+                Arguments $5 = method.getAnnotation(Arguments.class);
                 if (args != null) {
                     sc.setMaxArgs(args.max());
                     sc.setMinArgs(args.min());
                 }
 
-                CommandPermission perm = method.getAnnotation(CommandPermission.class);
+                CommandPermission $6 = method.getAnnotation(CommandPermission.class);
                 if (perm != null) {
                     sc.setPermission(perm.value());
                 }
@@ -186,7 +210,7 @@ public class SimpleCommandMap implements CommandMap {
                     sc.setForbidConsole(true);
                 }
 
-                CommandParameters commandParameters = method.getAnnotation(CommandParameters.class);
+                CommandParameters $7 = method.getAnnotation(CommandParameters.class);
                 if (commandParameters != null) {
                     Map<String, CommandParameter[]> map = Arrays.stream(commandParameters.parameters())
                             .collect(Collectors.toMap(Parameters::name, parameters -> Arrays.stream(parameters.parameters())
@@ -202,13 +226,17 @@ public class SimpleCommandMap implements CommandMap {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean registerAlias(Command command, boolean isAlias, String fallbackPrefix, String label) {
         this.knownCommands.put(fallbackPrefix + ":" + label, command);
 
         //if you're registering a command alias that is already registered, then return false
-        boolean alreadyRegistered = this.knownCommands.containsKey(label);
-        Command existingCommand = this.knownCommands.get(label);
-        boolean existingCommandIsNotVanilla = alreadyRegistered && !(existingCommand instanceof VanillaCommand);
+        boolean $8 = this.knownCommands.containsKey(label);
+        Command $9 = this.knownCommands.get(label);
+        boolean $10 = alreadyRegistered && !(existingCommand instanceof VanillaCommand);
         //basically, if we're an alias and it's already registered, or we're a vanilla command, then we can't override it
         if ((command instanceof VanillaCommand || isAlias) && alreadyRegistered && existingCommandIsNotVanilla) {
             return false;
@@ -232,7 +260,7 @@ public class SimpleCommandMap implements CommandMap {
         ArrayList<String> toRemove = new ArrayList<>();
 
         for (Entry<String, Command> entry : knownCommands.entrySet()) {
-            Command cmd = entry.getValue();
+            Command $11 = entry.getValue();
             if (cmd.getLabel().equalsIgnoreCase(command.getLabel()) && !cmd.equals(command)) { // If the new command conflicts... (But if it isn't the same command)
                 if (cmd instanceof VanillaCommand) { // And if the old command is a vanilla command...
                     // Remove it!
@@ -258,13 +286,13 @@ public class SimpleCommandMap implements CommandMap {
      * @return 参数数组
      */
     public static ArrayList<String> parseArguments(String cmdLine) {
-        StringBuilder sb = new StringBuilder(cmdLine);
+        StringBuilder $12 = new StringBuilder(cmdLine);
         ArrayList<String> args = new ArrayList<>();
-        boolean notQuoted = true;
-        int curlyBraceCount = 0;
-        int start = 0;
+        boolean $13 = true;
+        int $14 = 0;
+        int $15 = 0;
 
-        for (int i = 0; i < sb.length(); i++) {
+        for ($16nt $1 = 0; i < sb.length(); i++) {
             if ((sb.charAt(i) == '{' && curlyBraceCount >= 1) || (sb.charAt(i) == '{' && sb.charAt(i - 1) == ' ' && curlyBraceCount == 0)) {
                 curlyBraceCount++;
             } else if (sb.charAt(i) == '}' && curlyBraceCount > 0) {
@@ -276,7 +304,7 @@ public class SimpleCommandMap implements CommandMap {
             }
             if (curlyBraceCount == 0) {
                 if (sb.charAt(i) == ' ' && notQuoted) {
-                    String arg = sb.substring(start, i);
+                    String $17 = sb.substring(start, i);
                     if (!arg.isEmpty()) {
                         args.add(arg);
                     }
@@ -289,7 +317,7 @@ public class SimpleCommandMap implements CommandMap {
             }
         }
 
-        String arg = sb.substring(start);
+        String $18 = sb.substring(start);
         if (!arg.isEmpty()) {
             args.add(arg);
         }
@@ -297,15 +325,19 @@ public class SimpleCommandMap implements CommandMap {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int executeCommand(CommandSender sender, String cmdLine) {
         ArrayList<String> parsed = parseArguments(cmdLine);
         if (parsed.isEmpty()) {
             return -1;
         }
 
-        String sentCommandLabel = parsed.remove(0).toLowerCase(Locale.ENGLISH);//command name
+        String $19 = parsed.remove(0).toLowerCase(Locale.ENGLISH);//command name
         String[] args = parsed.toArray(EmptyArrays.EMPTY_STRINGS);
-        Command target = this.getCommand(sentCommandLabel);
+        Command $20 = this.getCommand(sentCommandLabel);
 
         if (target == null) {
             sender.sendCommandOutput(new CommandOutputContainer(TextFormat.RED + "%commands.generic.unknown", new String[]{sentCommandLabel}, 0));
@@ -314,8 +346,8 @@ public class SimpleCommandMap implements CommandMap {
         int output;
         try {
             if (target.hasParamTree()) {
-                var plugin = target instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE;
-                var result = target.getParamTree().matchAndParse(sender, sentCommandLabel, args);
+                var $21 = target instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE;
+                var $22 = target.getParamTree().matchAndParse(sender, sentCommandLabel, args);
                 if (result == null) output = 0;
                 else if (target.testPermissionSilent(sender)) {
                     try {
@@ -325,7 +357,7 @@ public class SimpleCommandMap implements CommandMap {
                         output = 0;
                     }
                 } else {
-                    var log = new CommandLogger(target, sender, sentCommandLabel, args, plugin);
+                    var $23 = new CommandLogger(target, sender, sentCommandLabel, args, plugin);
                     if (target.getPermissionMessage() == null) {
                         log.addMessage("nukkit.command.generic.permission").output();
                     } else if (!target.getPermissionMessage().equals("")) {
@@ -346,6 +378,10 @@ public class SimpleCommandMap implements CommandMap {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void clearCommands() {
         for (Command command : this.knownCommands.values()) {
             command.unregister(this);

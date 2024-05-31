@@ -7,6 +7,10 @@ package cn.nukkit.command.tree.node;
  */
 public class DoubleNode extends ParamNode<Double> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         try {
             this.value = Double.parseDouble(arg);

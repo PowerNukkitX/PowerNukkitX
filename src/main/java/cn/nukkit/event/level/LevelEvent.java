@@ -9,6 +9,10 @@ import cn.nukkit.level.Level;
 public abstract class LevelEvent extends Event {
 
     private final Level level;
+    /**
+     * @deprecated 
+     */
+    
 
     public LevelEvent(Level level) {
         this.level = level;

@@ -4,10 +4,14 @@ import cn.nukkit.item.Item;
 
 
 public class InvalidDescriptor implements ItemDescriptor {
-    int count = 0;
+    int $1 = 0;
 
-    public static final InvalidDescriptor INSTANCE = new InvalidDescriptor();
+    public static final InvalidDescriptor $2 = new InvalidDescriptor();
 
+    
+    /**
+     * @deprecated 
+     */
     private InvalidDescriptor() {
     }
 
@@ -27,9 +31,17 @@ public class InvalidDescriptor implements ItemDescriptor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getCount() {
         return count;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String toString() {
         return "InvalidDescriptor(count=" + this.getCount() + ")";

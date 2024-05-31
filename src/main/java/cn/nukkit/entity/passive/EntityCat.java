@@ -41,6 +41,10 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return CAT;
     }
@@ -48,6 +52,10 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
     //猫咪有11种颜色变种
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     protected float[] diffHandDamage = new float[]{4, 4, 4};
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityCat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -55,6 +63,10 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void updateMovement() {
         //猫猫流线运动怎么可能会摔落造成伤害呢~
         this.highestPosition = this.y;
@@ -89,9 +101,9 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
                         new Behavior(
                                 entity -> {
                                     if (this.hasOwner(false)) return false;
-                                    var storage = getMemoryStorage();
+                                    var $1 = getMemoryStorage();
                                     if (storage.notEmpty(CoreMemoryTypes.ATTACK_TARGET)) return false;
-                                    Entity attackTarget = null;
+                                    Entity $2 = null;
                                     //已驯服为家猫就不攻击下述动物反之未驯服为流浪猫攻击下述动物
                                     //攻击最近的小海龟，兔子
                                     if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
@@ -108,7 +120,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
                         new Behavior(entity -> false, entity -> this.isSitting(), 8),
                         //睡觉 优先级7
                         new Behavior(new SleepOnOwnerBedExecutor(), entity -> {
-                            var player = this.getOwner();
+                            var $3 = this.getOwner();
                             if (player == null) return false;
                             if (player.getLevel().getId() != this.level.getId()) return false;
                             return player.isSleeping();
@@ -120,9 +132,9 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
                         //猫咪向主人移动 优先级4
                         new Behavior(new EntityMoveToOwnerExecutor(0.35f, true, 15), entity -> {
                             if (this.hasOwner()) {
-                                var player = getOwner();
+                                var $4 = getOwner();
                                 if (!player.isOnGround()) return false;
-                                var distanceSquared = entity.distanceSquared(player);
+                                var $5 = entity.distanceSquared(player);
                                 return distanceSquared >= 100;
                             } else return false;
                         }, 4),
@@ -148,11 +160,19 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
 
     //猫咪身体大小来自Wiki https://minecraft.wiki/w/Cat
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return this.isBaby() ? 0.24f : 0.48f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return this.isBaby() ? 0.28f : 0.56f;
     }
@@ -162,6 +182,10 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attackTarget(Entity entity) {
         return switch (entity.getIdentifier().toString()) {
             case RABBIT, TURTLE -> true;
@@ -170,10 +194,14 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         //同步owner eid
         if (hasOwner()) {
-            Player owner = getOwner();
+            Player $6 = getOwner();
             if (owner != null && getDataProperty(Entity.OWNER_EID) != owner.getId()) {
                 this.setDataProperty(Entity.OWNER_EID, owner.getId());
             }
@@ -182,6 +210,10 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
@@ -206,17 +238,21 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (item.getId() == Item.NAME_TAG && !player.isAdventure()) {
             return applyNameTag(player, item);
         }
-        int healable = this.getHealingAmount(item);
+        int $7 = this.getHealingAmount(item);
         if (this.isBreedingItem(item)) {
             this.getLevel().addSound(this, Sound.MOB_CAT_EAT);
             if (!this.hasOwner()) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 if (Utils.rand(1, 3) == 3) {
-                    EntityEventPacket packet = new EntityEventPacket();
+                    EntityEventPacket $8 = new EntityEventPacket();
                     packet.eid = this.getId();
                     packet.event = EntityEventPacket.TAME_SUCCESS;
                     player.dataPacket(packet);
@@ -231,7 +267,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
 
                     return true;
                 } else {
-                    EntityEventPacket packet = new EntityEventPacket();
+                    EntityEventPacket $9 = new EntityEventPacket();
                     packet.eid = this.getId();
                     packet.event = EntityEventPacket.TAME_FAIL;
                     player.dataPacket(packet);
@@ -267,7 +303,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
     @Override
     public Item[] getDrops() {
         if (!this.isBaby()) {
-            int catdrops = Utils.rand(0, 2);
+            int $10 = Utils.rand(0, 2);
             if (catdrops > 0)
                 return new Item[]{Item.get(Item.STRING, 0, catdrops)};
         }
@@ -275,6 +311,10 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Cat";
     }
@@ -287,6 +327,10 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
      * WIKI understands that only raw salmon and raw cod can be used to breed
      */
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBreedingItem(Item item) {
         return item.getId() == ItemID.SALMON ||
                 item.getId() == ItemID.COD;
@@ -299,6 +343,10 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
      * Obtain healing amount of items that can heal cats
      * WIKI understands that only raw salmon and raw cod can restore the cat's blood recovery 2
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getHealingAmount(Item item) {
         return switch (item.getId()) {
             case ItemID.COD, ItemID.SALMON -> 2;

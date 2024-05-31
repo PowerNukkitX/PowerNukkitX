@@ -26,7 +26,11 @@ public interface ISensor {
      *
      * @return 刷新周期
      */
-    default int getPeriod() {
+    default 
+    /**
+     * @deprecated 
+     */
+    int getPeriod() {
         return 1;
     }
 }

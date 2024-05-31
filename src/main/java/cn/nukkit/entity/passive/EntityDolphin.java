@@ -11,9 +11,17 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityDolphin extends EntityAnimal implements EntitySwimmable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return DOLPHIN;
     }
+    /**
+     * @deprecated 
+     */
+    
     
 
     public EntityDolphin(IChunk chunk, CompoundTag nbt) {
@@ -24,21 +32,37 @@ public class EntityDolphin extends EntityAnimal implements EntitySwimmable {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Dolphin";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.9f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.6f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();

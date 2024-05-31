@@ -7,6 +7,10 @@ import cn.nukkit.command.tree.ParamList;
  */
 public class VoidNode implements IParamNode<Void> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
     }
 
@@ -16,6 +20,10 @@ public class VoidNode implements IParamNode<Void> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reset() {
     }
 
@@ -25,11 +33,19 @@ public class VoidNode implements IParamNode<Void> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasResult() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isOptional() {
         return true;
     }

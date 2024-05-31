@@ -12,6 +12,10 @@ import java.util.Map;
  * @author CreeperFace
  */
 public class PlayerCursorInventory extends BaseInventory {
+    /**
+     * @deprecated 
+     */
+    
     public PlayerCursorInventory(Player player) {
         super(player, InventoryType.INVENTORY, 1);
     }
@@ -31,14 +35,22 @@ public class PlayerCursorInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         Map<Integer, ContainerSlotType> slotTypeMap = super.slotTypeMap();
         slotTypeMap.put(0, ContainerSlotType.CURSOR);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendSlot(int index, Player... players) {
-        InventorySlotPacket pk = new InventorySlotPacket();
+        InventorySlotPacket $1 = new InventorySlotPacket();
         pk.item = this.getUnclonedItem(index);
         pk.slot = index;
 
@@ -49,8 +61,12 @@ public class PlayerCursorInventory extends BaseInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendContents(Player... players) {
-        InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
+        InventorySlotPacket $2 = new InventorySlotPacket();
         inventorySlotPacket.inventoryId = SpecialWindowId.CURSOR.getId();
         inventorySlotPacket.item = getUnclonedItem(0);
         inventorySlotPacket.slot = 0;

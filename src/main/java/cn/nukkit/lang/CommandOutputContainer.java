@@ -14,28 +14,52 @@ public class CommandOutputContainer implements Cloneable {
     public static final String[] EMPTY_STRING = new String[]{};
     private final List<CommandOutputMessage> messages;
     private int successCount;
+    /**
+     * @deprecated 
+     */
+    
 
     public CommandOutputContainer() {
         this.messages = new ArrayList<>();
         this.successCount = 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public CommandOutputContainer(String messageId, String[] parameters, int successCount) {
         this(List.of(new CommandOutputMessage(false, messageId, parameters)), successCount);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public CommandOutputContainer(List<CommandOutputMessage> messages, int successCount) {
         this.messages = messages;
         this.successCount = successCount;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getSuccessCount() {
         return successCount;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setSuccessCount(int successCount) {
         this.successCount = successCount;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void incrementSuccessCount() {
         this.successCount++;

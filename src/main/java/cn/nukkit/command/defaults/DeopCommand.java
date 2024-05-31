@@ -17,6 +17,10 @@ import java.util.Map;
  * @since 2015/11/12
  */
 public class DeopCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
     public DeopCommand(String name) {
         super(name, "commands.deop.description");
         this.setPermission("nukkit.command.op.take");
@@ -27,6 +31,10 @@ public class DeopCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         List<IPlayer> IPlayers = result.getValue().getResult(0);
         if (IPlayers.isEmpty()) {

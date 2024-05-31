@@ -11,6 +11,10 @@ public abstract class NumberTag<T extends Number> extends Tag {
     public abstract void setData(T data);
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return Objects.hash(super.hashCode(), getData());
     }

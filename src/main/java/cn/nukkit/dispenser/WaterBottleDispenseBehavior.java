@@ -14,7 +14,7 @@ public class WaterBottleDispenseBehavior extends DefaultDispenseBehavior {
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         if (((ItemPotion) item).getPotion() != PotionType.WATER)
             return super.dispense(block, face, item);
-        var targetId = block.getSide(face).getId();
+        var $1 = block.getSide(face).getId();
         if (targetId == BlockID.DIRT || targetId == BlockID.DIRT_WITH_ROOTS) {
             block.level.setBlock(block.getSideVec(face), Block.get(BlockID.MUD));
             return null;

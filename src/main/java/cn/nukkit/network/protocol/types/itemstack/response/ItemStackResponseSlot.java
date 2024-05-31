@@ -28,6 +28,10 @@ public class ItemStackResponseSlot {
      * @since v428
      */
     int durabilityCorrection;
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemStackResponseSlot(int slot, int hotbarSlot, int count, int stackNetworkId, String customName, int durabilityCorrection) {
         this.slot = slot;

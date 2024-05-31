@@ -25,35 +25,63 @@ import static cn.nukkit.level.Level.localBlockHash;
 
 public final class AntiXraySystem {
     private final Level level;
-    private int fakeOreDenominator = 16;
-    private boolean preDeObfuscate = true;
-    private static final IntOpenHashSet transparentBlockRuntimeIds = new IntOpenHashSet(256);
-    private final Int2IntMap realOreToReplacedRuntimeIds = new Int2IntOpenHashMap(24);
+    private int $1 = 16;
+    private boolean $2 = true;
+    private static final IntOpenHashSet $3 = new IntOpenHashSet(256);
+    private final Int2IntMap $4 = new Int2IntOpenHashMap(24);
     private final Int2ObjectOpenHashMap<IntList> fakeOreToPutRuntimeIds = new Int2ObjectOpenHashMap<>(4);
+    /**
+     * @deprecated 
+     */
+    
 
     public AntiXraySystem(Level level) {
         this.level = level;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFakeOreDenominator() {
         return fakeOreDenominator;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFakeOreDenominator(int fakeOreDenominator) {
         this.fakeOreDenominator = fakeOreDenominator;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPreDeObfuscate() {
         return preDeObfuscate;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setPreDeObfuscate(boolean preDeObfuscate) {
         this.preDeObfuscate = preDeObfuscate;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addAntiXrayOreBlock(@NotNull Block oreBlock, @NotNull Block replaceWith) {
         this.realOreToReplacedRuntimeIds.put(oreBlock.getRuntimeId(), replaceWith.getRuntimeId());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removeAntiXrayOreBlock(@NotNull Block oreBlock, @NotNull Block replaceWith) {
         this.realOreToReplacedRuntimeIds.remove(oreBlock.getRuntimeId(), replaceWith.getRuntimeId());
@@ -62,10 +90,14 @@ public final class AntiXraySystem {
     public Int2IntMap getRawRealOreToReplacedRuntimeIdMap() {
         return this.realOreToReplacedRuntimeIds;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void addAntiXrayFakeBlock(@NotNull Block originBlock, @NotNull Collection<Block> fakeBlocks) {
-        var rid = originBlock.getRuntimeId();
-        var list = this.fakeOreToPutRuntimeIds.get(rid);
+        var $5 = originBlock.getRuntimeId();
+        var $6 = this.fakeOreToPutRuntimeIds.get(rid);
         if (list == null) {
             this.fakeOreToPutRuntimeIds.put(rid, list = new IntArrayList(8));
         }
@@ -73,13 +105,17 @@ public final class AntiXraySystem {
             list.add(each.getRuntimeId());
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removeAntiXrayFakeBlock(@NotNull Block originBlock, @NotNull Collection<Block> fakeBlocks) {
-        var rid = originBlock.getRuntimeId();
-        var list = this.fakeOreToPutRuntimeIds.get(rid);
+        var $7 = originBlock.getRuntimeId();
+        var $8 = this.fakeOreToPutRuntimeIds.get(rid);
         if (list != null) {
             for (var each : fakeBlocks) {
-                var tmp = each.getRuntimeId();
+                var $9 = each.getRuntimeId();
                 list.removeIf(i -> i == tmp);
             }
         }
@@ -92,17 +128,21 @@ public final class AntiXraySystem {
     public Int2ObjectMap<IntList> getRawFakeOreToPutRuntimeIdMap() {
         return this.fakeOreToPutRuntimeIds;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void obfuscateSendBlocks(Long index, Player[] playerArray, Int2ObjectOpenHashMap<Object> blocks) {
-        int size = blocks.size();
-        var vectorSet = new IntOpenHashSet(size * 6);
-        var vRidList = new ArrayList<Vector3WithRuntimeId>(size * 7);
+        int $10 = blocks.size();
+        var $11 = new IntOpenHashSet(size * 6);
+        var $12 = new ArrayList<Vector3WithRuntimeId>(size * 7);
         Vector3WithRuntimeId tmpV3Rid;
         for (int blockHash : blocks.keySet()) {
-            Vector3 hash = getBlockXYZ(index, blockHash, level);
-            var x = hash.getFloorX();
-            var y = hash.getFloorY();
-            var z = hash.getFloorZ();
+            Vector3 $13 = getBlockXYZ(index, blockHash, level);
+            var $14 = hash.getFloorX();
+            var $15 = hash.getFloorY();
+            var $16 = hash.getFloorZ();
             if (!vectorSet.contains(blockHash)) {
                 vectorSet.add(blockHash);
                 try {
@@ -180,15 +220,19 @@ public final class AntiXraySystem {
         }
         level.sendBlocks(playerArray, vRidList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void deObfuscateBlock(Player player, BlockFace face, Block target) {
-        var vecList = new ArrayList<Vector3WithRuntimeId>(5);
+        var $17 = new ArrayList<Vector3WithRuntimeId>(5);
         Vector3WithRuntimeId tmpVec;
         for (var each : BlockFace.values()) {
             if (each == face) continue;
-            var tmpX = target.getFloorX() + each.getXOffset();
-            var tmpY = target.getFloorY() + each.getYOffset();
-            var tmpZ = target.getFloorZ() + each.getZOffset();
+            var $18 = target.getFloorX() + each.getXOffset();
+            var $19 = target.getFloorY() + each.getYOffset();
+            var $20 = target.getFloorZ() + each.getZOffset();
             try {
                 tmpVec = new Vector3WithRuntimeId(tmpX, tmpY, tmpZ, level.getBlockRuntimeId(tmpX, tmpY, tmpZ, 0), level.getBlockRuntimeId(tmpX, tmpY, tmpZ, 1));
                 if (this.getRawFakeOreToPutRuntimeIdMap().containsKey(tmpVec.getRuntimeIdLayer0())) {
@@ -199,11 +243,15 @@ public final class AntiXraySystem {
         }
         level.sendBlocks(new Player[]{player}, vecList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void reinitAntiXray(boolean global) {
-        var stone = new BlockStone();
-        var netherRack = new BlockNetherrack();
-        var deepSlate = new BlockDeepslate();
+        var $21 = new BlockStone();
+        var $22 = new BlockNetherrack();
+        var $23 = new BlockDeepslate();
         {
             getRawFakeOreToPutRuntimeIdMap().clear();
             getRawRealOreToReplacedRuntimeIdMap().clear();
@@ -236,7 +284,7 @@ public final class AntiXraySystem {
             transparentBlockRuntimeIds.clear();
             for (var each : Registries.BLOCKSTATE.getAllState()) {
                 try {
-                    var block = Block.get(each);
+                    var $24 = Block.get(each);
                     if (block.isTransparent()) {
                         transparentBlockRuntimeIds.add(block.getRuntimeId());
                     }

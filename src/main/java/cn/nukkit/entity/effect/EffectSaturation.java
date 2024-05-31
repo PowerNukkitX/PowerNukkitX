@@ -6,12 +6,20 @@ import cn.nukkit.entity.Entity;
 import java.awt.*;
 
 public class EffectSaturation extends InstantEffect {
+    /**
+     * @deprecated 
+     */
+    
 
     public EffectSaturation() {
         super(EffectType.SATURATION, "%potion.saturation", new Color(248, 36, 35));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void apply(Entity entity, double tickCount) {
         if (entity instanceof Player player) {
             player.getFoodData().addFood(this.getLevel(), 2 * this.getLevel());

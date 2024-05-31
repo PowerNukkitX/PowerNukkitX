@@ -4,6 +4,10 @@ package cn.nukkit.inventory;
 import cn.nukkit.entity.item.EntityChestMinecart;
 
 public class MinecartChestInventory extends ContainerInventory {
+    /**
+     * @deprecated 
+     */
+    
 
     public MinecartChestInventory(EntityChestMinecart minecart) {
         super(minecart, InventoryType.MINECART_CHEST, 27);
@@ -15,6 +19,10 @@ public class MinecartChestInventory extends ContainerInventory {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canCauseVibration() {
         return true;
     }

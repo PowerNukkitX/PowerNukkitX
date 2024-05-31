@@ -8,36 +8,52 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 
 public class BlockCutCopperStairs extends BlockStairsCopperBase {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CUT_COPPER_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(CUT_COPPER_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCutCopperStairs() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockCutCopperStairs(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
-        StringBuilder sb = new StringBuilder(30);
+        StringBuilder $2 = new StringBuilder(30);
         if (isWaxed()) {
             sb.append("Waxed ");
         }
-        OxidizationLevel oxidizationLevel = getOxidizationLevel();
+        OxidizationLevel $3 = getOxidizationLevel();
         if (!OxidizationLevel.UNAFFECTED.equals(oxidizationLevel)) {
-            String name = oxidizationLevel.name();
+            String $4 = oxidizationLevel.name();
             sb.append(name.charAt(0)).append(name.substring(1).toLowerCase(Locale.ENGLISH)).append(' ');
         }
         return sb.append("Cut Copper Stairs").toString();
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected String getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel) {
         if (oxidizationLevel == null) {
             return getId();

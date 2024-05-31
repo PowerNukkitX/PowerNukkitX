@@ -15,7 +15,7 @@ import java.util.Set;
  */
 public class EntityExplodeEvent extends EntityEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -26,6 +26,10 @@ public class EntityExplodeEvent extends EntityEvent implements Cancellable {
 
     protected Set<Block> ignitions;
     protected double yield;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityExplodeEvent(Entity entity, Position position, List<Block> blocks, double yield) {
         this.entity = entity;
@@ -42,14 +46,26 @@ public class EntityExplodeEvent extends EntityEvent implements Cancellable {
     public List<Block> getBlockList() {
         return this.blocks;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBlockList(List<Block> blocks) {
         this.blocks = blocks;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getYield() {
         return this.yield;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setYield(double yield) {
         this.yield = yield;
@@ -58,6 +74,10 @@ public class EntityExplodeEvent extends EntityEvent implements Cancellable {
     public Set<Block> getIgnitions() {
         return ignitions;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setIgnitions(Set<Block> ignitions) {
         this.ignitions = ignitions;

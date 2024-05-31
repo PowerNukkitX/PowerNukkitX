@@ -10,6 +10,10 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 
 public class LiftController implements IController {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean control(EntityIntelligent entity) {
         //add lift force
         if (entity.getMemoryStorage().get(CoreMemoryTypes.ENABLE_LIFT_FORCE))

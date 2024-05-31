@@ -2,9 +2,17 @@ package cn.nukkit.nbt.tag;
 
 public class ByteTag extends NumberTag<Integer> {
     public int data;
+    /**
+     * @deprecated 
+     */
+    
 
     public ByteTag() {
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ByteTag(int data) {
         this.data = (byte) data;
@@ -16,11 +24,19 @@ public class ByteTag extends NumberTag<Integer> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setData(Integer data) {
         this.data = (byte) (data == null ? 0 : data);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte getId() {
         return TAG_Byte;
     }
@@ -31,8 +47,12 @@ public class ByteTag extends NumberTag<Integer> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
-        String hex = Integer.toHexString(this.data);
+        String $1 = Integer.toHexString(this.data);
         if (hex.length() < 2) {
             hex = "0" + hex;
         }
@@ -40,20 +60,32 @@ public class ByteTag extends NumberTag<Integer> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT() {
         return data + "b";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toSNBT(int space) {
         return data + "b";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (super.equals(obj)) {
-            ByteTag byteTag = (ByteTag) obj;
-            return data == byteTag.data;
+            ByteTag $2 = (ByteTag) obj;
+            return $3 == byteTag.data;
         }
         return false;
     }

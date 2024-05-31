@@ -13,9 +13,13 @@ import java.util.List;
 public class CommandNode extends ParamNode<String> {
     private final List<String> TMP = new ArrayList<>();
 
-    private boolean first = true;
+    private boolean $1 = true;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         if (arg.contains(" ")) {
             arg = "\"" + arg + "\"";
@@ -35,6 +39,10 @@ public class CommandNode extends ParamNode<String> {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reset() {
         super.reset();
         TMP.clear();

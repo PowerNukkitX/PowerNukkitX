@@ -5,6 +5,10 @@ import cn.nukkit.item.Item;
 
 public class DefaultDescriptor implements ItemDescriptor {
     private final Item item;
+    /**
+     * @deprecated 
+     */
+    
 
     public DefaultDescriptor(Item item) {
         this.item = item;
@@ -26,16 +30,28 @@ public class DefaultDescriptor implements ItemDescriptor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getCount() {
         return this.item.getCount();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean match(Item item) {
         return this.item.equals(item, true, false);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return item.hashCode();
     }
@@ -43,6 +59,10 @@ public class DefaultDescriptor implements ItemDescriptor {
     public Item getItem() {
         return this.item;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String toString() {
         return "DefaultDescriptor(item=" + this.getItem() + ")";

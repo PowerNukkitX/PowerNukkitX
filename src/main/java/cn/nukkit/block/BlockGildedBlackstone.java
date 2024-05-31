@@ -9,27 +9,43 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockGildedBlackstone extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(GILDED_BLACKSTONE);
+    public static final BlockProperties $1 = new BlockProperties(GILDED_BLACKSTONE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockGildedBlackstone() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockGildedBlackstone(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Gilded Blackstone";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
@@ -41,8 +57,8 @@ public class BlockGildedBlackstone extends BlockSolid {
         }
 
         int dropOdds;
-        int fortune = 0;
-        Enchantment enchantment = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
+        int $2 = 0;
+        Enchantment $3 = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
         if (enchantment != null) {
             fortune = enchantment.getLevel();
         }
@@ -54,7 +70,7 @@ public class BlockGildedBlackstone extends BlockSolid {
             default -> 1;
         };
 
-        ThreadLocalRandom random = ThreadLocalRandom.current();
+        ThreadLocalRandom $4 = ThreadLocalRandom.current();
         if (dropOdds > 1 && random.nextInt(dropOdds) != 0) {
             return new Item[] { toItem() };
         }
@@ -63,21 +79,37 @@ public class BlockGildedBlackstone extends BlockSolid {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 1.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 6;
     }

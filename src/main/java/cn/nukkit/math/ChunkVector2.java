@@ -27,31 +27,59 @@ package cn.nukkit.math;
 public class ChunkVector2 {
     private int x;
     private int z;
+    /**
+     * @deprecated 
+     */
+    
 
     public ChunkVector2() {
         this(0, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ChunkVector2(int x) {
         this(x, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ChunkVector2(int x, int z) {
         this.x = x;
         this.z = z;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getX() {
         return this.x;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getZ() {
         return this.z;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setX(int x) {
         this.x = x;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setZ(int z) {
         this.z = z;
@@ -92,44 +120,84 @@ public class ChunkVector2 {
     public ChunkVector2 divide(int number) {
         return new ChunkVector2(this.x / number, this.z / number);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distance(double x) {
         return this.distance(x, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distance(double x, double y) {
         return Math.sqrt(this.distanceSquared(x, y));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distance(ChunkVector2 vector) {
         return Math.sqrt(this.distanceSquared(vector.getX(), vector.getZ()));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(double x) {
         return this.distanceSquared(x, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(double x, double y) {
         return Math.pow(this.x - x, 2) + Math.pow(this.z - y, 2);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double distanceSquared(ChunkVector2 vector) {
         return this.distanceSquared(vector.getX(), vector.getZ());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double length() {
         return Math.sqrt(this.lengthSquared());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int lengthSquared() {
         return this.x * this.x + this.z * this.z;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int dot(ChunkVector2 v) {
         return this.x * v.x + this.z * v.z;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return "MutableChunkVector(x=" + this.x + ",z=" + this.z + ")";
     }

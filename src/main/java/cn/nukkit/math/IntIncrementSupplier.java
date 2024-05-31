@@ -7,6 +7,10 @@ import java.util.stream.IntStream;
 public final class IntIncrementSupplier implements IntSupplier {
     private int next;
     private final int increment;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public IntIncrementSupplier(int first, int increment) {
@@ -15,8 +19,12 @@ public final class IntIncrementSupplier implements IntSupplier {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getAsInt() {
-        int current = next;
+        int $1 = next;
         next = current + increment;
         return current;
     }

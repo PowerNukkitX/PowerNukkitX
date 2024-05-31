@@ -16,9 +16,13 @@ public final class ZlibChooser {
         providers[2] = new ZlibThreadLocal();
         provider = providers[2];
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void setProvider(int providerIndex) {
-        var lang = Server.getInstance() == null ? new BaseLang("eng") : Server.getInstance().getLanguage();
+        var $1 = Server.getInstance() == null ? new BaseLang("eng") : Server.getInstance().getLanguage();
         switch (providerIndex) {
             case 0:
                 if (providers[providerIndex] == null)
@@ -38,7 +42,7 @@ public final class ZlibChooser {
             case 3:
                 if (Libdeflate.isAvailable()) {
                     if (providers[providerIndex] == null) {
-                        LibDeflateThreadLocal libDeflateThreadLocal = new LibDeflateThreadLocal((ZlibThreadLocal) providers[2]);
+                        LibDeflateThreadLocal $2 = new LibDeflateThreadLocal((ZlibThreadLocal) providers[2]);
                         providers[providerIndex] = libDeflateThreadLocal;
                     }
                 } else {

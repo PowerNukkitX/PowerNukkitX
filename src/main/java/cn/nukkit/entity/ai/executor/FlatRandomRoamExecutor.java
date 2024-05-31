@@ -15,15 +15,23 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
     protected int frequency;
 
     protected int currentTargetCalTick;
-    protected int durationTick = 0;
+    protected int $1 = 0;
     protected boolean calNextTargetImmediately;
     protected int runningTime;
     protected boolean avoidWater;
     protected int maxRetryTime;
+    /**
+     * @deprecated 
+     */
+    
 
     public FlatRandomRoamExecutor(float speed, int maxRoamRange, int frequency) {
         this(speed, maxRoamRange, frequency, false, 100);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FlatRandomRoamExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime) {
         this(speed, maxRoamRange, frequency, calNextTargetImmediately, runningTime, false, 10);
@@ -40,6 +48,10 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
      * @param avoidWater               是否避开水行走<br>Whether to walk away from water
      * @param maxRetryTime             选取目标点的最大尝试次数<br>Pick the maximum number of attempts at the target point
      */
+    /**
+     * @deprecated 
+     */
+    
     public FlatRandomRoamExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime) {
         this.speed = speed;
         this.maxRoamRange = maxRoamRange;
@@ -52,15 +64,19 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(@NotNull EntityIntelligent entity) {
         currentTargetCalTick++;
         durationTick++;
         if (entity.isEnablePitch()) entity.setEnablePitch(false);
         if (currentTargetCalTick >= frequency || (calNextTargetImmediately && needUpdateTarget(entity))) {
-            Vector3 target = next(entity);
+            Vector3 $2 = next(entity);
             if (avoidWater) {
                 String blockId;
-                int time = 0;
+                int $3 = 0;
                 while (time <= maxRetryTime && ((blockId = entity.level.getTickCachedBlock(target.add(0, -1, 0)).getId()) == Block.FLOWING_WATER || blockId == Block.WATER)) {
                     target = next(entity);
                     time++;
@@ -85,15 +101,27 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         stop(entity);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         stop(entity);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void stop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
@@ -102,14 +130,18 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
         durationTick = 0;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected boolean needUpdateTarget(EntityIntelligent entity) {
         return entity.getMoveTarget() == null;
     }
 
     protected Vector3 next(EntityIntelligent entity) {
-        var random = ThreadLocalRandom.current();
-        int x = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorX();
-        int z = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorZ();
+        var $4 = ThreadLocalRandom.current();
+        int $5 = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorX();
+        int $6 = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorZ();
         return new Vector3(x, entity.y, z);
     }
 }

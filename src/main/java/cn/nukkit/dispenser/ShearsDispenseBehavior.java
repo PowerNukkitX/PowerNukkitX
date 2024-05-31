@@ -12,8 +12,8 @@ public class ShearsDispenseBehavior extends DefaultDispenseBehavior {
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         item = item.clone();
-        var target = block.getSide(face);
-        var bb = new SimpleAxisAlignedBB(
+        var $1 = block.getSide(face);
+        var $2 = new SimpleAxisAlignedBB(
                 0, 0, 0,
                 1, 1, 1)
                 .offset(target.x, target.y, target.z);

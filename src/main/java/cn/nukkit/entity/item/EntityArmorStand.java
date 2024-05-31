@@ -38,17 +38,25 @@ import java.util.Objects;
 public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable, EntityNameable {
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return ARMOR_STAND;
     }
 
-    private static final String TAG_MAINHAND = "Mainhand";
-    private static final String TAG_POSE_INDEX = "PoseIndex";
-    private static final String TAG_OFFHAND = "Offhand";
-    private static final String TAG_ARMOR = "Armor";
+    private static final String $1 = "Mainhand";
+    private static final String $2 = "PoseIndex";
+    private static final String $3 = "Offhand";
+    private static final String $4 = "Armor";
 
     private EntityEquipmentInventory equipmentInventory;
     private EntityArmorInventory armorInventory;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public EntityArmorStand(IChunk chunk, CompoundTag nbt) {
@@ -61,6 +69,10 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static int getArmorSlot(ItemArmor armorItem) {
         if (armorItem.isHelmet()) {
             return EntityArmorInventory.SLOT_HEAD;
@@ -75,21 +87,37 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 1.975f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.5f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getGravity() {
         return 0.04f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
 
         this.setHealth(6);
@@ -122,16 +150,28 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPersistent() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setPersistent(boolean persistent) {
         // Armor stands are always persistent
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (player.isSpectator() || !isValid()) {
             return false;
@@ -155,7 +195,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         //Inventory
         boolean isArmor;
 
-        boolean hasItemInHand = !item.isNull();
+        boolean $5 = !item.isNull();
         int slot;
 
         if (hasItemInHand && item instanceof ItemArmor itemArmor) {
@@ -172,7 +212,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                 slot = EntityEquipmentInventory.MAIN_HAND;
             }
         } else {
-            double clickHeight = clickedPos.y - this.y;
+            double $6 = clickedPos.y - this.y;
             if (clickHeight >= 0.1 && clickHeight < 0.55 && !armorInventory.getBoots().isNull()) {
                 isArmor = true;
                 slot = EntityArmorInventory.SLOT_FEET;
@@ -206,11 +246,11 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
         }
 
-        var ev = new PlayerChangeArmorStandEvent(player, this, item, slot);
+        var $7 = new PlayerChangeArmorStandEvent(player, this, item, slot);
         this.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) return false;
 
-        boolean changed = false;
+        boolean $8 = false;
         if (isArmor) {
             changed = this.tryChangeEquipment(player, ev.getItem(), slot, true);
             slot = EntityEquipmentInventory.MAIN_HAND;
@@ -227,13 +267,17 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         return false; // Returning true would consume the item but tryChangeEquipment already manages the inventory
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean tryChangeEquipment(Player player, Item handItem, int slot, boolean isArmorSlot) {
-        BaseInventory inventory = isArmorSlot ? armorInventory : equipmentInventory;
-        Item item = inventory.getItem(slot);
+        BaseInventory $9 = isArmorSlot ? armorInventory : equipmentInventory;
+        Item $10 = inventory.getItem(slot);
 
         if (item.isNull() && !handItem.isNull()) {
             // Adding item to the armor stand
-            Item itemClone = handItem.clone();
+            Item $11 = handItem.clone();
             itemClone.setCount(1);
             inventory.setItem(slot, itemClone);
             if (!player.isCreative()) {
@@ -242,7 +286,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
             return true;
         } else if (!item.isNull()) {
-            Item itemtoAddToArmorStand = Item.AIR;
+            Item $12 = Item.AIR;
             if (!handItem.isNull()) {
                 if (handItem.equals(item, true, true)) {
                     // Attempted to replace with the same item type
@@ -278,7 +322,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                     return false;
                 }
 
-                Item itemClone = item.clone();
+                Item $13 = item.clone();
                 itemClone.count -= notAdded[0].count;
                 inventory.setItem(slot, itemClone);
             } else {
@@ -289,19 +333,31 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int getPose() {
         return this.entityDataMap.get(Entity.ARMOR_STAND_POSE_INDEX);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void setPose(int pose) {
         this.entityDataMap.put(Entity.ARMOR_STAND_POSE_INDEX, pose);
-        SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
+        SetEntityDataPacket $14 = new SetEntityDataPacket();
         setEntityDataPacket.eid = this.getId();
         setEntityDataPacket.entityData = this.getEntityDataMap();
         Server.getInstance().getOnlinePlayers().values().forEach(all -> all.dataPacket(setEntityDataPacket));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
 
@@ -310,7 +366,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
 
         if (this.armorInventory != null) {
             ListTag<CompoundTag> armorTag = new ListTag<>();
-            for (int i = 0; i < 4; i++) {
+            for ($15nt $1 = 0; i < 4; i++) {
                 armorTag.add(NBTIO.putItemHelper(this.armorInventory.getItem(i), i));
             }
             this.namedTag.putList(TAG_ARMOR, armorTag);
@@ -320,6 +376,10 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void spawnTo(Player player) {
         super.spawnTo(player);
         this.equipmentInventory.sendContents(player);
@@ -327,6 +387,10 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void spawnToAll() {
         if (this.chunk != null && !this.closed) {
             Collection<Player> chunkPlayers = this.level.getChunkPlayers(this.chunk.getX(), this.chunk.getZ()).values();
@@ -337,6 +401,10 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fall(float fallDistance) {
         super.fall(fallDistance);
 
@@ -344,12 +412,16 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void kill() {
         super.kill();
-        EntityDamageEvent lastDamageCause = this.lastDamageCause;
-        boolean byAttack = lastDamageCause != null && lastDamageCause.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK;
+        EntityDamageEvent $16 = this.lastDamageCause;
+        boolean $17 = lastDamageCause != null && lastDamageCause.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK;
 
-        Vector3 pos = getPosition();
+        Vector3 $18 = getPosition();
 
         pos.y += 0.2;
         level.dropItem(pos, armorInventory.getBoots());
@@ -374,6 +446,10 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
 
         switch (source.getCause()) {
@@ -437,15 +513,23 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Armor Stand";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean entityBaseTick(int tickDiff) {
-        boolean hasUpdate = super.entityBaseTick(tickDiff);
+        boolean $19 = super.entityBaseTick(tickDiff);
 
-        int hurtTime = getDataProperty(HURT_TICKS);
+        int $20 = getDataProperty(HURT_TICKS);
         if (hurtTime > 0 && age % 2 == 0) {
             setDataProperty(HURT_TICKS, hurtTime - 1, true);
             hasUpdate = true;
@@ -473,9 +557,13 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
-        int tickDiff = currentTick - lastUpdate;
-        boolean hasUpdated = super.onUpdate(currentTick);
+        int $21 = currentTick - lastUpdate;
+        boolean $22 = super.onUpdate(currentTick);
 
         if (closed || tickDiff <= 0 && !justCreated) {
             return hasUpdated;
@@ -483,7 +571,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
 
         lastUpdate = currentTick;
 
-        boolean hasUpdate = entityBaseTick(tickDiff);
+        boolean $23 = entityBaseTick(tickDiff);
 
         if (isAlive()) {
             if (getHealth() < getMaxHealth()) {
@@ -491,10 +579,10 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
             motionY -= getGravity();
 
-            double highestPosition = this.highestPosition;
+            double $24 = this.highestPosition;
             move(motionX, motionY, motionZ);
 
-            float friction = 1 - getDrag();
+            float $25 = 1 - getDrag();
 
             motionX *= friction;
             motionY *= 1 - getDrag();
@@ -511,6 +599,10 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getDrag() {
         if (hasWaterAt(getHeight() / 2f)) {
             return 0.25f;
@@ -519,16 +611,28 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getInteractButtonText(Player player) {
         return "action.interact.armorstand.equip";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canDoInteraction() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canEquipByDispenser() {
         return true;
     }

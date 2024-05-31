@@ -9,13 +9,17 @@ import cn.nukkit.math.Vector3;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityMotionEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     private final Vector3 motion;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityMotionEvent(Entity entity, Vector3 motion) {
         this.entity = entity;

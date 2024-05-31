@@ -7,16 +7,24 @@ import org.jetbrains.annotations.NotNull;
 import static cn.nukkit.block.property.CommonBlockProperties.MONSTER_EGG_STONE_TYPE;
 
 public class BlockMonsterEgg extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(MONSTER_EGG, MONSTER_EGG_STONE_TYPE);
+    public static final BlockProperties $1 = new BlockProperties(MONSTER_EGG, MONSTER_EGG_STONE_TYPE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMonsterEgg() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockMonsterEgg(BlockState blockstate) {
         super(blockstate);
@@ -25,22 +33,38 @@ public class BlockMonsterEgg extends BlockSolid {
     @NotNull public MonsterEggStoneType getMonsterEggStoneType() {
         return getPropertyValue(MONSTER_EGG_STONE_TYPE);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setMonsterEggStoneType(@NotNull MonsterEggStoneType value) {
         setPropertyValue(MONSTER_EGG_STONE_TYPE, value);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return getMonsterEggStoneType().name() + " Monster Egg";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 0.75;
     }

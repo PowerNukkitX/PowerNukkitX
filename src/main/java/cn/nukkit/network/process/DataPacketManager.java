@@ -12,10 +12,18 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("rawtypes")
 public final class DataPacketManager {
     private final Int2ObjectOpenHashMap<DataPacketProcessor> PROCESSORS = new Int2ObjectOpenHashMap<>(300);
+    /**
+     * @deprecated 
+     */
+    
 
     public DataPacketManager() {
         registerDefaultProcessors();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void registerProcessor(@NotNull DataPacketProcessor... processors) {
         for (var processor : processors) {
@@ -23,13 +31,21 @@ public final class DataPacketManager {
         }
         PROCESSORS.trim();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean canProcess(int packetId) {
         return PROCESSORS.containsKey(packetId);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void processPacket(@NotNull PlayerHandle playerHandle, @NotNull DataPacket packet) {
-        var processor = PROCESSORS.get(packet.pid());
+        var $1 = PROCESSORS.get(packet.pid());
         if (processor != null) {
             //noinspection unchecked
             processor.handle(playerHandle, packet);
@@ -37,6 +53,10 @@ public final class DataPacketManager {
             throw new UnsupportedOperationException("No processor found for packet " + packet.getClass().getName() + " with id " + packet.pid() + ".");
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void registerDefaultProcessors() {
         registerProcessor(

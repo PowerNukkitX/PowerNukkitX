@@ -125,6 +125,10 @@ public enum EntityFlag {
     EntityFlag(int value) {
         this.value = value;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getValue() {
         return value;

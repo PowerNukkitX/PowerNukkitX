@@ -23,11 +23,19 @@ import org.jetbrains.annotations.NotNull;
 public class EntityChestMinecart extends EntityMinecartAbstract implements InventoryHolder {
 
     @Override
-    public @NotNull String getIdentifier() {
+    public @NotNull 
+    /**
+     * @deprecated 
+     */
+    String getIdentifier() {
         return CHEST_MINECART;
     }
 
     protected MinecartChestInventory inventory;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityChestMinecart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -35,6 +43,10 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return getType().getName();
     }
@@ -45,6 +57,10 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isRideable() {
         return false;
     }
@@ -52,13 +68,17 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void dropItem() {
         for (Item item : this.inventory.getContents().values()) {
             this.level.dropItem(this, item);
         }
 
         if (this.lastDamageCause instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
-            Entity damager = entityDamageByEntityEvent.getDamager();
+            Entity $1 = entityDamageByEntityEvent.getDamager();
             if (damager instanceof Player player && player.isCreative()) {
                 return;
             }
@@ -67,17 +87,29 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void kill() {
         super.kill();
         this.inventory.clearAll();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean mountEntity(Entity entity, EntityLink.Type mode) {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         player.addWindow(this.inventory);
         return false; // If true, the count of items player has in hand decreases
@@ -89,6 +121,10 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         super.initEntity();
 
@@ -106,13 +142,17 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
 
         this.namedTag.putList("Items",new ListTag<CompoundTag>());
         if (this.inventory != null) {
-            for (int slot = 0; slot < 27; ++slot) {
-                Item item = this.inventory.getItem(slot);
+            for (int $2 = 0; slot < 27; ++slot) {
+                Item $3 = this.inventory.getItem(slot);
                 if (item != null && !item.isNull()) {
                     this.namedTag.getList("Items", CompoundTag.class)
                             .add(NBTIO.putItemHelper(item, slot));

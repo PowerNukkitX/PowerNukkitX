@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 public class HurtArmorPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.HURT_ARMOR_PACKET;
+    public static final int $1 = ProtocolInfo.HURT_ARMOR_PACKET;
 
 
     public int cause;
@@ -25,6 +25,10 @@ public class HurtArmorPacket extends DataPacket {
     public long armorSlots;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.cause = byteBuf.readVarInt();
         this.damage = byteBuf.readVarInt();
@@ -32,6 +36,10 @@ public class HurtArmorPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeVarInt(this.cause);
@@ -40,9 +48,17 @@ public class HurtArmorPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

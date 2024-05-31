@@ -15,21 +15,37 @@ public class CameraPresetsPacket extends DataPacket {
     public final List<CameraPreset> presets = new ObjectArrayList<>();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.CAMERA_PRESETS_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarInt(presets.size());
         for (var p : presets) {
             writePreset(byteBuf, p);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writePreset(HandleByteBuf byteBuf, CameraPreset preset) {
         byteBuf.writeString(preset.getIdentifier());
@@ -42,6 +58,10 @@ public class CameraPresetsPacket extends DataPacket {
         byteBuf.writeNotNull(preset.getListener(), (l) -> byteBuf.writeByte((byte) l.ordinal()));
         byteBuf.writeOptional(preset.getPlayEffect(), byteBuf::writeBoolean);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

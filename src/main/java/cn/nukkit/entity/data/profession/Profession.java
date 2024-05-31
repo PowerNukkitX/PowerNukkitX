@@ -8,6 +8,10 @@ import java.util.HashMap;
 public abstract class Profession {
 
     private static final HashMap<Integer, Profession> knownProfessions = new HashMap<>();
+    /**
+     * @deprecated 
+     */
+    
 
     public static void registerProfession(Profession profession) {
         knownProfessions.put(profession.getIndex(), profession);
@@ -25,6 +29,10 @@ public abstract class Profession {
     private final int index;
     private final String blockId;
     private final String name;
+    /**
+     * @deprecated 
+     */
+    
 
     public Profession(int index, String blockId, String name) {
         this.index = index;
@@ -35,6 +43,10 @@ public abstract class Profession {
     public ListTag<CompoundTag> buildTrades(int seed) {
         return new ListTag<>();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     
     public static void init() {
@@ -52,14 +64,26 @@ public abstract class Profession {
         registerProfession(new ProfessionLeather());
         registerProfession(new ProfessionMason());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getBlockID() {
         return this.blockId;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getIndex() {
         return this.index;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return this.name;

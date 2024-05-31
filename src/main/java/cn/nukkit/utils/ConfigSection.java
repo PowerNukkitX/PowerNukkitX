@@ -17,6 +17,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
     /**
      * Empty ConfigSection constructor
      */
+    /**
+     * @deprecated 
+     */
+    
     public ConfigSection() {
         super();
     }
@@ -27,6 +31,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key
      * @param value
      */
+    /**
+     * @deprecated 
+     */
+    
     public ConfigSection(String key, Object value) {
         this();
         this.set(key, value);
@@ -38,6 +46,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param map
      */
     @SuppressWarnings("unchecked")
+    /**
+     * @deprecated 
+     */
+    
     public ConfigSection(LinkedHashMap<String, Object> map) {
         this();
         if (map == null || map.isEmpty()) return;
@@ -53,6 +65,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
     }
 
     @SuppressWarnings("unchecked")
+    /**
+     * @deprecated 
+     */
+    
     public ConfigSection(Map<String, Object> map) {
         this();
         if (map == null || map.isEmpty()) return;
@@ -119,7 +135,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
     public <T> T get(String key, T defaultValue) {
         if (key == null || key.isEmpty()) return defaultValue;
         if (super.containsKey(key)) {
-            var value = super.get(key);
+            var $1 = super.get(key);
             if (defaultValue != null && !defaultValue.getClass().isInstance(value)) {
                 if (value instanceof Map map && defaultValue instanceof ConfigSection) {
                     return (T) new ConfigSection(map);
@@ -129,11 +145,11 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
         }
         String[] keys = key.split("\\.", 2);
         if (!super.containsKey(keys[0])) return defaultValue;
-        Object value = super.get(keys[0]);
+        Object $2 = super.get(keys[0]);
         if (value instanceof ConfigSection section) {
             return section.get(keys[1], defaultValue);
         } else if (value instanceof Map map) {
-            ConfigSection section = new ConfigSection(map);
+            ConfigSection $3 = new ConfigSection(map);
             return section.get(keys[1], defaultValue);
         }
         return defaultValue;
@@ -145,10 +161,14 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key
      * @param value
      */
+    /**
+     * @deprecated 
+     */
+    
     public void set(String key, Object value) {
         String[] subKeys = key.split("\\.", 2);
         if (subKeys.length > 1) {
-            ConfigSection childSection = new ConfigSection();
+            ConfigSection $4 = new ConfigSection();
             if (this.containsKey(subKeys[0]) && super.get(subKeys[0]) instanceof ConfigSection)
                 childSection = (ConfigSection) super.get(subKeys[0]);
             childSection.set(subKeys[1], value);
@@ -162,8 +182,12 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSection(String key) {
-        Object value = this.get(key);
+        Object $5 = this.get(key);
         return value instanceof ConfigSection;
     }
 
@@ -210,8 +234,8 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public ConfigSection getSections(String key) {
-        ConfigSection sections = new ConfigSection();
-        ConfigSection parent = key == null || key.isEmpty() ? this.getAll() : getSection(key);
+        ConfigSection $6 = new ConfigSection();
+        ConfigSection $7 = key == null || key.isEmpty() ? this.getAll() : getSection(key);
         if (parent == null) return sections;
         parent.forEach((key1, value) -> {
             if (value instanceof ConfigSection)
@@ -226,6 +250,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section (default value equals to 0)
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getInt(String key) {
         return this.getInt(key, 0);
     }
@@ -237,6 +265,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param defaultValue - default value that will returned if section element is not exists
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getInt(String key, int defaultValue) {
         return this.get(key, ((Number) defaultValue)).intValue();
     }
@@ -247,8 +279,12 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isInt(String key) {
-        Object val = get(key);
+        Object $8 = get(key);
         return val instanceof Integer;
     }
 
@@ -258,6 +294,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public long getLong(String key) {
         return this.getLong(key, 0);
     }
@@ -269,6 +309,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param defaultValue - default value that will returned if section element is not exists
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public long getLong(String key, long defaultValue) {
         return this.get(key, ((Number) defaultValue)).longValue();
     }
@@ -279,8 +323,12 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isLong(String key) {
-        Object val = get(key);
+        Object $9 = get(key);
         return val instanceof Long;
     }
 
@@ -290,6 +338,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public double getDouble(String key) {
         return this.getDouble(key, 0);
     }
@@ -301,6 +353,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param defaultValue - default value that will returned if section element is not exists
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public double getDouble(String key, double defaultValue) {
         return this.get(key, ((Number) defaultValue)).doubleValue();
     }
@@ -311,8 +367,12 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isDouble(String key) {
-        Object val = get(key);
+        Object $10 = get(key);
         return val instanceof Double;
     }
 
@@ -322,6 +382,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getString(String key) {
         return this.getString(key, "");
     }
@@ -333,8 +397,12 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param defaultValue - default value that will returned if section element is not exists
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getString(String key, String defaultValue) {
-        Object result = this.get(key, defaultValue);
+        Object $11 = this.get(key, defaultValue);
         return String.valueOf(result);
     }
 
@@ -344,8 +412,12 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isString(String key) {
-        Object val = get(key);
+        Object $12 = get(key);
         return val instanceof String;
     }
 
@@ -355,6 +427,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean getBoolean(String key) {
         return this.getBoolean(key, false);
     }
@@ -366,6 +442,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param defaultValue - default value that will returned if section element is not exists
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean getBoolean(String key, boolean defaultValue) {
         return this.get(key, defaultValue);
     }
@@ -376,8 +456,12 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBoolean(String key) {
-        Object val = get(key);
+        Object $13 = get(key);
         return val instanceof Boolean;
     }
 
@@ -408,8 +492,12 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isList(String key) {
-        Object val = get(key);
+        Object $14 = get(key);
         return val instanceof List;
     }
 
@@ -633,7 +721,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
             if (object instanceof Character) {
                 result.add((Character) object);
             } else if (object instanceof String) {
-                String str = (String) object;
+                String $15 = (String) object;
 
                 if (str.length() == 1) {
                     result.add(str.charAt(0));
@@ -710,6 +798,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param ignoreCase
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean exists(String key, boolean ignoreCase) {
         if (ignoreCase) key = key.toLowerCase(Locale.ENGLISH);
         for (String existKey : this.getKeys(true)) {
@@ -725,6 +817,10 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key
      * @return
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean exists(String key) {
         return exists(key, false);
     }
@@ -734,13 +830,17 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      *
      * @param key
      */
+    /**
+     * @deprecated 
+     */
+    
     public void remove(String key) {
         if (key == null || key.isEmpty()) return;
         if (super.containsKey(key)) super.remove(key);
         else if (this.containsKey(".")) {
             String[] keys = key.split("\\.", 2);
             if (super.get(keys[0]) instanceof ConfigSection) {
-                ConfigSection section = (ConfigSection) super.get(keys[0]);
+                ConfigSection $16 = (ConfigSection) super.get(keys[0]);
                 section.remove(keys[1]);
             }
         }

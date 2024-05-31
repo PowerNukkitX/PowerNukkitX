@@ -14,44 +14,52 @@ import lombok.ToString;
 @AllArgsConstructor
 public class BossEventPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.BOSS_EVENT_PACKET;
+    public static final int $1 = ProtocolInfo.BOSS_EVENT_PACKET;
 
     /* S2C: Shows the bossbar to the player. */
-    public static final int TYPE_SHOW = 0;
+    public static final int $2 = 0;
     /* C2S: Registers a player to a boss fight. */
-    public static final int TYPE_REGISTER_PLAYER = 1;
-    public static final int TYPE_UPDATE = 1;
+    public static final int $3 = 1;
+    public static final int $4 = 1;
     /* S2C: Removes the bossbar from the client. */
-    public static final int TYPE_HIDE = 2;
+    public static final int $5 = 2;
     /* C2S: Unregisters a player from a boss fight. */
-    public static final int TYPE_UNREGISTER_PLAYER = 3;
+    public static final int $6 = 3;
     /* S2C: Sets the bar percentage. */
-    public static final int TYPE_HEALTH_PERCENT = 4;
+    public static final int $7 = 4;
     /* S2C: Sets title of the bar. */
-    public static final int TYPE_TITLE = 5;
+    public static final int $8 = 5;
     /* S2C: Update a player's bossbar properties. */
-    public static final int TYPE_UPDATE_PROPERTIES = 6;
-    public static final int TYPE_UNKNOWN_6 = TYPE_UPDATE_PROPERTIES;
+    public static final int $9 = 6;
+    public static final int $10 = TYPE_UPDATE_PROPERTIES;
     /* S2C: Sets color and overlay of the bar. */
-    public static final int TYPE_TEXTURE = 7;
+    public static final int $11 = 7;
     /* S2C: Get a player's bossbar information. TODO: 2022/2/9 implement query packet. */
-    public static final int TYPE_QUERY = 8;
+    public static final int $12 = 8;
 
     public long bossEid;
     public int type;
     public long playerEid;
     public float healthPercent;
-    public String title = "";
+    public String $13 = "";
     public short unknown;
     public int color;
     public int overlay;
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.bossEid = byteBuf.readEntityUniqueId();
         this.type = (int) byteBuf.readUnsignedVarInt();
@@ -80,6 +88,10 @@ public class BossEventPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeEntityUniqueId(this.bossEid);
@@ -107,6 +119,10 @@ public class BossEventPacket extends DataPacket {
                 break;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

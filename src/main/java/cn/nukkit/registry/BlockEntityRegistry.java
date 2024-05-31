@@ -8,8 +8,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Class<? extends BlockEntity>, Class<? extends BlockEntity>> {
     private static final BiMap<String, Class<? extends BlockEntity>> knownBlockEntities = HashBiMap.create(35);
-    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static final AtomicBoolean $1 = new AtomicBoolean(false);
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         if (isLoad.getAndSet(true)) return;
         register0(FURNACE, BlockEntityFurnace.class);
@@ -63,16 +67,28 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
     public Class<? extends BlockEntity> get(String key) {
         return knownBlockEntities.get(key);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getSaveId(Class<? extends BlockEntity> c) {
         return knownBlockEntities.inverse().get(c);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void trim() {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void reload() {
         isLoad.set(false);
         knownBlockEntities.clear();
@@ -87,6 +103,10 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void register0(String key, Class<? extends BlockEntity> value){
         try {
             register(key,value);

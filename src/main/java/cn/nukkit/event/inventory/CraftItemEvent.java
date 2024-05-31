@@ -9,7 +9,7 @@ import cn.nukkit.recipe.Recipe;
 
 public class CraftItemEvent extends Event implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -20,6 +20,10 @@ public class CraftItemEvent extends Event implements Cancellable {
     private final Recipe recipe;
 
     private final Player player;
+    /**
+     * @deprecated 
+     */
+    
 
     public CraftItemEvent(Player player, Item[] input, Recipe recipe) {
         this.player = player;

@@ -17,33 +17,53 @@ import cn.nukkit.utils.Rail;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemMinecart extends Item {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemMinecart() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemMinecart(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemMinecart(Integer meta, int count) {
         super(MINECART, meta, count, "Minecart");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (Rail.isRailBlock(target)) {
-            Rail.Orientation type = ((BlockRail) target).getOrientation();
-            double adjacent = 0.0D;
+            Rail.Orientation $1 = ((BlockRail) target).getOrientation();
+            double $2 = 0.0D;
             if (type.isAscending()) {
                 adjacent = 0.5D;
             }
-            EntityMinecart minecart = (EntityMinecart) Entity.createEntity(Entity.MINECART,
+            EntityMinecart $3 = (EntityMinecart) Entity.createEntity(Entity.MINECART,
                     level.getChunk(target.getFloorX() >> 4, target.getFloorZ() >> 4), new CompoundTag()
                             .putList("Pos", new ListTag<>()
                                     .add(new DoubleTag(target.getX() + 0.5))
@@ -63,7 +83,7 @@ public class ItemMinecart extends Item {
             }
 
             if (player.isAdventure() || player.isSurvival()) {
-                Item item = player.getInventory().getItemInHand();
+                Item $4 = player.getInventory().getItemInHand();
                 item.setCount(item.getCount() - 1);
                 player.getInventory().setItemInHand(item);
             }
@@ -75,6 +95,10 @@ public class ItemMinecart extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxStackSize() {
         return 1;
     }

@@ -11,9 +11,13 @@ import cn.nukkit.registry.Registries;
  */
 public class BlockNode extends ParamNode<Block> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         arg = arg.startsWith("minecraft:") ? arg : arg.contains(":") ? arg : "minecraft:" + arg;
-        Block block = Registries.BLOCK.get(arg);
+        Block $1 = Registries.BLOCK.get(arg);
         if (block == null) {
             arg = mappingLegacyBlock(arg);
         }
@@ -24,6 +28,10 @@ public class BlockNode extends ParamNode<Block> {
         }
         this.value = block;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String mappingLegacyBlock(String name) {
         return switch (name) {

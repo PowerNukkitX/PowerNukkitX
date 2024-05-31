@@ -9,19 +9,35 @@ import cn.nukkit.utils.BlockColor;
  */
 public class InstantSpellParticle extends SpellParticle {
     protected int data;
+    /**
+     * @deprecated 
+     */
+    
 
     public InstantSpellParticle(Vector3 pos) {
         this(pos, 0);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public InstantSpellParticle(Vector3 pos, int data) {
         super(pos, data);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public InstantSpellParticle(Vector3 pos, BlockColor blockColor) {
         //alpha is ignored
         this(pos, blockColor.getRed(), blockColor.getGreen(), blockColor.getBlue());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public InstantSpellParticle(Vector3 pos, int r, int g, int b) {
         //this 0x01 is the only difference between instant spell and non-instant one

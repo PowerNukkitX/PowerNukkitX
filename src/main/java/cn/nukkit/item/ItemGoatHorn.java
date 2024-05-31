@@ -5,15 +5,27 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 
 public class ItemGoatHorn extends Item {
-    protected int coolDownTick = 140;
+    protected int $1 = 140;
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemGoatHorn() {
         this(1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemGoatHorn(int count) {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemGoatHorn(Integer aux, int count) {
         super(GOAT_HORN);
@@ -22,11 +34,19 @@ public class ItemGoatHorn extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxStackSize() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onClickAir(Player player, Vector3 directionVector) {
         if (player.isItemCoolDownEnd(this.getIdentifier())) {
             playSound(player);
@@ -40,9 +60,17 @@ public class ItemGoatHorn extends Item {
      *
      * @param coolDownTick the cool down tick
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setCoolDown(int coolDownTick) {
         this.coolDownTick = coolDownTick;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void playSound(Player player) {
         switch (this.meta) {

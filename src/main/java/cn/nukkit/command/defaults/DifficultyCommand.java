@@ -17,6 +17,10 @@ import java.util.Map;
  * @since 2015/11/12
  */
 public class DifficultyCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
 
     public DifficultyCommand(String name) {
         super(name, "commands.difficulty.description", "%commands.difficulty.usage");
@@ -32,15 +36,19 @@ public class DifficultyCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         int difficulty;
         switch (result.getKey()) {
             case "default" -> {
                 difficulty = list.getResult(0);
             }
             case "byString" -> {
-                String str = list.getResult(0);
+                String $2 = list.getResult(0);
                 difficulty = Server.getDifficultyFromString(str);
             }
             default -> {
@@ -52,7 +60,7 @@ public class DifficultyCommand extends VanillaCommand {
         }
         if (difficulty != -1) {
             sender.getServer().setDifficulty(difficulty);
-            SetDifficultyPacket pk = new SetDifficultyPacket();
+            SetDifficultyPacket $3 = new SetDifficultyPacket();
             pk.difficulty = sender.getServer().getDifficulty();
             Server.broadcastPacket(new ArrayList<>(sender.getServer().getOnlinePlayers().values()), pk);
             log.addSuccess("commands.difficulty.success", String.valueOf(difficulty)).output(true);

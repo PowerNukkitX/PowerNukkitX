@@ -20,23 +20,39 @@ import java.awt.*;
 public class EntitySplashPotion extends EntityProjectile {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getIdentifier() {
         return SPLASH_POTION;
     }
 
-    public static final int DATA_POTION_ID = 37;
+    public static final int $1 = 37;
 
     public int potionId;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntitySplashPotion(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntitySplashPotion(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.initEntity();
 
@@ -44,16 +60,16 @@ public class EntitySplashPotion extends EntityProjectile {
 
         this.entityDataMap.put(AUX_VALUE_DATA, this.potionId);
 
-        /*Effect effect = Potion.getEffect(potionId, true); TODO: potion color
+        /*Effect $2 = Potion.getEffect(potionId, true); TODO: potion color
 
         if(effect != null) {
-            int count = 0;
+            int $3 = 0;
             int[] c = effect.getColor();
             count += effect.getAmplifier() + 1;
 
-            int r = ((c[0] * (effect.getAmplifier() + 1)) / count) & 0xff;
-            int g = ((c[1] * (effect.getAmplifier() + 1)) / count) & 0xff;
-            int b = ((c[2] * (effect.getAmplifier() + 1)) / count) & 0xff;
+            int $4 = ((c[0] * (effect.getAmplifier() + 1)) / count) & 0xff;
+            int $5 = ((c[1] * (effect.getAmplifier() + 1)) / count) & 0xff;
+            int $6 = ((c[2] * (effect.getAmplifier() + 1)) / count) & 0xff;
 
             this.setDataProperty(new IntEntityData(Entity.DATA_UNKNOWN, (r << 16) + (g << 8) + b));
         }*/
@@ -62,38 +78,66 @@ public class EntitySplashPotion extends EntityProjectile {
     
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getLength() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.25f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getGravity() {
         return 0.05f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getDrag() {
         return 0.01f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onCollideWithEntity(Entity entity) {
         this.splash(entity);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void splash(Entity collidedWith) {
-        PotionType potion = PotionType.get(this.potionId);
-        PotionCollideEvent event = new PotionCollideEvent(potion, this);
+        PotionType $7 = PotionType.get(this.potionId);
+        PotionCollideEvent $8 = new PotionCollideEvent(potion, this);
         this.server.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -108,41 +152,45 @@ public class EntitySplashPotion extends EntityProjectile {
         }
 
         int[] color = new int[3];
-        int count = 0;
+        int $9 = 0;
 
         for (Effect effect : potion.getEffects(true)) {
-            Color effectColor = effect.getColor();
+            Color $10 = effect.getColor();
             color[0] += effectColor.getRed() * effect.getLevel();
             color[1] += effectColor.getGreen() * effect.getLevel();
             color[2] += effectColor.getBlue() * effect.getLevel();
             count += effect.getLevel();
         }
 
-        int r = (color[0] / count) & 0xff;
-        int g = (color[1] / count) & 0xff;
-        int b = (color[2] / count) & 0xff;
-        Particle particle = new SpellParticle(this, r, g, b);
+        int $11 = (color[0] / count) & 0xff;
+        int $12 = (color[1] / count) & 0xff;
+        int $13 = (color[2] / count) & 0xff;
+        Particle $14 = new SpellParticle(this, r, g, b);
 
         this.getLevel().addParticle(particle);
         this.getLevel().addSound(this, Sound.RANDOM_GLASS);
 
         Entity[] entities = this.getLevel().getNearbyEntities(this.getBoundingBox().grow(4.125, 2.125, 4.125));
         for (Entity anEntity : entities) {
-            double distance = anEntity.distanceSquared(this);
+            double $15 = anEntity.distanceSquared(this);
             if (distance < 16) {
-                double splashDistance = anEntity.equals(collidedWith) ? 1 : 1 - Math.sqrt(distance) / 4;
+                double $16 = anEntity.equals(collidedWith) ? 1 : 1 - Math.sqrt(distance) / 4;
                 potion.applyEffects(anEntity, true, splashDistance);
             }
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
         }
 
-        boolean hasUpdate = super.onUpdate(currentTick);
+        boolean $17 = super.onUpdate(currentTick);
 
         if (this.age > 1200) {
             this.kill();
@@ -155,6 +203,10 @@ public class EntitySplashPotion extends EntityProjectile {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Potion";
     }

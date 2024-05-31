@@ -69,86 +69,90 @@ import static org.objectweb.asm.Opcodes.V17;
  */
 public abstract class Enchantment implements Cloneable {
     public static final Enchantment[] EMPTY_ARRAY = new Enchantment[0];
-    public static final int CUSTOM_ENCHANTMENT_ID = dynamic(256);
+    public static final int $1 = dynamic(256);
     protected static Enchantment[] enchantments;
     protected static Map<Identifier, Enchantment> namedEnchantments = new Object2ObjectLinkedOpenHashMap<>();
 
-    public static final int ID_PROTECTION_ALL = 0;
-    public static final String NAME_PROTECTION_ALL = "protection";
-    public static final int ID_PROTECTION_FIRE = 1;
-    public static final String NAME_PROTECTION_FIRE = "fire_protection";
-    public static final int ID_PROTECTION_FALL = 2;
-    public static final String NAME_PROTECTION_FALL = "feather_falling";
-    public static final int ID_PROTECTION_EXPLOSION = 3;
-    public static final String NAME_PROTECTION_EXPLOSION = "blast_protection";
-    public static final int ID_PROTECTION_PROJECTILE = 4;
-    public static final String NAME_PROTECTION_PROJECTILE = "projectile_protection";
-    public static final int ID_THORNS = 5;
-    public static final String NAME_THORNS = "thorns";
-    public static final int ID_WATER_BREATHING = 6;
-    public static final String NAME_WATER_BREATHING = "respiration";
-    public static final int ID_WATER_WALKER = 7;
-    public static final String NAME_WATER_WALKER = "depth_strider";
-    public static final int ID_WATER_WORKER = 8;
-    public static final String NAME_WATER_WORKER = "aqua_affinity";
-    public static final int ID_DAMAGE_ALL = 9;
-    public static final String NAME_DAMAGE_ALL = "sharpness";
-    public static final int ID_DAMAGE_SMITE = 10;
-    public static final String NAME_DAMAGE_SMITE = "smite";
-    public static final int ID_DAMAGE_ARTHROPODS = 11;
-    public static final String NAME_DAMAGE_ARTHROPODS = "bane_of_arthropods";
-    public static final int ID_KNOCKBACK = 12;
-    public static final String NAME_KNOCKBACK = "knockback";
-    public static final int ID_FIRE_ASPECT = 13;
-    public static final String NAME_FIRE_ASPECT = "fire_aspect";
-    public static final int ID_LOOTING = 14;
-    public static final String NAME_LOOTING = "looting";
-    public static final int ID_EFFICIENCY = 15;
-    public static final String NAME_EFFICIENCY = "efficiency";
-    public static final int ID_SILK_TOUCH = 16;
-    public static final String NAME_SILK_TOUCH = "silk_touch";
-    public static final int ID_DURABILITY = 17;
-    public static final String NAME_DURABILITY = "unbreaking";
-    public static final int ID_FORTUNE_DIGGING = 18;
-    public static final String NAME_FORTUNE_DIGGING = "fortune";
-    public static final int ID_BOW_POWER = 19;
-    public static final String NAME_BOW_POWER = "power";
-    public static final int ID_BOW_KNOCKBACK = 20;
-    public static final String NAME_BOW_KNOCKBACK = "punch";
-    public static final int ID_BOW_FLAME = 21;
-    public static final String NAME_BOW_FLAME = "flame";
-    public static final int ID_BOW_INFINITY = 22;
-    public static final String NAME_BOW_INFINITY = "infinity";
-    public static final int ID_FORTUNE_FISHING = 23;
-    public static final String NAME_FORTUNE_FISHING = "luck_of_the_sea";
-    public static final int ID_LURE = 24;
-    public static final String NAME_LURE = "lure";
-    public static final int ID_FROST_WALKER = 25;
-    public static final String NAME_FROST_WALKER = "frost_walker";
-    public static final int ID_MENDING = 26;
-    public static final String NAME_MENDING = "mending";
-    public static final int ID_BINDING_CURSE = 27;
-    public static final String NAME_BINDING_CURSE = "binding";
-    public static final int ID_VANISHING_CURSE = 28;
-    public static final String NAME_VANISHING_CURSE = "vanishing";
-    public static final int ID_TRIDENT_IMPALING = 29;
-    public static final String NAME_TRIDENT_IMPALING = "impaling";
-    public static final int ID_TRIDENT_RIPTIDE = 30;
-    public static final String NAME_TRIDENT_RIPTIDE = "riptide";
-    public static final int ID_TRIDENT_LOYALTY = 31;
-    public static final String NAME_TRIDENT_LOYALTY = "loyalty";
-    public static final int ID_TRIDENT_CHANNELING = 32;
-    public static final String NAME_TRIDENT_CHANNELING = "channeling";
-    public static final int ID_CROSSBOW_MULTISHOT = 33;
-    public static final String NAME_CROSSBOW_MULTISHOT = "multishot";
-    public static final int ID_CROSSBOW_PIERCING = 34;
-    public static final String NAME_CROSSBOW_PIERCING = "piercing";
-    public static final int ID_CROSSBOW_QUICK_CHARGE = 35;
-    public static final String NAME_CROSSBOW_QUICK_CHARGE = "quick_charge";
-    public static final int ID_SOUL_SPEED = 36;
-    public static final String NAME_SOUL_SPEED = "soul_speed";
-    public static final int ID_SWIFT_SNEAK = 37;
-    public static final String NAME_SWIFT_SNEAK = "swift_sneak";
+    public static final int $2 = 0;
+    public static final String $3 = "protection";
+    public static final int $4 = 1;
+    public static final String $5 = "fire_protection";
+    public static final int $6 = 2;
+    public static final String $7 = "feather_falling";
+    public static final int $8 = 3;
+    public static final String $9 = "blast_protection";
+    public static final int $10 = 4;
+    public static final String $11 = "projectile_protection";
+    public static final int $12 = 5;
+    public static final String $13 = "thorns";
+    public static final int $14 = 6;
+    public static final String $15 = "respiration";
+    public static final int $16 = 7;
+    public static final String $17 = "depth_strider";
+    public static final int $18 = 8;
+    public static final String $19 = "aqua_affinity";
+    public static final int $20 = 9;
+    public static final String $21 = "sharpness";
+    public static final int $22 = 10;
+    public static final String $23 = "smite";
+    public static final int $24 = 11;
+    public static final String $25 = "bane_of_arthropods";
+    public static final int $26 = 12;
+    public static final String $27 = "knockback";
+    public static final int $28 = 13;
+    public static final String $29 = "fire_aspect";
+    public static final int $30 = 14;
+    public static final String $31 = "looting";
+    public static final int $32 = 15;
+    public static final String $33 = "efficiency";
+    public static final int $34 = 16;
+    public static final String $35 = "silk_touch";
+    public static final int $36 = 17;
+    public static final String $37 = "unbreaking";
+    public static final int $38 = 18;
+    public static final String $39 = "fortune";
+    public static final int $40 = 19;
+    public static final String $41 = "power";
+    public static final int $42 = 20;
+    public static final String $43 = "punch";
+    public static final int $44 = 21;
+    public static final String $45 = "flame";
+    public static final int $46 = 22;
+    public static final String $47 = "infinity";
+    public static final int $48 = 23;
+    public static final String $49 = "luck_of_the_sea";
+    public static final int $50 = 24;
+    public static final String $51 = "lure";
+    public static final int $52 = 25;
+    public static final String $53 = "frost_walker";
+    public static final int $54 = 26;
+    public static final String $55 = "mending";
+    public static final int $56 = 27;
+    public static final String $57 = "binding";
+    public static final int $58 = 28;
+    public static final String $59 = "vanishing";
+    public static final int $60 = 29;
+    public static final String $61 = "impaling";
+    public static final int $62 = 30;
+    public static final String $63 = "riptide";
+    public static final int $64 = 31;
+    public static final String $65 = "loyalty";
+    public static final int $66 = 32;
+    public static final String $67 = "channeling";
+    public static final int $68 = 33;
+    public static final String $69 = "multishot";
+    public static final int $70 = 34;
+    public static final String $71 = "piercing";
+    public static final int $72 = 35;
+    public static final String $73 = "quick_charge";
+    public static final int $74 = 36;
+    public static final String $75 = "soul_speed";
+    public static final int $76 = 37;
+    public static final String $77 = "swift_sneak";
+    /**
+     * @deprecated 
+     */
+    
 
     public static void init() {
         enchantments = new Enchantment[256];
@@ -231,6 +235,10 @@ public abstract class Enchantment implements Cloneable {
         namedEnchantments.put(new Identifier("minecraft", NAME_SWIFT_SNEAK), enchantments[37]);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static String getLevelString(int level) {
         return switch (level) {
             case 1 -> "I";
@@ -246,6 +254,10 @@ public abstract class Enchantment implements Cloneable {
             default -> "∞";
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static void reload() {
         enchantments = new Enchantment[256];
@@ -271,7 +283,7 @@ public abstract class Enchantment implements Cloneable {
 
     public static OK<?> register(Enchantment... enchantments) {
         for (var ench : enchantments) {
-            var msg = register(ench, true);
+            var $78 = register(ench, true);
             if (!msg.ok()) {
                 return msg;
             }
@@ -279,40 +291,40 @@ public abstract class Enchantment implements Cloneable {
         return OK.TRUE;
     }
 
-    private static int BOOK_NUMBER = 1;
+    private static int $79 = 1;
 
 
     @SuppressWarnings("unchecked")
     private static OK<?> registerCustomEnchantBook(Enchantment enchantment) {
-        var identifier = enchantment.getIdentifier();
+        var $80 = enchantment.getIdentifier();
         assert identifier != null;
-        for (int i = 1; i <= enchantment.getMaxLevel(); i++) {
-            var name = "§eEnchanted Book\n§7" + enchantment.getName() + " " + getLevelString(i);
-            ClassWriter classWriter = new ClassWriter(0);
+        for ($81nt $1 = 1; i <= enchantment.getMaxLevel(); i++) {
+            var $82 = "§eEnchanted Book\n§7" + enchantment.getName() + " " + getLevelString(i);
+            ClassWriter $83 = new ClassWriter(0);
             MethodVisitor methodVisitor;
-            String className = "CustomBookEnchanted" + BOOK_NUMBER;
+            String $84 = "CustomBookEnchanted" + BOOK_NUMBER;
             classWriter.visit(V17, ACC_PUBLIC | ACC_SUPER, "cn/nukkit/item/customitem/" + className, null, "cn/nukkit/item/customitem/ItemCustomBookEnchanted", null);
             classWriter.visitSource(className + ".java", null);
             {
                 methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
                 methodVisitor.visitCode();
-                Label label0 = new Label();
+                Label $85 = new Label();
                 methodVisitor.visitLabel(label0);
                 methodVisitor.visitLineNumber(5, label0);
                 methodVisitor.visitVarInsn(ALOAD, 0);
                 methodVisitor.visitLdcInsn(identifier.toString() + i);
                 methodVisitor.visitMethodInsn(INVOKESPECIAL, "cn/nukkit/item/customitem/ItemCustomBookEnchanted", "<init>", "(Ljava/lang/String;)V", false);
-                Label label1 = new Label();
+                Label $86 = new Label();
                 methodVisitor.visitLabel(label1);
                 methodVisitor.visitLineNumber(6, label1);
                 methodVisitor.visitVarInsn(ALOAD, 0);
                 methodVisitor.visitLdcInsn(name);
                 methodVisitor.visitFieldInsn(PUTFIELD, "cn/nukkit/item/customitem/" + className, "name", "Ljava/lang/String;");
-                Label label2 = new Label();
+                Label $87 = new Label();
                 methodVisitor.visitLabel(label2);
                 methodVisitor.visitLineNumber(7, label2);
                 methodVisitor.visitInsn(RETURN);
-                Label label3 = new Label();
+                Label $88 = new Label();
                 methodVisitor.visitLabel(label3);
                 methodVisitor.visitLocalVariable("this", "Lcn/nukkit/item/customitem/" + className + ";", null, label0, label3, 0);
                 methodVisitor.visitMaxs(2, 1);
@@ -339,14 +351,14 @@ public abstract class Enchantment implements Cloneable {
         Class<?> clazz;
         java.lang.reflect.Method method;
         if (defineClassMethodRef.get() == null) {
-            var cls = Class.forName("java.lang.ClassLoader");
+            var $89 = Class.forName("java.lang.ClassLoader");
             method = cls.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
             defineClassMethodRef = new WeakReference<>(method);
         } else {
             method = defineClassMethodRef.get();
         }
         Objects.requireNonNull(method).setAccessible(true);
-        var args = new Object[]{className, b, 0, b.length};
+        var $90 = new Object[]{className, b, 0, b.length};
         clazz = (Class<?>) method.invoke(loader, args);
         return clazz;
     }
@@ -360,7 +372,7 @@ public abstract class Enchantment implements Cloneable {
      * The UnknownEnchantment will be always a new instance and changes to it does not affects other calls.
      */
     public static Enchantment get(int id) {
-        Enchantment enchantment = null;
+        Enchantment $91 = null;
         if (id >= 0 && id < enchantments.length) {
             enchantment = enchantments[id];
         }
@@ -378,7 +390,7 @@ public abstract class Enchantment implements Cloneable {
      * The UnknownEnchantment will be always a new instance and changes to it does not affects other calls.
      */
     public static Enchantment getEnchantment(int id) {
-        Enchantment enchantment = null;
+        Enchantment $92 = null;
         if (id >= 0 && id < enchantments.length) {
             enchantment = enchantments[id];
         }
@@ -442,7 +454,7 @@ public abstract class Enchantment implements Cloneable {
     /**
      * The level of this enchantment. Starting from {@code 1}.
      */
-    protected int level = 1;
+    protected int $93 = 1;
     /**
      * The name visible by the player, this is used in conjunction with {@link #getName()},
      * unless modified with an override, the getter will automatically add
@@ -460,6 +472,10 @@ public abstract class Enchantment implements Cloneable {
      * @param rarity How rare this enchantment is
      * @param type   Where the enchantment can be applied
      */
+    
+    /**
+     * @deprecated 
+     */
     protected Enchantment(int id, String name, Rarity rarity, @NotNull EnchantmentType type) {
         this.identifier = null;
         this.id = id;
@@ -474,6 +490,10 @@ public abstract class Enchantment implements Cloneable {
      * @param name   The translation key without the "%enchantment." suffix
      * @param rarity How rare this enchantment is
      * @param type   Where the enchantment can be applied
+     */
+    
+    /**
+     * @deprecated 
      */
     protected Enchantment(@NotNull Identifier identifier, String name, Rarity rarity, @NotNull EnchantmentType type) {
         this.identifier = identifier;
@@ -499,6 +519,10 @@ public abstract class Enchantment implements Cloneable {
      *
      * @return the lore
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getLore() {
         return TextFormat.GRAY + this.getName() + " " + Enchantment.getLevelString(this.getLevel());
     }
@@ -508,6 +532,10 @@ public abstract class Enchantment implements Cloneable {
      *
      * @return The level starting from {@code 1}.
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getLevel() {
         return level;
     }
@@ -549,6 +577,10 @@ public abstract class Enchantment implements Cloneable {
     /**
      * The ID of this enchantment.
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getId() {
         return id;
     }
@@ -565,6 +597,10 @@ public abstract class Enchantment implements Cloneable {
     /**
      * The minimum safe level which is possible with this enchantment. It is usually {@code 1}.
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getMinLevel() {
         return 1;
     }
@@ -572,6 +608,10 @@ public abstract class Enchantment implements Cloneable {
     /**
      * The maximum safe level which is possible with this enchantment.
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxLevel() {
         return 1;
     }
@@ -582,6 +622,10 @@ public abstract class Enchantment implements Cloneable {
      * @param level The level being checked
      * @return The minimum value
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getMinEnchantAbility(int level) {
         return 1 + level * 10;
     }
@@ -592,6 +636,10 @@ public abstract class Enchantment implements Cloneable {
      * @param level The level being checked
      * @return The maximum value
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxEnchantAbility(int level) {
         return this.getMinEnchantAbility(level) + 5;
     }
@@ -606,6 +654,10 @@ public abstract class Enchantment implements Cloneable {
      * @param event 该实体被攻击的事件
      * @return the protection factor
      */
+    /**
+     * @deprecated 
+     */
+    
     public float getProtectionFactor(EntityDamageEvent event) {
         return 0;
     }
@@ -620,6 +672,10 @@ public abstract class Enchantment implements Cloneable {
      * @param entity 攻击的目标实体
      * @return the damage value
      */
+    /**
+     * @deprecated 
+     */
+    
     public double getDamageBonus(Entity entity) {
         return 0;
     }
@@ -632,6 +688,10 @@ public abstract class Enchantment implements Cloneable {
      * @param attacker the attacker
      * @param entity   the entity
      */
+    /**
+     * @deprecated 
+     */
+    
     public void doPostAttack(Entity attacker, Entity entity) {
     }
 
@@ -643,6 +703,10 @@ public abstract class Enchantment implements Cloneable {
      * @param attacker the attacker
      * @param entity   the entity
      */
+    /**
+     * @deprecated 
+     */
+    
     public void doAttack(Entity attacker, Entity entity) {
     }
 
@@ -652,6 +716,10 @@ public abstract class Enchantment implements Cloneable {
      * @param attacker the attacker
      * @param entity   the entity
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public void doPostHurt(Entity attacker, Entity entity) {
     }
@@ -666,6 +734,10 @@ public abstract class Enchantment implements Cloneable {
      * The right way to implement compatibility now is to override {@link #checkCompatibility(Enchantment)}
      * and also make sure to keep it protected! Some overrides was incorrectly made public, let's avoid this mistake
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isCompatibleWith(@NotNull Enchantment enchantment) {
         return this.checkCompatibility(enchantment) && enchantment.checkCompatibility(this);
@@ -677,15 +749,27 @@ public abstract class Enchantment implements Cloneable {
      * @param enchantment The enchantment to be checked
      * @return If this enchantment is compatible with the other enchantment.
      */
+    
+    /**
+     * @deprecated 
+     */
     protected boolean checkCompatibility(Enchantment enchantment) {
         return this != enchantment;
     }
 
     //return the translation key for the enchantment
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         if (this.identifier == null) return "%enchantment." + this.name;
         else return this.name;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getOriginalName() {
         return this.name;
@@ -698,9 +782,17 @@ public abstract class Enchantment implements Cloneable {
      * @param item The item to be checked
      * @return If the type of the item is valid for this enchantment
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean canEnchant(@NotNull Item item) {
         return this.type.canEnchantItem(item);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isMajor() {
         return false;
@@ -716,9 +808,13 @@ public abstract class Enchantment implements Cloneable {
     }
 
     public static final String[] words = {"the", "elder", "scrolls", "klaatu", "berata", "niktu", "xyzzy", "bless", "curse", "light", "darkness", "fire", "air", "earth", "water", "hot", "dry", "cold", "wet", "ignite", "snuff", "embiggen", "twist", "shorten", "stretch", "fiddle", "destroy", "imbue", "galvanize", "enchant", "free", "limited", "range", "of", "towards", "inside", "sphere", "cube", "self", "other", "ball", "mental", "physical", "grow", "shrink", "demon", "elemental", "spirit", "animal", "creature", "beast", "humanoid", "undead", "fresh", "stale"};
+    /**
+     * @deprecated 
+     */
+    
 
     public static String getRandomName() {
-        int count = ThreadLocalRandom.current().nextInt(3, 6);
+        int $94 = ThreadLocalRandom.current().nextInt(3, 6);
         HashSet<String> set = new LinkedHashSet<>();
         while (set.size() < count) {
             set.add(Enchantment.words[ThreadLocalRandom.current().nextInt(0, Enchantment.words.length)]);
@@ -730,10 +826,18 @@ public abstract class Enchantment implements Cloneable {
 
     private static class UnknownEnchantment extends Enchantment {
 
-        protected UnknownEnchantment(int id) {
+        
+    /**
+     * @deprecated 
+     */
+    protected UnknownEnchantment(int id) {
             super(id, "unknown", Rarity.VERY_RARE, EnchantmentType.ALL);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean equal(Enchantment e1, Enchantment e2) {
         if (e1.identifier == null && e2.identifier == null) {
@@ -759,6 +863,10 @@ public abstract class Enchantment implements Cloneable {
         Rarity(int weight) {
             this.weight = weight;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public int getWeight() {
             return this.weight;

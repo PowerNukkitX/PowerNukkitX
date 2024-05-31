@@ -10,6 +10,10 @@ import cn.nukkit.network.protocol.LevelEventPacket;
  */
 
 public class WaxOnParticle extends GenericParticle {
+    /**
+     * @deprecated 
+     */
+    
 
     public WaxOnParticle(Vector3 pos) {
         super(pos, Particle.TYPE_WAX);
@@ -17,7 +21,7 @@ public class WaxOnParticle extends GenericParticle {
 
     @Override
     public DataPacket[] encode() {
-        LevelEventPacket pk = new LevelEventPacket();
+        LevelEventPacket $1 = new LevelEventPacket();
         pk.evid = LevelEventPacket.EVENT_PARTICLE_WAX_ON;
         pk.x = (float) this.x;
         pk.y = (float) this.y;

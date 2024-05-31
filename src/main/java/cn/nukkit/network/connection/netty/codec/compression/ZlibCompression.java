@@ -15,7 +15,11 @@ public class ZlibCompression implements BatchCompression {
     private final CompressionProvider zlib;
 
     @Getter @Setter
-    private int level = 7;
+    private int $1 = 7;
+    /**
+     * @deprecated 
+     */
+    
 
     public ZlibCompression(CompressionProvider zlib) {
         this.zlib = zlib;
@@ -23,7 +27,7 @@ public class ZlibCompression implements BatchCompression {
 
     @Override
     public ByteBuf encode(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
-        ByteBuf outBuf = ctx.alloc().ioBuffer(msg.readableBytes());
+        ByteBuf $2 = ctx.alloc().ioBuffer(msg.readableBytes());
         try {
             byte[] bytes = Utils.convertByteBuf2Array(msg);
             byte[] compress = zlib.compress(bytes, level);
@@ -36,7 +40,7 @@ public class ZlibCompression implements BatchCompression {
 
     @Override
     public ByteBuf decode(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
-        ByteBuf outBuf = ctx.alloc().ioBuffer(msg.readableBytes() << 3);
+        ByteBuf $3 = ctx.alloc().ioBuffer(msg.readableBytes() << 3);
         try {
             byte[] bytes = Utils.convertByteBuf2Array(msg);
             byte[] decompress = zlib.decompress(bytes);

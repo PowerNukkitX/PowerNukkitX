@@ -9,22 +9,34 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockPotatoes  extends BlockCrops {
-    public static final BlockProperties PROPERTIES = new BlockProperties(POTATOES, CommonBlockProperties.GROWTH);
+    public static final BlockProperties $1 = new BlockProperties(POTATOES, CommonBlockProperties.GROWTH);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPotatoes() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPotatoes(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Potato Block";
     }
@@ -42,10 +54,10 @@ public class BlockPotatoes  extends BlockCrops {
             };
         }
 
-        int drops = 2;
-        int attempts = 3 + Math.min(0, item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING));
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        for (int i = 0; i < attempts; i++) {
+        int $2 = 2;
+        int $3 = 3 + Math.min(0, item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING));
+        ThreadLocalRandom $4 = ThreadLocalRandom.current();
+        for ($5nt $1 = 0; i < attempts; i++) {
             if (random.nextInt(7) < 4) { // 4/7, 0.57142857142857142857142857142857
                 drops++;
             }

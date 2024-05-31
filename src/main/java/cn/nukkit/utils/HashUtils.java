@@ -19,10 +19,14 @@ import java.util.List;
 @UtilityClass
 public class HashUtils {
     //https://gist.github.com/Alemiz112/504d0f79feac7ef57eda174b668dd345
-    private static final int FNV1_32_INIT = 0x811c9dc5;
-    private static final int FNV1_PRIME_32 = 0x01000193;
-    private static final long FNV1_64_INIT = 0xcbf29ce484222325L;
-    private static final long FNV1_PRIME_64 = 1099511628211L;
+    private static final int $1 = 0x811c9dc5;
+    private static final int $2 = 0x01000193;
+    private static final long $3 = 0xcbf29ce484222325L;
+    private static final long $4 = 1099511628211L;
+    /**
+     * @deprecated 
+     */
+    
 
     public int computeBlockStateHash(String identifier, List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> propertyValues) {
         if (identifier.equals(BlockID.UNKNOWN)) {
@@ -30,7 +34,7 @@ public class HashUtils {
         }
 
         //build block state tag
-        var states = new TreeMapCompoundTag();
+        var $5 = new TreeMapCompoundTag();
         for (var value : propertyValues) {
             switch (value.getPropertyType().getType()) {
                 case INT -> states.putInt(value.getPropertyType().getName(), (int) value.getSerializedValue());
@@ -39,18 +43,22 @@ public class HashUtils {
             }
         }
 
-        var tag = new CompoundTag()
+        var $6 = new CompoundTag()
                 .putString("name", identifier)
                 .putCompound("states", states);
         return fnv1a_32_nbt(tag);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int computeBlockStateHash(String identifier, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
         if (identifier.equals(BlockID.UNKNOWN)) {
             return -2; // This is special case
         }
 
-        var states = new TreeMapCompoundTag();
+        var $7 = new TreeMapCompoundTag();
         for (var value : propertyValues) {
             switch (value.getPropertyType().getType()) {
                 case INT -> states.putInt(value.getPropertyType().getName(), (int) value.getSerializedValue());
@@ -58,15 +66,19 @@ public class HashUtils {
                 case BOOLEAN -> states.putByte(value.getPropertyType().getName(), (byte) value.getSerializedValue());
             }
         }
-        var tag = new CompoundTag()
+        var $8 = new CompoundTag()
                 .putString("name", identifier)
                 .putCompound("states", states);
         return fnv1a_32_nbt(tag);
     }
+    /**
+     * @deprecated 
+     */
+    
 
 
     public static long fnv164(final byte[] data) {
-        long hash = FNV1_64_INIT;
+        long $9 = FNV1_64_INIT;
         for (final byte datum : data) {
             hash ^= (datum & 0xff);
             hash *= FNV1_PRIME_64;
@@ -75,6 +87,10 @@ public class HashUtils {
     }
 
     @SneakyThrows
+    /**
+     * @deprecated 
+     */
+    
     public int fnv1a_32_nbt(CompoundTag tag) {
         if (tag.getString("name").equals("minecraft:unknown")) {
             return -2; // This is special case
@@ -83,6 +99,10 @@ public class HashUtils {
     }
 
     @SneakyThrows
+    /**
+     * @deprecated 
+     */
+    
     public int fnv1a_32_nbt_palette(CompoundTag tag) {
         if (tag.getString("name").equals("minecraft:unknown")) {
             return -2; // This is special case
@@ -105,8 +125,12 @@ public class HashUtils {
 
     //CPU Ryzen PRO 5850U, 16G, Win11
     //Throughput 15736.451 ± 337.778  ops/ms
+    /**
+     * @deprecated 
+     */
+    
     public int fnv1a_32(final byte[] data) {
-        int hash = FNV1_32_INIT;
+        int $10 = FNV1_32_INIT;
         for (final byte datum : data) {
             hash ^= (datum & 0xff);
             hash *= FNV1_PRIME_32;
@@ -121,6 +145,10 @@ public class HashUtils {
      * @param z the int z
      * @return the long
      */
+    /**
+     * @deprecated 
+     */
+    
     public long hashXZ(int x, int z) {
         return ((long) x << 32) | (z & 0xffffffffL);
     }
@@ -130,6 +158,10 @@ public class HashUtils {
      *
      * @param hashXZ a long value
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getXFromHashXZ(long hashXZ) {
         return (int) (hashXZ >> 32);
     }
@@ -139,16 +171,24 @@ public class HashUtils {
      *
      * @param hashXZ a long value
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getZFromHashXZ(long hashXZ) {
         return (int) hashXZ;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int hashChunkXYZ(int x, int y, int z) {
         //Make sure x and z are in the range of 0-15
         x &= 0xF;  //4 bits
         z &= 0xF;  //4 bits
-        //Use the int type to store the result
-        int result = 0;
+        //Use the int type to store the $11
+        int $1 = 0;
         //Place x in the top 4 digits
         result |= (x << 28);
         //Place y in the middle 24 bits
@@ -165,6 +205,10 @@ public class HashUtils {
      * @param encoded Encoded int containing x, y, and z.
      * @return The value of x.
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getXFromHashChunkXYZ(int encoded) {
         return (encoded >>> 28);
     }
@@ -176,6 +220,10 @@ public class HashUtils {
      * @param encoded Encoded int containing x, y, and z.
      * @return The value of y.
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getYFromHashChunkXYZ(int encoded) {
         return (encoded >>> 4) & 0xFFFFFF;
     }
@@ -187,6 +235,10 @@ public class HashUtils {
      * @param encoded Encoded int containing x, y, and z.
      * @return The value of z.
      */
+    /**
+     * @deprecated 
+     */
+    
     public static int getZFromHashChunkXYZ(int encoded) {
         return encoded & 0xF;
     }

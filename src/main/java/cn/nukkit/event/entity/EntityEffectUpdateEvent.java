@@ -7,7 +7,7 @@ import cn.nukkit.entity.effect.Effect;
 
 
 public class EntityEffectUpdateEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -15,6 +15,10 @@ public class EntityEffectUpdateEvent extends EntityEvent implements Cancellable 
 
     private Effect oldEffect;
     private Effect newEffect;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityEffectUpdateEvent(Entity entity, Effect oldEffect, Effect newEffect) {
         this.entity = entity;

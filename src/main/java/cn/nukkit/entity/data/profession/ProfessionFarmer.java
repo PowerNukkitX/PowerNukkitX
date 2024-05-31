@@ -7,6 +7,10 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 
 public class ProfessionFarmer extends Profession {
+    /**
+     * @deprecated 
+     */
+    
 
     public ProfessionFarmer() {
         super(1, BlockID.COMPOSTER, "entity.villager.farmer");

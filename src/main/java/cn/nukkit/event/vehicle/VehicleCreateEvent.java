@@ -8,11 +8,15 @@ import cn.nukkit.event.HandlerList;
 
 public class VehicleCreateEvent extends VehicleEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public VehicleCreateEvent(Entity vehicle) {
         super(vehicle);

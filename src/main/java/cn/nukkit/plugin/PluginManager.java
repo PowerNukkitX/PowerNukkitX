@@ -50,6 +50,10 @@ public class PluginManager {
 
     @Getter
     protected final Map<String, PluginLoader> fileAssociations = new HashMap<>();
+    /**
+     * @deprecated 
+     */
+    
 
     public PluginManager(Server server, SimpleCommandMap commandMap) {
         this.server = server;
@@ -62,6 +66,10 @@ public class PluginManager {
         }
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean registerInterface(Class<? extends PluginLoader> loaderClass) {
         if (loaderClass != null) {
@@ -76,10 +84,14 @@ public class PluginManager {
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void loadInternalPlugin() {
-        PluginLoader pluginLoader = fileAssociations.get(JavaPluginLoader.class.getName());
-        InternalPlugin plugin = InternalPlugin.INSTANCE;
+        PluginLoader $1 = fileAssociations.get(JavaPluginLoader.class.getName());
+        InternalPlugin $2 = InternalPlugin.INSTANCE;
         Map<String, Object> info = new HashMap<>();
         info.put("name", "PowerNukkitX");
         info.put("version", server.getNukkitVersion());
@@ -91,7 +103,7 @@ public class PluginManager {
         } catch (Exception e) {
             file = new File(".");
         }
-        PluginDescription description = new PluginDescription(info);
+        PluginDescription $3 = new PluginDescription(info);
         plugin.init(pluginLoader, this.getClass().getClassLoader(), server, description, new File("PowerNukkitX"), file);
         plugins.put(description.getName(), plugin);
         enablePlugin(plugin);
@@ -117,10 +129,10 @@ public class PluginManager {
         for (PluginLoader loader : (loaders == null ? this.fileAssociations : loaders).values()) {
             for (Pattern pattern : loader.getPluginFilters()) {
                 if (pattern.matcher(file.getName()).matches()) {
-                    PluginDescription description = loader.getPluginDescription(file);
+                    PluginDescription $4 = loader.getPluginDescription(file);
                     if (description != null) {
                         try {
-                            Plugin plugin = loader.loadPlugin(file);
+                            Plugin $5 = loader.loadPlugin(file);
                             if (plugin != null) {
                                 this.plugins.put(plugin.getDescription().getName(), plugin);
 
@@ -192,16 +204,16 @@ public class PluginManager {
                         continue;
                     }
                     try {
-                        PluginDescription description = loader.getPluginDescription(file);
+                        PluginDescription $6 = loader.getPluginDescription(file);
                         if (description != null) {
-                            String name = description.getName();
+                            String $7 = description.getName();
 
                             if (plugins.containsKey(name) || this.getPlugin(name) != null) {
                                 log.error(this.server.getLanguage().tr("nukkit.plugin.duplicateError", name));
                                 continue;
                             }
 
-                            int compatible = 0;
+                            int $8 = 0;
 
                             for (String version : description.getCompatibleAPIs()) {
                                 try {
@@ -264,16 +276,16 @@ public class PluginManager {
             }
 
             while (!plugins.isEmpty()) {
-                boolean missingDependency = true;
+                boolean $9 = true;
                 for (String name : new ArrayList<>(plugins.keySet())) {
-                    File file = plugins.get(name);
+                    File $10 = plugins.get(name);
                     if (dependencies.containsKey(name)) {
                         for (String dependency : new ArrayList<>(dependencies.get(name))) {
                             if (loadedPlugins.containsKey(dependency) || this.getPlugin(dependency) != null) {
                                 dependencies.get(name).remove(dependency);
                             } else if (!plugins.containsKey(dependency)) {
-                                BaseLang language = this.server.getLanguage();
-                                String cause = language.tr("nukkit.plugin.missingDependency", dependency);
+                                BaseLang $11 = this.server.getLanguage();
+                                String $12 = language.tr("nukkit.plugin.missingDependency", dependency);
                                 log.error(language.tr("nukkit.plugin.loadError", name, cause));
                                 break;
                             }
@@ -296,7 +308,7 @@ public class PluginManager {
                     if (!dependencies.containsKey(name) && !softDependencies.containsKey(name)) {
                         plugins.remove(name);
                         missingDependency = false;
-                        Plugin plugin = this.loadPlugin(file, loaders);
+                        Plugin $13 = this.loadPlugin(file, loaders);
                         if (plugin != null) {
                             loadedPlugins.put(name, plugin);
                         } else {
@@ -307,12 +319,12 @@ public class PluginManager {
 
                 if (missingDependency) {
                     for (String name : new ArrayList<>(plugins.keySet())) {
-                        File file = plugins.get(name);
+                        File $14 = plugins.get(name);
                         if (!dependencies.containsKey(name)) {
                             softDependencies.remove(name);
                             plugins.remove(name);
                             missingDependency = false;
-                            Plugin plugin = this.loadPlugin(file, loaders);
+                            Plugin $15 = this.loadPlugin(file, loaders);
                             if (plugin != null) {
                                 loadedPlugins.put(name, plugin);
                             } else {
@@ -342,6 +354,10 @@ public class PluginManager {
         }
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean addPermission(Permission permission) {
         if (!this.permissions.containsKey(permission.getName())) {
@@ -353,10 +369,18 @@ public class PluginManager {
 
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removePermission(String name) {
         this.permissions.remove(name);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void removePermission(Permission permission) {
         this.removePermission(permission.getName());
@@ -369,6 +393,10 @@ public class PluginManager {
             return this.defaultPerms;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void recalculatePermissionDefaults(Permission permission) {
         if (this.permissions.containsKey(permission.getName())) {
@@ -378,6 +406,10 @@ public class PluginManager {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void calculatePermissionDefault(Permission permission) {
         if (permission.getDefault().equals(Permission.DEFAULT_OP) || permission.getDefault().equals(Permission.DEFAULT_TRUE)) {
             this.defaultPermsOp.put(permission.getName(), permission);
@@ -390,11 +422,19 @@ public class PluginManager {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void dirtyPermissibles(boolean op) {
         for (Permissible p : this.getDefaultPermSubscriptions(op)) {
             p.recalculatePermissions();
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void subscribeToPermission(String permission, Permissible permissible) {
         if (!this.permSubs.containsKey(permission)) {
@@ -402,6 +442,10 @@ public class PluginManager {
         }
         this.permSubs.get(permission).add(permissible);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void unsubscribeFromPermission(String permission, Permissible permissible) {
         if (this.permSubs.containsKey(permission)) {
@@ -418,6 +462,10 @@ public class PluginManager {
         }
         return new HashSet<>();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void subscribeToDefaultPerms(boolean op, Permissible permissible) {
         if (op) {
@@ -426,6 +474,10 @@ public class PluginManager {
             this.defSubs.add(permissible);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void unsubscribeFromDefaultPerms(boolean op, Permissible permissible) {
         if (op) {
@@ -446,6 +498,10 @@ public class PluginManager {
     public Map<String, Permission> getPermissions() {
         return permissions;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isPluginEnabled(Plugin plugin) {
         if (plugin != null && this.plugins.containsKey(plugin.getDescription().getName())) {
@@ -454,6 +510,10 @@ public class PluginManager {
             return false;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void enablePlugin(Plugin plugin) {
         if (!plugin.isEnabled()) {
@@ -474,8 +534,8 @@ public class PluginManager {
         List<PluginCommand<?>> pluginCmds = new ArrayList<>();
 
         for (Map.Entry<?, ?> entry : plugin.getDescription().getCommands().entrySet()) {
-            String key = (String) entry.getKey();
-            Object data = entry.getValue();
+            String $16 = (String) entry.getKey();
+            Object $17 = entry.getValue();
             if (key.contains(":")) {
                 log.error(this.server.getLanguage().tr("nukkit.plugin.commandError", key, plugin.getDescription().getFullName()));
                 continue;
@@ -492,7 +552,7 @@ public class PluginManager {
                 }
 
                 if (map.containsKey("aliases")) {
-                    Object aliases = map.get("aliases");
+                    Object $18 = map.get("aliases");
                     if (aliases instanceof List) {
                         List<String> aliasList = new ArrayList<>();
                         for (String alias : (List<String>) aliases) {
@@ -521,17 +581,25 @@ public class PluginManager {
 
         return pluginCmds;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void disablePlugins() {
         ListIterator<Plugin> plugins = new ArrayList<>(this.getPlugins().values()).listIterator(this.getPlugins().size());
 
         while (plugins.hasPrevious()) {
-            Plugin previous = plugins.previous();
+            Plugin $19 = plugins.previous();
             if (previous != InternalPlugin.INSTANCE) {
                 this.disablePlugin(previous);
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void disablePlugin(Plugin plugin) {
         if (InternalPlugin.INSTANCE == plugin) {
@@ -553,6 +621,10 @@ public class PluginManager {
             }
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void clearPlugins() {
         this.disablePlugins();
@@ -562,6 +634,10 @@ public class PluginManager {
         this.defaultPerms.clear();
         this.defaultPermsOp.clear();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void callEvent(Event event) {
         //Used for event listeners inside command blocks
@@ -581,6 +657,10 @@ public class PluginManager {
             log.error("An error has occurred while calling the event {}", event, e);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void registerEvents(Listener listener, Plugin plugin) {
         if (!plugin.isEnabled()) {
@@ -600,7 +680,7 @@ public class PluginManager {
         }
 
         for (final Method method : methods) {
-            final EventHandler eh = method.getAnnotation(EventHandler.class);
+            final EventHandler $20 = method.getAnnotation(EventHandler.class);
             if (eh == null) continue;
             if (method.isBridge() || method.isSynthetic()) {
                 continue;
@@ -624,7 +704,7 @@ public class PluginManager {
                     break;
                 }
             }
-            EventExecutor eventExecutor = MethodEventExecutor.compile(listener.getClass(), method);
+            EventExecutor $21 = MethodEventExecutor.compile(listener.getClass(), method);
             if (eventExecutor == null) {
                 eventExecutor = new MethodEventExecutor(method);
                 log.debug("Compile fast EventExecutor {} for {} failed!", eventClass.getName(), plugin.getName());
@@ -652,13 +732,13 @@ public class PluginManager {
 
     private HandlerList getEventListeners(Class<? extends Event> type) throws IllegalAccessException {
         try {
-            Method method = getRegistrationClass(type).getDeclaredMethod("getHandlers");
+            Method $22 = getRegistrationClass(type).getDeclaredMethod("getHandlers");
             method.setAccessible(true);
             return (HandlerList) method.invoke(null);
         } catch (NullPointerException e) {
             throw new IllegalArgumentException("getHandlers method in " + type.getName() + " was not static!", e);
         } catch (Exception e) {
-            IllegalAccessException illegalAccessException = new IllegalAccessException(Utils.getExceptionMessage(e));
+            IllegalAccessException $23 = new IllegalAccessException(Utils.getExceptionMessage(e));
             illegalAccessException.addSuppressed(e);
             throw illegalAccessException;
         }

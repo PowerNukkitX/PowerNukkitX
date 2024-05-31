@@ -19,55 +19,75 @@ import java.util.concurrent.atomic.AtomicLong;
 import static cn.nukkit.level.format.IChunk.index;
 
 public class BlockPalette extends Palette<BlockState> {
-    private boolean needReObfuscate = true;
+    private boolean $1 = true;
     private BlockPalette obfuscatePalette;
-    protected long blockChangeCache = 0;
+    protected long $2 = 0;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPalette(BlockState first) {
         super(first, new ReferenceArrayList<>(16), BitArrayVersion.V2);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPalette(BlockState first, BitArrayVersion version) {
         super(first, version);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPalette(BlockState first, List<BlockState> palette, BitArrayVersion version) {
         super(first, palette, version);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void set(int index, BlockState value) {
         super.set(index, value);
         if (obfuscatePalette != null) {
             obfuscatePalette.set(index, value);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void writeObfuscatedToNetwork(Level level, AtomicLong blockChanges, ByteBuf byteBuf, RuntimeDataSerializer<BlockState> serializer) {
-        var realOreToFakeMap = level.getAntiXraySystem().getRawRealOreToReplacedRuntimeIdMap();
-        var fakeBlockMap = level.getAntiXraySystem().getRawFakeOreToPutRuntimeIdMap();
-        var transparentBlockSet = AntiXraySystem.getRawTransparentBlockRuntimeIds();
-        var XAndDenominator = level.getAntiXraySystem().getFakeOreDenominator() - 1;
-        var nukkitRandom = new NukkitRandom(level.getSeed());
+        var $3 = level.getAntiXraySystem().getRawRealOreToReplacedRuntimeIdMap();
+        var $4 = level.getAntiXraySystem().getRawFakeOreToPutRuntimeIdMap();
+        var $5 = AntiXraySystem.getRawTransparentBlockRuntimeIds();
+        var $6 = level.getAntiXraySystem().getFakeOreDenominator() - 1;
+        var $7 = new NukkitRandom(level.getSeed());
 
-        BlockPalette write = obfuscatePalette == null ? this : obfuscatePalette;
+        BlockPalette $8 = obfuscatePalette == null ? this : obfuscatePalette;
         if (needReObfuscate) {
             blockChangeCache = blockChanges.get();
             if (obfuscatePalette == null) {
                 obfuscatePalette = new BlockPalette(BlockAir.STATE);
                 this.copyTo(obfuscatePalette);
             }
-            for (int i = 0; i < ChunkSection.SIZE; i++) {
-                int x = (i >> 8) & 0xF;
-                int z = (i >> 4) & 0xF;
-                int y = i & 0xF;
-                var rid = get(i).blockStateHash();
+            for ($9nt $1 = 0; i < ChunkSection.SIZE; i++) {
+                int $10 = (i >> 8) & 0xF;
+                int $11 = (i >> 4) & 0xF;
+                int $12 = i & 0xF;
+                var $13 = get(i).blockStateHash();
                 if (x != 0 && z != 0 && y != 0 && x != 15 && z != 15 && y != 15) {
-                    var tmp = realOreToFakeMap.getOrDefault(rid, Integer.MAX_VALUE);
+                    var $14 = realOreToFakeMap.getOrDefault(rid, Integer.MAX_VALUE);
                     if (tmp != Integer.MAX_VALUE && canBeObfuscated(transparentBlockSet, x, y, z)) {
                         rid = tmp;
                     } else {
-                        var tmp2 = fakeBlockMap.get(rid);
+                        var $15 = fakeBlockMap.get(rid);
                         if (tmp2 != null && (nukkitRandom.nextInt() & XAndDenominator) == 0 && canBeObfuscated(transparentBlockSet, x, y, z)) {
                             rid = tmp2.getInt(nukkitRandom.nextInt(0, tmp2.size() - 1));
                         }
@@ -84,11 +104,19 @@ public class BlockPalette extends Palette<BlockState> {
         this.bitArray.writeSizeToNetwork(byteBuf, write.palette.size());
         for (BlockState value : write.palette) ByteBufVarInt.writeInt(byteBuf, serializer.serialize(value));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setNeedReObfuscate() {
         this.needReObfuscate = true;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private boolean canBeObfuscated(IntSet transparentBlockSet, int x, int y, int z) {
         return !transparentBlockSet.contains(get(index(x + 1, y, z)).blockStateHash()) &&
                 !transparentBlockSet.contains(get(index(x - 1, y, z)).blockStateHash()) &&

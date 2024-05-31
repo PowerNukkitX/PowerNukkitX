@@ -17,23 +17,39 @@ import java.util.Objects;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EntityAnimal extends EntityIntelligent {
+    /**
+     * @deprecated 
+     */
+    
     public EntityAnimal(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initEntity() {
         super.initEntity();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        boolean superResult = super.onInteract(player, item, clickedPos);
+        boolean $1 = super.onInteract(player, item, clickedPos);
         if (isBreedingItem(item)) {
             getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
             getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FEED_TIME, Server.getInstance().getTick());
@@ -44,8 +60,12 @@ public abstract class EntityAnimal extends EntityIntelligent {
         return superResult;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void sendBreedingAnimation(Item item) {
-        EntityEventPacket pk = new EntityEventPacket();
+        EntityEventPacket $2 = new EntityEventPacket();
         pk.event = EntityEventPacket.EATING_ITEM;
         pk.eid = this.getId();
         pk.data =  item.getFullId();
@@ -60,11 +80,19 @@ public abstract class EntityAnimal extends EntityIntelligent {
      * @param item 物品
      * @return boolean 是否可以导致繁殖<br>Whether it can lead to reproduction
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBreedingItem(Item item) {
         return Objects.equals(item.getId(), BlockID.WHEAT); //default
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected double getStepHeight() {
         return 0.5;
     }

@@ -66,6 +66,10 @@ public enum MinecartType {
      *
      * @return Integer
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getId() {
         return type;
     }
@@ -75,6 +79,10 @@ public enum MinecartType {
      *
      * @return String
      */
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return realName;
     }
@@ -84,6 +92,10 @@ public enum MinecartType {
      *
      * @return Boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasBlockInside() {
         return hasBlockInside;
     }
@@ -95,7 +107,7 @@ public enum MinecartType {
      * @return Integer
      */
     public static MinecartType valueOf(int types) {
-        MinecartType what = TYPES.get(types);
-        return what == null ? MINECART_UNKNOWN : what;
+        MinecartType $1 = TYPES.get(types);
+        return $2 == null ? MINECART_UNKNOWN : what;
     }
 }

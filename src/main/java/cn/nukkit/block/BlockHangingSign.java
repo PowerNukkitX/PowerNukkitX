@@ -17,6 +17,10 @@ import javax.annotation.Nullable;
 
 @Slf4j
 public abstract class BlockHangingSign extends BlockSignBase implements BlockEntityHolder<BlockEntityHangingSign> {
+    /**
+     * @deprecated 
+     */
+    
     public BlockHangingSign(BlockState blockState) {
         super(blockState);
     }
@@ -29,6 +33,10 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.HANGING_SIGN;
     }
@@ -39,6 +47,10 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (isHanging()) {
@@ -55,10 +67,18 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
         }
         return 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isHanging() {
         return getPropertyValue(CommonBlockProperties.HANGING);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isAttached() {
         return getPropertyValue(CommonBlockProperties.ATTACHED_BIT);
@@ -74,12 +94,16 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player != null && !player.isSneaking() && target instanceof BlockSignBase) {
             return false;
         }
         if (face == BlockFace.UP) {
-            BlockFace blockFace = checkGroundBlock();
+            BlockFace $1 = checkGroundBlock();
             if (blockFace == null) {
                 return false;
             }
@@ -89,14 +113,14 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
             return false;
         }
 
-        Block layer0 = level.getBlock(this, 0);
-        Block layer1 = level.getBlock(this, 1);
+        Block $2 = level.getBlock(this, 0);
+        Block $3 = level.getBlock(this, 1);
 
-        CompoundTag nbt = new CompoundTag();
+        CompoundTag $4 = new CompoundTag();
 
         if (face == BlockFace.DOWN) {
             this.setPropertyValue(CommonBlockProperties.HANGING, true);
-            CompassRoseDirection direction = CompassRoseDirection.from(
+            CompassRoseDirection $5 = CompassRoseDirection.from(
                     (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
             );
             if ((player != null && player.isSneaking()) || target instanceof BlockThin || target instanceof BlockChain || target instanceof BlockHangingSign) {

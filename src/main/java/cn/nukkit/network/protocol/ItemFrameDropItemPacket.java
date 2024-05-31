@@ -15,29 +15,45 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ItemFrameDropItemPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.ITEM_FRAME_DROP_ITEM_PACKET;
+    public static final int $1 = ProtocolInfo.ITEM_FRAME_DROP_ITEM_PACKET;
 
     public int x;
     public int y;
     public int z;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
-        BlockVector3 v = byteBuf.readBlockVector3();
+        BlockVector3 $2 = byteBuf.readBlockVector3();
         this.z = v.z;
         this.y = v.y;
         this.x = v.x;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

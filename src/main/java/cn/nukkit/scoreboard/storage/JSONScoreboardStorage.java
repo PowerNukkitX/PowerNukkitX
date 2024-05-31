@@ -25,6 +25,10 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
 
     protected Path filePath;
     protected Config json;
+    /**
+     * @deprecated 
+     */
+    
 
     public JSONScoreboardStorage(String path) {
         this.filePath = Paths.get(path);
@@ -39,17 +43,29 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveScoreboard(IScoreboard scoreboard) {
         json.set("scoreboard." + scoreboard.getObjectiveName(), serializeToMap(scoreboard));
         json.save();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveScoreboard(Collection<IScoreboard> scoreboards) {
         for (var scoreboard : scoreboards) saveScoreboard(scoreboard);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveDisplay(Map<DisplaySlot, IScoreboard> display) {
         for (Map.Entry<DisplaySlot, IScoreboard> entry : display.entrySet()) {
             json.set("display." + entry.getKey().name(), entry.getValue() != null ? entry.getValue().getObjectiveName() : null);
@@ -77,25 +93,37 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
         Map<DisplaySlot, String> result = new HashMap<>();
         if (json.get("display") == null) return result;
         for (Map.Entry<String, String> e : ((Map<String, String>) json.get("display")).entrySet()) {
-            DisplaySlot slot = DisplaySlot.valueOf(e.getKey());
+            DisplaySlot $1 = DisplaySlot.valueOf(e.getKey());
             result.put(slot, e.getValue());
         }
         return result;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeScoreboard(String name) {
         json.remove("scoreboard." + name);
         json.save();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void removeAllScoreboard() {
         json.remove("scoreboard");
         json.save();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containScoreboard(String name) {
         return json.exists("scoreboard." + name);
     }
@@ -124,14 +152,14 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
     }
 
     private IScoreboard deserializeFromMap(Map<String, Object> map) {
-        String objectiveName = map.get("objectiveName").toString();
-        String displayName = map.get("displayName").toString();
-        String criteriaName = map.get("criteriaName").toString();
-        SortOrder sortOrder = SortOrder.valueOf(map.get("sortOrder").toString());
-        IScoreboard scoreboard = new Scoreboard(objectiveName, displayName, criteriaName, sortOrder);
+        String $2 = map.get("objectiveName").toString();
+        String $3 = map.get("displayName").toString();
+        String $4 = map.get("criteriaName").toString();
+        SortOrder $5 = SortOrder.valueOf(map.get("sortOrder").toString());
+        IScoreboard $6 = new Scoreboard(objectiveName, displayName, criteriaName, sortOrder);
         for (Map<String, Object> line : (List<Map<String, Object>>) map.get("lines")) {
-            int score = ((Double) line.get("score")).intValue();
-            IScorer scorer = null;
+            int $7 = ((Double) line.get("score")).intValue();
+            IScorer $8 = null;
             switch (line.get("scorerType").toString()) {
                 case "PLAYER":
                     scorer = new PlayerScorer(UUID.fromString((String) line.get("name")));

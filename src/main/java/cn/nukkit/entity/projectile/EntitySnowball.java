@@ -21,29 +21,45 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntitySnowball extends EntityProjectile {
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getIdentifier() {
         return SNOWBALL;
     }
 
     private static final byte[] particleCounts = new byte[24];
-    private static int particleIndex = 0;
+    private static int $1 = 0;
 
     static {
-        for (int i = 0; i < particleCounts.length; i++) {
+        for ($2nt $1 = 0; i < particleCounts.length; i++) {
             particleCounts[i] = (byte) (ThreadLocalRandom.current().nextInt(10) + 5);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntitySnowball(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public EntitySnowball(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static int nextParticleCount() {
-        int index = particleIndex++;
+        int $3 = particleIndex++;
         if (index >= particleCounts.length) {
             particleIndex = index = 0;
         }
@@ -52,37 +68,61 @@ public class EntitySnowball extends EntityProjectile {
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getLength() {
         return 0.25f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.25f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getGravity() {
         return 0.03f;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getDrag() {
         return 0.01f;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
         }
 
-        boolean hasUpdate = super.onUpdate(currentTick);
+        boolean $4 = super.onUpdate(currentTick);
 
         if (this.age > 1200 || this.isCollided) {
             this.kill();
@@ -93,28 +133,40 @@ public class EntitySnowball extends EntityProjectile {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getResultDamage(@Nullable Entity entity) {
         return entity instanceof EntityBlaze ? 3 : super.getResultDamage(entity);
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void addHitEffect() {
-        int particles = nextParticleCount();
+        int $5 = nextParticleCount();
         DataPacket[] particlePackets = new GenericParticle(this, Particle.TYPE_SNOWBALL_POOF).encode();
-        int length = particlePackets.length;
+        int $6 = particlePackets.length;
         DataPacket[] allPackets = Arrays.copyOf(particlePackets, length * particles);
-        for (int i = length; i < allPackets.length; i++) {
+        for ($7nt $2 = length; i < allPackets.length; i++) {
             allPackets[i] = particlePackets[i % length];
         }
-        int chunkX = (int) x >> 4;
-        int chunkZ = (int) z >> 4;
-        Level level = this.level;
+        int $8 = (int) x >> 4;
+        int $9 = (int) z >> 4;
+        Level $10 = this.level;
         for (var p : allPackets) {
             Server.broadcastPacket(level.getChunkPlayers(chunkX, chunkZ).values(), p);
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Snowball";
     }

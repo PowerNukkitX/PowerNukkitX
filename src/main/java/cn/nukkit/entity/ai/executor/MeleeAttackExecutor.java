@@ -58,6 +58,10 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
      */
 
     protected Effect[] effects;
+    /**
+     * @deprecated 
+     */
+    
 
     public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
         this(memory, speed, maxSenseRange, clearDataWhenLose, coolDown, new Effect[]{});
@@ -73,6 +77,10 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
      * @param coolDown          攻击冷却时间(单位tick)<br>Attack cooldown (in tick)
      * @param effects           给予目标药水效果<br>Give the target potion effect
      */
+    /**
+     * @deprecated 
+     */
+    
     public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown, Effect... effects) {
         this.memory = memory;
         this.speed = speed;
@@ -83,10 +91,14 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean execute(EntityIntelligent entity) {
         attackTick++;
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
-        Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
+        Entity $1 = entity.getBehaviorGroup().getMemoryStorage().get(memory);
 
         //first is null
         if (this.target == null) {
@@ -120,19 +132,19 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         setRouteTarget(entity, this.target.clone());
         setLookTarget(entity, this.lookTarget.clone());
 
-        var floor = target.floor();
+        var $2 = target.floor();
         if (oldTarget == null || !oldTarget.equals(floor)) entity.getBehaviorGroup().setForceUpdateRoute(true);
         oldTarget = floor;
 
         //attack logic
         if (entity.distanceSquared(target) <= 2.5 && attackTick > coolDown) {
-            Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.AIR;
+            Item $3 = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.AIR;
 
-            float defaultDamage = 0;
+            float $4 = 0;
             if (entity instanceof EntityCanAttack entityCanAttack) {
                 defaultDamage = entityCanAttack.getDiffHandDamage(entity.getServer().getDifficulty());
             }
-            float itemDamage = item.getAttackDamage() + defaultDamage;
+            float $5 = item.getAttackDamage() + defaultDamage;
 
             Enchantment[] enchantments = item.getEnchantments();
             if (item.applyEnchantments()) {
@@ -144,15 +156,15 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             Map<EntityDamageEvent.DamageModifier, Float> damage = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
             damage.put(EntityDamageEvent.DamageModifier.BASE, itemDamage);
 
-            float knockBack = 0.3f;
+            float $6 = 0.3f;
             if (item.applyEnchantments()) {
-                Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
+                Enchantment $7 = item.getEnchantment(Enchantment.ID_KNOCKBACK);
                 if (knockBackEnchantment != null) {
                     knockBack += knockBackEnchantment.getLevel() * 0.1f;
                 }
             }
 
-            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
+            EntityDamageByEntityEvent $8 = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
 
             ev.setBreakShield(item.canBreakShield());
 
@@ -173,6 +185,10 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
@@ -187,6 +203,10 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
@@ -200,8 +220,12 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         this.lookTarget = null;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void playAttackAnimation(EntityIntelligent entity) {
-        EntityEventPacket pk = new EntityEventPacket();
+        EntityEventPacket $9 = new EntityEventPacket();
         pk.eid = entity.getId();
         pk.event = EntityEventPacket.ARM_SWING;
         Server.broadcastPacket(entity.getViewers().values(), pk);

@@ -9,30 +9,50 @@ import org.jetbrains.annotations.NotNull;
 //todo complete
 public class BlockSuspiciousGravel extends BlockFallable {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(SUSPICIOUS_GRAVEL, CommonBlockProperties.HANGING, CommonBlockProperties.BRUSHED_PROGRESS);
+    public static final BlockProperties $1 = new BlockProperties(SUSPICIOUS_GRAVEL, CommonBlockProperties.HANGING, CommonBlockProperties.BRUSHED_PROGRESS);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSuspiciousGravel() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
     public BlockSuspiciousGravel(BlockState blockstate) {
         super(blockstate);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getName() {
         return "Suspicious Gravel";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.25;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 1.25;
     }

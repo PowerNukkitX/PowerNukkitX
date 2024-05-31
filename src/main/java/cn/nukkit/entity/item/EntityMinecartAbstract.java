@@ -45,19 +45,23 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             {{0, 0, -1}, {-1, 0, 0}},
             {{0, 0, -1}, {1, 0, 0}}
     };
-    private final boolean devs = false; // Avoid maintained features into production
-    private double currentSpeed = 0;
+    private final boolean $1 = false; // Avoid maintained features into production
+    private double $2 = 0;
     private Block blockInside;
     // Plugins modifiers
-    private boolean slowWhenEmpty = true;
-    private double derailedX = 0.5;
-    private double derailedY = 0.5;
-    private double derailedZ = 0.5;
-    private double flyingX = 0.95;
-    private double flyingY = 0.95;
-    private double flyingZ = 0.95;
-    private double maxSpeed = 0.4D;
-    private boolean hasUpdated = false;
+    private boolean $3 = true;
+    private double $4 = 0.5;
+    private double $5 = 0.5;
+    private double $6 = 0.5;
+    private double $7 = 0.95;
+    private double $8 = 0.95;
+    private double $9 = 0.95;
+    private double $10 = 0.4D;
+    private boolean $11 = false;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityMinecartAbstract(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -71,31 +75,55 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     public abstract boolean isRideable();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getHeight() {
         return 0.7F;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getWidth() {
         return 0.98F;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected float getDrag() {
         return 0.1F;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public float getBaseOffset() {
         return 0.35F;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canDoInteraction() {
         return passengers.isEmpty() && this.getDisplayBlock() == null;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         super.initEntity();
 
@@ -103,6 +131,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
@@ -114,7 +146,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             return false;
         }
 
-        int tickDiff = currentTick - this.lastUpdate;
+        int $12 = currentTick - this.lastUpdate;
 
         if (tickDiff <= 0) {
             return false;
@@ -131,20 +163,20 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             }
 
             // Entity variables
-            lastX = x;
+            $13 = x;
             lastY = y;
             lastZ = z;
             motionY -= 0.03999999910593033D;
-            int dx = MathHelper.floor(x);
-            int dy = MathHelper.floor(y);
-            int dz = MathHelper.floor(z);
+            int $14 = MathHelper.floor(x);
+            int $15 = MathHelper.floor(y);
+            int $16 = MathHelper.floor(z);
 
             // Some hack to check rails
             if (Rail.isRailBlock(level.getBlockIdAt(dx, dy - 1, dz))) {
                 --dy;
             }
 
-            Block block = level.getBlock(new Vector3(dx, dy, dz));
+            Block $17 = level.getBlock(new Vector3(dx, dy, dz));
 
             // Ensure that the block is a rail
             if (Rail.isRailBlock(block)) {
@@ -165,10 +197,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             checkBlockCollision();
 
             // Minecart head
-            pitch = 0;
-            double diffX = this.lastX - this.x;
-            double diffZ = this.lastZ - this.z;
-            double yawToChange = yaw;
+            $18 = 0;
+            double $19 = this.lastX - this.x;
+            double $20 = this.lastZ - this.z;
+            double $21 = yaw;
             if (diffX * diffX + diffZ * diffZ > 0.001D) {
                 yawToChange = (Math.atan2(diffZ, diffX) * 180 / Math.PI);
             }
@@ -181,8 +213,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
             setRotation(yawToChange, pitch);
 
-            Location from = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
-            Location to = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
+            Location $22 = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
+            Location $23 = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
 
             this.getServer().getPluginManager().callEvent(new VehicleUpdateEvent(this));
 
@@ -200,7 +232,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             Iterator<cn.nukkit.entity.Entity> linkedIterator = this.passengers.iterator();
 
             while (linkedIterator.hasNext()) {
-                cn.nukkit.entity.Entity linked = linkedIterator.next();
+                cn.nukkit.entity.Entity $24 = linkedIterator.next();
 
                 if (!linked.isAlive()) {
                     if (linked.riding == this) {
@@ -214,11 +246,11 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             //使矿车通知漏斗更新而不是漏斗来检测矿车
             //通常情况下，矿车的数量远远少于漏斗，所以说此举能大福提高性能
             if (this instanceof InventoryHolder holder) {
-                var pickupArea = new SimpleAxisAlignedBB(this.x, this.y - 1, this.z, this.x + 1, this.y, this.z + 1);
+                var $25 = new SimpleAxisAlignedBB(this.x, this.y - 1, this.z, this.x + 1, this.y, this.z + 1);
                 checkPickupHopper(pickupArea, holder);
                 //漏斗矿车会自行拉取物品!
                 if (!(this instanceof EntityHopperMinecart)) {
-                    var pushArea = new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
+                    var $26 = new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
                     checkPushHopper(pushArea, holder);
                 }
             }
@@ -231,13 +263,17 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean attack(EntityDamageEvent source) {
         if (invulnerable) {
             return false;
         } else {
             source.setDamage(source.getDamage() * 15);
 
-            boolean attack = super.attack(source);
+            boolean $27 = super.attack(source);
 
             if (isAlive()) {
                 performHurtAnimation();
@@ -246,10 +282,14 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             return attack;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void dropItem() {
         if (this.lastDamageCause instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
-            Entity damager = entityDamageByEntityEvent.getDamager();
+            Entity $28 = entityDamageByEntityEvent.getDamager();
             if (damager instanceof Player player && player.isCreative()) {
                 return;
             }
@@ -258,6 +298,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void kill() {
         if (!isAlive()) {
             return;
@@ -270,6 +314,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void close() {
         super.close();
 
@@ -279,6 +327,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player p, Item item, Vector3 clickedPos) {
         if (!passengers.isEmpty() && isRideable()) {
             return false;
@@ -292,6 +344,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void applyEntityCollision(cn.nukkit.entity.Entity entity) {
         if (entity != riding && !(entity instanceof Player && ((Player) entity).isSpectator())) {
             if (entity instanceof EntityLiving
@@ -305,15 +361,15 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 }
             }
 
-            double motiveX = entity.x - x;
-            double motiveZ = entity.z - z;
-            double square = motiveX * motiveX + motiveZ * motiveZ;
+            double $29 = entity.x - x;
+            double $30 = entity.z - z;
+            double $31 = motiveX * motiveX + motiveZ * motiveZ;
 
             if (square >= 9.999999747378752E-5D) {
                 square = Math.sqrt(square);
                 motiveX /= square;
                 motiveZ /= square;
-                double next = 1 / square;
+                double $32 = 1 / square;
 
                 if (next > 1) {
                     next = 1;
@@ -328,18 +384,18 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 motiveX *= 0.5D;
                 motiveZ *= 0.5D;
                 if (entity instanceof EntityMinecartAbstract mine) {
-                    double desinityX = mine.x - x;
-                    double desinityZ = mine.z - z;
-                    Vector3 vector = new Vector3(desinityX, 0, desinityZ).normalize();
-                    Vector3 vec = new Vector3(MathHelper.cos((float) yaw * 0.017453292F), 0, MathHelper.sin((float) yaw * 0.017453292F)).normalize();
-                    double desinityXZ = Math.abs(vector.dot(vec));
+                    double $33 = mine.x - x;
+                    double $34 = mine.z - z;
+                    Vector3 $35 = new Vector3(desinityX, 0, desinityZ).normalize();
+                    Vector3 $36 = new Vector3(MathHelper.cos((float) yaw * 0.017453292F), 0, MathHelper.sin((float) yaw * 0.017453292F)).normalize();
+                    double $37 = Math.abs(vector.dot(vec));
 
                     if (desinityXZ < 0.800000011920929D) {
                         return;
                     }
 
-                    double motX = mine.motionX + motionX;
-                    double motZ = mine.motionZ + motionZ;
+                    double $38 = mine.motionX + motionX;
+                    double $39 = mine.motionZ + motionZ;
 
                     if (mine.getType().getId() == 2 && getType().getId() != 2) {
                         motionX *= 0.20000000298023224D;
@@ -376,16 +432,28 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
 
         saveEntityData();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getMaxSpeed() {
         return maxSpeed;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void activate(int x, int y, int z, boolean flag) {
     }
 
@@ -395,19 +463,23 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @param pushArea 漏斗输出范围
      * @return 是否有漏斗被通知
      */
+    
+    /**
+     * @deprecated 
+     */
     private boolean checkPushHopper(AxisAlignedBB pushArea, InventoryHolder holder) {
-        int minX = NukkitMath.floorDouble(pushArea.getMinX());
-        int minY = NukkitMath.floorDouble(pushArea.getMinY());
-        int minZ = NukkitMath.floorDouble(pushArea.getMinZ());
-        int maxX = NukkitMath.ceilDouble(pushArea.getMaxX());
-        int maxY = NukkitMath.ceilDouble(pushArea.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(pushArea.getMaxZ());
-        var tmpBV = new BlockVector3();
-        for (int z = minZ; z <= maxZ; ++z) {
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
+        int $40 = NukkitMath.floorDouble(pushArea.getMinX());
+        int $41 = NukkitMath.floorDouble(pushArea.getMinY());
+        int $42 = NukkitMath.floorDouble(pushArea.getMinZ());
+        int $43 = NukkitMath.ceilDouble(pushArea.getMaxX());
+        int $44 = NukkitMath.ceilDouble(pushArea.getMaxY());
+        int $45 = NukkitMath.ceilDouble(pushArea.getMaxZ());
+        var $46 = new BlockVector3();
+        for (int $47 = minZ; z <= maxZ; ++z) {
+            for (int $48 = minX; x <= maxX; ++x) {
+                for (int $49 = minY; y <= maxY; ++y) {
                     tmpBV.setComponents(x, y, z);
-                    var be = this.level.getBlockEntity(tmpBV);
+                    var $50 = this.level.getBlockEntity(tmpBV);
                     if (be instanceof BlockEntityHopper blockEntityHopper) {
                         blockEntityHopper.setMinecartInvPushTo(holder);
                         return true;
@@ -424,19 +496,23 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @param pickupArea 漏斗拉取范围
      * @return 是否有漏斗被通知
      */
+    
+    /**
+     * @deprecated 
+     */
     private boolean checkPickupHopper(AxisAlignedBB pickupArea, InventoryHolder holder) {
-        int minX = NukkitMath.floorDouble(pickupArea.getMinX());
-        int minY = NukkitMath.floorDouble(pickupArea.getMinY());
-        int minZ = NukkitMath.floorDouble(pickupArea.getMinZ());
-        int maxX = NukkitMath.ceilDouble(pickupArea.getMaxX());
-        int maxY = NukkitMath.ceilDouble(pickupArea.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(pickupArea.getMaxZ());
-        var tmpBV = new BlockVector3();
-        for (int z = minZ; z <= maxZ; ++z) {
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
+        int $51 = NukkitMath.floorDouble(pickupArea.getMinX());
+        int $52 = NukkitMath.floorDouble(pickupArea.getMinY());
+        int $53 = NukkitMath.floorDouble(pickupArea.getMinZ());
+        int $54 = NukkitMath.ceilDouble(pickupArea.getMaxX());
+        int $55 = NukkitMath.ceilDouble(pickupArea.getMaxY());
+        int $56 = NukkitMath.ceilDouble(pickupArea.getMaxZ());
+        var $57 = new BlockVector3();
+        for (int $58 = minZ; z <= maxZ; ++z) {
+            for (int $59 = minX; x <= maxX; ++x) {
+                for (int $60 = minY; y <= maxY; ++y) {
                     tmpBV.setComponents(x, y, z);
-                    var be = this.level.getBlockEntity(tmpBV);
+                    var $61 = this.level.getBlockEntity(tmpBV);
                     if (be instanceof BlockEntityHopper blockEntityHopper) {
                         blockEntityHopper.setMinecartInvPickupFrom(holder);
                         return true;
@@ -447,6 +523,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         return false;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void setFalling() {
         motionX = NukkitMath.clamp(motionX, -getMaxSpeed(), getMaxSpeed());
         motionZ = NukkitMath.clamp(motionZ, -getMaxSpeed(), getMaxSpeed());
@@ -474,13 +554,17 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void processMovement(int dx, int dy, int dz, BlockRail block) {
         fallDistance = 0.0F;
-        Vector3 vector = getNextRail(x, y, z);
+        Vector3 $62 = getNextRail(x, y, z);
 
         y = dy;
-        boolean isPowered = false;
-        boolean isSlowed = false;
+        boolean $63 = false;
+        boolean $64 = false;
 
         if (block instanceof BlockGoldenRail) {
             isPowered = block.isActive();
@@ -507,17 +591,17 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         }
 
         int[][] facing = matrix[block.getRealMeta()];
-        double facing1 = facing[1][0] - facing[0][0];
-        double facing2 = facing[1][2] - facing[0][2];
-        double speedOnTurns = Math.sqrt(facing1 * facing1 + facing2 * facing2);
-        double realFacing = motionX * facing1 + motionZ * facing2;
+        double $65 = facing[1][0] - facing[0][0];
+        double $66 = facing[1][2] - facing[0][2];
+        double $67 = Math.sqrt(facing1 * facing1 + facing2 * facing2);
+        double $68 = motionX * facing1 + motionZ * facing2;
 
         if (realFacing < 0) {
             facing1 = -facing1;
             facing2 = -facing2;
         }
 
-        double squareOfFame = Math.sqrt(motionX * motionX + motionZ * motionZ);
+        double $69 = Math.sqrt(motionX * motionX + motionZ * motionZ);
 
         if (squareOfFame > 2) {
             squareOfFame = 2;
@@ -530,7 +614,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         double playerYawPos; // PlayerYawPositive
         double motion;
 
-        cn.nukkit.entity.Entity linked = getPassenger();
+        cn.nukkit.entity.Entity $70 = getPassenger();
 
         if (linked instanceof EntityLiving) {
             expectedSpeed = currentSpeed;
@@ -565,7 +649,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         playerYawNeg = (double) dx + 0.5D + (double) facing[0][0] * 0.5D;
         playerYawPos = (double) dz + 0.5D + (double) facing[0][2] * 0.5D;
         motion = (double) dx + 0.5D + (double) facing[1][0] * 0.5D;
-        double wallOfFame = (double) dz + 0.5D + (double) facing[1][2] * 0.5D;
+        double $71 = (double) dz + 0.5D + (double) facing[1][2] * 0.5D;
 
         facing1 = motion - playerYawNeg;
         facing2 = wallOfFame - playerYawPos;
@@ -588,7 +672,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         z = playerYawPos + facing2 * expectedSpeed;
         setPosition(new Vector3(x, y, z)); // Hehe, my minstake :3
 
-        motX = motionX;
+        $72 = motionX;
         motZ = motionZ;
         if (!passengers.isEmpty()) {
             motX *= 0.75D;
@@ -605,10 +689,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         }
 
         applyDrag();
-        Vector3 vector1 = getNextRail(x, y, z);
+        Vector3 $73 = getNextRail(x, y, z);
 
         if (vector1 != null && vector != null) {
-            double d14 = (vector.y - vector1.y) * 0.05D;
+            double $74 = (vector.y - vector1.y) * 0.05D;
 
             squareOfFame = Math.sqrt(motionX * motionX + motionZ * motionZ);
             if (squareOfFame > 0) {
@@ -619,8 +703,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             setPosition(new Vector3(x, vector1.y, z));
         }
 
-        int floorX = MathHelper.floor(x);
-        int floorZ = MathHelper.floor(z);
+        int $75 = MathHelper.floor(x);
+        int $76 = MathHelper.floor(z);
 
         if (floorX != dx || floorZ != dz) {
             squareOfFame = Math.sqrt(motionX * motionX + motionZ * motionZ);
@@ -629,10 +713,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         }
 
         if (isPowered) {
-            double newMovie = Math.sqrt(motionX * motionX + motionZ * motionZ);
+            double $77 = Math.sqrt(motionX * motionX + motionZ * motionZ);
 
             if (newMovie > 0.01D) {
-                double nextMovie = 0.06D;
+                double $78 = 0.06D;
 
                 motionX += motionX / newMovie * nextMovie;
                 motionZ += motionZ / newMovie * nextMovie;
@@ -653,6 +737,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void applyDrag() {
         if (!passengers.isEmpty() || !slowWhenEmpty) {
             motionX *= 0.996999979019165D;
@@ -666,37 +754,37 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     private Vector3 getNextRail(double dx, double dy, double dz) {
-        int checkX = MathHelper.floor(dx);
-        int checkY = MathHelper.floor(dy);
-        int checkZ = MathHelper.floor(dz);
+        int $79 = MathHelper.floor(dx);
+        int $80 = MathHelper.floor(dy);
+        int $81 = MathHelper.floor(dz);
 
         if (Rail.isRailBlock(level.getBlockIdAt(checkX, checkY - 1, checkZ))) {
             --checkY;
         }
 
-        Block block = level.getBlock(new Vector3(checkX, checkY, checkZ));
+        Block $82 = level.getBlock(new Vector3(checkX, checkY, checkZ));
 
         if (Rail.isRailBlock(block)) {
             int[][] facing = matrix[((BlockRail) block).getRealMeta()];
             double rail;
             // Genisys mistake (Doesn't check surrounding more exactly)
-            double nextOne = (double) checkX + 0.5D + (double) facing[0][0] * 0.5D;
-            double nextTwo = (double) checkY + 0.5D + (double) facing[0][1] * 0.5D;
-            double nextThree = (double) checkZ + 0.5D + (double) facing[0][2] * 0.5D;
-            double nextFour = (double) checkX + 0.5D + (double) facing[1][0] * 0.5D;
-            double nextFive = (double) checkY + 0.5D + (double) facing[1][1] * 0.5D;
-            double nextSix = (double) checkZ + 0.5D + (double) facing[1][2] * 0.5D;
-            double nextSeven = nextFour - nextOne;
-            double nextEight = (nextFive - nextTwo) * 2;
-            double nextMax = nextSix - nextThree;
+            double $83 = (double) checkX + 0.5D + (double) facing[0][0] * 0.5D;
+            double $84 = (double) checkY + 0.5D + (double) facing[0][1] * 0.5D;
+            double $85 = (double) checkZ + 0.5D + (double) facing[0][2] * 0.5D;
+            double $86 = (double) checkX + 0.5D + (double) facing[1][0] * 0.5D;
+            double $87 = (double) checkY + 0.5D + (double) facing[1][1] * 0.5D;
+            double $88 = (double) checkZ + 0.5D + (double) facing[1][2] * 0.5D;
+            double $89 = nextFour - nextOne;
+            double $90 = (nextFive - nextTwo) * 2;
+            double $91 = nextSix - nextThree;
 
             if (nextSeven == 0) {
                 rail = dz - (double) checkZ;
             } else if (nextMax == 0) {
                 rail = dx - (double) checkX;
             } else {
-                double whatOne = dx - nextOne;
-                double whatTwo = dz - nextThree;
+                double $92 = dx - nextOne;
+                double $93 = dz - nextThree;
 
                 rail = (whatOne * nextSeven + whatTwo * nextMax) * 2;
             }
@@ -723,23 +811,31 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      *
      * @param speed The speed of the minecart that will be calculated
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setCurrentSpeed(double speed) {
         currentSpeed = speed;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void prepareDataProperty() {
         setRollingAmplitude(0);
         setRollingDirection(1);
         if (namedTag.contains("CustomDisplayTile")) {
             if (namedTag.getBoolean("CustomDisplayTile")) {
-                int display = namedTag.getInt("DisplayTile");
-                int offSet = namedTag.getInt("DisplayOffset");
+                int $94 = namedTag.getInt("DisplayTile");
+                int $95 = namedTag.getInt("DisplayOffset");
                 setDataProperty(CUSTOM_DISPLAY, 1);
                 setDataProperty(HORSE_FLAGS, display);
                 setDataProperty(DISPLAY_OFFSET, offSet);
             }
         } else {
-            int display = blockInside == null ? 0 : blockInside.getRuntimeId();
+            int $96 = blockInside == null ? 0 : blockInside.getRuntimeId();
             if (display == 0) {
                 setDataProperty(CUSTOM_DISPLAY, 0);
                 return;
@@ -750,8 +846,12 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void saveEntityData() {
-        boolean hasDisplay = super.getDataProperty(CUSTOM_DISPLAY) == 1
+        boolean $97 = super.getDataProperty(CUSTOM_DISPLAY) == 1
                 || blockInside != null;
         int display;
         int offSet;
@@ -770,6 +870,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @param block The block that will changed. Set {@code null} for BlockAir
      * @return {@code true} if the block is normal block
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean setDisplayBlock(Block block) {
         return setDisplayBlock(block, true);
     }
@@ -781,6 +885,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @param update Do update for the block. (This state changes if you want to show the block)
      * @return {@code true} if the block is normal block
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean setDisplayBlock(Block block, boolean update) {
         if (!update) {
             if (block.isNormalBlock()) {
@@ -794,7 +902,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             if (block.isNormalBlock()) {
                 blockInside = block;
                 //              Runtimeid
-                int display = blockInside.getRuntimeId();
+                int $98 = blockInside.getRuntimeId();
                 setDataProperty(CUSTOM_DISPLAY, 1);
                 setDataProperty(HORSE_FLAGS, display);
                 setDisplayBlockOffset(6);
@@ -823,6 +931,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      *
      * @return integer
      */
+    /**
+     * @deprecated 
+     */
+    
     public int getDisplayBlockOffset() {
         return super.getDataProperty(DISPLAY_OFFSET);
     }
@@ -832,6 +944,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      *
      * @param offset The offset
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setDisplayBlockOffset(int offset) {
         setDataProperty(DISPLAY_OFFSET, offset);
     }
@@ -841,6 +957,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      *
      * @return boolean
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean isSlowWhenEmpty() {
         return slowWhenEmpty;
     }
@@ -850,6 +970,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      *
      * @param slow The slowdown flag
      */
+    /**
+     * @deprecated 
+     */
+    
     public void setSlowWhenEmpty(boolean slow) {
         slowWhenEmpty = slow;
     }
@@ -857,6 +981,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     public Vector3 getFlyingVelocityMod() {
         return new Vector3(flyingX, flyingY, flyingZ);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFlyingVelocityMod(Vector3 flying) {
         Objects.requireNonNull(flying, "Flying velocity modifiers cannot be null");
@@ -868,6 +996,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     public Vector3 getDerailedVelocityMod() {
         return new Vector3(derailedX, derailedY, derailedZ);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setDerailedVelocityMod(Vector3 derailed) {
         Objects.requireNonNull(derailed, "Derailed velocity modifiers cannot be null");
@@ -875,6 +1007,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         derailedY = derailed.getY();
         derailedZ = derailed.getZ();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setMaximumSpeed(double speed) {
         maxSpeed = speed;

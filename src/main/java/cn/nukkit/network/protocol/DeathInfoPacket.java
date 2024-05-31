@@ -10,25 +10,41 @@ import lombok.NoArgsConstructor;import lombok.*;
 @AllArgsConstructor
 public class DeathInfoPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.DEATH_INFO_PACKET;
+    public static final int $1 = ProtocolInfo.DEATH_INFO_PACKET;
 
     public TranslationContainer translation;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         //empty
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeString(translation.getText());
         byteBuf.writeArray(translation.getParameters(), byteBuf::writeString);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

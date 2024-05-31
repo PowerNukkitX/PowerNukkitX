@@ -29,6 +29,10 @@ import org.jetbrains.annotations.NotNull;
  * @since 2020 -09-28
  */
 public class SmithingTransformRecipe extends BaseRecipe {
+    /**
+     * @deprecated 
+     */
+    
 
     public SmithingTransformRecipe(@NotNull String recipeId, Item result, ItemDescriptor base, ItemDescriptor addition, ItemDescriptor template) {
         super(recipeId);
@@ -39,6 +43,10 @@ public class SmithingTransformRecipe extends BaseRecipe {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean match(Input input) {
         return false;
     }

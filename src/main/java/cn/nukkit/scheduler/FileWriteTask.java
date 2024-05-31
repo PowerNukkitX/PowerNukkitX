@@ -16,29 +16,53 @@ import java.nio.charset.StandardCharsets;
 public class FileWriteTask extends AsyncTask {
     private final File file;
     private final InputStream contents;
+    /**
+     * @deprecated 
+     */
+    
 
     public FileWriteTask(String path, String contents) {
         this(new File(path), contents);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FileWriteTask(String path, byte[] contents) {
         this(new File(path), contents);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FileWriteTask(String path, InputStream contents) {
         this.file = new File(path);
         this.contents = contents;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FileWriteTask(File file, String contents) {
         this.file = file;
         this.contents = new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8));
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FileWriteTask(File file, byte[] contents) {
         this.file = file;
         this.contents = new ByteArrayInputStream(contents);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public FileWriteTask(File file, InputStream contents) {
         this.file = file;
@@ -46,6 +70,10 @@ public class FileWriteTask extends AsyncTask {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onRun() {
         try {
             Utils.writeFile(file, contents);

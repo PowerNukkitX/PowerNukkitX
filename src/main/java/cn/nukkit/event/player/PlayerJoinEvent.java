@@ -13,18 +13,26 @@ import cn.nukkit.lang.TextContainer;
  * @see PlayerLoginEvent
  */
 public class PlayerJoinEvent extends PlayerEvent {
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
     protected TextContainer joinMessage;
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerJoinEvent(Player player, TextContainer joinMessage) {
         this.player = player;
         this.joinMessage = joinMessage;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public PlayerJoinEvent(Player player, String joinMessage) {
         this.player = player;
@@ -34,10 +42,18 @@ public class PlayerJoinEvent extends PlayerEvent {
     public TextContainer getJoinMessage() {
         return joinMessage;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setJoinMessage(TextContainer joinMessage) {
         this.joinMessage = joinMessage;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setJoinMessage(String joinMessage) {
         this.setJoinMessage(new TextContainer(joinMessage));

@@ -19,6 +19,10 @@ public final class VehicleDestroyByEntityEvent extends VehicleDestroyEvent {
      * @param vehicle   the destroyed vehicle
      * @param destroyer the destroying entity
      */
+    /**
+     * @deprecated 
+     */
+    
 
     public VehicleDestroyByEntityEvent(final Entity vehicle, final Entity destroyer) {
         super(vehicle);

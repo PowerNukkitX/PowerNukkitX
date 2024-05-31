@@ -14,6 +14,10 @@ import cn.nukkit.utils.NumberConversions;
 
 public abstract class MetadataValueAdapter extends MetadataValue {
 
+    
+    /**
+     * @deprecated 
+     */
     protected MetadataValueAdapter(Plugin owningPlugin) {
         super(owningPlugin);
     }
@@ -22,33 +26,61 @@ public abstract class MetadataValueAdapter extends MetadataValue {
     public Plugin getOwningPlugin() {
         return owningPlugin.get();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int asInt() {
         return NumberConversions.toInt(value());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public float asFloat() {
         return NumberConversions.toFloat(value());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double asDouble() {
         return NumberConversions.toDouble(value());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public long asLong() {
         return NumberConversions.toLong(value());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public short asShort() {
         return NumberConversions.toShort(value());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public byte asByte() {
         return NumberConversions.toByte(value());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean asBoolean() {
-        Object value = value();
+        Object $1 = value();
         if (value instanceof Boolean) {
             return (Boolean) value;
         }
@@ -63,9 +95,13 @@ public abstract class MetadataValueAdapter extends MetadataValue {
 
         return value != null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String asString() {
-        Object value = value();
+        Object $2 = value();
 
         if (value == null) {
             return "";

@@ -26,6 +26,10 @@ import static cn.nukkit.block.property.CommonBlockProperties.OUTPUT_SUBTRACT_BIT
 
 @Slf4j
 public abstract class BlockRedstoneComparator extends BlockRedstoneDiode implements BlockEntityHolder<BlockEntityComparator> {
+    /**
+     * @deprecated 
+     */
+    
     public BlockRedstoneComparator(BlockState blockstate) {
         super(blockstate);
     }
@@ -38,11 +42,19 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
 
     @Override
     @NotNull
+    /**
+     * @deprecated 
+     */
+    
     public String getBlockEntityType() {
         return BlockEntity.COMPARATOR;
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected int getDelay() {
         return 2;
     }
@@ -55,6 +67,10 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     public Mode getMode() {
         return getPropertyValue(OUTPUT_SUBTRACT_BIT) ? Mode.SUBTRACT : Mode.COMPARE;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setMode(Mode mode) {
         setPropertyValue(OUTPUT_SUBTRACT_BIT, mode == Mode.SUBTRACT);
@@ -71,16 +87,24 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected int getRedstoneSignal() {
-        BlockEntityComparator comparator = getBlockEntity();
-        return comparator == null ? 0 : comparator.getOutputSignal();
+        BlockEntityComparator $1 = getBlockEntity();
+        return $2 == null ? 0 : comparator.getOutputSignal();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void updateState() {
         if (!this.level.isBlockTickPending(this, this)) {
-            int output = this.calculateOutput();
-            int power = getRedstoneSignal();
+            int $3 = this.calculateOutput();
+            int $4 = getRedstoneSignal();
 
             if (output != power || this.isPowered() != this.shouldBePowered()) {
                 this.level.scheduleUpdate(this, this, 2);
@@ -89,10 +113,14 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected int calculateInputStrength() {
-        int power = super.calculateInputStrength();
-        BlockFace face = getFacing();
-        Block block = this.getSide(face);
+        int $5 = super.calculateInputStrength();
+        BlockFace $6 = getFacing();
+        Block $7 = this.getSide(face);
 
         if (block.hasComparatorInputOverride()) {
             power = block.getComparatorInputOverride();
@@ -108,24 +136,36 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected boolean shouldBePowered() {
-        int input = this.calculateInputStrength();
+        int $8 = this.calculateInputStrength();
 
         if (input >= 15) {
             return true;
         } else if (input == 0) {
             return false;
         } else {
-            int sidePower = this.getPowerOnSides();
-            return sidePower == 0 || input >= sidePower;
+            int $9 = this.getPowerOnSides();
+            return $10 == 0 || input >= sidePower;
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private int calculateOutput() {
         return getMode() == Mode.SUBTRACT ? Math.max(this.calculateInputStrength() - this.getPowerOnSides(), 0) : this.calculateInputStrength();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
         if (getMode() == Mode.SUBTRACT) {
@@ -144,6 +184,10 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             this.onChange();
@@ -153,25 +197,29 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
         return super.onUpdate(type);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void onChange() {
         if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
             return;
         }
 
-        int output = this.calculateOutput();
+        int $11 = this.calculateOutput();
         // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
         // before the "real" BlockEntity is set. That means, if we'd use the other method here,
         // it would create two BlockEntities.
-        BlockEntityComparator blockEntityComparator = getBlockEntity();
+        BlockEntityComparator $12 = getBlockEntity();
         if (blockEntityComparator == null)
             return;
 
-        int currentOutput = blockEntityComparator.getOutputSignal();
+        int $13 = blockEntityComparator.getOutputSignal();
         blockEntityComparator.setOutputSignal(output);
 
         if (currentOutput != output || getMode() == Mode.COMPARE) {
-            boolean shouldBePowered = this.shouldBePowered();
-            boolean isPowered = this.isPowered();
+            boolean $14 = this.shouldBePowered();
+            boolean $15 = this.isPowered();
 
             if (isPowered && !shouldBePowered) {
                 this.level.setBlock(this, getUnpowered(), true, false);
@@ -181,16 +229,20 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
                 this.level.updateComparatorOutputLevelSelective(this, true);
             }
 
-            Block side = this.getSide(getFacing().getOpposite());
+            Block $16 = this.getSide(getFacing().getOpposite());
             side.onUpdate(Level.BLOCK_UPDATE_REDSTONE);
             RedstoneComponent.updateAroundRedstone(side);
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        Block layer0 = level.getBlock(this, 0);
-        Block layer1 = level.getBlock(this, 1);
+        Block $17 = level.getBlock(this, 0);
+        Block $18 = level.getBlock(this, 1);
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;
         }
@@ -209,6 +261,10 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isPowered() {
         return this.isPowered || getPropertyValue(OUTPUT_LIT_BIT);
     }

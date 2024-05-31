@@ -11,18 +11,30 @@ public class ChunkPosition {
     public final int x;
     public final int y;
     public final int z;
+    /**
+     * @deprecated 
+     */
+    
 
     public ChunkPosition(int i, int j, int k) {
         this.x = i;
         this.y = j;
         this.z = k;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ChunkPosition(Vector3 vec3d) {
         this(MathHelper.floor(vec3d.x), MathHelper.floor(vec3d.y), MathHelper.floor(vec3d.z));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object object) {
         if (!(object instanceof ChunkPosition chunkposition)) {
             return false;
@@ -33,6 +45,10 @@ public class ChunkPosition {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return this.x * 8976890 + this.y * 981131 + this.z;
     }

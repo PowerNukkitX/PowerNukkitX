@@ -6,13 +6,25 @@ import org.jetbrains.annotations.Nullable;
 
 
 public class ItemShield extends ItemTool {
+    /**
+     * @deprecated 
+     */
+    
     public ItemShield() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemShield(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemShield(Integer meta, int count) {
         super(SHIELD, meta, count, "Shield");
@@ -28,11 +40,19 @@ public class ItemShield extends ItemTool {
      * @param count the count
      * @param name  the name
      */
+    
+    /**
+     * @deprecated 
+     */
     protected ItemShield(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasBannerPattern() {
         return this.hasCompoundTag() && (this.getNamedTag().containsInt("Base") ||
                 this.getNamedTag().containsInt("Type") || this.getNamedTag().containsList("Patterns"));
@@ -42,8 +62,8 @@ public class ItemShield extends ItemTool {
         if (!this.hasBannerPattern()) {
             return null;
         }
-        var tag = this.getNamedTag();
-        var item = new ItemBanner();
+        var $1 = this.getNamedTag();
+        var $2 = new ItemBanner();
         for (var e : item.getNamedTag().getEntrySet()) {
             tag.put(e.getKey(), e.getValue());
         }
@@ -52,6 +72,10 @@ public class ItemShield extends ItemTool {
         }
         return item;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBannerPattern(@Nullable ItemBanner banner) {
         if (banner == null) {
@@ -72,11 +96,19 @@ public class ItemShield extends ItemTool {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxStackSize() {
         return 1;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getMaxDurability() {
         return DURABILITY_SHIELD;
     }

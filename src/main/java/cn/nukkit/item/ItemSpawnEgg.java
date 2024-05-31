@@ -23,32 +23,56 @@ import java.util.Random;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemSpawnEgg extends Item {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemSpawnEgg() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemSpawnEgg(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemSpawnEgg(Integer meta, int count) {
         super(SPAWN_EGG, meta, count, "Spawn Egg");
         updateName();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemSpawnEgg(String id) {
         super(id, 0, 1);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDamage(int meta) {
         super.setDamage(meta);
         updateName();
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void updateName() {
-        String entityName = getEntityName();
+        String $1 = getEntityName();
         if (entityName == null) {
             name = "Spawn Egg";
         } else {
@@ -57,23 +81,31 @@ public class ItemSpawnEgg extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
             return false;
         }
 
-        IChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
+        IChunk $2 = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
 
         if (chunk == null) {
             return false;
         }
 
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag $3 = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(block.getX() + 0.5))
                         .add(new DoubleTag(target.getBoundingBox() == null ? block.getY() : target.getBoundingBox().getMaxY() + 0.0001f))
@@ -90,15 +122,15 @@ public class ItemSpawnEgg extends Item {
             nbt.putString("CustomName", this.getCustomName());
         }
 
-        int networkId = getEntityNetworkId();
-        CreatureSpawnEvent ev = new CreatureSpawnEvent(networkId, block, nbt, SpawnReason.SPAWN_EGG);
+        int $4 = getEntityNetworkId();
+        CreatureSpawnEvent $5 = new CreatureSpawnEvent(networkId, block, nbt, SpawnReason.SPAWN_EGG);
         level.getServer().getPluginManager().callEvent(ev);
 
         if (ev.isCancelled()) {
             return false;
         }
 
-        Entity entity = Entity.createEntity(networkId, chunk, nbt);
+        Entity $6 = Entity.createEntity(networkId, chunk, nbt);
 
         if (entity != null) {
             if (player.isSurvival()) {
@@ -113,15 +145,23 @@ public class ItemSpawnEgg extends Item {
 
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getEntityNetworkId() {
         return this.meta;
     }
 
-    public @Nullable String getEntityName() {
-        String entityIdentifier = Registries.ENTITY.getEntityIdentifier(getEntityNetworkId());
-        var path = entityIdentifier.split(":")[1];
-        StringBuilder result = new StringBuilder();
+    public @Nullable 
+    /**
+     * @deprecated 
+     */
+    String getEntityName() {
+        String $7 = Registries.ENTITY.getEntityIdentifier(getEntityNetworkId());
+        var $8 = entityIdentifier.split(":")[1];
+        StringBuilder $9 = new StringBuilder();
         String[] parts = path.split("_");
         for (String part : parts) {
             if (!part.isEmpty()) {

@@ -8,11 +8,19 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 
 public class BlockDarkoakWallSign extends BlockWallSign {
-    public static final BlockProperties PROPERTIES = new BlockProperties(DARKOAK_WALL_SIGN, FACING_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(DARKOAK_WALL_SIGN, FACING_DIRECTION);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDarkoakWallSign() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockDarkoakWallSign(BlockState blockState) {
         super(blockState);
@@ -24,11 +32,19 @@ public class BlockDarkoakWallSign extends BlockWallSign {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getWallSignId() {
         return DARKOAK_WALL_SIGN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getStandingSignId() {
         return DARKOAK_STANDING_SIGN;
     }

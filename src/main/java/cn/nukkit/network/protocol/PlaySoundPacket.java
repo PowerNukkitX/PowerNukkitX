@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 public class PlaySoundPacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.PLAY_SOUND_PACKET;
+    public static final int $1 = ProtocolInfo.PLAY_SOUND_PACKET;
 
     public String name;
     public int x;
@@ -18,16 +18,28 @@ public class PlaySoundPacket extends DataPacket {
     public float pitch;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeString(this.name);
@@ -35,6 +47,10 @@ public class PlaySoundPacket extends DataPacket {
         byteBuf.writeFloatLE(this.volume);
         byteBuf.writeFloatLE(this.pitch);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

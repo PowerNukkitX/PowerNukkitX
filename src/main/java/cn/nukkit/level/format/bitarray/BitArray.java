@@ -14,11 +14,19 @@ public interface BitArray {
 
     int get(int index);
 
-    default void writeSizeToNetwork(ByteBuf buffer, int size) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void writeSizeToNetwork(ByteBuf buffer, int size) {
         ByteBufVarInt.writeInt(buffer, size);
     }
 
-    default int readSizeFromNetwork(ByteBuf buffer) {
+    default 
+    /**
+     * @deprecated 
+     */
+    int readSizeFromNetwork(ByteBuf buffer) {
         return ByteBufVarInt.readInt(buffer);
     }
 

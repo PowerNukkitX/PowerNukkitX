@@ -23,11 +23,19 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockSweetBerryBush extends BlockFlowable {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(SWEET_BERRY_BUSH, CommonBlockProperties.GROWTH);
+    public static final BlockProperties $1 = new BlockProperties(SWEET_BERRY_BUSH, CommonBlockProperties.GROWTH);
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSweetBerryBush() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockSweetBerryBush(BlockState blockstate) {
         super(blockstate);
@@ -39,41 +47,65 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Sweet Berry Bush";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnChance() {
         return 30;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getBurnAbility() {
         return 60;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return getGrowth() == 0 ? 0 : 0.25;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        int age = MathHelper.clamp(getGrowth(), 0, 3);
+        int $2 = MathHelper.clamp(getGrowth(), 0, 3);
 
         if (age < 3 && item.isFertilizer()) {
-            BlockSweetBerryBush block = (BlockSweetBerryBush) this.clone();
+            BlockSweetBerryBush $3 = (BlockSweetBerryBush) this.clone();
             block.setGrowth(block.getGrowth() + 1);
             if (block.getGrowth() > 3) {
                 block.setGrowth(3);
             }
-            BlockGrowEvent ev = new BlockGrowEvent(this, block);
+            BlockGrowEvent $4 = new BlockGrowEvent(this, block);
             Server.getInstance().getPluginManager().callEvent(ev);
 
             if (ev.isCancelled()) {
@@ -94,12 +126,12 @@ public class BlockSweetBerryBush extends BlockFlowable {
             return true;
         }
 
-        int amount = 1 + ThreadLocalRandom.current().nextInt(2);
+        int $5 = 1 + ThreadLocalRandom.current().nextInt(2);
         if (age == 3) {
             amount++;
         }
 
-        BlockHarvestEvent event = new BlockHarvestEvent(this,
+        BlockHarvestEvent $6 = new BlockHarvestEvent(this,
                 new BlockSweetBerryBush().setGrowth(1),
                 new Item[]{ new ItemSweetBerries(0, amount) }
         );
@@ -109,7 +141,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
             getLevel().setBlock(this, event.getNewState(), true, true);
             Item[] drops = event.getDrops();
             if (drops != null) {
-                Position dropPos = add(0.5, 0.5, 0.5);
+                Position $7 = add(0.5, 0.5, 0.5);
                 for (Item drop : drops) {
                     if (drop != null) {
                         getLevel().dropItem(dropPos, drop);
@@ -122,6 +154,10 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isSupportValid(down())) {
@@ -131,7 +167,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (getGrowth() < 3 && ThreadLocalRandom.current().nextInt(5) == 0
                     && getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
-                BlockGrowEvent event = new BlockGrowEvent(this, Block.get(getId()).setPropertyValue(CommonBlockProperties.GROWTH, getGrowth() + 1));
+                BlockGrowEvent $8 = new BlockGrowEvent(this, Block.get(getId()).setPropertyValue(CommonBlockProperties.GROWTH, getGrowth() + 1));
                 if (!event.isCancelled()) {
                     getLevel().setBlock(this, event.getNewState(), true, true);
                 }
@@ -142,6 +178,10 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (target.getId().equals(SWEET_BERRY_BUSH) || !block.isAir()) {
             return false;
@@ -152,6 +192,10 @@ public class BlockSweetBerryBush extends BlockFlowable {
         }
         return false;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean isSupportValid(Block block) {
         return switch (block.getId()) {
@@ -161,11 +205,19 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasEntityCollision() {
         return getGrowth() > 0;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityCollide(Entity entity) {
         if (getGrowth() > 0) {
             if (entity.positionChanged && !entity.isSneaking() && ThreadLocalRandom.current().nextInt(20) == 0) {
@@ -183,9 +235,9 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
     @Override
     public Item[] getDrops(Item item) {
-        int age = MathHelper.clamp(getGrowth(), 0, 3);
+        int $9 = MathHelper.clamp(getGrowth(), 0, 3);
         
-        int amount = 1;
+        int $10 = 1;
         if (age > 1) {
             amount = 1 + ThreadLocalRandom.current().nextInt(2);
             if (age == 3) {
@@ -195,6 +247,10 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
         return new Item[]{ new ItemSweetBerries(0, amount) };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getGrowth() {
         return getPropertyValue(CommonBlockProperties.GROWTH);

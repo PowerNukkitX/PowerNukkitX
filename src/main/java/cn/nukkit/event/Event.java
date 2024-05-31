@@ -23,12 +23,20 @@ import cn.nukkit.utils.EventException;
  */
 public abstract class Event {
 
-    protected String eventName = null;
-    private boolean isCancelled = false;
+    protected String $1 = null;
+    private boolean $2 = false;
 
+    
+    /**
+     * @deprecated 
+     */
     final public String getEventName() {
-        return eventName == null ? getClass().getName() : eventName;
+        return $3 == null ? getClass().getName() : eventName;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isCancelled() {
         if (!(this instanceof Cancellable)) {
@@ -36,10 +44,18 @@ public abstract class Event {
         }
         return isCancelled;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCancelled() {
         setCancelled(true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setCancelled(boolean value) {
         if (!(this instanceof Cancellable)) {

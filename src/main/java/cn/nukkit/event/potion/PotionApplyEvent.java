@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class PotionApplyEvent extends PotionEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -22,6 +22,10 @@ public class PotionApplyEvent extends PotionEvent implements Cancellable {
 
     private final Entity entity;
     private List<Effect> applyEffects;
+    /**
+     * @deprecated 
+     */
+    
 
     public PotionApplyEvent(PotionType potion, List<Effect> applyEffects, Entity entity) {
         super(potion);
@@ -36,6 +40,10 @@ public class PotionApplyEvent extends PotionEvent implements Cancellable {
     public List<Effect> getApplyEffects() {
         return applyEffects;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setApplyEffect(List<Effect> applyEffects) {
         this.applyEffects = applyEffects;

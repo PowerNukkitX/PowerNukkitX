@@ -20,17 +20,29 @@ import org.jetbrains.annotations.NotNull;
 public class EntityChestBoat extends EntityBoat implements InventoryHolder {
 
     @Override
-    public @NotNull String getIdentifier() {
+    public @NotNull 
+    /**
+     * @deprecated 
+     */
+    String getIdentifier() {
         return CHEST_BOAT;
     }
 
     protected ChestBoatInventory inventory;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityChestBoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getOriginalName() {
         return "Chest Boat";
     }
@@ -42,6 +54,10 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (player.isSneaking()) {
             player.addWindow(this.inventory);
@@ -58,7 +74,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
 
     @Override
     protected DataPacket createAddEntityPacket() {
-        AddEntityPacket addEntity = new AddEntityPacket();
+        AddEntityPacket $1 = new AddEntityPacket();
         addEntity.type = 0;
         addEntity.id = "minecraft:chest_boat";
         addEntity.entityUniqueId = this.getId();
@@ -75,7 +91,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         addEntity.entityData = this.entityDataMap;
 
         addEntity.links = new EntityLink[this.passengers.size()];
-        for (int i = 0; i < addEntity.links.length; i++) {
+        for ($2nt $1 = 0; i < addEntity.links.length; i++) {
             addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false);
         }
 
@@ -83,6 +99,10 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getInteractButtonText(Player player) {
         if (player.isSneaking()) {
             return "action.interact.opencontainer";
@@ -91,6 +111,10 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void initEntity() {
         super.initEntity();
 
@@ -108,13 +132,17 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void saveNBT() {
         super.saveNBT();
 
         this.namedTag.putList("Items", new ListTag<CompoundTag>());
         if (this.inventory != null) {
-            for (int slot = 0; slot < 27; ++slot) {
-                Item item = this.inventory.getItem(slot);
+            for (int $3 = 0; slot < 27; ++slot) {
+                Item $4 = this.inventory.getItem(slot);
                 if (item != null && !item.isNull()) {
                     this.namedTag.getList("Items", CompoundTag.class)
                             .add(NBTIO.putItemHelper(item, slot));
@@ -124,6 +152,10 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void dropItem() {
         switch (this.getVariant()) {
             case 0 -> this.level.dropItem(this, Item.get(ItemID.OAK_CHEST_BOAT));

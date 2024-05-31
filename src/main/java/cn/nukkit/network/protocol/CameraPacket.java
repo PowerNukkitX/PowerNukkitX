@@ -14,22 +14,38 @@ public class CameraPacket extends DataPacket {
     public long playerUniqueId;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.CAMERA_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.cameraUniqueId = byteBuf.readVarLong();
         this.playerUniqueId = byteBuf.readVarLong();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeEntityUniqueId(this.cameraUniqueId);
         byteBuf.writeEntityUniqueId(this.playerUniqueId);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

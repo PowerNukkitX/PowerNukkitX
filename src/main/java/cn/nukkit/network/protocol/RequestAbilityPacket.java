@@ -20,6 +20,10 @@ public class RequestAbilityPacket extends DataPacket {
     public float floatValue;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.ability = ABILITIES[byteBuf.readVarInt()];
         this.type = ABILITY_TYPES[byteBuf.readByte()];
@@ -28,14 +32,26 @@ public class RequestAbilityPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.REQUEST_ABILITY_PACKET;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

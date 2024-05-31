@@ -13,6 +13,10 @@ public class OperatorStringNode extends StringNode {
     private static final HashSet<String> OPERATOR = Sets.newHashSet("+=", "-=", "*=", "/=", "%=", "=", "<", ">", "><");
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         if (OPERATOR.contains(arg)) this.value = arg;
         else this.error();

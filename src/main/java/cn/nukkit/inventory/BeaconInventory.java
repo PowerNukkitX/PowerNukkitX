@@ -9,12 +9,20 @@ import cn.nukkit.item.Item;
  * @author Rover656
  */
 public class BeaconInventory extends ContainerInventory implements BlockEntityInventoryNameable {
+    /**
+     * @deprecated 
+     */
+    
 
     public BeaconInventory(BlockEntityBeacon blockBeacon) {
         super(blockBeacon, InventoryType.BEACON, 1);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onClose(Player who) {
         super.onClose(who);
 

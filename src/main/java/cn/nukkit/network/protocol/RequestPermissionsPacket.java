@@ -34,11 +34,19 @@ public class RequestPermissionsPacket extends DataPacket {
     public int customPermissions;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.REQUEST_PERMISSIONS_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.uniqueEntityId = byteBuf.readLongLE();
         this.permissions = PlayerPermission.values()[byteBuf.readByte() / 2];
@@ -46,12 +54,16 @@ public class RequestPermissionsPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         throw new UnsupportedOperationException();
     }
 
     public Set<PlayerAbility> parseCustomPermissions() {
-        var abilities = new HashSet<PlayerAbility>();
+        var $1 = new HashSet<PlayerAbility>();
         for (PlayerAbility controllableAbility : CONTROLLABLE_ABILITIES) {
             if ((this.customPermissions & controllableAbility.bit) != 0)
                 abilities.add(controllableAbility);
@@ -66,6 +78,10 @@ public class RequestPermissionsPacket extends DataPacket {
         }
         return null;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

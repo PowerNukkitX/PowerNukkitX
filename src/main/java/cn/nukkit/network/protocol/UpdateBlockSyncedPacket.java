@@ -10,21 +10,33 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateBlockSyncedPacket extends UpdateBlockPacket {
-    public static final int NETWORK_ID = ProtocolInfo.UPDATE_BLOCK_SYNCED_PACKET;
+    public static final int $1 = ProtocolInfo.UPDATE_BLOCK_SYNCED_PACKET;
     public long actorUniqueId;
     public BlockSyncType updateType;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         super.encode(byteBuf);
         byteBuf.writeUnsignedVarLong(actorUniqueId);
         byteBuf.writeUnsignedVarLong(updateType.ordinal());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

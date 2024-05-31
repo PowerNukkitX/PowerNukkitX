@@ -13,9 +13,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GameRulesChangedPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.GAME_RULES_CHANGED_PACKET;
+    public static final int $1 = ProtocolInfo.GAME_RULES_CHANGED_PACKET;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -23,13 +27,25 @@ public class GameRulesChangedPacket extends DataPacket {
     public GameRules gameRules;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeGameRules(gameRules);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

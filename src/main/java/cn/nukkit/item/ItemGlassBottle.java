@@ -12,27 +12,47 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 
 public class ItemGlassBottle extends Item {
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemGlassBottle() {
         this(0, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemGlassBottle(Integer meta) {
         this(meta, 1);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemGlassBottle(Integer meta, int count) {
         super(GLASS_BOTTLE, meta, count, "Glass Bottle");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
-        Item filled = null;
+        Item $1 = null;
         if (target.getId().equals(BlockID.FLOWING_WATER) || target.getId().equals(BlockID.WATER)) {
             filled = new ItemPotion();
         } else if (target instanceof BlockBeehive && ((BlockBeehive) target).isFull()) {

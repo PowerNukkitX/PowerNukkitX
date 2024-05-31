@@ -6,6 +6,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 public class ConstAirItem extends Item {
+    /**
+     * @deprecated 
+     */
+    
     public ConstAirItem() {
         super("minecraft:air");
         this.meta = 0;
@@ -14,10 +18,18 @@ public class ConstAirItem extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDamage(int meta) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getDamage() {
         return 0;
     }
@@ -28,6 +40,10 @@ public class ConstAirItem extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getCount() {
         return 0;
     }
@@ -43,6 +59,10 @@ public class ConstAirItem extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockUnsafe(Block block) {
     }
 
@@ -82,30 +102,58 @@ public class ConstAirItem extends Item {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setCanDestroy(Block[] blocks) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setCanPlaceOn(Block[] blocks) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setNetId(Integer netId) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setCount(int count) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setItemLockMode(ItemLockMode mode) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setKeepOnDeath(boolean keepOnDeath) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isNull() {
         return true;
     }

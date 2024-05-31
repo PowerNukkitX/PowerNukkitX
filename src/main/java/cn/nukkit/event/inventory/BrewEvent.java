@@ -10,7 +10,7 @@ import cn.nukkit.item.Item;
  */
 public class BrewEvent extends InventoryEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -20,6 +20,10 @@ public class BrewEvent extends InventoryEvent implements Cancellable {
     private final Item ingredient;
     private final Item[] potions;
     private final int fuel;
+    /**
+     * @deprecated 
+     */
+    
 
     public BrewEvent(BlockEntityBrewingStand blockEntity) {
         super(blockEntity.getInventory());
@@ -29,7 +33,7 @@ public class BrewEvent extends InventoryEvent implements Cancellable {
         this.ingredient = blockEntity.getInventory().getIngredient();
 
         this.potions = new Item[3];
-        for (int i = 0; i < 3; i++) {
+        for ($2nt $1 = 0; i < 3; i++) {
             this.potions[i] = blockEntity.getInventory().getItem(i);
         }
     }
@@ -53,6 +57,10 @@ public class BrewEvent extends InventoryEvent implements Cancellable {
     public Item getPotion(int index) {
         return this.potions[index];
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getFuel() {
         return fuel;

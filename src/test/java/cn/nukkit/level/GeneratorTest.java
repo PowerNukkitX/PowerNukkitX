@@ -16,40 +16,48 @@ import java.util.HashMap;
 @ExtendWith(GameMockExtension.class)
 public class GeneratorTest {
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void testCreate(Level level, LevelProvider levelProvider) {
-        GameLoop loop = GameLoop.builder().loopCountPerSec(200).onTick((d) -> {
+        GameLoop $1 = GameLoop.builder().loopCountPerSec(200).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
         }).build();
-        Thread thread = new Thread(loop::startLoop);
+        Thread $2 = new Thread(loop::startLoop);
         thread.start();
 
-        Flat flat = new Flat(DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>());
+        Flat $3 = new Flat(DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>());
         flat.setLevel(level);
-        int x = 10000;
-        int z = 10000;
-        IChunk chunk = levelProvider.getChunk(x >> 4, z >> 4, true);
+        int $4 = 10000;
+        int $5 = 10000;
+        IChunk $6 = levelProvider.getChunk(x >> 4, z >> 4, true);
         flat.syncGenerate(chunk);
         loop.stop();
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void testLight(Level level, LevelProvider levelProvider) {
-        GameLoop loop = GameLoop.builder().loopCountPerSec(200).onTick((d) -> {
+        GameLoop $7 = GameLoop.builder().loopCountPerSec(200).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
         }).build();
-        Thread thread = new Thread(loop::startLoop);
+        Thread $8 = new Thread(loop::startLoop);
         thread.start();
 
-        Flat flat = new Flat(DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>());
+        Flat $9 = new Flat(DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>());
         flat.setLevel(level);
-        int x = 10000;
-        int z = 10000;
-        IChunk chunk = levelProvider.getChunk(x >> 4, z >> 4, true);
+        int $10 = 10000;
+        int $11 = 10000;
+        IChunk $12 = levelProvider.getChunk(x >> 4, z >> 4, true);
         flat.syncGenerate(chunk);
-        int blockLightAt = level.getBlockLightAt(x, 4, z);
-        int blockSkyLightAt = level.getBlockSkyLightAt(x, 4, z);
-        int fullLight = level.getFullLight(new Vector3(x, 4, z));
-        int highestAdjacentBlockSkyLight = level.getHighestAdjacentBlockSkyLight(x, 4, z);
+        int $13 = level.getBlockLightAt(x, 4, z);
+        int $14 = level.getBlockSkyLightAt(x, 4, z);
+        int $15 = level.getFullLight(new Vector3(x, 4, z));
+        int $16 = level.getHighestAdjacentBlockSkyLight(x, 4, z);
         //for flat, 0~4 is block,4 is top block
         Assertions.assertEquals(0, blockLightAt);
         Assertions.assertEquals(15, blockSkyLightAt);

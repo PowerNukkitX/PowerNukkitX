@@ -4,6 +4,10 @@ package cn.nukkit.inventory;
 import cn.nukkit.entity.item.EntityHopperMinecart;
 
 public class MinecartHopperInventory extends ContainerInventory {
+    /**
+     * @deprecated 
+     */
+    
 
     public MinecartHopperInventory(EntityHopperMinecart minecart) {
         super(minecart, InventoryType.MINECART_HOPPER, 5);

@@ -22,6 +22,10 @@ import java.util.concurrent.TimeUnit;
 public class FindRecipeTest {
 
     @Setup
+    /**
+     * @deprecated 
+     */
+    
     public void setup() {
         Registries.POTION.init();
         Registries.BLOCKSTATE_ITEMMETA.init();
@@ -32,22 +36,34 @@ public class FindRecipeTest {
     }
 
     @Benchmark
+    /**
+     * @deprecated 
+     */
+    
     public void test_findBlastFurnaceRecipe_fail(Blackhole hole) {//46
         hole.consume(Registries.RECIPE.findBlastFurnaceRecipe(Item.get(ItemID.IRON_NUGGET)));
     }
 
     @Benchmark
+    /**
+     * @deprecated 
+     */
+    
     public void test_findBlastFurnaceRecipe_success(Blackhole hole) {//46
         hole.consume(Registries.RECIPE.findBlastFurnaceRecipe(Item.get(ItemID.IRON_PICKAXE)));
     }
 
     @Benchmark
+    /**
+     * @deprecated 
+     */
+    
     public void test_findShapelessRecipe(Blackhole hole) {//1135
         hole.consume(Registries.RECIPE.findShapelessRecipe(Item.get(BlockID.BLUE_SHULKER_BOX), Item.get(ItemID.BROWN_DYE)));
     }
 
     public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
+        Options $1 = new OptionsBuilder()
                 .include(FindRecipeTest.class.getSimpleName())
                 .build();
         new Runner(opt).run();

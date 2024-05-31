@@ -10,6 +10,10 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 
 public class DiveController implements IController {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean control(EntityIntelligent entity) {
         //add dive force
         if (entity.getMemoryStorage().get(CoreMemoryTypes.ENABLE_DIVE_FORCE))

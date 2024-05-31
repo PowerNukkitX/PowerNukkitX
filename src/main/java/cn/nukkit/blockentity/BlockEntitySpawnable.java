@@ -9,12 +9,20 @@ import cn.nukkit.network.protocol.BlockEntityDataPacket;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockEntitySpawnable extends BlockEntity {
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntitySpawnable(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
+    
+    /**
+     * @deprecated 
+     */
     protected void initBlockEntity() {
         super.initBlockEntity();
         this.spawnToAll();
@@ -27,6 +35,10 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
                 .putInt("y", getFloorY())
                 .putInt("z", getFloorZ());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void spawnTo(Player player) {
         if (this.closed) {
@@ -45,7 +57,7 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
             nbt = this.getSpawnCompound();
         }
 
-        BlockEntityDataPacket pk = new BlockEntityDataPacket();
+        BlockEntityDataPacket $1 = new BlockEntityDataPacket();
         pk.x = this.getFloorX();
         pk.y = this.getFloorY();
         pk.z = this.getFloorZ();
@@ -53,6 +65,10 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
 
         return pk;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void spawnToAll() {
         if (this.closed) {
@@ -74,6 +90,10 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
      * @param player player
      * @return bool indication of success, will respawn the tile to the player if false.
      */
+    /**
+     * @deprecated 
+     */
+    
     public boolean updateCompoundTag(CompoundTag nbt, Player player) {
         return false;
     }

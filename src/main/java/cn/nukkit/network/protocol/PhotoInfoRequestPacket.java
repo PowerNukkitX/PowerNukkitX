@@ -9,25 +9,41 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PhotoInfoRequestPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.PHOTO_INFO_REQUEST_PACKET;
+    public static final int $1 = ProtocolInfo.PHOTO_INFO_REQUEST_PACKET;
     public long photoId;
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeEntityUniqueId(photoId);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

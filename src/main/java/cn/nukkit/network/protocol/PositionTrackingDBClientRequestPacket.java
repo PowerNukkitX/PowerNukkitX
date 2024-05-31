@@ -14,7 +14,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PositionTrackingDBClientRequestPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.POS_TRACKING_CLIENT_REQUEST_PACKET;
+    public static final int $1 = ProtocolInfo.POS_TRACKING_CLIENT_REQUEST_PACKET;
 
     private static final Action[] ACTIONS = Action.values();
 
@@ -22,19 +22,31 @@ public class PositionTrackingDBClientRequestPacket extends DataPacket {
     public int trackingId;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeByte((byte) action.ordinal());
         byteBuf.writeVarInt(trackingId);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
-        int aByte = byteBuf.readByte();
+        int $2 = byteBuf.readByte();
         action = ACTIONS[aByte];
         trackingId = byteBuf.readVarInt();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -44,6 +56,10 @@ public class PositionTrackingDBClientRequestPacket extends DataPacket {
 
         QUERY
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

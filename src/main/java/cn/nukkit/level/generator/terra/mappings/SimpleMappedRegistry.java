@@ -90,6 +90,10 @@ public class SimpleMappedRegistry<KEY, VALUE, MAPPING extends Map<KEY, VALUE>> i
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setContent(MAPPING mappings) {
         this.mappings = mappings;
     }

@@ -23,10 +23,18 @@ import java.util.Objects;
 
 @Slf4j
 public class BlockLodestone extends BlockSolid implements BlockEntityHolder<BlockEntityLodestone> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(LODESTONE);
+    public static final BlockProperties $1 = new BlockProperties(LODESTONE);
+    /**
+     * @deprecated 
+     */
+    
     public BlockLodestone() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockLodestone(BlockState blockState) {
         super(blockState);
@@ -38,27 +46,43 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getBlockEntityType() {
         return BlockEntity.LODESTONE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player == null || item.isNull() || !Objects.equals(item.getId(), ItemID.COMPASS) && !Objects.equals(item.getId(), ItemID.LODESTONE_COMPASS)) {
             return false;
         }
 
-        ItemLodestoneCompass compass = (ItemLodestoneCompass) Item.get(ItemID.LODESTONE_COMPASS);
+        ItemLodestoneCompass $2 = (ItemLodestoneCompass) Item.get(ItemID.LODESTONE_COMPASS);
         if (item.hasCompoundTag()) {
             compass.setCompoundTag(item.getCompoundTag().clone());
         }
@@ -72,11 +96,11 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
             return false;
         }
 
-        boolean added = true;
+        boolean $3 = true;
         if (item.getCount() == 1) {
             player.getInventory().setItemInHand(compass);
         } else {
-            Item clone = item.clone();
+            Item $4 = item.clone();
             clone.count--;
             player.getInventory().setItemInHand(clone);
             for (Item failed : player.getInventory().addItem(compass)) {
@@ -100,6 +124,10 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Lodestone";
     }
@@ -110,36 +138,64 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 2;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 3.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public  boolean sticksToPiston() {
         return false;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canBePushed() {
         return false;
     }

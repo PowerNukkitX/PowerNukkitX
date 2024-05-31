@@ -15,23 +15,35 @@ import javax.annotation.Nullable;
  * @author good777LUCKY
  */
 public class BlockNetherreactor extends BlockSolid implements BlockEntityHolder<BlockEntityNetherReactor> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(NETHERREACTOR);
+    public static final BlockProperties $1 = new BlockProperties(NETHERREACTOR);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockNetherreactor() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockNetherreactor(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    /**
+     * @deprecated 
+     */
+     public String getBlockEntityType() {
         return BlockEntity.NETHER_REACTOR;
     }
 
@@ -41,31 +53,55 @@ public class BlockNetherreactor extends BlockSolid implements BlockEntityHolder<
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Nether Reactor Core";
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 10;
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 6;
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canHarvestWithHand() {
         return false;
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -83,6 +119,10 @@ public class BlockNetherreactor extends BlockSolid implements BlockEntityHolder<
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }

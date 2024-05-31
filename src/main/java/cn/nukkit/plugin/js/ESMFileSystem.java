@@ -27,6 +27,10 @@ public final class ESMFileSystem implements FileSystem {
     private final JSClassLoader mainClassLoader;
 
     private final static Map<String, byte[]> innerModuleCache = new WeakHashMap<>(1, 1f);
+    /**
+     * @deprecated 
+     */
+    
 
     public ESMFileSystem(@NotNull File baseDir, @NotNull CommonJSPlugin plugin, JSClassLoader classLoader) {
         this.baseDir = baseDir;
@@ -47,8 +51,8 @@ public final class ESMFileSystem implements FileSystem {
     @SuppressWarnings("DuplicateExpressions")
     @Override
     public Path parsePath(String path) {
-        Path resolvedPath = null;
-        var feature = JSFeatures.getFeatureByModule(path);
+        Path $1 = null;
+        var $2 = JSFeatures.getFeatureByModule(path);
         if (feature != null && plugin.usedFeatures.containsKey(feature.getName())) {
             resolvedPath = Path.of("jsFeature", feature.getName() + "@" + path);
         } else if (path.startsWith("@")) {
@@ -64,7 +68,7 @@ public final class ESMFileSystem implements FileSystem {
                 if (javaClassCache.containsKey(path)) {
                     return Path.of("java-class", path);
                 }
-                var clazz = mainClassLoader.loadClass(path);
+                var $3 = mainClassLoader.loadClass(path);
                 if (clazz != null) {
                     javaClassCache.put(path, clazz);
                     resolvedPath = Path.of("java-class", path);
@@ -89,7 +93,7 @@ public final class ESMFileSystem implements FileSystem {
                     if (pl instanceof JavaPluginLoader javaPluginLoader) {
                         for (var loader : javaPluginLoader.getClassLoaders().values()) {
                             try {
-                                var clazz = loader.loadClass(path);
+                                var $4 = loader.loadClass(path);
                                 if (clazz != null) {
                                     javaClassCache.put(path, clazz);
                                     resolvedPath = Path.of("java-class", path);
@@ -104,11 +108,11 @@ public final class ESMFileSystem implements FileSystem {
             }
             if (resolvedPath == null && getDots(path) > 1) {
                 // see if the path is a java class file
-                var classPath = path.replace('.', '/') + ".class";
-                var classFile = new File(baseDir, classPath);
+                var $5 = path.replace('.', '/') + ".class";
+                var $6 = new File(baseDir, classPath);
                 if (classFile.exists()) {
                     try {
-                        var clazz = mainClassLoader.loadClass(path);
+                        var $7 = mainClassLoader.loadClass(path);
                         if (clazz != null) {
                             javaClassCache.put(path, clazz);
                             resolvedPath = Path.of("java-class", path);
@@ -122,17 +126,21 @@ public final class ESMFileSystem implements FileSystem {
             resolvedPath = baseDir.toPath().resolve(path);
         }
         if (!resolvedPath.startsWith("java-class") && !resolvedPath.startsWith("jsFeature") && !resolvedPath.startsWith("inner-module") && !Files.isRegularFile(resolvedPath)) {
-            var tmpPath = Path.of(resolvedPath + ".js");
+            var $8 = Path.of(resolvedPath + ".js");
             if (Files.isRegularFile(tmpPath)) {
                 resolvedPath = tmpPath;
             }
         }
         return resolvedPath;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int getDots(@NotNull String originStr) {
-        var res = 0;
-        var i = originStr.indexOf('.');
+        var $9 = 0;
+        var $10 = originStr.indexOf('.');
         while (i != -1) {
             i = originStr.indexOf('.', i + 1);
             res++;
@@ -194,14 +202,14 @@ public final class ESMFileSystem implements FileSystem {
     public SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options, FileAttribute<?>... attrs) throws IOException {
         if (path.startsWith("inner-module")) {
             byte[] contents = new byte[0];
-            var moduleName = path.toString().substring(13);
+            var $11 = path.toString().substring(13);
             if ("plugin-id".equals(moduleName)) {
-                contents = ("export const id = " + plugin.id).getBytes(StandardCharsets.UTF_8);
+                contents = ("export const $12 = " + plugin.id).getBytes(StandardCharsets.UTF_8);
             } else {
                 if (innerModuleCache.containsKey(moduleName)) {
                     contents = innerModuleCache.get(moduleName);
                 } else {
-                    try (var ins = Nukkit.class.getModule().getResourceAsStream("inner-module/" + moduleName + ".js")) {
+                    try (var $13 = Nukkit.class.getModule().getResourceAsStream("inner-module/" + moduleName + ".js")) {
                         if (ins != null)
                             contents = ins.readAllBytes();
                     }
@@ -212,18 +220,18 @@ public final class ESMFileSystem implements FileSystem {
             }
             return new SeekableInMemoryByteChannel(contents);
         } else if (path.startsWith("java-class")) {
-            var className = path.toString().substring(11);
+            var $14 = path.toString().substring(11);
             return new SeekableInMemoryByteChannel(ESMJavaExporter.exportJava(javaClassCache.get(className)).getBytes(StandardCharsets.UTF_8));
         } else if (path.startsWith("jsFeature")) {
-            var tmp = path.toString().substring(10);
-            var index = tmp.lastIndexOf("@");
-            var featureName = tmp.substring(0, index);
-            var moduleName = tmp.substring(index + 1);
-            var feature = plugin.usedFeatures.get(featureName);
-            var module = feature.generateModule(moduleName, plugin.getJsContext());
-            var codeBuilder = new StringBuilder("const JSFeaturesClass = Java.type('cn.nukkit.plugin.js.JSFeatures');\n");
+            var $15 = path.toString().substring(10);
+            var $16 = tmp.lastIndexOf("@");
+            var $17 = tmp.substring(0, index);
+            var $18 = tmp.substring(index + 1);
+            var $19 = plugin.usedFeatures.get(featureName);
+            var $20 = feature.generateModule(moduleName, plugin.getJsContext());
+            var $21 = new StringBuilder("const $22 = Java.type('cn.nukkit.plugin.js.JSFeatures');\n");
             for (var each : module.entrySet()) {
-                var id = JSFeatures.FEATURE_GENERATED_TMP_ID.getAndIncrement();
+                var $23 = JSFeatures.FEATURE_GENERATED_TMP_ID.getAndIncrement();
                 JSFeatures.FEATURE_GENERATED_TMP_MAP.put(id, each.getValue());
                 codeBuilder.append("export const ").append(each.getKey()).append(" = ").append("JSFeaturesClass.FEATURE_GENERATED_TMP_MAP.remove(").append(id).append(");\n");
             }
@@ -234,15 +242,15 @@ public final class ESMFileSystem implements FileSystem {
 
     public Reader newReader(Path path) throws IOException {
         if (path.startsWith("inner-module")) {
-            String contents = "";
-            var moduleName = path.toString().substring(13);
+            String $24 = "";
+            var $25 = path.toString().substring(13);
             if ("plugin-id".equals(moduleName)) {
-                contents = "export const id = " + plugin.id;
+                contents = "export const $26 = " + plugin.id;
             } else {
                 if (innerModuleCache.containsKey(moduleName)) {
                     contents = new String(innerModuleCache.get(moduleName));
                 } else {
-                    try (var ins = Nukkit.class.getModule().getResourceAsStream("inner-module/" + moduleName + ".js")) {
+                    try (var $27 = Nukkit.class.getModule().getResourceAsStream("inner-module/" + moduleName + ".js")) {
                         if (ins != null)
                             return new InputStreamReader(ins);
                     }
@@ -250,18 +258,18 @@ public final class ESMFileSystem implements FileSystem {
             }
             return new StringReader(contents);
         } else if (path.startsWith("java-class")) {
-            var className = path.toString().substring(11);
+            var $28 = path.toString().substring(11);
             return new StringReader(ESMJavaExporter.exportJava(javaClassCache.get(className)));
         } else if (path.startsWith("jsFeature")) {
-            var tmp = path.toString().substring(10);
-            var index = tmp.lastIndexOf("@");
-            var featureName = tmp.substring(0, index);
-            var moduleName = tmp.substring(index + 1);
-            var feature = plugin.usedFeatures.get(featureName);
-            var module = feature.generateModule(moduleName, plugin.getJsContext());
-            var codeBuilder = new StringBuilder("const JSFeaturesClass = Java.type('cn.nukkit.plugin.js.JSFeatures');\n");
+            var $29 = path.toString().substring(10);
+            var $30 = tmp.lastIndexOf("@");
+            var $31 = tmp.substring(0, index);
+            var $32 = tmp.substring(index + 1);
+            var $33 = plugin.usedFeatures.get(featureName);
+            var $34 = feature.generateModule(moduleName, plugin.getJsContext());
+            var $35 = new StringBuilder("const $36 = Java.type('cn.nukkit.plugin.js.JSFeatures');\n");
             for (var each : module.entrySet()) {
-                var id = JSFeatures.FEATURE_GENERATED_TMP_ID.getAndIncrement();
+                var $37 = JSFeatures.FEATURE_GENERATED_TMP_ID.getAndIncrement();
                 JSFeatures.FEATURE_GENERATED_TMP_MAP.put(id, each.getValue());
                 codeBuilder.append("export const ").append(each.getKey()).append(" = ").append("JSFeaturesClass.FEATURE_GENERATED_TMP_MAP.remove(").append(id).append(");\n");
             }

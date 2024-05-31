@@ -36,6 +36,10 @@ public enum ItemStackRequestActionType {
     ItemStackRequestActionType(int id) {
         this.id = id;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getId() {
         return id;

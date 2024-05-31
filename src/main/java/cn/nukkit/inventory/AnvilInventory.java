@@ -12,9 +12,13 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class AnvilInventory extends ContainerInventory implements CraftTypeInventory {
-    public static final int INPUT = 0;
-    public static final int MATERIAL = 1;
-    public static final int OUTPUT = 2;
+    public static final int $1 = 0;
+    public static final int $2 = 1;
+    public static final int $3 = 2;
+    /**
+     * @deprecated 
+     */
+    
 
     public AnvilInventory(BlockAnvil anvil) {
         super(anvil, InventoryType.ANVIL, 3);
@@ -39,6 +43,10 @@ public class AnvilInventory extends ContainerInventory implements CraftTypeInven
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onClose(Player who) {
         super.onClose(who);
 
@@ -65,34 +73,62 @@ public class AnvilInventory extends ContainerInventory implements CraftTypeInven
     public Item getOutputSlot() {
         return this.getItem(OUTPUT);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setInputSlot(Item item, boolean send) {
         return setItem(INPUT, item, send);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setInputSlot(Item item) {
         return setInputSlot(item, true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setMaterialSlot(Item item, boolean send) {
         return setItem(MATERIAL, item, send);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setMaterialSlot(Item item) {
         return setMaterialSlot(item, true);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setOutputSlot(Item item, boolean send) {
         return setItem(OUTPUT, item, send);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean setOutputSlot(Item item) {
         return setOutputSlot(item, true);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sendContents(Player... players) {
-        for (int slot = 0; slot < getSize(); slot++) {
+        for (int $4 = 0; slot < getSize(); slot++) {
             sendSlot(slot, players);
         }
     }

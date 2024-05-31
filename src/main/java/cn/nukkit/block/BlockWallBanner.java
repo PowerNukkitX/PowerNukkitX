@@ -12,28 +12,44 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
  */
 
 public class BlockWallBanner extends BlockStandingBanner {
-    public static final BlockProperties PROPERTIES = new BlockProperties(WALL_BANNER, FACING_DIRECTION);
+    public static final BlockProperties $1 = new BlockProperties(WALL_BANNER, FACING_DIRECTION);
 
     @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockWallBanner() {
         this(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockWallBanner(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Wall Banner";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.getSide(getBlockFace().getOpposite()).isAir()) {
@@ -45,6 +61,10 @@ public class BlockWallBanner extends BlockStandingBanner {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setBlockFace(BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
@@ -55,6 +75,10 @@ public class BlockWallBanner extends BlockStandingBanner {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDirection(CompassRoseDirection direction) {
         setBlockFace(direction.getClosestBlockFace());
     }

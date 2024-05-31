@@ -7,6 +7,10 @@ import cn.nukkit.event.Event;
 public abstract class VibrationEvent extends Event implements Cancellable {
 
     protected cn.nukkit.level.vibration.VibrationEvent vibrationEvent;
+    /**
+     * @deprecated 
+     */
+    
 
     public VibrationEvent(cn.nukkit.level.vibration.VibrationEvent vibrationEvent) {
         this.vibrationEvent = vibrationEvent;

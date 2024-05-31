@@ -12,6 +12,10 @@ import org.jetbrains.annotations.NotNull;
  * @author lt_name
  */
 public abstract class ItemCustom extends Item implements CustomItem {
+    /**
+     * @deprecated 
+     */
+    
     public ItemCustom(@NotNull String id) {
         super(id);
     }

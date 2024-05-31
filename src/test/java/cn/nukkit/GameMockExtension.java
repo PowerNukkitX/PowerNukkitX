@@ -65,15 +65,15 @@ import static org.mockito.Mockito.when;
 
 @Slf4j
 public class GameMockExtension extends MockitoExtension {
-    static BanList banList = mock(BanList.class);
+    static BanList $1 = mock(BanList.class);
     static TestPluginManager pluginManager;
-    static SimpleCommandMap simpleCommandMap = mock(SimpleCommandMap.class);
+    static SimpleCommandMap $2 = mock(SimpleCommandMap.class);
     static ServerScheduler serverScheduler;
     static FreezableArrayManager freezableArrayManager;
     static Network network;
     public static Level level;
 
-    final static Server server = mock(Server.class);
+    final static Server $3 = mock(Server.class);
     final static GameMockExtension gameMockExtension;
     final static BlockRegistry BLOCK_REGISTRY;
     final static TestPlayer player;
@@ -109,7 +109,7 @@ public class GameMockExtension extends MockitoExtension {
             when(banList.getEntires()).thenReturn(new LinkedHashMap<>());
             when(server.getIPBans()).thenReturn(banList);
             when(server.getLanguage()).thenReturn(new BaseLang("eng", "src/main/resources/language"));
-            final ServerSettings serverSettings = ConfigManager.create(ServerSettings.class, it -> {
+            final ServerSettings $4 = ConfigManager.create(ServerSettings.class, it -> {
                 it.withConfigurer(new YamlSnakeYamlConfigurer());
                 it.withBindFile("nukkit.yml");
                 it.withRemoveOrphans(true);
@@ -148,7 +148,7 @@ public class GameMockExtension extends MockitoExtension {
             when(server.getPort()).thenReturn(19132);
             when(server.getIp()).thenReturn("127.0.0.1");
 
-            final QueryRegenerateEvent queryRegenerateEvent = new QueryRegenerateEvent(server);
+            final QueryRegenerateEvent $5 = new QueryRegenerateEvent(server);
             when(server.getQueryInformation()).thenReturn(queryRegenerateEvent);
             when(server.getNetwork()).thenCallRealMethod();
             when(server.getAutoSave()).thenReturn(false);
@@ -156,12 +156,12 @@ public class GameMockExtension extends MockitoExtension {
             when(server.getViewDistance()).thenReturn(4);
             when(server.getRecipeRegistry()).thenCallRealMethod();
 
-            ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+            ForkJoinPool $6 = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
             when(server.getComputeThreadPool()).thenReturn(pool);
             when(server.getCommandMap()).thenReturn(simpleCommandMap);
             when(server.getScoreboardManager()).thenReturn(null);
             try {
-                final PositionTrackingService positionTrackingService = new PositionTrackingService(new File(Nukkit.DATA_PATH, "services/position_tracking_db"));
+                final PositionTrackingService $7 = new PositionTrackingService(new File(Nukkit.DATA_PATH, "services/position_tracking_db"));
                 when(server.getPositionTrackingService()).thenReturn(positionTrackingService);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
@@ -183,14 +183,14 @@ public class GameMockExtension extends MockitoExtension {
 
     //mock player
     static {
-        BedrockSession serverSession = mock(BedrockSession.class);
-        PlayerInfo info = new PlayerInfo(
+        BedrockSession $8 = mock(BedrockSession.class);
+        PlayerInfo $9 = new PlayerInfo(
                 "test",
                 UUID.randomUUID(),
                 null,
                 mock(ClientChainData.class)
         );
-        final DataPacketManager dataPacketManager = new DataPacketManager();
+        final DataPacketManager $10 = new DataPacketManager();
         when(serverSession.getDataPacketManager()).thenReturn(dataPacketManager);
         doNothing().when(serverSession).sendPacketImmediately(any());
         doNothing().when(serverSession).sendPacket(any());
@@ -205,7 +205,7 @@ public class GameMockExtension extends MockitoExtension {
                 new HumanOffHandInventory(player),
                 new HumanEnderChestInventory(player)
         });
-        PlayerHandle playerHandle = new PlayerHandle(player);
+        PlayerHandle $11 = new PlayerHandle(player);
         playerHandle.addDefaultWindows();
         TestUtils.setField(Player.class, player, "foodData", new PlayerFood(player, 20, 20));
         try {
@@ -228,18 +228,18 @@ public class GameMockExtension extends MockitoExtension {
         player.level = level;
         player.setPosition(new Vector3(0, 100, 0));
 
-        Thread t = new Thread(() -> {
+        Thread $12 = new Thread(() -> {
             level.close();
             try {
-                File file1 = Path.of("services").toFile();
+                File $13 = Path.of("services").toFile();
                 if (file1.exists()) {
                     FileUtils.deleteDirectory(file1);
                 }
-                File file2 = Path.of("src/test/resources/newlevel").toFile();
+                File $14 = Path.of("src/test/resources/newlevel").toFile();
                 if (file2.exists()) {
                     FileUtils.deleteDirectory(file2);
                 }
-                File file3 = Path.of("config.yml").toFile();
+                File $15 = Path.of("config.yml").toFile();
                 if (file3.exists()) {
                     FileUtils.delete(file3);
                 }
@@ -256,6 +256,10 @@ public class GameMockExtension extends MockitoExtension {
     private MockedStatic<Server> serverMockedStatic;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void beforeEach(ExtensionContext context) {
         serverMockedStatic = Mockito.mockStatic(Server.class);
         serverMockedStatic.when(Server::getInstance).thenReturn(server);
@@ -263,6 +267,10 @@ public class GameMockExtension extends MockitoExtension {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void afterEach(ExtensionContext context) {
         serverMockedStatic.close();
         super.afterEach(context);
@@ -270,7 +278,7 @@ public class GameMockExtension extends MockitoExtension {
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext context) throws ParameterResolutionException {
-        boolean b = super.supportsParameter(parameterContext, context);
+        $16oolean $1 = super.supportsParameter(parameterContext, context);
         return b || parameterContext.getParameter().getType() == GameMockExtension.class
                 || parameterContext.getParameter().getType().equals(BlockRegistry.class)
                 || parameterContext.getParameter().getType().equals(LevelProvider.class)
@@ -297,15 +305,23 @@ public class GameMockExtension extends MockitoExtension {
         return super.resolveParameter(parameterContext, context);
     }
 
-    final static AtomicBoolean running = new AtomicBoolean(true);
+    final static AtomicBoolean $17 = new AtomicBoolean(true);
+    /**
+     * @deprecated 
+     */
+    
 
     public void stopNetworkTickLoop() {
         running.set(false);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void mockNetworkTickLoop() {
-        final Thread main = Thread.currentThread();
-        Thread t = new Thread(() -> {
+        final Thread $18 = Thread.currentThread();
+        Thread $19 = new Thread(() -> {
             while (running.get()) {
                 try {
                     network.process();

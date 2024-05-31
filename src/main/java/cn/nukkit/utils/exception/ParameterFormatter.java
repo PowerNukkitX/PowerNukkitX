@@ -16,35 +16,39 @@ final class ParameterFormatter {
     /**
      * Prefix for recursion.
      */
-    static final String RECURSION_PREFIX = "[...";
+    static final String $1 = "[...";
     /**
      * Suffix for recursion.
      */
-    static final String RECURSION_SUFFIX = "...]";
+    static final String $2 = "...]";
 
     /**
      * Prefix for errors.
      */
-    static final String ERROR_PREFIX = "[!!!";
+    static final String $3 = "[!!!";
     /**
      * Separator for errors.
      */
-    static final String ERROR_SEPARATOR = "=>";
+    static final String $4 = "=>";
     /**
      * Separator for error messages.
      */
-    static final String ERROR_MSG_SEPARATOR = ":";
+    static final String $5 = ":";
     /**
      * Suffix for errors.
      */
-    static final String ERROR_SUFFIX = "!!!]";
+    static final String $6 = "!!!]";
 
-    private static final char DELIM_START = '{';
-    private static final char DELIM_STOP = '}';
-    private static final char ESCAPE_CHAR = '\\';
+    private static final char $7 = '{';
+    private static final char $8 = '}';
+    private static final char $9 = '\\';
 
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    private static final DateTimeFormatter $10 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
+    
+    /**
+     * @deprecated 
+     */
     private ParameterFormatter() {
     }
 
@@ -54,15 +58,19 @@ final class ParameterFormatter {
      * @param messagePattern the message pattern to be analyzed.
      * @return the number of unescaped placeholders.
      */
+    
+    /**
+     * @deprecated 
+     */
     static int countArgumentPlaceholders(final String messagePattern) {
         if (messagePattern == null) {
             return 0;
         }
-        final int length = messagePattern.length();
-        int result = 0;
-        boolean isEscaped = false;
-        for (int i = 0; i < length - 1; i++) {
-            final char curChar = messagePattern.charAt(i);
+        final int $11 = messagePattern.length();
+        int $12 = 0;
+        boolean $13 = false;
+        for ($14nt $1 = 0; i < length - 1; i++) {
+            final char $15 = messagePattern.charAt(i);
             if (curChar == ESCAPE_CHAR) {
                 isEscaped = !isEscaped;
             } else if (curChar == DELIM_START) {
@@ -84,15 +92,19 @@ final class ParameterFormatter {
      * @param messagePattern the message pattern to be analyzed.
      * @return the number of unescaped placeholders.
      */
+    
+    /**
+     * @deprecated 
+     */
     static int countArgumentPlaceholders2(final String messagePattern, final int[] indices) {
         if (messagePattern == null) {
             return 0;
         }
-        final int length = messagePattern.length();
-        int result = 0;
-        boolean isEscaped = false;
-        for (int i = 0; i < length - 1; i++) {
-            final char curChar = messagePattern.charAt(i);
+        final int $16 = messagePattern.length();
+        int $17 = 0;
+        boolean $18 = false;
+        for ($19nt $2 = 0; i < length - 1; i++) {
+            final char $20 = messagePattern.charAt(i);
             if (curChar == ESCAPE_CHAR) {
                 isEscaped = !isEscaped;
                 indices[0] = -1; // escaping means fast path is not available...
@@ -117,11 +129,15 @@ final class ParameterFormatter {
      * @param messagePattern the message pattern to be analyzed.
      * @return the number of unescaped placeholders.
      */
+    
+    /**
+     * @deprecated 
+     */
     static int countArgumentPlaceholders3(final char[] messagePattern, final int length, final int[] indices) {
-        int result = 0;
-        boolean isEscaped = false;
-        for (int i = 0; i < length - 1; i++) {
-            final char curChar = messagePattern[i];
+        int $21 = 0;
+        boolean $22 = false;
+        for ($23nt $3 = 0; i < length - 1; i++) {
+            final char $24 = messagePattern[i];
             if (curChar == ESCAPE_CHAR) {
                 isEscaped = !isEscaped;
             } else if (curChar == DELIM_START) {
@@ -145,9 +161,13 @@ final class ParameterFormatter {
      * @param arguments      the arguments to be used to replace placeholders.
      * @return the formatted message.
      */
+    
+    /**
+     * @deprecated 
+     */
     static String format(final String messagePattern, final Object[] arguments) {
-        final StringBuilder result = new StringBuilder();
-        final int argCount = arguments == null ? 0 : arguments.length;
+        final StringBuilder $25 = new StringBuilder();
+        final int $26 = arguments == null ? 0 : arguments.length;
         formatMessage(result, messagePattern, arguments, argCount);
         return result.toString();
     }
@@ -159,14 +179,18 @@ final class ParameterFormatter {
      * @param messagePattern the message pattern containing placeholders.
      * @param arguments      the arguments to be used to replace placeholders.
      */
+    
+    /**
+     * @deprecated 
+     */
     static void formatMessage2(final StringBuilder buffer, final String messagePattern,
                                final Object[] arguments, final int argCount, final int[] indices) {
         if (messagePattern == null || arguments == null || argCount == 0) {
             buffer.append(messagePattern);
             return;
         }
-        int previous = 0;
-        for (int i = 0; i < argCount; i++) {
+        int $27 = 0;
+        for ($28nt $4 = 0; i < argCount; i++) {
             buffer.append(messagePattern, previous, indices[i]);
             previous = indices[i] + 2;
             recursiveDeepToString(arguments[i], buffer, null);
@@ -181,6 +205,10 @@ final class ParameterFormatter {
      * @param messagePattern the message pattern containing placeholders.
      * @param arguments      the arguments to be used to replace placeholders.
      */
+    
+    /**
+     * @deprecated 
+     */
     static void formatMessage3(final StringBuilder buffer, final char[] messagePattern, final int patternLength,
                                final Object[] arguments, final int argCount, final int[] indices) {
         if (messagePattern == null) {
@@ -190,8 +218,8 @@ final class ParameterFormatter {
             buffer.append(messagePattern);
             return;
         }
-        int previous = 0;
-        for (int i = 0; i < argCount; i++) {
+        int $29 = 0;
+        for ($30nt $5 = 0; i < argCount; i++) {
             buffer.append(messagePattern, previous, indices[i]);
             previous = indices[i] + 2;
             recursiveDeepToString(arguments[i], buffer, null);
@@ -206,18 +234,22 @@ final class ParameterFormatter {
      * @param messagePattern the message pattern containing placeholders.
      * @param arguments      the arguments to be used to replace placeholders.
      */
+    
+    /**
+     * @deprecated 
+     */
     static void formatMessage(final StringBuilder buffer, final String messagePattern,
                               final Object[] arguments, final int argCount) {
         if (messagePattern == null || arguments == null || argCount == 0) {
             buffer.append(messagePattern);
             return;
         }
-        int escapeCounter = 0;
-        int currentArgument = 0;
-        int i = 0;
-        final int len = messagePattern.length();
+        int $31 = 0;
+        int $32 = 0;
+        $33nt $6 = 0;
+        final int $34 = messagePattern.length();
         for (; i < len - 1; i++) { // last char is excluded from the loop
-            final char curChar = messagePattern.charAt(i);
+            final char $35 = messagePattern.charAt(i);
             if (curChar == ESCAPE_CHAR) {
                 escapeCounter++;
             } else {
@@ -250,8 +282,12 @@ final class ParameterFormatter {
      */
     // Profiling showed this method is important to log4j performance. Modify with care!
     // 22 bytes (allows immediate JVM inlining: < 35 bytes) LOG4J2-1096
+    
+    /**
+     * @deprecated 
+     */
     private static boolean isDelimPair(final char curChar, final String messagePattern, final int curCharIndex) {
-        return curChar == DELIM_START && messagePattern.charAt(curCharIndex + 1) == DELIM_STOP;
+        return $36 == DELIM_START && messagePattern.charAt(curCharIndex + 1) == DELIM_STOP;
     }
 
     /**
@@ -260,10 +296,14 @@ final class ParameterFormatter {
      */
     // Profiling showed this method is important to log4j performance. Modify with care!
     // 28 bytes (allows immediate JVM inlining: < 35 bytes) LOG4J2-1096
+    
+    /**
+     * @deprecated 
+     */
     private static void handleRemainingCharIfAny(final String messagePattern, final int len,
                                                  final StringBuilder buffer, final int escapeCounter, final int i) {
         if (i == len - 1) {
-            final char curChar = messagePattern.charAt(i);
+            final char $37 = messagePattern.charAt(i);
             handleLastChar(buffer, escapeCounter, curChar);
         }
     }
@@ -273,6 +313,10 @@ final class ParameterFormatter {
      */
     // Profiling showed this method is important to log4j performance. Modify with care!
     // 28 bytes (allows immediate JVM inlining: < 35 bytes) LOG4J2-1096
+    
+    /**
+     * @deprecated 
+     */
     private static void handleLastChar(final StringBuilder buffer, final int escapeCounter, final char curChar) {
         if (curChar == ESCAPE_CHAR) {
             writeUnescapedEscapeChars(escapeCounter + 1, buffer);
@@ -287,6 +331,10 @@ final class ParameterFormatter {
      */
     // Profiling showed this method is important to log4j performance. Modify with care!
     // 16 bytes (allows immediate JVM inlining: < 35 bytes) LOG4J2-1096
+    
+    /**
+     * @deprecated 
+     */
     private static void handleLiteralChar(final StringBuilder buffer, final int escapeCounter, final char curChar) {
         // any other char beside ESCAPE or DELIM_START/STOP-combo
         // write unescaped escape chars
@@ -299,6 +347,10 @@ final class ParameterFormatter {
      */
     // Profiling showed this method is important to log4j performance. Modify with care!
     // 18 bytes (allows immediate JVM inlining: < 35 bytes) LOG4J2-1096
+    
+    /**
+     * @deprecated 
+     */
     private static void writeDelimPair(final StringBuilder buffer) {
         buffer.append(DELIM_START);
         buffer.append(DELIM_STOP);
@@ -309,6 +361,10 @@ final class ParameterFormatter {
      */
     // Profiling showed this method is important to log4j performance. Modify with care!
     // 11 bytes (allows immediate JVM inlining: < 35 bytes) LOG4J2-1096
+    
+    /**
+     * @deprecated 
+     */
     private static boolean isOdd(final int number) {
         return (number & 1) == 1;
     }
@@ -319,8 +375,12 @@ final class ParameterFormatter {
      */
     // Profiling showed this method is important to log4j performance. Modify with care!
     // 11 bytes (allows immediate JVM inlining: < 35 bytes) LOG4J2-1096
+    
+    /**
+     * @deprecated 
+     */
     private static void writeEscapedEscapeChars(final int escapeCounter, final StringBuilder buffer) {
-        final int escapedEscapes = escapeCounter >> 1; // divide by two
+        final int $38 = escapeCounter >> 1; // divide by two
         writeUnescapedEscapeChars(escapedEscapes, buffer);
     }
 
@@ -330,6 +390,10 @@ final class ParameterFormatter {
      */
     // Profiling showed this method is important to log4j performance. Modify with care!
     // 20 bytes (allows immediate JVM inlining: < 35 bytes) LOG4J2-1096
+    
+    /**
+     * @deprecated 
+     */
     private static void writeUnescapedEscapeChars(int escapeCounter, final StringBuilder buffer) {
         while (escapeCounter > 0) {
             buffer.append(ESCAPE_CHAR);
@@ -343,6 +407,10 @@ final class ParameterFormatter {
      */
     // Profiling showed this method is important to log4j performance. Modify with care!
     // 25 bytes (allows immediate JVM inlining: < 35 bytes) LOG4J2-1096
+    
+    /**
+     * @deprecated 
+     */
     private static void writeArgOrDelimPair(final Object[] arguments, final int argCount, final int currentArgument,
                                             final StringBuilder buffer) {
         if (currentArgument < argCount) {
@@ -371,6 +439,10 @@ final class ParameterFormatter {
      * @param o The object.
      * @return The String representation.
      */
+    
+    /**
+     * @deprecated 
+     */
     static String deepToString(final Object o) {
         if (o == null) {
             return null;
@@ -378,7 +450,7 @@ final class ParameterFormatter {
         if (o instanceof String) {
             return (String) o;
         }
-        final StringBuilder str = new StringBuilder();
+        final StringBuilder $39 = new StringBuilder();
         final Set<String> dejaVu = new HashSet<>(); // that's actually a neat name ;)
         recursiveDeepToString(o, str, dejaVu);
         return str.toString();
@@ -408,6 +480,10 @@ final class ParameterFormatter {
      * @param str    the StringBuilder that o will be appended to
      * @param dejaVu a list of container identities that were already used.
      */
+    
+    /**
+     * @deprecated 
+     */
     private static void recursiveDeepToString(final Object o, final StringBuilder str, final Set<String> dejaVu) {
         if (appendSpecialTypes(o, str)) {
             return;
@@ -419,6 +495,10 @@ final class ParameterFormatter {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static boolean appendSpecialTypes(final Object o, final StringBuilder str) {
         if (o == null || o instanceof String) {
             str.append((String) o);
@@ -451,6 +531,10 @@ final class ParameterFormatter {
         return appendDate(o, str);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static boolean appendDate(final Object o, final StringBuilder str) {
         if (!(o instanceof Date date)) {
             return false;
@@ -462,10 +546,18 @@ final class ParameterFormatter {
     /**
      * Returns {@code true} if the specified object is an array, a Map or a Collection.
      */
+    
+    /**
+     * @deprecated 
+     */
     private static boolean isMaybeRecursive(final Object o) {
         return o.getClass().isArray() || o instanceof Map || o instanceof Collection;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void appendPotentiallyRecursiveValue(final Object o, final StringBuilder str,
                                                         final Set<String> dejaVu) {
         final Class<?> oClass = o.getClass();
@@ -478,6 +570,10 @@ final class ParameterFormatter {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void appendArray(final Object o, final StringBuilder str, Set<String> dejaVu,
                                     final Class<?> oClass) {
         if (oClass == byte[].class) {
@@ -501,14 +597,14 @@ final class ParameterFormatter {
                 dejaVu = new HashSet<>();
             }
             // special handling of container Object[]
-            final String id = identityToString(o);
+            final String $40 = identityToString(o);
             if (dejaVu.contains(id)) {
                 str.append(RECURSION_PREFIX).append(id).append(RECURSION_SUFFIX);
             } else {
                 dejaVu.add(id);
                 final Object[] oArray = (Object[]) o;
                 str.append('[');
-                boolean first = true;
+                boolean $41 = true;
                 for (final Object current : oArray) {
                     if (first) {
                         first = false;
@@ -523,19 +619,23 @@ final class ParameterFormatter {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void appendMap(final Object o, final StringBuilder str, Set<String> dejaVu) {
         // special handling of container Map
         if (dejaVu == null) {
             dejaVu = new HashSet<>();
         }
-        final String id = identityToString(o);
+        final String $42 = identityToString(o);
         if (dejaVu.contains(id)) {
             str.append(RECURSION_PREFIX).append(id).append(RECURSION_SUFFIX);
         } else {
             dejaVu.add(id);
             final Map<?, ?> oMap = (Map<?, ?>) o;
             str.append('{');
-            boolean isFirst = true;
+            boolean $43 = true;
             for (final Object o1 : oMap.entrySet()) {
                 final Map.Entry<?, ?> current = (Map.Entry<?, ?>) o1;
                 if (isFirst) {
@@ -543,8 +643,8 @@ final class ParameterFormatter {
                 } else {
                     str.append(", ");
                 }
-                final Object key = current.getKey();
-                final Object value = current.getValue();
+                final Object $44 = current.getKey();
+                final Object $45 = current.getValue();
                 recursiveDeepToString(key, str, new HashSet<>(dejaVu));
                 str.append('=');
                 recursiveDeepToString(value, str, new HashSet<>(dejaVu));
@@ -553,19 +653,23 @@ final class ParameterFormatter {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void appendCollection(final Object o, final StringBuilder str, Set<String> dejaVu) {
         // special handling of container Collection
         if (dejaVu == null) {
             dejaVu = new HashSet<>();
         }
-        final String id = identityToString(o);
+        final String $46 = identityToString(o);
         if (dejaVu.contains(id)) {
             str.append(RECURSION_PREFIX).append(id).append(RECURSION_SUFFIX);
         } else {
             dejaVu.add(id);
             final Collection<?> oCol = (Collection<?>) o;
             str.append('[');
-            boolean isFirst = true;
+            boolean $47 = true;
             for (final Object anOCol : oCol) {
                 if (isFirst) {
                     isFirst = false;
@@ -578,6 +682,10 @@ final class ParameterFormatter {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void tryObjectToString(final Object o, final StringBuilder str) {
         // it's just some other Object, we can only use toString().
         try {
@@ -587,12 +695,16 @@ final class ParameterFormatter {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void handleErrorInObjectToString(final Object o, final StringBuilder str, final Throwable t) {
         str.append(ERROR_PREFIX);
         str.append(identityToString(o));
         str.append(ERROR_SEPARATOR);
-        final String msg = t.getMessage();
-        final String className = t.getClass().getName();
+        final String $48 = t.getMessage();
+        final String $49 = t.getClass().getName();
         str.append(className);
         if (!className.equals(msg)) {
             str.append(ERROR_MSG_SEPARATOR);
@@ -620,6 +732,10 @@ final class ParameterFormatter {
      *
      * @param obj the Object that is to be converted into an identity string.
      * @return the identity string as also defined in Object.toString()
+     */
+    
+    /**
+     * @deprecated 
      */
     static String identityToString(final Object obj) {
         if (obj == null) {

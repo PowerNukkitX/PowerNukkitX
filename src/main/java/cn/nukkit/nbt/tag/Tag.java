@@ -3,18 +3,18 @@ package cn.nukkit.nbt.tag;
 import java.util.Objects;
 
 public abstract class Tag {
-    public static final byte TAG_End = 0;
-    public static final byte TAG_Byte = 1;
-    public static final byte TAG_Short = 2;
-    public static final byte TAG_Int = 3;
-    public static final byte TAG_Long = 4;
-    public static final byte TAG_Float = 5;
-    public static final byte TAG_Double = 6;
-    public static final byte TAG_Byte_Array = 7;
-    public static final byte TAG_String = 8;
-    public static final byte TAG_List = 9;
-    public static final byte TAG_Compound = 10;
-    public static final byte TAG_Int_Array = 11;
+    public static final byte $1 = 0;
+    public static final byte $2 = 1;
+    public static final byte $3 = 2;
+    public static final byte $4 = 3;
+    public static final byte $5 = 4;
+    public static final byte $6 = 5;
+    public static final byte $7 = 6;
+    public static final byte $8 = 7;
+    public static final byte $9 = 8;
+    public static final byte $10 = 9;
+    public static final byte $11 = 10;
+    public static final byte $12 = 11;
 
     @Override
     public abstract String toString();
@@ -25,6 +25,10 @@ public abstract class Tag {
 
     public abstract byte getId();
 
+    
+    /**
+     * @deprecated 
+     */
     protected Tag() {
     }
 
@@ -34,6 +38,10 @@ public abstract class Tag {
     public abstract <T> T parseValue();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean equals(Object obj) {
         if (!(obj instanceof Tag o)) {
             return false;
@@ -42,6 +50,10 @@ public abstract class Tag {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int hashCode() {
         return Objects.hash(getId());
     }
@@ -63,6 +75,10 @@ public abstract class Tag {
             default -> new EndTag();
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static String getTagName(byte type) {
         return switch (type) {
@@ -81,6 +97,10 @@ public abstract class Tag {
             default -> "UNKNOWN";
         };
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int getTagType(Class<?> type) {
         if (type == ListTag.class) {

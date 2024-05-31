@@ -15,7 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 public class AnimatePacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.ANIMATE_PACKET;
+    public static final int $1 = ProtocolInfo.ANIMATE_PACKET;
 
 
     public long eid;
@@ -23,6 +23,10 @@ public class AnimatePacket extends DataPacket {
     public float rowingTime;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.action = Action.fromId(byteBuf.readVarInt());
         this.eid = byteBuf.readEntityRuntimeId();
@@ -32,6 +36,10 @@ public class AnimatePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
 
         byteBuf.writeVarInt(this.action.getId());
@@ -42,6 +50,10 @@ public class AnimatePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -68,6 +80,10 @@ public class AnimatePacket extends DataPacket {
         Action(int id) {
             this.id = id;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public int getId() {
             return id;
@@ -77,6 +93,10 @@ public class AnimatePacket extends DataPacket {
             return ID_LOOKUP.get(id);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

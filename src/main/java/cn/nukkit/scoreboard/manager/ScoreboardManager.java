@@ -26,6 +26,10 @@ public class ScoreboardManager implements IScoreboardManager{
     protected Map<DisplaySlot, IScoreboard> display = new HashMap<>();
     protected Set<IScoreboardViewer> viewers = new HashSet<>();
     protected IScoreboardStorage storage;
+    /**
+     * @deprecated 
+     */
+    
 
     public ScoreboardManager(IScoreboardStorage storage) {
         this.storage = storage;
@@ -33,8 +37,12 @@ public class ScoreboardManager implements IScoreboardManager{
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean addScoreboard(IScoreboard scoreboard) {
-        var event = new ScoreboardObjectiveChangeEvent(scoreboard, ScoreboardObjectiveChangeEvent.ActionType.ADD);
+        var $1 = new ScoreboardObjectiveChangeEvent(scoreboard, ScoreboardObjectiveChangeEvent.ActionType.ADD);
         Server.getInstance().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
@@ -45,15 +53,23 @@ public class ScoreboardManager implements IScoreboardManager{
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean removeScoreboard(IScoreboard scoreboard) {
         return removeScoreboard(scoreboard.getObjectiveName());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean removeScoreboard(String objectiveName) {
-        var removed = scoreboards.get(objectiveName);
+        var $2 = scoreboards.get(objectiveName);
         if (removed == null) return false;
-        var event = new ScoreboardObjectiveChangeEvent(removed, ScoreboardObjectiveChangeEvent.ActionType.REMOVE);
+        var $3 = new ScoreboardObjectiveChangeEvent(removed, ScoreboardObjectiveChangeEvent.ActionType.REMOVE);
         Server.getInstance().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
@@ -75,11 +91,19 @@ public class ScoreboardManager implements IScoreboardManager{
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containScoreboard(IScoreboard scoreboard) {
         return scoreboards.containsKey(scoreboard.getObjectiveName());
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean containScoreboard(String name) {
         return scoreboards.containsKey(name);
     }
@@ -90,15 +114,23 @@ public class ScoreboardManager implements IScoreboardManager{
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setDisplay(DisplaySlot slot, @Nullable IScoreboard scoreboard) {
-        var old = display.put(slot, scoreboard);
+        var $4 = display.put(slot, scoreboard);
         if (old != null) this.viewers.forEach(viewer -> old.removeViewer(viewer, slot));
         if (scoreboard != null) this.viewers.forEach(viewer -> scoreboard.addViewer(viewer, slot));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean addViewer(IScoreboardViewer viewer) {
-        var added =  this.viewers.add(viewer);
+        var $5 =  this.viewers.add(viewer);
         if (added) this.display.forEach((slot, scoreboard) -> {
             if (scoreboard != null) scoreboard.addViewer(viewer, slot);
         });
@@ -106,8 +138,12 @@ public class ScoreboardManager implements IScoreboardManager{
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean removeViewer(IScoreboardViewer viewer) {
-        var removed = viewers.remove(viewer);
+        var $6 = viewers.remove(viewer);
         if (removed) this.display.forEach((slot, scoreboard) -> {
             if (scoreboard != null) scoreboard.removeViewer(viewer, slot);
         });
@@ -122,9 +158,13 @@ public class ScoreboardManager implements IScoreboardManager{
      */
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onPlayerJoin(Player player) {
         addViewer(player);
-        var scorer = new PlayerScorer(player);
+        var $7 = new PlayerScorer(player);
         this.scoreboards.values().forEach(scoreboard -> {
             if (scoreboard.containLine(scorer)) {
                 this.viewers.forEach(viewer -> viewer.updateScore(scoreboard.getLine(scorer)));
@@ -133,8 +173,12 @@ public class ScoreboardManager implements IScoreboardManager{
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void beforePlayerQuit(Player player) {
-        var scorer = new PlayerScorer(player);
+        var $8 = new PlayerScorer(player);
         this.scoreboards.values().forEach(scoreboard -> {
             if (scoreboard.containLine(scorer)) {
                 this.viewers.forEach(viewer -> viewer.removeLine(scoreboard.getLine(scorer)));
@@ -144,8 +188,12 @@ public class ScoreboardManager implements IScoreboardManager{
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onEntityDead(EntityLiving entity) {
-        var scorer = new EntityScorer(entity);
+        var $9 = new EntityScorer(entity);
         this.scoreboards.forEach((s, scoreboard) -> {
             if (scoreboard.getLines().isEmpty()) return;
             scoreboard.removeLine(scorer);
@@ -153,6 +201,10 @@ public class ScoreboardManager implements IScoreboardManager{
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void save() {
         storage.removeAllScoreboard();
         storage.saveScoreboard(scoreboards.values());
@@ -160,6 +212,10 @@ public class ScoreboardManager implements IScoreboardManager{
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void read() {
         //新建一个列表避免迭代冲突
         new ArrayList<>(this.scoreboards.values()).forEach(this::removeScoreboard);
@@ -167,7 +223,7 @@ public class ScoreboardManager implements IScoreboardManager{
 
         scoreboards = storage.readScoreboard();
         storage.readDisplay().forEach((slot, objectiveName) -> {
-            var scoreboard = getScoreboard(objectiveName);
+            var $10 = getScoreboard(objectiveName);
             if (scoreboard != null) {
                 this.setDisplay(slot, scoreboard);
             }

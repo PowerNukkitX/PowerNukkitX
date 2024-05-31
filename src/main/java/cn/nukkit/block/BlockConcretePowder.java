@@ -13,21 +13,37 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public abstract class BlockConcretePowder extends BlockFallable {
+    /**
+     * @deprecated 
+     */
+    
     public BlockConcretePowder(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 2.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getToolType() {
         return ItemTool.TYPE_SHOVEL;
     }
@@ -35,12 +51,16 @@ public abstract class BlockConcretePowder extends BlockFallable {
     public abstract BlockConcrete getConcrete();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             super.onUpdate(Level.BLOCK_UPDATE_NORMAL);
 
-            for (int side = 1; side <= 5; side++) {
-                Block block = this.getSide(BlockFace.fromIndex(side));
+            for (int $1 = 1; side <= 5; side++) {
+                Block $2 = this.getSide(BlockFace.fromIndex(side));
                 if (block.getId().equals(Block.FLOWING_WATER) || block.getId().equals(Block.WATER)) {
                     this.level.setBlock(this, getConcrete(), true, true);
                 }
@@ -52,11 +72,15 @@ public abstract class BlockConcretePowder extends BlockFallable {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean place(@NotNull Item item, @NotNull Block b, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        boolean concrete = false;
+        boolean $3 = false;
 
-        for (int side = 1; side <= 5; side++) {
-            Block block = this.getSide(BlockFace.fromIndex(side));
+        for (int $4 = 1; side <= 5; side++) {
+            Block $5 = this.getSide(BlockFace.fromIndex(side));
             if (block.getId().equals(Block.FLOWING_WATER) || block.getId().equals(Block.WATER)) {
                 concrete = true;
                 break;

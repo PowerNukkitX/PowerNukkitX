@@ -11,7 +11,7 @@ import java.util.List;
 
 public class BlockPistonEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -21,6 +21,10 @@ public class BlockPistonEvent extends BlockEvent implements Cancellable {
     private final List<Block> blocks;
     private final List<Block> destroyedBlocks;
     private final boolean extending;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockPistonEvent(BlockPistonBase piston, BlockFace direction, List<Block> blocks, List<Block> destroyedBlocks, boolean extending) {
         super(piston);
@@ -41,6 +45,10 @@ public class BlockPistonEvent extends BlockEvent implements Cancellable {
     public List<Block> getDestroyedBlocks() {
         return destroyedBlocks;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isExtending() {
         return extending;

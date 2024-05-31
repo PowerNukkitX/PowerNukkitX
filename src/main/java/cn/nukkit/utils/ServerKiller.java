@@ -8,10 +8,18 @@ import java.util.concurrent.TimeUnit;
 public class ServerKiller extends Thread {
 
     public final long sleepTime;
+    /**
+     * @deprecated 
+     */
+    
 
     public ServerKiller(long time) {
         this(time, TimeUnit.SECONDS);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public ServerKiller(long time, TimeUnit unit) {
         this.sleepTime = unit.toMillis(time);
@@ -20,6 +28,10 @@ public class ServerKiller extends Thread {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void run() {
         try {
             sleep(sleepTime);

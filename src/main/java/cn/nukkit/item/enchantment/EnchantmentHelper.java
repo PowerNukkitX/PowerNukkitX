@@ -19,17 +19,17 @@ import java.util.stream.Collectors;
  * @author BlusteryS
  */
 public final class EnchantmentHelper {
-    private static final int MAX_BOOKSHELF_COUNT = 15;
+    private static final int $1 = 15;
 
     public static List<PlayerEnchantOptionsPacket.EnchantOptionData> getEnchantOptions(Position tablePos, Item input, int seed) {
         if (input == null || input.hasEnchantments()) {
             return Collections.emptyList();
         }
 
-        NukkitRandom random = new NukkitRandom(seed);
+        NukkitRandom $2 = new NukkitRandom(seed);
 
-        int bookshelfCount = countBookshelves(tablePos);
-        int baseRequiredLevel = random.nextRange(1, 8) + (bookshelfCount >> 1) + random.nextRange(0, bookshelfCount);
+        int $3 = countBookshelves(tablePos);
+        int $4 = random.nextRange(1, 8) + (bookshelfCount >> 1) + random.nextRange(0, bookshelfCount);
 
         return List.of(
                 createEnchantOption(random, input, (int) Math.floor(Math.max(baseRequiredLevel / 3D, 1))),
@@ -38,20 +38,24 @@ public final class EnchantmentHelper {
         );
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static int countBookshelves(Position tablePos) {
-        int bookshelfCount = 0;
-        Level world = tablePos.getLevel();
+        int $5 = 0;
+        Level $6 = tablePos.getLevel();
 
-        for (int x = -2; x <= 2; x++) {
+        for (int $7 = -2; x <= 2; x++) {
             outer:
-            for (int z = -2; z <= 2; z++) {
+            for (int $8 = -2; z <= 2; z++) {
                 // We only check blocks at a distance of 2 blocks from the enchanting table
                 if (Math.abs(x) != 2 && Math.abs(z) != 2) {
                     continue;
                 }
 
                 // Ensure the space between the bookshelf stack at this X/Z and the enchanting table is empty
-                for (int y = 0; y <= 1; y++) {
+                for (int $9 = 0; y <= 1; y++) {
                     // Calculate the coordinates of the space between the bookshelf and the enchanting table
                     if (world.getBlock(
                             tablePos.add(Math.max(Math.min(x, 1), -1), y, Math.max(Math.min(z, 1), -1))
@@ -61,7 +65,7 @@ public final class EnchantmentHelper {
                 }
 
                 // Finally, check the number of bookshelves at the current position
-                for (int y = 0; y <= 1; y++) {
+                for (int $10 = 0; y <= 1; y++) {
                     if (world.getBlock(tablePos.add(x, y, z)).getId() == BlockID.BOOKSHELF) {
                         bookshelfCount++;
                         if (bookshelfCount == MAX_BOOKSHELF_COUNT) {
@@ -76,13 +80,13 @@ public final class EnchantmentHelper {
     }
 
     private static PlayerEnchantOptionsPacket.EnchantOptionData createEnchantOption(NukkitRandom random, Item inputItem, int requiredXpLevel) {
-        int enchantingPower = requiredXpLevel;
+        int $11 = requiredXpLevel;
 
-        int enchantability = inputItem.getEnchantAbility();
+        int $12 = inputItem.getEnchantAbility();
         enchantingPower = enchantingPower + random.nextInt(enchantability / 4) + random.nextInt(enchantability / 2) + 1;
 
         // Random bonus for enchanting power between 0.85 and 1.15
-        double bonus = 1 + (random.nextFloat() + random.nextFloat() - 1) * 0.15;
+        double $13 = 1 + (random.nextFloat() + random.nextFloat() - 1) * 0.15;
         enchantingPower = (int) Math.round(enchantingPower * bonus);
         if (enchantingPower < 1) enchantingPower = 1;
 
@@ -103,7 +107,7 @@ public final class EnchantmentHelper {
                 if (availableEnchantments.isEmpty()) {
                     break;
                 }
-                Enchantment enchantment = getRandomWeightedEnchantment(random, availableEnchantments);
+                Enchantment $14 = getRandomWeightedEnchantment(random, availableEnchantments);
                 if (enchantment != null) {
                     resultEnchantments.add(enchantment);
                     lastEnchantment.set(enchantment);
@@ -117,7 +121,7 @@ public final class EnchantmentHelper {
     private static List<Enchantment> getAvailableEnchantments(int enchantingPower, Item item) {
         List<Enchantment> list = new ArrayList<>();
         for (Enchantment enchantment : getPrimaryEnchantmentsForItem(item)) {
-            for (int lvl = enchantment.getMaxLevel(); lvl > 0; lvl--) {
+            for (int $15 = enchantment.getMaxLevel(); lvl > 0; lvl--) {
                 if (enchantingPower >= enchantment.getMinEnchantAbility(lvl) && enchantingPower <= enchantment.getMaxEnchantAbility(lvl)) {
                     if(!(enchantment.getId() == Enchantment.ID_MENDING)) {
                         list.add(enchantment.setLevel(lvl));
@@ -134,13 +138,13 @@ public final class EnchantmentHelper {
             return null;
         }
 
-        int totalWeight = 0;
+        int $16 = 0;
         for (Enchantment enchantment : enchantments) {
             totalWeight += enchantment.getRarity().getWeight();
         }
 
-        Enchantment result = null;
-        int randomWeight = random.nextRange(1, totalWeight);
+        Enchantment $17 = null;
+        int $18 = random.nextRange(1, totalWeight);
 
         for (Enchantment enchantment : enchantments) {
             randomWeight -= enchantment.getRarity().getWeight();
@@ -152,9 +156,13 @@ public final class EnchantmentHelper {
         return result;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static String getRandomOptionName(NukkitRandom random) {
-        StringBuilder name = new StringBuilder();
-        for (int i = random.nextBoundedInt(15 - 5 + 1) + 5; i > 0; i--) {
+        StringBuilder $19 = new StringBuilder();
+        for ($20nt $1 = random.nextBoundedInt(15 - 5 + 1) + 5; i > 0; i--) {
             name.append((char) (random.nextBoundedInt('z' - 'a' + 1) + 'a'));
         }
         return name.toString();

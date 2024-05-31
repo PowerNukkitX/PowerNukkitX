@@ -27,15 +27,19 @@ import java.util.UUID;
 @AllArgsConstructor
 public class StartGamePacket extends DataPacket {
 
-    public static final int NETWORK_ID = ProtocolInfo.START_GAME_PACKET;
+    public static final int $1 = ProtocolInfo.START_GAME_PACKET;
 
-    public static final int GAME_PUBLISH_SETTING_NO_MULTI_PLAY = 0;
-    public static final int GAME_PUBLISH_SETTING_INVITE_ONLY = 1;
-    public static final int GAME_PUBLISH_SETTING_FRIENDS_ONLY = 2;
-    public static final int GAME_PUBLISH_SETTING_FRIENDS_OF_FRIENDS = 3;
-    public static final int GAME_PUBLISH_SETTING_PUBLIC = 4;
+    public static final int $2 = 0;
+    public static final int $3 = 1;
+    public static final int $4 = 2;
+    public static final int $5 = 3;
+    public static final int $6 = 4;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
@@ -50,52 +54,52 @@ public class StartGamePacket extends DataPacket {
     public float pitch;
     public long seed;
     public byte dimension;
-    public int generator = 1;
+    public int $7 = 1;
     public int worldGamemode;
-    public boolean isHardcore = false;
+    public boolean $8 = false;
     public int difficulty;
     public int spawnX;
     public int spawnY;
     public int spawnZ;
-    public boolean hasAchievementsDisabled = true;
+    public boolean $9 = true;
 
     public boolean worldEditor;
-    public int dayCycleStopTime = -1; //-1 = not stopped, any positive value = stopped at that time
-    public int eduEditionOffer = 0;
-    public boolean hasEduFeaturesEnabled = false;
+    public int $10 = -1; //-1 = not stopped, any positive $11 = stopped at that time
+    public int $12 = 0;
+    public boolean $13 = false;
     public float rainLevel;
     public float lightningLevel;
-    public boolean hasConfirmedPlatformLockedContent = false;
-    public boolean multiplayerGame = true;
-    public boolean broadcastToLAN = true;
-    public int xblBroadcastIntent = GAME_PUBLISH_SETTING_PUBLIC;
-    public int platformBroadcastIntent = GAME_PUBLISH_SETTING_PUBLIC;
+    public boolean $14 = false;
+    public boolean $15 = true;
+    public boolean $16 = true;
+    public int $17 = GAME_PUBLISH_SETTING_PUBLIC;
+    public int $18 = GAME_PUBLISH_SETTING_PUBLIC;
     public boolean commandsEnabled;
-    public boolean isTexturePacksRequired = false;
+    public boolean $19 = false;
 
     public GameRules gameRules;
-    public boolean bonusChest = false;
-    public boolean hasStartWithMapEnabled = false;
+    public boolean $20 = false;
+    public boolean $21 = false;
 
-    public int permissionLevel = 1;
-    public int serverChunkTickRange = 4;
-    public boolean hasLockedBehaviorPack = false;
-    public boolean hasLockedResourcePack = false;
-    public boolean isFromLockedWorldTemplate = false;
-    public boolean isUsingMsaGamertagsOnly = false;
-    public boolean isFromWorldTemplate = false;
-    public boolean isWorldTemplateOptionLocked = false;
-    public boolean isOnlySpawningV1Villagers = false;
+    public int $22 = 1;
+    public int $23 = 4;
+    public boolean $24 = false;
+    public boolean $25 = false;
+    public boolean $26 = false;
+    public boolean $27 = false;
+    public boolean $28 = false;
+    public boolean $29 = false;
+    public boolean $30 = false;
 
-    public String vanillaVersion = ProtocolInfo.MINECRAFT_VERSION_NETWORK;
+    public String $31 = ProtocolInfo.MINECRAFT_VERSION_NETWORK;
     //HACK: For now we can specify this version, since the new chunk changes are not relevant for our Anvil format.
     //However, it could be that Microsoft will prevent this in a new update.
-    public CompoundTag playerPropertyData = new CompoundTag();
+    public CompoundTag $32 = new CompoundTag();
 
-    public String levelId = ""; //base64 string, usually the same as world folder name in vanilla
+    public String $33 = ""; //base64 string, usually the same as world folder name in vanilla
     public String worldName;
-    public String premiumWorldTemplateId = "";
-    public boolean isTrial = false;
+    public String $34 = "";
+    public boolean $35 = false;
     public boolean isMovementServerAuthoritative;
 
     public Integer serverAuthoritativeMovement;
@@ -108,7 +112,7 @@ public class StartGamePacket extends DataPacket {
 
     public final List<CustomBlockDefinition> blockProperties = new ArrayList<>();
 
-    public String multiplayerCorrelationId = "";
+    public String $36 = "";
 
     public boolean isDisablingPersonas;
 
@@ -142,6 +146,10 @@ public class StartGamePacket extends DataPacket {
      */
     public boolean isSoundsServerAuthoritative;
 
+    
+    /**
+     * @deprecated 
+     */
     private void writeLevelSettings(HandleByteBuf byteBuf) {
         /* Level settings start */
         byteBuf.writeLongLE(this.seed);
@@ -216,11 +224,19 @@ public class StartGamePacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeEntityUniqueId(this.entityUniqueId);
         byteBuf.writeEntityRuntimeId(this.entityRuntimeId);
@@ -269,6 +285,10 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(this.blockNetworkIdsHashed); // blockIdsAreHashed
         byteBuf.writeBoolean(this.isSoundsServerAuthoritative); // serverAuthSounds
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

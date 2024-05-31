@@ -8,7 +8,7 @@ import cn.nukkit.item.Item;
 
 public class LecternPlaceBookEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -17,6 +17,10 @@ public class LecternPlaceBookEvent extends BlockEvent implements Cancellable {
     private final Player player;
     private final BlockEntityLectern lectern;
     private Item book;
+    /**
+     * @deprecated 
+     */
+    
 
     public LecternPlaceBookEvent(Player player, BlockEntityLectern lectern, Item book) {
         super(lectern.getBlock());
@@ -36,6 +40,10 @@ public class LecternPlaceBookEvent extends BlockEvent implements Cancellable {
     public Item getBook() {
         return book.clone();
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBook(Item book) {
         this.book = book;

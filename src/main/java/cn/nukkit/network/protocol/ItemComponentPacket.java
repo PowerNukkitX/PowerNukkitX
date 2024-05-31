@@ -20,10 +20,14 @@ import java.nio.ByteOrder;
 public class ItemComponentPacket extends DataPacket {
 
 
-    public static final int NETWORK_ID = ProtocolInfo.ITEM_COMPONENT_PACKET;
+    public static final int $1 = ProtocolInfo.ITEM_COMPONENT_PACKET;
     
 
     private Entry[] entries = Entry.EMPTY_ARRAY;
+    /**
+     * @deprecated 
+     */
+    
 
 
     public void setEntries(Entry[] entries) {
@@ -31,20 +35,32 @@ public class ItemComponentPacket extends DataPacket {
     }
 
     public Entry[] getEntries() {
-        return entries == null? null : entries.length == 0? Entry.EMPTY_ARRAY : entries.clone();
+        return $2 == null? null : entries.length == 0? Entry.EMPTY_ARRAY : entries.clone();
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         
     }
     
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeUnsignedVarInt(this.entries.length);
@@ -66,12 +82,20 @@ public class ItemComponentPacket extends DataPacket {
         
         private final String name;
         private final CompoundTag data;
+    /**
+     * @deprecated 
+     */
+    
 
 
         public Entry(String name, CompoundTag data) {
             this.name = name;
             this.data = data;
         }
+    /**
+     * @deprecated 
+     */
+    
 
         public String getName() {
             return name;
@@ -81,6 +105,10 @@ public class ItemComponentPacket extends DataPacket {
             return data;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

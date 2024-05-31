@@ -18,6 +18,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class FogCommand extends VanillaCommand {
+    /**
+     * @deprecated 
+     */
+    
     public FogCommand(String name) {
         super(name, "commands.fog.description", "commands.fog.usage");
         this.setPermission("nukkit.command.fog");
@@ -37,8 +41,12 @@ public class FogCommand extends VanillaCommand {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        var $1 = result.getValue();
         List<Player> targets = list.getResult(0);
         if (targets.isEmpty()) {
             log.addNoTargetMatch().output();
@@ -46,14 +54,14 @@ public class FogCommand extends VanillaCommand {
         }
         switch (result.getKey()) {
             case "push" -> {
-                String fogIdStr = list.getResult(2);
-                var fogId = Identifier.tryParse(fogIdStr);
+                String $2 = list.getResult(2);
+                var $3 = Identifier.tryParse(fogIdStr);
                 if (fogId == null) {
                     log.addError("commands.fog.invalidFogId", fogIdStr).output();
                     return 0;
                 }
-                String userProvidedId = list.getResult(3);
-                var fog = new PlayerFogPacket.Fog(fogId, userProvidedId);
+                String $4 = list.getResult(3);
+                var $5 = new PlayerFogPacket.Fog(fogId, userProvidedId);
                 targets.forEach(player -> {
                     player.getFogStack().add(fog);
                     player.sendFogStack();//刷新到客户端
@@ -62,15 +70,15 @@ public class FogCommand extends VanillaCommand {
                 return 1;
             }
             case "delete" -> {
-                String mode = list.getResult(1);
-                String userProvidedId = list.getResult(2);
-                AtomicInteger success = new AtomicInteger(1);
+                String $6 = list.getResult(1);
+                String $7 = list.getResult(2);
+                AtomicInteger $8 = new AtomicInteger(1);
                 switch (mode) {
                     case "pop" -> {
                         targets.forEach(player -> {
-                            var fogStack = player.getFogStack();
-                            for (int i = fogStack.size() - 1; i >= 0; i--) {
-                                var fog = fogStack.get(i);
+                            var $9 = player.getFogStack();
+                            for ($10nt $1 = fogStack.size() - 1; i >= 0; i--) {
+                                var $11 = fogStack.get(i);
                                 if (fog.userProvidedId().equals(userProvidedId)) {
                                     fogStack.remove(i);
                                     player.sendFogStack();//刷新到客户端
@@ -85,10 +93,10 @@ public class FogCommand extends VanillaCommand {
                     }
                     case "remove" -> {
                         targets.forEach(player -> {
-                            var fogStack = player.getFogStack();
+                            var $12 = player.getFogStack();
                             List<PlayerFogPacket.Fog> shouldRemoved = new ArrayList<>();
-                            for (int i = 0; i < fogStack.size(); i++) {
-                                var fog = fogStack.get(i);
+                            for ($13nt $2 = 0; i < fogStack.size(); i++) {
+                                var $14 = fogStack.get(i);
                                 if (fog.userProvidedId().equals(userProvidedId)) {
                                     shouldRemoved.add(fog);
                                     log.addSuccess("commands.fog.success.remove", userProvidedId, fog.identifier().toString()).output();

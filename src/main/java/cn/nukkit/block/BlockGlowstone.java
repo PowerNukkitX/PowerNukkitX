@@ -13,46 +13,70 @@ import java.util.Random;
  * @since 2015/12/6
  */
 public class BlockGlowstone extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(GLOWSTONE);
+    public static final BlockProperties $1 = new BlockProperties(GLOWSTONE);
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockGlowstone() {
         super(PROPERTIES.getDefaultState());
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockGlowstone(BlockState blockState) {
         super(blockState);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return "Glowstone";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getResistance() {
         return 1.5;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public double getHardness() {
         return 0.3;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getLightLevel() {
         return 15;
     }
 
     @Override
     public Item[] getDrops(Item item) {
-        Random random = new Random();
-        int count = 2 + random.nextInt(3);
+        Random $2 = new Random();
+        int $3 = 2 + random.nextInt(3);
 
-        Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
+        Enchantment $4 = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
         if (fortune != null && fortune.getLevel() >= 1) {
             count += random.nextInt(fortune.getLevel() + 1);
         }
@@ -63,6 +87,10 @@ public class BlockGlowstone extends BlockTransparent {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean canSilkTouch() {
         return true;
     }

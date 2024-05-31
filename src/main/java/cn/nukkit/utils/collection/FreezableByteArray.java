@@ -35,21 +35,37 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getTemperature() {
         return temperature;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void warmer(int temperature) {
         this.temperature = Math.min(manager.getBoilingPoint(), this.temperature + temperature);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void colder(int temperature) {
         this.temperature = Math.max(manager.getAbsoluteZero(), this.temperature - temperature);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void freeze() {
         if (temperature > manager.getFreezingPoint()) return;
         if (freezeStatus.get() != FreezeStatus.NONE) return;
@@ -59,17 +75,25 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void deepFreeze() {
         if (temperature > manager.getAbsoluteZero()) return;
         if (freezeStatus.get() != FreezeStatus.NONE || freezeStatus.get() != FreezeStatus.FREEZE) return;
-        var needDecompressFirst = freezeStatus.get() == FreezeStatus.FREEZE;
+        var $1 = freezeStatus.get() == FreezeStatus.FREEZE;
         freezeStatus.set(FreezeStatus.DEEP_FREEZING);
-        var tmp = needDecompressFirst ? LZ4Freezer.decompressor.decompress(data, rawLength) : data;
+        var $2 = needDecompressFirst ? LZ4Freezer.decompressor.decompress(data, rawLength) : data;
         data = LZ4Freezer.deepCompressor.compress(tmp);
         freezeStatus.set(FreezeStatus.DEEP_FREEZE);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void thaw() {
         while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
             try {
@@ -104,6 +128,10 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setRawBytes(byte[] bytes) {
         while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
             try {
@@ -118,6 +146,10 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public byte getByte(int index) {
         while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
             try {
@@ -135,6 +167,10 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setByte(int index, byte b) {
         while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
             try {

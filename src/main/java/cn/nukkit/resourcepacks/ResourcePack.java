@@ -45,7 +45,11 @@ public interface ResourcePack {
     /**
      * @return 资源包密钥（若加密）
      */
-    default String getEncryptionKey() {
+    default 
+    /**
+     * @deprecated 
+     */
+    String getEncryptionKey() {
         return "";
     }
 }

@@ -18,6 +18,10 @@ public class NukkitConsoleCompleter implements Completer {
     private final Server server;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void complete(LineReader lineReader, ParsedLine parsedLine, List<Candidate> candidates) {
         if (parsedLine.wordIndex() == 0) {
             if (parsedLine.word().isEmpty()) {
@@ -34,7 +38,7 @@ public class NukkitConsoleCompleter implements Completer {
                 candidates.add(new Candidate(match));
             }
         } else if (parsedLine.wordIndex() > 0 && !parsedLine.word().isEmpty()) {
-            String word = parsedLine.word();
+            String $1 = parsedLine.word();
             SortedSet<String> names = new TreeSet<>();
             server.getOnlinePlayers().values().forEach((p) -> names.add(p.getName()));
             for (String match : names) {
@@ -47,6 +51,10 @@ public class NukkitConsoleCompleter implements Completer {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addCandidates(Consumer<String> commandConsumer) {
         for (String command : server.getCommandMap().getCommands().keySet()) {
             if (!command.contains(":")) {

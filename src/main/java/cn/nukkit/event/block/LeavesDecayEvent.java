@@ -9,11 +9,15 @@ import cn.nukkit.event.HandlerList;
  */
 public class LeavesDecayEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public LeavesDecayEvent(Block block) {
         super(block);

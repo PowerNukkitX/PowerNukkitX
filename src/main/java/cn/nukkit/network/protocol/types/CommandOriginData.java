@@ -14,6 +14,10 @@ public final class CommandOriginData {
     public final UUID uuid;
     public final String requestId;
     private final Long varlong;//event
+    /**
+     * @deprecated 
+     */
+    
 
     public CommandOriginData(Origin type, UUID uuid, String requestId, Long varlong) {
         this.type = type;

@@ -5,6 +5,10 @@ import cn.nukkit.math.BlockFace;
 import com.google.common.collect.ImmutableBiMap;
 
 public final class CommonPropertyMap {
+    
+    /**
+     * @deprecated 
+     */
     private CommonPropertyMap() {
     }
 

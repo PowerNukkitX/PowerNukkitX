@@ -5,9 +5,13 @@ import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 
 public class BlockStateUpdater_1_19_0 implements Updater {
 
-    public static final Updater INSTANCE = new BlockStateUpdater_1_19_0();
+    public static final Updater $1 = new BlockStateUpdater_1_19_0();
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void registerUpdaters(CompoundTagUpdaterContext context) {
         this.renameIdentifier(context, "minecraft:stone_slab", "minecraft:stone_block_slab");
         this.renameIdentifier(context, "minecraft:stone_slab2", "minecraft:stone_block_slab2");
@@ -22,12 +26,20 @@ public class BlockStateUpdater_1_19_0 implements Updater {
 
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void renameIdentifier(CompoundTagUpdaterContext context, String from, String to) {
         context.addUpdater(1, 18, 10, true) // Here we go again Mojang
                 .match("name", from)
                 .edit("name", helper -> helper.replaceWith("name", to));
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void addProperty(CompoundTagUpdaterContext context, String identifier, String propertyName, Object value) {
         context.addUpdater(1, 18, 10, true) // Here we go again Mojang
                 .match("name", identifier)

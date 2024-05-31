@@ -12,8 +12,8 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public interface LevelProvider {
-    byte ORDER_YZX = 0;
-    byte ORDER_ZXY = 1;
+    byte $1 = 0;
+    byte $2 = 1;
 
     DimensionData getDimensionData();
 
@@ -105,19 +105,35 @@ public interface LevelProvider {
 
     void setGameRules(GameRules rules);
 
-    default int getMaximumLayer() {
+    default 
+    /**
+     * @deprecated 
+     */
+    int getMaximumLayer() {
         return 1;//two layer 0,1
     }
 
-    default boolean isOverWorld() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isOverWorld() {
         return this.getDimensionData().getDimensionId() == 0;
     }
 
-    default boolean isNether() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isNether() {
         return this.getDimensionData().getDimensionId() == 1;
     }
 
-    default boolean isTheEnd() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean isTheEnd() {
         return this.getDimensionData().getDimensionId() == 2;
     }
 }

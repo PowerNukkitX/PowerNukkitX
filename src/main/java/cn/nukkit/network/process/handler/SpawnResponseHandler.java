@@ -20,19 +20,23 @@ import java.util.Collections;
 
 @Slf4j
 public class SpawnResponseHandler extends BedrockSessionPacketHandler {
+    /**
+     * @deprecated 
+     */
+    
     public SpawnResponseHandler(BedrockSession session) {
         super(session);
-        var server = player.getServer();
+        var $1 = player.getServer();
 
         this.startGame();
 
         // 写入自定义物品数据
         // Write custom item data
         log.debug("Sending component items");
-        var itemComponentPacket = new ItemComponentPacket();
+        var $2 = new ItemComponentPacket();
         if (!Registries.ITEM.getCustomItemDefinition().isEmpty()) {
-            var entries = new Int2ObjectOpenHashMap<ItemComponentPacket.Entry>();
-            var i = 0;
+            var $3 = new Int2ObjectOpenHashMap<ItemComponentPacket.Entry>();
+            var $4 = 0;
             for (var entry : Registries.ITEM.getCustomItemDefinition().entrySet()) {
                 try {
                     entries.put(i, new ItemComponentPacket.Entry(entry.getKey(), entry.getValue().nbt()));
@@ -67,7 +71,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         // 发送玩家权限列表
         // Send player permission list
         log.debug("Sending abilities");
-        var col = Collections.singleton(player);
+        var $5 = Collections.singleton(player);
         server.getOnlinePlayers().values().forEach(p -> {
             if (p != player) {
                 p.getAdventureSettings().sendAbilities(col);
@@ -90,7 +94,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         log.debug("Sending crafting data");
         this.session.syncCraftingData();
 
-        TrimDataPacket trimDataPacket = new TrimDataPacket();
+        TrimDataPacket $6 = new TrimDataPacket();
         trimDataPacket.materials.addAll(TrimData.trimMaterials);
         trimDataPacket.patterns.addAll(TrimData.trimPatterns);
         this.session.sendPacket(trimDataPacket);
@@ -108,9 +112,13 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void startGame() {
-        var server = player.getServer();
-        var startPk = new StartGamePacket();
+        var $7 = player.getServer();
+        var $8 = new StartGamePacket();
 
         startPk.entityUniqueId = player.getId();
         startPk.entityRuntimeId = player.getId();
@@ -125,7 +133,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         startPk.dimension = (byte) (player.level.getDimension() & 0xff);
         startPk.worldGamemode = Player.toNetworkGamemode(server.getDefaultGamemode());
         startPk.difficulty = server.getDifficulty();
-        var spawn = player.getSafeSpawn();
+        var $9 = player.getSafeSpawn();
         startPk.spawnX = spawn.getFloorX();
         startPk.spawnY = spawn.getFloorY();
         startPk.spawnZ = spawn.getFloorZ();
@@ -149,11 +157,19 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(RequestChunkRadiusPacket pk) {
         player.setViewDistance(Math.max(2, Math.min(pk.radius, player.getViewDistance())));
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(SetLocalPlayerAsInitializedPacket pk) {
         log.debug("receive SetLocalPlayerAsInitializedPacket for {}", this.player.getPlayerInfo().getUsername());
         handle.onPlayerLocallyInitialized();

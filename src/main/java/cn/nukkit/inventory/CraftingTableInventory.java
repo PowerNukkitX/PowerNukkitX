@@ -12,30 +12,42 @@ import java.util.List;
 import java.util.Map;
 
 public class CraftingTableInventory extends BaseInventory implements CraftTypeInventory, InputInventory {
+    /**
+     * @deprecated 
+     */
+    
     public CraftingTableInventory(BlockCraftingTable table) {
         super(table, InventoryType.WORKBENCH, 9);
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void init() {
         BiMap<Integer, Integer> map = super.networkSlotMap();
-        for (int i = 0; i < getSize(); i++) {
+        for ($1nt $1 = 0; i < getSize(); i++) {
             map.put(i, 32 + i);
         }
 
         Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
-        for (int i = 0; i < getSize(); i++) {
+        for ($2nt $2 = 0; i < getSize(); i++) {
             map2.put(i, ContainerSlotType.CRAFTING_INPUT);
         }
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onOpen(Player who) {
         super.onOpen(who);
-        ContainerOpenPacket pk = new ContainerOpenPacket();
+        ContainerOpenPacket $3 = new ContainerOpenPacket();
         pk.windowId = who.getWindowId(this);
         pk.type = this.getType().getNetworkType();
-        InventoryHolder holder = this.getHolder();
+        InventoryHolder $4 = this.getHolder();
         pk.x = (int) holder.getX();
         pk.y = (int) holder.getY();
         pk.z = (int) holder.getZ();
@@ -44,6 +56,10 @@ public class CraftingTableInventory extends BaseInventory implements CraftTypeIn
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void onClose(Player who) {
         super.onClose(who);
     }

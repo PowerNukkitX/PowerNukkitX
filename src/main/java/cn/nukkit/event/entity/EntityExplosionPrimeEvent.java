@@ -9,7 +9,7 @@ import cn.nukkit.event.HandlerList;
  */
 public class EntityExplosionPrimeEvent extends EntityEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList $1 = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
@@ -18,32 +18,60 @@ public class EntityExplosionPrimeEvent extends EntityEvent implements Cancellabl
     private double force;
     private boolean blockBreaking;
     private double fireChance;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityExplosionPrimeEvent(Entity entity, double force) {
         this.entity = entity;
         this.force = force;
         this.blockBreaking = true;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getForce() {
         return force;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setForce(double force) {
         this.force = force;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isBlockBreaking() {
         return blockBreaking;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setBlockBreaking(boolean blockBreaking) {
         this.blockBreaking = blockBreaking;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public boolean isIncendiary() {
         return fireChance > 0;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setIncendiary(boolean incendiary) {
         if (!incendiary) {
@@ -52,10 +80,18 @@ public class EntityExplosionPrimeEvent extends EntityEvent implements Cancellabl
             fireChance = 1.0/3.0;
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public double getFireChance() {
         return fireChance;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void setFireChance(double fireChance) {
         this.fireChance = fireChance;

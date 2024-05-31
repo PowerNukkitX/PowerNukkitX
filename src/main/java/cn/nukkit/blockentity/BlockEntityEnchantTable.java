@@ -10,6 +10,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class BlockEntityEnchantTable extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
     protected EnchantInventory inventory;
+    /**
+     * @deprecated 
+     */
+    
 
     public BlockEntityEnchantTable(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -17,21 +21,37 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
         return getBlock().getId() == Block.ENCHANTING_TABLE;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String getName() {
         return this.hasName() ? this.namedTag.getString("CustomName") : "Enchanting Table";
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasName() {
         return this.namedTag.contains("CustomName");
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setName(String name) {
         if (name == null || name.isBlank()) {
             this.namedTag.remove("CustomName");
@@ -43,7 +63,7 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = super.getSpawnCompound()
+        CompoundTag $1 = super.getSpawnCompound()
                 .putBoolean("isMovable", false);
 
         if (this.hasName()) {

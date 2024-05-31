@@ -13,12 +13,16 @@ import com.google.gson.JsonSyntaxException;
 public class RawTextNode extends ParamNode<RawText> {
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         try {
             this.value = RawText.fromRawText(arg);
         } catch (JsonSyntaxException e) {
             int index;
-            String s = e.getMessage();
+            String $1 = e.getMessage();
             s = s.substring(s.indexOf("column") + 7, s.indexOf("path") - 1);
             try {
                 index = Integer.parseInt(s);

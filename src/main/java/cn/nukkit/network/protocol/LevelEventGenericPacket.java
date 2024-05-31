@@ -15,21 +15,33 @@ import java.nio.ByteOrder;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LevelEventGenericPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.LEVEL_EVENT_GENERIC_PACKET;
+    public static final int $1 = ProtocolInfo.LEVEL_EVENT_GENERIC_PACKET;
 
     public int eventId;
     public CompoundTag tag;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         
         byteBuf.writeVarInt(eventId);
@@ -39,6 +51,10 @@ public class LevelEventGenericPacket extends DataPacket {
             throw new EncoderException(e);
         }
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

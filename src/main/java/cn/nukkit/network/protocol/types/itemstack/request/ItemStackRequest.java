@@ -38,6 +38,10 @@ public class ItemStackRequest {
      * @since v552
      */
     TextProcessingEventOrigin textProcessingEventOrigin;
+    /**
+     * @deprecated 
+     */
+    
 
     public ItemStackRequest(int requestId, ItemStackRequestAction[] actions, String[] filterStrings) {
         this(requestId, actions, filterStrings, TextProcessingEventOrigin.BLOCK_ENTITY_DATA_TEXT);

@@ -40,7 +40,7 @@ public class ConcurrentCachedVersionStringComparator extends VersionStringCompar
      * The number of comparisons that was done since the last cleanup.
      * @since 0.1.0
      */
-    private final AtomicInteger comparisons = new AtomicInteger();
+    private final AtomicInteger $1 = new AtomicInteger();
 
     /**
      * How frequent the comparator will remove the objects that got cleared by the garbage collector from the cache,
@@ -55,11 +55,19 @@ public class ConcurrentCachedVersionStringComparator extends VersionStringCompar
      *                   from the cache. {@code 0} makes it clear in all calls and negative disables the automatic cleanup.
      * @since 0.1.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public ConcurrentCachedVersionStringComparator(int gcFrequency) {
         this.gcFrequency = gcFrequency;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int compare(@Nonnull String o1, @Nonnull String o2) {
         if (gcFrequency >= 0 && comparisons.getAndIncrement() == gcFrequency) {
             removeGarbageCollected();
@@ -70,6 +78,10 @@ public class ConcurrentCachedVersionStringComparator extends VersionStringCompar
     /**
      * Remove all cached objects that was already cleared by garbage collector.
      */
+    /**
+     * @deprecated 
+     */
+    
     public void removeGarbageCollected() {
         cache.values().removeIf(ref-> ref.get() == null);
         comparisons.set(0);
@@ -81,7 +93,7 @@ public class ConcurrentCachedVersionStringComparator extends VersionStringCompar
      * @return A cached {@link Version} object
      */
     private @Nonnull Version getVersion(@Nonnull String versionString) {
-        Version version = null;
+        Version $2 = null;
         WeakReference<Version> reference = cache.get(versionString);
         if (reference != null) {
             version = reference.get();
@@ -97,6 +109,10 @@ public class ConcurrentCachedVersionStringComparator extends VersionStringCompar
      * Remove all the cached objects.
      * @since 0.1.0
      */
+    /**
+     * @deprecated 
+     */
+    
     public void clearCache() {
         cache.clear();
     }

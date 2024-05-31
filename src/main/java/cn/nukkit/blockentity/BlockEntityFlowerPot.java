@@ -9,20 +9,28 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @since 2016/2/4
  */
 public class BlockEntityFlowerPot extends BlockEntitySpawnable {
+    /**
+     * @deprecated 
+     */
+    
     public BlockEntityFlowerPot(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         movable = true;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean isBlockEntityValid() {
-        String blockId = getBlock().getId();
-        return blockId == Block.FLOWER_POT;
+        String $1 = getBlock().getId();
+        return $2 == Block.FLOWER_POT;
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag tag = super.getSpawnCompound()
+        CompoundTag $3 = super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable());
         if (namedTag.containsCompound("PlantBlock"))
             tag.putCompound("PlantBlock", namedTag.getCompound("PlantBlock"));

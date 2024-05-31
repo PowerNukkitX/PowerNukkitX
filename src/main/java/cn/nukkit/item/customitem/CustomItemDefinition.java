@@ -35,7 +35,7 @@ import java.util.function.Consumer;
 @Slf4j
 public record CustomItemDefinition(String identifier, CompoundTag nbt) implements BlockID {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
-    private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);
+    private static final AtomicInteger $1 = new AtomicInteger(10000);
 
     /**
      * 自定义物品的定义构造器
@@ -93,10 +93,18 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         return new CustomItemDefinition.EdibleBuilder(item);
     }
 
-    public @Nullable String getDisplayName() {
+    public @Nullable 
+    /**
+     * @deprecated 
+     */
+    String getDisplayName() {
         if (!this.nbt.getCompound("components").contains("minecraft:display_name")) return null;
         return this.nbt.getCompound("components").getCompound("minecraft:display_name").getString("value");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String getTexture() {
         return this.nbt.getCompound("components")
@@ -105,10 +113,18 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                 .getCompound("textures")
                 .getString("default");
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public int getRuntimeId() {
         return CustomItemDefinition.INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static int getRuntimeId(String identifier) {
         return CustomItemDefinition.INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
@@ -116,7 +132,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
     public static class SimpleBuilder {
         protected final String identifier;
-        protected final CompoundTag nbt = new CompoundTag()
+        protected final CompoundTag $2 = new CompoundTag()
                 .putCompound("components", new CompoundTag()
                         .putCompound("item_properties", new CompoundTag()
                                 .putCompound("minecraft:icon", new CompoundTag())));
@@ -124,7 +140,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         protected String texture;
         protected String name;
 
-        protected SimpleBuilder(CustomItem customItem) {
+        
+    /**
+     * @deprecated 
+     */
+    protected SimpleBuilder(CustomItem customItem) {
             this.item = (Item) customItem;
             this.identifier = ((Item) customItem).getId();
             //定义最大堆叠数量
@@ -190,7 +210,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * <p>
          * Control the grouping of custom items in the creation inventory, e.g. all enchantment books are grouped together
          *
-         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
+         * @see <a $3="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
          */
         public SimpleBuilder creativeGroup(String creativeGroup) {
             if (creativeGroup.isBlank()) {
@@ -208,7 +228,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * <p>
          * Control the grouping of custom items in the creation inventory, e.g. all enchantment books are grouped together
          *
-         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
+         * @see <a $4="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
          */
         public SimpleBuilder creativeGroup(CreativeGroup creativeGroup) {
             this.nbt.getCompound("components")
@@ -245,7 +265,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          */
         public SimpleBuilder tag(String... tags) {
             Arrays.stream(tags).forEach(Identifier::assertValid);
-            var list = this.nbt.getCompound("components").getList("item_tags", StringTag.class);
+            var $5 = this.nbt.getCompound("components").getList("item_tags", StringTag.class);
             if (list == null) {
                 this.nbt.getCompound("components").putList("item_tags", new ListTag<>());
                 return this;
@@ -278,7 +298,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * Custom processing of the item to be sent to the client ComponentNBT, which contains all definitions for custom item. You can modify them as much as you want, under the right conditions.
          */
         public CustomItemDefinition customBuild(Consumer<CompoundTag> nbt) {
-            var def = this.build();
+            var $6 = this.build();
             nbt.accept(def.nbt);
             return def;
         }
@@ -303,7 +323,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                         .putCompound("minecraft:display_name", new CompoundTag().putString("value", name));
             }
 
-            var result = new CustomItemDefinition(identifier, nbt);
+            var $7 = new CustomItemDefinition(identifier, nbt);
             int id;
             if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(result.identifier())) {
                 while (INTERNAL_ALLOCATION_ID_MAP.containsValue(id = nextRuntimeId.getAndIncrement())) {
@@ -334,12 +354,12 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             }
 
             if (this.nbt.getCompound("components").contains("minecraft:repairable")) {
-                var repair_items = this.nbt
+                var $8 = this.nbt
                         .getCompound("components")
                         .getCompound("minecraft:repairable")
                         .getList("repair_items", CompoundTag.class);
 
-                var items = new ListTag<CompoundTag>();
+                var $9 = new ListTag<CompoundTag>();
                 for (var name : repairItemNames) {
                     items.add(new CompoundTag().putString("name", name));
                 }
@@ -350,8 +370,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                                 .putString("expression", molang)
                                 .putInt("version", 1)));
             } else {
-                var repair_items = new ListTag<CompoundTag>();
-                var items = new ListTag<CompoundTag>();
+                var $10 = new ListTag<CompoundTag>();
+                var $11 = new ListTag<CompoundTag>();
                 for (var name : repairItemNames) {
                     items.add(new CompoundTag().putString("name", name));
                 }
@@ -372,19 +392,19 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         private final ItemCustomTool item;
         private final List<CompoundTag> blocks = new ArrayList<>();
         private final List<String> blockTags = new ArrayList<>();
-        private final CompoundTag diggerRoot = new CompoundTag()
+        private final CompoundTag $12 = new CompoundTag()
                 .putBoolean("use_efficiency", true)
                 .putList("destroy_speeds", new ListTag<>(Tag.TAG_Compound));
-        private Integer speed = null;
+        private Integer $13 = null;
 
         public static Map<String, Map<String, DigProperty>> toolBlocks = new HashMap<>();
 
         static {
-            var pickaxeBlocks = new Object2ObjectOpenHashMap<String, DigProperty>();
-            var axeBlocks = new Object2ObjectOpenHashMap<String, DigProperty>();
-            var shovelBlocks = new Object2ObjectOpenHashMap<String, DigProperty>();
-            var hoeBlocks = new Object2ObjectOpenHashMap<String, DigProperty>();
-            var swordBlocks = new Object2ObjectOpenHashMap<String, DigProperty>();
+            var $14 = new Object2ObjectOpenHashMap<String, DigProperty>();
+            var $15 = new Object2ObjectOpenHashMap<String, DigProperty>();
+            var $16 = new Object2ObjectOpenHashMap<String, DigProperty>();
+            var $17 = new Object2ObjectOpenHashMap<String, DigProperty>();
+            var $18 = new Object2ObjectOpenHashMap<String, DigProperty>();
             for (var name : List.of(ICE, BLUE_ICE, UNDYED_SHULKER_BOX, BLUE_SHULKER_BOX, RED_SHULKER_BOX, BLACK_SHULKER_BOX, CYAN_SHULKER_BOX, BROWN_SHULKER_BOX, LIME_SHULKER_BOX, GRAY_SHULKER_BOX, GREEN_SHULKER_BOX, LIGHT_BLUE_SHULKER_BOX, LIGHT_GRAY_SHULKER_BOX, MAGENTA_SHULKER_BOX, ORANGE_SHULKER_BOX, WHITE_SHULKER_BOX, YELLOW_SHULKER_BOX, PINK_SHULKER_BOX, PURPLE_SHULKER_BOX, PRISMARINE, PRISMARINE_BRICKS_STAIRS, PRISMARINE_STAIRS, STONE_BLOCK_SLAB4, DARK_PRISMARINE_STAIRS, ANVIL, BONE_BLOCK, IRON_TRAPDOOR, NETHER_BRICK_FENCE, CRYING_OBSIDIAN, MAGMA, SMOKER, LIT_SMOKER, HOPPER, REDSTONE_BLOCK, MOB_SPAWNER, NETHERITE_BLOCK, SMOOTH_STONE, DIAMOND_BLOCK, LAPIS_BLOCK, EMERALD_BLOCK, ENCHANTING_TABLE, END_BRICKS, CRACKED_POLISHED_BLACKSTONE_BRICKS, NETHER_BRICK, CRACKED_NETHER_BRICKS, PURPUR_BLOCK, PURPUR_STAIRS, END_BRICK_STAIRS, STONE_BLOCK_SLAB, STONE_BLOCK_SLAB2, STONE_BLOCK_SLAB3, STONE_BRICK_STAIRS, MOSSY_STONE_BRICK_STAIRS, POLISHED_BLACKSTONE_BRICKS, POLISHED_BLACKSTONE_STAIRS, BLACKSTONE_WALL, BLACKSTONE_WALL, POLISHED_BLACKSTONE_WALL, SANDSTONE, GRINDSTONE, SMOOTH_STONE, BREWING_STAND, CHAIN, LANTERN, SOUL_LANTERN, ANCIENT_DEBRIS, QUARTZ_ORE, NETHERRACK, BASALT, POLISHED_BASALT, STONEBRICK, WARPED_NYLIUM, CRIMSON_NYLIUM, END_STONE, ENDER_CHEST, QUARTZ_BLOCK, QUARTZ_STAIRS, QUARTZ_BRICKS, QUARTZ_STAIRS, NETHER_GOLD_ORE, FURNACE, BLAST_FURNACE, LIT_FURNACE, BLAST_FURNACE, BLACKSTONE, BLACK_CONCRETE, BLUE_CONCRETE, BROWN_CONCRETE, CYAN_CONCRETE, GRAY_CONCRETE, GREEN_CONCRETE, LIGHT_BLUE_CONCRETE, LIME_CONCRETE, MAGENTA_CONCRETE, ORANGE_CONCRETE, PINK_CONCRETE, PURPLE_CONCRETE, RED_CONCRETE, LIGHT_GRAY_CONCRETE, WHITE_CONCRETE, YELLOW_CONCRETE, DEEPSLATE_COPPER_ORE, DEEPSLATE_LAPIS_ORE, CHISELED_DEEPSLATE, COBBLED_DEEPSLATE, COBBLED_DEEPSLATE_DOUBLE_SLAB, COBBLED_DEEPSLATE_SLAB, COBBLED_DEEPSLATE_STAIRS, COBBLED_DEEPSLATE_WALL, CRACKED_DEEPSLATE_BRICKS, CRACKED_DEEPSLATE_TILES, DEEPSLATE, DEEPSLATE_BRICK_DOUBLE_SLAB, DEEPSLATE_BRICK_SLAB, DEEPSLATE_BRICK_STAIRS, DEEPSLATE_BRICK_WALL, DEEPSLATE_BRICKS, DEEPSLATE_TILE_DOUBLE_SLAB, DEEPSLATE_TILE_SLAB, DEEPSLATE_TILE_STAIRS, DEEPSLATE_TILE_WALL, DEEPSLATE_TILES, INFESTED_DEEPSLATE, POLISHED_DEEPSLATE, POLISHED_DEEPSLATE_DOUBLE_SLAB, POLISHED_DEEPSLATE_SLAB, POLISHED_DEEPSLATE_STAIRS, POLISHED_DEEPSLATE_WALL, CALCITE, AMETHYST_BLOCK, AMETHYST_CLUSTER, BUDDING_AMETHYST, RAW_COPPER_BLOCK, RAW_GOLD_BLOCK, RAW_IRON_BLOCK, COPPER_ORE, COPPER_BLOCK, CUT_COPPER, CUT_COPPER_SLAB, CUT_COPPER_STAIRS, DOUBLE_CUT_COPPER_SLAB, EXPOSED_COPPER, EXPOSED_CUT_COPPER, EXPOSED_CUT_COPPER_SLAB, EXPOSED_CUT_COPPER_STAIRS, EXPOSED_DOUBLE_CUT_COPPER_SLAB, OXIDIZED_COPPER, OXIDIZED_CUT_COPPER, OXIDIZED_CUT_COPPER_SLAB, OXIDIZED_CUT_COPPER_STAIRS, OXIDIZED_DOUBLE_CUT_COPPER_SLAB, WEATHERED_COPPER, WEATHERED_CUT_COPPER, WEATHERED_CUT_COPPER_SLAB, WEATHERED_CUT_COPPER_STAIRS, WEATHERED_DOUBLE_CUT_COPPER_SLAB, WAXED_COPPER, WAXED_CUT_COPPER, WAXED_CUT_COPPER_SLAB, WAXED_CUT_COPPER_STAIRS, WAXED_DOUBLE_CUT_COPPER_SLAB, WAXED_EXPOSED_COPPER, WAXED_EXPOSED_CUT_COPPER, WAXED_EXPOSED_CUT_COPPER_SLAB, WAXED_EXPOSED_CUT_COPPER_STAIRS, WAXED_EXPOSED_DOUBLE_CUT_COPPER_SLAB, WAXED_OXIDIZED_COPPER, WAXED_OXIDIZED_CUT_COPPER, WAXED_OXIDIZED_CUT_COPPER_SLAB, WAXED_OXIDIZED_CUT_COPPER_STAIRS, WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB, WAXED_WEATHERED_COPPER, WAXED_WEATHERED_CUT_COPPER, WAXED_WEATHERED_CUT_COPPER_SLAB, WAXED_WEATHERED_CUT_COPPER_STAIRS, WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB, DRIPSTONE_BLOCK, POINTED_DRIPSTONE, LIGHTNING_ROD, BASALT, TUFF, DOUBLE_STONE_BLOCK_SLAB, DOUBLE_STONE_BLOCK_SLAB2, DOUBLE_STONE_BLOCK_SLAB3, DOUBLE_STONE_BLOCK_SLAB4, BLACKSTONE_DOUBLE_SLAB, POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB, POLISHED_BLACKSTONE_DOUBLE_SLAB, MOSSY_COBBLESTONE_STAIRS, STONECUTTER, STONECUTTER_BLOCK, RED_NETHER_BRICK, RED_NETHER_BRICK_STAIRS, NORMAL_STONE_STAIRS, SMOOTH_BASALT, STONE, COBBLESTONE, MOSSY_COBBLESTONE, DRIPSTONE_BLOCK, BRICK_BLOCK, STONE_STAIRS, STONE_BLOCK_SLAB, STONE_BLOCK_SLAB2, STONE_BLOCK_SLAB3, STONE_BLOCK_SLAB4, COBBLESTONE_WALL, GOLD_BLOCK, IRON_BLOCK, CAULDRON, IRON_BARS, OBSIDIAN, COAL_ORE, DEEPSLATE_COAL_ORE, DEEPSLATE_DIAMOND_ORE, DEEPSLATE_EMERALD_ORE, DEEPSLATE_GOLD_ORE, DEEPSLATE_IRON_ORE, DEEPSLATE_REDSTONE_ORE, LIT_DEEPSLATE_REDSTONE_ORE, DIAMOND_ORE, EMERALD_ORE, GOLD_ORE, IRON_ORE, LAPIS_ORE, REDSTONE_ORE, LIT_REDSTONE_ORE, RAW_IRON_BLOCK, RAW_GOLD_BLOCK, RAW_COPPER_BLOCK, MUD_BRICK_DOUBLE_SLAB, MUD_BRICK_SLAB, MUD_BRICK_STAIRS, MUD_BRICK_WALL, MUD_BRICKS, HARDENED_CLAY, BLACK_TERRACOTTA, BLUE_TERRACOTTA, BROWN_TERRACOTTA, CYAN_TERRACOTTA, GRAY_TERRACOTTA, GREEN_TERRACOTTA, LIGHT_BLUE_TERRACOTTA, LIME_TERRACOTTA, MAGENTA_TERRACOTTA, ORANGE_TERRACOTTA, PINK_TERRACOTTA, PURPLE_TERRACOTTA, RED_TERRACOTTA, LIGHT_GRAY_TERRACOTTA, WHITE_TERRACOTTA, YELLOW_TERRACOTTA, POLISHED_DIORITE_STAIRS, ANDESITE_STAIRS, POLISHED_ANDESITE_STAIRS, GRANITE_STAIRS, POLISHED_GRANITE_STAIRS, POLISHED_BLACKSTONE, CHISELED_POLISHED_BLACKSTONE, POLISHED_BLACKSTONE_BRICK_STAIRS, BLACKSTONE_STAIRS, POLISHED_BLACKSTONE_BRICK_WALL, GILDED_BLACKSTONE, COAL_BLOCK)) {
                 pickaxeBlocks.put(name, new DigProperty());
             }
@@ -421,7 +441,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             toolBlocks.put(ItemTags.IS_SWORD, swordBlocks);
         }
 
-        private ToolBuilder(ItemCustomTool item) {
+        
+    /**
+     * @deprecated 
+     */
+    private ToolBuilder(ItemCustomTool item) {
             super(item);
             this.item = item;
             this.nbt.getCompound("components")
@@ -582,7 +606,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                     default -> 1;
                 };
             }
-            String type = null;
+            String $19 = null;
             if (item.isPickaxe()) {
                 //添加可挖掘方块Tags
                 this.blockTags.addAll(List.of("'stone'", "'metal'", "'diamond_pick_diggable'", "'mob_spawner'", "'rail'", "'slab_block'", "'stair_block'", "'smooth stone slab'", "'sandstone slab'", "'cobblestone slab'", "'brick slab'", "'stone bricks slab'", "'quartz slab'", "'nether brick slab'"));
@@ -615,9 +639,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                 type = ItemTags.IS_SWORD;
             } else {
                 if (this.nbt.getCompound("components").contains("item_tags")) {
-                    var list = this.nbt.getCompound("components").getList("item_tags", StringTag.class).getAll();
+                    var $20 = this.nbt.getCompound("components").getList("item_tags", StringTag.class).getAll();
                     for (var tag : list) {
-                        var id = tag.parseValue();
+                        var $21 = tag.parseValue();
                         if (toolBlocks.containsKey(id)) {
                             type = id;
                             break;
@@ -641,7 +665,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             }
             //添加可挖掘的方块tags
             if (!this.blockTags.isEmpty()) {
-                var cmp = new CompoundTag();
+                var $22 = new CompoundTag();
                 cmp.putCompound("block", new CompoundTag()
                                 .putString("name", "")
                                 .putCompound("states", new CompoundTag())
@@ -669,7 +693,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
     public static class ArmorBuilder extends SimpleBuilder {
         private final ItemCustomArmor item;
 
-        private ArmorBuilder(ItemCustomArmor item) {
+        
+    /**
+     * @deprecated 
+     */
+    private ArmorBuilder(ItemCustomArmor item) {
             super(item);
             this.item = item;
             this.nbt.getCompound("components")
@@ -735,7 +763,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
     }
 
     public static class EdibleBuilder extends SimpleBuilder {
-        private EdibleBuilder(ItemCustomFood item) {
+        
+    /**
+     * @deprecated 
+     */
+    private EdibleBuilder(ItemCustomFood item) {
             super(item);
 
             if (this.nbt.getCompound("components").contains("minecraft:food")) {
@@ -744,7 +776,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                 this.nbt.getCompound("components").putCompound("minecraft:food", new CompoundTag().putBoolean("can_always_eat", !item.isRequiresHunger()));
             }
 
-            int eatingtick = item.getEatingTicks();
+            int $23 = item.getEatingTicks();
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .putInt("use_duration", eatingtick)

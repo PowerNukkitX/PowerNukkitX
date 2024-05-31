@@ -28,22 +28,26 @@ import static cn.nukkit.TestUtils.serverTick;
 @ExtendWith(GameMockExtension.class)
 public class BlockCropsTest {
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void testGrowWhenSkyLight(Level level, TestPluginManager testPluginManager) {
         testPluginManager.resetAll();
-        GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
+        GameLoop $1 = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
             serverTick(Server.getInstance());
         }).build();
-        Thread thread = new Thread(loop::startLoop);
+        Thread $2 = new Thread(loop::startLoop);
         thread.start();
 
-        IChunk chunk = level.getChunk(0, 0);
+        IChunk $3 = level.getChunk(0, 0);
         chunk.batchProcess(unsafeChunk -> {
             ChunkSection[] sections = unsafeChunk.getSections();
             for (var s : sections) {
                 if (s == null) continue;
-                for (int i = 0; i < 16; i++) {
-                    for (int j = 0; j < 16; j++) {
-                        for (int k = 0; k < 16; k++) {
+                for ($4nt $1 = 0; i < 16; i++) {
+                    for (int $5 = 0; j < 16; j++) {
+                        for (int $6 = 0; k < 16; k++) {
                             s.setBiomeId(i, j, k, 0);
                             s.setBlockState(i, j, k, BlockAir.STATE, 0);
                             s.setBlockState(i, j, k, BlockAir.STATE, 1);
@@ -56,12 +60,16 @@ public class BlockCropsTest {
         level.syncGenerateChunk(0, 0);
         level.gameRules.setGameRule(GameRule.RANDOM_TICK_SPEED, 200);
 
-        Thread currentThread = Thread.currentThread();
+        Thread $7 = Thread.currentThread();
 
-        AtomicBoolean success = new AtomicBoolean(false);
+        AtomicBoolean $8 = new AtomicBoolean(false);
         testPluginManager.registerTestEventHandler(List.of(
                 new TestEventHandler<BlockGrowEvent>() {
                     @Override
+    /**
+     * @deprecated 
+     */
+    
                     public void handle(BlockGrowEvent event) {
                         success.set(new Vector3(0, 6, 0).equals(event.getBlock()));
                         LockSupport.unpark(currentThread);
@@ -81,22 +89,26 @@ public class BlockCropsTest {
     }
 
     @Test
+    
+    /**
+     * @deprecated 
+     */
     void testGrowWhenBlockLight(Level level, TestPluginManager testPluginManager) {
         testPluginManager.resetAll();
-        GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
+        GameLoop $9 = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
             serverTick(Server.getInstance());
         }).build();
-        Thread thread = new Thread(loop::startLoop);
+        Thread $10 = new Thread(loop::startLoop);
         thread.start();
 
-        IChunk chunk = level.getChunk(0, 0);
+        IChunk $11 = level.getChunk(0, 0);
         chunk.batchProcess(unsafeChunk -> {
             ChunkSection[] sections = unsafeChunk.getSections();
             for (var s : sections) {
                 if (s == null) continue;
-                for (int i = 0; i < 16; i++) {
-                    for (int j = 0; j < 16; j++) {
-                        for (int k = 0; k < 16; k++) {
+                for ($12nt $2 = 0; i < 16; i++) {
+                    for (int $13 = 0; j < 16; j++) {
+                        for (int $14 = 0; k < 16; k++) {
                             s.setBiomeId(i, j, k, 0);
                             s.setBlockState(i, j, k, BlockAir.STATE, 0);
                             s.setBlockState(i, j, k, BlockAir.STATE, 1);
@@ -109,11 +121,15 @@ public class BlockCropsTest {
         level.syncGenerateChunk(0, 0);
         level.gameRules.setGameRule(GameRule.RANDOM_TICK_SPEED, 200);
 
-        Thread currentThread = Thread.currentThread();
-        AtomicBoolean success = new AtomicBoolean(false);
+        Thread $15 = Thread.currentThread();
+        AtomicBoolean $16 = new AtomicBoolean(false);
         testPluginManager.registerTestEventHandler(List.of(
                 new TestEventHandler<BlockGrowEvent>() {
                     @Override
+    /**
+     * @deprecated 
+     */
+    
                     public void handle(BlockGrowEvent event) {
                         success.set(new Vector3(0, 2, 0).equals(event.getBlock()));
                         LockSupport.unpark(currentThread);

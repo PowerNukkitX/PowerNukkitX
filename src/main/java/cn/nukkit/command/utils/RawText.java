@@ -22,35 +22,47 @@ import java.util.stream.Collectors;
 
 @Getter
 public class RawText {
-    private Component base = null;
+    private Component $1 = null;
 
+    
+    /**
+     * @deprecated 
+     */
     private RawText(Component base) {
         this.base = base;
     }
 
     public static RawText fromRawText(String rawText) {
-        Component base = JSONUtils.from(rawText, Component.class);
+        Component $2 = JSONUtils.from(rawText, Component.class);
         return new RawText(base);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void preParse(CommandSender sender) {
         preParse(sender, base);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void preParse(CommandSender sender, Component cps) {
         if (cps.getType() != Component.ComponentType.RAWTEXT)
             return;
         List<Component> components = cps.component_rawtext;
         for (Component component : components.toArray(new Component[0])) {
             if (component.getType() == Component.ComponentType.SCORE) {
-                Component newComponent = preParseScore(component, sender);
+                Component $3 = preParseScore(component, sender);
                 if (newComponent != null)
                     components.set(components.indexOf(component), newComponent);
                 else
                     components.remove(component);
             }
             if (component.getType() == Component.ComponentType.SELECTOR) {
-                Component newComponent = preParseSelector(component, sender);
+                Component $4 = preParseSelector(component, sender);
                 if (newComponent != null)
                     components.set(components.indexOf(component), newComponent);
                 else
@@ -61,7 +73,7 @@ public class RawText {
             }
             if (component.getType() == Component.ComponentType.TRANSLATE_WITH) {
                 if (component.component_translate_with instanceof Map<?, ?>) {
-                    Component cp = JSONUtils.from(JSONUtils.to(component.component_translate_with), Component.class);
+                    Component $5 = JSONUtils.from(JSONUtils.to(component.component_translate_with), Component.class);
                     preParse(sender, cp);
                     component.component_translate_with = cp;
                 }
@@ -71,12 +83,12 @@ public class RawText {
 
     @SneakyThrows
     private static Component preParseScore(Component component, CommandSender sender) {
-        var scoreboard = Server.getInstance().getScoreboardManager().getScoreboard(component.component_score.objective);
+        var $6 = Server.getInstance().getScoreboardManager().getScoreboard(component.component_score.objective);
         if (scoreboard == null)
             return null;
-        String name_str = component.component_score.name;
-        IScorer scorer = null;
-        Integer value = component.component_score.value;
+        String $7 = component.component_score.name;
+        IScorer $8 = null;
+        Integer $9 = component.component_score.value;
 
         if (name_str.equals("*")) {
             if (!sender.isEntity())
@@ -97,7 +109,7 @@ public class RawText {
             return null;
         if (value == null)
             value = scoreboard.getLine(scorer).getScore();
-        Component newComponent = new Component();
+        Component $10 = new Component();
         newComponent.setComponent_text(String.valueOf(value));
         return newComponent;
     }
@@ -111,11 +123,15 @@ public class RawText {
         }
         if (entities.isEmpty())
             return null;
-        String entities_str = entities.stream().map(Entity::getName).collect(Collectors.joining(", "));
-        Component newComponent = new Component();
+        String $11 = entities.stream().map(Entity::getName).collect(Collectors.joining(", "));
+        Component $12 = new Component();
         newComponent.setComponent_text(entities_str);
         return newComponent;
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public String toRawText() {
         return JSONUtils.to(base);
@@ -187,6 +203,10 @@ public class RawText {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public String toString() {
         return JSONUtils.to(this.base);
     }

@@ -37,6 +37,10 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
      *
      * @see #NearestTargetEntitySensor(double, double, int, List, Function[])
      */
+    /**
+     * @deprecated 
+     */
+    
     public NearestTargetEntitySensor(double minRange, double maxRange, List<MemoryType<Entity>> memories) {
         this(minRange, maxRange, 1, memories, (Function<T, Boolean>) null);
     }
@@ -49,6 +53,10 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
      * @param memories          保存结果的记忆类型<br>Memory class type for saving results
      */
     @SafeVarargs
+    /**
+     * @deprecated 
+     */
+    
     public NearestTargetEntitySensor(double minRange, double maxRange, int period, List<MemoryType<Entity>> memories, Function<T, Boolean>... allTargetFunction) {
         this.minRange = minRange;
         this.maxRange = maxRange;
@@ -64,17 +72,21 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sense(EntityIntelligent entity) {
-        double minRangeSquared = this.minRange * this.minRange;
-        double maxRangeSquared = this.maxRange * this.maxRange;
+        double $1 = this.minRange * this.minRange;
+        double $2 = this.maxRange * this.maxRange;
 
         if (allTargetFunction == null && memories.size() == 1) {
-            var currentMemory = memories.get(0);
-            var current = entity.getMemoryStorage().get(currentMemory);
+            var $3 = memories.get(0);
+            var $4 = entity.getMemoryStorage().get(currentMemory);
             if (current != null && current.isAlive()) return;
 
             //寻找范围内最近的实体
-            var entities = Collections.synchronizedList(new SortedList<>(Comparator.comparingDouble((Entity e) -> e.distanceSquared(entity))));
+            var $5 = Collections.synchronizedList(new SortedList<>(Comparator.comparingDouble((Entity e) -> e.distanceSquared(entity))));
             for (Entity p : entity.getLevel().getEntities()) {
                 if (entity.distanceSquared(p) <= maxRangeSquared && entity.distanceSquared(p) >= minRangeSquared && !p.equals(entity)) {
                     entities.add(p);
@@ -89,13 +101,13 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
         if (allTargetFunction != null) {
             List<List<Entity>> sortEntities = new ArrayList<>(memories.size());
 
-            for (int i = 0, len = memories.size(); i < len; ++i) {
+            for ($6nt $1 = 0, len = memories.size(); i < len; ++i) {
                 sortEntities.add(new SortedList<>(Comparator.comparingDouble((Entity e) -> e.distanceSquared(entity))));
             }
 
             for (Entity p : entity.getLevel().getEntities()) {
                 if (entity.distanceSquared(p) <= maxRangeSquared && entity.distanceSquared(p) >= minRangeSquared && !p.equals(entity)) {
-                    int i = 0;
+                    $7nt $2 = 0;
                     for (var targetFunction : allTargetFunction) {
                         if (targetFunction.apply((T) p)) {
                             sortEntities.get(i).add(p);
@@ -105,9 +117,9 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
                 }
             }
 
-            for (int i = 0, len = sortEntities.size(); i < len; ++i) {
-                var currentMemory = memories.get(i);
-                var current = entity.getMemoryStorage().get(currentMemory);
+            for ($8nt $3 = 0, len = sortEntities.size(); i < len; ++i) {
+                var $9 = memories.get(i);
+                var $10 = entity.getMemoryStorage().get(currentMemory);
                 if (current != null && current.isAlive()) continue;
 
                 if (sortEntities.get(i).isEmpty()) {
@@ -118,6 +130,10 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPeriod() {
         return period;
     }

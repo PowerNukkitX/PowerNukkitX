@@ -17,12 +17,20 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
 
     //同步访问锁
-    protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    protected final ReentrantReadWriteLock $1 = new ReentrantReadWriteLock();
+    /**
+     * @deprecated 
+     */
+    
 
     public ConcurrentRouteFinder(IPosEvaluator blockEvaluator) {
         super(blockEvaluator);
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void addNode(Node node) {
         try {
             lock.writeLock().lock();
@@ -32,6 +40,10 @@ public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void addNode(ArrayList<Node> node) {
         try {
             lock.writeLock().lock();
@@ -41,6 +53,10 @@ public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     protected void resetNodes() {
         try {
             this.lock.writeLock().lock();
@@ -81,6 +97,10 @@ public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasNext() {
         try {
             if (this.currentIndex + 1 < nodes.size()) {
@@ -106,16 +126,28 @@ public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public boolean hasCurrentNode() {
         return currentIndex < this.nodes.size();
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getNodeIndex() {
         return this.currentIndex;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void setNodeIndex(int index) {
         this.currentIndex = index;
     }

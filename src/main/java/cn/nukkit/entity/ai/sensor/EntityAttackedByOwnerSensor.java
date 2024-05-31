@@ -7,6 +7,10 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 public class EntityAttackedByOwnerSensor implements ISensor {
     protected int period;
     protected boolean changeTarget;
+    /**
+     * @deprecated 
+     */
+    
 
     public EntityAttackedByOwnerSensor(int period, boolean changeTarget) {
         this.period = period;
@@ -14,11 +18,15 @@ public class EntityAttackedByOwnerSensor implements ISensor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void sense(EntityIntelligent entity) {
         if (entity instanceof EntityOwnable entityTamable) {
-            var player = entityTamable.getOwner();
+            var $1 = entityTamable.getOwner();
             if (player != null) {
-                var current = entity.getMemoryStorage().get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
+                var $2 = entity.getMemoryStorage().get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
                 if (!changeTarget) {
                     if (current != null && current.isAlive()) return;
                     else entity.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
@@ -33,6 +41,10 @@ public class EntityAttackedByOwnerSensor implements ISensor {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPeriod() {
         return period;
     }

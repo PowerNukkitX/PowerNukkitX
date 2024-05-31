@@ -22,11 +22,19 @@ public class ChangeMobPropertyPacket extends DataPacket {
     public float floatValue;
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int pid() {
         return ProtocolInfo.CHANGE_MOB_PROPERTY_PACKET;
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void decode(HandleByteBuf byteBuf) {
         this.uniqueEntityId = byteBuf.readLong();
         this.property = byteBuf.readString();
@@ -37,6 +45,10 @@ public class ChangeMobPropertyPacket extends DataPacket {
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeLong(this.uniqueEntityId);
         byteBuf.writeString(this.property);
@@ -45,6 +57,10 @@ public class ChangeMobPropertyPacket extends DataPacket {
         byteBuf.writeVarInt(this.intValue);
         byteBuf.writeFloatLE(this.floatValue);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public void handle(PacketHandler handler) {
         handler.handle(this);

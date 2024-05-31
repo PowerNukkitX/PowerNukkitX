@@ -14,6 +14,10 @@ public class BooleanNode extends ParamNode<Boolean> {
     private final static Set<String> ENUM_BOOLEAN = Sets.newHashSet(CommandEnum.ENUM_BOOLEAN.getValues());
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void fill(String arg) {
         if (ENUM_BOOLEAN.contains(arg)) this.value = Boolean.parseBoolean(arg);
         else this.error();

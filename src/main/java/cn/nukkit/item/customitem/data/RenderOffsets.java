@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 
 
 public class RenderOffsets {
-    public final CompoundTag nbt = new CompoundTag();
+    public final CompoundTag $1 = new CompoundTag();
 
     /**
      * 设置自定义物品在不同视角下的渲染偏移量
@@ -27,6 +27,10 @@ public class RenderOffsets {
      * @param offHandFirstPerson  设置第一人称副手物品的偏移量<br>Set the offset of the first person offhand item
      * @param offHandThirdPerson  设置第三人称副手物品的偏移量<br>Set the offset of the third person offhand item
      */
+    /**
+     * @deprecated 
+     */
+    
     public RenderOffsets(@Nullable Offset mainHandFirstPerson, @Nullable Offset mainHandThirdPerson, @Nullable Offset offHandFirstPerson, @Nullable Offset offHandThirdPerson) {
         if (mainHandFirstPerson != null || mainHandThirdPerson != null) {
             this.nbt.putCompound("main_hand", new CompoundTag());
@@ -61,9 +65,9 @@ public class RenderOffsets {
         if (multiplier < 0) {
             multiplier = 1;
         }
-        float scale1 = (float) (0.075 / multiplier);
-        float scale2 = (float) (0.125 / multiplier);
-        float scale3 = (float) (0.075 / (multiplier * 2.4f));
+        float $2 = (float) (0.075 / multiplier);
+        float $3 = (float) (0.125 / multiplier);
+        float $4 = (float) (0.075 / (multiplier * 2.4f));
         return new RenderOffsets(
                 Offset.builder().scale(scale3, scale3, scale3),
                 Offset.builder().scale(scale1, scale2, scale1),
@@ -81,28 +85,28 @@ public class RenderOffsets {
      * @return the render offsets
      */
     public static RenderOffsets scaleOffset(int textureSize) {
-        double multiplier = textureSize / 16f;
+        double $5 = textureSize / 16f;
         return scaleOffset(multiplier);
     }
 
     private CompoundTag xyzToCompoundTag(Vector3f pos, Vector3f rot, Vector3f sc) {
-        var result = new CompoundTag();
+        var $6 = new CompoundTag();
         if (pos != null) {
-            var position = new ListTag<FloatTag>();
+            var $7 = new ListTag<FloatTag>();
             position.add(new FloatTag(pos.x));
             position.add(new FloatTag(pos.y));
             position.add(new FloatTag(pos.z));
             result.putList("position", position);
         }
         if (rot != null) {
-            var rotation = new ListTag<FloatTag>();
+            var $8 = new ListTag<FloatTag>();
             rotation.add(new FloatTag(rot.x));
             rotation.add(new FloatTag(rot.y));
             rotation.add(new FloatTag(rot.z));
             result.putList("rotation", rotation);
         }
         if (sc != null) {
-            var scale = new ListTag<FloatTag>();
+            var $9 = new ListTag<FloatTag>();
             scale.add(new FloatTag(sc.x));
             scale.add(new FloatTag(sc.y));
             scale.add(new FloatTag(sc.z));

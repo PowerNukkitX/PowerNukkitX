@@ -13,10 +13,14 @@ public class ItemFrameDropItemProcessor extends DataPacketProcessor<ItemFrameDro
 
     // PowerNukkit Note: This packed is not being sent anymore since 1.16.210
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ItemFrameDropItemPacket pk) {
-        Vector3 vector3 = playerHandle.player.temporalVector.setComponents(pk.x, pk.y, pk.z);
+        Vector3 $1 = playerHandle.player.temporalVector.setComponents(pk.x, pk.y, pk.z);
         if (vector3.distanceSquared(playerHandle.player) < 1000) {
-            BlockEntity itemFrame = playerHandle.player.level.getBlockEntity(vector3);
+            BlockEntity $2 = playerHandle.player.level.getBlockEntity(vector3);
             if (itemFrame instanceof BlockEntityItemFrame) {
                 ((BlockEntityItemFrame) itemFrame).dropItem(playerHandle.player);
             }
@@ -24,6 +28,10 @@ public class ItemFrameDropItemProcessor extends DataPacketProcessor<ItemFrameDro
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.ITEM_FRAME_DROP_ITEM_PACKET;
     }

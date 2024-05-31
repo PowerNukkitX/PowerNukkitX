@@ -9,16 +9,28 @@ import java.util.Set;
 
 
 public final class EntityAI {
-    private static long routeParticleSpawnInterval = 500;//ms
+    private static long $1 = 500;//ms
 
     private static final Set<DebugOption> debugOptions = EnumSet.noneOf(DebugOption.class);
 
+    
+    /**
+     * @deprecated 
+     */
     private EntityAI() {/*不能实例化*/}
+    /**
+     * @deprecated 
+     */
+    
 
     public static void setDebugOption(DebugOption option, boolean open) {
         if (open) debugOptions.add(option);
         else debugOptions.remove(option);
     }
+    /**
+     * @deprecated 
+     */
+    
 
     public static boolean checkDebugOption(DebugOption option) {
         return debugOptions.contains(option);
@@ -29,6 +41,10 @@ public final class EntityAI {
      *
      * @param routeParticleSpawnInterval the route particle spawn interval
      */
+    /**
+     * @deprecated 
+     */
+    
     public static void setRouteParticleSpawnInterval(long routeParticleSpawnInterval) {
         EntityAI.routeParticleSpawnInterval = routeParticleSpawnInterval;
     }
@@ -38,6 +54,10 @@ public final class EntityAI {
      *
      * @return the route particle spawn interval
      */
+    /**
+     * @deprecated 
+     */
+    
     public static long getRouteParticleSpawnInterval() {
         return routeParticleSpawnInterval;
     }

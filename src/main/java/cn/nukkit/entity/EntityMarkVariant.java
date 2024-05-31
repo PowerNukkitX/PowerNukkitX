@@ -9,22 +9,38 @@ import cn.nukkit.utils.Utils;
 
 
 public interface EntityMarkVariant extends EntityComponent {
-    default int getMarkVariant() {
+    default 
+    /**
+     * @deprecated 
+     */
+    int getMarkVariant() {
         return getMemoryStorage().get(CoreMemoryTypes.MARK_VARIANT);
     }
 
-    default void setMarkVariant(int variant) {
+    default 
+    /**
+     * @deprecated 
+     */
+    void setMarkVariant(int variant) {
         getMemoryStorage().put(CoreMemoryTypes.MARK_VARIANT, variant);
     }
 
-    default boolean hasMarkVariant() {
+    default 
+    /**
+     * @deprecated 
+     */
+    boolean hasMarkVariant() {
         return getMemoryStorage().notEmpty(CoreMemoryTypes.MARK_VARIANT);
     }
 
     /**
      * 随机一个变种值
      */
-    default int randomMarkVariant() {
+    default 
+    /**
+     * @deprecated 
+     */
+    int randomMarkVariant() {
         return getAllMarkVariant()[Utils.rand(0, getAllMarkVariant().length - 1)];
     }
 

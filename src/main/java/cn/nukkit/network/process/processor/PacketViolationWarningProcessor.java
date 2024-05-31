@@ -14,6 +14,10 @@ import java.util.Optional;
 @Slf4j
 public class PacketViolationWarningProcessor extends DataPacketProcessor<PacketViolationWarningPacket> {
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PacketViolationWarningPacket pk) {
         Optional<String> packetName = Arrays.stream(ProtocolInfo.class.getDeclaredFields())
                 .filter(field -> field.getType() == Byte.TYPE)
@@ -28,6 +32,10 @@ public class PacketViolationWarningProcessor extends DataPacketProcessor<PacketV
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.PACKET_VIOLATION_WARNING_PACKET;
     }

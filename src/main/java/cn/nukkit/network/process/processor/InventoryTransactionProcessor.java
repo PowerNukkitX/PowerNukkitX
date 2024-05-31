@@ -45,12 +45,16 @@ import java.util.Objects;
 
 @Slf4j
 public class InventoryTransactionProcessor extends DataPacketProcessor<InventoryTransactionPacket> {
-    Item lastUsedItem = null;
+    Item $1 = null;
 
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
-        Player player = playerHandle.player;
+        Player $2 = playerHandle.player;
         if (player.isSpectator()) {
             player.sendAllInventories();
             return;
@@ -60,16 +64,16 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         } else if (pk.transactionType == InventoryTransactionPacket.TYPE_USE_ITEM_ON_ENTITY) {
             handleUseItemOnEntity(playerHandle, pk);
         } else if (pk.transactionType == InventoryTransactionPacket.TYPE_RELEASE_ITEM) {
-            ReleaseItemData releaseItemData = (ReleaseItemData) pk.transactionData;
+            ReleaseItemData $3 = (ReleaseItemData) pk.transactionData;
             try {
-                int type = releaseItemData.actionType;
+                int $4 = releaseItemData.actionType;
                 switch (type) {
                     case InventoryTransactionPacket.RELEASE_ITEM_ACTION_RELEASE -> {
-                        int lastUseTick = player.getLastUseTick(releaseItemData.itemInHand.getId());
+                        int $5 = player.getLastUseTick(releaseItemData.itemInHand.getId());
                         if (lastUseTick != -1) {
-                            Item item = player.getInventory().getItemInHand();
+                            Item $6 = player.getInventory().getItemInHand();
 
-                            int ticksUsed = player.getServer().getTick() - lastUseTick;
+                            int $7 = player.getServer().getTick() - lastUseTick;
                             if (!item.onRelease(player, ticksUsed)) {
                                 player.getInventory().sendContents(player);
                             }
@@ -96,9 +100,13 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private static void dropHotBarItemForPlayer(int hotbarSlot, int dropCount, Player player) {
-        final HumanInventory inventory = player.getInventory();
-        Item item = inventory.getItem(hotbarSlot);
+        final HumanInventory $8 = player.getInventory();
+        Item $9 = inventory.getItem(hotbarSlot);
         if (item.isNull()) return;
 
         PlayerDropItemEvent ev;
@@ -108,7 +116,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
             return;
         }
 
-        int c = item.getCount() - dropCount;
+        int $10 = item.getCount() - dropCount;
         if (c <= 0) {
             inventory.clear(hotbarSlot);
         } else {
@@ -120,25 +128,33 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
     }
 
     @Override
+    /**
+     * @deprecated 
+     */
+    
     public int getPacketId() {
         return ProtocolInfo.INVENTORY_TRANSACTION_PACKET;
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void handleUseItemOnEntity(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
-        Player player = playerHandle.player;
-        UseItemOnEntityData useItemOnEntityData = (UseItemOnEntityData) pk.transactionData;
-        Entity target = player.level.getEntity(useItemOnEntityData.entityRuntimeId);
+        Player $11 = playerHandle.player;
+        UseItemOnEntityData $12 = (UseItemOnEntityData) pk.transactionData;
+        Entity $13 = player.level.getEntity(useItemOnEntityData.entityRuntimeId);
         if (target == null) {
             return;
         }
-        int type = useItemOnEntityData.actionType;
+        int $14 = useItemOnEntityData.actionType;
         if (!useItemOnEntityData.itemInHand.equalsExact(player.getInventory().getItemInHand())) {
             player.getInventory().sendHeldItem(player);
         }
-        Item item = player.getInventory().getItemInHand();
+        Item $15 = player.getInventory().getItemInHand();
         switch (type) {
             case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_INTERACT -> {
-                PlayerInteractEntityEvent playerInteractEntityEvent = new PlayerInteractEntityEvent(player, target, item, useItemOnEntityData.clickPos);
+                PlayerInteractEntityEvent $16 = new PlayerInteractEntityEvent(player, target, item, useItemOnEntityData.clickPos);
                 if (player.isSpectator()) playerInteractEntityEvent.setCancelled();
                 player.getServer().getPluginManager().callEvent(playerInteractEntityEvent);
                 if (playerInteractEntityEvent.isCancelled()) {
@@ -188,7 +204,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         return;
                     }
                 }
-                float itemDamage = item.getAttackDamage();
+                float $17 = item.getAttackDamage();
                 Enchantment[] enchantments = item.getEnchantments();
                 if (item.applyEnchantments()) {
                     for (Enchantment enchantment : enchantments) {
@@ -197,14 +213,14 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 }
                 Map<EntityDamageEvent.DamageModifier, Float> damage = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
                 damage.put(EntityDamageEvent.DamageModifier.BASE, itemDamage);
-                float knockBack = 0.3f;
+                float $18 = 0.3f;
                 if (item.applyEnchantments()) {
-                    Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
+                    Enchantment $19 = item.getEnchantment(Enchantment.ID_KNOCKBACK);
                     if (knockBackEnchantment != null) {
                         knockBack += knockBackEnchantment.getLevel() * 0.1f;
                     }
                 }
-                EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(player, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
+                EntityDamageByEntityEvent $20 = new EntityDamageByEntityEvent(player, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
                 entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
                 if (player.isSpectator()) entityDamageByEntityEvent.setCancelled();
                 if ((target instanceof Player) && !player.level.getGameRules().getBoolean(GameRule.PVP)) {
@@ -246,17 +262,21 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void handleUseItem(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
-        Player player = playerHandle.player;
-        UseItemData useItemData = (UseItemData) pk.transactionData;
-        BlockVector3 blockVector = useItemData.blockPos;
-        BlockFace face = useItemData.face;
+        Player $21 = playerHandle.player;
+        UseItemData $22 = (UseItemData) pk.transactionData;
+        BlockVector3 $23 = useItemData.blockPos;
+        BlockFace $24 = useItemData.face;
 
-        int type = useItemData.actionType;
+        int $25 = useItemData.actionType;
         switch (type) {
             case InventoryTransactionPacket.USE_ITEM_ACTION_CLICK_BLOCK -> {
                 // Remove if client bug is ever fixed
-                boolean spamBug = (playerHandle.getLastRightClickPos() != null && System.currentTimeMillis() - playerHandle.getLastRightClickTime() < 100.0 && blockVector.distanceSquared(playerHandle.getLastRightClickPos()) < 0.00001);
+                boolean $26 = (playerHandle.getLastRightClickPos() != null && System.currentTimeMillis() - playerHandle.getLastRightClickTime() < 100.0 && blockVector.distanceSquared(playerHandle.getLastRightClickPos()) < 0.00001);
                 playerHandle.setLastRightClickPos(blockVector.asVector3());
                 playerHandle.setLastRightClickTime(System.currentTimeMillis());
                 if (spamBug && player.getInventory().getItemInHand().getBlock().isAir()) {//Normal blocks are not detected, as they can be placed continuously
@@ -265,13 +285,13 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 player.setDataFlag(EntityFlag.USING_ITEM, false);
                 if (player.canInteract(blockVector.add(0.5, 0.5, 0.5), player.isCreative() ? 13 : 7)) {
                     if (player.isCreative()) {
-                        Item i = player.getInventory().getItemInHand();
+                        Item $27 = player.getInventory().getItemInHand();
                         if (player.level.useItemOn(blockVector.asVector3(), i, face, useItemData.clickPos.x, useItemData.clickPos.y, useItemData.clickPos.z, player) != null) {
                             return;
                         }
                     } else if (player.getInventory().getItemInHand().equals(useItemData.itemInHand)) {
-                        Item i = player.getInventory().getItemInHand();
-                        Item oldItem = i.clone();
+                        Item $28 = player.getInventory().getItemInHand();
+                        Item $29 = i.clone();
                         //TODO: Implement adventure mode checks
                         if ((i = player.level.useItemOn(blockVector.asVector3(), i, face, useItemData.clickPos.x, useItemData.clickPos.y, useItemData.clickPos.z, player)) != null) {
                             if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
@@ -290,8 +310,8 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 if (blockVector.distanceSquared(player) > 10000) {
                     return;
                 }
-                Block target = player.level.getBlock(blockVector.asVector3());
-                Block block = target.getSide(face);
+                Block $30 = player.level.getBlock(blockVector.asVector3());
+                Block $31 = target.getSide(face);
                 player.level.sendBlocks(new Player[]{player}, new Block[]{target, block}, UpdateBlockPacket.FLAG_NOGRAPHIC);
                 player.level.sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_NOGRAPHIC, 1);
             }
@@ -301,8 +321,8 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     return;
                 }
                 player.resetInventory();
-                Item i = player.getInventory().getItemInHand();
-                Item oldItem = i.clone();
+                Item $32 = player.getInventory().getItemInHand();
+                Item $33 = i.clone();
                 if (player.isSurvival() || player.isAdventure()) {
                     if (player.canInteract(blockVector.add(0.5, 0.5, 0.5), 7) && (i = player.level.useBreakOn(blockVector.asVector3(), face, i, player, true)) != null) {
                         player.getFoodData().exhaust(0.005);
@@ -320,10 +340,10 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 player.getInventory().sendContents(player);
                 player.getInventory().sendHeldItem(player);
                 if (blockVector.distanceSquared(player) < 10000) {
-                    Block target = player.level.getBlock(blockVector.asVector3());
+                    Block $34 = player.level.getBlock(blockVector.asVector3());
                     player.level.sendBlocks(new Player[]{player}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
 
-                    BlockEntity blockEntity = player.level.getBlockEntity(blockVector.asVector3());
+                    BlockEntity $35 = player.level.getBlockEntity(blockVector.asVector3());
                     if (blockEntity instanceof BlockEntitySpawnable) {
                         ((BlockEntitySpawnable) blockEntity).spawnTo(player);
                     }
@@ -331,7 +351,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
             }
             case InventoryTransactionPacket.USE_ITEM_ACTION_CLICK_AIR -> {
                 Item item;
-                Vector3 directionVector = player.getDirectionVector();
+                Vector3 $36 = player.getDirectionVector();
                 if (player.isCreative()) {
                     item = player.getInventory().getItemInHand();
                 } else if (!player.getInventory().getItemInHand().equals(useItemData.itemInHand)) {
@@ -340,7 +360,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 } else {
                     item = player.getInventory().getItemInHand();
                 }
-                PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, item, directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
+                PlayerInteractEvent $37 = new PlayerInteractEvent(player, item, directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
                 player.getServer().getPluginManager().callEvent(interactEvent);
                 if (interactEvent.isCancelled()) {
                     if (interactEvent.getItem() != null && interactEvent.getItem().isArmor()) {
@@ -363,7 +383,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         return;
                     }
 
-                    int ticksUsed = player.getServer().getTick() - player.getLastUseTick(lastUsedItem.getId());
+                    int $38 = player.getServer().getTick() - player.getLastUseTick(lastUsedItem.getId());
                     if (lastUsedItem.onUse(player, ticksUsed)) {
                         lastUsedItem.afterUse(player);
                         player.removeLastUseTick(item.getId());
@@ -377,6 +397,10 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         }
     }
 
+    
+    /**
+     * @deprecated 
+     */
     private void logTriedToSetButHadInHand(PlayerHandle playerHandle, Item tried, Item had) {
         log.debug("Tried to set item {} but {} had item {} in their hand slot", tried.getId(), playerHandle.getUsername(), had.getId());
     }

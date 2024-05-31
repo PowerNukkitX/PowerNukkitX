@@ -11,6 +11,10 @@ import java.util.Set;
 public interface EntityDataTypes {
     EntityDataType<EnumSet<EntityFlag>> FLAGS = new EntityDataType<EnumSet<EntityFlag>>(EnumSet.noneOf(EntityFlag.class), "FLAGS", 0, Transformers.FLAGS) {
         @Override
+    /**
+     * @deprecated 
+     */
+    
         public boolean isInstance(Object value) {
             return value instanceof EnumSet &&
                     (((EnumSet<?>) value).isEmpty() || ((Set<?>) value).iterator().next() instanceof EntityFlag);
