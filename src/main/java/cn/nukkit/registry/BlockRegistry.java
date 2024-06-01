@@ -1353,9 +1353,9 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
 
     @Override
     public void register(String key, Class<? extends Block> value) throws RegisterException {
-        if (skipBlockSet.contains(key)) return;//skip for experimental or educational blocks
+        if (skipBlockSet.contains(key)) return;// skip for experimental or educational blocks
         if (Modifier.isAbstract(value.getModifiers())) {
-            throw new RegisterException("you cant register a abstract block class!");
+            throw new RegisterException("You can't register a abstract block class!");
         }
         try {
             Field properties = value.getDeclaredField("PROPERTIES");
@@ -1407,7 +1407,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
      */
     public void registerCustomBlock(Plugin plugin, Class<? extends Block> value) throws RegisterException {
         if (Modifier.isAbstract(value.getModifiers())) {
-            throw new RegisterException("you cant register a abstract block class!");
+            throw new RegisterException("You can't register a abstract block class!");
         }
         try {
             Field properties = value.getDeclaredField("PROPERTIES");

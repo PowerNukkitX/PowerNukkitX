@@ -117,7 +117,7 @@ public final class BlockProperties {
             }
         }
         if (defaultState == null)
-            throw new IllegalArgumentException("cant find default block state for block: " + identifier);
+            throw new IllegalArgumentException("Can't find default block state for block: " + identifier);
         return Pair.of(blockStates, defaultState);
     }
 

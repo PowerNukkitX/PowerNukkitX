@@ -65,12 +65,12 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         if (action.getRecipeNetworkId() >= PlayerEnchantOptionsPacket.ENCH_RECIPEID) {  //handle ench recipe
             PlayerEnchantOptionsPacket.EnchantOptionData enchantOptionData = PlayerEnchantOptionsPacket.RECIPE_MAP.get(action.getRecipeNetworkId());
             if (enchantOptionData == null) {
-                log.error("cant find enchant recipe from netId " + action.getRecipeNetworkId());
+                log.error("Can't find enchant recipe from netId " + action.getRecipeNetworkId());
                 return context.error();
             }
             Item first = inventory.getItem(0);
             if (first.isNull()) {
-                log.error("cant find enchant input!");
+                log.error("Can't find enchant input!");
                 return context.error();
             }
             Item item = first.clone().autoAssignStackNetworkId();
@@ -84,20 +84,20 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         } else if (action.getRecipeNetworkId() >= TradeRecipeBuildUtils.TRADE_RECIPEID) {//handle village trade recipe
             CompoundTag tradeRecipe = TradeRecipeBuildUtils.RECIPE_MAP.get(action.getRecipeNetworkId());
             if (tradeRecipe == null) {
-                log.error("cant find trade recipe from netId {}", action.getRecipeNetworkId());
+                log.error("Can't find trade recipe from netId {}", action.getRecipeNetworkId());
                 return context.error();
             }
             Item first = inventory.getItem(0);
             Item second = inventory.getItem(1);
             if (first.isNull() && second.isNull()) {
-                log.error("cant find trade input!");
+                log.error("Can't find trade input!");
                 return context.error();
             }
             boolean ca = tradeRecipe.contains("buyA");
             boolean cb = tradeRecipe.contains("buyB");
             if (ca && cb) {
                 if ((first.isNull() || second.isNull())) {
-                    log.error("cant find trade input!");
+                    log.error("Can't find trade input!");
                     return context.error();
                 } else {
                     if (checkTrade(tradeRecipe.getCompound("buyA"), first)) return context.error();
@@ -106,7 +106,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 }
             } else if (ca) {
                 if (first.isNull()) {
-                    log.error("cant find trade input!");
+                    log.error("Can't find trade input!");
                     return context.error();
                 } else {
                     if (checkTrade(tradeRecipe.getCompound("buyA"), first)) return context.error();

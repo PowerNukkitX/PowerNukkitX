@@ -3,6 +3,7 @@ package cn.nukkit.item;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.ClientboundMapItemDataPacket;
 import cn.nukkit.plugin.InternalPlugin;
@@ -95,7 +96,27 @@ public class ItemFilledMap extends Item {
         return getNamedTag().getLong("map_uuid");
     }
 
-    public void sendImage(Player p) {
+    public int getMapWorld() {
+        return getNamedTag().getInt("map_level");
+    }
+
+    public int getMapStartX() {
+        return getNamedTag().getInt("map_startX");
+    }
+
+    public int getMapStartZ() {
+        return getNamedTag().getInt("map_startZ");
+    }
+
+    public int getMapScale() {
+        return getNamedTag().getInt("map_scale");
+    }
+
+    public void sendImage(Player player) {
+        sendImage(player, 1);
+    }
+
+    public void sendImage(Player player, int scale) {
         // don't load the image from NBT if it has been done before.
         BufferedImage image = this.image != null ? this.image : loadImageFromNBT();
 
@@ -103,15 +124,15 @@ public class ItemFilledMap extends Item {
         pk.eids = new long[]{getMapId()};
         pk.mapId = getMapId();
         pk.update = 2;
-        pk.scale = 0;
+        pk.scale = (byte) (scale - 1);
         pk.width = 128;
         pk.height = 128;
         pk.offsetX = 0;
         pk.offsetZ = 0;
         pk.image = image;
 
-        p.dataPacket(pk);
-        Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> p.dataPacket(pk), 20);
+        player.dataPacket(pk);
+        Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> player.dataPacket(pk), 20);
     }
 
     public boolean trySendImage(Player p) {
@@ -138,6 +159,11 @@ public class ItemFilledMap extends Item {
             BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
             image.setRGB(0, 0, 128, 128, pixels, 0, 128);
 
+            this.setNamedTag(this.getNamedTag().putInt("map_level", level.getId()));
+            this.setNamedTag(this.getNamedTag().putInt("map_startX", startX));
+            this.setNamedTag(this.getNamedTag().putInt("map_startZ", startZ));
+            this.setNamedTag(this.getNamedTag().putInt("map_scale", zoom));
+
             setImage(image);
         } catch (Exception ex) {
             log.warn("There was an error while generating map image", ex);
@@ -152,5 +178,15 @@ public class ItemFilledMap extends Item {
     @Override
     public int getMaxStackSize() {
         return 1;
+    }
+
+    @Override
+    public boolean onClickAir(Player player, Vector3 directionVector) {
+        if (getDamage() == 6) return false;
+        Server server = player.getServer();
+        renderMap(server.getLevel(getMapWorld()), getMapStartX(), getMapStartZ(), getMapScale());
+        player.getInventory().setItemInHand(this);
+        sendImage(player, getMapScale());
+        return true;
     }
 }

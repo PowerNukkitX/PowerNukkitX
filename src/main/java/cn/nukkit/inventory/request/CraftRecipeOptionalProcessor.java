@@ -1,12 +1,16 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.AnvilInventory;
+import cn.nukkit.inventory.CartographyTableInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
@@ -42,7 +46,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
         Inventory inventory = topWindow.get();
 
         String filterString = null;
-        if (itemStackRequest.getFilterStrings().length != 0) {
+        if (itemStackRequest.getFilterStrings().length != 0 && !itemStackRequest.getFilterStrings()[0].isBlank()) {
             int filteredStringIndex = action.getFilteredStringIndex();
             String[] filterStrings = itemStackRequest.getFilterStrings();
             filterString = filterStrings[filteredStringIndex];
@@ -51,12 +55,20 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                 return context.error();
             }
         }
+
         if (inventory instanceof AnvilInventory anvilInventory) {
             Pair<Item, Integer> pair = updateAnvilResult(player, anvilInventory, filterString);
             if (pair != null) {
                 player.getCreativeOutputInventory().setItem(pair.left());
                 player.setExperience(player.getExperience() - pair.right());
             } else{
+                return context.error();
+            }
+        } else if (inventory instanceof CartographyTableInventory cartographyInventory) {
+            Item item = updateCartographyTableResult(player, cartographyInventory, filterString);
+            if (item != null) {
+                player.getCreativeOutputInventory().setItem(item);
+            } else {
                 return context.error();
             }
         } else {
@@ -255,6 +267,64 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
         }
         resultPair.left(result);
         return resultPair;
+    }
+
+    public @Nullable Item updateCartographyTableResult(Player player, CartographyTableInventory inventory, String filterString) {
+        Server server = player.getServer();
+        Item input = inventory.getInput();
+        Item additional = inventory.getAdditional();
+        Item result = Item.AIR;
+
+        if (input.isNull() && additional.isNull()) {
+            return null;
+        }
+
+        if (input.getId().equals(Item.PAPER) && additional.isNull()) {
+            result = Item.get(Item.EMPTY_MAP);
+        }
+
+        if (input.getId().equals(Item.EMPTY_MAP) || input.getId().equals(Item.FILLED_MAP) && additional.isNull()) {
+            result = input.clone();
+        }
+
+        if ((input.getId().equals(Item.EMPTY_MAP) || input.getId().equals(Item.FILLED_MAP) || input.getId().equals(Item.PAPER)) && additional.getId().equals(Item.COMPASS)) {
+            Item item = input.getId().equals(Item.PAPER) ? Item.get(Item.EMPTY_MAP) : input.clone();
+            item.setDamage(2);
+            result = item;
+        }
+
+        if (input.getId().equals(Item.FILLED_MAP) && additional.getId().equals(BlockID.GLASS_PANE)) {
+            Item item = input.clone();
+            item.setDamage(6);
+            result = item;
+        }
+
+        if (input.getId().equals(Item.FILLED_MAP) && additional.getId().equals(Item.EMPTY_MAP)) {
+            Item item = input.clone();
+            item.setCount(2);
+            result = item;
+        }
+
+        if (input.getId().equals(Item.FILLED_MAP) && additional.getId().equals(Item.PAPER)) {
+            ItemFilledMap item = (ItemFilledMap) input.clone();
+            Level level = server.getLevel(item.getMapWorld());
+            int startX = item.getMapStartX();
+            int startZ = item.getMapStartZ();
+            int scale = item.getMapScale() + 1;
+
+            item.renderMap(level, startX, startZ, scale);
+            item.sendImage(player, item.getMapScale());
+
+            result = item;
+        }
+
+        if (!StringUtil.isNullOrEmpty(filterString)) {
+            result.setCustomName(filterString);
+        } else {
+            result.clearCustomName();
+        }
+
+        return result;
     }
 
     private static int getRepairCost(Item item) {

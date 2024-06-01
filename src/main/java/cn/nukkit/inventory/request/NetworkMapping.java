@@ -20,7 +20,7 @@ public class NetworkMapping {
                 if (riding instanceof InventoryHolder inventoryHolder) {
                     yield inventoryHolder.getInventory();
                 } else {
-                    throw new IllegalArgumentException("Cant handle horse inventory: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
+                    throw new IllegalArgumentException("Can't handle horse inventory: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
                 }
             }
             case CREATED_OUTPUT -> player.getCreativeOutputInventory();
@@ -38,6 +38,7 @@ public class NetworkMapping {
                  ANVIL_INPUT, ANVIL_MATERIAL, ANVIL_RESULT,
                  STONECUTTER_INPUT, STONECUTTER_RESULT,
                  GRINDSTONE_ADDITIONAL, GRINDSTONE_INPUT, GRINDSTONE_RESULT,
+                 CARTOGRAPHY_INPUT, CARTOGRAPHY_ADDITIONAL, CARTOGRAPHY_RESULT,
                  LEVEL_ENTITY, SHULKER_BOX -> {
                 if (player.getFakeInventoryOpen() && player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof FakeInventory) {
                     yield player.getTopWindow().get();
@@ -46,7 +47,7 @@ public class NetworkMapping {
                 } else if (player.getTopWindow().isPresent()) {
                     yield player.getTopWindow().get();
                 } else {
-                    throw new IllegalArgumentException("Cant handle inventory: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
+                    throw new IllegalArgumentException("Can't handle inventory: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
                 }
             }
             case CRAFTING_INPUT -> {
@@ -59,7 +60,7 @@ public class NetworkMapping {
                 }
             }
             default -> {
-                throw new IllegalArgumentException("Cant handle containerSlotType: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
+                throw new IllegalArgumentException("Can't handle containerSlotType: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
             }
         };
     }

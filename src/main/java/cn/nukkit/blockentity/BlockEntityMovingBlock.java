@@ -62,7 +62,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
             int blockhash = HashUtils.fnv1a_32_nbt_palette(movingBlock);
             BlockState blockState = Registries.BLOCKSTATE.get(blockhash);
             if(blockState==null){
-                log.error("cant load moving block {}",movingBlock.toSNBT());
+                log.error("Can't load moving block {}",movingBlock.toSNBT());
             }else{
                 this.block = blockState.toBlock();
             }

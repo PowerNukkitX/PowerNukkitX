@@ -84,5 +84,6 @@ public class SmithingInventory extends ContainerInventory implements CraftTypeIn
 
         this.clear(EQUIPMENT);
         this.clear(INGREDIENT);
+        this.clear(TEMPLATE);
     }
 }

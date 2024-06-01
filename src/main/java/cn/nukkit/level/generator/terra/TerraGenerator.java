@@ -75,7 +75,7 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
         Optional<ConfigPack> byID = PNXPlatform.getInstance().getConfigRegistry().getByID(packName);
         return byID.orElseGet(
                 () -> PNXPlatform.getInstance().getConfigRegistry().getByID(packName.toUpperCase(Locale.ENGLISH))
-                        .orElseThrow(() -> new IllegalArgumentException("Cant find terra config pack " + packName))
+                        .orElseThrow(() -> new IllegalArgumentException("Can't find terra config pack " + packName))
         );
     }
 

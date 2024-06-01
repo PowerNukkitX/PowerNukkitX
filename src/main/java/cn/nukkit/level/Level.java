@@ -329,7 +329,7 @@ public class Level implements Metadatable {
         this.autoSave = server.getAutoSave();
         this.generatorClass = Registries.GENERATOR.get(generatorConfig.name());
         if (generatorClass == null) {
-            throw new NullPointerException("Cant find generator for " + generatorConfig.name() + " The level " + name + " cant be load!");
+            throw new NullPointerException("Can't find generator for " + generatorConfig.name() + " The level " + name + " can't be load!");
         }
         try {
             this.generator = generatorClass.getConstructor(DimensionData.class, Map.class).newInstance(

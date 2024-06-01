@@ -877,7 +877,7 @@ public abstract class Item implements Cloneable, ItemID {
         }
         if (i == Integer.MAX_VALUE) {
             log.warn("Can't find runtimeId for item {}, will return unknown itemblock!", getId());
-            return getUnknownRuntimeId();//cant find runtimeId
+            return getUnknownRuntimeId();// Can't find runtimeId
         }
         return i;
     }

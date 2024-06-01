@@ -77,6 +77,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                 if (topWindow.isPresent() && topWindow.get() instanceof FakeInventory fakeInventory) {
                     fakeInventory.handle(event);
                 }
+
                 ActionResponse response;
                 if (event.getResponse() != null) {
                     response = event.getResponse();
@@ -92,6 +93,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                         responses.add(itemStackResponse);
                         break;
                     }
+
                     for (var container : response.containers()) {
                         responseContainerMap.compute(container.getContainer(), (key, oldValue) -> {
                             if (oldValue == null) {
@@ -107,6 +109,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
             itemStackResponse.getContainers().addAll(responseContainerMap.values());
             responses.add(itemStackResponse);
         }
+
         for (var r : responses) {
             for (var c : r.getContainers()) {
                 LinkedHashMap<Integer, ItemStackResponseSlot> newItems = new LinkedHashMap<>();
@@ -117,6 +120,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                 c.getItems().addAll(newItems.values());
             }
         }
+
         var itemStackResponsePacket = new ItemStackResponsePacket();
         itemStackResponsePacket.entries.addAll(responses);
         player.dataPacket(itemStackResponsePacket);
