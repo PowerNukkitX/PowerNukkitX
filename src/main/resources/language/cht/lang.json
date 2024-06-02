@@ -16,6 +16,7 @@
   "nukkit.server.settings.networkSettings.snappy": "Whether the server uses Snappy compression (not recommended)",
   "nukkit.server.settings.networkSettings.compressionBufferSize": "Buffer for server decompression",
   "nukkit.server.settings.networkSettings.maxDecompressSize": "Maximum number of bytes the server can decompress",
+  "nukkit.server.settings.networkSettings.packetLimit": "Maximun number of packet per seconds",
   "nukkit.server.settings.debugSettings": "Server's debug configuration",
   "nukkit.server.settings.debugSettings.level": "Server's debug level [INFO, DEBUG, TRACE, ALL]",
   "nukkit.server.settings.debugSettings.command": "Whether to enable debug commands",

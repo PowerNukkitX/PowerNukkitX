@@ -16,6 +16,7 @@
   "nukkit.server.settings.networkSettings.snappy": "服务器是否使用snappy压缩 (不推荐使用 易崩溃)",
   "nukkit.server.settings.networkSettings.compressionBufferSize": "服务器是解压缩的缓存",
   "nukkit.server.settings.networkSettings.maxDecompressSize": "服务器最大可以解压的字节数 单位B",
+  "nukkit.server.settings.networkSettings.packetLimit": "服务器每秒最大的可以接受的数据包数量",
   "nukkit.server.settings.debugSettings": "服务器的调试配置",
   "nukkit.server.settings.debugSettings.level": "服务器的调试等级 [INFO,DEBUG,TRACE,ALL]",
   "nukkit.server.settings.debugSettings.command": "是否开启调试命令",

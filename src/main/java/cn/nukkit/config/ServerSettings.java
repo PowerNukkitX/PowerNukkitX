@@ -78,6 +78,8 @@ public final class ServerSettings extends OkaeriConfig {
         int compressionBufferSize = 1048576;
         @Comment("nukkit.server.settings.networkSettings.maxDecompressSize")
         int maxDecompressSize = 67108864;
+        @Comment("nukkit.server.settings.networkSettings.packetLimit")
+        int packetLimit = 240;
     }
 
     @EqualsAndHashCode(callSuper = true)

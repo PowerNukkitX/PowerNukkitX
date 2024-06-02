@@ -104,6 +104,7 @@ public class Network {
         this.channel = (RakServerChannel) new ServerBootstrap()
                 .channelFactory(RakChannelFactory.server(oclass))
                 .option(RakChannelOption.RAK_ADVERTISEMENT, pong.toByteBuf())
+                .option(RakChannelOption.RAK_PACKET_LIMIT, server.getSettings().networkSettings().packetLimit())
                 .group(eventloopgroup)
                 .childHandler(new BedrockServerInitializer() {
                     @Override
