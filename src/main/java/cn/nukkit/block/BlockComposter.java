@@ -27,12 +27,13 @@ public class BlockComposter extends BlockSolid {
     private static final Object2IntMap<BlockState> compostableBlocks = new Object2IntOpenHashMap<>();
     public static final Item OUTPUT_ITEM = new ItemBoneMeal();
 
-    public static void init(){
+    public static void init() {
         registerDefaults();
     }
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -106,7 +107,7 @@ public class BlockComposter extends BlockSolid {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(isNotActivate(player)) return false;
+        if (isNotActivate(player)) return false;
         if (item.isNull()) {
             return false;
         }
@@ -229,7 +230,7 @@ public class BlockComposter extends BlockSolid {
                 ItemID.GLOW_BERRIES
         );
         registerItems(50, ItemID.MELON_SLICE, ItemID.SUGAR_CANE, BlockID.NETHER_SPROUTS);
-        registerItems(65, ItemID.APPLE, BlockID.BEETROOT, ItemID.CARROT, ItemID.COCOA_BEANS, ItemID.POTATO, BlockID.WHEAT);
+        registerItems(65, ItemID.APPLE, BlockID.BEETROOT, ItemID.CARROT, ItemID.COCOA_BEANS, ItemID.POTATO);
         registerItems(85, ItemID.BAKED_POTATO, ItemID.BREAD, ItemID.COOKIE, ItemID.MUSHROOM_STEW);
         registerItems(100, BlockID.CAKE, ItemID.PUMPKIN_PIE);
 
@@ -243,7 +244,7 @@ public class BlockComposter extends BlockSolid {
         registerBlocks(65, YELLOW_FLOWER, ItemID.RED_FLOWER, DOUBLE_PLANT, WITHER_ROSE, WATERLILY, MELON_BLOCK,
                 PUMPKIN, CARVED_PUMPKIN, SEA_PICKLE, BROWN_MUSHROOM, RED_MUSHROOM,
                 WARPED_ROOTS, CRIMSON_ROOTS, SHROOMLIGHT, AZALEA, BIG_DRIPLEAF, MOSS_BLOCK,
-                SPORE_BLOSSOM);
+                SPORE_BLOSSOM, WHEAT);
         registerBlocks(85, HAY_BLOCK, BROWN_MUSHROOM_BLOCK, RED_MUSHROOM_BLOCK);
         registerBlocks(100, CAKE);
     }
