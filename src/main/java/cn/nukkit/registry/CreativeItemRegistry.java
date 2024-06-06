@@ -43,6 +43,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 var nbt = tag.containsKey("nbt_b64") ? Base64.getDecoder().decode(tag.get("nbt_b64").toString()) : EmptyArrays.EMPTY_BYTES;
                 String name = tag.get("id").toString();
                 Item item = Item.get(name, damage, 1, nbt, false);
+                item.setCompoundTag(nbt);
                 if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
                     item = Item.AIR;
                     log.warn("load creative item {} damage {} is null", name, damage);
@@ -142,6 +143,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 MAP.put(i, MAP.get(i + 1));
             }
             MAP.remove(lastIntKey);
+            INTERNAL_DIFF_ITEM.remove(index);
         }
     }
 
