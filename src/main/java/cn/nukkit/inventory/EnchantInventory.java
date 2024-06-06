@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class EnchantInventory extends ContainerInventory implements BlockEntityInventoryNameable, CraftTypeInventory {
+public class EnchantInventory extends ContainerInventory implements BlockEntityInventoryNameable, CraftTypeInventory, SoleInventory {
     public EnchantInventory(BlockEntityEnchantTable table) {
         super(table, InventoryType.ENCHANTMENT, 2);
     }

@@ -9,16 +9,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockEntityEnchantTable extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
-    protected EnchantInventory inventory;
-
     public BlockEntityEnchantTable(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        this.inventory = new EnchantInventory(this);
     }
 
     @Override
     public boolean isBlockEntityValid() {
-        return getBlock().getId() == Block.ENCHANTING_TABLE;
+        return getBlock().getId().equals(Block.ENCHANTING_TABLE);
     }
 
     @Override
@@ -55,6 +52,6 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
 
     @Override
     public EnchantInventory getInventory() {
-        return inventory;
+        return new EnchantInventory(this);
     }
 }
