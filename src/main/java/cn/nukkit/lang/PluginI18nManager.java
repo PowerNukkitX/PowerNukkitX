@@ -117,7 +117,7 @@ public final class PluginI18nManager {
                     // 开始读取文件内容
                     InputStream inputStream = plugin.getResource(name);
                     assert inputStream != null;
-                    pluginMultiLanguage.addLang(LangCode.valueOf(name.substring(9, name.indexOf("."))), inputStream);
+                    pluginMultiLanguage.addLang(LangCode.from(name.substring(9, name.indexOf("."))), inputStream);
                     inputStream.close();
                 }
             }
@@ -145,7 +145,7 @@ public final class PluginI18nManager {
             var pluginMultiLanguage = new PluginI18n(plugin);
             for (var f : files) {
                 try (InputStream inputStream = new FileInputStream(f)) {
-                    pluginMultiLanguage.addLang(LangCode.valueOf(f.getName().replace(".json", "")), inputStream);
+                    pluginMultiLanguage.addLang(LangCode.from(f.getName().replace(".json", "")), inputStream);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

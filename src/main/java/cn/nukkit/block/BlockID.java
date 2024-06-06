@@ -230,11 +230,15 @@ public interface BlockID {
 
     String BRAIN_CORAL = "minecraft:brain_coral";
 
+    String BRAIN_CORAL_BLOCK = "minecraft:brain_coral_block";
+
     String BRAIN_CORAL_FAN = "minecraft:brain_coral_fan";
 
     String BREWING_STAND = "minecraft:brewing_stand";
 
     String BRICK_BLOCK = "minecraft:brick_block";
+
+    String BRICK_SLAB = "minecraft:brick_slab";
 
     String BRICK_STAIRS = "minecraft:brick_stairs";
 
@@ -267,6 +271,8 @@ public interface BlockID {
     String BUBBLE_COLUMN = "minecraft:bubble_column";
 
     String BUBBLE_CORAL = "minecraft:bubble_coral";
+
+    String BUBBLE_CORAL_BLOCK = "minecraft:bubble_coral_block";
 
     String BUBBLE_CORAL_FAN = "minecraft:bubble_coral_fan";
 
@@ -384,6 +390,8 @@ public interface BlockID {
 
     String COBBLESTONE = "minecraft:cobblestone";
 
+    String COBBLESTONE_SLAB = "minecraft:cobblestone_slab";
+
     String COBBLESTONE_WALL = "minecraft:cobblestone_wall";
 
     String COCOA = "minecraft:cocoa";
@@ -409,8 +417,6 @@ public interface BlockID {
     String COPPER_ORE = "minecraft:copper_ore";
 
     String COPPER_TRAPDOOR = "minecraft:copper_trapdoor";
-
-    String CORAL_BLOCK = "minecraft:coral_block";
 
     String CORAL_FAN_HANG = "minecraft:coral_fan_hang";
 
@@ -540,21 +546,31 @@ public interface BlockID {
 
     String DEAD_BRAIN_CORAL = "minecraft:dead_brain_coral";
 
+    String DEAD_BRAIN_CORAL_BLOCK = "minecraft:dead_brain_coral_block";
+
     String DEAD_BRAIN_CORAL_FAN = "minecraft:dead_brain_coral_fan";
 
     String DEAD_BUBBLE_CORAL = "minecraft:dead_bubble_coral";
+
+    String DEAD_BUBBLE_CORAL_BLOCK = "minecraft:dead_bubble_coral_block";
 
     String DEAD_BUBBLE_CORAL_FAN = "minecraft:dead_bubble_coral_fan";
 
     String DEAD_FIRE_CORAL = "minecraft:dead_fire_coral";
 
+    String DEAD_FIRE_CORAL_BLOCK = "minecraft:dead_fire_coral_block";
+
     String DEAD_FIRE_CORAL_FAN = "minecraft:dead_fire_coral_fan";
 
     String DEAD_HORN_CORAL = "minecraft:dead_horn_coral";
 
+    String DEAD_HORN_CORAL_BLOCK = "minecraft:dead_horn_coral_block";
+
     String DEAD_HORN_CORAL_FAN = "minecraft:dead_horn_coral_fan";
 
     String DEAD_TUBE_CORAL = "minecraft:dead_tube_coral";
+
+    String DEAD_TUBE_CORAL_BLOCK = "minecraft:dead_tube_coral_block";
 
     String DEAD_TUBE_CORAL_FAN = "minecraft:dead_tube_coral_fan";
 
@@ -619,8 +635,6 @@ public interface BlockID {
     String DISPENSER = "minecraft:dispenser";
 
     String DOUBLE_CUT_COPPER_SLAB = "minecraft:double_cut_copper_slab";
-
-    String DOUBLE_PLANT = "minecraft:double_plant";
 
     String DOUBLE_STONE_BLOCK_SLAB = "minecraft:double_stone_block_slab";
 
@@ -922,9 +936,13 @@ public interface BlockID {
 
     String FENCE_GATE = "minecraft:fence_gate";
 
+    String FERN = "minecraft:fern";
+
     String FIRE = "minecraft:fire";
 
     String FIRE_CORAL = "minecraft:fire_coral";
+
+    String FIRE_CORAL_BLOCK = "minecraft:fire_coral_block";
 
     String FIRE_CORAL_FAN = "minecraft:fire_coral_fan";
 
@@ -1108,6 +1126,8 @@ public interface BlockID {
 
     String HORN_CORAL = "minecraft:horn_coral";
 
+    String HORN_CORAL_BLOCK = "minecraft:horn_coral_block";
+
     String HORN_CORAL_FAN = "minecraft:horn_coral_fan";
 
     String ICE = "minecraft:ice";
@@ -1180,6 +1200,8 @@ public interface BlockID {
 
     String LARGE_AMETHYST_BUD = "minecraft:large_amethyst_bud";
 
+    String LARGE_FERN = "minecraft:large_fern";
+
     String LAVA = "minecraft:lava";
 
     String LECTERN = "minecraft:lectern";
@@ -1233,6 +1255,8 @@ public interface BlockID {
     String LIGHT_WEIGHTED_PRESSURE_PLATE = "minecraft:light_weighted_pressure_plate";
 
     String LIGHTNING_ROD = "minecraft:lightning_rod";
+
+    String LILAC = "minecraft:lilac";
 
     String LILY_OF_THE_VALLEY = "minecraft:lily_of_the_valley";
 
@@ -1378,6 +1402,8 @@ public interface BlockID {
 
     String NETHER_BRICK_FENCE = "minecraft:nether_brick_fence";
 
+    String NETHER_BRICK_SLAB = "minecraft:nether_brick_slab";
+
     String NETHER_BRICK_STAIRS = "minecraft:nether_brick_stairs";
 
     String NETHER_GOLD_ORE = "minecraft:nether_gold_ore";
@@ -1475,6 +1501,10 @@ public interface BlockID {
     String PACKED_MUD = "minecraft:packed_mud";
 
     String PEARLESCENT_FROGLIGHT = "minecraft:pearlescent_froglight";
+
+    String PEONY = "minecraft:peony";
+
+    String PETRIFIED_OAK_SLAB = "minecraft:petrified_oak_slab";
 
     String PINK_CANDLE = "minecraft:pink_candle";
 
@@ -1626,6 +1656,8 @@ public interface BlockID {
 
     String QUARTZ_ORE = "minecraft:quartz_ore";
 
+    String QUARTZ_SLAB = "minecraft:quartz_slab";
+
     String QUARTZ_STAIRS = "minecraft:quartz_stairs";
 
     String RAIL = "minecraft:rail";
@@ -1692,9 +1724,13 @@ public interface BlockID {
 
     String RESPAWN_ANCHOR = "minecraft:respawn_anchor";
 
+    String ROSE_BUSH = "minecraft:rose_bush";
+
     String SAND = "minecraft:sand";
 
     String SANDSTONE = "minecraft:sandstone";
+
+    String SANDSTONE_SLAB = "minecraft:sandstone_slab";
 
     String SANDSTONE_STAIRS = "minecraft:sandstone_stairs";
 
@@ -1715,6 +1751,8 @@ public interface BlockID {
     String SEA_PICKLE = "minecraft:sea_pickle";
 
     String SEAGRASS = "minecraft:seagrass";
+
+    String SHORT_GRASS = "minecraft:short_grass";
 
     String SHROOMLIGHT = "minecraft:shroomlight";
 
@@ -1741,6 +1779,8 @@ public interface BlockID {
     String SMOOTH_SANDSTONE_STAIRS = "minecraft:smooth_sandstone_stairs";
 
     String SMOOTH_STONE = "minecraft:smooth_stone";
+
+    String SMOOTH_STONE_SLAB = "minecraft:smooth_stone_slab";
 
     String SNIFFER_EGG = "minecraft:sniffer_egg";
 
@@ -1808,13 +1848,13 @@ public interface BlockID {
 
     String STONE = "minecraft:stone";
 
-    String STONE_BLOCK_SLAB = "minecraft:stone_block_slab";
-
     String STONE_BLOCK_SLAB2 = "minecraft:stone_block_slab2";
 
     String STONE_BLOCK_SLAB3 = "minecraft:stone_block_slab3";
 
     String STONE_BLOCK_SLAB4 = "minecraft:stone_block_slab4";
+
+    String STONE_BRICK_SLAB = "minecraft:stone_brick_slab";
 
     String STONE_BRICK_STAIRS = "minecraft:stone_brick_stairs";
 
@@ -1876,13 +1916,15 @@ public interface BlockID {
 
     String STRUCTURE_VOID = "minecraft:structure_void";
 
+    String SUNFLOWER = "minecraft:sunflower";
+
     String SUSPICIOUS_GRAVEL = "minecraft:suspicious_gravel";
 
     String SUSPICIOUS_SAND = "minecraft:suspicious_sand";
 
     String SWEET_BERRY_BUSH = "minecraft:sweet_berry_bush";
 
-    String TALLGRASS = "minecraft:tallgrass";
+    String TALL_GRASS = "minecraft:tall_grass";
 
     String TARGET = "minecraft:target";
 
@@ -1907,6 +1949,8 @@ public interface BlockID {
     String TRIPWIRE_HOOK = "minecraft:tripwire_hook";
 
     String TUBE_CORAL = "minecraft:tube_coral";
+
+    String TUBE_CORAL_BLOCK = "minecraft:tube_coral_block";
 
     String TUBE_CORAL_FAN = "minecraft:tube_coral_fan";
 

@@ -51,7 +51,7 @@ public enum LangCode {
     public static LangCode from(String name) {
         try {
             return valueOf(LangCode.class, name);
-        } catch (IllegalArgumentException illegalArgumentException) {
+        } catch (IllegalArgumentException ignore) {
             log.error("Can't find LangCode for {},return null", name);
             return null;
         }

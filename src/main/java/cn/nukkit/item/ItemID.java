@@ -1,5 +1,9 @@
 package cn.nukkit.item;
 
+
+/**
+ * @author Cool_Loong
+ */
 public interface ItemID {
     String ACACIA_BOAT = "minecraft:acacia_boat";
 
@@ -199,6 +203,8 @@ public interface ItemID {
 
     String CORAL = "minecraft:coral";
 
+    String CORAL_BLOCK = "minecraft:coral_block";
+
     String CORAL_FAN = "minecraft:coral_fan";
 
     String CORAL_FAN_DEAD = "minecraft:coral_fan_dead";
@@ -250,6 +256,8 @@ public interface ItemID {
     String DOLPHIN_SPAWN_EGG = "minecraft:dolphin_spawn_egg";
 
     String DONKEY_SPAWN_EGG = "minecraft:donkey_spawn_egg";
+
+    String DOUBLE_PLANT = "minecraft:double_plant";
 
     String DRAGON_BREATH = "minecraft:dragon_breath";
 
@@ -545,6 +553,10 @@ public interface ItemID {
 
     String MUSIC_DISC_CHIRP = "minecraft:music_disc_chirp";
 
+    String MUSIC_DISC_CREATOR = "minecraft:music_disc_creator";
+
+    String MUSIC_DISC_CREATOR_MUSIC_BOX = "minecraft:music_disc_creator_music_box";
+
     String MUSIC_DISC_FAR = "minecraft:music_disc_far";
 
     String MUSIC_DISC_MALL = "minecraft:music_disc_mall";
@@ -554,6 +566,8 @@ public interface ItemID {
     String MUSIC_DISC_OTHERSIDE = "minecraft:music_disc_otherside";
 
     String MUSIC_DISC_PIGSTEP = "minecraft:music_disc_pigstep";
+
+    String MUSIC_DISC_PRECIPICE = "minecraft:music_disc_precipice";
 
     String MUSIC_DISC_RELIC = "minecraft:music_disc_relic";
 
@@ -608,6 +622,10 @@ public interface ItemID {
     String OAK_SIGN = "minecraft:oak_sign";
 
     String OCELOT_SPAWN_EGG = "minecraft:ocelot_spawn_egg";
+
+    String OMINOUS_BOTTLE = "minecraft:ominous_bottle";
+
+    String OMINOUS_TRIAL_KEY = "minecraft:ominous_trial_key";
 
     String ORANGE_DYE = "minecraft:orange_dye";
 
@@ -801,6 +819,8 @@ public interface ItemID {
 
     String STONE_AXE = "minecraft:stone_axe";
 
+    String STONE_BLOCK_SLAB = "minecraft:stone_block_slab";
+
     String STONE_HOE = "minecraft:stone_hoe";
 
     String STONE_PICKAXE = "minecraft:stone_pickaxe";
@@ -826,6 +846,8 @@ public interface ItemID {
     String TADPOLE_BUCKET = "minecraft:tadpole_bucket";
 
     String TADPOLE_SPAWN_EGG = "minecraft:tadpole_spawn_egg";
+
+    String TALLGRASS = "minecraft:tallgrass";
 
     String TIDE_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:tide_armor_trim_smithing_template";
 
