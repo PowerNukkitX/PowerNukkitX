@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.*;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
@@ -102,6 +103,9 @@ public class CraftingDataPacket extends DataPacket {
                         case SHAPELESS, SHULKER_BOX -> byteBuf.writeString(CRAFTING_TAG_CRAFTING_TABLE);
                     }
                     byteBuf.writeVarInt(shapeless.getPriority());
+
+                    this.writeRequirement(byteBuf, shapeless.getRequirement());
+
                     byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case SMITHING_TRANSFORM -> {
@@ -140,8 +144,9 @@ public class CraftingDataPacket extends DataPacket {
                     }
                     byteBuf.writeUUID(shaped.getUUID());
                     byteBuf.writeString(CRAFTING_TAG_CRAFTING_TABLE);
-                    byteBuf.writeBoolean(shaped.isMirror());
                     byteBuf.writeVarInt(shaped.getPriority());
+                    byteBuf.writeBoolean(shaped.isMirror());
+                    this.writeRequirement(byteBuf, shaped.getRequirement());
                     byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case MULTI -> {
@@ -188,6 +193,16 @@ public class CraftingDataPacket extends DataPacket {
         byteBuf.writeUnsignedVarInt(0); // Material reducers size
 
         byteBuf.writeBoolean(cleanRecipes);
+    }
+
+    protected void writeRequirement(HandleByteBuf buffer, RecipeUnlockingRequirement requirement) {
+        buffer.writeByte(requirement.getContext().ordinal());
+        if (requirement.getContext().equals(RecipeUnlockingRequirement.UnlockingContext.NONE)) {
+            buffer.writeUnsignedVarInt(requirement.getIngredients().size());
+            for (var ing : requirement.getIngredients()) {
+                buffer.writeRecipeIngredient(ing);
+            }
+        }
     }
 
     @Override

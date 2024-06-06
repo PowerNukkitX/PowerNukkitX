@@ -1,6 +1,7 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.registry.RecipeRegistry;
@@ -11,6 +12,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class ShapelessRecipe extends CraftingRecipe {
+    protected final RecipeUnlockingRequirement recipeUnlockingRequirement;
+
     public ShapelessRecipe(Item result, Collection<Item> ingredients) {
         this(null, 10, result, ingredients);
     }
@@ -24,6 +27,10 @@ public class ShapelessRecipe extends CraftingRecipe {
     }
 
     public ShapelessRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients) {
+        this(recipeId, uuid, priority, result, ingredients, null);
+    }
+
+    public ShapelessRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients, RecipeUnlockingRequirement recipeUnlockingRequirement) {
         super(recipeId == null ? RecipeRegistry.computeRecipeId(List.of(result), ingredients, RecipeType.SHAPELESS) : recipeId, priority);
         this.uuid = uuid;
         this.results.add(result.clone());
@@ -31,10 +38,20 @@ public class ShapelessRecipe extends CraftingRecipe {
             throw new IllegalArgumentException("Shapeless recipes cannot have more than 9 ingredients");
         }
         this.ingredients.addAll(ingredients);
+        if (recipeUnlockingRequirement == null) {
+            //todo 1.21            
+            this.recipeUnlockingRequirement = null;
+        } else {
+            this.recipeUnlockingRequirement = recipeUnlockingRequirement;
+        }
     }
 
     public Item getResult() {
         return results.get(0);
+    }
+
+    public RecipeUnlockingRequirement getRequirement() {
+        return recipeUnlockingRequirement;
     }
 
     @Override

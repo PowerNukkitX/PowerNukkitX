@@ -1,9 +1,10 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
-import cn.nukkit.registry.Registries;
+import cn.nukkit.registry.RecipeRegistry;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.util.collection.CharObjectHashMap;
@@ -19,10 +20,10 @@ import static cn.nukkit.recipe.RecipeType.SHAPED;
 public class ShapedRecipe extends CraftingRecipe {
     private final String[] shape;
     private final CharObjectHashMap<ItemDescriptor> shapedIngredients = new CharObjectHashMap<>();
-
     private final int row;
     private final int col;
     private final boolean mirror;
+    protected final RecipeUnlockingRequirement recipeUnlockingRequirement;
 
     public ShapedRecipe(Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
         this(null, 1, primaryResult, shape, ingredients, extraResults);
@@ -54,7 +55,12 @@ public class ShapedRecipe extends CraftingRecipe {
     }
 
     public ShapedRecipe(String recipeId, UUID uuid, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults, boolean mirror) {
-        super(recipeId == null ? Registries.RECIPE.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, priority);
+        this(recipeId, uuid, priority, primaryResult, shape, ingredients, extraResults, mirror, null);
+    }
+
+    public ShapedRecipe(String recipeId, UUID uuid, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients,
+                        Collection<Item> extraResults, boolean mirror, RecipeUnlockingRequirement recipeUnlockingRequirement) {
+        super(recipeId == null ? RecipeRegistry.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, priority);
         this.uuid = uuid;
         this.row = shape.length;
         this.mirror = mirror;
@@ -94,6 +100,17 @@ public class ShapedRecipe extends CraftingRecipe {
             this.shapedIngredients.put(key, item);
             this.ingredients.add(entry.getValue());
         }
+
+        if (recipeUnlockingRequirement == null) {
+            //todo 1.21            
+            this.recipeUnlockingRequirement = null;
+        } else {
+            this.recipeUnlockingRequirement = recipeUnlockingRequirement;
+        }
+    }
+
+    public RecipeUnlockingRequirement getRequirement() {
+        return recipeUnlockingRequirement;
     }
 
     public int getWidth() {
