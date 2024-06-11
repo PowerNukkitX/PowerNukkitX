@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
 
-public class GrindstoneInventory extends ContainerInventory implements CraftTypeInventory {
+public class GrindstoneInventory extends ContainerInventory implements CraftTypeInventory, SoleInventory {
     private static final int SLOT_FIRST_ITEM = 0;
     private static final int SLOT_SECOND_ITEM = 1;
     private static final int SLOT_RESULT = 2;

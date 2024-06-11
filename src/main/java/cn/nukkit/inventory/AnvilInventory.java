@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class AnvilInventory extends ContainerInventory implements CraftTypeInventory {
+public class AnvilInventory extends ContainerInventory implements CraftTypeInventory, SoleInventory {
     public static final int INPUT = 0;
     public static final int MATERIAL = 1;
     public static final int OUTPUT = 2;

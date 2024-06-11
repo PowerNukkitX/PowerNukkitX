@@ -57,10 +57,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             return true;
         }
         Item itemInHand = player.getInventory().getItemInHand();
-        if ((player.isSneaking() || player.isFlySneaking()) && !(itemInHand.isTool() || itemInHand.isNull())) {
-            return true;
-        }
-        return false;
+        return (player.isSneaking() || player.isFlySneaking()) && !(itemInHand.isTool() || itemInHand.isNull());
     }
 
     @NotNull

@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 public interface BlockInventoryHolder extends InventoryHolder {
     String KEY = "inventory";
 
-
     Supplier<Inventory> blockInventorySupplier();
 
     default Block getBlock() {
@@ -26,7 +25,9 @@ public interface BlockInventoryHolder extends InventoryHolder {
         Block block = getBlock();
         MetadataValue meta = block.getMetadata(KEY, InternalPlugin.INSTANCE);
         if (meta == null) {
-            Inventory containerInventory = blockInventorySupplier().get();
+            final Inventory containerInventory = blockInventorySupplier().get();
+            if (containerInventory instanceof SoleInventory) return containerInventory;
+
             block.setMetadata(KEY, new FixedMetadataValue(InternalPlugin.INSTANCE, containerInventory));
             return containerInventory;
         } else {

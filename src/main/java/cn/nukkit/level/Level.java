@@ -2257,7 +2257,6 @@ public class Level implements Metadatable {
         }
 
         if (update) {
-
             if (server.getSettings().chunkSettings().lightUpdates()) {
                 updateAllLight(block);
             }
@@ -3066,6 +3065,14 @@ public class Level implements Metadatable {
         setBlockStateAt(x, y, z, 0, state);
     }
 
+    public BlockState getBlockStateAt(int x, int y, int z, int layer) {
+        return this.getChunk(x >> 4, z >> 4, true).getBlockState(x & 0x0f, ensureY(y), z & 0x0f, layer);
+    }
+
+    public BlockState getBlockStateAt(int x, int y, int z) {
+        return getBlockStateAt(x, y, z, 0);
+    }
+
     public void setBlockStateAt(int x, int y, int z, int layer, BlockState state) {
         IChunk chunk = this.getChunk(x >> 4, z >> 4, true);
         chunk.setBlockState(x & 0x0f, ensureY(y), z & 0x0f, state, layer);
@@ -3074,14 +3081,6 @@ public class Level implements Metadatable {
         if (server.getSettings().chunkSettings().lightUpdates()) {
             updateAllLight(new Vector3(x, y, z));
         }
-    }
-
-    public BlockState getBlockStateAt(int x, int y, int z, int layer) {
-        return this.getChunk(x >> 4, z >> 4, true).getBlockState(x & 0x0f, ensureY(y), z & 0x0f, layer);
-    }
-
-    public BlockState getBlockStateAt(int x, int y, int z) {
-        return getBlockStateAt(x, y, z, 0);
     }
 
     /**

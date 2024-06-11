@@ -30,7 +30,7 @@ import java.util.Map;
  * @author joserobjr | CoolLoong
  * @since 2020-09-28
  */
-public class SmithingInventory extends ContainerInventory implements CraftTypeInventory {
+public class SmithingInventory extends ContainerInventory implements CraftTypeInventory, SoleInventory {
     private static final int EQUIPMENT = 0;
     private static final int INGREDIENT = 1;
     private static final int TEMPLATE = 2;
