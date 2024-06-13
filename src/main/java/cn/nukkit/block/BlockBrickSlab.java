@@ -1,9 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.StoneSlabType;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockBrickSlab extends Block {
+public class BlockBrickSlab extends BlockStoneBlockSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(BRICK_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
@@ -18,5 +19,10 @@ public class BlockBrickSlab extends Block {
 
     public BlockBrickSlab(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public StoneSlabType getSlabType() {
+        return StoneSlabType.BRICK;
     }
 }

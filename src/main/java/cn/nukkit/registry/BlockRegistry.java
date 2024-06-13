@@ -1140,7 +1140,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(STICKY_PISTON, BlockStickyPiston.class);
             register(STICKY_PISTON_ARM_COLLISION, BlockStickyPistonArmCollision.class);
             register(STONE, BlockStone.class);
-            register(STONE_BLOCK_SLAB, BlockStoneBlockSlab.class);
             register(STONE_BLOCK_SLAB2, BlockStoneBlockSlab2.class);
             register(STONE_BLOCK_SLAB3, BlockStoneBlockSlab3.class);
             register(STONE_BLOCK_SLAB4, BlockStoneBlockSlab4.class);

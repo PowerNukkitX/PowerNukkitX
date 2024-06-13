@@ -4,15 +4,38 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.StoneSlabType;
 import cn.nukkit.item.ItemTool;
 
+import java.util.Locale;
+
 public abstract class BlockStoneBlockSlab extends BlockSlab {
     public BlockStoneBlockSlab(BlockState blockstate) {
-        super(blockstate, getDoubleBlockState(blockstate));
+        super(blockstate, getDoubleSlabState(getType(blockstate)));
     }
 
-    static BlockState getDoubleBlockState(BlockState blockState) {
-        if (blockState == null) return BlockDoubleStoneBlockSlab.PROPERTIES.getDefaultState();
-        StoneSlabType propertyValue = blockState.getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE);
-        return BlockDoubleStoneBlockSlab.PROPERTIES.getBlockState(CommonBlockProperties.STONE_SLAB_TYPE, propertyValue);
+    public static BlockState getDoubleSlabState(String string) {
+        StoneSlabType stoneSlabType = StoneSlabType.valueOf(string.toUpperCase(Locale.ENGLISH));
+        return BlockDoubleStoneBlockSlab.PROPERTIES.getBlockState(CommonBlockProperties.STONE_SLAB_TYPE, stoneSlabType);
+    }
+
+    public static String getType(BlockState state) {
+        if (state.equals(BlockQuartzSlab.PROPERTIES.getDefaultState())) {
+            return "quartz";
+        } else if (state.equals(BlockPetrifiedOakSlab.PROPERTIES.getDefaultState())) {
+            return "wood";
+        } else if (state.equals(BlockStoneBrickSlab.PROPERTIES.getDefaultState())) {
+            return "stone_brick";
+        } else if (state.equals(BlockBrickSlab.PROPERTIES.getDefaultState())) {
+            return "brick";
+        } else if (state.equals(BlockSmoothStoneSlab.PROPERTIES.getDefaultState())) {
+            return "smooth_stone";
+        } else if (state.equals(BlockSandstoneSlab.PROPERTIES.getDefaultState())) {
+            return "sandstone";
+        } else if (state.equals(BlockNetherBrickSlab.PROPERTIES.getDefaultState())) {
+            return "nether_brick";
+        } else if (state.equals(BlockCobblestoneSlab.PROPERTIES.getDefaultState())) {
+            return "cobblestone";
+        } else {
+            return "unknown";
+        }
     }
 
     @Override
