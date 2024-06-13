@@ -452,7 +452,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(COPPER_GRATE, BlockCopperGrate.class);
             register(COPPER_ORE, BlockCopperOre.class);
             register(COPPER_TRAPDOOR, BlockCopperTrapdoor.class);
-            register(CORAL_BLOCK, BlockCoralBlock.class);
             register(BRAIN_CORAL_FAN, BlockBrainCoralFan.class);
             register(BUBBLE_CORAL_FAN, BlockBubbleCoralFan.class);
             register(DEAD_BRAIN_CORAL_FAN, BlockDeadBrainCoralFan.class);
@@ -560,7 +559,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(DIRT_WITH_ROOTS, BlockDirtWithRoots.class);
             register(DISPENSER, BlockDispenser.class);
             register(DOUBLE_CUT_COPPER_SLAB, BlockDoubleCutCopperSlab.class);
-            register(DOUBLE_PLANT, BlockDoublePlant.class);
             register(DOUBLE_STONE_BLOCK_SLAB, BlockDoubleStoneBlockSlab.class);
             register(DOUBLE_STONE_BLOCK_SLAB2, BlockDoubleStoneBlockSlab2.class);
             register(DOUBLE_STONE_BLOCK_SLAB3, BlockDoubleStoneBlockSlab3.class);

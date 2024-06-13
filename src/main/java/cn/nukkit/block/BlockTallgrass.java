@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.DoublePlantType;
 import cn.nukkit.block.property.enums.TallGrassType;
 import cn.nukkit.item.Item;
@@ -21,11 +22,12 @@ import static cn.nukkit.block.property.CommonBlockProperties.TALL_GRASS_TYPE;
 /**
  * @author Angelic47 (Nukkit Project)
  */
-public class BlockTallgrass extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-    public static final BlockProperties PROPERTIES = new BlockProperties(TALLGRASS, TALL_GRASS_TYPE);
+public class BlockTallgrass extends BlockDoublePlant implements BlockFlowerPot.FlowerPotBlock {
+    public static final BlockProperties PROPERTIES = new BlockProperties(TALL_GRASS, CommonBlockProperties.UPPER_BLOCK_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -38,8 +40,13 @@ public class BlockTallgrass extends BlockFlowable implements BlockFlowerPot.Flow
     }
 
     @Override
+    public @NotNull DoublePlantType getDoublePlantType() {
+        return DoublePlantType.GRASS;
+    }
+
+    @Override
     public String getName() {
-        return getPropertyValue(TALL_GRASS_TYPE).name() + "Tallgrass";
+        return "Tallgrass";
     }
 
     @Override
@@ -97,8 +104,7 @@ public class BlockTallgrass extends BlockFlowable implements BlockFlowerPot.Flow
                     item.count--;
                 }
 
-                BlockDoublePlant doublePlant = (BlockDoublePlant) Block.get(BlockID.DOUBLE_PLANT);
-                doublePlant.setDoublePlantType(type);
+                BlockDoublePlant doublePlant = BlockDoublePlant.getFromType(type);
                 doublePlant.setTopHalf(false);
 
                 this.level.addParticle(new BoneMealParticle(this));

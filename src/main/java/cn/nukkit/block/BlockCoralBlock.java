@@ -7,46 +7,23 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 import static cn.nukkit.block.property.CommonBlockProperties.CORAL_COLOR;
-import static cn.nukkit.block.property.CommonBlockProperties.DEAD_BIT;
 
 
-public class BlockCoralBlock extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_BLOCK, CORAL_COLOR, DEAD_BIT);
-
-    @Override
-    @NotNull
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    public BlockCoralBlock() {
-        this(PROPERTIES.getDefaultState());
-    }
-
+public abstract class BlockCoralBlock extends BlockSolid {
     public BlockCoralBlock(BlockState blockstate) {
         super(blockstate);
     }
 
     public boolean isDead() {
-        return getPropertyValue(DEAD_BIT);
+        return false;
     }
 
-    public void setDead(boolean dead) {
-        setPropertyValue(DEAD_BIT, dead);
-    }
-
-    @Override
-    public String getName() {
-        if (isDead()) {
-            return "Dead " + this.getPropertyValue(CORAL_COLOR).name() + " Coral Block";
-        } else {
-            return this.getPropertyValue(CORAL_COLOR).name() + " Coral Block";
-        }
+    public BlockCoralBlock toDead() {
+        return this;
     }
 
     @Override
@@ -84,9 +61,8 @@ public class BlockCoralBlock extends BlockSolid {
                         return type;
                     }
                 }
-                BlockFadeEvent event = new BlockFadeEvent(this, new BlockCoralBlock(blockstate));
+                BlockFadeEvent event = new BlockFadeEvent(this, toDead());
                 if (!event.isCancelled()) {
-                    setDead(true);
                     this.getLevel().setBlock(this, event.getNewState(), true, true);
                 }
             }
