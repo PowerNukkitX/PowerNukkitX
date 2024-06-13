@@ -65,10 +65,6 @@ the [contributing guide](.github/CONTRIBUTING.md).
 
 Give a ⭐️ if this project helped you!
 
-### Donate
-
-- [Patreon](https://www.patreon.com/coolloong)
-- Ethereum: 0x140fc5f4c1fb00270c3491275d316470abc887f0
 
 ## 📝 License
 
