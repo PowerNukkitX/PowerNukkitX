@@ -1,11 +1,11 @@
 <h1 align="center">Welcome to PowerNukkitX 👋</h1>
 <p>
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://feedback.minecraft.net/hc/en-us/articles/26247797084173--Minecraft-1-20-81-Bedrock">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.20.81%20(Bedrock)-56383E" />
+   <a href="https://feedback.minecraft.net/hc/en-us/articles/26247797084173--Minecraft-1-21-0-Bedrock">
+      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.0%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
-      <img alt="Minecraft" src="https://img.shields.io/badge/protocol-671-blue" />
+      <img alt="Minecraft" src="https://img.shields.io/badge/protocol-685-blue" />
    </a>
    <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
       <img alt="Action" src="https://github.com/PowerNukkitX/PowerNukkitX/actions/workflows/maven.yml/badge.svg?branch=master" />
