@@ -14,14 +14,18 @@ import cn.nukkit.entity.ai.evaluator.BlockCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
-import cn.nukkit.entity.ai.executor.*;
+import cn.nukkit.entity.ai.executor.EatGrassExecutor;
+import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
+import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.InLoveExecutor;
+import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
+import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.Sound;
@@ -85,7 +89,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
                                 ),
                                 any(
                                         new BlockCheckEvaluator(Block.GRASS_BLOCK, new Vector3(0, -1, 0)),
-                                        new BlockCheckEvaluator(Block.TALLGRASS, Vector3.ZERO))),
+                                        new BlockCheckEvaluator(Block.TALL_GRASS, Vector3.ZERO))),
                                 3, 1, 100
                         ),
                         new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),

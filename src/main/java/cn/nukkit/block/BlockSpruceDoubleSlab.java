@@ -22,7 +22,7 @@ public class BlockSpruceDoubleSlab extends BlockDoubleWoodenSlab {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return SPRUCE_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockSpruceSlab.PROPERTIES.getDefaultState();
     }
 }

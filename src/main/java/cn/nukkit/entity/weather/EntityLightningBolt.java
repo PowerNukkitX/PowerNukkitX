@@ -1,7 +1,10 @@
 package cn.nukkit.entity.weather;
 
-import cn.nukkit.block.*;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockFire;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.Oxidizable;
+import cn.nukkit.block.Waxable;
 import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockFadeEvent;
@@ -59,7 +62,7 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
 
         if (isEffect && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK) && (this.server.getDifficulty() >= 2)) {
             Block block = this.getLevelBlock();
-            if (block.isAir() || block.getId().equals(BlockID.TALLGRASS)) {
+            if (block.isAir() || block.getId().equals(BlockID.TALL_GRASS)) {
                 BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);
                 fire.x = block.x;
                 fire.y = block.y;
@@ -191,7 +194,7 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
                 if (this.isEffect && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
                     Block block = this.getLevelBlock();
 
-                    if (block.isAir() || block.getId().equals(Block.TALLGRASS)) {
+                    if (block.isAir() || block.getId().equals(Block.TALL_GRASS)) {
                         BlockIgniteEvent event = new BlockIgniteEvent(block, null, this, BlockIgniteEvent.BlockIgniteCause.LIGHTNING);
                         getServer().getPluginManager().callEvent(event);
 

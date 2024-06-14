@@ -237,11 +237,12 @@ public class BlockComposter extends BlockSolid {
         registerBlocks(30, PINK_PETALS, ItemID.LEAVES, ItemID.LEAVES2, ItemID.SAPLING, SEAGRASS, SWEET_BERRY_BUSH, MOSS_CARPET, HANGING_ROOTS, SMALL_DRIPLEAF_BLOCK);
         registerBlocks(50, GLOW_LICHEN, GRASS_BLOCK, CACTUS, DRIED_KELP_BLOCK, VINE, NETHER_SPROUTS,
                 TWISTING_VINES, WEEPING_VINES, GLOW_LICHEN);
-        registerBlock(50, TALLGRASS, 0);
-        registerBlock(50, TALLGRASS, 1);
-        registerBlock(65, TALLGRASS, 2);
-        registerBlock(65, TALLGRASS, 3);
-        registerBlocks(65, YELLOW_FLOWER, ItemID.RED_FLOWER, DOUBLE_PLANT, WITHER_ROSE, WATERLILY, MELON_BLOCK,
+        registerBlock(50, TALL_GRASS, 0);
+        registerBlock(50, TALL_GRASS, 1);
+        registerBlock(65, TALL_GRASS, 2);
+        registerBlock(65, TALL_GRASS, 3);
+        //todo support all DOUBLE_PLANT
+        registerBlocks(65, YELLOW_FLOWER, ItemID.RED_FLOWER, WITHER_ROSE, WATERLILY, MELON_BLOCK,
                 PUMPKIN, CARVED_PUMPKIN, SEA_PICKLE, BROWN_MUSHROOM, RED_MUSHROOM,
                 WARPED_ROOTS, CRIMSON_ROOTS, SHROOMLIGHT, AZALEA, BIG_DRIPLEAF, MOSS_BLOCK,
                 SPORE_BLOSSOM, WHEAT);

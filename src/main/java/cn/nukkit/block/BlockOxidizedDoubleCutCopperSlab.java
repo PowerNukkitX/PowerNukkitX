@@ -21,8 +21,8 @@ public class BlockOxidizedDoubleCutCopperSlab extends BlockDoubleCutCopperSlab {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return OXIDIZED_CUT_COPPER_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockOxidizedCutCopperSlab.PROPERTIES.getDefaultState();
     }
 
     @Override

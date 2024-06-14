@@ -141,7 +141,7 @@ public class BlockSnowLayer extends BlockFallable {
                 return false;
             }
             case GRASS_BLOCK -> setCovered(true);
-            case TALLGRASS -> {
+            case TALL_GRASS -> {
                 if (!level.setBlock(this, 0, this, true)) {
                     return false;
                 }
@@ -170,7 +170,7 @@ public class BlockSnowLayer extends BlockFallable {
         }
 
         Block layer1 = getLevelBlockAtLayer(1);
-        if (!layer1.getId().equals(TALLGRASS)) {
+        if (!layer1.getId().equals(TALL_GRASS)) {
             return;
         }
 

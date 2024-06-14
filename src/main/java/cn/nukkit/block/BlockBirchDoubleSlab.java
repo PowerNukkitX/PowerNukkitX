@@ -22,7 +22,7 @@ public class BlockBirchDoubleSlab extends BlockDoubleWoodenSlab {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return BIRCH_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockBirchSlab.PROPERTIES.getDefaultState();
     }
 }

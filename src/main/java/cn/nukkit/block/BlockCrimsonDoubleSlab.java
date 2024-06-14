@@ -57,7 +57,7 @@ public class BlockCrimsonDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return CRIMSON_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockCrimsonSlab.PROPERTIES.getDefaultState();
     }
 }

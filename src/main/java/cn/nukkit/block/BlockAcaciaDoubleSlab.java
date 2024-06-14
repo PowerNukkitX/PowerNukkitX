@@ -22,7 +22,7 @@ public class BlockAcaciaDoubleSlab extends BlockDoubleWoodenSlab {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return ACACIA_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockAcaciaSlab.PROPERTIES.getDefaultState();
     }
 }

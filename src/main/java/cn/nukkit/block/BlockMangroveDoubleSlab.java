@@ -41,8 +41,8 @@ public class BlockMangroveDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return MANGROVE_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockMangroveSlab.PROPERTIES.getDefaultState();
     }
 
 }

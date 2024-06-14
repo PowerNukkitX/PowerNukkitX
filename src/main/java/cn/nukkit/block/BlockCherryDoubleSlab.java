@@ -51,7 +51,7 @@ public class BlockCherryDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return CHERRY_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockCherrySlab.PROPERTIES.getDefaultState();
     }
 }
