@@ -73,6 +73,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(BLUE_DYE, ItemBlueDye.class);
             register(BOAT, ItemBoat.class);
             register(BOGGED_SPAWN_EGG, ItemBoggedSpawnEgg.class);
+            register(BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, ItemBoltArmorTrimSmithingTemplate.class);
             register(BONE, ItemBone.class);
             register(BONE_MEAL, ItemBoneMeal.class);
             register(BOOK, ItemBook.class);
@@ -80,6 +81,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(BOW, ItemBow.class);
             register(BOWL, ItemBowl.class);
             register(BREAD, ItemBread.class);
+            register(BREEZE_ROD, ItemBreezeRod.class);
             register(BREEZE_SPAWN_EGG, ItemBreezeSpawnEgg.class);
             register(BREWER_POTTERY_SHERD, ItemBrewerPotterySherd.class);
             register(BRICK, ItemBrick.class);
@@ -130,6 +132,9 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(COOKIE, ItemCookie.class);
             register(COPPER_INGOT, ItemCopperIngot.class);
             register(CORAL, ItemCoral.class);
+            register(CORAL_BLOCK, ItemCoralBlock.class);
+            register(CORAL_FAN, ItemCoralFan.class);
+            register(CORAL_FAN_DEAD, ItemCoralFanDead.class);
             register(COW_SPAWN_EGG, ItemCowSpawnEgg.class);
             register(CREEPER_BANNER_PATTERN, ItemCreeperBannerPattern.class);
             register(CREEPER_SPAWN_EGG, ItemCreeperSpawnEgg.class);
@@ -154,6 +159,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(DISC_FRAGMENT_5, ItemDiscFragment5.class);
             register(DOLPHIN_SPAWN_EGG, ItemDolphinSpawnEgg.class);
             register(DONKEY_SPAWN_EGG, ItemDonkeySpawnEgg.class);
+            register(DOUBLE_PLANT, ItemDoublePlant.class);
             register(DRAGON_BREATH, ItemDragonBreath.class);
             register(DRIED_KELP, ItemDriedKelp.class);
             register(DROWNED_SPAWN_EGG, ItemDrownedSpawnEgg.class);
@@ -188,6 +194,9 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(FISHING_ROD, ItemFishingRod.class);
             register(FLINT, ItemFlint.class);
             register(FLINT_AND_STEEL, ItemFlintAndSteel.class);
+            register(FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, ItemFlowArmorTrimSmithingTemplate.class);
+            register(FLOW_BANNER_PATTERN, ItemFlowBannerPattern.class);
+            register(FLOW_POTTERY_SHERD, ItemFlowPotterySherd.class);
             register(FLOWER_BANNER_PATTERN, ItemFlowerBannerPattern.class);
             register(FOX_SPAWN_EGG, ItemFoxSpawnEgg.class);
             register(FRIEND_POTTERY_SHERD, ItemFriendPotterySherd.class);
@@ -222,6 +231,8 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(GREEN_DYE, ItemGreenDye.class);
             register(GUARDIAN_SPAWN_EGG, ItemGuardianSpawnEgg.class);
             register(GUNPOWDER, ItemGunpowder.class);
+            register(GUSTER_BANNER_PATTERN, ItemGusterBannerPattern.class);
+            register(GUSTER_POTTERY_SHERD, ItemGusterPotterySherd.class);
             register(HARD_STAINED_GLASS, ItemHardStainedGlass.class);
             register(HARD_STAINED_GLASS_PANE, ItemHardStainedGlassPane.class);
             register(HEART_OF_THE_SEA, ItemHeartOfTheSea.class);
@@ -272,6 +283,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(LODESTONE_COMPASS, ItemLodestoneCompass.class);
             register(LOG, ItemLog.class);
             register(LOG2, ItemLog2.class);
+            register(MACE, ItemMace.class);
             register(MAGENTA_DYE, ItemMagentaDye.class);
             register(MAGMA_CREAM, ItemMagmaCream.class);
             register(MAGMA_CUBE_SPAWN_EGG, ItemMagmaCubeSpawnEgg.class);
@@ -295,11 +307,14 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(MUSIC_DISC_BLOCKS, ItemMusicDiscBlocks.class);
             register(MUSIC_DISC_CAT, ItemMusicDiscCat.class);
             register(MUSIC_DISC_CHIRP, ItemMusicDiscChirp.class);
+            register(MUSIC_DISC_CREATOR, ItemMusicDiscCreator.class);
+            register(MUSIC_DISC_CREATOR_MUSIC_BOX, ItemMusicDiscCreatorMusicBox.class);
             register(MUSIC_DISC_FAR, ItemMusicDiscFar.class);
             register(MUSIC_DISC_MALL, ItemMusicDiscMall.class);
             register(MUSIC_DISC_MELLOHI, ItemMusicDiscMellohi.class);
             register(MUSIC_DISC_OTHERSIDE, ItemMusicDiscOtherside.class);
             register(MUSIC_DISC_PIGSTEP, ItemMusicDiscPigstep.class);
+            register(MUSIC_DISC_PRECIPICE, ItemMusicDiscPrecipice.class);
             register(MUSIC_DISC_RELIC, ItemMusicDiscRelic.class);
             register(MUSIC_DISC_STAL, ItemMusicDiscStal.class);
             register(MUSIC_DISC_STRAD, ItemMusicDiscStrad.class);
@@ -327,6 +342,8 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(OAK_CHEST_BOAT, ItemOakChestBoat.class);
             register(OAK_SIGN, ItemOakSign.class);
             register(OCELOT_SPAWN_EGG, ItemOcelotSpawnEgg.class);
+            register(OMINOUS_BOTTLE, ItemOminousBottle.class);
+            register(OMINOUS_TRIAL_KEY, ItemOminousTrialKey.class);
             register(ORANGE_DYE, ItemOrangeDye.class);
             register(PAINTING, ItemPainting.class);
             register(PANDA_SPAWN_EGG, ItemPandaSpawnEgg.class);
@@ -373,6 +390,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(RAW_IRON, ItemRawIron.class);
             register(RECOVERY_COMPASS, ItemRecoveryCompass.class);
             register(RED_DYE, ItemRedDye.class);
+            register(RED_FLOWER, ItemRedFlower.class);
             register(REDSTONE, ItemRedstone.class);
             register(REPEATER, ItemRepeater.class);
             register(RIB_ARMOR_TRIM_SMITHING_TEMPLATE, ItemRibArmorTrimSmithingTemplate.class);
@@ -381,6 +399,8 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(SALMON, ItemSalmon.class);
             register(SALMON_BUCKET, ItemSalmonBucket.class);
             register(SALMON_SPAWN_EGG, ItemSalmonSpawnEgg.class);
+            register(SAPLING, ItemSapling.class);
+            register(SCRAPE_POTTERY_SHERD, ItemScrapePotterySherd.class);
             register(SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSentryArmorTrimSmithingTemplate.class);
             register(SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE, ItemShaperArmorTrimSmithingTemplate.class);
             register(SHEAF_POTTERY_SHERD, ItemSheafPotterySherd.class);
@@ -420,6 +440,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(STAINED_HARDENED_CLAY, ItemStainedHardenedClay.class);
             register(STICK, ItemStick.class);
             register(STONE_AXE, ItemStoneAxe.class);
+            register(STONE_BLOCK_SLAB, ItemStoneBlockSlab.class);
             register(STONE_HOE, ItemStoneHoe.class);
             register(STONE_PICKAXE, ItemStonePickaxe.class);
             register(STONE_SHOVEL, ItemStoneShovel.class);
@@ -433,6 +454,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(SWEET_BERRIES, ItemSweetBerries.class);
             register(TADPOLE_BUCKET, ItemTadpoleBucket.class);
             register(TADPOLE_SPAWN_EGG, ItemTadpoleSpawnEgg.class);
+            register(TALLGRASS, ItemTallgrass.class);
             register(TIDE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemTideArmorTrimSmithingTemplate.class);
             register(TNT_MINECART, ItemTntMinecart.class);
             register(TORCHFLOWER_SEEDS, ItemTorchflowerSeeds.class);
@@ -482,24 +504,26 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(ZOMBIE_PIGMAN_SPAWN_EGG, ItemZombiePigmanSpawnEgg.class);
             register(ZOMBIE_SPAWN_EGG, ItemZombieSpawnEgg.class);
             register(ZOMBIE_VILLAGER_SPAWN_EGG, ItemZombieVillagerSpawnEgg.class);
-            register(BlockID.BED, ItemBed.class);
-            register(BlockID.SKULL, ItemSkull.class);
-
-            register(BlockID.BIRCH_HANGING_SIGN, ItemBirchHangingSign.class);
-            register(BlockID.ACACIA_HANGING_SIGN, ItemAcaciaHangingSign.class);
-            register(BlockID.BAMBOO_HANGING_SIGN, ItemBambooHangingSign.class);
-            register(BlockID.CHERRY_HANGING_SIGN, ItemCherryHangingSign.class);
-            register(BlockID.CRIMSON_HANGING_SIGN, ItemCrimsonHangingSign.class);
-            register(BlockID.DARK_OAK_HANGING_SIGN, ItemDarkOakHangingSign.class);
-            register(BlockID.JUNGLE_HANGING_SIGN, ItemJungleHangingSign.class);
-            register(BlockID.MANGROVE_HANGING_SIGN, ItemMangroveHangingSign.class);
-            register(BlockID.OAK_HANGING_SIGN, ItemOakHangingSign.class);
-            register(BlockID.SPRUCE_HANGING_SIGN, ItemSpruceHangingSign.class);
-            register(BlockID.WARPED_HANGING_SIGN, ItemWarpedHangingSign.class);
-
-            register(BlockID.BEETROOT, ItemBeetroot.class);
+            registerBlockItem();
         } catch (RegisterException ignore) {
         }
+    }
+
+    private void registerBlockItem() throws RegisterException {
+        register(BlockID.BED, ItemBed.class);
+        register(BlockID.SKULL, ItemSkull.class);
+        register(BlockID.BIRCH_HANGING_SIGN, ItemBirchHangingSign.class);
+        register(BlockID.ACACIA_HANGING_SIGN, ItemAcaciaHangingSign.class);
+        register(BlockID.BAMBOO_HANGING_SIGN, ItemBambooHangingSign.class);
+        register(BlockID.CHERRY_HANGING_SIGN, ItemCherryHangingSign.class);
+        register(BlockID.CRIMSON_HANGING_SIGN, ItemCrimsonHangingSign.class);
+        register(BlockID.DARK_OAK_HANGING_SIGN, ItemDarkOakHangingSign.class);
+        register(BlockID.JUNGLE_HANGING_SIGN, ItemJungleHangingSign.class);
+        register(BlockID.MANGROVE_HANGING_SIGN, ItemMangroveHangingSign.class);
+        register(BlockID.OAK_HANGING_SIGN, ItemOakHangingSign.class);
+        register(BlockID.SPRUCE_HANGING_SIGN, ItemSpruceHangingSign.class);
+        register(BlockID.WARPED_HANGING_SIGN, ItemWarpedHangingSign.class);
+        register(BlockID.BEETROOT, ItemBeetroot.class);
     }
 
     @Override

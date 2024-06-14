@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.DoublePlantType;
-import cn.nukkit.block.property.enums.TallGrassType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
@@ -17,12 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.block.property.CommonBlockProperties.TALL_GRASS_TYPE;
-
 /**
  * @author Angelic47 (Nukkit Project)
  */
-public class BlockTallgrass extends BlockDoublePlant implements BlockFlowerPot.FlowerPotBlock {
+public class BlockTallGrass extends BlockDoublePlant {
     public static final BlockProperties PROPERTIES = new BlockProperties(TALL_GRASS, CommonBlockProperties.UPPER_BLOCK_BIT);
 
     @Override
@@ -31,11 +28,11 @@ public class BlockTallgrass extends BlockDoublePlant implements BlockFlowerPot.F
         return PROPERTIES;
     }
 
-    public BlockTallgrass() {
+    public BlockTallGrass() {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockTallgrass(BlockState blockstate) {
+    public BlockTallGrass(BlockState blockstate) {
         super(blockstate);
     }
 
@@ -47,11 +44,6 @@ public class BlockTallgrass extends BlockDoublePlant implements BlockFlowerPot.F
     @Override
     public String getName() {
         return "Tallgrass";
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override
@@ -95,16 +87,11 @@ public class BlockTallgrass extends BlockDoublePlant implements BlockFlowerPot.F
             Block up = this.up();
 
             if (up.isAir()) {
-                DoublePlantType type = switch (getPropertyValue(TALL_GRASS_TYPE)) {
-                    case DEFAULT, TALL -> DoublePlantType.GRASS;
-                    case FERN, SNOW -> DoublePlantType.FERN;
-                };
-
                 if (player != null && !player.isCreative()) {
                     item.count--;
                 }
 
-                BlockDoublePlant doublePlant = BlockDoublePlant.getFromType(type);
+                BlockTallGrass doublePlant = new BlockTallGrass();
                 doublePlant.setTopHalf(false);
 
                 this.level.addParticle(new BoneMealParticle(this));
@@ -143,15 +130,5 @@ public class BlockTallgrass extends BlockDoublePlant implements BlockFlowerPot.F
     @Override
     public int getToolType() {
         return ItemTool.TYPE_SHEARS;
-    }
-
-    @Override
-    public boolean isPotBlockState() {
-        return getPropertyValue(TALL_GRASS_TYPE) == TallGrassType.FERN;
-    }
-
-    @Override
-    public boolean isFertilizable() {
-        return true;
     }
 }

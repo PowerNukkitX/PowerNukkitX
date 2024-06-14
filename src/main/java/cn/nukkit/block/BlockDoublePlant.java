@@ -20,7 +20,7 @@ public abstract class BlockDoublePlant extends BlockFlowable {
         return switch (type) {
             case FERN -> new BlockLargeFern();
             case ROSE -> new BlockRoseBush();
-            case GRASS -> new BlockTallgrass();
+            case GRASS -> new BlockTallGrass();
             case PAEONIA -> new BlockPeony();
             case SYRINGA -> new BlockLilac();
             case SUNFLOWER -> new BlockSunflower();

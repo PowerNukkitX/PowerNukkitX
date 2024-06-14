@@ -125,7 +125,7 @@ public class BlockMossBlock extends BlockSolid {
                                 topBlock.setTopHalf(true);
                                 pos.level.setBlock(new Position(x, y + 1, z, pos.level), topBlock, true, true);
                             } else {
-                                BlockTallgrass block = (BlockTallgrass) Block.get(BlockID.TALLGRASS);
+                                BlockTallGrass block = (BlockTallGrass) Block.get(BlockID.TALLGRASS);
                                 block.setPropertyValue(TALL_GRASS_TYPE, TallGrassType.TALL);
                                 pos.level.setBlock(new Position(x, y, z, pos.level), block, true, true);
                             }
