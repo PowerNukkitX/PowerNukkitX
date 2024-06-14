@@ -1,8 +1,6 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-
-
 import cn.nukkit.blockentity.BlockEntityStructBlock;
 import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
@@ -226,6 +224,7 @@ public class StructBlockInventory implements Inventory {
         ContainerClosePacket pk = new ContainerClosePacket();
         pk.windowId = who.getWindowId(this);
         pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
+        pk.type = getType();
         who.dataPacket(pk);
         this.viewers.remove(who);
     }

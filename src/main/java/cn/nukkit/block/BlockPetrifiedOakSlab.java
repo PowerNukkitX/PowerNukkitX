@@ -18,7 +18,7 @@ public class BlockPetrifiedOakSlab extends BlockStoneBlockSlab {
     }
 
     public BlockPetrifiedOakSlab(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate==null ? PROPERTIES.getDefaultState(): blockstate);
     }
 
     @Override

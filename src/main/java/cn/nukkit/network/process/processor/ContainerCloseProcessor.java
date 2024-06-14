@@ -2,6 +2,7 @@ package cn.nukkit.network.process.processor;
 
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ContainerClosePacket;
@@ -17,6 +18,8 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
             return;
         }
 
+        Inventory inventory = player.getWindowById(pk.windowId);
+
         if (playerHandle.getWindowIndex().containsKey(pk.windowId)) {
             if (pk.windowId == SpecialWindowId.PLAYER.getId()) {
                 playerHandle.setClosingWindowId(pk.windowId);
@@ -29,14 +32,18 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
                 playerHandle.removeWindow(playerHandle.getWindowIndex().get(pk.windowId));
             }
         }
+        
         if (pk.windowId == -1) {
             player.addWindow(player.getCraftingGrid(), SpecialWindowId.NONE.getId());
         }
-        ContainerClosePacket pk2 = new ContainerClosePacket();
-        pk2.wasServerInitiated = false;
-        pk2.windowId = pk.windowId;
-        player.dataPacket(pk2);
-        player.resetInventory();
+        if (inventory != null) {
+            ContainerClosePacket pk2 = new ContainerClosePacket();
+            pk2.wasServerInitiated = false;
+            pk2.windowId = pk.windowId;
+            pk2.type = inventory.getType();
+            player.dataPacket(pk2);
+            player.resetInventory();
+        }
     }
 
     @Override

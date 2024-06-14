@@ -18,7 +18,7 @@ public class BlockSmoothStoneSlab extends BlockStoneBlockSlab {
     }
 
     public BlockSmoothStoneSlab(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate==null ? PROPERTIES.getDefaultState(): blockstate);
     }
 
     @Override

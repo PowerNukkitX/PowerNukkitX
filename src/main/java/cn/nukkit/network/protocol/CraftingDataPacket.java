@@ -85,6 +85,7 @@ public class CraftingDataPacket extends DataPacket {
                     byteBuf.writeUUID(stonecutter.getUUID());
                     byteBuf.writeString(CRAFTING_TAG_STONECUTTER);
                     byteBuf.writeVarInt(stonecutter.getPriority());
+                    this.writeRequirement(byteBuf, stonecutter.getRequirement());
                     byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case SHAPELESS, CARTOGRAPHY, SHULKER_BOX -> {
@@ -103,9 +104,7 @@ public class CraftingDataPacket extends DataPacket {
                         case SHAPELESS, SHULKER_BOX -> byteBuf.writeString(CRAFTING_TAG_CRAFTING_TABLE);
                     }
                     byteBuf.writeVarInt(shapeless.getPriority());
-
                     this.writeRequirement(byteBuf, shapeless.getRequirement());
-
                     byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case SMITHING_TRANSFORM -> {

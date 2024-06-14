@@ -1,6 +1,7 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.registry.RecipeRegistry;
@@ -27,7 +28,11 @@ public class CartographyRecipe extends ShapelessRecipe {
     }
 
     public CartographyRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients) {
-        super(recipeId == null ? RecipeRegistry.computeRecipeId(List.of(result), ingredients, CARTOGRAPHY) : recipeId, uuid, priority, result, ingredients);
+        this(recipeId, null, priority, result, ingredients, null);
+    }
+
+    public CartographyRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients, RecipeUnlockingRequirement recipeUnlockingRequirement) {
+        super(recipeId == null ? RecipeRegistry.computeRecipeId(List.of(result), ingredients, CARTOGRAPHY) : recipeId, uuid, priority, result, ingredients, recipeUnlockingRequirement);
     }
 
     @Override

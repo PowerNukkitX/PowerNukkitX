@@ -23,7 +23,6 @@ public class ShapedRecipe extends CraftingRecipe {
     private final int row;
     private final int col;
     private final boolean mirror;
-    protected final RecipeUnlockingRequirement recipeUnlockingRequirement;
 
     public ShapedRecipe(Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
         this(null, 1, primaryResult, shape, ingredients, extraResults);
@@ -60,7 +59,7 @@ public class ShapedRecipe extends CraftingRecipe {
 
     public ShapedRecipe(String recipeId, UUID uuid, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients,
                         Collection<Item> extraResults, boolean mirror, RecipeUnlockingRequirement recipeUnlockingRequirement) {
-        super(recipeId == null ? RecipeRegistry.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, priority);
+        super(recipeId == null ? RecipeRegistry.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, priority, recipeUnlockingRequirement);
         this.uuid = uuid;
         this.row = shape.length;
         this.mirror = mirror;
@@ -100,19 +99,8 @@ public class ShapedRecipe extends CraftingRecipe {
             this.shapedIngredients.put(key, item);
             this.ingredients.add(entry.getValue());
         }
-
-        if (recipeUnlockingRequirement == null) {
-            //todo 1.21            
-            this.recipeUnlockingRequirement = null;
-        } else {
-            this.recipeUnlockingRequirement = recipeUnlockingRequirement;
-        }
     }
-
-    public RecipeUnlockingRequirement getRequirement() {
-        return recipeUnlockingRequirement;
-    }
-
+    
     public int getWidth() {
         return this.col;
     }

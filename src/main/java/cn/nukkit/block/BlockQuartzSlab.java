@@ -18,7 +18,7 @@ public class BlockQuartzSlab extends BlockStoneBlockSlab {
     }
 
     public BlockQuartzSlab(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate==null ? PROPERTIES.getDefaultState(): blockstate);
     }
 
     @Override

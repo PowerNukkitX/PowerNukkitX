@@ -126,6 +126,7 @@ public class FakeInventory extends BaseInventory implements InputInventory {
         ContainerClosePacket packet = new ContainerClosePacket();
         packet.windowId = player.getWindowId(this);
         packet.wasServerInitiated = player.getClosingWindowId() != packet.windowId;
+        packet.type = getType();
         player.dataPacket(packet);
         Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             this.fakeBlock.remove(player);

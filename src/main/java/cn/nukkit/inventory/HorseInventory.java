@@ -92,6 +92,7 @@ public class HorseInventory extends BaseInventory {
         ContainerClosePacket pk = new ContainerClosePacket();
         pk.windowId = who.getWindowId(this);
         pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
+        pk.type = getType();
         who.dataPacket(pk);
         super.onClose(who);
     }

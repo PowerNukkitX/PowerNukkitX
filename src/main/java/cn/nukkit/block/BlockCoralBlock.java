@@ -86,8 +86,7 @@ public abstract class BlockCoralBlock extends BlockSolid {
 
     @Override
     public Item toItem() {
-        int aux = this.getPropertyValue(CORAL_COLOR).ordinal();
-        return new ItemBlock(this, aux);
+        return new ItemBlock(this);
     }
 
 }

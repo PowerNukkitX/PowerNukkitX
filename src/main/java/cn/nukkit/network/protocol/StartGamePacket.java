@@ -128,15 +128,15 @@ public class StartGamePacket extends DataPacket {
     /**
      * @since v685
      */
-    private String serverId;
+    private String serverId = "";
     /**
      * @since v685
      */
-    private String worldId;
+    private String worldId = "";
     /**
      * @since v685
      */
-    private String scenarioId;
+    private String scenarioId = "";
 
     private void writeLevelSettings(HandleByteBuf byteBuf) {
         /* Level settings start */

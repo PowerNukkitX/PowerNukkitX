@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class ShapelessRecipe extends CraftingRecipe {
-    protected final RecipeUnlockingRequirement recipeUnlockingRequirement;
-
     public ShapelessRecipe(Item result, Collection<Item> ingredients) {
         this(null, 10, result, ingredients);
     }
@@ -31,27 +29,17 @@ public class ShapelessRecipe extends CraftingRecipe {
     }
 
     public ShapelessRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients, RecipeUnlockingRequirement recipeUnlockingRequirement) {
-        super(recipeId == null ? RecipeRegistry.computeRecipeId(List.of(result), ingredients, RecipeType.SHAPELESS) : recipeId, priority);
+        super(recipeId == null ? RecipeRegistry.computeRecipeId(List.of(result), ingredients, RecipeType.SHAPELESS) : recipeId, priority, recipeUnlockingRequirement);
         this.uuid = uuid;
         this.results.add(result.clone());
         if (ingredients.size() > 9) {
             throw new IllegalArgumentException("Shapeless recipes cannot have more than 9 ingredients");
         }
         this.ingredients.addAll(ingredients);
-        if (recipeUnlockingRequirement == null) {
-            //todo 1.21            
-            this.recipeUnlockingRequirement = null;
-        } else {
-            this.recipeUnlockingRequirement = recipeUnlockingRequirement;
-        }
     }
 
     public Item getResult() {
         return results.get(0);
-    }
-
-    public RecipeUnlockingRequirement getRequirement() {
-        return recipeUnlockingRequirement;
     }
 
     @Override
