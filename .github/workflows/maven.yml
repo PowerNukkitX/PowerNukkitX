@@ -5,7 +5,7 @@ on: [ push, pull_request ]
 jobs:
   move-tag:
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
+    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository) && contains(github.ref_name, 'master')
     steps:
       - name: Move ci tag
         run: |

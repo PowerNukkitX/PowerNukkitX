@@ -25,7 +25,8 @@ public class BlockSeaPickle extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SEA_PICKLE, CLUSTER_COUNT, DEAD_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -124,7 +125,7 @@ public class BlockSeaPickle extends BlockFlowable {
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
 
         //Bone meal
-        if (item.isFertilizer() && down().getId().equals(CORAL_BLOCK) && !isDead()) {
+        if (item.isFertilizer() && down() instanceof BlockCoralBlock && !isDead()) {
             BlockSeaPickle block = (BlockSeaPickle) clone();
             block.setPropertyValue(CLUSTER_COUNT, 3);
 
@@ -145,7 +146,7 @@ public class BlockSeaPickle extends BlockFlowable {
             ThreadLocalRandom random = ThreadLocalRandom.current();
             Block[] blocksAround = this.getLevel().getCollisionBlocks(new SimpleAxisAlignedBB(x - 2, y - 2, z - 2, x + 3, y, z + 3));
             for (Block blockNearby : blocksAround) {
-                if (blockNearby.getId().equals(CORAL_BLOCK)) {
+                if (blockNearby instanceof BlockCoralBlock) {
                     Block up = blockNearby.up();
                     if (up instanceof BlockFlowingWater w &&
                             (w.getLiquidDepth() == 0 || w.getLiquidDepth() == 8) &&

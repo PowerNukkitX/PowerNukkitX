@@ -30,7 +30,7 @@ public class BlockPolishedBlackstoneBrickDoubleSlab extends BlockPolishedBlackst
     }
 
     @Override
-    public String getSingleSlabId() {
-        return POLISHED_BLACKSTONE_BRICK_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockPolishedBlackstoneBrickSlab.PROPERTIES.getDefaultState();
     }
 }

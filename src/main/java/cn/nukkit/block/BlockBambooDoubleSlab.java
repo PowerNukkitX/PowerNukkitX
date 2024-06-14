@@ -52,7 +52,7 @@ public class BlockBambooDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return BAMBOO_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockBambooSlab.PROPERTIES.getDefaultState();
     }
 }

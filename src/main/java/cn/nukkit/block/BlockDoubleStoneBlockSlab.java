@@ -7,8 +7,23 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Locale;
+
 public class BlockDoubleStoneBlockSlab extends BlockDoubleSlabBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(DOUBLE_STONE_BLOCK_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF, CommonBlockProperties.STONE_SLAB_TYPE);
+
+    public static BlockState getDoubleBlockState(String string) {
+        return switch (string) {
+            case "quartz" -> BlockQuartzSlab.PROPERTIES.getDefaultState();
+            case "wood" -> BlockPetrifiedOakSlab.PROPERTIES.getDefaultState();
+            case "stone_brick" -> BlockStoneBrickSlab.PROPERTIES.getDefaultState();
+            case "brick" -> BlockBrickSlab.PROPERTIES.getDefaultState();
+            case "smooth_stone" -> BlockSmoothStoneSlab.PROPERTIES.getDefaultState();
+            case "sandstone" -> BlockSandstoneSlab.PROPERTIES.getDefaultState();
+            case "nether_brick" -> BlockNetherBrickSlab.PROPERTIES.getDefaultState();
+            default -> BlockCobblestoneSlab.PROPERTIES.getDefaultState();
+        };
+    }
 
     @Override
     @NotNull
@@ -44,8 +59,8 @@ public class BlockDoubleStoneBlockSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return STONE_BLOCK_SLAB;
+    public BlockState getSingleSlab() {
+        return getDoubleBlockState(getSlabType().name().toLowerCase(Locale.ENGLISH));
     }
 
     public void setSlabType(StoneSlabType type) {
@@ -69,7 +84,7 @@ public class BlockDoubleStoneBlockSlab extends BlockDoubleSlabBase {
 
     @Override
     public Item toItem() {
-        Block block = Block.get(getSingleSlabId()).setPropertyValues(CommonBlockProperties.STONE_SLAB_TYPE.createValue(getSlabType()));
+        Block block = Block.get(getSingleSlab());
         return new ItemBlock(block);
     }
 }

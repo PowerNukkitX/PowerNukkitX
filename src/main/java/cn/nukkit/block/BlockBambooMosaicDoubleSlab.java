@@ -27,8 +27,8 @@ public class BlockBambooMosaicDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return BAMBOO_MOSAIC_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockBambooMosaicSlab.PROPERTIES.getDefaultState();
     }
 
     @Override

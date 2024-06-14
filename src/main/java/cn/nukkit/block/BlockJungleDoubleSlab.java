@@ -22,7 +22,7 @@ public class BlockJungleDoubleSlab extends BlockDoubleWoodenSlab {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return JUNGLE_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockJungleSlab.PROPERTIES.getDefaultState();
     }
 }

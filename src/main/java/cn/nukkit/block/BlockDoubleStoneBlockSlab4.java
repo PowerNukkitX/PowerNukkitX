@@ -52,8 +52,8 @@ public class BlockDoubleStoneBlockSlab4 extends BlockDoubleSlabBase {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return STONE_BLOCK_SLAB4;
+    public BlockState getSingleSlab() {
+        return BlockStoneBlockSlab4.PROPERTIES.getDefaultState();
     }
 
     @Override
@@ -68,7 +68,7 @@ public class BlockDoubleStoneBlockSlab4 extends BlockDoubleSlabBase {
 
     @Override
     public Item toItem() {
-        Block block = Block.get(getSingleSlabId()).setPropertyValues(CommonBlockProperties.STONE_SLAB_TYPE_4.createValue(getSlabType()));
+        Block block = Block.get(getSingleSlab()).setPropertyValues(CommonBlockProperties.STONE_SLAB_TYPE_4.createValue(getSlabType()));
         return new ItemBlock(block);
     }
 }

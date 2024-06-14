@@ -224,6 +224,7 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
         ContainerClosePacket pk = new ContainerClosePacket();
         pk.windowId = who.getWindowId(this);
         pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
+        pk.type = getType();
         who.dataPacket(pk);
         this.viewers.remove(who);
     }

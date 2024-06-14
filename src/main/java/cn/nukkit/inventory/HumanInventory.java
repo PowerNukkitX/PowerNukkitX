@@ -662,6 +662,7 @@ public class HumanInventory extends BaseInventory {
         ContainerClosePacket pk = new ContainerClosePacket();
         pk.windowId = who.getWindowId(this);
         pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
+        pk.type = getType();
         who.dataPacket(pk);
         // player can never stop viewing their own inventory
         if (who != holder) {

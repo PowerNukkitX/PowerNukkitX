@@ -51,7 +51,7 @@ public class BlockDeepslateTileDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return DEEPSLATE_TILE_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockDeepslateTileSlab.PROPERTIES.getDefaultState();
     }
 }

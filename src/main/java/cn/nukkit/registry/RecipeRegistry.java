@@ -1,12 +1,14 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.Server;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.CraftingDataPacket;
+import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.*;
 import cn.nukkit.recipe.descriptor.ComplexAliasDescriptor;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
@@ -711,14 +713,34 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             }
             itemDescriptors.add(recipeItem);
         }
+
+        RecipeUnlockingRequirement recipeUnlockingRequirement = parseRequirement(recipeObject);
+
         return switch (craftingBlock) {
-            case "crafting_table", "deprecated" -> new ShapelessRecipe(id, uuid, priority, resultItem, itemDescriptors);
-            case "shulker_box" -> new ShulkerBoxRecipe(id, uuid, priority, resultItem, itemDescriptors);
+            case "crafting_table", "deprecated" ->
+                    new ShapelessRecipe(id, uuid, priority, resultItem, itemDescriptors, recipeUnlockingRequirement);
+            case "shulker_box" ->
+                    new ShulkerBoxRecipe(id, uuid, priority, resultItem, itemDescriptors, recipeUnlockingRequirement);
             case "stonecutter" ->
-                    new StonecutterRecipe(id, uuid, priority, resultItem, itemDescriptors.get(0).toItem());
-            case "cartography_table" -> new CartographyRecipe(id, uuid, priority, resultItem, itemDescriptors);
+                    new StonecutterRecipe(id, uuid, priority, resultItem, itemDescriptors.get(0).toItem(), recipeUnlockingRequirement);
+            case "cartography_table" ->
+                    new CartographyRecipe(id, uuid, priority, resultItem, itemDescriptors, recipeUnlockingRequirement);
             default -> null;
         };
+    }
+
+    private RecipeUnlockingRequirement parseRequirement(Map<String, Object> recipeObject) {
+        if (recipeObject.containsKey("requirement")) {
+            Map<String, Object> requirement = (Map<String, Object>) recipeObject.get("requirement");
+            String string = requirement.get("context").toString();
+            RecipeUnlockingRequirement.UnlockingContext unlockingContext = RecipeUnlockingRequirement.UnlockingContext.valueOf(string.toUpperCase(Locale.ENGLISH));
+
+            List<Map<String, Object>> items = (List<Map<String, Object>>) requirement.get("items");
+            RecipeUnlockingRequirement recipeUnlockingRequirement = new RecipeUnlockingRequirement(unlockingContext);
+            recipeUnlockingRequirement.getIngredients().addAll(items.stream().map(this::parseRecipeItem).toList());
+            return recipeUnlockingRequirement;
+        }
+        return null;
     }
 
     private Recipe parseShapeRecipe(Map<String, Object> recipeObject) {
@@ -743,8 +765,8 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
         Map<?, ?> input = (Map<?, ?>) recipeObject.get("input");
         boolean mirror = false;
-        if (input.containsKey("mirror")) {
-            mirror = Boolean.parseBoolean(input.remove("mirror").toString());
+        if (input.containsKey("assumeSymetry")) {
+            mirror = Boolean.parseBoolean(input.remove("assumeSymetry").toString());
         }
         Map<String, Map<String, Object>> input2 = (Map<String, Map<String, Object>>) input;
         for (Map.Entry<String, Map<String, Object>> ingredientEntry : input2.entrySet()) {
@@ -754,7 +776,9 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             if (itemDescriptor == null) return null;
             ingredients.put(ingredientChar, itemDescriptor);
         }
-        return new ShapedRecipe(id, uuid, priority, primaryResult.toItem(), shape, ingredients, extraResults, mirror);
+
+        RecipeUnlockingRequirement recipeUnlockingRequirement = parseRequirement(recipeObject);
+        return new ShapedRecipe(id, uuid, priority, primaryResult.toItem(), shape, ingredients, extraResults, mirror, recipeUnlockingRequirement);
     }
 
     private ItemDescriptor parseRecipeItem(Map<String, Object> data) {
@@ -786,15 +810,26 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 }
 
                 //block item
-                if (data.containsKey("block_states")) {
-                    try {
-                        item = NBTIO.getBlockStateHelper(new CompoundTag()
-                                .putString("name", name)
-                                .putCompound("states", NBTIO.read(Base64.getDecoder().decode(data.get("block_states").toString()), ByteOrder.LITTLE_ENDIAN))
-                        ).toItem();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                if (data.containsKey("blockHash") || data.containsKey("block_states")) {
+                    BlockState blockState;
+                    if (data.containsKey("blockHash")) {
+                        int blockHash = Utils.toInt(data.get("blockHash"));
+                        blockState = Registries.BLOCKSTATE.get(blockHash);
+                    } else {
+                        try {
+                            blockState = NBTIO.getBlockStateHelper(new CompoundTag()
+                                    .putString("name", name)
+                                    .putCompound("states", NBTIO.read(Base64.getDecoder().decode(data.get("block_states").toString()), ByteOrder.LITTLE_ENDIAN))
+                            );
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
+                    if (blockState == null) {
+                        log.error("parseRecipeItem {} error because blockstate is null", name);
+                        yield null;
+                    }
+                    item = blockState.toItem();
                     item.setCount(count);
                     if (nbtBytes != EmptyArrays.EMPTY_BYTES) {
                         item.setCompoundTag(nbtBytes);

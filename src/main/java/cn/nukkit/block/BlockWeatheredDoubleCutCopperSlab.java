@@ -21,8 +21,8 @@ public class BlockWeatheredDoubleCutCopperSlab extends BlockDoubleCutCopperSlab 
     }
 
     @Override
-    public String getSingleSlabId() {
-        return WEATHERED_CUT_COPPER_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockWeatheredCutCopperSlab.PROPERTIES.getDefaultState();
     }
 
     @Override

@@ -15,29 +15,24 @@ import java.util.concurrent.ThreadLocalRandom;
 import static cn.nukkit.block.property.CommonBlockProperties.DOUBLE_PLANT_TYPE;
 import static cn.nukkit.block.property.CommonBlockProperties.UPPER_BLOCK_BIT;
 
-/**
- * @author xtypr
- * @since 2015/11/23
- */
-public class BlockDoublePlant extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(DOUBLE_PLANT, DOUBLE_PLANT_TYPE, UPPER_BLOCK_BIT);
-
-    @Override
-    @NotNull public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    public BlockDoublePlant() {
-        this(PROPERTIES.getDefaultState());
+public abstract class BlockDoublePlant extends BlockFlowable {
+    public static BlockDoublePlant getFromType(DoublePlantType type) {
+        return switch (type) {
+            case FERN -> new BlockLargeFern();
+            case ROSE -> new BlockRoseBush();
+            case GRASS -> new BlockTallGrass();
+            case PAEONIA -> new BlockPeony();
+            case SYRINGA -> new BlockLilac();
+            case SUNFLOWER -> new BlockSunflower();
+        };
     }
 
     public BlockDoublePlant(BlockState blockstate) {
         super(blockstate);
     }
 
-    @NotNull public DoublePlantType getDoublePlantType() {
-        return getPropertyValue(DOUBLE_PLANT_TYPE);
-    }
+    @NotNull
+    public abstract DoublePlantType getDoublePlantType();
 
     public void setDoublePlantType(@NotNull DoublePlantType type) {
         setPropertyValue(DOUBLE_PLANT_TYPE, type);
@@ -72,13 +67,13 @@ public class BlockDoublePlant extends BlockFlowable {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (isTopHalf()) {
                 // Top
-                if (!this.down().getId().equals(DOUBLE_PLANT)) {
+                if (!(this.down() instanceof BlockDoublePlant)) {
                     this.getLevel().setBlock(this, Block.get(BlockID.AIR), false, true);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }
             } else {
                 // Bottom
-                if (!this.up().getId().equals(DOUBLE_PLANT) || !isSupportValid(down())) {
+                if (!(this.down() instanceof BlockDoublePlant) || !isSupportValid(down())) {
                     this.getLevel().useBreakOn(this);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }

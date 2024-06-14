@@ -2,27 +2,40 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.StoneSlabType;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import org.jetbrains.annotations.NotNull;
 
-public class BlockStoneBlockSlab extends BlockSlab {
-    public static final BlockProperties PROPERTIES = new BlockProperties(STONE_BLOCK_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF, CommonBlockProperties.STONE_SLAB_TYPE);
+import java.util.Locale;
 
-    @Override
-    @NotNull public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
+public abstract class BlockStoneBlockSlab extends BlockSlab {
     public BlockStoneBlockSlab(BlockState blockstate) {
-        super(blockstate, getDoubleBlockState(blockstate));
+        super(blockstate, getDoubleSlabState(getType(blockstate)));
     }
 
-    static BlockState getDoubleBlockState(BlockState blockState) {
-        if (blockState == null) return BlockDoubleStoneBlockSlab.PROPERTIES.getDefaultState();
-        StoneSlabType propertyValue = blockState.getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE);
-        return BlockDoubleStoneBlockSlab.PROPERTIES.getBlockState(CommonBlockProperties.STONE_SLAB_TYPE, propertyValue);
+    public static BlockState getDoubleSlabState(String string) {
+        StoneSlabType stoneSlabType = StoneSlabType.valueOf(string.toUpperCase(Locale.ENGLISH));
+        return BlockDoubleStoneBlockSlab.PROPERTIES.getBlockState(CommonBlockProperties.STONE_SLAB_TYPE, stoneSlabType);
+    }
+
+    public static String getType(BlockState state) {
+        if (state.equals(BlockQuartzSlab.PROPERTIES.getDefaultState())) {
+            return "quartz";
+        } else if (state.equals(BlockPetrifiedOakSlab.PROPERTIES.getDefaultState())) {
+            return "wood";
+        } else if (state.equals(BlockStoneBrickSlab.PROPERTIES.getDefaultState())) {
+            return "stone_brick";
+        } else if (state.equals(BlockBrickSlab.PROPERTIES.getDefaultState())) {
+            return "brick";
+        } else if (state.equals(BlockSmoothStoneSlab.PROPERTIES.getDefaultState())) {
+            return "smooth_stone";
+        } else if (state.equals(BlockSandstoneSlab.PROPERTIES.getDefaultState())) {
+            return "sandstone";
+        } else if (state.equals(BlockNetherBrickSlab.PROPERTIES.getDefaultState())) {
+            return "nether_brick";
+        } else if (state.equals(BlockCobblestoneSlab.PROPERTIES.getDefaultState())) {
+            return "cobblestone";
+        } else {
+            return "unknown";
+        }
     }
 
     @Override
@@ -50,18 +63,5 @@ public class BlockStoneBlockSlab extends BlockSlab {
         return slab.getId().equals(getId()) && getSlabType().equals(slab.getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE));
     }
 
-    public StoneSlabType getSlabType() {
-        return getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE);
-    }
-
-    public void setSlabType(StoneSlabType type) {
-        setPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE, type);
-    }
-
-    public Item toItem() {
-        Block block = PROPERTIES.getBlockState(CommonBlockProperties.STONE_SLAB_TYPE.createValue(getSlabType())).toBlock();
-        ItemBlock itemBlock = new ItemBlock(block);
-        itemBlock.setBlockUnsafe(block);
-        return itemBlock;
-    }
+    public abstract StoneSlabType getSlabType();
 }

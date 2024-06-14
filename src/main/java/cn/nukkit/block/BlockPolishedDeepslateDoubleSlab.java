@@ -51,8 +51,8 @@ public class BlockPolishedDeepslateDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return POLISHED_DEEPSLATE_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockPolishedDeepslateSlab.PROPERTIES.getDefaultState();
     }
 
 }

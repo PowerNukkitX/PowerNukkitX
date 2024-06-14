@@ -25,8 +25,8 @@ public class BlockMudBrickDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return MUD_BRICK_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockMudBrickSlab.PROPERTIES.getDefaultState();
     }
 
 }

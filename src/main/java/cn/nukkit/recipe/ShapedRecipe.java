@@ -1,9 +1,10 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
-import cn.nukkit.registry.Registries;
+import cn.nukkit.registry.RecipeRegistry;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.util.collection.CharObjectHashMap;
@@ -19,7 +20,6 @@ import static cn.nukkit.recipe.RecipeType.SHAPED;
 public class ShapedRecipe extends CraftingRecipe {
     private final String[] shape;
     private final CharObjectHashMap<ItemDescriptor> shapedIngredients = new CharObjectHashMap<>();
-
     private final int row;
     private final int col;
     private final boolean mirror;
@@ -54,7 +54,12 @@ public class ShapedRecipe extends CraftingRecipe {
     }
 
     public ShapedRecipe(String recipeId, UUID uuid, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults, boolean mirror) {
-        super(recipeId == null ? Registries.RECIPE.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, priority);
+        this(recipeId, uuid, priority, primaryResult, shape, ingredients, extraResults, mirror, null);
+    }
+
+    public ShapedRecipe(String recipeId, UUID uuid, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients,
+                        Collection<Item> extraResults, boolean mirror, RecipeUnlockingRequirement recipeUnlockingRequirement) {
+        super(recipeId == null ? RecipeRegistry.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, priority, recipeUnlockingRequirement);
         this.uuid = uuid;
         this.row = shape.length;
         this.mirror = mirror;
@@ -95,7 +100,7 @@ public class ShapedRecipe extends CraftingRecipe {
             this.ingredients.add(entry.getValue());
         }
     }
-
+    
     public int getWidth() {
         return this.col;
     }

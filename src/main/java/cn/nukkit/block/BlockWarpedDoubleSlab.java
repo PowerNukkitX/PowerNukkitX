@@ -57,8 +57,8 @@ public class BlockWarpedDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return WARPED_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockWarpedSlab.PROPERTIES.getDefaultState();
     }
 
 }

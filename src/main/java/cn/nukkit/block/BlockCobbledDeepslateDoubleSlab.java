@@ -25,7 +25,7 @@ public class BlockCobbledDeepslateDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return COBBLED_DEEPSLATE_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockCobbledDeepslateSlab.PROPERTIES.getDefaultState();
     }
 }

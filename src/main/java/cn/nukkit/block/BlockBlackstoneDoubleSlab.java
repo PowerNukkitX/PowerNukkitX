@@ -41,8 +41,8 @@ public class BlockBlackstoneDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return BLACKSTONE_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockBlackstoneSlab.PROPERTIES.getDefaultState();
     }
 
     @Override

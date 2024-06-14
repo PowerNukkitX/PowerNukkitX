@@ -1,6 +1,7 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.registry.RecipeRegistry;
 
@@ -18,7 +19,11 @@ public class StonecutterRecipe extends CraftingRecipe {
     }
 
     public StonecutterRecipe(String recipeId, UUID uuid, int priority, Item result, Item ingredient) {
-        super(recipeId == null ? RecipeRegistry.computeRecipeIdWithItem(List.of(result), List.of(ingredient), RecipeType.STONECUTTER) : recipeId, priority);
+        this(recipeId, null, priority, result, ingredient, null);
+    }
+
+    public StonecutterRecipe(String recipeId, UUID uuid, int priority, Item result, Item ingredient, RecipeUnlockingRequirement recipeUnlockingRequirement) {
+        super(recipeId == null ? RecipeRegistry.computeRecipeIdWithItem(List.of(result), List.of(ingredient), RecipeType.STONECUTTER) : recipeId, priority, recipeUnlockingRequirement);
         this.uuid = uuid;
         this.results.add(result.clone());
         if (ingredient.getCount() < 1) {

@@ -58,6 +58,10 @@ public class PotionRegistry implements IRegistry<String, PotionType, PotionType>
         register0(PotionType.SLOW_FALLING);
         register0(PotionType.SLOW_FALLING_LONG);
         register0(PotionType.SLOWNESS_STRONG);
+        register0(PotionType.WIND_CHARGED);
+        register0(PotionType.WEAVING);
+        register0(PotionType.OOZING);
+        register0(PotionType.INFESTED);
     }
 
     @Override

@@ -92,6 +92,7 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
         ContainerClosePacket containerClosePacket = new ContainerClosePacket();
         containerClosePacket.windowId = SpecialWindowId.ENDER_CHEST.getId();
         containerClosePacket.wasServerInitiated = who.getClosingWindowId() != containerClosePacket.windowId;
+        containerClosePacket.type = getType();
         who.dataPacket(containerClosePacket);
 
         BlockEventPacket blockEventPacket = new BlockEventPacket();

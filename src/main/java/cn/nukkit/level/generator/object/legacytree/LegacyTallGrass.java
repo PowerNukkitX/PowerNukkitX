@@ -12,8 +12,8 @@ import static cn.nukkit.block.property.CommonBlockProperties.TALL_GRASS_TYPE;
 
 public class LegacyTallGrass {
     private static final BlockState[] places = {//total 106
-            BlockTallgrass.PROPERTIES.getBlockState(TALL_GRASS_TYPE, TallGrassType.DEFAULT),// 50
-            BlockTallgrass.PROPERTIES.getBlockState(TALL_GRASS_TYPE, TallGrassType.TALL),// 30
+            BlockTallGrass.PROPERTIES.getBlockState(TALL_GRASS_TYPE, TallGrassType.DEFAULT),// 50
+            BlockTallGrass.PROPERTIES.getBlockState(TALL_GRASS_TYPE, TallGrassType.TALL),// 30
             BlockYellowFlower.PROPERTIES.getDefaultState(),// 10
             BlockPoppy.PROPERTIES.getDefaultState(),// 10
             BlockAzureBluet.PROPERTIES.getDefaultState(),// 5

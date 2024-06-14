@@ -1163,7 +1163,7 @@ public class Level implements Metadatable {
             }
 
             var b = this.getBlock(vector.getFloorX(), vector.getFloorY(), vector.getFloorZ());
-            if (b.getProperties() != BlockTallgrass.PROPERTIES && !(b instanceof BlockFlowingWater))
+            if (b.getProperties() != BlockTallGrass.PROPERTIES && !(b instanceof BlockFlowingWater))
                 vector.y += 1;
             CompoundTag nbt = new CompoundTag()
                     .putList("Pos", new ListTag<DoubleTag>().add(new DoubleTag(vector.x))

@@ -1,7 +1,5 @@
 package cn.nukkit.entity;
 
-import java.lang.String;
-
 public interface EntityID {
   String CHICKEN = "minecraft:chicken";
 
@@ -241,7 +239,17 @@ public interface EntityID {
 
   String SNIFFER = "minecraft:sniffer";
 
+  String BREEZE = "minecraft:breeze";
+
+  String BREEZE_WIND_CHARGE_PROJECTILE = "minecraft:breeze_wind_charge_projectile";
+
   String ARMADILLO = "minecraft:armadillo";
+
+  String WIND_CHARGE_PROJECTILE = "minecraft:wind_charge_projectile";
+
+  String BOGGED = "minecraft:bogged";
+
+  String OMINOUS_ITEM_SPAWNER = "minecraft:ominous_item_spawner";
 
   String TRADER_LLAMA = "minecraft:trader_llama";
 

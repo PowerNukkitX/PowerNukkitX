@@ -51,7 +51,7 @@ public class BlockDeepslateBrickDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return DEEPSLATE_BRICK_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockDeepslateBrickSlab.PROPERTIES.getDefaultState();
     }
 }

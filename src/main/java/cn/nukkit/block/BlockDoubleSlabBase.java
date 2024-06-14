@@ -14,11 +14,11 @@ public abstract class BlockDoubleSlabBase extends BlockSolid {
 
     public abstract String getSlabName();
 
-    public abstract String getSingleSlabId();
+    public abstract BlockState getSingleSlab();
 
     @Override
     public Item toItem() {
-        return Block.get(getSingleSlabId()).toItem();
+        return Block.get(getSingleSlab()).toItem();
     }
 
     protected boolean isCorrectTool(Item item) {

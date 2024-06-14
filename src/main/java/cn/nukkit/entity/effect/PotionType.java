@@ -99,8 +99,11 @@ public record PotionType(String name, String stringId, int id, int level, Potion
     public static final PotionType SLOW_FALLING = new PotionType("Slow Falling", "minecraft:slow_falling", 40, PotionEffects.SLOW_FALLING);
 
     public static final PotionType SLOW_FALLING_LONG = new PotionType("Long Slow Falling", "minecraft:long_slow_falling", 41, PotionEffects.SLOW_FALLING_LONG);
-
     public static final PotionType SLOWNESS_STRONG = new PotionType("Strong Slowness", "minecraft:strong_slowness", 42, 2, PotionEffects.SLOWNESS_STRONG);
+    public static final PotionType WIND_CHARGED = new PotionType("Wind Charged", "minecraft:wind_charged", 43, PotionEffects.EMPTY);
+    public static final PotionType WEAVING = new PotionType("Weaving", "minecraft:weaving", 44, PotionEffects.EMPTY);
+    public static final PotionType OOZING = new PotionType("Oozing", "minecraft:oozing", 45, PotionEffects.EMPTY);
+    public static final PotionType INFESTED = new PotionType("Infested", "minecraft:infested", 46, PotionEffects.EMPTY);
 
     public List<Effect> getEffects(boolean splash) {
         return effects.getEffects(splash);

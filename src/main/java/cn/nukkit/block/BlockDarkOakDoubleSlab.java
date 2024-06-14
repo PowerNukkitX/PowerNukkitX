@@ -22,7 +22,7 @@ public class BlockDarkOakDoubleSlab extends BlockDoubleWoodenSlab {
     }
 
     @Override
-    public String getSingleSlabId() {
-        return DARK_OAK_SLAB;
+    public BlockState getSingleSlab() {
+        return BlockDarkOakSlab.PROPERTIES.getDefaultState();
     }
 }
