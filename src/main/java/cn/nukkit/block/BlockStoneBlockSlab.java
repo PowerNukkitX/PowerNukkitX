@@ -17,25 +17,17 @@ public abstract class BlockStoneBlockSlab extends BlockSlab {
     }
 
     public static String getType(BlockState state) {
-        if (state.equals(BlockQuartzSlab.PROPERTIES.getDefaultState())) {
-            return "quartz";
-        } else if (state.equals(BlockPetrifiedOakSlab.PROPERTIES.getDefaultState())) {
-            return "wood";
-        } else if (state.equals(BlockStoneBrickSlab.PROPERTIES.getDefaultState())) {
-            return "stone_brick";
-        } else if (state.equals(BlockBrickSlab.PROPERTIES.getDefaultState())) {
-            return "brick";
-        } else if (state.equals(BlockSmoothStoneSlab.PROPERTIES.getDefaultState())) {
-            return "smooth_stone";
-        } else if (state.equals(BlockSandstoneSlab.PROPERTIES.getDefaultState())) {
-            return "sandstone";
-        } else if (state.equals(BlockNetherBrickSlab.PROPERTIES.getDefaultState())) {
-            return "nether_brick";
-        } else if (state.equals(BlockCobblestoneSlab.PROPERTIES.getDefaultState())) {
-            return "cobblestone";
-        } else {
-            return "unknown";
-        }
+        return switch (state.getIdentifier()) {
+            case BlockID.QUARTZ_SLAB -> "quartz";
+            case BlockID.PETRIFIED_OAK_SLAB -> "wood";
+            case BlockID.STONE_BRICK_SLAB -> "stone_brick";
+            case BlockID.BRICK_SLAB -> "brick";
+            case BlockID.SMOOTH_STONE_SLAB -> "smooth_stone";
+            case BlockID.SANDSTONE_SLAB -> "sandstone";
+            case BlockID.NETHER_BRICK_SLAB -> "nether_brick";
+            case BlockID.COBBLESTONE_SLAB -> "cobblestone";
+            default -> "unknown";
+        };
     }
 
     @Override
