@@ -15,12 +15,15 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.utils.Identifier;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
 import static cn.nukkit.block.property.CommonBlockProperties.HONEY_LEVEL;
 
 
+@Slf4j
 public class BlockEntityBeehive extends BlockEntity {
 
     private static final Random RANDOM = new Random();
@@ -211,6 +214,10 @@ public class BlockEntityBeehive extends BlockEntity {
     public Entity spawnOccupant(Occupant occupant, List<BlockFace> validFaces) {
         if (validFaces != null && validFaces.isEmpty()) {
             return null;
+        }
+        if (!Identifier.isValid(occupant.getActorIdentifier())) {
+            log.warn("Invalid beehive occupant identifier: {}", occupant.getActorIdentifier());
+            occupant.setActorIdentifier("minecraft:bee");
         }
 
         CompoundTag saveData = occupant.saveData.copy();
