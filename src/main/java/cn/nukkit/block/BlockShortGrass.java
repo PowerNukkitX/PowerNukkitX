@@ -48,6 +48,10 @@ public class BlockShortGrass extends BlockFlowable {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+
+        if (this.getLevel().getBlock(this).getId().equals(BlockID.SHORT_GRASS))
+            return false;
+
         if (BlockSweetBerryBush.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true);
             return true;
