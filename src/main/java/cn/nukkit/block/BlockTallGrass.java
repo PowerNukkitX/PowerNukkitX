@@ -66,6 +66,9 @@ public class BlockTallGrass extends BlockDoublePlant {
         if (!up().isAir())
             return false;
 
+        if (this.getLevel().getBlock(this).getId().equals(BlockID.TALL_GRASS))
+            return false;
+
         if (BlockSweetBerryBush.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true);
             return true;

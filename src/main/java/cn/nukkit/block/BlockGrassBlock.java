@@ -52,7 +52,7 @@ public class BlockGrassBlock extends BlockDirt {
     @Override
     public void setDirtType(@Nullable DirtType dirtType) throws Exception {
         if (dirtType != null) {
-            throw new Exception(getName() + "don't support DirtType!");
+            throw new Exception(getName() + "don't support  DirtType!");
         }
     }
 
