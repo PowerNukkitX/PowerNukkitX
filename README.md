@@ -1,7 +1,7 @@
 <p align="center">
-<a href="https://v2.powernukkitx.com/">
-<img alt="PowerNukkitX" src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/PowerNukkitX.png" />
-</a>
+    <a href="https://powernukkitx.com">
+      <h1 align="center">PowerNukkitX</h1>
+    </a>
 <br>
 <strong>
 A Minecraft Bedrock Editon Server Software, open source and written in java
