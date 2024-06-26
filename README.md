@@ -1,17 +1,18 @@
 <p align="center">
     <a href="https://powernukkitx.com">
-      <h1 align="center">PowerNukkitX</h1>
+      <img src="https://www.powernukkitx.com/assets/image/PNX_LOGO_sm.png" width=20%>
     </a>
-<br>
-<strong>
-A Minecraft Bedrock Editon Server Software, open source and written in java
-</strong>
+    <p align="center">
+        <strong>
+            A Minecraft Bedrock Editon Server Software, open source and written in java
+        </strong>
+    </p>
 </p>
 
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://feedback.minecraft.net/hc/en-us/articles/26247797084173--Minecraft-1-21-0-Bedrock">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.0%20(Bedrock)-56383E" />
+   <a href="https://feedback.minecraft.net/hc/en-us/articles/26247797084173--Minecraft-1-21-1-Bedrock">
+      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.1%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
       <img alt="Minecraft" src="https://img.shields.io/badge/protocol-685-blue" />
@@ -35,14 +36,15 @@ A Minecraft Bedrock Editon Server Software, open source and written in java
       <img alt="License: LGPL-3" src="https://img.shields.io/badge/License-LGPL--3-yellow.svg" />
    </a>
 </p>
+<br>
 
- **Feature-rich, highly customizable third-party server software for Minecraft: Bedrock Edition.**
- - 🪄 **Custom Item,Block,Entity**
- - 🤖 **Built-in AI framework**
- - 🪴 **Terra Generator**
- - ✏️ **Full Vanilla Command Support**
- - 🗃️ **Full Item, Block and Container Support**
- - 🗿 **More features to discover...**
+**Feature-rich, highly customizable third-party server software for Minecraft: Bedrock Edition.**
+- 🪄 **Custom Item,Block,Entity**
+- 🤖 **Built-in AI framework**
+- 🪴 **Terra Generator**
+- ✏️ **Full Vanilla Command Support**
+- 🗃️ **Full Item, Block and Container Support**
+- 🗿 **More features to discover...**
 
 ## Install
 
