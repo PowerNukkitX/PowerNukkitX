@@ -11,8 +11,8 @@
 
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://feedback.minecraft.net/hc/en-us/articles/26247797084173--Minecraft-1-21-0-Bedrock">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.0%20(Bedrock)-56383E" />
+   <a href="https://feedback.minecraft.net/hc/en-us/articles/26247797084173--Minecraft-1-21-1-Bedrock">
+      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.1%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
       <img alt="Minecraft" src="https://img.shields.io/badge/protocol-685-blue" />
