@@ -1,5 +1,14 @@
-<h1 align="center">Welcome to PowerNukkitX 👋</h1>
-<p>
+<p align="center">
+<a href="https://v2.powernukkitx.com/">
+<img alt="PowerNukkitX" src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/PowerNukkitX.png" />
+</a>
+<br>
+<strong>
+A Minecraft Bedrock Editon Server Software, open source and written in java
+</strong>
+</p>
+
+<p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
    <a href="https://feedback.minecraft.net/hc/en-us/articles/26247797084173--Minecraft-1-21-0-Bedrock">
       <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.0%20(Bedrock)-56383E" />
@@ -27,15 +36,13 @@
    </a>
 </p>
 
-> Feature-rich, highly customizable third-party server software for Minecraft: Bedrock Edition.
-> - Custom Item,Block,Entity
-> - Built-in AI framework
-> - Terra Generator
-> - Full Vanilla Command Support
-> - Full Item, Block and Container Support
-> - More features to discover...
-
-### 🏠 [Homepage](https://v2.powernukkitx.com/)
+ **Feature-rich, highly customizable third-party server software for Minecraft: Bedrock Edition.**
+ - 🪄 **Custom Item,Block,Entity**
+ - 🤖 **Built-in AI framework**
+ - 🪴 **Terra Generator**
+ - ✏️ **Full Vanilla Command Support**
+ - 🗃️ **Full Item, Block and Container Support**
+ - 🗿 **More features to discover...**
 
 ## Install
 
@@ -51,24 +58,24 @@
 java -jar cli.jar
 ```
 
-## Author
+## Community & Support
+Join our [Discord](https://discord.gg/apwd7uauZg) server to chat with other users and developers.
 
-👤 **PowerNukkitX Team**
 
-## 🤝 Contributing
+
+## 🤝 Contributing to PowerNukkitX
 
 Contributions, issues and feature requests are welcome!<br />Feel free to
 check [issues page](https://github.com/PowerNukkitX/PowerNukkitX/issues). You can also take a look at
 the [contributing guide](.github/CONTRIBUTING.md).
 
-## Show your support
+<a href="https://github.com/PowerNukkitX/PowerNukkitX/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=PowerNukkitX/PowerNukkitX" />
+</a>
 
 Give a ⭐️ if this project helped you!
 
 
-## 📝 License
+## 📝 License Information
 
-This project is [LGPL-3](https://www.gnu.org/licenses/lgpl-3.0.html) licensed.
-
-***
-_This README was generated with ❤️ by [readme-md-generator](https://github.com/kefranabg/readme-md-generator)_
+This project is licensed under LGPL-3.0. Please see the [LICENSE](/LICENSE) file for details.
