@@ -136,7 +136,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         startPk.commandsEnabled = player.isEnableClientCommand();
         startPk.gameRules = player.getLevel().getGameRules();
         startPk.levelId = "";
-        startPk.worldName = player.getLevelName();
+        startPk.worldName = server.getSubMotd();
         startPk.generator = (byte) ((player.getLevel().getDimension() + 1) & 0xff); //0 旧世界 Old world, 1 主世界 Main world, 2 下界 Nether, 3 末地 End
         startPk.serverAuthoritativeMovement = server.getServerAuthoritativeMovement();
         startPk.isInventoryServerAuthoritative = true;//enable item stack request packet
