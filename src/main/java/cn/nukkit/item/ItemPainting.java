@@ -123,6 +123,9 @@ public class ItemPainting extends Item {
     }
 
     private static double offset(int value) {
-        return value > 1 ? 0.5 : 0;
+        if(value > 1 && value != 3) {
+            return 0.5;
+        }
+        return 0;
     }
 }

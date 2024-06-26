@@ -1,8 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWaxedChiseledCopper extends Block {
+public class BlockWaxedChiseledCopper extends BlockChiseledCopperBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(WAXED_CHISELED_COPPER);
 
     @Override
@@ -16,5 +17,15 @@ public class BlockWaxedChiseledCopper extends Block {
 
     public BlockWaxedChiseledCopper(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public @NotNull OxidizationLevel getOxidizationLevel() {
+        return OxidizationLevel.UNAFFECTED;
+    }
+
+    @Override
+    public boolean isWaxed() {
+        return true;
     }
 }

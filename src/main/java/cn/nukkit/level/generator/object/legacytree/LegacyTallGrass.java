@@ -9,7 +9,7 @@ import java.util.Objects;
 
 public class LegacyTallGrass {
     private static final BlockState[] places = {//total 106
-            BlockShortGrass.PROPERTIES.getDefaultState(),// 50
+            BlockShortGrass.PROPERTIES.getDefaultState(), //50
             BlockTallGrass.PROPERTIES.getDefaultState(),// 30
             BlockYellowFlower.PROPERTIES.getDefaultState(),// 10
             BlockPoppy.PROPERTIES.getDefaultState(),// 10
@@ -42,6 +42,7 @@ public class LegacyTallGrass {
                             level.setBlockStateAt(x, newY, z, places[0]);
                         } else if (300 <= absRn && absRn <= 500) {//-300 ~ -500 + 300 ~ 500
                             level.setBlockStateAt(x, newY, z, places[1]);
+                            level.setBlockStateAt(x, newY + 1, z, BlockTallGrass.PROPERTIES.getBlockState(UPPER_BLOCK_BIT, true));
                         } else if (500 <= ranNumber && ranNumber < 600) {
                             level.setBlockStateAt(x, newY, z, places[2]);
                         } else if (-600 <= ranNumber && ranNumber <= -500) {

@@ -1,9 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWaxedCopperDoor extends Block {
+public class BlockWaxedCopperDoor extends BlockCopperDoorBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(WAXED_COPPER_DOOR, CommonBlockProperties.DIRECTION, CommonBlockProperties.DOOR_HINGE_BIT, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPPER_BLOCK_BIT);
 
     @Override
@@ -17,5 +18,15 @@ public class BlockWaxedCopperDoor extends Block {
 
     public BlockWaxedCopperDoor(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public @NotNull OxidizationLevel getOxidizationLevel() {
+        return OxidizationLevel.UNAFFECTED;
+    }
+
+    @Override
+    public boolean isWaxed() {
+        return true;
     }
 }

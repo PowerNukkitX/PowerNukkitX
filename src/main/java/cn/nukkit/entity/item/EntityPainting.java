@@ -22,6 +22,7 @@ import com.google.common.collect.Sets;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -85,6 +86,25 @@ public class EntityPainting extends EntityHanging {
         return true;
     };
 
+    private static final PaintingPlacePredicate predicateFor3WidthHeight = (level, face, block, target) -> {
+        for (int x = -1; x < 2; x++) {
+            for (int z = -1; z < 2; z++) {
+                if (checkPlacePaint(x, z, level, face, block, target)) return false;
+            }
+        }
+        return true;
+    };
+
+    private static final Function<Integer, PaintingPlacePredicate> predicateFor3Width = (height) -> (level, face, block, target) -> {
+        for (int x = -1; x < 2; x++) {
+            for (int z = 0; z < height; z++) {
+                if (checkPlacePaint(x, z, level, face, block, target)) return false;
+            }
+        }
+        return true;
+    };
+
+
     @FunctionalInterface
     public interface PaintingPlacePredicate {
         boolean test(Level level, BlockFace blockFace, Block block, Block target);
@@ -125,7 +145,10 @@ public class EntityPainting extends EntityHanging {
         boolean b = super.onUpdate(currentTick);
         if (currentTick % 20 == 0) {
             Block[] tickCachedCollisionBlocks = level.getTickCachedCollisionBlocks(this.getBoundingBox(), false, false, bl -> !bl.isAir());
-            if (tickCachedCollisionBlocks.length != (this.getMotive().height * this.getMotive().width)) {
+            if (tickCachedCollisionBlocks.length < (this.getMotive().height * this.getMotive().width)) {
+                System.out.println(tickCachedCollisionBlocks.length);
+                System.out.println(this.getMotive().height * this.getMotive().width);
+                System.out.println(Arrays.stream(tickCachedCollisionBlocks).toList());
                 this.level.dropItem(this, new ItemPainting());
                 this.close();
                 return false;
@@ -214,10 +237,6 @@ public class EntityPainting extends EntityHanging {
         this.close();
     }
 
-    public Motive getArt() {
-        return getMotive();
-    }
-
     public Motive getMotive() {
         return Motive.BY_NAME.get(namedTag.getString("Motive"));
     }
@@ -235,8 +254,10 @@ public class EntityPainting extends EntityHanging {
         BOMB("Bomb", 1, 1),
         PLANT("Plant", 1, 1),
         WASTELAND("Wasteland", 1, 1),
+        MEDITATIVE("meditative", 1, 1),
         WANDERER("Wanderer", 1, 2),
         GRAHAM("Graham", 1, 2),
+        PRAIRIE_RIDE("prairie_ride", 1, 2),
         POOL("Pool", 2, 1),
         COURBET("Courbet", 2, 1),
         SUNSET("Sunset", 2, 1),
@@ -248,12 +269,30 @@ public class EntityPainting extends EntityHanging {
         VOID("Void", 2, 2),
         SKULL_AND_ROSES("SkullAndRoses", 2, 2),
         WITHER("Wither", 2, 2),
+        BAROQUE("baroque", 2, 2),
+        HUMBLE("humble", 2, 2),
+        BOUQUET("bouquet", 3, 3, predicateFor3WidthHeight),
+        CAVEBIRD("cavebird", 3, 3, predicateFor3WidthHeight),
+        COTAN("cotan", 3, 3, predicateFor3WidthHeight),
+        ENDBOSS("endboss", 3, 3, predicateFor3WidthHeight),
+        FERN("fern", 3, 3, predicateFor3WidthHeight),
+        OWLEMONS("owlemons", 3, 3, predicateFor3WidthHeight),
+        SUNFLOWERS("sunflowers", 3, 3, predicateFor3WidthHeight),
+        TIDES("tides", 3, 3, predicateFor3WidthHeight),
+        BACKYARD("backyard", 3, 4, predicateFor3Width.apply(4)),
+        POND("pond", 3, 4, predicateFor3Width.apply(4)),
         FIGHTERS("Fighters", 4, 2, predicateFor4Width.apply(2)),
+        CHANGING("changing", 4, 2, predicateFor4Width.apply(2)),
+        FINDING("finding", 4, 2, predicateFor4Width.apply(2)),
+        LOWMIST("lowmist", 4, 2, predicateFor4Width.apply(2)),
+        PASSAGE("passage", 4, 2, predicateFor4Width.apply(2)),
         SKELETON("Skeleton", 4, 3, predicateFor4Width.apply(3)),
         DONKEY_KONG("DonkeyKong", 4, 3, predicateFor4Width.apply(3)),
         POINTER("Pointer", 4, 4, predicateFor4WidthHeight),
         PIG_SCENE("Pigscene", 4, 4, predicateFor4WidthHeight),
-        BURNING_SKULL("BurningSkull", 4, 4, predicateFor4WidthHeight);
+        BURNING_SKULL("BurningSkull", 4, 4, predicateFor4WidthHeight),
+        ORB("orb", 4, 4, predicateFor4WidthHeight),
+        UNPACKED("unpacked", 4, 4, predicateFor4WidthHeight);
 
         private static final Map<String, Motive> BY_NAME = new HashMap<>();
 
