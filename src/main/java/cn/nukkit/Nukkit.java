@@ -154,7 +154,7 @@ public class Nukkit {
 
         try {
             if (TITLE) {
-                System.out.print((char) 0x1b + "]0;Nukkit is starting up..." + (char) 0x07);
+                System.out.print((char) 0x1b + "]0;PowerNukkitX is starting up..." + (char) 0x07);
             }
             new Server(PATH, DATA_PATH, PLUGIN_PATH, language);
         } catch (Throwable t) {

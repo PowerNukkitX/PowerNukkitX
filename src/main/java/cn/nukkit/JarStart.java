@@ -13,7 +13,7 @@ public final class JarStart {
             // There are no libs now. It means that even logger cannot be used.
             System.out.println("No libraries detected. PowerNukkitX cannot work without them and will now exit.");
             System.out.println("Do NOT use java -jar to run PowerNukkitX!");
-            System.out.println("For more information. See https://doc.powernukkitx.cn");
+            System.out.println("For more information. See https://docs.powernukkitx.com");
             return;
         }
         usingJavaJar = true;
@@ -22,5 +22,10 @@ public final class JarStart {
 
     public static boolean isUsingJavaJar() {
         return usingJavaJar;
+    }
+
+    // Method to reset the state for testing
+    public static void resetUsingJavaJar() {
+        usingJavaJar = false;
     }
 }
