@@ -81,6 +81,7 @@ public class BlockNetherWart extends BlockFlowable {
     @Override
     public Item[] getDrops(Item item) {
         if (this.getAge() == 0x03) {
+            this.setAge(0);
             return new Item[]{
                     new ItemBlock(this, 0, 2 + (int) (Math.random() * ((4 - 2) + 1)))
             };
