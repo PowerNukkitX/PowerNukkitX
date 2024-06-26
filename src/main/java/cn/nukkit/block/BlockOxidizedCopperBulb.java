@@ -1,9 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockOxidizedCopperBulb extends Block {
+public class BlockOxidizedCopperBulb extends BlockCopperBulbBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(OXIDIZED_COPPER_BULB, CommonBlockProperties.LIT, CommonBlockProperties.POWERED_BIT);
 
     @Override
@@ -17,5 +18,15 @@ public class BlockOxidizedCopperBulb extends Block {
 
     public BlockOxidizedCopperBulb(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public @NotNull OxidizationLevel getOxidizationLevel() {
+        return OxidizationLevel.OXIDIZED;
+    }
+
+    @Override
+    public int getLightLevel() {
+        return getLit() ? 4 : 0;
     }
 }

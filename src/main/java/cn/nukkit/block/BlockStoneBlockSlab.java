@@ -52,7 +52,7 @@ public abstract class BlockStoneBlockSlab extends BlockSlab {
 
     @Override
     public boolean isSameType(BlockSlab slab) {
-        return slab.getId().equals(getId()) && getSlabType().equals(slab.getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE));
+        return slab.getId().equals(getId()) && getSlabType().equals(StoneSlabType.valueOf(slab.getSlabName()));
     }
 
     public abstract StoneSlabType getSlabType();

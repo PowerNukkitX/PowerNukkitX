@@ -170,6 +170,8 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(TRADER_LLAMA, "", 157, true, true), EntityTraderLlama.class);
         registerInternal(new EntityDefinition(CHEST_BOAT, "", 218, false, true), EntityChestBoat.class);
         registerInternal(new EntityDefinition(ARMADILLO, "", 142, true, true), EntityArmadillo.class);
+        registerInternal(new EntityDefinition(BREEZE, "", 140, true, true), EntityBreeze.class);
+        registerInternal(new EntityDefinition(BOGGED, "", 144, true, true), EntityBogged.class);
     }
 
     public Class<? extends Entity> getEntityClass(String id) {

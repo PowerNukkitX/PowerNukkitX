@@ -63,8 +63,11 @@ public class BlockTallGrass extends BlockDoublePlant {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (BlockSweetBerryBush.isSupportValid(down())) {
+        if (isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true);
+            BlockTallGrass doublePlant = new BlockTallGrass();
+            doublePlant.setTopHalf(true);
+            this.level.setBlock(this.up(), doublePlant, true);
             return true;
         }
         return false;
@@ -73,7 +76,7 @@ public class BlockTallGrass extends BlockDoublePlant {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!BlockSweetBerryBush.isSupportValid(down(1, 0))) {
+            if (!isSupportValid(down(1, 0))) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -130,5 +133,15 @@ public class BlockTallGrass extends BlockDoublePlant {
     @Override
     public int getToolType() {
         return ItemTool.TYPE_SHEARS;
+    }
+
+    public static boolean isSupportValid(Block block) {
+        if(block.getId().equals(Block.TALL_GRASS)) {
+            return !block.getPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT);
+        }
+        return switch (block.getId()) {
+            case GRASS_BLOCK, DIRT, PODZOL, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
+            default -> false;
+        };
     }
 }

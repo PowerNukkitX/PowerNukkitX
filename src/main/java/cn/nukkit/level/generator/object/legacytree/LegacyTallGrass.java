@@ -9,11 +9,12 @@ import cn.nukkit.utils.random.RandomSourceProvider;
 import java.util.Objects;
 
 import static cn.nukkit.block.property.CommonBlockProperties.TALL_GRASS_TYPE;
+import static cn.nukkit.block.property.CommonBlockProperties.UPPER_BLOCK_BIT;
 
 public class LegacyTallGrass {
     private static final BlockState[] places = {//total 106
-            BlockTallGrass.PROPERTIES.getBlockState(TALL_GRASS_TYPE, TallGrassType.DEFAULT),// 50
-            BlockTallGrass.PROPERTIES.getBlockState(TALL_GRASS_TYPE, TallGrassType.TALL),// 30
+            BlockShortGrass.PROPERTIES.getDefaultState(), //50
+            BlockTallGrass.PROPERTIES.getBlockState(UPPER_BLOCK_BIT, false),// 30
             BlockYellowFlower.PROPERTIES.getDefaultState(),// 10
             BlockPoppy.PROPERTIES.getDefaultState(),// 10
             BlockAzureBluet.PROPERTIES.getDefaultState(),// 5
@@ -45,6 +46,7 @@ public class LegacyTallGrass {
                             level.setBlockStateAt(x, newY, z, places[0]);
                         } else if (300 <= absRn && absRn <= 500) {//-300 ~ -500 + 300 ~ 500
                             level.setBlockStateAt(x, newY, z, places[1]);
+                            level.setBlockStateAt(x, newY + 1, z, BlockTallGrass.PROPERTIES.getBlockState(UPPER_BLOCK_BIT, true));
                         } else if (500 <= ranNumber && ranNumber < 600) {
                             level.setBlockStateAt(x, newY, z, places[2]);
                         } else if (-600 <= ranNumber && ranNumber <= -500) {

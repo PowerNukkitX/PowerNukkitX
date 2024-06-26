@@ -315,9 +315,11 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public void close() {
-        for (var r : recipes.getAll()) {
-            int netId = r.getInt("netId");
-            TradeRecipeBuildUtils.RECIPE_MAP.remove(netId);
+        if(recipes != null) {
+            for (var r : recipes.getAll()) {
+                int netId = r.getInt("netId");
+                TradeRecipeBuildUtils.RECIPE_MAP.remove(netId);
+            }
         }
         super.close();
     }

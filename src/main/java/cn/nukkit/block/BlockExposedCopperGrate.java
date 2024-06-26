@@ -1,8 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockExposedCopperGrate extends Block {
+public class BlockExposedCopperGrate extends BlockCopperGrateBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(EXPOSED_COPPER_GRATE);
 
     @Override
@@ -16,5 +17,10 @@ public class BlockExposedCopperGrate extends Block {
 
     public BlockExposedCopperGrate(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    @NotNull public OxidizationLevel getOxidizationLevel() {
+        return OxidizationLevel.EXPOSED;
     }
 }
