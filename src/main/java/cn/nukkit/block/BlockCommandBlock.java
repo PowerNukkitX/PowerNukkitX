@@ -49,11 +49,6 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     }
 
     @Override
-    public Item toItem() {
-        return new ItemBlock(get(AIR));
-    }
-
-    @Override
     public boolean canHarvestWithHand() {
         return false;
     }
