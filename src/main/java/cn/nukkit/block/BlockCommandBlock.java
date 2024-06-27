@@ -34,11 +34,6 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     }
 
     @Override
-    public String getName() {
-        return "Impulse Command Block";
-    }
-
-    @Override
     public double getResistance() {
         return 6000000;
     }
@@ -46,11 +41,6 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     @Override
     public boolean canBePushed() {
         return false;
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemBlock(get(AIR));
     }
 
     @Override

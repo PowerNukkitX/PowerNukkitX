@@ -146,9 +146,6 @@ public class EntityPainting extends EntityHanging {
         if (currentTick % 20 == 0) {
             Block[] tickCachedCollisionBlocks = level.getTickCachedCollisionBlocks(this.getBoundingBox(), false, false, bl -> !bl.isAir());
             if (tickCachedCollisionBlocks.length < (this.getMotive().height * this.getMotive().width)) {
-                System.out.println(tickCachedCollisionBlocks.length);
-                System.out.println(this.getMotive().height * this.getMotive().width);
-                System.out.println(Arrays.stream(tickCachedCollisionBlocks).toList());
                 this.level.dropItem(this, new ItemPainting());
                 this.close();
                 return false;
