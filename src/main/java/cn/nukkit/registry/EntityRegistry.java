@@ -12,6 +12,7 @@ import cn.nukkit.entity.projectile.EntityEnderPearl;
 import cn.nukkit.entity.projectile.EntitySmallFireball;
 import cn.nukkit.entity.projectile.EntitySnowball;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
+import cn.nukkit.entity.projectile.EntityWindCharge;
 import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -171,6 +172,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(CHEST_BOAT, "", 218, false, true), EntityChestBoat.class);
         registerInternal(new EntityDefinition(ARMADILLO, "", 142, true, true), EntityArmadillo.class);
         registerInternal(new EntityDefinition(BREEZE, "", 140, true, true), EntityBreeze.class);
+        registerInternal(new EntityDefinition(WIND_CHARGE_PROJECTILE, "", 143, false, false), EntityWindCharge.class);
         registerInternal(new EntityDefinition(BOGGED, "", 144, true, true), EntityBogged.class);
     }
 
