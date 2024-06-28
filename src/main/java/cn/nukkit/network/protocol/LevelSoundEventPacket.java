@@ -498,14 +498,12 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_BLOCK_DECORATED_POT_INSERT = dynamic(481);
     public static final int SOUND_BLOCK_DECORATED_POT_INSERT_FAIL = dynamic(482);
     public static final int SOUND_CRAFTER_DISABLE_SLOT = dynamic(483);
-
     public static final int SOUND_TRIAL_SPAWNER_OPEN_SHUTTER = dynamic(484);
     public static final int SOUND_TRIAL_SPAWNER_EJECT_ITEM = dynamic(485);
     public static final int SOUND_TRIAL_SPAWNER_DETECT_PLAYER = dynamic(486);
     public static final int SOUND_TRIAL_SPAWNER_SPAWN_MOB = dynamic(487);
     public static final int SOUND_TRIAL_SPAWNER_CLOSE_SHUTTER = dynamic(488);
     public static final int SOUND_TRIAL_SPAWNER_AMBIENT = dynamic(489);
-
     public static final int SOUND_BLOCK_COPPER_BULB_TURN_ON = dynamic(490);
     public static final int SOUND_BLOCK_COPPER_BULB_TURN_OFF = dynamic(491);
     public static final int SOUND_AMBIENT_IN_AIR = dynamic(492);
@@ -516,7 +514,6 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_ARMOR_EQUIP_WOLF = dynamic(497);
     public static final int SOUND_ARMOR_UNEQUIP_WOLF = dynamic(498);
     public static final int SOUND_REFLECT = dynamic(499);
-
     public static final int SOUND_VAULT_OPEN_SHUTTER = dynamic(500);
     public static final int SOUND_VAULT_CLOSE_SHUTTER = dynamic(501);
     public static final int SOUND_VAULT_EJECT_ITEM = dynamic(502);
@@ -545,8 +542,6 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_OMINOUS_ITEM_SPAWNER_ABOUT_TO_SPAWN_ITEM = dynamic(526);
     public static final int SOUND_CREATOR = dynamic(527);
     public static final int SOUND_RECORD_CREATOR_MUSIC_BOX = dynamic(528);
-
-
     public static final int SOUND_RECORD_PRECIPICE = dynamic(529);
 
     public int sound;
