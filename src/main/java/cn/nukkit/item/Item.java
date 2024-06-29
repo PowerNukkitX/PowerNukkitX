@@ -52,7 +52,7 @@ public abstract class Item implements Cloneable, ItemID {
     protected String id;
     protected Identifier identifier;
     protected String name;
-    protected int meta;
+    public int meta;
     public int count;
     protected Integer netId;
     protected Block block = null;
@@ -123,6 +123,10 @@ public abstract class Item implements Cloneable, ItemID {
 
     @ApiStatus.Internal
     public void internalAdjust() {
+    }
+
+    public void setMeta(int meta) {
+        this.meta = meta;
     }
 
     public boolean hasMeta() {
