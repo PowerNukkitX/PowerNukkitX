@@ -135,7 +135,7 @@ jobs:
           zip -q -r powernukkitx-run.zip powernukkitx.jar cli.jar libs
           ls -l
 
-      - name: Release lastest build
+      - name: Release latest build
         uses: Xotl/cool-github-releases@v1
         if: success() && github.repository == 'PowerNukkitX/PowerNukkitX' && contains(github.ref_name, 'master')
         with:
