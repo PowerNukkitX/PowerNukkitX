@@ -18,7 +18,7 @@
       <img alt="Minecraft" src="https://img.shields.io/badge/protocol-685-blue" />
    </a>
    <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
-      <img alt="Action" src="https://github.com/PowerNukkitX/PowerNukkitX/actions/workflows/maven.yml/badge.svg?branch=master" />
+      <img alt="Action" src="https://github.com/PowerNukkitX/PowerNukkitX/actions/workflows/pnx.yml/badge.svg?branch=master" />
    </a>
    <a href="https://jitpack.io/#PowerNukkitX/PowerNukkitX" target="_blank">
       <img alt="JitPack" src="https://jitpack.io/v/PowerNukkitX/PowerNukkitX.svg" />
