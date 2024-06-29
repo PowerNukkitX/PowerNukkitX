@@ -1,4 +1,4 @@
-name: Maven Central
+name: Gradle Central
 
 on:
   workflow_dispatch:
@@ -13,13 +13,21 @@ jobs:
       - name: Install Java and Maven
         uses: actions/setup-java@v1
         with:
-          java-version: 17
+          java-version: 21
 
-      - name: Release Maven package
-        uses: samuelmeuli/action-maven-publish@v1
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3
         with:
-          maven_profiles: release
-          gpg_private_key: ${{ secrets.GPG_SECRET }}
-          gpg_passphrase: ${{ secrets.GPG_PASSWORD }}
-          nexus_username: ${{ secrets.OSSRH_USER }}
-          nexus_password: ${{ secrets.OSSRH_PASSWORD }}
+          gradle-version: wrapper
+          cache-overwrite-existing: true
+          build-scan-publish: true
+          build-scan-terms-of-service-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-service-agree: "yes"
+          arguments: buildForGithubAction --scan
+
+      - name: Publish package
+        run: ./gradlew publish
+        env:
+          nexus_username: ${{ secrets.OSSRH_USERNAME }}
+          nexus_password: ${{ secrets.OSSRH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
