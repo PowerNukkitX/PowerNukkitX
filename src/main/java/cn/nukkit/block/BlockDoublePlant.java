@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.DoublePlantType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -16,27 +17,12 @@ import static cn.nukkit.block.property.CommonBlockProperties.DOUBLE_PLANT_TYPE;
 import static cn.nukkit.block.property.CommonBlockProperties.UPPER_BLOCK_BIT;
 
 public abstract class BlockDoublePlant extends BlockFlowable {
-    public static BlockDoublePlant getFromType(DoublePlantType type) {
-        return switch (type) {
-            case FERN -> new BlockLargeFern();
-            case ROSE -> new BlockRoseBush();
-            case GRASS -> new BlockTallGrass();
-            case PAEONIA -> new BlockPeony();
-            case SYRINGA -> new BlockLilac();
-            case SUNFLOWER -> new BlockSunflower();
-        };
-    }
-
     public BlockDoublePlant(BlockState blockstate) {
         super(blockstate);
     }
 
     @NotNull
     public abstract DoublePlantType getDoublePlantType();
-
-    public void setDoublePlantType(@NotNull DoublePlantType type) {
-        setPropertyValue(DOUBLE_PLANT_TYPE, type);
-    }
 
     public boolean isTopHalf() {
         return getPropertyValue(UPPER_BLOCK_BIT);
@@ -52,10 +38,10 @@ public abstract class BlockDoublePlant extends BlockFlowable {
         return new ItemBlock(this, aux);
     }
 
-    @Override
+    /*@Override
     public boolean canBeReplaced() {
         return getDoublePlantType() == DoublePlantType.GRASS || getDoublePlantType() == DoublePlantType.FERN;
-    }
+    }*/
 
     @Override
     public String getName() {
@@ -73,7 +59,7 @@ public abstract class BlockDoublePlant extends BlockFlowable {
                 }
             } else {
                 // Bottom
-                if (!(this.down() instanceof BlockDoublePlant) || !isSupportValid(down())) {
+                if (!isSupportValid(down())) {
                     this.getLevel().useBreakOn(this);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }
@@ -100,6 +86,9 @@ public abstract class BlockDoublePlant extends BlockFlowable {
     }
 
     private boolean isSupportValid(Block support) {
+        if(support instanceof BlockDoublePlant plant) {
+            return !plant.isTopHalf();
+        }
         return switch (support.getId()) {
             case GRASS_BLOCK, DIRT, PODZOL, FARMLAND, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
             default -> false;
