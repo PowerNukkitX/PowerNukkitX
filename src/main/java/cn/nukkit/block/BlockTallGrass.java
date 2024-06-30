@@ -56,44 +56,6 @@ public class BlockTallGrass extends BlockDoublePlant {
         return 100;
     }
 
-    /*@Override
-    public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!isSupportValid(down(1, 0))) {
-                this.getLevel().useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
-            }
-        }
-        return 0;
-    }*/
-
-    /*@Override
-    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if (item.isFertilizer()) {
-            Block up = this.up();
-
-            if (up.isAir()) {
-                if (player != null && !player.isCreative()) {
-                    item.count--;
-                }
-
-                BlockTallGrass doublePlant = new BlockTallGrass();
-                doublePlant.setTopHalf(false);
-
-                this.level.addParticle(new BoneMealParticle(this));
-                this.level.setBlock(this, doublePlant, true, false);
-
-                doublePlant.setTopHalf(true);
-                this.level.setBlock(up, doublePlant, true);
-                this.level.updateAround(this);
-            }
-
-            return true;
-        }
-
-        return false;
-    }*/
-
     @Override
     public Item[] getDrops(Item item) {
         // https://minecraft.wiki/w/Fortune#Grass_and_ferns
