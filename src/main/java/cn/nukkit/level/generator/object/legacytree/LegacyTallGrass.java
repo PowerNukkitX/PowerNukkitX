@@ -42,9 +42,11 @@ public class LegacyTallGrass {
                         int absRn = Math.abs(ranNumber);
                         if (-300 <= ranNumber && ranNumber <= 300) {
                             level.setBlockStateAt(x, newY, z, places[0]);
-                        } else if (300 <= absRn && absRn <= 500) {//-300 ~ -500 + 300 ~ 500
+                        } else if (300 <= absRn && absRn <= 500) {//-300 ~ -500 + 300 ~ 50
                             level.setBlockStateAt(x, newY, z, places[1]);
-                            level.setBlockStateAt(x, newY + 1, z, BlockTallGrass.PROPERTIES.getBlockState(UPPER_BLOCK_BIT, true));
+                            BlockTallGrass block = new BlockTallGrass();
+                            block.setTopHalf(true);
+                            level.getLevel().setBlock(x, newY + 1, z, block, false, false);
                         } else if (500 <= ranNumber && ranNumber < 600) {
                             level.setBlockStateAt(x, newY, z, places[2]);
                         } else if (-600 <= ranNumber && ranNumber <= -500) {
