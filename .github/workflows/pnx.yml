@@ -146,7 +146,7 @@ jobs:
           body_mrkdwn: |
             This is the **latest version of PowerNukkitX**, built from the latest source. 
             (_Please note that the date on GitHub might appear outdated due to certain limitations._)
-            **Corresponding commit:** <https://github.com/powernukkitx/powernukkitx/commit/${{ github.sha }}>_
+            **Corresponding commit:** _<https://github.com/powernukkitx/powernukkitx/commit/${{ github.sha }}>_
             
             > [!NOTE]
             > If you encounter any issues, please report them directly on our [Discord](https://discord.gg/apwd7uauZg) or in the [GitHub Issues](https://github.com/powernukkitx/powernukkitx/issues) tab.
