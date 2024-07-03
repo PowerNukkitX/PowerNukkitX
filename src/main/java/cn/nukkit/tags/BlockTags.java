@@ -67,7 +67,7 @@ public final class BlockTags {
                 HashMap<String, HashSet<String>> map2 = new HashMap<>();
                 map.forEach((key, value) -> {
                     HashSet<String> handle = new HashSet<>(value.size());
-                    value.forEach(v -> handle.add("minecraft:" + v));
+                    handle.addAll(value);
                     map2.put(key, handle);
                 });
                 TAG_2_BLOCKS.putAll(map2);
