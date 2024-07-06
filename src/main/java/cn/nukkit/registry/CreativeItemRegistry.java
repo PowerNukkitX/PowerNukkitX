@@ -38,86 +38,45 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     public void init() {
         if (isLoad.getAndSet(true))
             return;
-
-        try (InputStream stream = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.nbt")) {
-            CompoundTag nbt = NBTIO.readCompressed(stream);
-            List<CompoundTag> items = nbt.getList("items", CompoundTag.class).getAll();
-
+        try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.json")) {
+            Map data = new Gson().fromJson(new InputStreamReader(input), Map.class);
+            List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
             for (int i = 0; i < items.size(); i++) {
-                CompoundTag itemNbt = items.get(i);
-                boolean isBlock = itemNbt.contains("blockStateHash");
-                String id = itemNbt.getString("name");
-                int damage = itemNbt.getInt("damage");
-
-                Item item = Item.get(id, damage, 1);
-
-                if (itemNbt.contains("tag")) {
-                    item.setCompoundTag(itemNbt.getCompound("tag"));
+                Map<String, Object> tag = items.get(i);
+                int damage = ((Number) tag.getOrDefault("damage", 0)).intValue();
+                var nbt = tag.containsKey("nbt_b64") ? Base64.getDecoder().decode(tag.get("nbt_b64").toString()) : EmptyArrays.EMPTY_BYTES;
+                String name = tag.get("id").toString();
+                Item item = Item.get(name, damage, 1, nbt, false);
+                item.setCompoundTag(nbt);
+                if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
+                    item = Item.AIR;
+                    log.warn("load creative item {} damage {} is null", name, damage);
                 }
-
+                var isBlock = tag.containsKey("block_state_b64");
                 if (isBlock) {
-                    int blockHash = itemNbt.getInt("blockStateHash");
-                    BlockState blockState = Registries.BLOCKSTATE.get(blockHash);
-
-                    if (blockState == null) {
+                    byte[] blockTag = Base64.getDecoder().decode(tag.get("block_state_b64").toString());
+                    CompoundTag blockCompoundTag = NBTIO.read(blockTag, ByteOrder.LITTLE_ENDIAN);
+                    int blockHash = blockCompoundTag.getInt("network_id");
+                    BlockState block = Registries.BLOCKSTATE.get(blockHash);
+                    if (block == null) {
                         item = Item.AIR;
-                        log.warn("load creative item {} blockHash {} is null", id, blockHash);
+                        log.warn("load creative item {} blockHash {} is null", name, blockHash);
                     } else {
-                        item.setBlockUnsafe(blockState.toBlock());
-                        Item updateDamage = blockState.toBlock().toItem();
+                        item.setBlockUnsafe(block.toBlock());
+                        Item updateDamage = block.toBlock().toItem();
                         if (updateDamage.getDamage() != 0) {
                             item.setDamage(updateDamage.getDamage());
                         }
                     }
-
                 } else {
                     INTERNAL_DIFF_ITEM.put(i, item.clone());
                     item.setBlockUnsafe(null);
                 }
-                register(i, item.clone());
+                register(i, item);
             }
         } catch (IOException | RegisterException e) {
             throw new RuntimeException(e);
         }
-//        try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.json")) {
-//            Map data = new Gson().fromJson(new InputStreamReader(input), Map.class);
-//            List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
-//            for (int i = 0; i < items.size(); i++) {
-//                Map<String, Object> tag = items.get(i);
-//                int damage = ((Number) tag.getOrDefault("damage", 0)).intValue();
-//                var nbt = tag.containsKey("nbt_b64") ? Base64.getDecoder().decode(tag.get("nbt_b64").toString()) : EmptyArrays.EMPTY_BYTES;
-//                String name = tag.get("id").toString();
-//                Item item = Item.get(name, damage, 1, nbt, false);
-//                item.setCompoundTag(nbt);
-//                if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
-//                    item = Item.AIR;
-//                    log.warn("load creative item {} damage {} is null", name, damage);
-//                }
-//                var isBlock = tag.containsKey("block_state_b64");
-//                if (isBlock) {
-//                    byte[] blockTag = Base64.getDecoder().decode(tag.get("block_state_b64").toString());
-//                    CompoundTag blockCompoundTag = NBTIO.read(blockTag, ByteOrder.LITTLE_ENDIAN);
-//                    int blockHash = blockCompoundTag.getInt("network_id");
-//                    BlockState block = Registries.BLOCKSTATE.get(blockHash);
-//                    if (block == null) {
-//                        item = Item.AIR;
-//                        log.warn("load creative item {} blockHash {} is null", name, blockHash);
-//                    } else {
-//                        item.setBlockUnsafe(block.toBlock());
-//                        Item updateDamage = block.toBlock().toItem();
-//                        if (updateDamage.getDamage() != 0) {
-//                            item.setDamage(updateDamage.getDamage());
-//                        }
-//                    }
-//                } else {
-//                    INTERNAL_DIFF_ITEM.put(i, item.clone());
-//                    item.setBlockUnsafe(null);
-//                }
-//                register(i, item);
-//            }
-//        } catch (IOException | RegisterException e) {
-//            throw new RuntimeException(e);
-//        }
     }
 
     /**
