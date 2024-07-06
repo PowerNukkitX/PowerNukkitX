@@ -13,9 +13,9 @@ public interface ProtocolInfo {
      */
     int CURRENT_PROTOCOL = dynamic(685);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.21.0");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.21.1");
 
-    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 21, 0, 0, 0);
+    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 21, 1, 0, 0);
 
     int BLOCK_STATE_VERSION_NO_REVISION = (MINECRAFT_SEMVERSION.major() << 24) | //major
             (MINECRAFT_SEMVERSION.minor() << 16) | //minor
