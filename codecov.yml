@@ -1,4 +1,20 @@
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: false
+
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+      loop: yes
+      method: yes
+      macro: yes
+
 coverage:
+  precision: 2
+  round: down
+  range: "70...100"
   status:
     project:
       default:
@@ -24,30 +40,3 @@ coverage:
         if_ci_failed: error
         informational: true
         only_pulls: false
-
-    changes:
-      default:
-        paths:
-          - "src"
-        threshold: 1
-
-  comment:
-    layout: "reach, diff, flags, files"
-    behavior: default
-    require_changes: false
-
-  parsers:
-    gcov:
-      branch_detection:
-        conditional: yes
-        loop: yes
-        method: yes
-        macro: yes
-
-  fixes:
-    - "src/:"
-
-  coverage:
-    precision: 2
-    round: down
-    range: "70...100"
