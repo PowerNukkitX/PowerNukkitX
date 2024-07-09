@@ -248,7 +248,7 @@ public class AdventureSettings implements Cloneable {
         FLYING(PlayerAbility.FLYING, false),
         MUTED(PlayerAbility.MUTED, false),
         MINE(PlayerAbility.MINE, true),
-        DOORS_AND_SWITCHES(PlayerAbility.DOORS_AND_SWITCHES, true),
+        DOORS_AND_SWITCHED(PlayerAbility.DOORS_AND_SWITCHES, true),
         OPEN_CONTAINERS(PlayerAbility.OPEN_CONTAINERS, true),
         ATTACK_PLAYERS(PlayerAbility.ATTACK_PLAYERS, true),
         ATTACK_MOBS(PlayerAbility.ATTACK_MOBS, true),

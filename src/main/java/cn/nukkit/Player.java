@@ -1651,7 +1651,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public void setAllowInteract(boolean value, boolean containers) {
         this.getAdventureSettings().set(Type.WORLD_IMMUTABLE, !value);
-        this.getAdventureSettings().set(Type.DOORS_AND_SWITCHES, value);
+        this.getAdventureSettings().set(Type.DOORS_AND_SWITCHED, value);
         this.getAdventureSettings().set(Type.OPEN_CONTAINERS, containers);
         this.getAdventureSettings().update();
     }

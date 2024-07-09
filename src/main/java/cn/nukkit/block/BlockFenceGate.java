@@ -155,7 +155,7 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     }
 
     public boolean toggle(Player player) {
-        if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHES))
+        if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
             return false;
         return this.setOpen(player, !this.isOpen());
     }

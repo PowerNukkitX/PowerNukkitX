@@ -66,7 +66,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player == null) {
             return false;
-        } else if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHES))
+        } else if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
             return false;
         Item itemInHand = player.getInventory().getItemInHand();
         if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) return false;
