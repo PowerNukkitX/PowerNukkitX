@@ -81,9 +81,11 @@ public class AdventureSettings implements Cloneable {
             readNBT(nbt);
         }
 
+        //Offline deop
         if (playerPermission == PlayerPermission.OPERATOR && !player.isOp()) {
             onOpChange(false);
         }
+        //Offline by op
         if (playerPermission != PlayerPermission.OPERATOR && player.isOp()) {
             onOpChange(true);
         }
@@ -129,23 +131,33 @@ public class AdventureSettings implements Cloneable {
     }
 
     public void update() {
+        //Permission to send to all players so they can see each other
+        //Make sure it will be sent to yourself (eg: there is no such player among the online players when the player enters the server)
         Collection<Player> players = new HashSet<>(player.getServer().getOnlinePlayers().values());
         players.add(this.player);
         sendAbilities(players);
         updateAdventureSettings();
     }
 
+
+    /**
+     * This method will be called when the player's OP status changes.
+     * Note that this method does not send a packet to the client to refresh the privilege information, you need to manually call the update() method to do so
+     * @param op is OP or not
+     */
     public void onOpChange(boolean op) {
         if (op) {
             for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES) {
                 set(controllableAbility, true);
             }
         }
+        //Set op-specific attributes
         set(Type.OPERATOR, op);
         set(Type.TELEPORT, op);
 
         commandPermission = op ? CommandPermission.OPERATOR : CommandPermission.NORMAL;
 
+        //Don't override customization/guest status
         if (op && playerPermission != PlayerPermission.OPERATOR) {
             playerPermission = PlayerPermission.OPERATOR;
         }
@@ -185,6 +197,9 @@ public class AdventureSettings implements Cloneable {
         Server.broadcastPacket(players, packet);
     }
 
+    /**
+     * Save permissions to nbt
+     */
     public void saveNBT() {
         CompoundTag nbt = player.namedTag;
         CompoundTag abilityTag = new CompoundTag();
@@ -196,6 +211,9 @@ public class AdventureSettings implements Cloneable {
         nbt.putString(KEY_COMMAND_PERMISSION, commandPermission.name());
     }
 
+    /**
+     * Read permission data from nbt
+     */
     public void readNBT(CompoundTag nbt) {
         CompoundTag abilityTag = nbt.getCompound(KEY_ABILITIES);
         for (Map.Entry<String, Tag> e : abilityTag.getTags().entrySet()) {
