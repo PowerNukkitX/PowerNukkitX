@@ -54,7 +54,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     public static boolean isNotActivate(Player player) {
         if (player == null) {
-            return false;
+            return true;
         }
         Item itemInHand = player.getInventory().getItemInHand();
         return (player.isSneaking() || player.isFlySneaking()) && !(itemInHand.isTool() || itemInHand.isNull());
