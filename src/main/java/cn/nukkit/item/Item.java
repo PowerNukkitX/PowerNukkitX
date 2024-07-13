@@ -1339,7 +1339,7 @@ public abstract class Item implements Cloneable, ItemID {
                 tags = this.tags.clone();
             }
             Item item = (Item) super.clone();
-            item.tags = tags;
+            item.setCompoundTag(tags);
             return item;
         } catch (CloneNotSupportedException e) {
             return null;
