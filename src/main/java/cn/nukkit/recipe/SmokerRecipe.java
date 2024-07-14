@@ -29,6 +29,6 @@ public class SmokerRecipe extends SmeltingRecipe {
 
     @Override
     public RecipeType getType() {
-        return this.getResult().hasMeta() ? RecipeType.SMOKER_DATA : RecipeType.SMOKER;
+        return RecipeType.SMOKER;
     }
 }

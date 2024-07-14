@@ -20,6 +20,6 @@ public class SoulCampfireRecipe extends CampfireRecipe {
 
     @Override
     public RecipeType getType() {
-        return this.getInput().toItem().hasMeta() ? RecipeType.SOUL_CAMPFIRE_DATA : RecipeType.SOUL_CAMPFIRE;
+        return RecipeType.SOUL_CAMPFIRE;
     }
 }

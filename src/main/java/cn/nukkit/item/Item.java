@@ -757,7 +757,11 @@ public abstract class Item implements Cloneable, ItemID {
         try {
             return NBTIO.read(tag, ByteOrder.LITTLE_ENDIAN);
         } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            try {
+                return NBTIO.read(tag, ByteOrder.BIG_ENDIAN);
+            } catch (IOException ee) {
+                throw new UncheckedIOException(ee);
+            }
         }
     }
 
@@ -766,7 +770,7 @@ public abstract class Item implements Cloneable, ItemID {
             return EmptyArrays.EMPTY_BYTES;
         }
         try {
-            return NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN);
+            return NBTIO.write(tag, ByteOrder.BIG_ENDIAN);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

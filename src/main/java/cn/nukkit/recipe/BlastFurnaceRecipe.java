@@ -28,8 +28,6 @@ public class BlastFurnaceRecipe extends SmeltingRecipe {
 
     @Override
     public RecipeType getType() {
-        if (this.getInput() instanceof DefaultDescriptor des) {
-            return des.getItem().hasMeta() ? RecipeType.BLAST_FURNACE_DATA : RecipeType.BLAST_FURNACE;
-        } else return RecipeType.BLAST_FURNACE;
+        return RecipeType.BLAST_FURNACE;
     }
 }

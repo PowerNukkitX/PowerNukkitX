@@ -28,6 +28,6 @@ public class CampfireRecipe extends SmeltingRecipe {
 
     @Override
     public RecipeType getType() {
-        return this.getInput().toItem().hasMeta() ? RecipeType.CAMPFIRE_DATA : RecipeType.CAMPFIRE;
+        return RecipeType.CAMPFIRE;
     }
 }

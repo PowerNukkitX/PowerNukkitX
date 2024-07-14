@@ -31,6 +31,6 @@ public class FurnaceRecipe extends SmeltingRecipe {
 
     @Override
     public RecipeType getType() {
-        return this.getInput().toItem().hasMeta() ? RecipeType.FURNACE_DATA : RecipeType.FURNACE;
+        return RecipeType.FURNACE;
     }
 }
