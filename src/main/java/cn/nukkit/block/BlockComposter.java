@@ -31,6 +31,13 @@ public class BlockComposter extends BlockSolid {
         registerDefaults();
     }
 
+    public static boolean isNotActivate(Player player) {
+        if (player == null) {
+            return false;
+        }
+        return Block.isNotActivate(player);
+    }
+
     @Override
     @NotNull
     public BlockProperties getProperties() {
