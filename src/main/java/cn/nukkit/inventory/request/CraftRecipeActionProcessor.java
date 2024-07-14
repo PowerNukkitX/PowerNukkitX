@@ -186,6 +186,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         match &= expectTemplate.match(template);
         if (match) {
             Item result = recipe.getResult().clone();
+            result.addEnchantment(smithingInventory.getIngredient().getEnchantments());
             player.getCreativeOutputInventory().setItem(result);
             return null;
         }
