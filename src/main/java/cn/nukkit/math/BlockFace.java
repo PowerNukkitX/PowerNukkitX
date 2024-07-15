@@ -414,7 +414,7 @@ public enum BlockFace {
         }
 
         public BlockFace random(RandomSourceProvider rand) {
-            return faces[rand.nextInt(faces.length)];
+            return faces[rand.nextInt(faces.length - 1)];
         }
 
         @Override
