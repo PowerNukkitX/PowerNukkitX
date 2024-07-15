@@ -114,12 +114,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.security.AccessControlContext;
-import java.security.AccessController;
-import java.security.Permission;
-import java.security.Permissions;
-import java.security.PrivilegedAction;
-import java.security.ProtectionDomain;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
@@ -668,8 +662,6 @@ public class Server {
                 // ignore
             }
         }
-
-        this.pluginManager.registerInterface(JavaPluginLoader.class);
         //todo enable js plugin when adapt
 //        JSIInitiator.reset();
 //        JSFeatures.clearFeatures();
@@ -698,6 +690,7 @@ public class Server {
             Enchantment.reload();
         }
 
+        this.pluginManager.registerInterface(JavaPluginLoader.class);
         this.pluginManager.loadPlugins(this.pluginPath);
         this.functionManager.reload();
 
@@ -2846,35 +2839,24 @@ public class Server {
          * Creates a ForkJoinWorkerThread operating in the given pool.
          *
          * @param pool the pool this thread works in
+         * @param threadCount an AtomicInteger tracking the number of threads created
          * @throws NullPointerException if pool is null
          */
         ComputeThread(ForkJoinPool pool, AtomicInteger threadCount) {
             super(pool);
+            // Set the thread name with the incremented count
             this.setName("ComputeThreadPool-thread-" + threadCount.getAndIncrement());
         }
     }
 
     private static class ComputeThreadPoolThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
         private static final AtomicInteger threadCount = new AtomicInteger(0);
-        @SuppressWarnings("removal")
-        private static final AccessControlContext ACC = contextWithPermissions(
-                new RuntimePermission("getClassLoader"),
-                new RuntimePermission("setContextClassLoader"));
 
-        @SuppressWarnings("removal")
-        static AccessControlContext contextWithPermissions(@NotNull Permission... perms) {
-            Permissions permissions = new Permissions();
-            for (var perm : perms)
-                permissions.add(perm);
-            return new AccessControlContext(new ProtectionDomain[]{new ProtectionDomain(null, permissions)});
-        }
-
-        @SuppressWarnings("removal")
-        public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
-            return AccessController.doPrivileged((PrivilegedAction<ForkJoinWorkerThread>) () -> new ComputeThread(pool, threadCount), ACC);
+        @Override
+        public ForkJoinWorkerThread newThread(@NotNull ForkJoinPool pool) {
+            // Utilize the ComputeThread class for creating new threads
+            return new ComputeThread(pool, threadCount);
         }
     }
-
     // endregion
-
 }
