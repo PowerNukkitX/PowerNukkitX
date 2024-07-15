@@ -52,14 +52,14 @@ import static cn.nukkit.utils.Utils.dynamic;
  */
 @Slf4j
 public class Nukkit {
-    public final static Properties GIT_INFO = getGitInfo();
-    public final static String VERSION = getVersion();
-    public final static String CODENAME = dynamic("PowerNukkitX");
-    public final static String GIT_COMMIT = getGitCommit();
-    public final static String API_VERSION = dynamic("2.0.0");
-    public final static String PATH = System.getProperty("user.dir") + "/";
-    public final static String DATA_PATH = System.getProperty("user.dir") + "/";
-    public final static String PLUGIN_PATH = DATA_PATH + "plugins";
+    public static final Properties GIT_INFO = getGitInfo();
+    public static final String VERSION = getVersion();
+    public static final String CODENAME = dynamic("PowerNukkitX");
+    public static final String GIT_COMMIT = getGitCommit();
+    public static final String API_VERSION = dynamic("2.0.0");
+    public static final String PATH = System.getProperty("user.dir") + "/";
+    public static final String DATA_PATH = System.getProperty("user.dir") + "/";
+    public static final String PLUGIN_PATH = DATA_PATH + "plugins";
     public static final long START_TIME = System.currentTimeMillis();
     public static boolean ANSI = true;
     public static boolean TITLE = false;
@@ -71,8 +71,7 @@ public class Nukkit {
     public static void main(String[] args) {
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
 
-        AtomicBoolean disableSentry = new AtomicBoolean(false);
-        disableSentry.set(Boolean.parseBoolean(System.getProperty("disableSentry", "false")));
+        AtomicBoolean disableSentry = new AtomicBoolean(Boolean.parseBoolean(System.getProperty("disableSentry", "false")));
 
         Path propertiesPath = Paths.get(DATA_PATH, "server.properties");
         if (!disableSentry.get() && Files.isRegularFile(propertiesPath)) {
@@ -80,27 +79,20 @@ public class Nukkit {
             try (FileReader reader = new FileReader(propertiesPath.toFile())) {
                 properties.load(reader);
                 String value = properties.getProperty("disable-auto-bug-report", "false");
-                if (value.equalsIgnoreCase("on") || value.equals("1")) {
-                    value = "true";
-                }
-                disableSentry.set(Boolean.parseBoolean(value.toLowerCase(Locale.ENGLISH)));
+                disableSentry.set(value.equalsIgnoreCase("on") || value.equals("1") || Boolean.parseBoolean(value.toLowerCase(Locale.ENGLISH)));
             } catch (IOException e) {
                 log.error("Failed to load server.properties to check disable-auto-bug-report.", e);
             }
         }
 
-        // Force IPv4 since Nukkit is not compatible with IPv6
+        // Force IPv4 and other system properties
         System.setProperty("java.net.preferIPv4Stack", "true");
         System.setProperty("log4j.skipJansi", "false");
-        System.getProperties().putIfAbsent("io.netty.allocator.type", "unpooled"); // Disable memory pooling unless specified
-
-        // Force Mapped ByteBuffers for LevelDB till fixed.
+        System.getProperties().putIfAbsent("io.netty.allocator.type", "unpooled");
         System.setProperty("leveldb.mmap", "true");
-
-        // Netty logger for debug info
         InternalLoggerFactory.setDefaultFactory(Log4J2LoggerFactory.INSTANCE);
 
-        // Define args
+        // Command line argument parser setup
         OptionParser parser = new OptionParser();
         parser.allowsUnrecognizedOptions();
         OptionSpec<Void> helpSpec = parser.accepts("help", "Shows this page").forHelp();
@@ -112,12 +104,10 @@ public class Nukkit {
         OptionSpec<Integer> chromeDebugPortSpec = parser.accepts("chrome-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(Integer.class);
         OptionSpec<String> jsDebugPortSpec = parser.accepts("js-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(String.class);
 
-        // Parse arguments
         OptionSet options = parser.parse(args);
 
         if (options.has(helpSpec)) {
             try {
-                // Display help page
                 parser.printHelpOn(System.out);
             } catch (IOException e) {
                 // ignore
@@ -125,6 +115,7 @@ public class Nukkit {
             return;
         }
 
+        // Apply command line options
         ANSI = !options.has(ansiSpec);
         TITLE = options.has(titleSpec);
 
@@ -133,9 +124,8 @@ public class Nukkit {
             verbosity = options.valueOf(verbositySpec);
         }
         if (verbosity != null) {
-
             try {
-                Level level = Level.valueOf(verbosity);
+                Level level = Level.valueOf(verbosity.toUpperCase(Locale.ENGLISH));
                 setLogLevel(level);
             } catch (Exception e) {
                 // ignore
@@ -149,7 +139,7 @@ public class Nukkit {
         }
 
         if (options.has(jsDebugPortSpec)) {
-            JS_DEBUG_LIST = Arrays.stream(options.valueOf(jsDebugPortSpec).split(",")).toList();
+            JS_DEBUG_LIST = Arrays.asList(options.valueOf(jsDebugPortSpec).split(","));
         }
 
         try {
@@ -158,7 +148,7 @@ public class Nukkit {
             }
             new Server(PATH, DATA_PATH, PLUGIN_PATH, language);
         } catch (Throwable t) {
-            log.error("", t);
+            log.error("Server initialization failed", t);
         }
 
         if (TITLE) {
@@ -170,12 +160,9 @@ public class Nukkit {
             JSIInitiator.jsTimer.cancel();
         }
         PGZIPOutputStream.getSharedThreadPool().shutdownNow();
-        for (Thread thread : java.lang.Thread.getAllStackTraces().keySet()) {
-            if (!(thread instanceof InterruptibleThread)) {
-                continue;
-            }
-            log.debug("Stopping {} thread", thread.getClass().getSimpleName());
-            if (thread.isAlive()) {
+        for (Thread thread : Thread.getAllStackTraces().keySet()) {
+            if (thread instanceof InterruptibleThread && thread.isAlive()) {
+                log.debug("Stopping {} thread", thread.getClass().getSimpleName());
                 thread.interrupt();
             }
         }
@@ -188,79 +175,58 @@ public class Nukkit {
     }
 
     private static boolean requiresShortTitle() {
-        //Shorter title for windows 8/2012
+        // Shorter title for Windows 8/2012
         String osName = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
         return osName.contains("windows") && (osName.contains("windows 8") || osName.contains("2012"));
     }
 
     private static Properties getGitInfo() {
-        InputStream gitFileStream = null;
-        try {
-            gitFileStream = Nukkit.class.getModule().getResourceAsStream("git.properties");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (gitFileStream == null) {
-            return null;
-        }
-        Properties properties = new Properties();
-        try {
+        try (InputStream gitFileStream = Nukkit.class.getModule().getResourceAsStream("git.properties")) {
+            if (gitFileStream == null) {
+                return null;
+            }
+            Properties properties = new Properties();
             properties.load(gitFileStream);
+            return properties;
         } catch (IOException e) {
-            return null;
+            throw new RuntimeException("Failed to load git properties", e);
         }
-        return properties;
     }
 
     private static String getVersion() {
-        InputStream resourceAsStream = null;
-        try {
-            resourceAsStream = Nukkit.class.getModule().getResourceAsStream("git.properties");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (resourceAsStream == null) {
-            return "Unknown-PNX-SNAPSHOT";
-        }
-        Properties properties = new Properties();
-        try (InputStream is = resourceAsStream;
-             InputStreamReader reader = new InputStreamReader(is);
-             BufferedReader buffered = new BufferedReader(reader)) {
-            properties.load(buffered);
-            String line = properties.getProperty("git.build.version");
-            if ("${project.version}".equalsIgnoreCase(line)) {
+        try (InputStream resourceAsStream = Nukkit.class.getModule().getResourceAsStream("git.properties")) {
+            if (resourceAsStream == null) {
                 return "Unknown-PNX-SNAPSHOT";
-            } else {
-                return line;
             }
+            Properties properties = new Properties();
+            properties.load(new BufferedReader(new InputStreamReader(resourceAsStream)));
+            String version = properties.getProperty("git.build.version");
+            return "${project.version}".equalsIgnoreCase(version) ? "Unknown-PNX-SNAPSHOT" : version;
         } catch (IOException e) {
             return "Unknown-PNX-SNAPSHOT";
         }
     }
 
     private static String getGitCommit() {
-        StringBuilder version = new StringBuilder();
-        version.append("git-");
-        String commitId;
-        if (GIT_INFO == null || (commitId = GIT_INFO.getProperty("git.commit.id.abbrev")) == null) {
-            return version.append("null").toString();
+        if (GIT_INFO == null) {
+            return "git-null";
         }
-        return version.append(commitId).toString();
+        return "git-" + GIT_INFO.getProperty("git.commit.id.abbrev", "null");
     }
 
     public static void setLogLevel(Level level) {
-        Preconditions.checkNotNull(level, "level");
+        Preconditions.checkNotNull(level, "Level must not be null");
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        Configuration log4jConfig = ctx.getConfiguration();
-        LoggerConfig loggerConfig = log4jConfig.getLoggerConfig(org.apache.logging.log4j.LogManager.ROOT_LOGGER_NAME);
+        Configuration config = ctx.getConfiguration();
+        LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
         loggerConfig.setLevel(level);
         ctx.updateLoggers();
     }
 
     public static Level getLogLevel() {
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        Configuration log4jConfig = ctx.getConfiguration();
-        LoggerConfig loggerConfig = log4jConfig.getLoggerConfig(org.apache.logging.log4j.LogManager.ROOT_LOGGER_NAME);
+        Configuration config = ctx.getConfiguration();
+        LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
         return loggerConfig.getLevel();
     }
 }
