@@ -115,7 +115,7 @@ public class ObjectSavannaTree extends TreeGenerator {
                     BlockFace face1 = BlockFace.Plane.HORIZONTAL.random(rand);
 
                     if (face1 != face) {
-                        int l3 = k2 - rand.nextInt(2) - 1;
+                        int l3 = k2 - rand.nextInt(1) - 1;
                         int k4 = 1 + rand.nextInt(3);
                         k1 = 0;
 
