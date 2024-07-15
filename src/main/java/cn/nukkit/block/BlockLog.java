@@ -40,6 +40,7 @@ public abstract class BlockLog extends BlockSolid implements IBlockWood {
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isAxe()) {
             Block strippedBlock = Block.get(getStrippedState());
+            strippedBlock.setPropertyValue(PILLAR_AXIS, this.getPillarAxis());
             item.useOn(this);
             this.level.setBlock(this, strippedBlock, true, true);
             return true;

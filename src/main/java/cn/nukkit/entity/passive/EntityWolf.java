@@ -236,7 +236,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
                     player.dataPacket(packet);
                 }
             }
-        } else if (item.getId() == Item.DYE) {
+        } else if (item instanceof ItemDye) {
             if (this.hasOwner() && player.equals(this.getOwner())) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 this.setColor(((ItemDye) item).getDyeColor());
