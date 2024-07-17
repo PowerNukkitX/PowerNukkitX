@@ -21,7 +21,7 @@ public class BlockPropertiesTest {
     void BlockPaletteTest() {
         Registries.BLOCK.init();
         TreeMap<String, String> errors = new TreeMap<>();
-        int countedBlocks = 0; // Ajout pour compter les blocs traités
+        int countedBlocks = 0;
         try (var stream = new FileInputStream("src/main/resources/block_palette.nbt")) {
             CompoundTag nbt = NBTIO.readCompressed(stream);
             ListTag<CompoundTag> blocks = nbt.getList("blocks", CompoundTag.class);
@@ -30,11 +30,11 @@ public class BlockPropertiesTest {
                 if (blockState == null) {
                     errors.put(b.getString("name"), "palette not match vanilla, expected:  block: " + b.getString("name"));
                 } else {
-                    countedBlocks++; // Incrémenter pour chaque bloc valide
+                    countedBlocks++;
                 }
             }
         }
-        System.out.println("Nombre de blocs comptés: " + countedBlocks); // Log pour débogage
+        System.out.println("Counted blocks: " + countedBlocks);
         Assertions.assertEquals(BlockRegistry.skipBlockSet.size(), errors.size(), Sets.difference(errors.keySet(), BlockRegistry.skipBlockSet).toString());
     }
 }
