@@ -119,12 +119,6 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 result.addAll(Collections2.transform(s, d -> (FurnaceRecipe) d));
             }
         }
-        Int2ObjectArrayMap<Set<Recipe>> recipe_data = recipeMaps.get(RecipeType.FURNACE_DATA);
-        if (recipe_data != null) {
-            for (var s : recipe_data.values()) {
-                result.addAll(Collections2.transform(s, d -> (FurnaceRecipe) d));
-            }
-        }
         return result;
     }
 
@@ -133,14 +127,6 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         Set<Recipe> recipes = map1.get(items.length);
         if (recipes != null) {
             for (var r : recipes) {
-                if (r.fastCheck(items)) return (FurnaceRecipe) r;
-            }
-        }
-        Int2ObjectArrayMap<Set<Recipe>> map2 = recipeMaps.get(RecipeType.FURNACE_DATA);
-        if (map2 == null) return null;
-        Set<Recipe> recipes2 = map2.get(items.length);
-        if (recipes2 != null) {
-            for (var r : recipes2) {
                 if (r.fastCheck(items)) return (FurnaceRecipe) r;
             }
         }
@@ -155,12 +141,6 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 result.addAll(Collections2.transform(s, d -> (BlastFurnaceRecipe) d));
             }
         }
-        Int2ObjectArrayMap<Set<Recipe>> recipe_data = recipeMaps.get(RecipeType.BLAST_FURNACE_DATA);
-        if (recipe_data != null) {
-            for (var s : recipe_data.values()) {
-                result.addAll(Collections2.transform(s, d -> (BlastFurnaceRecipe) d));
-            }
-        }
         return result;
     }
 
@@ -172,14 +152,6 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 if (r.fastCheck(items)) return (BlastFurnaceRecipe) r;
             }
         }
-        Int2ObjectArrayMap<Set<Recipe>> map2 = recipeMaps.get(RecipeType.BLAST_FURNACE_DATA);
-        Set<Recipe> recipes2 = map2.get(items.length);
-        if (recipes2 == null)
-            return null;
-
-        for (var r : recipes2) {
-            if (r.fastCheck(items)) return (BlastFurnaceRecipe) r;
-        }
         return null;
     }
 
@@ -188,12 +160,6 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         Int2ObjectArrayMap<Set<Recipe>> smoker = recipeMaps.get(RecipeType.SMOKER);
         if (smoker != null) {
             for (var s : smoker.values()) {
-                result.addAll(Collections2.transform(s, d -> (SmokerRecipe) d));
-            }
-        }
-        Int2ObjectArrayMap<Set<Recipe>> smoker_data = recipeMaps.get(RecipeType.SMOKER_DATA);
-        if (smoker_data != null) {
-            for (var s : smoker_data.values()) {
                 result.addAll(Collections2.transform(s, d -> (SmokerRecipe) d));
             }
         }
@@ -208,14 +174,6 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 if (r.fastCheck(items)) return (SmokerRecipe) r;
             }
         }
-        Int2ObjectArrayMap<Set<Recipe>> map2 = recipeMaps.get(RecipeType.SMOKER_DATA);
-        if (map2 == null) return null;
-        Set<Recipe> recipes2 = map2.get(items.length);
-        if (recipes2 != null) {
-            for (var r : recipes2) {
-                if (r.fastCheck(items)) return (SmokerRecipe) r;
-            }
-        }
         return null;
     }
 
@@ -227,21 +185,9 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 result.addAll(Collections2.transform(s, d -> (CampfireRecipe) d));
             }
         }
-        Int2ObjectArrayMap<Set<Recipe>> r2 = recipeMaps.get(RecipeType.CAMPFIRE_DATA);
-        if (r2 != null) {
-            for (var s : r2.values()) {
-                result.addAll(Collections2.transform(s, d -> (CampfireRecipe) d));
-            }
-        }
         Int2ObjectArrayMap<Set<Recipe>> r3 = recipeMaps.get(RecipeType.SOUL_CAMPFIRE);
         if (r3 != null) {
             for (var s : r3.values()) {
-                result.addAll(Collections2.transform(s, d -> (CampfireRecipe) d));
-            }
-        }
-        Int2ObjectArrayMap<Set<Recipe>> r4 = recipeMaps.get(RecipeType.SOUL_CAMPFIRE_DATA);
-        if (r4 != null) {
-            for (var s : r4.values()) {
                 result.addAll(Collections2.transform(s, d -> (CampfireRecipe) d));
             }
         }
@@ -252,12 +198,6 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         Set<Recipe> recipes = recipeMaps.get(RecipeType.CAMPFIRE).get(items.length);
         if (recipes != null) {
             for (var r : recipes) {
-                if (r.fastCheck(items)) return (CampfireRecipe) r;
-            }
-        }
-        Set<Recipe> recipes2 = recipeMaps.get(RecipeType.CAMPFIRE_DATA).get(items.length);
-        if (recipes2 != null) {
-            for (var r : recipes2) {
                 if (r.fastCheck(items)) return (CampfireRecipe) r;
             }
         }

@@ -137,6 +137,8 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_ANIMATION_VAULT_ACTIVATE = dynamic(9811);
     public static final int EVENT_ANIMATION_VAULT_DEACTIVATE = dynamic(9812);
     public static final int EVENT_ANIMATION_VAULT_EJECT_ITEM = dynamic(9813);
+    public static final int EVENT_ANIMATION_SPAWN_COBWEB = dynamic(9814);
+    public static final int EVENT_PARTICLE_SMASH_ATTACK_GROUND_DUST = dynamic(9815);
 
     public static final int EVENT_ADD_PARTICLE_MASK = dynamic(0x4000);
 

@@ -280,6 +280,6 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{toItem()};
+        return new Item[]{new ItemBlock(PROPERTIES.getDefaultState().toBlock(), 0)};
     }
 }
