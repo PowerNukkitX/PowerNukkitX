@@ -410,11 +410,11 @@ public enum BlockFace {
 
 
         public BlockFace random() {
-            return faces[ThreadLocalRandom.current().nextInt(faces.length)];
+            return faces[ThreadLocalRandom.current().nextInt(faces.length - 1)];
         }
 
         public BlockFace random(RandomSourceProvider rand) {
-            return faces[rand.nextInt(faces.length)];
+            return faces[rand.nextInt(faces.length - 1)];
         }
 
         @Override
