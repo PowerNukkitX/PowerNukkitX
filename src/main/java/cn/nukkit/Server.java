@@ -9,6 +9,8 @@ import cn.nukkit.command.SimpleCommandMap;
 import cn.nukkit.command.defaults.WorldCommand;
 import cn.nukkit.command.function.FunctionManager;
 import cn.nukkit.compression.ZlibChooser;
+import cn.nukkit.config.ServerProperties;
+import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.config.ServerSettings;
 import cn.nukkit.config.YamlSnakeYamlConfigurer;
 import cn.nukkit.console.NukkitConsole;
@@ -128,10 +130,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 代表着服务器对象，全局单例.
- * <p>在{@link Nukkit}中被实例化，后通过{@link cn.nukkit.Server#getInstance}获取实例对象.
- * {@link cn.nukkit.Server}的构造方法进行了一系列操作，包括但不限于初始化配置文件，创建线程、线程池，开启插件，注册配方、方块、实体、物品等.
- * <p>
  * Represents a server object, global singleton.
  * <p>is instantiated in {@link Nukkit} and later the instance object is obtained via {@link cn.nukkit.Server#getInstance}.
  * The constructor method of {@link cn.nukkit.Server} performs a number of operations, including but not limited to initializing configuration files, creating threads, thread pools, start plugins, registering recipes, blocks, entities, items, etc.
@@ -139,6 +137,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author MagicDroidX
  * @author Box
  */
+
 @Slf4j
 public class Server {
     public static final String BROADCAST_CHANNEL_ADMINISTRATIVE = "nukkit.broadcast.admin";
@@ -202,7 +201,7 @@ public class Server {
     private final String dataPath;
     private final String pluginPath;
     private final Set<UUID> uniquePlayers = new HashSet<>();
-    private final Config properties;
+    private final ServerProperties properties;
     private final Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
     private final Map<UUID, Player> playerList = new ConcurrentHashMap<>();
     private QueryRegenerateEvent queryRegenerateEvent;
@@ -340,62 +339,24 @@ public class Server {
         }
 
         log.info("Loading {} ...", TextFormat.GREEN + "server.properties" + TextFormat.WHITE);
-        this.properties = new Config(this.dataPath + "server.properties", Config.PROPERTIES, new ConfigSection() {
-            {
-                put("motd", "PowerNukkitX Server");
-                put("sub-motd", "v2.powernukkitx.com");
-                put("server-port", 19132);
-                put("server-ip", "0.0.0.0");
-                put("view-distance", 16);
-                put("white-list", false);
-                put("achievements", true);
-                put("announce-player-achievements", true);
-                put("spawn-protection", 16);
-                put("max-players", 20);
-                put("allow-flight", false);
-                put("spawn-animals", true);
-                put("spawn-mobs", true);
-                put("gamemode", 0);
-                put("force-gamemode", false);
-                put("hardcore", false);
-                put("pvp", true);
-                put("difficulty", 1);
-                put("level-name", "world");
-                put("level-seed", "");
-                put("allow-nether", false);
-                put("allow-the_end", false);
-                put("use-terra", false);
-                put("enable-query", true);
-                put("enable-rcon", false);
-                put("rcon.password", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().replace("-", "").getBytes()).substring(3, 13));
-                put("auto-save", true);
-                put("force-resources", false);
-                put("force-resources-allow-client-packs", false);
-                put("xbox-auth", true);
-                put("check-login-time", false);
-                put("disable-auto-bug-report", false);
-                put("allow-shaded", false);
-                put("server-authoritative-movement", "server-auth");// Allowed values: "client-auth", "server-auth", "server-auth-with-rewind"
-                put("network-encryption", true);
-            }
-        });
+        this.properties = new ServerProperties(this.dataPath);
 
         var isShaded = StartArgUtils.isShaded();
         if (!StartArgUtils.isValidStart() || (JarStart.isUsingJavaJar() && !isShaded)) {
             log.error(getLanguage().tr("nukkit.start.invalid"));
             return;
         }
-        if (!this.properties.getBoolean("allow-shaded", false) && isShaded) {
+        if (!this.properties.get(ServerPropertiesKeys.ALLOW_SHADED, false) && isShaded) {
             log.error(getLanguage().tr("nukkit.start.shaded1"));
             log.error(getLanguage().tr("nukkit.start.shaded2"));
             log.error(getLanguage().tr("nukkit.start.shaded3"));
             return;
         }
 
-        this.allowNether = this.properties.getBoolean("allow-nether", true);
-        this.allowTheEnd = this.properties.getBoolean("allow-the_end", true);
-        this.useTerra = this.properties.getBoolean("use-terra", false);
-        this.checkLoginTime = this.properties.getBoolean("check-login-time", false);
+        this.allowNether = this.properties.get(ServerPropertiesKeys.ALLOW_NETHER, true);
+        this.allowTheEnd = this.properties.get(ServerPropertiesKeys.ALLOW_THE_END, true);
+        this.useTerra = this.properties.get(ServerPropertiesKeys.USE_TERRA, false);
+        this.checkLoginTime = this.properties.get(ServerPropertiesKeys.CHECK_LOGIN_TIME, false);
 
         log.info(this.getLanguage().tr("language.selected", getLanguage().getName(), getLanguage().getLang()));
         log.info(getLanguage().tr("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
@@ -412,20 +373,20 @@ public class Server {
 
         ZlibChooser.setProvider(settings.networkSettings().zlibProvider());
 
-        this.serverAuthoritativeMovementMode = switch (this.properties.get("server-authoritative-movement", "server-auth")) {
+        this.serverAuthoritativeMovementMode = switch (this.properties.get(ServerPropertiesKeys.SERVER_AUTHORITATIVE_MOVEMENT, "server-auth")) {
             case "client-auth" -> 0;
             case "server-auth" -> 1;
             case "server-auth-with-rewind" -> 2;
             default -> throw new IllegalArgumentException();
         };
-        this.enabledNetworkEncryption = this.properties.getBoolean("network-encryption", true);
+        this.enabledNetworkEncryption = this.properties.get(ServerPropertiesKeys.NETWORK_ENCRYPTION, true);
         if (this.getSettings().baseSettings().waterdogpe()) {
             this.checkLoginTime = false;
         }
 
-        if (this.getPropertyBoolean("enable-rcon", false)) {
+        if (this.properties.get(ServerPropertiesKeys.ENABLE_RCON, false)) {
             try {
-                this.rcon = new RCON(this, this.getPropertyString("rcon.password", ""), (!this.getIp().equals("")) ? this.getIp() : "0.0.0.0", this.getPropertyInt("rcon.port", this.getPort()));
+                this.rcon = new RCON(this, this.properties.get(ServerPropertiesKeys.RCON_PASSWORD, ""), (!this.getIp().equals("")) ? this.getIp() : "0.0.0.0", this.getPort());
             } catch (IllegalArgumentException e) {
                 log.error(getLanguage().tr(e.getMessage(), e.getCause().getMessage()));
             }
@@ -439,10 +400,10 @@ public class Server {
         this.banByName.load();
         this.banByIP = new BanList(this.dataPath + "banned-ips.json");
         this.banByIP.load();
-        this.maxPlayers = this.getPropertyInt("max-players", 20);
-        this.setAutoSave(this.getPropertyBoolean("auto-save", true));
-        if (this.getPropertyBoolean("hardcore", false) && this.getDifficulty() < 3) {
-            this.setPropertyInt("difficulty", 3);
+        this.maxPlayers = this.properties.get(ServerPropertiesKeys.MAX_PLAYERS, 20);
+        this.setAutoSave(this.properties.get(ServerPropertiesKeys.AUTO_SAVE, true));
+        if (this.properties.get(ServerPropertiesKeys.HARDCORE, false) && this.getDifficulty() < 3) {
+            this.properties.get(ServerPropertiesKeys.DIFFICULTY, 3);
         }
 
         log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + " (" + this.getGitCommit() + ")" + TextFormat.WHITE, this.getApiVersion()));
@@ -557,7 +518,7 @@ public class Server {
         this.network = new Network(this);
         this.getTickingAreaManager().loadAllTickingArea();
 
-        this.properties.save(true);
+        this.properties.save();
 
         if (this.getDefaultLevel() == null) {
             log.error(this.getLanguage().tr("nukkit.level.defaultError"));
@@ -601,11 +562,11 @@ public class Server {
         }
 
         if (this.getDefaultLevel() == null) {
-            String levelFolder = this.getPropertyString("level-name", "world");
+            String levelFolder = this.properties.get(ServerPropertiesKeys.LEVEL_NAME, "world");
             if (levelFolder == null || levelFolder.trim().isEmpty()) {
                 log.warn("level-name cannot be null, using default");
                 levelFolder = "world";
-                this.setPropertyString("level-name", levelFolder);
+                this.properties.get(ServerPropertiesKeys.LEVEL_NAME, levelFolder);
             }
 
             if (!this.loadLevel(levelFolder)) {
@@ -614,7 +575,7 @@ public class Server {
                 HashMap<Integer, LevelConfig.GeneratorConfig> generatorConfig = new HashMap<>();
                 //spawn seed
                 long seed;
-                String seedString = String.valueOf(this.getProperty("level-seed", System.currentTimeMillis()));
+                String seedString = String.valueOf(this.properties.get(ServerPropertiesKeys.LEVEL_SEED, System.currentTimeMillis()));
                 try {
                     seed = Long.parseLong(seedString);
                 } catch (NumberFormatException e) {
@@ -651,9 +612,9 @@ public class Server {
 
         log.info("Reloading properties...");
         this.properties.reload();
-        this.maxPlayers = this.getPropertyInt("max-players", 20);
-        if (this.getPropertyBoolean("hardcore", false) && this.getDifficulty() < 3) {
-            this.setPropertyInt("difficulty", difficulty = 3);
+        this.maxPlayers = this.properties.get(ServerPropertiesKeys.MAX_PLAYERS, 20);
+        if (this.properties.get(ServerPropertiesKeys.HARDCORE, false) && this.getDifficulty() < 3) {
+            this.properties.get(ServerPropertiesKeys.DIFFICULTY, difficulty = 3);
         }
 
         this.banByIP.load();
@@ -1622,7 +1583,8 @@ public class Server {
         if (bytes == null) {
             playerDataDB.put(nameBytes, array);
         }
-        if (info instanceof XboxLivePlayerInfo && this.getPropertyBoolean("xbox-auth") || !this.getPropertyBoolean("xbox-auth")) {//update
+        boolean xboxAuthEnabled = this.properties.get(ServerPropertiesKeys.XBOX_AUTH, false);
+        if (info instanceof XboxLivePlayerInfo || !xboxAuthEnabled) {
             playerDataDB.put(nameBytes, array);
         }
     }
@@ -2413,21 +2375,21 @@ public class Server {
      * @return 服务器端口<br>server port
      */
     public int getPort() {
-        return this.getPropertyInt("server-port", 19132);
+        return this.properties.get(ServerPropertiesKeys.SERVER_PORT, 19132);
     }
 
     /**
      * @return 可视距离<br>server view distance
      */
     public int getViewDistance() {
-        return this.getPropertyInt("view-distance", 10);
+        return this.properties.get(ServerPropertiesKeys.VIEW_DISTANCE, 10);
     }
 
     /**
      * @return 服务器网络地址<br>server ip
      */
     public String getIp() {
-        return this.getPropertyString("server-ip", "0.0.0.0");
+        return this.properties.get(ServerPropertiesKeys.SERVER_IP, "0.0.0.0");
     }
 
     /**
@@ -2452,13 +2414,6 @@ public class Server {
     }
 
     /**
-     * @return 服务器是否生成结构<br>Whether the server generate the structure.
-     */
-    public boolean getGenerateStructures() {
-        return this.getPropertyBoolean("generate-structures", true);
-    }
-
-    /**
      * 得到服务器的gamemode
      * <p>
      * Get the gamemode of the server
@@ -2467,14 +2422,14 @@ public class Server {
      */
     public int getGamemode() {
         try {
-            return this.getPropertyInt("gamemode", 0) & 0b11;
+            return this.properties.get(ServerPropertiesKeys.GAMEMODE, 0) & 0b11;
         } catch (NumberFormatException exception) {
-            return getGamemodeFromString(this.getPropertyString("gamemode")) & 0b11;
+            return getGamemodeFromString(this.properties.get(ServerPropertiesKeys.GAMEMODE, "survival")) & 0b11;
         }
     }
 
     public boolean getForceGamemode() {
-        return this.getPropertyBoolean("force-gamemode", false);
+        return this.properties.get(ServerPropertiesKeys.FORCE_GAMEMODE, false);
     }
 
     /**
@@ -2565,7 +2520,7 @@ public class Server {
      */
     public int getDifficulty() {
         if (this.difficulty == Integer.MAX_VALUE) {
-            this.difficulty = getDifficultyFromString(this.getPropertyString("difficulty", "1"));
+            this.difficulty = getDifficultyFromString(this.properties.get(ServerPropertiesKeys.DIFFICULTY, "1"));
         }
         return this.difficulty;
     }
@@ -2582,21 +2537,21 @@ public class Server {
         if (value < 0) value = 0;
         if (value > 3) value = 3;
         this.difficulty = value;
-        this.setPropertyInt("difficulty", value);
+        this.properties.get(ServerPropertiesKeys.DIFFICULTY, value);
     }
 
     /**
      * @return 是否开启白名单<br>Whether to start server whitelist
      */
     public boolean hasWhitelist() {
-        return this.getPropertyBoolean("white-list", false);
+        return this.properties.get(ServerPropertiesKeys.WHITE_LIST, false);
     }
 
     /**
      * @return 得到服务器出生点保护半径<br>Get server birth point protection radius
      */
     public int getSpawnRadius() {
-        return this.getPropertyInt("spawn-protection", 16);
+        return this.properties.get(ServerPropertiesKeys.SPAWN_PROTECTION, 16);
     }
 
     /**
@@ -2604,7 +2559,7 @@ public class Server {
      */
     public boolean getAllowFlight() {
         if (getAllowFlight == null) {
-            getAllowFlight = this.getPropertyBoolean("allow-flight", false);
+            getAllowFlight = this.properties.get(ServerPropertiesKeys.ALLOW_FLIGHT, false);
         }
         return getAllowFlight;
     }
@@ -2613,7 +2568,7 @@ public class Server {
      * @return 服务器是否为硬核模式<br>Whether the server is in hardcore mode
      */
     public boolean isHardcore() {
-        return this.getPropertyBoolean("hardcore", false);
+        return this.properties.get(ServerPropertiesKeys.HARDCORE, false);
     }
 
     /**
@@ -2640,7 +2595,7 @@ public class Server {
      * @return 得到服务器标题<br>Get server motd
      */
     public String getMotd() {
-        return this.getPropertyString("motd", "PowerNukkitX Server");
+        return this.properties.get(ServerPropertiesKeys.MOTD, "PowerNukkitX Server");
     }
 
     /**
@@ -2649,7 +2604,7 @@ public class Server {
      * @param motd the motd content
      */
     public void setMotd(String motd) {
-        this.setPropertyString("motd", motd);
+        this.properties.get(ServerPropertiesKeys.MOTD, motd);
         this.getNetwork().getPong().motd(motd).update();
     }
 
@@ -2657,9 +2612,9 @@ public class Server {
      * @return 得到服务器子标题<br>Get the server subheading
      */
     public String getSubMotd() {
-        String subMotd = this.getPropertyString("sub-motd", "https://powernukkitx.cn");
+        String subMotd = this.properties.get(ServerPropertiesKeys.SUB_MOTD, "v2.powernukkitx.com");
         if (subMotd.isEmpty()) {
-            subMotd = "https://powernukkitx.cn"; // The client doesn't allow empty sub-motd in 1.16.210
+            subMotd = "v2.powernukkitx.com";
         }
         return subMotd;
     }
@@ -2670,7 +2625,7 @@ public class Server {
      * @param subMotd the sub motd
      */
     public void setSubMotd(String subMotd) {
-        this.setPropertyString("sub-motd", subMotd);
+        this.properties.get(ServerPropertiesKeys.SUB_MOTD, subMotd);
         this.getNetwork().getPong().subMotd(subMotd).update();
     }
 
@@ -2678,14 +2633,14 @@ public class Server {
      * @return 是否强制使用服务器资源包<br>Whether to force the use of server resourcepack
      */
     public boolean getForceResources() {
-        return this.getPropertyBoolean("force-resources", false);
+        return this.properties.get(ServerPropertiesKeys.FORCE_RESOURCES, false);
     }
 
     /**
      * @return 是否强制使用服务器资源包的同时允许加载客户端资源包<br>Whether to force the use of server resourcepack while allowing the loading of client resourcepack
      */
     public boolean getForceResourcesAllowOwnPacks() {
-        return this.getPropertyBoolean("force-resources-allow-client-packs", false);
+        return this.properties.get(ServerPropertiesKeys.FORCE_RESOURCES_ALLOW_CLIENT_PACKS, false);
     }
 
     private LangCode mapInternalLang(String langName) {
@@ -2697,7 +2652,7 @@ public class Server {
             case "deu" -> LangCode.valueOf("de_DE");
             case "fin" -> LangCode.valueOf("fi_FI");
             case "eng" -> LangCode.valueOf("en_US");
-            case "fra" -> LangCode.valueOf("en_US");
+            case "fra" -> LangCode.valueOf("fr_FR");
             case "idn" -> LangCode.valueOf("id_ID");
             case "jpn" -> LangCode.valueOf("ja_JP");
             case "kor" -> LangCode.valueOf("ko_KR");
@@ -2724,62 +2679,8 @@ public class Server {
         return settings;
     }
 
-    public Config getProperties() {
-        return this.properties;
-    }
-
-    public Object getProperty(String variable) {
-        return this.getProperty(variable, null);
-    }
-
-    public Object getProperty(String variable, Object defaultValue) {
-        return this.properties.exists(variable) ? this.properties.get(variable) : defaultValue;
-    }
-
-    public void setPropertyString(String variable, String value) {
-        this.properties.set(variable, value);
-        this.properties.save();
-    }
-
-    public String getPropertyString(String variable) {
-        return this.getPropertyString(variable, null);
-    }
-
-    public String getPropertyString(String variable, String defaultValue) {
-        return this.properties.exists(variable) ? this.properties.get(variable).toString() : defaultValue;
-    }
-
-    public int getPropertyInt(String variable) {
-        return this.getPropertyInt(variable, null);
-    }
-
-    public int getPropertyInt(String variable, Integer defaultValue) {
-        return this.properties.exists(variable) ? (!this.properties.get(variable).equals("") ? Integer.parseInt(String.valueOf(this.properties.get(variable))) : defaultValue) : defaultValue;
-    }
-
-    public void setPropertyInt(String variable, int value) {
-        this.properties.set(variable, value);
-        this.properties.save();
-    }
-
-    public boolean getPropertyBoolean(String variable) {
-        return this.getPropertyBoolean(variable, null);
-    }
-
-    public boolean getPropertyBoolean(String variable, Object defaultValue) {
-        Object value = this.properties.exists(variable) ? this.properties.get(variable) : defaultValue;
-        if (value instanceof Boolean) {
-            return (Boolean) value;
-        }
-        return switch (String.valueOf(value)) {
-            case "on", "true", "1", "yes" -> true;
-            default -> false;
-        };
-    }
-
-    public void setPropertyBoolean(String variable, boolean value) {
-        this.properties.set(variable, value ? "1" : "0");
-        this.properties.save();
+    public ServerProperties getProperties() {
+        return properties;
     }
 
     public boolean isNetherAllowed() {

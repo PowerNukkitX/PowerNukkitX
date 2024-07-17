@@ -2,6 +2,7 @@ package cn.nukkit.network;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.network.connection.BedrockPeer;
 import cn.nukkit.network.connection.BedrockPong;
 import cn.nukkit.network.connection.BedrockSession;
@@ -109,7 +110,7 @@ public class Network {
                 .childHandler(new BedrockServerInitializer() {
                     @Override
                     protected void postInitChannel(Channel channel) {
-                        if (Network.this.server.getPropertyBoolean("enable-query", true)) {
+                        if (Network.this.server.getProperties().get(ServerPropertiesKeys.ENABLE_QUERY, true)) {
                             channel.pipeline().addLast("queryPacketCodec", new QueryPacketCodec())
                                     .addLast("queryPacketHandler", new QueryPacketHandler(address -> Network.this.server.getQueryInformation()));
                         }
