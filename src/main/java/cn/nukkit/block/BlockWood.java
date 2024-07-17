@@ -24,12 +24,12 @@ public abstract class BlockWood extends BlockLog {
     @Override
     public BlockState getStrippedState() {
         String strippedId = switch (getWoodType()) {
-            case OAK -> STRIPPED_OAK_LOG;
-            case SPRUCE -> STRIPPED_SPRUCE_LOG;
-            case BIRCH -> STRIPPED_BIRCH_LOG;
-            case JUNGLE -> STRIPPED_JUNGLE_LOG;
-            case ACACIA -> STRIPPED_ACACIA_LOG;
-            case DARK_OAK -> STRIPPED_DARK_OAK_LOG;
+            case OAK -> STRIPPED_OAK_WOOD;
+            case SPRUCE -> STRIPPED_SPRUCE_WOOD;
+            case BIRCH -> STRIPPED_BIRCH_WOOD;
+            case JUNGLE -> STRIPPED_JUNGLE_WOOD;
+            case ACACIA -> STRIPPED_ACACIA_WOOD;
+            case DARK_OAK -> STRIPPED_DARK_OAK_WOOD;
         };
         return Registries.BLOCK.getBlockProperties(strippedId).getBlockState(PILLAR_AXIS, getPillarAxis());
     }
