@@ -567,7 +567,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
                 } //TODO: remove this when Endstone will fix duplication of furnaceAux recipes
 
-                var xp = furnaceXpConfig.getDouble(input.get("item") + ":" + 0);
+                var xp = furnaceXpConfig.getDouble(input.get("item") + ":" + (int)outputData);
                 if (xp != 0) {
                     this.setRecipeXp(furnaceRecipe, xp);
                 }
