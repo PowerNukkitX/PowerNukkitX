@@ -9,13 +9,6 @@
     </p>
 </p>
 
-<div align="center">
-
-[English](README.md) | Русский
-
-</div>
-
-
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
    <a href="https://feedback.minecraft.net/hc/en-us/articles/26247797084173--Minecraft-1-21-1-Bedrock">
@@ -43,6 +36,13 @@
       <img alt="License: LGPL-3" src="https://img.shields.io/badge/License-LGPL--3-yellow.svg" />
    </a>
 </p>
+
+<div align="center">
+
+[English](README.md) | Русский
+
+</div>
+
 <br>
 
 **Функционально-богатое, сильно кастомизируемое стороннее программное обеспечение для Minecraft: Bedrock Edition.**

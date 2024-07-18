@@ -9,12 +9,6 @@
     </p>
 </p>
 
-<div align="center">
-
-English | [Русский](README_RU.md)
-
-</div>
-
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
    <a href="https://feedback.minecraft.net/hc/en-us/articles/26247797084173--Minecraft-1-21-1-Bedrock">
@@ -42,6 +36,12 @@ English | [Русский](README_RU.md)
       <img alt="License: LGPL-3" src="https://img.shields.io/badge/License-LGPL--3-yellow.svg" />
    </a>
 </p>
+
+<div align="center">
+
+English | [Русский](README_RU.md)
+
+</div>
 <br>
 
 **Feature-rich, highly customizable third-party server software for Minecraft: Bedrock Edition.**
