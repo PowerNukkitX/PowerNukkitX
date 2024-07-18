@@ -15,8 +15,7 @@ public class SmokerRecipe extends SmeltingRecipe {
 
     public SmokerRecipe(@Nullable String recipeId, Item result, Item ingredient) {
         super(recipeId == null ?
-                RecipeRegistry.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)),
-                        ingredient.hasMeta() ? RecipeType.SMOKER_DATA : RecipeType.SMOKER) :
+                RecipeRegistry.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)), RecipeType.SMOKER) :
                 recipeId);
         this.ingredients.add(new DefaultDescriptor(ingredient.clone()));
         this.results.add(result.clone());
@@ -29,6 +28,6 @@ public class SmokerRecipe extends SmeltingRecipe {
 
     @Override
     public RecipeType getType() {
-        return this.getResult().hasMeta() ? RecipeType.SMOKER_DATA : RecipeType.SMOKER;
+        return RecipeType.SMOKER;
     }
 }

@@ -14,8 +14,7 @@ public class BlastFurnaceRecipe extends SmeltingRecipe {
 
     public BlastFurnaceRecipe(String recipeId, Item result, Item ingredient) {
         super(recipeId == null ?
-                RecipeRegistry.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)),
-                        ingredient.hasMeta() ? RecipeType.BLAST_FURNACE_DATA : RecipeType.BLAST_FURNACE) :
+                RecipeRegistry.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)), RecipeType.BLAST_FURNACE) :
                 recipeId);
         this.ingredients.add(new DefaultDescriptor(ingredient.clone()));
         this.results.add(result.clone());
@@ -28,8 +27,6 @@ public class BlastFurnaceRecipe extends SmeltingRecipe {
 
     @Override
     public RecipeType getType() {
-        if (this.getInput() instanceof DefaultDescriptor des) {
-            return des.getItem().hasMeta() ? RecipeType.BLAST_FURNACE_DATA : RecipeType.BLAST_FURNACE;
-        } else return RecipeType.BLAST_FURNACE;
+        return RecipeType.BLAST_FURNACE;
     }
 }

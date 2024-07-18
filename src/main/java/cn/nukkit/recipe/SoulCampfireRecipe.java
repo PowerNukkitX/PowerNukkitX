@@ -13,13 +13,12 @@ public class SoulCampfireRecipe extends CampfireRecipe {
 
     public SoulCampfireRecipe(String recipeId, Item result, Item ingredient) {
         super(recipeId == null ?
-                RecipeRegistry.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)),
-                        ingredient.hasMeta() ? RecipeType.SOUL_CAMPFIRE_DATA : RecipeType.SOUL_CAMPFIRE) :
+                RecipeRegistry.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)), RecipeType.SOUL_CAMPFIRE) :
                 recipeId, result, ingredient);
     }
 
     @Override
     public RecipeType getType() {
-        return this.getInput().toItem().hasMeta() ? RecipeType.SOUL_CAMPFIRE_DATA : RecipeType.SOUL_CAMPFIRE;
+        return RecipeType.SOUL_CAMPFIRE;
     }
 }

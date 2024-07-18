@@ -271,10 +271,15 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     }
 
     /**
-     * TODO: 大箱子在PNX不能推动
+     * TODO: Double chests cannot be moved
      */
     protected boolean canMove() {
         var blockEntity = this.getBlockEntity();
         return blockEntity == null || !blockEntity.isPaired();
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return new Item[]{new ItemBlock(PROPERTIES.getDefaultState().toBlock(), 0)};
     }
 }

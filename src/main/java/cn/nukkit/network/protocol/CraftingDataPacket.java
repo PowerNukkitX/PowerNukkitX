@@ -152,8 +152,7 @@ public class CraftingDataPacket extends DataPacket {
                     byteBuf.writeUUID(((MultiRecipe) recipe).getId());
                     byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
-                case FURNACE, FURNACE_DATA, SMOKER, SMOKER_DATA, BLAST_FURNACE, BLAST_FURNACE_DATA, CAMPFIRE,
-                     CAMPFIRE_DATA, SOUL_CAMPFIRE_DATA, SOUL_CAMPFIRE -> {
+                case FURNACE, SMOKER, BLAST_FURNACE, CAMPFIRE, SOUL_CAMPFIRE -> {
                     SmeltingRecipe smelting = (SmeltingRecipe) recipe;
                     Item input = smelting.getInput().toItem();
                     byteBuf.writeVarInt(input.getRuntimeId());
@@ -162,11 +161,11 @@ public class CraftingDataPacket extends DataPacket {
                     }
                     byteBuf.writeSlot(smelting.getResult(), true);
                     switch (recipe.getType()) {
-                        case FURNACE, FURNACE_DATA -> byteBuf.writeString(CRAFTING_TAG_FURNACE);
-                        case SMOKER, SMOKER_DATA -> byteBuf.writeString(CRAFTING_TAG_SMOKER);
-                        case BLAST_FURNACE, BLAST_FURNACE_DATA -> byteBuf.writeString(CRAFTING_TAG_BLAST_FURNACE);
-                        case CAMPFIRE, CAMPFIRE_DATA -> byteBuf.writeString(CRAFTING_TAG_CAMPFIRE);
-                        case SOUL_CAMPFIRE_DATA, SOUL_CAMPFIRE -> byteBuf.writeString(CRAFTING_TAG_SOUL_CAMPFIRE);
+                        case FURNACE -> byteBuf.writeString(CRAFTING_TAG_FURNACE);
+                        case SMOKER -> byteBuf.writeString(CRAFTING_TAG_SMOKER);
+                        case BLAST_FURNACE -> byteBuf.writeString(CRAFTING_TAG_BLAST_FURNACE);
+                        case CAMPFIRE -> byteBuf.writeString(CRAFTING_TAG_CAMPFIRE);
+                        case SOUL_CAMPFIRE -> byteBuf.writeString(CRAFTING_TAG_SOUL_CAMPFIRE);
                     }
                 }
             }

@@ -1,14 +1,23 @@
 {
-    "acacia": [
+    "minecraft:acacia": [
         "minecraft:acacia_log"
     ],
-    "birch": [
+    "minecraft:birch": [
         "minecraft:birch_log"
     ],
-    "dark_oak": [
+    "minecraft:crop": [
+        "minecraft:pitcher_crop",
+        "minecraft:potatoes",
+        "minecraft:beetroot",
+        "minecraft:carrots",
+        "minecraft:sweet_berry_bush",
+        "minecraft:torchflower_crop",
+        "minecraft:wheat"
+    ],
+    "minecraft:dark_oak": [
         "minecraft:dark_oak_log"
     ],
-    "diamond_pick_diggable": [
+    "minecraft:diamond_pick_diggable": [
         "minecraft:raw_gold_block",
         "minecraft:obsidian",
         "minecraft:gold_ore",
@@ -28,7 +37,7 @@
         "minecraft:deepslate_diamond_ore",
         "minecraft:raw_iron_block"
     ],
-    "dirt": [
+    "minecraft:dirt": [
         "minecraft:muddy_mangrove_roots",
         "minecraft:mycelium",
         "minecraft:farmland",
@@ -39,7 +48,7 @@
         "minecraft:moss_block",
         "minecraft:mud"
     ],
-    "fertilize_area": [
+    "minecraft:fertilize_area": [
         "minecraft:azure_bluet",
         "minecraft:lily_of_the_valley",
         "minecraft:yellow_flower",
@@ -57,17 +66,16 @@
         "minecraft:oxeye_daisy",
         "minecraft:red_tulip"
     ],
-    "gold_pick_diggable": [],
-    "grass": [
+    "minecraft:grass": [
         "minecraft:dirt",
         "minecraft:grass_block",
         "minecraft:grass_path"
     ],
-    "gravel": [
+    "minecraft:gravel": [
         "minecraft:suspicious_gravel",
         "minecraft:gravel"
     ],
-    "iron_pick_diggable": [
+    "minecraft:iron_pick_diggable": [
         "minecraft:raw_gold_block",
         "minecraft:gold_ore",
         "minecraft:coal_ore",
@@ -86,10 +94,10 @@
         "minecraft:deepslate_diamond_ore",
         "minecraft:raw_iron_block"
     ],
-    "jungle": [
+    "minecraft:jungle": [
         "minecraft:jungle_log"
     ],
-    "log": [
+    "minecraft:log": [
         "minecraft:jungle_log",
         "minecraft:oak_log",
         "minecraft:birch_log",
@@ -97,26 +105,17 @@
         "minecraft:spruce_log",
         "minecraft:acacia_log"
     ],
-    "metal": [
+    "minecraft:metal": [
         "minecraft:gold_block",
         "minecraft:iron_door",
         "minecraft:iron_bars",
         "minecraft:cauldron",
         "minecraft:iron_block"
     ],
-    "minecraft:crop": [
-        "minecraft:pitcher_crop",
-        "minecraft:potatoes",
-        "minecraft:beetroot",
-        "minecraft:carrots",
-        "minecraft:sweet_berry_bush",
-        "minecraft:torchflower_crop",
-        "minecraft:wheat"
-    ],
-    "mob_spawner": [
+    "minecraft:mob_spawner": [
         "minecraft:mob_spawner"
     ],
-    "not_feature_replaceable": [
+    "minecraft:not_feature_replaceable": [
         "minecraft:chiseled_bookshelf",
         "minecraft:mob_spawner",
         "minecraft:end_portal_frame",
@@ -125,10 +124,10 @@
         "minecraft:chest",
         "minecraft:trial_spawner"
     ],
-    "oak": [
+    "minecraft:oak": [
         "minecraft:oak_log"
     ],
-    "plant": [
+    "minecraft:plant": [
         "minecraft:pitcher_crop",
         "minecraft:dark_oak_sapling",
         "minecraft:oak_sapling",
@@ -144,28 +143,28 @@
         "minecraft:birch_sapling",
         "minecraft:peony"
     ],
-    "pumpkin": [
+    "minecraft:pumpkin": [
         "minecraft:pumpkin",
         "minecraft:lit_pumpkin",
         "minecraft:carved_pumpkin"
     ],
-    "rail": [
+    "minecraft:rail": [
         "minecraft:activator_rail",
         "minecraft:rail",
         "minecraft:detector_rail",
         "minecraft:golden_rail"
     ],
-    "sand": [
+    "minecraft:sand": [
         "minecraft:suspicious_sand",
         "minecraft:sand"
     ],
-    "snow": [
+    "minecraft:snow": [
         "minecraft:snow_layer"
     ],
-    "spruce": [
+    "minecraft:spruce": [
         "minecraft:spruce_log"
     ],
-    "stone": [
+    "minecraft:stone": [
         "minecraft:granite",
         "minecraft:diorite",
         "minecraft:mossy_cobblestone",
@@ -191,7 +190,7 @@
         "minecraft:smooth_stone_slab",
         "minecraft:polished_andesite"
     ],
-    "stone_pick_diggable": [
+    "minecraft:stone_pick_diggable": [
         "minecraft:waxed_oxidized_chiseled_copper",
         "minecraft:deepslate_copper_ore",
         "minecraft:waxed_oxidized_cut_copper",
@@ -246,7 +245,7 @@
         "minecraft:waxed_oxidized_copper_grate",
         "minecraft:weathered_copper"
     ],
-    "text_sign": [
+    "minecraft:text_sign": [
         "minecraft:birch_standing_sign",
         "minecraft:cherry_hanging_sign",
         "minecraft:crimson_wall_sign",
@@ -281,7 +280,7 @@
         "minecraft:spruce_wall_sign",
         "minecraft:cherry_wall_sign"
     ],
-    "trapdoors": [
+    "minecraft:trapdoors": [
         "minecraft:trapdoor",
         "minecraft:iron_trapdoor",
         "minecraft:cherry_trapdoor",
@@ -303,11 +302,11 @@
         "minecraft:birch_trapdoor",
         "minecraft:dark_oak_trapdoor"
     ],
-    "water": [
+    "minecraft:water": [
         "minecraft:flowing_water",
         "minecraft:water"
     ],
-    "wood": [
+    "minecraft:wood": [
         "minecraft:dark_oak_wood",
         "minecraft:birch_standing_sign",
         "minecraft:fence_gate",
@@ -445,6 +444,5 @@
         "minecraft:cherry_fence_gate",
         "minecraft:ladder",
         "minecraft:stripped_mangrove_log"
-    ],
-    "wood_pick_diggable": []
+    ]
 }

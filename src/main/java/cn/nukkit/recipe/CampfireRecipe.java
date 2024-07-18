@@ -14,8 +14,7 @@ public class CampfireRecipe extends SmeltingRecipe {
 
     public CampfireRecipe(String recipeId, Item result, Item ingredient) {
         super(recipeId == null ?
-                RecipeRegistry.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)),
-                        ingredient.hasMeta() ? RecipeType.CAMPFIRE_DATA : RecipeType.CAMPFIRE) :
+                RecipeRegistry.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)), RecipeType.CAMPFIRE) :
                 recipeId);
         this.results.add(result);
         this.ingredients.add(new DefaultDescriptor(ingredient));
@@ -28,6 +27,6 @@ public class CampfireRecipe extends SmeltingRecipe {
 
     @Override
     public RecipeType getType() {
-        return this.getInput().toItem().hasMeta() ? RecipeType.CAMPFIRE_DATA : RecipeType.CAMPFIRE;
+        return RecipeType.CAMPFIRE;
     }
 }

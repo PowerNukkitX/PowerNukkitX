@@ -5,6 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import com.google.gson.Gson;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
@@ -12,7 +13,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteOrder;
 import java.util.Base64;
@@ -33,7 +36,8 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
     @Override
     public void init() {
-        if (isLoad.getAndSet(true)) return;
+        if (isLoad.getAndSet(true))
+            return;
         try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.json")) {
             Map data = new Gson().fromJson(new InputStreamReader(input), Map.class);
             List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
