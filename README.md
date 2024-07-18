@@ -1,5 +1,4 @@
 <p align="right">
-Language:
 <img src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/eng.svg">
 </p>
 
