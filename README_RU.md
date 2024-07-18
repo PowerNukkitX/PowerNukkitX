@@ -9,9 +9,11 @@
     </p>
 </p>
 
-<p align="center">
-   <a href="https://github.com/PowerNukkitX/PowerNukkitX/README.md">English</a> | Русский
-</p>
+<center>
+
+English | [Русский](README_RU.md)
+
+</center>
 
 
 <p align="center">

@@ -9,9 +9,11 @@
     </p>
 </p>
 
-<p align="center">
-   English | <a href="https://github.com/PowerNukkitX/PowerNukkitX/README_RU.md">Русский</a>
-</p>
+<center>
+
+[English](README.md) | Русский
+
+</center>
 
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
