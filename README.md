@@ -36,6 +36,12 @@
       <img alt="License: LGPL-3" src="https://img.shields.io/badge/License-LGPL--3-yellow.svg" />
    </a>
 </p>
+
+<div align="center">
+
+English | [Русский](README_RU.md)
+
+</div>
 <br>
 
 **Feature-rich, highly customizable third-party server software for Minecraft: Bedrock Edition.**
