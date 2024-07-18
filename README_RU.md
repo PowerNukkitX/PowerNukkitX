@@ -9,11 +9,11 @@
     </p>
 </p>
 
-<center>
+<div align="center">
 
-English | [Русский](README_RU.md)
+[English](README.md) | Русский
 
-</center>
+</div>
 
 
 <p align="center">

@@ -9,11 +9,11 @@
     </p>
 </p>
 
-<center>
+<div align="center">
 
 [English](README.md) | Русский
 
-</center>
+</div>
 
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
