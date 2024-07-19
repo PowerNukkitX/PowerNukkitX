@@ -540,4 +540,7 @@ public interface PacketHandler {
 
     default void handle(VideoStreamConnectPacket pk) {
     }
+
+    default void handle(SettingsCommandPacket pk) {
+    }
 }

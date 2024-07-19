@@ -74,6 +74,7 @@ public final class DataPacketManager {
                 new RespawnProcessor(),
                 new BookEditProcessor(),
                 new SetDifficultyProcessor(),
+                new SettingsCommandProcessor(),
                 new PositionTrackingDBClientRequestProcessor(),
                 new ShowCreditsProcessor(),
                 new TickSyncProcessor(),
