@@ -253,6 +253,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.TOGGLE_CRAFTER_SLOT_REQUEST, ToggleCrafterSlotRequestPacket.class);
         this.register0(ProtocolInfo.SET_PLAYER_INVENTORY_OPTIONS_PACKET, SetPlayerInventoryOptionsPacket.class);
         this.register0(ProtocolInfo.SET_HUD, SetHudPacket.class);
+        this.register0(ProtocolInfo.SETTINGS_COMMAND_PACKET, SettingsCommandPacket.class);
         this.PACKET_POOL.trim();
     }
 }
