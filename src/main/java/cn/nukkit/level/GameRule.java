@@ -36,8 +36,9 @@ public enum GameRule {
     PLAYERS_SLEEPING_PERCENTAGE("playersSleepingPercentage"),
     DO_LIMITED_CRAFTING("dolimitedcrafting"),
     RESPAWN_BLOCKS_EXPLODE("respawnBlocksExplode"),
-    SHOW_BORDER_EFFECT("showBorderEffect");
-
+    SHOW_BORDER_EFFECT("showBorderEffect"),
+    RECIPES_UNLOCK("recipesUnlock"),
+    SHOW_DAYS_PLAYED("showDaysPlayed");
 
     public static final GameRule[] EMPTY_ARRAY = new GameRule[0];
     private final String name;
