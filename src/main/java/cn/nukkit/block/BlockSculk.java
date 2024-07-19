@@ -30,12 +30,12 @@ public class BlockSculk extends BlockSolid {
 
     @Override
     public double getHardness() {
-        return 0.6;
+        return 0.2;
     }
 
     @Override
     public double getResistance() {
-        return 0.6;
+        return 0.2;
     }
 
     @Override
@@ -64,5 +64,15 @@ public class BlockSculk extends BlockSolid {
         } else {
             return Item.EMPTY_ARRAY;
         }
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
+    }
+
+    @Override
+    public int getDropExp() {
+        return 1;
     }
 }
