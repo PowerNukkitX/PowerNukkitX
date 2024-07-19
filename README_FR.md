@@ -84,7 +84,9 @@ N'hésitez pas à consulter la [page des problèmes](https://github.com/PowerNuk
 
 [![Contributeurs](https://contrib.rocks/image?repo=PowerNukkitX/PowerNukkitX)](https://github.com/PowerNukkitX/PowerNukkitX/graphs/contributors)
 
-Donnez une ⭐️ si ce projet vous a aidé !
+## Donnez une ⭐️ si ce projet vous a aidé !
+
+[![Stargazers over time](https://starchart.cc/PowerNukkitX/PowerNukkitX.svg?variant=adaptive)]()
 
 ## 📝 Informations de licence
 

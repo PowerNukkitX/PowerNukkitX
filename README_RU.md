@@ -87,8 +87,9 @@ Contributions, issues и feature requests приветствуются!<br />П�
   <img src="https://contrib.rocks/image?repo=PowerNukkitX/PowerNukkitX" />
 </a>
 
-Поставьте ⭐️ если этот проект помог вам!
+## Поставьте ⭐️ если этот проект помог вам!
 
+[![Stargazers over time](https://starchart.cc/PowerNukkitX/PowerNukkitX.svg?variant=adaptive)]()
 
 ## 📝 Информация о лицензии
 
