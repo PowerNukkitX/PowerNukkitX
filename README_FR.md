@@ -1,6 +1,5 @@
 <p align="right">
-Langue:
-<img src="https://github.com/PowerNukkitX/PowerNukkitX/tree/master/.github/img/lang/fr.svg">
+<img src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/fr.svg">
 </p>
 
 <p align="center">
@@ -44,10 +43,10 @@ Langue:
 
 <p align="center">
       <a href="README.md">
-        <img src="https://github.com/PowerNukkitX/PowerNukkitX/tree/master/.github/img/lang/eng.svg">
+        <img src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/eng.svg">
       </a>
       <a href="README_RU.md">
-        <img src="https://github.com/PowerNukkitX/PowerNukkitX/tree/master/.github/img/lang/ru.svg">
+        <img src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/ru.svg">
       </a>
 </p>
 
