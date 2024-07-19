@@ -7,6 +7,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
+import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.EntityFlag;
@@ -184,7 +185,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 } else if (target instanceof Player) {
                     if ((((Player) target).getGamemode() & 0x01) > 0) {
                         return;
-                    } else if (!player.getServer().getPropertyBoolean("pvp")) {
+                    } else if (!player.getServer().getProperties().get(ServerPropertiesKeys.PVP, true)) {
                         return;
                     }
                 }

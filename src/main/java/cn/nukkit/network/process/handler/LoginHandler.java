@@ -1,6 +1,7 @@
 package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Server;
+import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.connection.util.EncryptionUtils;
@@ -50,7 +51,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         var chainData = ClientChainData.read(pk);
 
         //verify the player if enable the xbox-auth
-        if (!chainData.isXboxAuthed() && server.getPropertyBoolean("xbox-auth")) {
+        if (!chainData.isXboxAuthed() && server.getProperties().get(ServerPropertiesKeys.XBOX_AUTH, true)) {
             log.debug("disconnection due to notAuthenticated");
             session.close("disconnectionScreen.notAuthenticated");
             return;
