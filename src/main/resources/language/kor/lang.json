@@ -1046,6 +1046,7 @@
   "nukkit.level.loadError": "\"{%0}\" 레벨을 불러올 수 없습니다: {%1}",
   "nukkit.level.notFound": "\"{%0}\" 레벨을 찾을 수 없습니다",
   "nukkit.level.preparing": "\"{%0}\" 레벨을 준비 중입니다",
+  "nukkit.level.init": "레벨 \"{%0}\" 로딩이 완료되었습니다",
   "nukkit.level.tickError": "\"{%0}\" 레벨의 틱을 처리할 수 없습니다: {%1}",
   "nukkit.level.unloading": "\"{%0}\" 레벨을 언로드 중입니다",
   "nukkit.level.updating": "\"{%0}\"의 레벨 데이터가 오래되었습니다, 포맷을 변환합니다",

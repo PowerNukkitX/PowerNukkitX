@@ -1051,6 +1051,7 @@
   "nukkit.level.loadError": "无法加载世界 \"{%0}\"：{%1}",
   "nukkit.level.notFound": "无法找到世界 \"{%0}",
   "nukkit.level.preparing": "准备世界 \"{%0}\" 中",
+  "nukkit.level.init": "级别“{%0}”的加载已完成",
   "nukkit.level.tickError": "更新世界 \"{%0}\" 时出现错误：{%1}",
   "nukkit.level.unloading": "正在卸载世界 \"{%0}",
   "nukkit.level.updating": "发现旧的世界 \"{%0}\"，正在转换格式",

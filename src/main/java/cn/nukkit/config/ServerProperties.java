@@ -49,10 +49,10 @@ public class ServerProperties {
         defaults.put(ServerPropertiesKeys.FORCE_RESOURCES.toString(), false);
         defaults.put(ServerPropertiesKeys.FORCE_RESOURCES_ALLOW_CLIENT_PACKS.toString(), false);
         defaults.put(ServerPropertiesKeys.XBOX_AUTH.toString(), true);
-        defaults.put(ServerPropertiesKeys.CHECK_LOGIN_TIME.toString(), 60);
+        defaults.put(ServerPropertiesKeys.CHECK_LOGIN_TIME.toString(), false);
         defaults.put(ServerPropertiesKeys.DISABLE_AUTO_BUG_REPORT.toString(), false);
         defaults.put(ServerPropertiesKeys.ALLOW_SHADED.toString(), false);
-        defaults.put(ServerPropertiesKeys.SERVER_AUTHORITATIVE_MOVEMENT.toString(), true);
+        defaults.put(ServerPropertiesKeys.SERVER_AUTHORITATIVE_MOVEMENT.toString(), "server-auth");
         defaults.put(ServerPropertiesKeys.NETWORK_ENCRYPTION.toString(), true);
         return defaults;
     }
@@ -69,8 +69,51 @@ public class ServerProperties {
         return this.properties.getRootSection();
     }
 
-    public <T> T get(ServerPropertiesKeys key, T defaultValue) {
-        return this.properties.get(key.name(), defaultValue);
+    public Integer get(ServerPropertiesKeys key, Integer defaultValue) {
+        Object value = this.properties.get(key.toString());
+        if (value instanceof String) {
+            try {
+                return Integer.parseInt((String) value);
+            } catch (NumberFormatException e) {
+                // Log the error or handle it as needed
+                return defaultValue;
+            }
+        } else if (value instanceof Integer) {
+            return (Integer) value;
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public String get(ServerPropertiesKeys key, String defaultValue) {
+        Object value = this.properties.get(key.toString());
+        if (value instanceof String) {
+            return (String) value;
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public Boolean get(ServerPropertiesKeys key, Boolean defaultValue) {
+        Object value = this.properties.get(key.toString());
+        if (value instanceof String) {
+            return Boolean.parseBoolean((String) value);
+        } else if (value instanceof Boolean) {
+            return (Boolean) value;
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public Long get(ServerPropertiesKeys key, Long defaultValue) {
+        Object value = this.properties.get(key.toString());
+        if (value instanceof String) {
+            return Long.parseLong((String) value);
+        } else if (value instanceof Long) {
+            return (Long) value;
+        } else {
+            return defaultValue;
+        }
     }
 
     public void set(String key, Object value) {

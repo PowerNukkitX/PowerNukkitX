@@ -347,8 +347,10 @@ public class Level implements Metadatable {
             throw new LevelException("Constructor of " + provider + " failed", e);
         }
         LevelProvider levelProvider = requireProvider();
+        //to be changed later as the Dim0 will be deleted to be put in a config.json file of the world
+        String levelNameDim = levelProvider.getName().replace(" Dim0", "");
+        log.info(this.server.getLanguage().tr("nukkit.level.preparing", TextFormat.GREEN + levelNameDim + TextFormat.RESET));
         levelProvider.updateLevelName(name);
-        log.info(this.server.getLanguage().tr("nukkit.level.preparing", TextFormat.GREEN + levelProvider.getName() + TextFormat.WHITE));
 
         if (generatorConfig.enableAntiXray()) {
             this.setAntiXrayEnabled(true);
@@ -525,7 +527,7 @@ public class Level implements Metadatable {
         if (!getChunk(spawn.getChunkX(), spawn.getChunkZ(), true).getChunkState().canSend()) {
             this.generateChunk(spawn.getChunkX(), spawn.getChunkZ());
         }
-        log.info("Loading is complete for level \"{}\"", TextFormat.GREEN + this.getName());
+        log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getFolderName() + TextFormat.RESET));
     }
 
     public Generator getGenerator() {

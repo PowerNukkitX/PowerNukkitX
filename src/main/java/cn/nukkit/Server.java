@@ -318,7 +318,7 @@ public class Server {
         }
         this.baseLang = new BaseLang(chooseLanguage);
         this.baseLangCode = mapInternalLang(chooseLanguage);
-        log.info("Loading {} ...", TextFormat.GREEN + "nukkit.yml" + TextFormat.WHITE);
+        log.info("Loading {}...", TextFormat.GREEN + "nukkit.yml" + TextFormat.RESET);
         this.settings = ConfigManager.create(ServerSettings.class, it -> {
             it.withConfigurer(new YamlSnakeYamlConfigurer());
             it.withBindFile(config);
@@ -338,7 +338,7 @@ public class Server {
             Nukkit.setLogLevel(targetLevel);
         }
 
-        log.info("Loading {} ...", TextFormat.GREEN + "server.properties" + TextFormat.WHITE);
+        log.info("Loading {}...", TextFormat.GREEN + "server.properties" + TextFormat.RESET);
         this.properties = new ServerProperties(this.dataPath);
 
         var isShaded = StartArgUtils.isShaded();
@@ -406,7 +406,7 @@ public class Server {
             this.properties.get(ServerPropertiesKeys.DIFFICULTY, 3);
         }
 
-        log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + " (" + this.getGitCommit() + ")" + TextFormat.WHITE, this.getApiVersion()));
+        log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + TextFormat.RESET + " (" + TextFormat.YELLOW + this.getGitCommit() + TextFormat.RESET + ")" + TextFormat.RESET, this.getApiVersion()));
         log.info(this.getLanguage().tr("nukkit.server.license"));
         this.consoleSender = new ConsoleCommandSender();
 

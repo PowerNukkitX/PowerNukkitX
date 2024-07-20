@@ -1046,6 +1046,7 @@
   "nukkit.level.loadError": "ワールド \"{%0}\" を読み込むことができませんでした: {%1}",
   "nukkit.level.notFound": "ワールド \"{%0}\" が見つかりません",
   "nukkit.level.preparing": "ワールド \"{%0}\" を読み込んでいます",
+  "nukkit.level.init": "レベル \"{%0}\" の読み込みが完了しました",
   "nukkit.level.tickError": "ワールド \"{%0}\" をチェックすることができませんでした: {%1}",
   "nukkit.level.unloading": "ワールド\"{%0}\"の書き込みをしています",
   "nukkit.level.updating": "古いレベルのデータが見つかりました \"{%0}\" フォーマットを変換しています。",
