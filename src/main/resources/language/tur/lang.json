@@ -1046,6 +1046,7 @@
   "nukkit.level.loadError": "\"{%0}\" dünyası yüklenemedi: {%1}",
   "nukkit.level.notFound": "\"{%0}\" adlı dünya bulunamadı",
   "nukkit.level.preparing": "\"{%0}\" adlı dünya hazırlanıyor",
+  "nukkit.level.init": "Nivel \"{%0}\" için yükleme tamamlandı",
   "nukkit.level.tickError": "\"{%0}\" dünyası yüklenemedi: {%1}",
   "nukkit.level.unloading": "\"{%0}\" adlı dünyanın yüklemesi kaldırılıyor",
   "nukkit.level.updating": "\"{%0}\" için eski dünya verisi bulundu, format dönüştürülüyor",
