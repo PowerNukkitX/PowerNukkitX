@@ -87,11 +87,6 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
     }
 
     @Override
-    public boolean isSolid() {
-        return false;
-    }
-
-    @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
