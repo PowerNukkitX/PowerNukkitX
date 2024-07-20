@@ -25,7 +25,7 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
         if (this.isBaby()) {
             return 0.268f;
         }
-        return 0.67f;
+        return 0.402f;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
         if (this.isBaby()) {
             return 0.268f;
         }
-        return 0.67f;
+        return 0.402f;
     }
 
     @Override
@@ -46,11 +46,10 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
         return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_RABBIT : Item.RABBIT)), Item.get(Item.RABBIT_HIDE), Item.get(Item.RABBIT_FOOT)};
     }
 
-    
-
     @Override
     protected void initEntity() {
-        this.setMaxHealth(10);
         super.initEntity();
+        this.setMaxHealth(3);
+        this.setScale(0.65f);
     }
 }

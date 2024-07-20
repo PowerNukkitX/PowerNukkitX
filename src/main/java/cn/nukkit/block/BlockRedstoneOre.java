@@ -49,7 +49,7 @@ public class BlockRedstoneOre extends BlockOre {
             }
 
             return new Item[]{
-                    new ItemRedstone(0, count)
+                    Item.get(Item.REDSTONE, 0, count)
             };
         } else {
             return Item.EMPTY_ARRAY;

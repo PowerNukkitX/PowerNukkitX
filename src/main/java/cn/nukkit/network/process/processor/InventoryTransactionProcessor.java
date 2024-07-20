@@ -269,7 +269,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         if (player.level.useItemOn(blockVector.asVector3(), i, face, useItemData.clickPos.x, useItemData.clickPos.y, useItemData.clickPos.z, player) != null) {
                             return;
                         }
-                    } else if (player.getInventory().getItemInHand().equals(useItemData.itemInHand)) {
+                    } else if (player.getInventory().getItemInHand().equals(useItemData.itemInHand, true, false)) {
                         Item i = player.getInventory().getItemInHand();
                         Item oldItem = i.clone();
                         //TODO: Implement adventure mode checks
