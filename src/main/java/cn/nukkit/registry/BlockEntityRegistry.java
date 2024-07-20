@@ -50,6 +50,7 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
         register0(END_GATEWAY, BlockEntityEndGateway.class);
         register0(COMMAND_BLOCK, BlockEntityCommandBlock.class);
         register0(SCULK_SENSOR, BlockEntitySculkSensor.class);
+        register0(CALIBRATED_SCULK_SENSOR, BlockEntityCalibratedSculkSensor.class);
         register0(SCULK_CATALYST, BlockEntitySculkCatalyst.class);
         register0(SCULK_SHRIEKER, BlockEntitySculkShrieker.class);
         register0(STRUCTURE_BLOCK, BlockEntityStructBlock.class);

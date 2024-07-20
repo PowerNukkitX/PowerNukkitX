@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Server;
+import cn.nukkit.block.BlockCalibratedSculkSensor;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockSculkSensor;
 import cn.nukkit.level.Position;
@@ -9,12 +10,7 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationListener;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-/**
- * @author Kevims KCodeYT
- */
-
-
-public class BlockEntitySculkSensor extends BlockEntity implements VibrationListener {
+public class BlockEntityCalibratedSculkSensor extends BlockEntity implements VibrationListener {
 
     protected int lastActiveTime = Server.getInstance().getTick();
     protected VibrationEvent lastVibrationEvent;
@@ -26,7 +22,7 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
     protected boolean waitForVibration = false;
 
 
-    public BlockEntitySculkSensor(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityCalibratedSculkSensor(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -52,7 +48,7 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
 
     @Override
     public boolean isBlockEntityValid() {
-        return getLevelBlock().getId() == BlockID.SCULK_SENSOR;
+        return getLevelBlock().getId() == BlockID.CALIBRATED_SCULK_SENSOR;
     }
 
     @Override
@@ -62,7 +58,7 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
 
     @Override
     public boolean onVibrationOccur(VibrationEvent event) {
-        if (this.isBlockEntityValid() && level.getServer().getSettings().levelSettings().enableRedstone() && !(this.level.getBlock(event.source()) instanceof BlockSculkSensor)) {
+        if (this.isBlockEntityValid() && level.getServer().getSettings().levelSettings().enableRedstone() && !(this.level.getBlock(event.source()) instanceof BlockCalibratedSculkSensor)) {
             boolean canBeActive = (Server.getInstance().getTick() - lastActiveTime) > 40 && !waitForVibration;
             if (canBeActive) waitForVibration = true;
             return canBeActive;
@@ -80,7 +76,7 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
 
             calPower();
 
-            var block = (BlockSculkSensor) this.getBlock();
+            var block = (BlockCalibratedSculkSensor) this.getBlock();
             block.setPhase(1);
             block.updateAroundRedstone();
             level.scheduleUpdate(block, 41);
@@ -123,3 +119,4 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
         power = Math.max(1, 15 - (int) Math.floor(event.source().distance(this.add(0.5, 0.5, 0.5)) * 1.875));
     }
 }
+

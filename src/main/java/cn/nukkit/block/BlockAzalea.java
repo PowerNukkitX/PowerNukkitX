@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author LoboMetalurgico
  * @since 13/06/2021
  */
-public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+public class BlockAzalea extends BlockSolid implements BlockFlowerPot.FlowerPotBlock {
     public static final BlockProperties PROPERTIES = new BlockProperties(AZALEA);
 
     @Override
