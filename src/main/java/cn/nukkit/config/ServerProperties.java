@@ -107,8 +107,17 @@ public class ServerProperties {
 
     public Long get(ServerPropertiesKeys key, Long defaultValue) {
         Object value = this.properties.get(key.toString());
-        if (value instanceof String) {
-            return Long.parseLong((String) value);
+        if (value instanceof String stringValue) {
+            if (!stringValue.isEmpty()) {
+                try {
+                    return Long.parseLong(stringValue);
+                } catch (NumberFormatException e) {
+                    // Log the error or handle it as needed
+                    return defaultValue;
+                }
+            } else {
+                return defaultValue;
+            }
         } else if (value instanceof Long) {
             return (Long) value;
         } else {
