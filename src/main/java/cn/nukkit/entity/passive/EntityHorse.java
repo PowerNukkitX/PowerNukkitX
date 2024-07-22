@@ -377,7 +377,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         mountEntity(player);
-        return true;
+        return false;
     }
 
     @Override

@@ -75,7 +75,7 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
             }
             BlockFace blockFace = getBlockFace();
             if (blockFace.getAxis().isHorizontal() && getSide(blockFace).getId() != getFruitId()) {
-                setBlockFace(null);
+                setBlockFace(BlockFace.DOWN);
                 getLevel().setBlock(this, this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -102,7 +102,7 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
             }
             return Level.BLOCK_UPDATE_RANDOM;
         }
-        
+
         growFruit();
         return Level.BLOCK_UPDATE_RANDOM;
     }
@@ -159,4 +159,6 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
     public BlockCropsStem clone() {
         return (BlockCropsStem) super.clone();
     }
+
+
 }

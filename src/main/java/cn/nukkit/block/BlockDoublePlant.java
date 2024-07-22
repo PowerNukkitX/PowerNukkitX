@@ -60,7 +60,7 @@ public abstract class BlockDoublePlant extends BlockFlowable {
             } else {
                 // Bottom
                 if (!isSupportValid(down())) {
-                    this.getLevel().useBreakOn(this);
+                    this.getLevel().setBlock(this, Block.get(BlockID.AIR), false, true);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }
             }
@@ -90,7 +90,7 @@ public abstract class BlockDoublePlant extends BlockFlowable {
             return !plant.isTopHalf();
         }
         return switch (support.getId()) {
-            case GRASS_BLOCK, DIRT, PODZOL, FARMLAND, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
+            case GRASS_BLOCK, DIRT, PODZOL, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
             default -> false;
         };
     }
