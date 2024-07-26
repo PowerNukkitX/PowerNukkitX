@@ -63,17 +63,18 @@ public class ItemChorusFruit extends ItemFood {
             }
             y++; // Back up to non solid
 
+            Block blockBelow = level.getBlock(new Vector3(x, y, z));
             Block blockUp = level.getBlock(new Vector3(x, y + 1, z));
             Block blockUp2 = level.getBlock(new Vector3(x, y + 2, z));
 
-            if (blockUp.isSolid() || blockUp instanceof BlockLiquid ||
+            if (!blockBelow.isSolid() || blockUp.isSolid() || blockUp instanceof BlockLiquid ||
                     blockUp2.isSolid() || blockUp2 instanceof BlockLiquid) {
                 continue;
             }
 
             // Sounds are broadcast at both source and destination
             level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_TELEPORT);
-            player.teleport(new Vector3(x + 0.5, y + 1, z + 0.5), PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT);
+            player.teleport(new Vector3(x + 0.5, y + 1.5, z + 0.5), PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT);
             level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_TELEPORT);
 
             break;
