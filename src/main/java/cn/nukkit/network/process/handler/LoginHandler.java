@@ -12,12 +12,16 @@ import cn.nukkit.network.protocol.ServerToClientHandshakePacket;
 import cn.nukkit.network.protocol.types.PlayerInfo;
 import cn.nukkit.network.protocol.types.XboxLivePlayerInfo;
 import cn.nukkit.utils.ClientChainData;
+import cn.nukkit.utils.Platform;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,6 +74,26 @@ public class LoginHandler extends BedrockSessionPacketHandler {
             session.setAddress(new InetSocketAddress(chainData.getWaterdogIP(), session.getAddress().getPort()));
             Server.getInstance().getNetwork().replaceSessionAddress(oldAddress, session.getAddress(), session);
         }
+
+        //Verify if the titleId match with DeviceOs
+        int predictedDeviceOS = getPredictedDeviceOS(chainData);
+        if(predictedDeviceOS != chainData.getDeviceOS()) {
+            session.close("Packet handling error");
+            return;
+        }
+
+        //Verify if the language is valid
+        if(!isValidLanguage(chainData.getLanguageCode())) {
+            session.close("Packet handling error");
+            return;
+        }
+
+        //Verify if the GameVersion has valid format
+        if(chainData.getGameVersion().split("\\.").length != 3) {
+            session.close("Packet handling error");
+            return;
+        }
+
 
         var uniqueId = pk.clientUUID;
 
@@ -132,6 +156,43 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         } else {
             session.getMachine().fire(SessionState.RESOURCE_PACK);
         }
+    }
+
+    private int getPredictedDeviceOS(ClientChainData chainData) {
+        String titleId = chainData.getTitleId();
+        return switch (titleId) {
+            case "896928775":
+                yield Platform.WINDOWS_10.getId();
+            case "2047319603":
+                yield Platform.SWITCH.getId();
+            case "1739947436":
+                yield Platform.ANDROID.getId();
+            case "2044456598":
+                yield Platform.PLAYSTATION.getId();
+            case "1828326430":
+                yield Platform.XBOX_ONE.getId();
+            case "1810924247":
+                yield Platform.IOS.getId();
+            default:
+                yield 0;
+        };
+    }
+
+    private boolean isValidLanguage(String language) {
+        Set<String> languagesCode = new HashSet<>();
+        Collections.addAll(languagesCode,
+                "fr_CA", "fr_FR",
+                "bg_BG", "cs_CZ", "da_DK",
+                "de_DE", "el_GR", "en_GB",
+                "en_US", "es_ES", "es_MX",
+                "fi_FI", "hu_HU", "id_ID",
+                "it_IT", "ja_JP", "ko_KR",
+                "nb_NO", "nl_NL", "pl_PL",
+                "pt_BR", "pt_PT", "ru_RU",
+                "sk_SK", "sv_SE", "tr_TR", "uk_UA",
+                "zh_CN", "zh_TW"
+        );
+        return languagesCode.contains(language);
     }
 
     private void enableEncryption(ClientChainData data) {

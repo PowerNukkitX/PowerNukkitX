@@ -34,6 +34,7 @@ public class LoginPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.LOGIN_PACKET;
 
     public String username;
+    public String titleId;
     public int protocol;
     public UUID clientUUID;
     public long clientId;
@@ -83,6 +84,7 @@ public class LoginPacket extends DataPacket {
                 JsonObject extra = chainMap.get("extraData").getAsJsonObject();
                 if (extra.has("displayName")) this.username = extra.get("displayName").getAsString();
                 if (extra.has("identity")) this.clientUUID = UUID.fromString(extra.get("identity").getAsString());
+                if (extra.has("titleId")) this.titleId = extra.get("titleId").getAsString();
             }
         }
     }

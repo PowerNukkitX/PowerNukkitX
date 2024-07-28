@@ -109,6 +109,10 @@ public final class ClientChainData implements LoginChainData {
         }
     }
 
+    public String getTitleId() {
+        return titleId;
+    }
+
     private boolean xboxAuthed;
 
     @Override
@@ -178,6 +182,7 @@ public final class ClientChainData implements LoginChainData {
     private String username;
     private UUID clientUUID;
     private String xuid;
+    private String titleId;
 
     private static ECPublicKey generateKey(String base64) throws NoSuchAlgorithmException, InvalidKeySpecException {
         return (ECPublicKey) KeyFactory.getInstance("EC").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(base64)));
@@ -273,6 +278,7 @@ public final class ClientChainData implements LoginChainData {
                 if (extra.has("displayName")) this.username = extra.get("displayName").getAsString();
                 if (extra.has("identity")) this.clientUUID = UUID.fromString(extra.get("identity").getAsString());
                 if (extra.has("XUID")) this.xuid = extra.get("XUID").getAsString();
+                if (extra.has("titleId")) this.titleId = extra.get("titleId").getAsString();
             }
             if (chainMap.has("identityPublicKey"))
                 this.identityPublicKey = chainMap.get("identityPublicKey").getAsString();
