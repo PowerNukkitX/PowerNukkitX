@@ -6,6 +6,7 @@ import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.TextPacket;
+import cn.nukkit.network.protocol.types.DisconnectFailReason;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,8 +23,9 @@ public class TextProcessor extends DataPacketProcessor<TextPacket> {
             log.warn("{} sent TextPacket with invalid xuid : {} != {}", playerHandle.getUsername(), pk.xboxUserId, playerHandle.getLoginChainData().getXUID());
             return;
         }
-        
+
         if(pk.parameters.length > 1) {
+            playerHandle.player.close("Packet handling error");
             return;
         }
 
