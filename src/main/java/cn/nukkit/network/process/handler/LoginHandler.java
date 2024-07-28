@@ -9,6 +9,7 @@ import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ServerToClientHandshakePacket;
+import cn.nukkit.network.protocol.types.InputMode;
 import cn.nukkit.network.protocol.types.PlayerInfo;
 import cn.nukkit.network.protocol.types.XboxLivePlayerInfo;
 import cn.nukkit.utils.ClientChainData;
@@ -94,14 +95,37 @@ public class LoginHandler extends BedrockSessionPacketHandler {
             return;
         }
 
+        //Verify if the CurrentInputMode is valid
+        int CurrentInputMode = chainData.getCurrentInputMode();
+        if(
+                CurrentInputMode <= InputMode.UNDEFINED.getOrdinal() ||
+                CurrentInputMode >= InputMode.COUNT.getOrdinal()
+        ) {
+            log.debug("disconnection due to invalid input mode");
+            session.close("Packet handling error");
+            return;
+        }
+
+        //Verify if the DefaultInputMode is valid
+        int DefaultInputMode = chainData.getDefaultInputMode();
+        if(
+                DefaultInputMode <= InputMode.UNDEFINED.getOrdinal() ||
+                DefaultInputMode >= InputMode.COUNT.getOrdinal()
+        ) {
+            log.debug("disconnection due to invalid input mode");
+            session.close("Packet handling error");
+            return;
+        }
 
         var uniqueId = pk.clientUUID;
-
         var username = pk.username;
         Matcher usernameMatcher = playerNamePattern.matcher(username);
 
-        if (!usernameMatcher.matches() || Objects.equals(username, "rcon")
-                || Objects.equals(username, "console")) {
+        if (
+                !usernameMatcher.matches() ||
+                username.equalsIgnoreCase("rcon") ||
+                username.equalsIgnoreCase("console")
+        ) {
             log.debug("disconnection due to invalidName");
             session.close("disconnectionScreen.invalidName");
             return;
