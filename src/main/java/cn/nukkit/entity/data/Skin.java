@@ -25,7 +25,7 @@ public class Skin {
     public static final String GEOMETRY_CUSTOM = convertLegacyGeometryName("geometry.humanoid.custom");
     public static final String GEOMETRY_CUSTOM_SLIM = convertLegacyGeometryName("geometry.humanoid.customSlim");
     private static final int PIXEL_SIZE = 4;
-    public static final int SINGLE_SKIN_SIZE = 64 * 32 * PIXEL_SIZE;
+    public static final int SINGLE_SKIN_SIZE = 32 * 32 * PIXEL_SIZE;
     public static final int DOUBLE_SKIN_SIZE = 64 * 64 * PIXEL_SIZE;
     public static final int SKIN_128_64_SIZE = 128 * 64 * PIXEL_SIZE;
     public static final int SKIN_128_128_SIZE = 128 * 128 * PIXEL_SIZE;
@@ -77,7 +77,7 @@ public class Skin {
 
     private boolean isValidSkin() {
         return skinId != null && !skinId.trim().isEmpty() && skinId.length() < 100 &&
-                skinData != null && skinData.width >= 64 && skinData.height >= 32 &&
+                skinData != null && skinData.width >= 32 && skinData.height >= 32 &&
                 skinData.data.length >= SINGLE_SKIN_SIZE &&
                 (playFabId == null || playFabId.length() < 100) &&
                 (capeId == null || capeId.length() < 100) &&
