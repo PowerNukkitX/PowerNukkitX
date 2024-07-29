@@ -1,4 +1,4 @@
-package cn.nukkit.utils;
+package cn.nukkit.network.protocol.types;
 
 import lombok.Getter;
 
