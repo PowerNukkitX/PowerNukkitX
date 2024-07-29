@@ -6,6 +6,7 @@ import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.event.player.PlayerCreationEvent;
+import cn.nukkit.event.server.DataPacketDecodeEvent;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
@@ -20,15 +21,7 @@ import cn.nukkit.network.process.handler.LoginHandler;
 import cn.nukkit.network.process.handler.ResourcePackHandler;
 import cn.nukkit.network.process.handler.SessionStartHandler;
 import cn.nukkit.network.process.handler.SpawnResponseHandler;
-import cn.nukkit.network.protocol.AvailableCommandsPacket;
-import cn.nukkit.network.protocol.CreativeContentPacket;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.DisconnectPacket;
-import cn.nukkit.network.protocol.NetworkSettingsPacket;
-import cn.nukkit.network.protocol.PacketHandler;
-import cn.nukkit.network.protocol.PlayStatusPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.SetCommandsEnabledPacket;
+import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import cn.nukkit.network.protocol.types.PlayerInfo;
 import cn.nukkit.plugin.InternalPlugin;
@@ -289,6 +282,22 @@ public class BedrockSession {
     protected void onPacket(BedrockPacketWrapper wrapper) {
         DataPacket packet = wrapper.getPacket();
         this.logInbound(packet);
+
+        DataPacketDecodeEvent ev = new DataPacketDecodeEvent(this.getPlayer(), wrapper);
+        Server.getInstance().getPluginManager().callEvent(ev);
+
+        int predictMaxBuffer = switch (ev.getPacketId()) {
+            case ProtocolInfo.LOGIN_PACKET -> 10_000_000;
+            case ProtocolInfo.PLAYER_SKIN_PACKET -> 5_000_000;
+            default -> 25_000;
+        };
+        if(ev.getPacketBuffer().length() > predictMaxBuffer) {
+            ev.setCancelled();
+        }
+
+        if (ev.isCancelled())
+            return;
+
         if (this.nettyThreadOwned.get()) {
             var c = this.consumer.get();
             if (c != null) {
