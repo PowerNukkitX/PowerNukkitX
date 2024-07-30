@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.utils.UUIDValidator;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -28,7 +29,12 @@ public class ResourcePackClientResponsePacket extends DataPacket {
         this.packEntries = new Entry[byteBuf.readShortLE()];
         for (int i = 0; i < this.packEntries.length; i++) {
             String[] entry = byteBuf.readString().split("_");
-            this.packEntries[i] = new Entry(UUID.fromString(entry[0]), entry[1]);
+
+            if(UUIDValidator.isValidUUID(entry[0])) {
+                // Literally a server crash if spammed.
+                // @Zwuiix
+                this.packEntries[i] = new Entry(UUID.fromString(entry[0]), entry[1]);
+            }
         }
     }
 
