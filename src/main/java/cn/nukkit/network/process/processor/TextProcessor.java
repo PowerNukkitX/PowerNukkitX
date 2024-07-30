@@ -25,7 +25,7 @@ public class TextProcessor extends DataPacketProcessor<TextPacket> {
         }
 
         if(pk.parameters.length > 1) {
-            playerHandle.player.close("Packet handling error");
+            playerHandle.player.close("§cPacket handling error");
             return;
         }
 

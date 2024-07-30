@@ -34,6 +34,8 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.PlatformDependent;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.ApiStatus;
@@ -65,6 +67,8 @@ public class BedrockSession {
     private PlayerInfo info;
     protected @Nullable PacketHandler packetHandler;
     private InetSocketAddress address;
+    @Getter
+    protected boolean authenticated = false;
 
 
     public BedrockSession(BedrockPeer peer, int subClientId) {
@@ -532,6 +536,10 @@ public class BedrockSession {
         if (enable) {
             this.syncAvailableCommands();
         }
+    }
+
+    public void setAuthenticated() {
+        authenticated = true;
     }
 
     public @NotNull Server getServer() {
