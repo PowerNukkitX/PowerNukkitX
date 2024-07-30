@@ -591,4 +591,8 @@ public abstract class BaseInventory implements Inventory {
     public InventoryType getType() {
         return type;
     }
+
+    public boolean isValidSlot(int index) {
+        return index >= 0 && index < this.slots.size();
+    }
 }
