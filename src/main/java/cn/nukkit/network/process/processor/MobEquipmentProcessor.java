@@ -6,6 +6,8 @@ import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.enchantment.loot.EnchantmentLootDigging;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -18,6 +20,27 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MobEquipmentPacket pk) {
         Player player = playerHandle.player;
         if (!player.spawned || !player.isAlive()) {
+            return;
+        }
+
+        if(pk.hotbarSlot < 0 || pk.hotbarSlot > 8) {
+            player.close("§cPacket handling error");
+            return;
+        }
+        if(pk.item.getEnchantments().length > Enchantment.getEnchantments().length) { // Last Enchant Id
+            player.close("§cPacket handling error");
+            return;
+        }
+        if(pk.item.getLore().length > 100) {
+            player.close("§cPacket handling error");
+            return;
+        }
+        if(pk.item.getCanPlaceOn().size() > 250) {
+            player.close("§cPacket handling error");
+            return;
+        }
+        if(pk.item.getCanDestroy().size() > 250) {
+            player.close("§cPacket handling error");
             return;
         }
 
