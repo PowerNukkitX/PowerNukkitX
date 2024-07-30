@@ -3,6 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFrame;
 import cn.nukkit.block.BlockLectern;
@@ -24,10 +25,12 @@ import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MovePlayerPacket;
 import cn.nukkit.network.protocol.PlayerActionPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+@Slf4j
 public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerActionPacket pk) {
@@ -41,6 +44,20 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
         BlockFace face = BlockFace.fromIndex(pk.face);
 
         switch (pk.action) {
+            case PlayerActionPacket.ACTION_START_BREAK -> {
+                if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
+                    return;
+                }
+
+                playerHandle.onBlockBreakStart(pos, face);
+            }
+            case PlayerActionPacket.ACTION_ABORT_BREAK, PlayerActionPacket.ACTION_STOP_BREAK -> {
+                if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
+                    return;
+                }
+
+                playerHandle.onBlockBreakAbort(pos);
+            }
             case PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK -> {
                 // Used by client to get book from lecterns and items from item frame in creative mode since 1.20.70
                 Block blockLectern = playerHandle.player.getLevel().getBlock(pos);
@@ -53,7 +70,13 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 if (player.getServer().getServerAuthoritativeMovement() > 0) break;//ServerAuthorInput not use player
                 playerHandle.onBlockBreakComplete(new BlockVector3(pk.x, pk.y, pk.z), face);
             }
-            case PlayerActionPacket.ACTION_CONTINUE_BREAK -> playerHandle.onBlockBreakContinue(pos, face);
+            case PlayerActionPacket.ACTION_CONTINUE_BREAK -> {
+                if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
+                    return;
+                }
+
+                playerHandle.onBlockBreakContinue(pos, face);
+            }
             case PlayerActionPacket.ACTION_GET_UPDATED_BLOCK -> {
                 //TODO
             }
@@ -67,9 +90,73 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 }
                 playerHandle.respawn();
             }
+            case PlayerActionPacket.ACTION_JUMP -> {
+                if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
+                    return;
+                }
+
+                PlayerJumpEvent playerJumpEvent = new PlayerJumpEvent(player);
+                player.getServer().getPluginManager().callEvent(playerJumpEvent);
+            }
+            case PlayerActionPacket.ACTION_START_SPRINT -> {
+                if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
+                    return;
+                }
+
+                PlayerToggleSprintEvent playerToggleSprintEvent = new PlayerToggleSprintEvent(player, true);
+                player.getServer().getPluginManager().callEvent(playerToggleSprintEvent);
+                if (playerToggleSprintEvent.isCancelled()) {
+                    player.sendData(player);
+                } else {
+                    player.setSprinting(true);
+                }
+            }
+            case PlayerActionPacket.ACTION_STOP_SPRINT -> {
+                if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
+                    return;
+                }
+
+                var playerToggleSprintEvent = new PlayerToggleSprintEvent(player, false);
+                player.getServer().getPluginManager().callEvent(playerToggleSprintEvent);
+                if (playerToggleSprintEvent.isCancelled()) {
+                    player.sendData(player);
+                } else {
+                    player.setSprinting(false);
+                }
+            }
+            case PlayerActionPacket.ACTION_START_SNEAK -> {
+                if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
+                    return;
+                }
+
+                PlayerToggleSneakEvent playerToggleSneakEvent = new PlayerToggleSneakEvent(player, true);
+                player.getServer().getPluginManager().callEvent(playerToggleSneakEvent);
+                if (playerToggleSneakEvent.isCancelled()) {
+                    player.sendData(player);
+                } else {
+                    player.setSneaking(true);
+                }
+            }
+            case PlayerActionPacket.ACTION_STOP_SNEAK -> {
+                if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
+                    return;
+                }
+
+                var playerToggleSneakEvent = new PlayerToggleSneakEvent(player, false);
+                player.getServer().getPluginManager().callEvent(playerToggleSneakEvent);
+                if (playerToggleSneakEvent.isCancelled()) {
+                    player.sendData(player);
+                } else {
+                    player.setSneaking(false);
+                }
+            }
             case PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK ->
                     player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_NORMAL);
             case PlayerActionPacket.ACTION_START_GLIDE -> {
+                if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
+                    return;
+                }
+
                 PlayerToggleGlideEvent playerToggleGlideEvent = new PlayerToggleGlideEvent(player, true);
                 player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
                 if (playerToggleGlideEvent.isCancelled()) {
@@ -79,12 +166,44 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 }
             }
             case PlayerActionPacket.ACTION_STOP_GLIDE -> {
+                if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
+                    return;
+                }
+
                 var playerToggleGlideEvent = new PlayerToggleGlideEvent(player, false);
                 player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
                 if (playerToggleGlideEvent.isCancelled()) {
                     player.sendData(player);
                 } else {
                     player.setGliding(false);
+                }
+            }
+            case PlayerActionPacket.ACTION_START_SWIMMING -> {
+                if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
+                    return;
+                }
+
+                PlayerToggleSwimEvent ptse = new PlayerToggleSwimEvent(player, true);
+                player.getServer().getPluginManager().callEvent(ptse);
+
+                if (ptse.isCancelled()) {
+                    player.sendData(player);
+                } else {
+                    player.setSwimming(true);
+                }
+            }
+            case PlayerActionPacket.ACTION_STOP_SWIMMING -> {
+                if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
+                    return;
+                }
+
+                var ev = new PlayerToggleSwimEvent(player, false);
+                player.getServer().getPluginManager().callEvent(ev);
+
+                if (ev.isCancelled()) {
+                    player.sendData(player);
+                } else {
+                    player.setSwimming(false);
                 }
             }
             case PlayerActionPacket.ACTION_START_SPIN_ATTACK -> {
@@ -133,6 +252,37 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                     player.setSpinAttacking(false);
                 }
             }
+            case PlayerActionPacket.ACTION_START_FLYING -> {
+                if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
+                    return;
+                }
+
+                if (!player.getServer().getAllowFlight() && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
+                    player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
+                    break;
+                }
+                PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, true);
+                player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
+                if (playerToggleFlightEvent.isCancelled()) {
+                    player.getAdventureSettings().update();
+                } else {
+                    player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
+                }
+            }
+            case PlayerActionPacket.ACTION_STOP_FLYING -> {
+                if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
+                    return;
+                }
+
+                var playerToggleFlightEvent = new PlayerToggleFlightEvent(player, false);
+                player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
+                if (playerToggleFlightEvent.isCancelled()) {
+                    player.getAdventureSettings().update();
+                } else {
+                    player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
+                }
+            }
+            default -> log.warn("{} sent invalid action id {}", player.getName(), pk.action);
         }
     }
 
