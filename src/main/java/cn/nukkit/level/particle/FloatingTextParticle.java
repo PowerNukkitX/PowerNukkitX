@@ -23,7 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class FloatingTextParticle extends Particle {
     private static final Skin EMPTY_SKIN = new Skin();
-    private static final SerializedImage SKIN_DATA = SerializedImage.fromLegacy(new byte[8192]);
+    private static final SerializedImage SKIN_DATA = SerializedImage.fromLegacy(new byte[4096]);
 
     static {
         EMPTY_SKIN.setSkinData(SKIN_DATA);
