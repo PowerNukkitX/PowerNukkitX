@@ -76,7 +76,7 @@ public final class DataPacketManager {
                 new LevelSoundEventProcessorV1(),
                 new LevelSoundEventProcessorV2(),
                 */
-                new PlayerHotbarProcessor(),
+                //new PlayerHotbarProcessor(),
                 new ServerSettingsRequestProcessor(),
                 new RespawnProcessor(),
                 new BookEditProcessor(),
