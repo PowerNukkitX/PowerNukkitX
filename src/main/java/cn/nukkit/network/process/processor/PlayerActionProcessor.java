@@ -282,6 +282,9 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                     player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
                 }
             }
+            case PlayerActionPacket.ACTION_START_ITEM_USE_ON, PlayerActionPacket.ACTION_STOP_ITEM_USE_ON -> {
+                // TODO
+            }
             default -> log.warn("{} sent invalid action id {}", player.getName(), pk.action);
         }
     }
