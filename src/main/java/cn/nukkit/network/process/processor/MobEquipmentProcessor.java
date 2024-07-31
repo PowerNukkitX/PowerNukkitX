@@ -27,21 +27,23 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
             player.close("§cPacket handling error");
             return;
         }
-        if(pk.item.getEnchantments().length > Enchantment.getEnchantments().length) { // Last Enchant Id
-            player.close("§cPacket handling error");
-            return;
-        }
-        if(pk.item.getLore().length > 100) {
-            player.close("§cPacket handling error");
-            return;
-        }
-        if(pk.item.getCanPlaceOn().size() > 250) {
-            player.close("§cPacket handling error");
-            return;
-        }
-        if(pk.item.getCanDestroy().size() > 250) {
-            player.close("§cPacket handling error");
-            return;
+        if(!pk.item.isNull()) {
+            if (pk.item.getEnchantments().length > Enchantment.getEnchantments().length) { // Last Enchant Id
+                player.close("§cPacket handling error");
+                return;
+            }
+            if (pk.item.getLore().length > 100) {
+                player.close("§cPacket handling error");
+                return;
+            }
+            if (pk.item.getCanPlaceOn().size() > 250) {
+                player.close("§cPacket handling error");
+                return;
+            }
+            if (pk.item.getCanDestroy().size() > 250) {
+                player.close("§cPacket handling error");
+                return;
+            }
         }
 
         Inventory inv = player.getWindowById(pk.windowId);
