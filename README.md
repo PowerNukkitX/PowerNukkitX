@@ -89,8 +89,9 @@ the [contributing guide](.github/CONTRIBUTING.md).
   <img src="https://contrib.rocks/image?repo=PowerNukkitX/PowerNukkitX" />
 </a>
 
-Give a ⭐️ if this project helped you!
+## Give a ⭐️ if this project helped you!
 
+[![Stargazers over time](https://starchart.cc/PowerNukkitX/PowerNukkitX.svg?variant=adaptive)]()
 
 ## 📝 License Information
 
