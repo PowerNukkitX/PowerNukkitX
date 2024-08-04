@@ -10,8 +10,10 @@ import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ModalFormResponsePacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
+@Slf4j
 public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormResponsePacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ModalFormResponsePacket pk) {
@@ -19,6 +21,12 @@ public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormRes
         if (!player.spawned || !player.isAlive()) {
             return;
         }
+        
+        if(pk.data.length() > 1024) {
+            player.close("§cPacket handling error");
+            return;
+        }
+        
         if (playerHandle.getFormWindows().containsKey(pk.formId)) {
             FormWindow window = playerHandle.getFormWindows().remove(pk.formId);
             window.setResponse(pk.data.trim());
@@ -43,7 +51,7 @@ public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormRes
             //Set back new settings if not been cancelled
             if (!event.isCancelled() && window instanceof FormWindowCustom formWindowCustom)
                 formWindowCustom.setElementsFromResponse();
-        }
+        } else log.warn("{} sent unknown form id {}", player.getName(), pk.formId);
 
     }
 
