@@ -2261,7 +2261,1295 @@
         }
     ],
     "potionMixes": [
-        {
+      {
+        "input": {
+          "data": 1,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 1,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 2,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 2,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 3,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 3,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 4,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 4,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 5,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 5,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 6,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 6,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 7,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 7,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 8,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 8,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 9,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 9,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 10,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 10,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 11,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 11,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 12,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 12,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 13,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 13,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 14,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 14,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 15,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 15,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 16,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 16,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 17,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 17,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 18,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 18,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 19,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 19,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 20,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 20,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 21,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 21,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 22,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 22,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 23,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 23,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 24,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 24,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 25,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 25,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 26,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 26,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 27,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 27,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 28,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 28,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 29,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 29,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 30,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 30,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 31,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 31,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 32,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 32,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 33,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 33,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 34,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 34,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 35,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 35,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 36,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 36,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 37,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 37,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 38,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 38,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 39,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 39,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 40,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 40,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 41,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 41,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 42,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 42,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 43,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 43,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 44,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 44,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 45,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 45,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 46,
+          "item": "minecraft:potion"
+        },
+        "output": {
+          "data": 46,
+          "item": "minecraft:splash_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:gunpowder"
+        }
+      },
+      {
+        "input": {
+          "data": 1,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 1,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 2,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 2,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 3,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 3,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 4,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 4,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 5,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 5,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 6,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 6,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 7,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 7,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 8,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 8,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 9,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 9,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 10,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 10,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 11,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 11,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 12,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 12,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 13,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 13,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 14,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 14,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 15,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 15,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 16,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 16,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 17,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 17,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 18,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 18,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 19,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 19,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 20,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 20,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 21,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 21,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 22,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 22,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 23,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 23,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 24,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 24,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 25,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 25,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 26,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 26,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 27,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 27,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 28,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 28,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 29,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 29,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 30,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 30,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 31,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 31,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 32,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 32,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 33,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 33,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 34,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 34,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 35,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 35,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 36,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 36,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 37,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 37,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 38,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 38,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 39,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 39,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 40,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 40,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 41,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 41,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 42,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 42,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 43,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 43,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breat"
+        }
+      },
+      {
+        "input": {
+          "data": 44,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 44,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 45,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 45,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
+        "input": {
+          "data": 46,
+          "item": "minecraft:splash_potion"
+        },
+        "output": {
+          "data": 46,
+          "item": "minecraft:lingering_potion"
+        },
+        "reagent": {
+          "data": 0,
+          "item": "minecraft:dragon_breath"
+        }
+      },
+      {
             "input": {
                 "data": 4,
                 "item": "minecraft:potion"
