@@ -4241,6 +4241,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastTeleportMessage = Pair.of(from, System.currentTimeMillis());
 
         Location to = location;
+        to.y += 9.894371033e-6;
         //event
         if (cause != null) {
             PlayerTeleportEvent event = new PlayerTeleportEvent(this, from, to, cause);
