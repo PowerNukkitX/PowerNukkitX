@@ -96,17 +96,6 @@ jobs:
           mv build/powernukkitx-${{ steps.read_version.outputs.git-build-version }}-all.jar build/powernukkitx-shaded.jar
           tar -vczf build/libs.tar.gz build/libs
 
-      - name: Calculate hashes
-        run: |
-          cd build
-          mkdir -p hash/sha256 hash/md5
-          sha256sum powernukkitx-shaded.jar > hash/sha256/powernukkitx-shaded.jar.sha256
-          sha256sum powernukkitx.jar > hash/sha256/powernukkitx.jar.sha256
-          sha256sum libs.tar.gz > hash/sha256/libs.tar.gz.sha256
-          md5sum powernukkitx-shaded.jar > hash/md5/powernukkitx-shaded.jar.md5
-          md5sum powernukkitx.jar > hash/md5/powernukkitx.jar.md5
-          md5sum libs.tar.gz > hash/md5/libs.tar.gz.md5
-
       - name: Archive PNX Core
         uses: actions/upload-artifact@v4
         if: success()
@@ -128,11 +117,21 @@ jobs:
           name: PowerNukkitX-Shaded
           path: build/powernukkitx-shaded.jar
 
-      - name: Download PNX CLI
+      - name: Archive PNX Scripts
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: PowerNukkitX-Scripts
+          path: |
+            build/start.sh
+            build/start.bat
+            build/start.cmd
+            build/start.ps1
+
+      - name: Archive PNX RUN
         run: |
           cd build
-          wget -O cli.jar https://github.com/PowerNukkitX/PNX-CLI/releases/download/0.2.4/PNX-CLI-0.2.4.jar
-          zip -q -r powernukkitx-run.zip powernukkitx.jar cli.jar libs
+          zip -q -r powernukkitx-run.zip powernukkitx.jar libs start.sh start.bat start.cmd
           ls -l
 
       - name: Release latest build
@@ -146,7 +145,7 @@ jobs:
           body_mrkdwn: |
             This is the **latest version of PowerNukkitX**, built from the latest source. 
             (_Please note that the date on GitHub might appear outdated due to certain limitations._)
-            **Corresponding commit:** <https://github.com/powernukkitx/powernukkitx/commit/${{ github.sha }}>_
+            **Corresponding commit:** _<https://github.com/powernukkitx/powernukkitx/commit/${{ github.sha }}>_
             
             > [!NOTE]
             > If you encounter any issues, please report them directly on our [Discord](https://discord.gg/apwd7uauZg) or in the [GitHub Issues](https://github.com/powernukkitx/powernukkitx/issues) tab.
@@ -160,17 +159,6 @@ jobs:
             4. Enjoy the latest features and bug fixes !
 
             Thank you for using PowerNukkitX ⭐
-          assets: build/powernukkitx-run.zip;build/powernukkitx.jar;build/libs.tar.gz;build/hash/sha256/powernukkitx.jar.sha256|text/plain;build/hash/sha256/libs.tar.gz.sha256|text/plain;build/hash/md5/powernukkitx.jar.md5|text/plain;build/hash/md5/libs.tar.gz.md5|text/plain;
+          assets: build/powernukkitx-run.zip;build/powernukkitx.jar;build/libs.tar.gz;build/powernukkitx-shaded.jar;build/start.sh;build/start.bat;build/start.cmd;build/start.ps1;
           replace_assets: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Release new version
-        uses: ncipollo/release-action@v1
-        if: success() && contains(github.event.commits[0].message, '+u') && github.repository == 'PowerNukkitX/PowerNukkitX' && contains(github.ref_name, 'master')
-        with:
-          artifacts: "build/powernukkitx-run.zip,build/powernukkitx.jar,build/libs.tar.gz,build/hash/sha256/powernukkitx.jar.sha256,build/hash/sha256/libs.tar.gz.sha256,build/hash/md5/powernukkitx.jar.md5,build/hash/md5/libs.tar.gz.md5"
-          tag: ${{ steps.read_version.outputs.git-build-version }}
-          body: ${{ steps.read_version.outputs.git-build-version }} - ${{ github.ref_name }} - ${{ github.sha }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit: ${{ github.ref_name }}
-          allowUpdates: true
