@@ -1960,6 +1960,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.rawSocketAddress.getPort();
     }
 
+
+    /**
+     * Close all form windows
+     */
+    public void closeFormWindows() {
+        this.formWindows.clear();
+        this.dataPacket(new ClientboundCloseFormPacket());
+    }
+
+
     /**
      * 得到原始套接字地址
      *

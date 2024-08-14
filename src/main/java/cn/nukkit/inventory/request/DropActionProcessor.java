@@ -74,7 +74,8 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
                                         item.getCustomName(),
                                         item.getDamage()
                                 )
-                        )
+                        ),
+                        action.getSource().getContainerName()
                 )
         ));
     }

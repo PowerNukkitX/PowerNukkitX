@@ -30,7 +30,7 @@ public abstract class Particle extends Vector3 {
     public static final int TYPE_SNOWBALL_POOF = dynamic(15);
     public static final int TYPE_LARGE_EXPLODE = dynamic(16);
     public static final int TYPE_HUGE_EXPLOSION = dynamic(17);
-    public static final int TYPE_BREEZE_WIND_EXPLOSION = dynamic(18);
+    public static final int BREEZE_WIND_EXPLOSION = dynamic(18);
     public static final int TYPE_MOB_FLAME = dynamic(19);
     public static final int TYPE_HEART = dynamic(20);
     public static final int TYPE_TERRAIN = dynamic(21);
@@ -104,6 +104,8 @@ public abstract class Particle extends Vector3 {
     public static final int TYPE_WHITE_SMOKE = dynamic(89);
     public static final int TYPE_VAULT_CONNECTION = dynamic(90);
     public static final int TYPE_WIND_EXPLOSION = dynamic(91);
+    public static final int TYPE_WOLF_ARMOR_BREAK = dynamic(92);
+    public static final int TYPE_OMINOUS_ITEM_SPAWNER = dynamic(93);
 
 
     public Particle() {

@@ -6,6 +6,7 @@ import lombok.Value;
 public class CraftGrindstoneAction implements ItemStackRequestAction {
     int recipeNetworkId;
     int repairCost;
+    int numberOfRequestedCrafts;
 
     @Override
     public ItemStackRequestActionType getType() {

@@ -7,13 +7,11 @@ import cn.nukkit.utils.random.RandomSourceProvider;
 
 import java.util.Objects;
 
-import static cn.nukkit.block.property.CommonBlockProperties.UPPER_BLOCK_BIT;
-
 public class LegacyTallGrass {
     private static final BlockState[] places = {//total 106
             BlockShortGrass.PROPERTIES.getDefaultState(), //50
             BlockTallGrass.PROPERTIES.getDefaultState(),// 30
-            BlockYellowFlower.PROPERTIES.getDefaultState(),// 10
+            BlockDandelion.PROPERTIES.getDefaultState(),// 10
             BlockPoppy.PROPERTIES.getDefaultState(),// 10
             BlockAzureBluet.PROPERTIES.getDefaultState(),// 5
             BlockOxeyeDaisy.PROPERTIES.getDefaultState(),// 5

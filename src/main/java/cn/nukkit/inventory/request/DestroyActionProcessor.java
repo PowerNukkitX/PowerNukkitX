@@ -72,7 +72,8 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
                                         item.getCustomName(),
                                         item.getDamage()
                                 )
-                        )
+                        ),
+                        action.getSource().getContainerName()
                 )
         ));
     }

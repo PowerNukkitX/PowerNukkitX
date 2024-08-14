@@ -22,7 +22,7 @@ public class BlockMangroveDoubleSlab extends BlockDoubleSlabBase {
 
     @Override
     public String getSlabName() {
-        return "Double Mangrove Slab";
+        return "Mangrove";
     }
 
     @Override

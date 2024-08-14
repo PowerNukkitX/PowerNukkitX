@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol.types;
 
+import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.utils.OptionalBoolean;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,8 @@ public class CameraPreset {
     private Vector3f pos;
     private Float yaw;
     private Float pitch;
+    private Vector2f viewOffset;
+    private Float radius;
     private CameraAudioListener listener;
     private OptionalBoolean playEffect;
 }

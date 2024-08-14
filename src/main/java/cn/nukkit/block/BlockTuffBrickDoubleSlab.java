@@ -26,16 +26,6 @@ public class BlockTuffBrickDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public double getResistance() {
-        return 6;
-    }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -53,5 +43,10 @@ public class BlockTuffBrickDoubleSlab extends BlockDoubleSlabBase {
     @Override
     public BlockState getSingleSlab() {
         return BlockTuffBrickSlab.PROPERTIES.getDefaultState();
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
     }
 }

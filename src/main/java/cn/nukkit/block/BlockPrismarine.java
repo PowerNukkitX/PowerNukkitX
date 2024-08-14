@@ -10,10 +10,11 @@ import static cn.nukkit.block.property.CommonBlockProperties.PRISMARINE_BLOCK_TY
 
 
 public class BlockPrismarine extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(PRISMARINE, PRISMARINE_BLOCK_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(PRISMARINE);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -50,11 +51,19 @@ public class BlockPrismarine extends BlockSolid {
     }
 
     public void setPrismarineBlockType(PrismarineBlockType prismarineBlockType) {
-        setPropertyValue(PRISMARINE_BLOCK_TYPE, prismarineBlockType);
+        this.blockstate = switch (prismarineBlockType) {
+            case BRICKS -> BlockPrismarineBricks.PROPERTIES.getDefaultState();
+            case DARK -> BlockDarkPrismarine.PROPERTIES.getDefaultState();
+            case DEFAULT -> PROPERTIES.getDefaultState();
+        };
     }
 
     public PrismarineBlockType getPrismarineBlockType() {
-        return getPropertyValue(PRISMARINE_BLOCK_TYPE);
+        return switch (this) {
+            case BlockPrismarineBricks ignored -> PrismarineBlockType.BRICKS;
+            case BlockDarkPrismarine ignored -> PrismarineBlockType.DARK;
+            default -> PrismarineBlockType.DEFAULT;
+        };
     }
 
     @Override
@@ -69,6 +78,10 @@ public class BlockPrismarine extends BlockSolid {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this.getProperties().getBlockState(PRISMARINE_BLOCK_TYPE.createValue(getPropertyValue(PRISMARINE_BLOCK_TYPE))).toBlock());
+        return switch (this.getPrismarineBlockType()) {
+            case BRICKS -> new ItemBlock(BlockPrismarineBricks.PROPERTIES.getDefaultState().toBlock());
+            case DARK -> new ItemBlock(BlockDarkPrismarine.PROPERTIES.getDefaultState().toBlock());
+            case DEFAULT -> new ItemBlock(this.getProperties().getDefaultState().toBlock());
+        };
     }
 }

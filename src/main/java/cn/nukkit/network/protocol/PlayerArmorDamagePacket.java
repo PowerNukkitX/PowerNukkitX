@@ -13,7 +13,7 @@ import java.util.Set;
 public class PlayerArmorDamagePacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.PLAYER_ARMOR_DAMAGE_PACKET;
     public final Set<PlayerArmorDamageFlag> flags = EnumSet.noneOf(PlayerArmorDamageFlag.class);
-    public final int[] damage = new int[4];
+    public final int[] damage = new int[5];
 
     @Override
     public int pid() {
@@ -23,7 +23,7 @@ public class PlayerArmorDamagePacket extends DataPacket {
     @Override
     public void decode(HandleByteBuf byteBuf) {
         int flagsval = byteBuf.readByte();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             if ((flagsval & (1 << i)) != 0) {
                 this.flags.add(PlayerArmorDamageFlag.values()[i]);
                 this.damage[i] = byteBuf.readVarInt();
@@ -48,7 +48,8 @@ public class PlayerArmorDamagePacket extends DataPacket {
         HELMET,
         CHESTPLATE,
         LEGGINGS,
-        BOOTS
+        BOOTS,
+        BODY
     }
 
     public void handle(PacketHandler handler) {

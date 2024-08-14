@@ -27,7 +27,7 @@ public class BlockPolishedTuffDoubleSlab extends BlockDoubleSlabBase {
 
     @Override
     public String getSlabName() {
-        return "Polished Tuff Slab";
+        return "Polished Tuff";
     }
 
     @Override

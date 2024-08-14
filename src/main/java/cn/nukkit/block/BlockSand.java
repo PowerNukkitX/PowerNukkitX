@@ -10,9 +10,11 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public class BlockSand extends BlockFallable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SAND, CommonBlockProperties.SAND_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(SAND);
+
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -41,7 +43,11 @@ public class BlockSand extends BlockFallable {
 
     @Override
     public String getName() {
-        return getPropertyValue(CommonBlockProperties.SAND_TYPE) == SandType.NORMAL ? "Sand" : "Red Sand";
+        if (this instanceof BlockRedSand) {
+            return "Red Sand";
+        } else {
+            return "Sand";
+        }
     }
 
 }

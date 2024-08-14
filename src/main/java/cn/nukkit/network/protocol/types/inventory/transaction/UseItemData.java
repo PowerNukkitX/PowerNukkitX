@@ -21,4 +21,17 @@ public class UseItemData implements TransactionData {
     public Vector3 playerPos;
     public Vector3f clickPos;
     public int blockRuntimeId;
+    public PredictedResult clientInteractPrediction;
+    public TriggerType triggerType;
+
+    public enum PredictedResult {
+        FAILURE,
+        SUCCESS
+    }
+
+    public enum TriggerType {
+        UNKNOWN,
+        PLAYER_INPUT,
+        SIMULATION_TICK
+    }
 }

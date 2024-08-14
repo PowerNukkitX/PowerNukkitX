@@ -2,6 +2,7 @@ package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.SwapAction;
@@ -57,7 +58,8 @@ public class SwapActionProcessor implements ItemStackRequestActionProcessor<Swap
                                         destinationItem.getCustomName(),
                                         destinationItem.getDamage()
                                 )
-                        )
+                        ),
+                        action.getSource().getContainerName()
                 ),
                 new ItemStackResponseContainer(
                         destination.getSlotType(destinationSlot),
@@ -70,7 +72,8 @@ public class SwapActionProcessor implements ItemStackRequestActionProcessor<Swap
                                         sourceItem.getCustomName(),
                                         sourceItem.getDamage()
                                 )
-                        )
+                        ),
+                        action.getDestination().getContainerName()
                 )
         ));
     }

@@ -3,6 +3,7 @@ package cn.nukkit.inventory.request;
 import cn.nukkit.Player;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.MineBlockAction;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
@@ -51,7 +52,8 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
                                         itemInHand.getCustomName(),
                                         itemInHand.getDamage()
                                 )
-                        )
+                        ),
+                        null
                 );
         return context.success(List.of(itemStackResponseSlot));
     }

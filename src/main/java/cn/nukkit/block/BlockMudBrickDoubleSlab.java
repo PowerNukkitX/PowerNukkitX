@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockMudBrickDoubleSlab extends BlockDoubleSlabBase {
@@ -21,12 +22,17 @@ public class BlockMudBrickDoubleSlab extends BlockDoubleSlabBase {
 
     @Override
     public String getSlabName() {
-        return "Double Mud Brick Slab";
+        return "Double Mud Brick";
     }
 
     @Override
     public BlockState getSingleSlab() {
         return BlockMudBrickSlab.PROPERTIES.getDefaultState();
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
     }
 
 }

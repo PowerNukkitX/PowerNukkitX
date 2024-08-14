@@ -6,12 +6,16 @@ import cn.nukkit.camera.instruction.CameraInstruction;
 import cn.nukkit.camera.instruction.impl.ClearInstruction;
 import cn.nukkit.camera.instruction.impl.FadeInstruction;
 import cn.nukkit.camera.instruction.impl.SetInstruction;
+import cn.nukkit.camera.instruction.impl.TargetInstruction;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.utils.OptionalBoolean;
+import cn.nukkit.utils.OptionalValue;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.awt.*;
+import java.util.Optional;
 
 
 @ToString
@@ -21,6 +25,8 @@ public class CameraInstructionPacket extends DataPacket {
     public SetInstruction setInstruction;
     public FadeInstruction fadeInstruction;
     public ClearInstruction clearInstruction;
+    private TargetInstruction targetInstruction;
+    private OptionalBoolean removeTarget = OptionalBoolean.empty();
 
     @Override
     public int pid() {
@@ -51,6 +57,16 @@ public class CameraInstructionPacket extends DataPacket {
             byteBuf.writeNotNull(f.getTime(), t -> this.writeTimeData(byteBuf, t));
             byteBuf.writeNotNull(f.getColor(), c -> this.writeColor(byteBuf, c));
         });
+        if (this.targetInstruction == null) {
+            byteBuf.writeBoolean(false);
+        } else {
+            byteBuf.writeBoolean(true);
+            if (this.targetInstruction.getTargetCenterOffset() != null) {
+                byteBuf.writeVector3f(this.targetInstruction.getTargetCenterOffset());
+            }
+            byteBuf.writeLongLE(this.targetInstruction.getUniqueEntityId());
+        }
+        byteBuf.writeOptional(OptionalValue.of(this.removeTarget.isPresent()), byteBuf::writeBoolean);
     }
 
     public void setInstruction(CameraInstruction instruction) {

@@ -21,6 +21,7 @@ public class SetEntityLinkPacket extends DataPacket {
     public EntityLink.Type type;
     public byte immediate;
     public boolean riderInitiated = false;
+    public float vehicleAngularVelocity;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -29,12 +30,13 @@ public class SetEntityLinkPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
+
         byteBuf.writeEntityUniqueId(this.vehicleUniqueId);
         byteBuf.writeEntityUniqueId(this.riderUniqueId);
         byteBuf.writeByte((byte) this.type.ordinal());
         byteBuf.writeByte(this.immediate);
         byteBuf.writeBoolean(this.riderInitiated);
+        byteBuf.writeFloatLE(this.vehicleAngularVelocity);
     }
 
     @Override

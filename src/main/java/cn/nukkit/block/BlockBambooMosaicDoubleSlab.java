@@ -32,16 +32,6 @@ public class BlockBambooMosaicDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
     public int getBurnChance() {
         return 5;
     }

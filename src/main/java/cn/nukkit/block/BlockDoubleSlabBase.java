@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemTool;
 
 public abstract class BlockDoubleSlabBase extends BlockSolid {
     public BlockDoubleSlabBase(BlockState blockState) {
@@ -19,6 +20,18 @@ public abstract class BlockDoubleSlabBase extends BlockSolid {
     @Override
     public Item toItem() {
         return Block.get(getSingleSlab()).toItem();
+    }
+
+    public abstract int getToolType();
+
+    @Override
+    public double getHardness() {
+        return 2;
+    }
+
+    @Override
+    public double getResistance() {
+        return getToolType() == ItemTool.TYPE_PICKAXE ? 6 : 3;
     }
 
     protected boolean isCorrectTool(Item item) {

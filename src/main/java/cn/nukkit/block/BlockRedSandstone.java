@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 26. 11. 2016
  */
 public class BlockRedSandstone extends BlockSandstone {
-    public static final BlockProperties PROPERTIES = new BlockProperties(RED_SANDSTONE, CommonBlockProperties.SAND_STONE_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(RED_SANDSTONE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -23,13 +23,4 @@ public class BlockRedSandstone extends BlockSandstone {
         super(blockstate);
     }
 
-    @Override
-    public String getName() {
-        return switch (getSandstoneType()) {
-            case CUT -> "Cut Red Sandstone";
-            case DEFAULT -> "Red Sandstone";
-            case HEIROGLYPHS -> "Chiseled Red Sandstone";
-            case SMOOTH -> "Smooth Red Sandstone";
-        };
-    }
 }

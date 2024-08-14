@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.utils.OptionalValue;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -24,6 +25,8 @@ public class ChangeDimensionPacket extends DataPacket {
 
     public boolean respawn;
 
+    private Integer loadingScreenId = null;
+
     @Override
     public void decode(HandleByteBuf byteBuf) {
 
@@ -35,6 +38,10 @@ public class ChangeDimensionPacket extends DataPacket {
         byteBuf.writeVarInt(this.dimension);
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeBoolean(this.respawn);
+        byteBuf.writeBoolean(this.loadingScreenId != null);
+        if (this.loadingScreenId != null) {
+            byteBuf.writeIntLE(this.loadingScreenId);
+        }
     }
 
     @Override

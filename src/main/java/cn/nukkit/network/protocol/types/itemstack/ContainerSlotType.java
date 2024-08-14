@@ -65,7 +65,9 @@ public enum ContainerSlotType {
     CURSOR(59),
     CREATED_OUTPUT(60),
     SMITHING_TABLE_TEMPLATE(61),
-    CRAFTER_BLOCK_CONTAINER(62);
+    CRAFTER_BLOCK_CONTAINER(62),
+    DYNAMIC_CONTAINER(63);
+
     private final int id;
     private static final Int2ObjectArrayMap<ContainerSlotType> VALUES = new Int2ObjectArrayMap<>();
 

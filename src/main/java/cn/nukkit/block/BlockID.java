@@ -54,6 +54,8 @@ public interface BlockID {
 
     String ANDESITE = "minecraft:andesite";
 
+    String ANDESITE_SLAB = "minecraft:andesite_slab";
+
     String ANDESITE_STAIRS = "minecraft:andesite_stairs";
 
     String ANVIL = "minecraft:anvil";
@@ -238,6 +240,8 @@ public interface BlockID {
 
     String BRICK_BLOCK = "minecraft:brick_block";
 
+    String BRICK_DOUBLE_SLAB = "minecraft:brick_double_slab";
+
     String BRICK_SLAB = "minecraft:brick_slab";
 
     String BRICK_STAIRS = "minecraft:brick_stairs";
@@ -352,6 +356,8 @@ public interface BlockID {
 
     String CHEST = "minecraft:chest";
 
+    String CHIPPED_ANVIL = "minecraft:chipped_anvil";
+
     String CHISELED_BOOKSHELF = "minecraft:chiseled_bookshelf";
 
     String CHISELED_COPPER = "minecraft:chiseled_copper";
@@ -361,6 +367,14 @@ public interface BlockID {
     String CHISELED_NETHER_BRICKS = "minecraft:chiseled_nether_bricks";
 
     String CHISELED_POLISHED_BLACKSTONE = "minecraft:chiseled_polished_blackstone";
+
+    String CHISELED_QUARTZ_BLOCK = "minecraft:chiseled_quartz_block";
+
+    String CHISELED_RED_SANDSTONE = "minecraft:chiseled_red_sandstone";
+
+    String CHISELED_SANDSTONE = "minecraft:chiseled_sandstone";
+
+    String CHISELED_STONE_BRICKS = "minecraft:chiseled_stone_bricks";
 
     String CHISELED_TUFF = "minecraft:chiseled_tuff";
 
@@ -389,6 +403,8 @@ public interface BlockID {
     String COBBLED_DEEPSLATE_WALL = "minecraft:cobbled_deepslate_wall";
 
     String COBBLESTONE = "minecraft:cobblestone";
+
+    String COBBLESTONE_DOUBLE_SLAB = "minecraft:cobblestone_double_slab";
 
     String COBBLESTONE_SLAB = "minecraft:cobblestone_slab";
 
@@ -433,6 +449,8 @@ public interface BlockID {
     String CRACKED_NETHER_BRICKS = "minecraft:cracked_nether_bricks";
 
     String CRACKED_POLISHED_BLACKSTONE_BRICKS = "minecraft:cracked_polished_blackstone_bricks";
+
+    String CRACKED_STONE_BRICKS = "minecraft:cracked_stone_bricks";
 
     String CRAFTER = "minecraft:crafter";
 
@@ -482,6 +500,10 @@ public interface BlockID {
 
     String CUT_COPPER_STAIRS = "minecraft:cut_copper_stairs";
 
+    String CUT_RED_SANDSTONE = "minecraft:cut_red_sandstone";
+
+    String CUT_SANDSTONE = "minecraft:cut_sandstone";
+
     String CYAN_CANDLE = "minecraft:cyan_candle";
 
     String CYAN_CANDLE_CAKE = "minecraft:cyan_candle_cake";
@@ -503,6 +525,10 @@ public interface BlockID {
     String CYAN_TERRACOTTA = "minecraft:cyan_terracotta";
 
     String CYAN_WOOL = "minecraft:cyan_wool";
+
+    String DAMAGED_ANVIL = "minecraft:damaged_anvil";
+
+    String DANDELION = "minecraft:dandelion";
 
     String DARK_OAK_BUTTON = "minecraft:dark_oak_button";
 
@@ -533,6 +559,10 @@ public interface BlockID {
     String DARK_OAK_TRAPDOOR = "minecraft:dark_oak_trapdoor";
 
     String DARK_OAK_WOOD = "minecraft:dark_oak_wood";
+
+    String DARK_PRISMARINE = "minecraft:dark_prismarine";
+
+    String DARK_PRISMARINE_SLAB = "minecraft:dark_prismarine_slab";
 
     String DARK_PRISMARINE_STAIRS = "minecraft:dark_prismarine_stairs";
 
@@ -625,6 +655,8 @@ public interface BlockID {
     String DIAMOND_ORE = "minecraft:diamond_ore";
 
     String DIORITE = "minecraft:diorite";
+
+    String DIORITE_SLAB = "minecraft:diorite_slab";
 
     String DIORITE_STAIRS = "minecraft:diorite_stairs";
 
@@ -910,6 +942,8 @@ public interface BlockID {
 
     String END_STONE = "minecraft:end_stone";
 
+    String END_STONE_BRICK_SLAB = "minecraft:end_stone_brick_slab";
+
     String ENDER_CHEST = "minecraft:ender_chest";
 
     String EXPOSED_CHISELED_COPPER = "minecraft:exposed_chiseled_copper";
@@ -985,6 +1019,8 @@ public interface BlockID {
     String GOLDEN_RAIL = "minecraft:golden_rail";
 
     String GRANITE = "minecraft:granite";
+
+    String GRANITE_SLAB = "minecraft:granite_slab";
 
     String GRANITE_STAIRS = "minecraft:granite_stairs";
 
@@ -1208,7 +1244,37 @@ public interface BlockID {
 
     String LEVER = "minecraft:lever";
 
-    String LIGHT_BLOCK = "minecraft:light_block";
+    String LIGHT_BLOCK_0 = "minecraft:light_block_0";
+
+    String LIGHT_BLOCK_1 = "minecraft:light_block_1";
+
+    String LIGHT_BLOCK_2 = "minecraft:light_block_2";
+
+    String LIGHT_BLOCK_3 = "minecraft:light_block_3";
+
+    String LIGHT_BLOCK_4 = "minecraft:light_block_4";
+
+    String LIGHT_BLOCK_5 = "minecraft:light_block_5";
+
+    String LIGHT_BLOCK_6 = "minecraft:light_block_6";
+
+    String LIGHT_BLOCK_7 = "minecraft:light_block_7";
+
+    String LIGHT_BLOCK_8 = "minecraft:light_block_8";
+
+    String LIGHT_BLOCK_9 = "minecraft:light_block_9";
+
+    String LIGHT_BLOCK_10 = "minecraft:light_block_10";
+
+    String LIGHT_BLOCK_11 = "minecraft:light_block_11";
+
+    String LIGHT_BLOCK_12 = "minecraft:light_block_12";
+
+    String LIGHT_BLOCK_13 = "minecraft:light_block_13";
+
+    String LIGHT_BLOCK_14 = "minecraft:light_block_14";
+
+    String LIGHT_BLOCK_15 = "minecraft:light_block_15";
 
     String LIGHT_BLUE_CANDLE = "minecraft:light_blue_candle";
 
@@ -1376,7 +1442,11 @@ public interface BlockID {
 
     String MOSSY_COBBLESTONE = "minecraft:mossy_cobblestone";
 
+    String MOSSY_COBBLESTONE_SLAB = "minecraft:mossy_cobblestone_slab";
+
     String MOSSY_COBBLESTONE_STAIRS = "minecraft:mossy_cobblestone_stairs";
+
+    String MOSSY_STONE_BRICKS = "minecraft:mossy_stone_bricks";
 
     String MOSSY_STONE_BRICK_STAIRS = "minecraft:mossy_stone_brick_stairs";
 
@@ -1419,6 +1489,8 @@ public interface BlockID {
     String NETHERRACK = "minecraft:netherrack";
 
     String NETHERREACTOR = "minecraft:netherreactor";
+
+    String NORMAL_STONE_SLAB = "minecraft:normal_stone_slab";
 
     String NORMAL_STONE_STAIRS = "minecraft:normal_stone_stairs";
 
@@ -1546,6 +1618,8 @@ public interface BlockID {
 
     String POLISHED_ANDESITE = "minecraft:polished_andesite";
 
+    String POLISHED_ANDESITE_SLAB = "minecraft:polished_andesite_slab";
+
     String POLISHED_ANDESITE_STAIRS = "minecraft:polished_andesite_stairs";
 
     String POLISHED_BASALT = "minecraft:polished_basalt";
@@ -1586,9 +1660,13 @@ public interface BlockID {
 
     String POLISHED_DIORITE = "minecraft:polished_diorite";
 
+    String POLISHED_DIORITE_SLAB = "minecraft:polished_diorite_slab";
+
     String POLISHED_DIORITE_STAIRS = "minecraft:polished_diorite_stairs";
 
     String POLISHED_GRANITE = "minecraft:polished_granite";
+
+    String POLISHED_GRANITE_SLAB = "minecraft:polished_granite_slab";
 
     String POLISHED_GRANITE_STAIRS = "minecraft:polished_granite_stairs";
 
@@ -1616,7 +1694,13 @@ public interface BlockID {
 
     String PRISMARINE = "minecraft:prismarine";
 
+    String PRISMARINE_BRICK_SLAB = "minecraft:prismarine_brick_slab";
+
+    String PRISMARINE_BRICKS = "minecraft:prismarine_bricks";
+
     String PRISMARINE_BRICKS_STAIRS = "minecraft:prismarine_bricks_stairs";
+
+    String PRISMARINE_SLAB = "minecraft:prismarine_slab";
 
     String PRISMARINE_STAIRS = "minecraft:prismarine_stairs";
 
@@ -1648,6 +1732,8 @@ public interface BlockID {
 
     String PURPUR_BLOCK = "minecraft:purpur_block";
 
+    String PURPUR_SLAB = "minecraft:purpur_slab";
+
     String PURPUR_STAIRS = "minecraft:purpur_stairs";
 
     String QUARTZ_BLOCK = "minecraft:quartz_block";
@@ -1655,6 +1741,8 @@ public interface BlockID {
     String QUARTZ_BRICKS = "minecraft:quartz_bricks";
 
     String QUARTZ_ORE = "minecraft:quartz_ore";
+
+    String QUARTZ_PILLAR = "minecraft:quartz_pillar";
 
     String QUARTZ_SLAB = "minecraft:quartz_slab";
 
@@ -1686,9 +1774,15 @@ public interface BlockID {
 
     String RED_NETHER_BRICK = "minecraft:red_nether_brick";
 
+    String RED_NETHER_BRICK_SLAB = "minecraft:red_nether_brick_slab";
+
     String RED_NETHER_BRICK_STAIRS = "minecraft:red_nether_brick_stairs";
 
+    String RED_SAND = "minecraft:red_sand";
+
     String RED_SANDSTONE = "minecraft:red_sandstone";
+
+    String RED_SANDSTONE_SLAB = "minecraft:red_sandstone_slab";
 
     String RED_SANDSTONE_STAIRS = "minecraft:red_sandstone_stairs";
 
@@ -1729,6 +1823,8 @@ public interface BlockID {
     String SAND = "minecraft:sand";
 
     String SANDSTONE = "minecraft:sandstone";
+
+    String SANDSTONE_DOUBLE_SLAB = "minecraft:sandstone_double_slab";
 
     String SANDSTONE_SLAB = "minecraft:sandstone_slab";
 
@@ -1772,13 +1868,25 @@ public interface BlockID {
 
     String SMOOTH_BASALT = "minecraft:smooth_basalt";
 
+    String SMOOTH_QUARTZ = "minecraft:smooth_quartz";
+
     String SMOOTH_QUARTZ_STAIRS = "minecraft:smooth_quartz_stairs";
 
+    String SMOOTH_RED_SANDSTONE = "minecraft:smooth_red_sandstone";
+
+    String SMOOTH_RED_SANDSTONE_SLAB = "minecraft:smooth_red_sandstone_slab";
+
     String SMOOTH_RED_SANDSTONE_STAIRS = "minecraft:smooth_red_sandstone_stairs";
+
+    String SMOOTH_SANDSTONE = "minecraft:smooth_sandstone";
+
+    String SMOOTH_SANDSTONE_SLAB = "minecraft:smooth_sandstone_slab";
 
     String SMOOTH_SANDSTONE_STAIRS = "minecraft:smooth_sandstone_stairs";
 
     String SMOOTH_STONE = "minecraft:smooth_stone";
+
+    String SMOOTH_STONE_DOUBLE_SLAB = "minecraft:smooth_stone_double_slab";
 
     String SMOOTH_STONE_SLAB = "minecraft:smooth_stone_slab";
 
@@ -1854,6 +1962,10 @@ public interface BlockID {
 
     String STONE_BLOCK_SLAB4 = "minecraft:stone_block_slab4";
 
+    String STONE_BRICKS = "minecraft:stone_bricks";
+
+    String STONE_BRICK_DOUBLE_SLAB = "minecraft:stone_brick_double_slab";
+
     String STONE_BRICK_SLAB = "minecraft:stone_brick_slab";
 
     String STONE_BRICK_STAIRS = "minecraft:stone_brick_stairs";
@@ -1863,8 +1975,6 @@ public interface BlockID {
     String STONE_PRESSURE_PLATE = "minecraft:stone_pressure_plate";
 
     String STONE_STAIRS = "minecraft:stone_stairs";
-
-    String STONEBRICK = "minecraft:stonebrick";
 
     String STONECUTTER = "minecraft:stonecutter";
 
@@ -2189,8 +2299,6 @@ public interface BlockID {
     String YELLOW_CONCRETE = "minecraft:yellow_concrete";
 
     String YELLOW_CONCRETE_POWDER = "minecraft:yellow_concrete_powder";
-
-    String YELLOW_FLOWER = "minecraft:yellow_flower";
 
     String YELLOW_GLAZED_TERRACOTTA = "minecraft:yellow_glazed_terracotta";
 

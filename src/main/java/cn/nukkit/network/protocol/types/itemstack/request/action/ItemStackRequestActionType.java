@@ -10,7 +10,15 @@ public enum ItemStackRequestActionType {
     DESTROY(4),
     CONSUME(5),
     CREATE(6),
+    /**
+     * @deprecated since v712
+     */
+    @Deprecated
     PLACE_IN_ITEM_CONTAINER(7),
+    /**
+     * @deprecated since v712
+     */
+    @Deprecated
     TAKE_FROM_ITEM_CONTAINER(8),
     LAB_TABLE_COMBINE(9),
     BEACON_PAYMENT(10),

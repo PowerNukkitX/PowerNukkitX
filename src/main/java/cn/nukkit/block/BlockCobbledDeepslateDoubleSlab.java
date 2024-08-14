@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCobbledDeepslateDoubleSlab extends BlockDoubleSlabBase {
@@ -27,5 +28,15 @@ public class BlockCobbledDeepslateDoubleSlab extends BlockDoubleSlabBase {
     @Override
     public BlockState getSingleSlab() {
         return BlockCobbledDeepslateSlab.PROPERTIES.getDefaultState();
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
+    }
+
+    @Override
+    public double getHardness() {
+        return 3.5;
     }
 }

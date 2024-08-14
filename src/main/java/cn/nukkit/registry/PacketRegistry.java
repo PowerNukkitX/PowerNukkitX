@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? extends DataPacket>> {
     private final Int2ObjectOpenHashMap<FastConstructor<? extends DataPacket>> PACKET_POOL = new Int2ObjectOpenHashMap<>(256);
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
@@ -254,6 +255,8 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.SET_PLAYER_INVENTORY_OPTIONS_PACKET, SetPlayerInventoryOptionsPacket.class);
         this.register0(ProtocolInfo.SET_HUD, SetHudPacket.class);
         this.register0(ProtocolInfo.SETTINGS_COMMAND_PACKET, SettingsCommandPacket.class);
+        this.register0(ProtocolInfo.CLIENTBOUND_CLOSE_FORM_PACKET, ClientboundCloseFormPacket.class);
+        this.register0(ProtocolInfo.SERVERBOUND_LOADING_SCREEN_PACKET, ServerboundLoadingScreenPacket.class);
         this.PACKET_POOL.trim();
     }
 }

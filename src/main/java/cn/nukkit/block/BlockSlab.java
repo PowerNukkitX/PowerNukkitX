@@ -51,7 +51,7 @@ public abstract class BlockSlab extends BlockTransparent {
 
     @Override
     public double getResistance() {
-        return getToolType() < ItemTool.TYPE_AXE ? 30 : 15;
+        return getToolType() == ItemTool.TYPE_PICKAXE ? 6 : 3;
     }
 
     @Override

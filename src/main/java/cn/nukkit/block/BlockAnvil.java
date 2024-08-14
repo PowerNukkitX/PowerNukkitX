@@ -27,8 +27,8 @@ import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_
  * @author Pub4Game
  * @since 27.12.2015
  */
-public class BlockAnvil extends BlockFallable implements Faceable, BlockInventoryHolder {
-    public static final BlockProperties PROPERTIES = new BlockProperties(ANVIL, DAMAGE, MINECRAFT_CARDINAL_DIRECTION);
+public abstract class BlockAnvil extends BlockFallable implements Faceable, BlockInventoryHolder {
+    public static final BlockProperties PROPERTIES = new BlockProperties(ANVIL, MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
     @NotNull
@@ -45,11 +45,20 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
     }
 
     public Damage getAnvilDamage() {
-        return getPropertyValue(DAMAGE);
+        return switch (this) {
+            case BlockChippedAnvil ignored -> Damage.SLIGHTLY_DAMAGED;
+            case BlockDamagedAnvil ignored -> Damage.VERY_DAMAGED;
+            default -> Damage.UNDAMAGED;
+        };
     }
 
     public void setAnvilDamage(Damage anvilDamage) {
-        setPropertyValue(DAMAGE, anvilDamage);
+        this.blockstate = switch (anvilDamage) {
+            case UNDAMAGED -> PROPERTIES.getDefaultState();
+            case SLIGHTLY_DAMAGED -> BlockChippedAnvil.PROPERTIES.getDefaultState();
+            case VERY_DAMAGED -> BlockDamagedAnvil.PROPERTIES.getDefaultState();
+            case BROKEN -> BlockAir.STATE;
+        };
     }
 
     @Override
@@ -127,12 +136,12 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
 
     @Override
     public void setBlockFace(BlockFace face) {
-        this.setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
+        this.setPropertyValue(MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(MINECRAFT_CARDINAL_DIRECTION));
     }
 
     @Override

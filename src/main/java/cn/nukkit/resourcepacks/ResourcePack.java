@@ -41,6 +41,8 @@ public interface ResourcePack {
      * @return 资源包文件的指定分块
      */
     byte[] getPackChunk(int off, int len);
+    
+    boolean isAddonPack();
 
     /**
      * @return 资源包密钥（若加密）

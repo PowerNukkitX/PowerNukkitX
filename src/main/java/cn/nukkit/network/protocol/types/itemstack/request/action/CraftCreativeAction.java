@@ -14,6 +14,8 @@ public class CraftCreativeAction implements ItemStackRequestAction {
      */
     int creativeItemNetworkId;
 
+    int numberOfRequestedCrafts;
+
     @Override
     public ItemStackRequestActionType getType() {
         return ItemStackRequestActionType.CRAFT_CREATIVE;

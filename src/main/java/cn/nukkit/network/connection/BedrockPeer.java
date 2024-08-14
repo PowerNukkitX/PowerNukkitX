@@ -11,6 +11,7 @@ import cn.nukkit.network.connection.netty.initializer.BedrockChannelInitializer;
 import cn.nukkit.network.connection.util.EncryptionUtils;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.protocol.UpdateAbilitiesPacket;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;

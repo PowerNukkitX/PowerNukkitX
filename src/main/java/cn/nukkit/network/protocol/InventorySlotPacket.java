@@ -15,19 +15,22 @@ import lombok.*;
 public class InventorySlotPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.INVENTORY_SLOT_PACKET;
 
+    public int inventoryId;
+    public int slot;
+    public Item item;
+    private int dynamicInventoryId;
+
+
     @Override
     public int pid() {
         return NETWORK_ID;
     }
 
-    public int inventoryId;
-    public int slot;
-    public Item item;
-
     @Override
     public void decode(HandleByteBuf byteBuf) {
         this.inventoryId = byteBuf.readUnsignedVarInt();
         this.slot = byteBuf.readUnsignedVarInt();
+        this.dynamicInventoryId = byteBuf.readUnsignedVarInt();
         this.item = byteBuf.readSlot();
     }
 
@@ -35,6 +38,7 @@ public class InventorySlotPacket extends DataPacket {
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarInt(this.inventoryId);
         byteBuf.writeUnsignedVarInt(this.slot);
+        byteBuf.writeUnsignedVarInt(this.dynamicInventoryId);
         byteBuf.writeSlot(this.item);
     }
 

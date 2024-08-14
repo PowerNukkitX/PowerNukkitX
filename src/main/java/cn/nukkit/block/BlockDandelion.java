@@ -2,8 +2,8 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockYellowFlower extends BlockFlower {
-    public static final BlockProperties PROPERTIES = new BlockProperties(YELLOW_FLOWER);
+public class BlockDandelion extends BlockFlower {
+    public static final BlockProperties PROPERTIES = new BlockProperties(DANDELION);
 
     @Override
     @NotNull
@@ -11,11 +11,11 @@ public class BlockYellowFlower extends BlockFlower {
         return PROPERTIES;
     }
 
-    public BlockYellowFlower() {
+    public BlockDandelion() {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockYellowFlower(BlockState blockstate) {
+    public BlockDandelion(BlockState blockstate) {
         super(blockstate);
     }
 

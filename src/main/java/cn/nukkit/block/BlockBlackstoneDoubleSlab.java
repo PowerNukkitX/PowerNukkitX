@@ -22,7 +22,7 @@ public class BlockBlackstoneDoubleSlab extends BlockDoubleSlabBase {
 
     @Override
     public String getSlabName() {
-        return "Double Blackstone Slab";
+        return "Blackstone";
     }
 
     @Override

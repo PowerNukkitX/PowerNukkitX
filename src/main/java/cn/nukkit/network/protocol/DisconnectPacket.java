@@ -18,6 +18,7 @@ public class DisconnectPacket extends DataPacket {
     public DisconnectFailReason reason = DisconnectFailReason.UNKNOWN;
     public boolean hideDisconnectionScreen = false;
     public String message;
+    private String filteredMessage = "";
 
     @Override
     public int pid() {
@@ -29,15 +30,17 @@ public class DisconnectPacket extends DataPacket {
         this.reason = DisconnectFailReason.values()[byteBuf.readVarInt()];
         this.hideDisconnectionScreen = byteBuf.readBoolean();
         this.message = byteBuf.readString();
+        this.filteredMessage=byteBuf.readString();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
+
         byteBuf.writeVarInt(this.reason.ordinal());
         byteBuf.writeBoolean(this.hideDisconnectionScreen);
         if (!this.hideDisconnectionScreen) {
             byteBuf.writeString(this.message);
+            byteBuf.writeString(this.filteredMessage);
         }
     }
 

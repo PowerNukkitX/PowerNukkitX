@@ -29,6 +29,7 @@ public class ResourcePacksInfoPacket extends DataPacket {
      */
     private List<CDNEntry> CDNEntries = new ObjectArrayList<>();
 
+
     @Override
     public void decode(HandleByteBuf byteBuf) {
 
@@ -57,8 +58,9 @@ public class ResourcePacksInfoPacket extends DataPacket {
             byteBuf.writeLongLE(entry.getPackSize());
             byteBuf.writeString(entry.getEncryptionKey()); // encryption key
             byteBuf.writeString(""); // sub-pack name
-            byteBuf.writeString(!entry.getEncryptionKey().equals("") ? entry.getPackId().toString() : ""); // content identity
+            byteBuf.writeString(!entry.getEncryptionKey().isEmpty() ? entry.getPackId().toString() : ""); // content identity
             byteBuf.writeBoolean(false); // scripting
+            byteBuf.writeBoolean(false);    // isAddonPack
             if (!behaviour) {
                 byteBuf.writeBoolean(false); // raytracing capable
             }

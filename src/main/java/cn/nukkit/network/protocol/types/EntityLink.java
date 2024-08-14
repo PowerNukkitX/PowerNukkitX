@@ -4,19 +4,25 @@ public class EntityLink {
 
     public static final EntityLink[] EMPTY_ARRAY = new EntityLink[0];
 
-    public long fromEntityUniquieId;
-    public long toEntityUniquieId;
+    public long fromEntityUniqueId;
+    public long toEntityUniqueId;
     public byte type;
     public boolean immediate;
-
     public boolean riderInitiated;
+    public float vehicleAngularVelocity;
 
-    public EntityLink(long fromEntityUniquieId, long toEntityUniquieId, Type type, boolean immediate, boolean riderInitiated) {
-        this.fromEntityUniquieId = fromEntityUniquieId;
-        this.toEntityUniquieId = toEntityUniquieId;
+    @Deprecated
+    public EntityLink(long fromEntityUniqueId, long toEntityUniqueId, Type type, boolean immediate, boolean riderInitiated) {
+        this(fromEntityUniqueId, toEntityUniqueId, type, immediate, riderInitiated, 0f);
+    }
+
+    public EntityLink(long fromEntityUniqueId, long toEntityUniqueId, Type type, boolean immediate, boolean riderInitiated, float vehicleAngularVelocity) {
+        this.fromEntityUniqueId = fromEntityUniqueId;
+        this.toEntityUniqueId = toEntityUniqueId;
         this.type = (byte) type.ordinal();
         this.immediate = immediate;
         this.riderInitiated = riderInitiated;
+        this.vehicleAngularVelocity = vehicleAngularVelocity;
     }
 
     public enum Type {

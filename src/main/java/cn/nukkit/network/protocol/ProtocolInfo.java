@@ -11,9 +11,9 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(686);
+    int CURRENT_PROTOCOL = dynamic(712);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.21.2");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.21.20");
 
     SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 21, 2, 0, 0);
 
@@ -273,7 +273,7 @@ public interface ProtocolInfo {
 
     int CAMERA_PRESETS_PACKET = 0xc6;
 
-    int UNLOCKED_RECIPES_PACKET = (int) 0xc7;
+    int UNLOCKED_RECIPES_PACKET = 0xc7;
 
     int CAMERA_INSTRUCTION_PACKET = 300;
 
@@ -292,4 +292,8 @@ public interface ProtocolInfo {
     int SET_PLAYER_INVENTORY_OPTIONS_PACKET = 307;
 
     int SET_HUD = 308;
+
+    int CLIENTBOUND_CLOSE_FORM_PACKET = 310;
+
+    int SERVERBOUND_LOADING_SCREEN_PACKET = 312;
 }

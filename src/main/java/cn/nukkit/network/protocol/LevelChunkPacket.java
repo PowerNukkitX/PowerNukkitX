@@ -39,7 +39,6 @@ public class LevelChunkPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeVarInt(this.chunkX);
         byteBuf.writeVarInt(this.chunkZ);
         byteBuf.writeVarInt(this.dimension);

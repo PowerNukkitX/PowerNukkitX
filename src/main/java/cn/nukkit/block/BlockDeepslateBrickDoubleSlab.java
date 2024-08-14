@@ -22,7 +22,7 @@ public class BlockDeepslateBrickDoubleSlab extends BlockDoubleSlabBase {
 
     @Override
     public String getSlabName() {
-        return "Double Deepslate Brick Slab";
+        return "Deepslate Brick";
     }
 
     @Override

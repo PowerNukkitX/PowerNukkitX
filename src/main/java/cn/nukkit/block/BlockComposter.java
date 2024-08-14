@@ -249,7 +249,7 @@ public class BlockComposter extends BlockSolid {
         registerBlock(65, TALL_GRASS, 2);
         registerBlock(65, TALL_GRASS, 3);
         //todo support all DOUBLE_PLANT
-        registerBlocks(65, YELLOW_FLOWER, ItemID.RED_FLOWER, WITHER_ROSE, WATERLILY, MELON_BLOCK,
+        registerBlocks(65, DANDELION, ItemID.RED_FLOWER, WITHER_ROSE, WATERLILY, MELON_BLOCK,
                 PUMPKIN, CARVED_PUMPKIN, SEA_PICKLE, BROWN_MUSHROOM, RED_MUSHROOM,
                 WARPED_ROOTS, CRIMSON_ROOTS, SHROOMLIGHT, AZALEA, BIG_DRIPLEAF, MOSS_BLOCK,
                 SPORE_BLOSSOM, WHEAT);

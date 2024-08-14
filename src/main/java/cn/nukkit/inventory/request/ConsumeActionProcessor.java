@@ -83,7 +83,8 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
                                         item.getCustomName(),
                                         item.getDamage()
                                 )
-                        )
+                        ),
+                        action.getSource().getContainerName()
                 )
         ));
     }

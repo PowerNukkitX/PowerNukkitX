@@ -89,6 +89,6 @@ public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPo
     }
 
     public Block getUncommonFlower() {
-        return get(YELLOW_FLOWER);
+        return get(DANDELION);
     }
 }

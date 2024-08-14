@@ -13,13 +13,15 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InventoryContentPacket extends DataPacket {
+
+    public int inventoryId;
+    public Item[] slots = Item.EMPTY_ARRAY;
+    private int dynamicInventoryId;
+
     @Override
     public int pid() {
         return ProtocolInfo.INVENTORY_CONTENT_PACKET;
     }
-
-    public int inventoryId;
-    public Item[] slots = Item.EMPTY_ARRAY;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -33,6 +35,7 @@ public class InventoryContentPacket extends DataPacket {
         for (Item slot : this.slots) {
             byteBuf.writeSlot(slot);
         }
+        byteBuf.writeUnsignedVarInt(this.dynamicInventoryId);
     }
 
     public void handle(PacketHandler handler) {

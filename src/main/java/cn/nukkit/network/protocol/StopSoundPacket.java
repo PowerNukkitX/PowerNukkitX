@@ -8,6 +8,7 @@ public class StopSoundPacket extends DataPacket {
 
     public String name;
     public boolean stopAll;
+    public boolean stopMusicLegacy;
 
     @Override
     public int pid() {
@@ -21,9 +22,9 @@ public class StopSoundPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeString(this.name);
         byteBuf.writeBoolean(this.stopAll);
+        byteBuf.writeBoolean(this.stopMusicLegacy);
     }
 
     public void handle(PacketHandler handler) {

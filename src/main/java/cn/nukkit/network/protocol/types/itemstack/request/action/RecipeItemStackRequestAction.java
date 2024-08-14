@@ -7,4 +7,6 @@ package cn.nukkit.network.protocol.types.itemstack.request.action;
 public interface RecipeItemStackRequestAction extends ItemStackRequestAction {
 
     int getRecipeNetworkId();
+
+    int getNumberOfRequestedCrafts();
 }

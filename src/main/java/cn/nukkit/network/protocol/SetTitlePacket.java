@@ -31,6 +31,7 @@ public class SetTitlePacket extends DataPacket {
     public int fadeOutTime = 0;
     public String xuid = "";
     public String platformOnlineId = "";
+    private String filteredTitleText = "";
 
     @Override
     public int pid() {
@@ -46,11 +47,11 @@ public class SetTitlePacket extends DataPacket {
         this.fadeOutTime = byteBuf.readVarInt();
         this.xuid = byteBuf.readString();
         this.platformOnlineId = byteBuf.readString();
+        this.filteredTitleText = byteBuf.readString();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeVarInt(type);
         byteBuf.writeString(text);
         byteBuf.writeVarInt(fadeInTime);
@@ -58,21 +59,24 @@ public class SetTitlePacket extends DataPacket {
         byteBuf.writeVarInt(fadeOutTime);
         byteBuf.writeString(xuid);
         byteBuf.writeString(platformOnlineId);
+        byteBuf.writeString(this.filteredTitleText);
     }
 
-    @NotNull public TitleAction getTitleAction() {
+    @NotNull
+    public TitleAction getTitleAction() {
         int currentType = this.type;
         if (currentType >= 0 && currentType < TITLE_ACTIONS.length) {
             return TITLE_ACTIONS[currentType];
         }
-        throw new UnsupportedOperationException("Bad type: "+currentType);
+        throw new UnsupportedOperationException("Bad type: " + currentType);
     }
 
     public void setTitleAction(@NotNull TitleAction type) {
         this.type = type.ordinal();
     }
 
-    @NotNull public String getText() {
+    @NotNull
+    public String getText() {
         return text;
     }
 

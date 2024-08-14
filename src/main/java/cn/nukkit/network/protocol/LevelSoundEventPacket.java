@@ -543,6 +543,8 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_CREATOR = dynamic(527);
     public static final int SOUND_RECORD_CREATOR_MUSIC_BOX = dynamic(528);
     public static final int SOUND_RECORD_PRECIPICE = dynamic(529);
+    public static final int SOUND_IMITATE_BOGGED = dynamic(530);
+    public static final int SOUND_VAULT_REJECT_REWARDED_PLAYER = dynamic(531);
 
     public int sound;
     public float x;

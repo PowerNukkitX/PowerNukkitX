@@ -23,7 +23,7 @@ public class BlockMudBrickSlab extends BlockSlab{
 
     @Override
     public String getSlabName() {
-        return "Mud Brick Slab";
+        return "Mud Brick";
     }
 
     @Override

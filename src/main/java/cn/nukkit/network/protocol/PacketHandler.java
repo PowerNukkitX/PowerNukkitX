@@ -543,4 +543,10 @@ public interface PacketHandler {
 
     default void handle(SettingsCommandPacket pk) {
     }
+
+    default void handle(ServerboundLoadingScreenPacket pk) {
+    }
+
+    default void handle(ClientboundCloseFormPacket pk) {
+    }
 }
