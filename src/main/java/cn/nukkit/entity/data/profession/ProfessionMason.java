@@ -38,7 +38,7 @@ public class ProfessionMason extends Profession {
                         .setTier(2)
                         .setTraderExp(10)
                         .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 1), Item.get(BlockID.STONEBRICK, 3, 4))
+                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 1), Item.get(BlockID.CHISELED_STONE_BRICKS, 0, 4))
                         .setMaxUses(16)
                         .setRewardExp((byte) 1)
                         .setTier(2)

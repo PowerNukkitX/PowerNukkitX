@@ -28,7 +28,7 @@ public class BlockInfestedDeepslate extends BlockSolid {
     
     @Override
     public double getHardness() {
-        return 0;
+        return 1.5;
     }
     
     @Override
@@ -37,23 +37,13 @@ public class BlockInfestedDeepslate extends BlockSolid {
     }
     
     @Override
-    public boolean canHarvestWithHand() {
-        return false;
+    public Item[] getDrops(Item item) {
+        return Item.EMPTY_ARRAY;
     }
-    
+
     @Override
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
-    }
-    
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-    
-    @Override
-    public Item[] getDrops(Item item) {
-        return Item.EMPTY_ARRAY;
     }
 
 }

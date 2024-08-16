@@ -53,6 +53,8 @@ public class InventoryTransactionPacket extends DataPacket {
 
     private UseItemData.TriggerType triggerType;
 
+    private UseItemData.PredictedResult clientInteractPrediction;
+
     /**
      * NOTE: THESE FIELDS DO NOT EXIST IN THE PROTOCOL, it's merely used for convenience for us to easily
      * determine whether we're doing a crafting or enchanting transaction.

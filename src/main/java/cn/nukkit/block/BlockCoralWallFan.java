@@ -10,37 +10,15 @@ import static cn.nukkit.block.property.CommonBlockProperties.CORAL_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.CORAL_HANG_TYPE_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.DEAD_BIT;
 
-public class BlockCoralFanHang extends BlockCoralFan {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_HANG, CORAL_DIRECTION, CORAL_HANG_TYPE_BIT, DEAD_BIT);
+public abstract class BlockCoralWallFan extends BlockCoralFan {
 
-    @Override
-    @NotNull
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    public BlockCoralFanHang() {
-        this(PROPERTIES.getDefaultState());
-    }
-
-    public BlockCoralFanHang(BlockState blockstate) {
+    public BlockCoralWallFan(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
     public String getName() {
-        String name = super.getName();
-        name = name.substring(0, name.length() - 4);
-        if (isDead()) {
-            return "Dead " + name + " Wall Fan";
-        } else {
-            return name + " Wall Fan";
-        }
-    }
-
-    @Override
-    public boolean isDead() {
-        return getPropertyValue(DEAD_BIT);
+        return super.getName() + " Wall Fan";
     }
 
     @Override
@@ -51,16 +29,6 @@ public class BlockCoralFanHang extends BlockCoralFan {
             return super.onUpdate(type);
         }
     }
-
-    @Override
-    public Block getDeadCoralFan() {
-        if (getPropertyValue(CORAL_HANG_TYPE_BIT)) {
-            return new BlockDeadTubeCoralFan();
-        } else {
-            return new BlockDeadBrainCoralFan();
-        }
-    }
-
 
     @Override
     public BlockFace getBlockFace() {

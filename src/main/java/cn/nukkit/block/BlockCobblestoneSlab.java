@@ -2,10 +2,15 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.StoneSlabType;
+import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockCobblestoneSlab extends BlockStoneBlockSlab {
+public class BlockCobblestoneSlab extends BlockSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(COBBLESTONE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+
+    public BlockCobblestoneSlab(BlockState blockState) {
+        super(blockState, COBBLESTONE_DOUBLE_SLAB);
+    }
 
     @Override
     @NotNull
@@ -13,16 +18,28 @@ public class BlockCobblestoneSlab extends BlockStoneBlockSlab {
         return PROPERTIES;
     }
 
-    public BlockCobblestoneSlab() {
-        super(PROPERTIES.getDefaultState());
-    }
-
-    public BlockCobblestoneSlab(BlockState blockstate) {
-        super(blockstate==null ? PROPERTIES.getDefaultState(): blockstate);
+    @Override
+    public String getSlabName() {
+        return "Cobblestone";
     }
 
     @Override
-    public StoneSlabType getSlabType() {
-        return StoneSlabType.COBBLESTONE;
+    public boolean isSameType(BlockSlab slab) {
+        return this.getId().equals(slab.getId());
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
+    }
+
+    @Override
+    public int getToolTier() {
+        return ItemTool.TIER_WOODEN;
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
     }
 }

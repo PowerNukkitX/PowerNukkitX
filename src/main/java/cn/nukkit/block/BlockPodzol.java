@@ -34,18 +34,6 @@ public class BlockPodzol extends BlockDirt {
     }
 
     @Override
-    @NotNull public DirtType getDirtType() {
-        return DirtType.NORMAL;
-    }
-
-    @Override
-    public void setDirtType(@Nullable DirtType dirtType) throws Exception {
-        if (dirtType != null) {
-            throw new Exception(getName() + "don't support DirtType!");
-        }
-    }
-
-    @Override
     public boolean canSilkTouch() {
         return true;
     }

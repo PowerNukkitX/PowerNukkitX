@@ -51,6 +51,11 @@ public class BlockTuffBrickSlab extends BlockSlab {
     }
 
     @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
+    }
+
+    @Override
     public boolean canHarvestWithHand() {
         return false;
     }

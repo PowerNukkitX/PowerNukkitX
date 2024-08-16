@@ -28,6 +28,16 @@ public class BlockWarpedSlab extends BlockSlab {
     }
 
     @Override
+    public boolean canHarvestWithHand() {
+        return true;
+    }
+
+    @Override
+    public int getToolTier() {
+        return 0;
+    }
+
+    @Override
     public boolean isSameType(BlockSlab slab) {
         return getId().equals(slab.getId());
     }
@@ -38,13 +48,6 @@ public class BlockWarpedSlab extends BlockSlab {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
-        return new Item[]{
-                toItem()
-        };
-    }
-
-    @Override
     public double getResistance() {
         return 3;
     }
@@ -52,16 +55,6 @@ public class BlockWarpedSlab extends BlockSlab {
     @Override
     public Item toItem() {
         return new ItemBlock(this);
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 0;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
     }
 
 }

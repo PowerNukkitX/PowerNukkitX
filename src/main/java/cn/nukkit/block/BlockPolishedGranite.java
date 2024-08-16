@@ -1,9 +1,9 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.property.enums.StoneType;
+import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockPolishedGranite extends BlockStone {
+public class BlockPolishedGranite extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_GRANITE);
 
     @Override
@@ -20,12 +20,27 @@ public class BlockPolishedGranite extends BlockStone {
     }
 
     @Override
-    public StoneType stoneType() {
-        return StoneType.GRANITE_SMOOTH;
+    public double getHardness() {
+        return 1.5;
     }
 
     @Override
-    public boolean canSilkTouch() {
+    public double getResistance() {
+        return 6;
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
+    }
+
+    @Override
+    public int getToolTier() {
+        return ItemTool.TIER_WOODEN;
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
         return false;
     }
 }

@@ -157,6 +157,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(DIAMOND_PICKAXE, ItemDiamondPickaxe.class);
             register(DIAMOND_SHOVEL, ItemDiamondShovel.class);
             register(DIAMOND_SWORD, ItemDiamondSword.class);
+            register(DIRT, ItemDirt.class);
             register(DISC_FRAGMENT_5, ItemDiscFragment5.class);
             register(DOLPHIN_SPAWN_EGG, ItemDolphinSpawnEgg.class);
             register(DONKEY_SPAWN_EGG, ItemDonkeySpawnEgg.class);
@@ -403,6 +404,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(SALMON, ItemSalmon.class);
             register(SALMON_BUCKET, ItemSalmonBucket.class);
             register(SALMON_SPAWN_EGG, ItemSalmonSpawnEgg.class);
+            register(SAND, ItemSand.class);
             register(SANDSTONE, ItemSandstone.class);
             register(SAPLING, ItemSapling.class);
             register(SCRAPE_POTTERY_SHERD, ItemScrapePotterySherd.class);

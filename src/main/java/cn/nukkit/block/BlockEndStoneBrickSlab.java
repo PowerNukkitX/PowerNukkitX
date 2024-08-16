@@ -8,8 +8,8 @@ public class BlockEndStoneBrickSlab extends BlockSlab {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(END_STONE_BRICK_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
-    public BlockEndStoneBrickSlab(BlockState blockState, BlockState doubleSlab) {
-        super(blockState, doubleSlab);
+    public BlockEndStoneBrickSlab(BlockState blockState) {
+        super(blockState, END_STONE_BRICK_DOUBLE_SLAB);
     }
 
     @Override
@@ -35,5 +35,20 @@ public class BlockEndStoneBrickSlab extends BlockSlab {
     @Override
     public double getResistance() {
         return 9;
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
+    }
+
+    @Override
+    public int getToolTier() {
+        return ItemTool.TIER_WOODEN;
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
     }
 }

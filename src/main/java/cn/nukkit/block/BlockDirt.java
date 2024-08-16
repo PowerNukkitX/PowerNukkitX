@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
  * @author MagicDroidX (Nukkit Project), kvetinac97
  */
 public class BlockDirt extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRT, CommonBlockProperties.DIRT_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(DIRT);
 
     public BlockDirt() {
         super(PROPERTIES.getDefaultState());
@@ -32,15 +32,6 @@ public class BlockDirt extends BlockSolid {
         return PROPERTIES;
     }
 
-    @NotNull
-    public DirtType getDirtType() {
-        return getPropertyValue(CommonBlockProperties.DIRT_TYPE);
-    }
-
-    public void setDirtType(@Nullable DirtType dirtType) throws Exception {
-        setPropertyValue(CommonBlockProperties.DIRT_TYPE, dirtType);
-    }
-
     @Override
     public boolean canBeActivated() {
         return true;
@@ -48,7 +39,7 @@ public class BlockDirt extends BlockSolid {
 
     @Override
     public double getResistance() {
-        return 2.5;
+        return 0.5;
     }
 
     @Override
@@ -63,11 +54,6 @@ public class BlockDirt extends BlockSolid {
     }
 
     @Override
-    public String getName() {
-        return this.getDirtType() == DirtType.NORMAL ? "Dirt" : "Coarse Dirt";
-    }
-
-    @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!this.up().canBeReplaced()) {
             return false;
@@ -75,14 +61,14 @@ public class BlockDirt extends BlockSolid {
 
         if (item.isHoe()) {
             item.useOn(this);
-            this.getLevel().setBlock(this, this.getDirtType() == DirtType.NORMAL ? get(FARMLAND) : get(DIRT), true);
+            this.getLevel().setBlock(this, get(FARMLAND), true);
             if (player != null) {
                 player.getLevel().addSound(player, Sound.USE_GRASS);
             }
             return true;
         } else if (item.isShovel()) {
             item.useOn(this);
-            this.getLevel().setBlock(this, Block.get(BlockID.GRASS_PATH));
+            this.getLevel().setBlock(this, get(GRASS_PATH));
             if (player != null) {
                 player.getLevel().addSound(player, Sound.USE_GRASS);
             }

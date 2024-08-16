@@ -8,11 +8,12 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class BlockStone extends BlockSolid{
+public class BlockStone extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(STONE);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -39,26 +40,9 @@ public class BlockStone extends BlockSolid{
         return ItemTool.TYPE_PICKAXE;
     }
 
-    public StoneType stoneType() {
-        return StoneType.STONE;
-    }
-
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public Item[] getDrops(Item item) {
-        if (item.isPickaxe() && item.getTier() >= getToolTier()) {
-            return new Item[]{
-                    StoneType.STONE.equals(stoneType())
-                            ? Item.get(BlockID.COBBLESTONE)
-                            : toItem()
-            };
-        } else {
-            return Item.EMPTY_ARRAY;
-        }
     }
 
     @Override

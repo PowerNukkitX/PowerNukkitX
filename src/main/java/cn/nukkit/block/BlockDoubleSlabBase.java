@@ -10,7 +10,7 @@ public abstract class BlockDoubleSlabBase extends BlockSolid {
 
     @Override
     public String getName() {
-        return "Double "+getSlabName()+" Slab";
+        return "Double " + getSlabName() + " Slab";
     }
 
     public abstract String getSlabName();
@@ -22,7 +22,7 @@ public abstract class BlockDoubleSlabBase extends BlockSolid {
         return Block.get(getSingleSlab()).toItem();
     }
 
-    public abstract int getToolType();
+//    public abstract int getToolType();
 
     @Override
     public double getHardness() {
@@ -43,7 +43,7 @@ public abstract class BlockDoubleSlabBase extends BlockSolid {
         if (isCorrectTool(item)) {
             Item slab = toItem();
             slab.setCount(2);
-            return new Item[]{ slab };
+            return new Item[]{slab};
         } else {
             return Item.EMPTY_ARRAY;
         }

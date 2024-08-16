@@ -35,4 +35,14 @@ public abstract class BlockWoodenSlab extends BlockSlab {
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return true;
+    }
+
+    @Override
+    public int getToolTier() {
+        return ItemTool.TYPE_NONE;
+    }
 }

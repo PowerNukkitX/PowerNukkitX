@@ -2,6 +2,7 @@ package cn.nukkit.registry;
 
 import cn.nukkit.block.BlockState;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -12,6 +13,7 @@ import java.util.Set;
  *
  * @author Cool_Loong
  */
+@Slf4j
 public final class BlockStateRegistry implements IRegistry<Integer, BlockState, BlockState> {
     private static final Int2ObjectOpenHashMap<BlockState> REGISTRY = new Int2ObjectOpenHashMap<>();
 
@@ -54,6 +56,7 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
 
     public void register(BlockState value) throws RegisterException {
         BlockState now;
+        log.info("register blockstate {} -- 1", value);
         if ((now = REGISTRY.put(value.blockStateHash(), value)) == null) {
         } else {
             throw new RegisterException("The blockstate " + value + "has been registered,\n current value: " + now);

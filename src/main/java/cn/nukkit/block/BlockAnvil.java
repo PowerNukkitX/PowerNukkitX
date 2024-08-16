@@ -27,7 +27,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_
  * @author Pub4Game
  * @since 27.12.2015
  */
-public abstract class BlockAnvil extends BlockFallable implements Faceable, BlockInventoryHolder {
+public class BlockAnvil extends BlockFallable implements Faceable, BlockInventoryHolder {
     public static final BlockProperties PROPERTIES = new BlockProperties(ANVIL, MINECRAFT_CARDINAL_DIRECTION);
 
     @Override

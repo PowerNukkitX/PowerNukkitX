@@ -32,5 +32,6 @@ public class SetInstruction implements CameraInstruction {
     private final Vector3f facing;
     @NotNull
     private final CameraPreset preset;
+    private final Vector2f viewOffset;
     private final OptionalValue<Boolean> defaultPreset = OptionalValue.empty();
 }

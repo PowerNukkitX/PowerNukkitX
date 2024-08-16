@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSpruceSlab extends BlockWoodenSlab {
@@ -20,4 +21,5 @@ public class BlockSpruceSlab extends BlockWoodenSlab {
     public String getSlabName() {
         return "Spruce";
     }
+
 }

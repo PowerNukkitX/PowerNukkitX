@@ -8,8 +8,8 @@ public class BlockRedSandstoneSlab extends BlockSlab {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(RED_SANDSTONE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
-    public BlockRedSandstoneSlab(BlockState blockState, BlockState doubleSlab) {
-        super(blockState, doubleSlab);
+    public BlockRedSandstoneSlab(BlockState blockState) {
+        super(blockState, RED_SANDSTONE_DOUBLE_SLAB);
     }
 
     @Override
@@ -25,5 +25,20 @@ public class BlockRedSandstoneSlab extends BlockSlab {
     @Override
     public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
+    }
+
+    @Override
+    public int getToolTier() {
+        return ItemTool.TIER_WOODEN;
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
     }
 }

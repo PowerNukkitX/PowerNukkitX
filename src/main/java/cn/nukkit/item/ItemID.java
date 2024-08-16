@@ -253,6 +253,8 @@ public interface ItemID {
 
     String DIAMOND_SWORD = "minecraft:diamond_sword";
 
+    String DIRT = "minecraft:dirt";
+
     String DISC_FRAGMENT_5 = "minecraft:disc_fragment_5";
 
     String DOLPHIN_SPAWN_EGG = "minecraft:dolphin_spawn_egg";
@@ -744,6 +746,8 @@ public interface ItemID {
     String SALMON_BUCKET = "minecraft:salmon_bucket";
 
     String SALMON_SPAWN_EGG = "minecraft:salmon_spawn_egg";
+
+    String SAND = "minecraft:sand";
 
     String SANDSTONE = "minecraft:sandstone";
 

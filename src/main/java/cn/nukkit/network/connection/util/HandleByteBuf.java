@@ -1525,20 +1525,20 @@ public class HandleByteBuf extends ByteBuf {
     protected ItemStackRequestAction readRequestActionData(ItemStackRequestActionType type) {
         return switch (type) {
             case CRAFT_REPAIR_AND_DISENCHANT ->
-                    new CraftGrindstoneAction(readUnsignedVarInt(), readVarInt(), readVarInt());
+                    new CraftGrindstoneAction(readUnsignedVarInt(), readByte(), readInt());
             case CRAFT_LOOM -> new CraftLoomAction(readString());
             case CRAFT_RECIPE_AUTO -> {
                 int recipeId = readUnsignedVarInt();
+                int numberOfRequestedCrafts = readVarInt();
                 int timesCrafted = readUnsignedByte();
                 List<ItemDescriptor> ingredients = new ObjectArrayList<>();
                 readArray(ingredients, HandleByteBuf::readUnsignedByte, HandleByteBuf::readRecipeIngredient);
-                int numberOfRequestedCrafts = readVarInt();
                 yield new AutoCraftRecipeAction(
                         recipeId,
+                        numberOfRequestedCrafts,
                         timesCrafted,
-                        ingredients,
-                        numberOfRequestedCrafts
-                        );
+                        ingredients
+                );
             }
             case CRAFT_RESULTS_DEPRECATED -> new CraftResultsDeprecatedAction(
                     readArray(Item.class, (s) -> s.readSlot(true)),

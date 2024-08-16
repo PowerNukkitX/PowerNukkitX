@@ -5,7 +5,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 
-public class BlockBambooSlab extends BlockSlab {
+public class BlockBambooSlab extends BlockWoodenSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
@@ -20,25 +20,5 @@ public class BlockBambooSlab extends BlockSlab {
     @Override
     public String getSlabName() {
         return "Bamboo";
-    }
-
-    @Override
-    public boolean isSameType(BlockSlab slab) {
-        return slab.getId() == getId();
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
     }
 }

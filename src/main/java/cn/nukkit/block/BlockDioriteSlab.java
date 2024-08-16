@@ -1,14 +1,15 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDioriteSlab extends BlockSlab {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(DIORITE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
-    public BlockDioriteSlab(BlockState blockState, BlockState doubleSlab) {
-        super(blockState, doubleSlab);
+    public BlockDioriteSlab(BlockState blockState) {
+        super(blockState, DIORITE_DOUBLE_SLAB);
     }
 
     @Override
@@ -27,12 +28,22 @@ public class BlockDioriteSlab extends BlockSlab {
     }
 
     @Override
-    public double getResistance() {
-        return 7.5;
+    public boolean canHarvestWithHand() {
+        return false;
     }
 
     @Override
-    public double getHardness() {
+    public int getToolTier() {
+        return ItemTool.TIER_WOODEN;
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
+    }
+
+    @Override
+    public double getHardness(){
         return 1.5;
     }
 }
