@@ -17,7 +17,6 @@ import com.google.common.collect.HashBiMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +25,6 @@ import java.util.*;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@Slf4j
 public abstract class BaseInventory implements Inventory {
     protected final Int2ObjectOpenHashMap<Item> slots = new Int2ObjectOpenHashMap<>();
     protected final InventoryType type;
@@ -431,7 +429,6 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public void onOpen(Player who) {
         this.viewers.add(who);
-//        who.addWindow(this);
     }
 
     @Override
