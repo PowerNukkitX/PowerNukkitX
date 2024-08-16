@@ -10,9 +10,9 @@ import lombok.Value;
 @Value
 public class ItemStackRequestSlotData {
     /**
-     * container the slot was in
+     * container that the slots that follow are in.
      *
-     * @deprecated since v712
+     * @deprecated since v712 - FullContainerName#getContainer should be preferred
      */
     @Deprecated
     ContainerSlotType container;

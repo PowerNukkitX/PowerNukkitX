@@ -109,9 +109,6 @@ public class BlockGrassBlock extends BlockDirt {
                 int z = random.nextInt((int) this.z - 1, (int) this.z + 1 + 1);
                 Block block = this.getLevel().getBlock(new Vector3(x, y, z));
                 if (block.getId().equals(Block.DIRT)
-                        // It cannot spread to coarse dirt
-                        && block.getPropertyValue(CommonBlockProperties.DIRT_TYPE) == DirtType.NORMAL
-
                         // The dirt block must have a light level of at least 4 above it.
                         && getLevel().getFullLight(block) >= 4
 
@@ -136,6 +133,6 @@ public class BlockGrassBlock extends BlockDirt {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{Item.get(DIRT)};
+        return new Item[]{Block.get(DIRT).toItem()};
     }
 }

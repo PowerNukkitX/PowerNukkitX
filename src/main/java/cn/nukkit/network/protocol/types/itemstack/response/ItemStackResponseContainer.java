@@ -4,6 +4,7 @@ import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import lombok.Value;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ public class ItemStackResponseContainer {
     /**
      * container that the slots that follow are in.
      *
-     * @deprecated since v712
+     * @deprecated since v712 - FullContainerName#getContainer should be preferred
      */
     @Deprecated
     ContainerSlotType container;

@@ -1524,12 +1524,11 @@ public class HandleByteBuf extends ByteBuf {
 
     protected ItemStackRequestAction readRequestActionData(ItemStackRequestActionType type) {
         return switch (type) {
-            case CRAFT_REPAIR_AND_DISENCHANT ->
-                    new CraftGrindstoneAction(readUnsignedVarInt(), readByte(), readInt());
+            case CRAFT_REPAIR_AND_DISENCHANT -> new CraftGrindstoneAction(readUnsignedVarInt(), readByte(), readInt());
             case CRAFT_LOOM -> new CraftLoomAction(readString());
             case CRAFT_RECIPE_AUTO -> {
                 int recipeId = readUnsignedVarInt();
-                int numberOfRequestedCrafts = readVarInt();
+                int numberOfRequestedCrafts = readUnsignedByte();
                 int timesCrafted = readUnsignedByte();
                 List<ItemDescriptor> ingredients = new ObjectArrayList<>();
                 readArray(ingredients, HandleByteBuf::readUnsignedByte, HandleByteBuf::readRecipeIngredient);
@@ -1595,14 +1594,15 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     private ItemStackRequestSlotData readStackRequestSlotInfo() {
-        return new ItemStackRequestSlotData(
+        FullContainerName containerName = new FullContainerName(
                 ContainerSlotType.fromId(readByte()),
+                readIntLE()
+        );
+        return new ItemStackRequestSlotData(
+                containerName.getContainer(),
                 readUnsignedByte(),
                 readVarInt(),
-                new FullContainerName(
-                        ContainerSlotType.values()[readUnsignedVarInt()],
-                        readVarInt()
-                )
+                containerName
         );
     }
 

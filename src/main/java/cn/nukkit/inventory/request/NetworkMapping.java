@@ -42,9 +42,6 @@ public class NetworkMapping {
                  GRINDSTONE_ADDITIONAL, GRINDSTONE_INPUT, GRINDSTONE_RESULT,
                  CARTOGRAPHY_INPUT, CARTOGRAPHY_ADDITIONAL, CARTOGRAPHY_RESULT,
                  LEVEL_ENTITY, SHULKER_BOX -> {
-                log.info("fakeinventoryopen {}", player.getFakeInventoryOpen());
-                log.info("topwindow is present {}", player.getTopWindow().isPresent());
-                log.info("topwindow {}", player.getTopWindow().orElse(null));
                 if (player.getFakeInventoryOpen() && player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof FakeInventory) {
                     yield player.getTopWindow().get();
                 } else if (player.getEnderChestOpen()) {

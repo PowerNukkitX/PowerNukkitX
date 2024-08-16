@@ -54,4 +54,9 @@ public class BlockStone extends BlockSolid {
     public boolean canSilkTouch() {
         return true;
     }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return new Item[] {Block.get(COBBLESTONE).toItem()};
+    }
 }

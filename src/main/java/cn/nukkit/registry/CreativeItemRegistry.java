@@ -61,7 +61,6 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                     if (block == null) {
                         item = Item.AIR;
                         log.warn("load creative item {} blockHash {} is null", name, blockHash);
-                        log.info("nbt {}", blockCompoundTag);
                     } else {
                         item.setBlockUnsafe(block.toBlock());
                         Item updateDamage = block.toBlock().toItem();

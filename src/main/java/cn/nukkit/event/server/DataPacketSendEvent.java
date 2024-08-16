@@ -4,11 +4,15 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.network.protocol.DataPacket;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
+@Slf4j
 public class DataPacketSendEvent extends ServerEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();

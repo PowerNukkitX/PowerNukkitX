@@ -53,7 +53,10 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
                                         itemInHand.getDamage()
                                 )
                         ),
-                        null
+                        new FullContainerName(
+                                inventory.getSlotType(heldItemIndex),
+                                0   // I don't know the purpose of the dynamicId yet, this is why I leave it at 0 for the MineBlockAction
+                        )
                 );
         return context.success(List.of(itemStackResponseSlot));
     }
