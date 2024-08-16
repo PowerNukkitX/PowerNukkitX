@@ -8,9 +8,11 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.fake.FakeInventory;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Locale;
 
+@Slf4j
 @UtilityClass
 public class NetworkMapping {
     public Inventory getInventory(Player player, ContainerSlotType containerSlotType) {
@@ -40,6 +42,9 @@ public class NetworkMapping {
                  GRINDSTONE_ADDITIONAL, GRINDSTONE_INPUT, GRINDSTONE_RESULT,
                  CARTOGRAPHY_INPUT, CARTOGRAPHY_ADDITIONAL, CARTOGRAPHY_RESULT,
                  LEVEL_ENTITY, SHULKER_BOX -> {
+                log.info("fakeinventoryopen {}", player.getFakeInventoryOpen());
+                log.info("topwindow is present {}", player.getTopWindow().isPresent());
+                log.info("topwindow {}", player.getTopWindow().orElse(null));
                 if (player.getFakeInventoryOpen() && player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof FakeInventory) {
                     yield player.getTopWindow().get();
                 } else if (player.getEnderChestOpen()) {

@@ -1,5 +1,6 @@
 package cn.nukkit.registry;
 
+import ca.solostudios.strata.parser.tokenizer.Char;
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -16,6 +17,7 @@ import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.MinecraftNamespaceComparator;
 import cn.nukkit.utils.Utils;
 import com.google.common.collect.Collections2;
+import com.google.gson.internal.LinkedTreeMap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.util.ReferenceCountUtil;
@@ -30,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Slf4j
 @SuppressWarnings("unchecked")
@@ -506,13 +509,13 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             List<Map<String, Object>> potionMixes = (List<Map<String, Object>>) recipeConfig.getList("potionMixes");
             for (Map<String, Object> recipe : potionMixes) {
                 String inputId = (String) recipe.get("inputId");
-                int inputMeta = (int) recipe.get("inputMeta");
+                int inputMeta = (int) ((double) recipe.get("inputMeta"));
 
                 String reagentId = (String) recipe.get("reagentId");
-                int reagentMeta = (int) recipe.get("reagentMeta");
+                int reagentMeta = (int) ((double) recipe.get("reagentMeta"));
 
                 String outputId = (String) recipe.get("outputId");
-                int outputMeta = (int) recipe.get("outputMeta");
+                int outputMeta = (int) ((double) recipe.get("outputMeta"));
 
                 Item inputItem = Item.get(inputId, inputMeta);
                 Item reagentItem = Item.get(reagentId, reagentMeta);
@@ -561,7 +564,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 String reagentId = (String) containerMix.get("reagentId");
                 String outputId = (String) containerMix.get("outputId");
 
-                register(new ContainerRecipe(
+                this.register(new ContainerRecipe(
                         Item.get(inputId),
                         Item.get(reagentId),
                         Item.get(outputId)
@@ -578,7 +581,12 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             List<Map<String, Object>> recipes = (List<Map<String, Object>>) recipeConfig.getList("recipes");
             for (Map<String, Object> recipe : recipes) {
 
-                switch ((String) recipe.get("block")) {     // the block defines the type of recipe
+                String block = (String) recipe.get("block");
+
+                if (block == null)
+                    continue;
+
+                switch (block) {     // the block defines the type of recipe
                     case "smithing_table" -> {
                         String recipeId = (String) recipe.get("id");
 
@@ -598,7 +606,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                         if (recipe.containsKey("result")) { // is smithing transform recipe
                             Map<String, Object> result = (Map<String, Object>) recipe.get("result");
                             String itemId = (String) result.get("id");
-                            int count = (int) result.get("count");
+                            int count = (int) ((double) result.get("count"));
                             this.register(new SmithingTransformRecipe(
                                     recipeId,
                                     Item.get(itemId, 0, count),
@@ -616,11 +624,113 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                             ));
                         }
                     }
-                    case "crafting_table" -> {
+                    case "crafting_table", "stonecutter", "cartography_table" -> {
+                        ParseType inputParseType = ParseType.CRAFTING_TABLE_INPUT;
+                        ParseType outputParseType = ParseType.CRAFTING_TABLE_OUTPUT;
 
+                        switch (block) {
+                            case "stonecutter" -> {
+                                inputParseType = ParseType.STONECUTTER_INPUT;
+                                outputParseType = ParseType.STONECUTTER_OUTPUT;
+                            }
+                            case "cartography_table" -> {
+                                inputParseType = ParseType.CARTOGRAPHY_TABLE_INPUT;
+                                outputParseType = ParseType.CARTOGRAPHY_TABLE_OUTPUT;
+                            }
+                        }
+
+                        String recipeId = (String) recipe.get("id");
+                        UUID uuid = UUID.fromString((String) recipe.get("uuid"));
+                        int priority = (int) ((double) recipe.get("priority"));
+
+                        List<Map<String, Object>> outputs = (List<Map<String, Object>>) recipe.get("output");
+                        Map<String, Object> primaryResultData = outputs.removeFirst();
+                        ItemDescriptor primaryResult = parseDescription(primaryResultData, outputParseType);
+
+                        if (recipe.containsKey("shape")) {
+                            List<Item> extraResults = new ArrayList<>();
+                            for (Map<String, Object> output : outputs) {
+                                extraResults.add(parseDescription(output, outputParseType).toItem());
+                            }
+
+                            String[] shape = ((List<String>) recipe.get("shape")).toArray(String[]::new);
+
+                            Map<Character, ItemDescriptor> ingredients = new CharObjectHashMap<>();
+
+                            LinkedTreeMap<String, Object> inputs = (LinkedTreeMap<String, Object>) recipe.get("input");
+
+                            for (Map.Entry<String, Object> inputData : inputs.entrySet()) {
+                                char patternKey = inputData.getKey().charAt(0);
+                                Map<String, Object> ingredientData = (Map<String, Object>) inputData.getValue();
+
+                                ingredients.put(
+                                        patternKey,
+                                        parseDescription(
+                                                ingredientData,
+                                                inputParseType
+                                        )
+                                );
+                            }
+
+                            this.register(new ShapedRecipe(
+                                    recipeId,
+                                    uuid,
+                                    priority,
+                                    primaryResult.toItem(),
+                                    shape,
+                                    ingredients,
+                                    extraResults,
+                                    false,
+                                    new RecipeUnlockingRequirement(
+                                            RecipeUnlockingRequirement.UnlockingContext.ALWAYS_UNLOCKED
+                                    )
+                            ));
+                        } else {    // is shapeless recipe
+
+                            List<ItemDescriptor> ingredients = new ArrayList<>();
+                            List<Map<String, Object>> inputs = (List<Map<String, Object>>) recipe.get("input");
+
+                            for (Map<String, Object> input : inputs) {
+                                ingredients.add(parseDescription(input, inputParseType));
+                            }
+
+                            this.register(new ShapelessRecipe(
+                                    recipeId,
+                                    uuid,
+                                    priority,
+                                    primaryResult.toItem(),
+                                    ingredients,
+                                    new RecipeUnlockingRequirement(
+                                            RecipeUnlockingRequirement.UnlockingContext.ALWAYS_UNLOCKED
+                                    )
+                            ));
+                        }
+                    }
+                    case "furnace", "blast_furnace", "smoker", "campfire", "soul_campfire" -> {
+                        Map<String, Object> inputData = (Map<String, Object>) recipe.get("input");
+                        Map<String, Object> outputData = (Map<String, Object>) recipe.get("output");
+                        Item inputItem = parseDescription(inputData, ParseType.FURNACE_INPUT).toItem();
+                        Item outputItem = parseDescription(outputData, ParseType.FURNACE_OUTPUT).toItem();
+
+                        SmeltingRecipe smeltingRecipe = switch (block) {
+                            case "blast_furnace" -> new BlastFurnaceRecipe(outputItem, inputItem);
+                            case "smoker" -> new SmokerRecipe(outputItem, inputItem);
+                            case "campfire" -> new CampfireRecipe(outputItem, inputItem);
+                            case "soul_campfire" -> new SoulCampfireRecipe(outputItem, inputItem);
+                            default -> new FurnaceRecipe(outputItem, inputItem);
+                        };
+
+                        double xp = furnaceXpConfig.getDouble(inputItem.getId() + ":" + inputItem.getDamage());
+                        if (xp != 0) {
+                            this.setRecipeXp(smeltingRecipe, xp);
+                        }
+
+                        try {
+                            this.register(smeltingRecipe);
+                        } catch (Exception e) {     //this can be removed once duplicate recipes no longer exist
+                        }
                     }
                 }
-
             }
 
             //load furnace recipes
@@ -743,17 +853,25 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         ItemDescriptor descriptor = null;
 
         switch (parseType) {
-            case SMITHING_TABLE -> {
+            case SMITHING_TABLE, CRAFTING_TABLE_INPUT, CARTOGRAPHY_TABLE_INPUT, STONECUTTER_INPUT -> {
                 if (data.get("type").equals("item_tag")) {
                     String itemTag = (String) data.get("itemTag");
                     int count = data.containsKey("count") ? Utils.toInt(data.get("count")) : 1;
                     descriptor = new ItemTagDescriptor(itemTag, count);
+
+                } else if (data.get("type").equals("complex_alias")) {
+                    String itemId = (String) data.get("name");
+                    int count = (int) ((double) data.get("count"));
+                    Item item = Item.get(itemId, 0, count);
+                    item.disableMeta();
+                    descriptor = new DefaultDescriptor(item);
+
                 } else {    // only other possibility is the "default" type
                     String itemId = (String) data.get("itemId");
                     int count = data.containsKey("count") ? Utils.toInt(data.get("count")) : 1;
-                    short meta = (short) data.get("auxValue");
+                    short meta = (short) ((double) data.get("auxValue"));
                     Item item;
-                    if (meta == Short.MAX_VALUE) {
+                    if (meta == Short.MAX_VALUE || meta == -1) {
                         item = Item.get(itemId, 0, count);
                         item.disableMeta();
                     } else {
@@ -762,13 +880,47 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                     descriptor = new DefaultDescriptor(item);
                 }
             }
+            case CRAFTING_TABLE_OUTPUT, CARTOGRAPHY_TABLE_OUTPUT, STONECUTTER_OUTPUT, FURNACE_INPUT, FURNACE_OUTPUT -> {
+                String id = (String) data.get("id");
+                int count = 1;
+                short meta = 0;
+
+                if (data.containsKey("count")) {
+                    count = (int) ((double) data.get("count"));
+                }
+
+                if (data.containsKey("damage")) {
+                    meta = (short) ((double) data.get("damage"));
+                }
+
+                Item item;
+
+                if (meta == Short.MAX_VALUE || meta == -1) {
+                    item = Item.get(id, 0, count);
+                    item.disableMeta();
+                } else {
+                    item = Item.get(id, meta, count);
+                }
+                descriptor = new DefaultDescriptor(item);
+            }
         }
 
         return descriptor;
     }
 
     enum ParseType {
-        SMITHING_TABLE
+        SMITHING_TABLE,
+        CRAFTING_TABLE_INPUT,
+        CRAFTING_TABLE_OUTPUT,
+        STONECUTTER_INPUT,
+        STONECUTTER_OUTPUT,
+        CARTOGRAPHY_TABLE_INPUT,
+        CARTOGRAPHY_TABLE_OUTPUT,
+
+        // we use this two parse types for all blocks similar to furnace:
+        // blast_furnace, smoker, campfire and soul_campfire
+        FURNACE_INPUT,
+        FURNACE_OUTPUT
     }
 
     private Recipe parseShapelessRecipe(Map<String, Object> recipeObject, String craftingBlock) {

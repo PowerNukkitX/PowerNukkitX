@@ -18,7 +18,8 @@ public class FurnaceRecipe extends SmeltingRecipe {
     public FurnaceRecipe(@Nullable String recipeId, Item result, Item ingredient) {
         super(recipeId == null ?
                 RecipeRegistry.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)), RecipeType.FURNACE) :
-                recipeId);
+                recipeId
+        );
         this.ingredients.add(new DefaultDescriptor(ingredient.clone()));
         this.results.add(result.clone());
     }

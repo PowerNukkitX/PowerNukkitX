@@ -13,10 +13,10 @@ public abstract class SmeltingRecipe extends BaseRecipe {
     }
 
     public ItemDescriptor getInput() {
-        return this.ingredients.get(0);
+        return this.ingredients.getFirst();
     }
 
     public Item getResult() {
-        return this.results.get(0);
+        return this.results.getFirst();
     }
 }

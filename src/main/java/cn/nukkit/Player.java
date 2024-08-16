@@ -4617,6 +4617,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public Optional<Inventory> getTopWindow() {
         for (Entry<Inventory, Integer> entry : this.windows.entrySet()) {
+            log.info("window {} is permanent {}", entry, this.permanentWindows.contains(entry.getValue()));
             if (!this.permanentWindows.contains(entry.getValue())) {
                 return Optional.of(entry.getKey());
             }
