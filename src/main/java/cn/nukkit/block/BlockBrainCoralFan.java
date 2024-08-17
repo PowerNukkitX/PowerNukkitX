@@ -29,4 +29,9 @@ public class BlockBrainCoralFan extends BlockCoralFan {
     public Block getDeadCoralFan() {
         return new BlockDeadBrainCoralFan();
     }
+
+    @Override
+    public String getWallFanId() {
+        return BRAIN_CORAL_WALL_FAN;
+    }
 }

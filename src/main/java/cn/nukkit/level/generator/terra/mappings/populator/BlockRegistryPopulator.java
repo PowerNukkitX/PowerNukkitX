@@ -64,7 +64,7 @@ public final class BlockRegistryPopulator {
         try (InputStream stream = BlockRegistryPopulator.class.getClassLoader().getResourceAsStream("mappings/blocks.json")) {
             Map<String, Map<String, Object>> blocks = JSONUtils.from(
                     stream,
-                    new TypeToken<Map<String, Map<String, Object>>>() {
+                    new TypeToken<>() {
                     }
             );
             Object2ObjectOpenHashMap<JeBlockState, cn.nukkit.block.BlockState> MAP1 = new Object2ObjectOpenHashMap<>();

@@ -238,6 +238,8 @@ public interface BlockID {
 
     String BRAIN_CORAL_FAN = "minecraft:brain_coral_fan";
 
+    String BRAIN_CORAL_WALL_FAN = "minecraft:brain_coral_wall_fan";
+
     String BREWING_STAND = "minecraft:brewing_stand";
 
     String BRICK_BLOCK = "minecraft:brick_block";

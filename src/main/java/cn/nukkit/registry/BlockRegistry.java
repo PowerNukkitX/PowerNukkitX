@@ -317,6 +317,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(BRAIN_CORAL, BlockBrainCoral.class);
             register(BRAIN_CORAL_BLOCK, BlockBrainCoralBlock.class);
             register(BRAIN_CORAL_FAN, BlockBrainCoralFan.class);
+            register(BRAIN_CORAL_WALL_FAN, BlockBrainCoralWallFan.class);
             register(BREWING_STAND, BlockBrewingStand.class);
             register(BRICK_BLOCK, BlockBrickBlock.class);
             register(BRICK_DOUBLE_SLAB, BlockBrickDoubleSlab.class);
