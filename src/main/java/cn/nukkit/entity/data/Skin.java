@@ -26,6 +26,7 @@ public class Skin {
     public static final String GEOMETRY_CUSTOM_SLIM = convertLegacyGeometryName("geometry.humanoid.customSlim");
     private static final int PIXEL_SIZE = 4;
     public static final int SINGLE_SKIN_SIZE = 32 * 32 * PIXEL_SIZE;
+    public static final int SKIN_64_32_SIZE = 64 * 32 * PIXEL_SIZE;
     public static final int DOUBLE_SKIN_SIZE = 64 * 64 * PIXEL_SIZE;
     public static final int SKIN_128_64_SIZE = 128 * 64 * PIXEL_SIZE;
     public static final int SKIN_128_128_SIZE = 128 * 128 * PIXEL_SIZE;
