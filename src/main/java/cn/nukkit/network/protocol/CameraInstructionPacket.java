@@ -22,7 +22,6 @@ import java.util.Optional;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Slf4j
 public class CameraInstructionPacket extends DataPacket {
     public SetInstruction setInstruction;
     public FadeInstruction fadeInstruction;
