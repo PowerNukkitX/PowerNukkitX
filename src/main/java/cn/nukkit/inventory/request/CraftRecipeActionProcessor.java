@@ -122,6 +122,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         } else {
             craft = player.getCraftingGrid();
         }
+        var numberOfRequestedCrafts = action.getNumberOfRequestedCrafts();
         var recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetworkId());
         Input input = craft.getInput();
         Item[][] data = input.getData();
@@ -144,7 +145,17 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             log.warn("Mismatched recipe! Network id: {},Recipe name: {},Recipe type: {}", action.getRecipeNetworkId(), recipe.getRecipeId(), recipe.getType());
             return context.error();
         } else {
-            context.put(RECIPE_DATA_KEY, recipe);
+            // Validate if the player has provided enough ingredients
+            var itemStackArray = player.getCraftingGrid().getInput().getFlatItems();
+            for (int slot = 0; slot < itemStackArray.length; slot++) {
+                var ingredient = itemStackArray[slot];
+                // Skip empty slot because we have checked item type above
+                if (ingredient.isNull()) continue;
+                if (ingredient.getCount() < numberOfRequestedCrafts) {
+                    log.warn("Not enough ingredients in slot {}! Expected: {}, Actual: {}", slot, numberOfRequestedCrafts, ingredient.getCount());
+                    return context.error();
+                }
+            }
             // Validate the consume action count which client sent
             // 还有一部分检查被放在了ConsumeActionProcessor里面（例如消耗物品数量检查）
             var consumeActions = findAllConsumeActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1);
@@ -156,9 +167,11 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             if (recipe.getResults().size() == 1) {
                 // 若配方输出物品为1，客户端将不会发送CreateAction，此时我们直接在CraftRecipeAction输出物品到CREATED_OUTPUT
                 // 若配方输出物品为多个，客户端将会发送CreateAction，此时我们将在CreateActionProcessor里面输出物品到CREATED_OUTPUT
-                var output = recipe.getResults().getFirst();
+                var output = recipe.getResults().getFirst().clone();
+                output.setCount(output.getCount() * numberOfRequestedCrafts);
                 var createdOutput = player.getCreativeOutputInventory();
                 createdOutput.setItem(0, output.clone().autoAssignStackNetworkId(), false);
+                context.put(RECIPE_DATA_KEY, recipe);
             }
         }
         return null;

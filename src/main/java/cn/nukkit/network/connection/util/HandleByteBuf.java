@@ -1602,11 +1602,11 @@ public class HandleByteBuf extends ByteBuf {
             );
             case CRAFT_RECIPE -> new CraftRecipeAction(
                     readUnsignedVarInt(),
-                    readVarInt()
+                    readUnsignedVarInt()
             );
             case CRAFT_CREATIVE -> new CraftCreativeAction(
                     readUnsignedVarInt(),
-                    readVarInt()
+                    readUnsignedVarInt()
             );
             case CRAFT_NON_IMPLEMENTED_DEPRECATED -> new CraftNonImplementedAction();
             default -> throw new UnsupportedOperationException("Unhandled stack request action type: " + type);
