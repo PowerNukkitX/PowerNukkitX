@@ -40,7 +40,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             return context.error();
         }
         if (sourItem.getCount() < count) {
-            log.warn("transfer an item that has not enough count is not allowed");
+            log.warn("transfer an item that has not enough count is not allowed. Expected: {}, Actual: {}", sourItem.getCount(), count);
             return context.error();
         }
 

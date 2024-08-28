@@ -5,6 +5,7 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
@@ -1208,7 +1209,26 @@ public class HandleByteBuf extends ByteBuf {
 
         ByteBuf userDataBuf = ByteBufAllocator.DEFAULT.ioBuffer();
         try (LittleEndianByteBufOutputStream stream = new LittleEndianByteBufOutputStream(userDataBuf)) {
-            if (item.hasCompoundTag()) {
+
+            Block block = item.getBlockUnsafe();
+            int data = item.getDamage();
+
+            if ((item instanceof ItemDurable && data != 0) || block != null) {
+                byte[] nbt = item.getCompoundTag();
+                CompoundTag tag;
+                if (nbt == null || nbt.length == 0) {
+                    tag = new CompoundTag();
+                } else {
+                    tag = NBTIO.read(nbt, ByteOrder.LITTLE_ENDIAN);
+                }
+                if (tag.contains("Damage")) {
+                    tag.put("__DamageConflict__", tag.removeAndGet("Damage"));
+                }
+                tag.putInt("Damage", data);
+                stream.writeShort(-1);
+                stream.writeByte(1); // Hardcoded in current version
+                stream.write(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
+            } else if (item.hasCompoundTag()) {
                 stream.writeShort(-1);
                 stream.writeByte(1); // Hardcoded in current version
                 stream.write(NBTIO.write(item.getNamedTag(), ByteOrder.LITTLE_ENDIAN));
@@ -1582,11 +1602,11 @@ public class HandleByteBuf extends ByteBuf {
             );
             case CRAFT_RECIPE -> new CraftRecipeAction(
                     readUnsignedVarInt(),
-                    readVarInt()
+                    readUnsignedVarInt()
             );
             case CRAFT_CREATIVE -> new CraftCreativeAction(
                     readUnsignedVarInt(),
-                    readVarInt()
+                    readUnsignedVarInt()
             );
             case CRAFT_NON_IMPLEMENTED_DEPRECATED -> new CraftNonImplementedAction();
             default -> throw new UnsupportedOperationException("Unhandled stack request action type: " + type);

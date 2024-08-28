@@ -13,6 +13,7 @@ import cn.nukkit.utils.OptionalValue;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 import java.util.Optional;
@@ -45,37 +46,39 @@ public class CameraInstructionPacket extends DataPacket {
             byteBuf.writeNotNull(s.getPos(), byteBuf::writeVector3f);
             byteBuf.writeNotNull(s.getRot(), byteBuf::writeVector2f);
             byteBuf.writeNotNull(s.getFacing(), byteBuf::writeVector3f);
+            byteBuf.writeNotNull(s.getViewOffset(), byteBuf::writeVector2f);
             byteBuf.writeOptional(s.getDefaultPreset(), byteBuf::writeBoolean);
         });
+
         if (clearInstruction == null) {
             byteBuf.writeBoolean(false);
         } else {
             byteBuf.writeBoolean(true);//optional.isPresent
             byteBuf.writeBoolean(true);//actual data
         }
+
         byteBuf.writeNotNull(fadeInstruction, (f) -> {
             byteBuf.writeNotNull(f.getTime(), t -> this.writeTimeData(byteBuf, t));
             byteBuf.writeNotNull(f.getColor(), c -> this.writeColor(byteBuf, c));
         });
-        if (this.targetInstruction == null) {
-            byteBuf.writeBoolean(false);
-        } else {
-            byteBuf.writeBoolean(true);
-            if (this.targetInstruction.getTargetCenterOffset() != null) {
-                byteBuf.writeVector3f(this.targetInstruction.getTargetCenterOffset());
-            }
+
+        byteBuf.writeNotNull(targetInstruction, target -> {
+            byteBuf.writeNotNull(target.getTargetCenterOffset(), byteBuf::writeVector3f);
             byteBuf.writeLongLE(this.targetInstruction.getUniqueEntityId());
-        }
-        byteBuf.writeOptional(OptionalValue.of(this.removeTarget.isPresent()), byteBuf::writeBoolean);
+        });
+
+        byteBuf.writeOptional(this.removeTarget.toOptionalValue(), byteBuf::writeBoolean);
     }
 
     public void setInstruction(CameraInstruction instruction) {
-        if (instruction instanceof SetInstruction se) {
-            this.setInstruction = se;
-        } else if (instruction instanceof FadeInstruction fa) {
-            this.fadeInstruction = fa;
-        } else if (instruction instanceof ClearInstruction cl) {
-            this.clearInstruction = cl;
+        switch (instruction) {
+            case SetInstruction set -> this.setInstruction = set;
+            case FadeInstruction fade -> this.fadeInstruction = fade;
+            case ClearInstruction clear -> this.clearInstruction = clear;
+            case TargetInstruction target -> this.targetInstruction = target;
+            default -> {
+
+            }
         }
     }
 

@@ -87,4 +87,9 @@ public enum OptionalBoolean {
                 value ? "OptionalBoolean[true]" :
                         "OptionalBoolean[false]";
     }
+
+
+    public OptionalValue<Boolean> toOptionalValue() {
+        return OptionalValue.ofNullable(this.value);
+    }
 }

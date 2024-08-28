@@ -1,6 +1,5 @@
 package cn.nukkit.level.format.palette;
 
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
@@ -15,6 +14,7 @@ import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.LinkedCompoundTag;
 import cn.nukkit.nbt.tag.TreeMapCompoundTag;
+import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.ByteBufVarInt;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.SemVersion;
@@ -24,6 +24,7 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.Pair;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.common.reflection.qual.UnknownMethod;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -208,45 +209,59 @@ public class Palette<V> {
         if (p == null)
             return;
 
-        if (p.left() == null) {
+        final V unknownState = (V) BlockUnknown.PROPERTIES.getDefaultState();
+        V resultingBlockState = unknownState;
+        SemVersion semVersion = p.right();
+
+        if (semVersion == null) {
+            semVersion = ProtocolInfo.MINECRAFT_SEMVERSION;
+        }
+
+        int version = CompoundTagUpdaterContext.makeVersion(semVersion.major(), semVersion.minor(), semVersion.patch());
+
+        boolean isBlockOutdated = false;
+
+        if (p.left() == null) {     // is blockStateHash null
+            isBlockOutdated = true;
+        } else {
+            int hash = p.left();
+            V currentState = deserializer.deserialize(hash);
+            if (hash != -2 && currentState == unknownState) {
+                byteBuf.resetReaderIndex();
+                isBlockOutdated = true;
+            } else {
+                resultingBlockState = currentState;
+            }
+        }
+
+        if (isBlockOutdated) {
             CompoundTag oldBlockNbt = (CompoundTag) input.readTag();
-            SemVersion semVersion = p.right();
-            int version = CompoundTagUpdaterContext.makeVersion(semVersion.major(), semVersion.minor(), semVersion.patch());
             CompoundTag newNbtMap = BlockStateUpdaters.updateBlockState(oldBlockNbt, version);
-            var states = new TreeMapCompoundTag(newNbtMap.getCompound("states").getTags());
-            var newBlockNbt = new CompoundTag()
+            TreeMapCompoundTag states = new TreeMapCompoundTag(newNbtMap.getCompound("states").getTags());
+
+            CompoundTag newBlockNbt = new CompoundTag()
                     .putString("name", newNbtMap.getString("name"))
                     .putCompound("states", states);
 
-            final int hash = HashUtils.fnv1a_32_nbt(newBlockNbt);
-            V deserialize = deserializer.deserialize(hash);
-            if (hash != -2 && deserialize == BlockUnknown.PROPERTIES.getDefaultState() && Server.getInstance().getSettings().baseSettings().saveUnknownBlock()) {
-                log.warn("missing block palette, block_hash: {}, block_id: {}", hash, newBlockNbt.getString("name"));
-                BlockState blockState = BlockState.makeUnknownBlockState(hash, new LinkedCompoundTag()
-                        .putString("name", newNbtMap.getString("name"))
-                        .putCompound("states", states)
-                        .putInt("version", newNbtMap.getInt("version")));
-                deserialize = (V) blockState;
+            int hash = HashUtils.fnv1a_32_nbt(newBlockNbt);
+
+            resultingBlockState = deserializer.deserialize(hash);
+
+            // we send a warning if the resultingBlockState is null or unknown after updating it.
+            // this way the only possibility is that the block hash is not represented in block_palette.nbt
+            if (resultingBlockState == null || resultingBlockState == unknownState) {
+                resultingBlockState = unknownState;
+                log.warn("missing block palette, blockHash: {}, blockId {}", hash, oldBlockNbt.getString("name"));
             }
-            if (deserialize != null) {
-                this.palette.add(deserialize);
+        }
+
+        if (resultingBlockState == unknownState) {
+            boolean replaceWithUnknown = Server.getInstance().getSettings().baseSettings().saveUnknownBlock();
+            if (replaceWithUnknown) {
+                this.palette.add(resultingBlockState);
             }
-        } else {
-            final int hash = p.left();
-            V deserialize = deserializer.deserialize(hash);
-            if (hash != -2 && deserialize == BlockUnknown.PROPERTIES.getDefaultState() && Server.getInstance().getSettings().baseSettings().saveUnknownBlock()) {
-                byteBuf.resetReaderIndex();
-                CompoundTag oldBlockNbt = (CompoundTag) input.readTag();
-                log.warn("missing block palette, block_hash: {}, block_id: {} -", hash, oldBlockNbt.getString("name"));
-                BlockState blockState = BlockState.makeUnknownBlockState(hash, new LinkedCompoundTag()
-                        .putString("name", oldBlockNbt.getString("name"))
-                        .putCompound("states", new TreeMapCompoundTag(oldBlockNbt.getCompound("states").getTags()))
-                        .putInt("version", oldBlockNbt.getInt("version")));
-                deserialize = (V) blockState;
-            }
-            if (deserialize != null) {
-                this.palette.add(deserialize);
-            }
+        } else if (resultingBlockState != null) {
+            this.palette.add(resultingBlockState);
         }
     }
 
