@@ -53,6 +53,10 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     }
 
     protected void moveCollidedEntities() {
+        if (this.closed || this.level == null) {
+            return;
+        }
+
         var pushDirection = this.extending ? facing : facing.getOpposite();
         for (var pos : this.attachedBlocks) {
             var blockEntity = this.level.getBlockEntity(pos.getSide(pushDirection));
@@ -97,7 +101,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
      * This method initializes the state prior to movement, including setting whether the structure is extending or contracting,
      * progress, state, and updates relevant moving data.
      *
-     * @param extending A boolean indicating whether is extending
+     * @param extending      A boolean indicating whether is extending
      * @param attachedBlocks A list of BlockVector3 representing the blocks attached to the moving block.
      */
     public void preMove(boolean extending, List<BlockVector3> attachedBlocks) {
@@ -114,6 +118,10 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     //需要先调用preMove
     public void move() {
+        if (this.closed || this.level == null) {
+            return;
+        }
+
         //开始推动
         this.lastProgress = this.extending ? 0 : 1;
         this.moveCollidedEntities();
@@ -163,7 +171,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                     moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
                 }
             }
-            for (var update : redstoneUpdateList){
+            for (var update : redstoneUpdateList) {
                 //红石更新
                 RedstoneComponent.updateAllAroundRedstone(new Position(update.x, update.y, update.z, this.level));
             }
@@ -267,12 +275,16 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     }
 
     public void updateMovingData(boolean immediately) {
+        if (this.closed || this.level == null) {
+            return;
+        }
+
         var packet = this.getSpawnPacket();
         if (!immediately) {
             if (packet != null)
                 this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);
         } else {
-            Server.broadcastPacket(this.getLevel().getChunkPlayers(this.chunk.getX(), this.chunk.getZ()).values(), packet);
+            Server.broadcastPacket(this.level.getChunkPlayers(this.chunk.getX(), this.chunk.getZ()).values(), packet);
         }
     }
 }
