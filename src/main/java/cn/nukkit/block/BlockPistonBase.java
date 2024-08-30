@@ -317,6 +317,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 }
             }
             //开始移动
+
             blockEntity.move();
             if (extending) {
                 this.getLevel().addSound(this, Sound.TILE_PISTON_OUT);
