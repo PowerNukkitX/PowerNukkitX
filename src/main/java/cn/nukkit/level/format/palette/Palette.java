@@ -79,10 +79,10 @@ public class Palette<V> {
         for (int i = 0; i < size; i++) this.palette.add(deserializer.deserialize(ByteBufVarInt.readInt(byteBuf)));
     }
 
-    protected boolean writeEmpty(ByteBuf byteBuf) {
+    protected boolean writeEmpty(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {
         if (this.isEmpty()) {
             byteBuf.writeByte(Palette.getPaletteHeader(BitArrayVersion.V0, true));
-            byteBuf.writeIntLE(0);
+            byteBuf.writeIntLE(serializer.serialize(this.palette.getFirst()));
             return true;
         }
         return false;
@@ -143,7 +143,7 @@ public class Palette<V> {
 
     public void writeToStorageRuntime(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer, Palette<V> last) {
         if (writeLast(byteBuf, last)) return;
-        if (writeEmpty(byteBuf)) return;
+        if (writeEmpty(byteBuf, serializer)) return;
 
         byteBuf.writeByte(Palette.getPaletteHeader(this.bitArray.version(), true));
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
