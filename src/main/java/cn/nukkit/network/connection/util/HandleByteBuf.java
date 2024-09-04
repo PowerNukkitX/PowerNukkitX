@@ -914,6 +914,18 @@ public class HandleByteBuf extends ByteBuf {
         }
     }
 
+
+    public void writeFullContainerName(FullContainerName fullContainerName) {
+        this.writeByte(fullContainerName.getContainer().getId());
+        this.writeIntLE(fullContainerName.getDynamicId());
+    }
+
+
+    public FullContainerName readFullContainerName() {
+        return new FullContainerName(ContainerSlotType.values()[this.readByte()], this.readIntLE());
+    }
+
+
     public void writeUUID(UUID uuid) {
         this.writeBytes(Binary.writeUUID(uuid));
     }

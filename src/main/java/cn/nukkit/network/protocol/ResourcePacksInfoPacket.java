@@ -21,7 +21,6 @@ public class ResourcePacksInfoPacket extends DataPacket {
     public boolean scripting;
     public boolean hasAddonPacks;
 
-    public boolean forceServerPacks;
     public ResourcePack[] behaviourPackEntries = ResourcePack.EMPTY_ARRAY;
     public ResourcePack[] resourcePackEntries = ResourcePack.EMPTY_ARRAY;
     /**
@@ -40,7 +39,6 @@ public class ResourcePacksInfoPacket extends DataPacket {
         byteBuf.writeBoolean(this.mustAccept);
         byteBuf.writeBoolean(this.hasAddonPacks);
         byteBuf.writeBoolean(this.scripting);
-        byteBuf.writeBoolean(this.forceServerPacks);
         this.encodePacks(byteBuf, this.behaviourPackEntries, true);
         this.encodePacks(byteBuf, this.resourcePackEntries, false);
         byteBuf.writeUnsignedVarInt(getCDNEntries().size());
@@ -102,14 +100,6 @@ public class ResourcePacksInfoPacket extends DataPacket {
 
     public void setResourcePackEntries(ResourcePack[] resourcePackEntries) {
         this.resourcePackEntries = resourcePackEntries;
-    }
-
-    public boolean isForcingServerPacksEnabled() {
-        return forceServerPacks;
-    }
-
-    public void setForcingServerPacksEnabled(boolean forcingServerPacksEnabled) {
-        this.forceServerPacks = forcingServerPacksEnabled;
     }
 
     public void setCDNEntries(List<CDNEntry> CDNEntries) {

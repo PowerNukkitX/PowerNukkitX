@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -16,7 +17,8 @@ public class InventoryContentPacket extends DataPacket {
 
     public int inventoryId;
     public Item[] slots = Item.EMPTY_ARRAY;
-    private int dynamicInventoryId;
+    public FullContainerName fullContainerName;
+    public int dynamicContainerSize;
 
     @Override
     public int pid() {
@@ -35,7 +37,8 @@ public class InventoryContentPacket extends DataPacket {
         for (Item slot : this.slots) {
             byteBuf.writeSlot(slot);
         }
-        byteBuf.writeUnsignedVarInt(this.dynamicInventoryId);
+        byteBuf.writeFullContainerName(this.fullContainerName);
+        byteBuf.writeUnsignedVarInt(this.dynamicContainerSize);
     }
 
     public void handle(PacketHandler handler) {
