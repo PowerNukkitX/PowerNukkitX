@@ -17,7 +17,10 @@ public class CameraPreset {
     private Vector3f pos;
     private Float yaw;
     private Float pitch;
+    private Float rotationSpeed;
+    private OptionalBoolean snapToTarget;
     private Vector2f viewOffset;
+    private Vector3f entityOffset;
     private Float radius;
     private CameraAudioListener listener;
     private OptionalBoolean playEffect;

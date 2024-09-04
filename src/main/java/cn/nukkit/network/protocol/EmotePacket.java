@@ -33,7 +33,7 @@ public class EmotePacket extends DataPacket {
         this.emoteID = byteBuf.readString();
         this.xuid = byteBuf.readString();
         this.platformId = byteBuf.readString();
-        this.flags = (byte) byteBuf.readByte();
+        this.flags = byteBuf.readByte();
     }
 
     @Override

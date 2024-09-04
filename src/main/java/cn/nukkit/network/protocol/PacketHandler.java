@@ -549,4 +549,7 @@ public interface PacketHandler {
 
     default void handle(ClientboundCloseFormPacket pk) {
     }
+
+    default void handle(CameraAimAssistPacket pk){
+    }
 }
