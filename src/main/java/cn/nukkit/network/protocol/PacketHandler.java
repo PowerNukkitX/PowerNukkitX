@@ -61,6 +61,9 @@ public interface PacketHandler {
     default void handle(BossEventPacket pk) {
     }
 
+    default void handle(CameraAimAssistPacket pk){
+    }
+
     default void handle(CameraInstructionPacket pk) {
     }
 
@@ -80,6 +83,9 @@ public interface PacketHandler {
     }
 
     default void handle(ChunkRadiusUpdatedPacket pk) {
+    }
+
+    default void handle(ClientboundCloseFormPacket pk) {
     }
 
     default void handle(ClientCacheStatusPacket pk) {
@@ -116,6 +122,9 @@ public interface PacketHandler {
     }
 
     default void handle(ContainerOpenPacket pk) {
+    }
+
+    default void handle(ContainerRegistryCleanupPacket pk) {
     }
 
     default void handle(ContainerSetDataPacket pk) {
@@ -547,9 +556,5 @@ public interface PacketHandler {
     default void handle(ServerboundLoadingScreenPacket pk) {
     }
 
-    default void handle(ClientboundCloseFormPacket pk) {
-    }
 
-    default void handle(CameraAimAssistPacket pk){
-    }
 }

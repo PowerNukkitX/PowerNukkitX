@@ -924,6 +924,15 @@ public class HandleByteBuf extends ByteBuf {
         return Binary.readUUID(bytes);
     }
 
+    public void writeFullContainerName(FullContainerName fullContainerName) {
+        this.writeByte(fullContainerName.getContainer().getId());
+        this.writeIntLE(fullContainerName.getDynamicId());
+    }
+
+    public FullContainerName readFullContainerName() {
+        return new FullContainerName(ContainerSlotType.values()[this.readByte()], this.readIntLE());
+    }
+
     public void writeImage(SerializedImage image) {
         this.writeIntLE(image.width);
         this.writeIntLE(image.height);
