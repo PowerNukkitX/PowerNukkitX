@@ -3,7 +3,9 @@ package cn.nukkit.entity;
 
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ServerException;
+import lombok.Getter;
 
+import javax.annotation.processing.Generated;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -139,8 +141,8 @@ public class Attribute implements Cloneable {
         return new CompoundTag().putString("Name", attribute.getName())
                 .putFloat("Base", attribute.getDefaultValue())
                 .putFloat("Current", attribute.getValue())
-                .putFloat("DefaultMax", attribute.getMaxValue())
-                .putFloat("DefaultMin", attribute.getMinValue())
+                .putFloat("DefaultMax", attribute.getDefaultMaximum())
+                .putFloat("DefaultMin", attribute.getDefaultMinimum())
                 .putFloat("Max", attribute.getMaxValue())
                 .putFloat("Min", attribute.getMinValue());
     }
@@ -280,6 +282,14 @@ public class Attribute implements Cloneable {
 
     public boolean isSyncable() {
         return this.shouldSend;
+    }
+
+    public float getDefaultMinimum() {
+        return defaultMinimum;
+    }
+
+    public float getDefaultMaximum() {
+        return defaultMaximum;
     }
 
     @Override

@@ -21,7 +21,8 @@ public class ResourcePacksInfoPacket extends DataPacket {
     public boolean scripting;
     public boolean hasAddonPacks;
 
-    public ResourcePack[] behaviourPackEntries = ResourcePack.EMPTY_ARRAY;
+//    public boolean forceServerPacks;
+//    public ResourcePack[] behaviourPackEntries = ResourcePack.EMPTY_ARRAY;
     public ResourcePack[] resourcePackEntries = ResourcePack.EMPTY_ARRAY;
     /**
      * @since v618
@@ -39,7 +40,8 @@ public class ResourcePacksInfoPacket extends DataPacket {
         byteBuf.writeBoolean(this.mustAccept);
         byteBuf.writeBoolean(this.hasAddonPacks);
         byteBuf.writeBoolean(this.scripting);
-        this.encodePacks(byteBuf, this.behaviourPackEntries, true);
+//        byteBuf.writeBoolean(this.forceServerPacks);
+//        this.encodePacks(byteBuf, this.behaviourPackEntries, true);
         this.encodePacks(byteBuf, this.resourcePackEntries, false);
         byteBuf.writeUnsignedVarInt(getCDNEntries().size());
         for (var cdn : getCDNEntries()) {
@@ -86,13 +88,13 @@ public class ResourcePacksInfoPacket extends DataPacket {
         this.scripting = scripting;
     }
 
-    public ResourcePack[] getBehaviourPackEntries() {
-        return behaviourPackEntries;
-    }
-
-    public void setBehaviourPackEntries(ResourcePack[] behaviourPackEntries) {
-        this.behaviourPackEntries = behaviourPackEntries;
-    }
+//    public ResourcePack[] getBehaviourPackEntries() {
+//        return behaviourPackEntries;
+//    }
+//
+//    public void setBehaviourPackEntries(ResourcePack[] behaviourPackEntries) {
+//        this.behaviourPackEntries = behaviourPackEntries;
+//    }
 
     public ResourcePack[] getResourcePackEntries() {
         return resourcePackEntries;
@@ -101,6 +103,14 @@ public class ResourcePacksInfoPacket extends DataPacket {
     public void setResourcePackEntries(ResourcePack[] resourcePackEntries) {
         this.resourcePackEntries = resourcePackEntries;
     }
+
+//    public boolean isForcingServerPacksEnabled() {
+//        return forceServerPacks;
+//    }
+//
+//    public void setForcingServerPacksEnabled(boolean forcingServerPacksEnabled) {
+//        this.forceServerPacks = forcingServerPacksEnabled;
+//    }
 
     public void setCDNEntries(List<CDNEntry> CDNEntries) {
         this.CDNEntries = CDNEntries;

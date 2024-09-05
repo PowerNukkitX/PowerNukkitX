@@ -16,7 +16,7 @@ public class TransferPacket extends DataPacket {
     @Override
     public void decode(HandleByteBuf byteBuf) {
         this.address = byteBuf.readString();
-        this.port = (short) byteBuf.readShortLE();
+        this.port = byteBuf.readShortLE();
         this.reloadWorld = byteBuf.readBoolean();
     }
 

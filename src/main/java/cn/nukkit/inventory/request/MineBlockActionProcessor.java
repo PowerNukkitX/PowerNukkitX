@@ -7,6 +7,7 @@ import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.MineBlockAction;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
@@ -42,9 +43,15 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
 
         if (itemInHand.getDamage() != action.getPredictedDurability()) {
             InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
-            inventorySlotPacket.inventoryId = SpecialWindowId.PLAYER.getId();
+            int id = SpecialWindowId.PLAYER.getId();
+            inventorySlotPacket.inventoryId = id;
             inventorySlotPacket.item = itemInHand;
             inventorySlotPacket.slot = action.getHotbarSlot();
+            inventorySlotPacket.fullContainerName = new FullContainerName(
+                    ContainerSlotType.HOTBAR,
+                    id
+            );
+            inventorySlotPacket.dynamicContainerSize = player.getInventory().getHotbarSize();
             player.dataPacket(inventorySlotPacket);
         }
         var itemStackResponseSlot =

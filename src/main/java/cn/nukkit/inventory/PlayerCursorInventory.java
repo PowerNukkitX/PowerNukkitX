@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventorySlotPacket;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 
 import java.util.Map;
@@ -41,9 +42,15 @@ public class PlayerCursorInventory extends BaseInventory {
         InventorySlotPacket pk = new InventorySlotPacket();
         pk.item = this.getUnclonedItem(index);
         pk.slot = index;
+        pk.dynamicContainerSize = this.getSize();
 
         for (Player player : players) {
-            pk.inventoryId = SpecialWindowId.CURSOR.getId();
+            int id = SpecialWindowId.CURSOR.getId();
+            pk.inventoryId = id;
+            pk.fullContainerName = new FullContainerName(
+                    ContainerSlotType.CURSOR,
+                    id
+            );
             player.dataPacket(pk);
         }
     }
@@ -51,9 +58,15 @@ public class PlayerCursorInventory extends BaseInventory {
     @Override
     public void sendContents(Player... players) {
         InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
-        inventorySlotPacket.inventoryId = SpecialWindowId.CURSOR.getId();
+        int id = SpecialWindowId.CURSOR.getId();
+        inventorySlotPacket.inventoryId = id;
         inventorySlotPacket.item = getUnclonedItem(0);
         inventorySlotPacket.slot = 0;
+        inventorySlotPacket.fullContainerName = new FullContainerName(
+                ContainerSlotType.CURSOR,
+                id
+        );
+        inventorySlotPacket.dynamicContainerSize = this.getSize();
         Server.broadcastPacket(players, inventorySlotPacket);
     }
 }

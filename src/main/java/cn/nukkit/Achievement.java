@@ -11,7 +11,7 @@ import java.util.HashMap;
  */
 public class Achievement {
 
-    public static final HashMap<String, Achievement> achievements = new HashMap<String, Achievement>() {
+    public static final HashMap<String, Achievement> achievements = new HashMap<>() {
         {
             put("mineWood", new Achievement("Getting Wood"));
             put("buildWorkBench", new Achievement("Benchmarking", "mineWood"));

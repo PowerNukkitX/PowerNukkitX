@@ -45,6 +45,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.SneakyThrows;
 import lombok.val;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,6 +69,7 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.function.ToLongFunction;
 
 public class HandleByteBuf extends ByteBuf {
@@ -901,6 +903,14 @@ public class HandleByteBuf extends ByteBuf {
         }
     }
 
+    public <T> T readOptional(T nonPresentValue, Supplier<T> valueReader) {
+        boolean isPresent = this.readBoolean();
+        if (isPresent) {
+            return valueReader.get();
+        }
+        return nonPresentValue;
+    }
+
     /**
      * Writes a list of Attributes to the packet buffer using the standard format.
      */
@@ -914,18 +924,6 @@ public class HandleByteBuf extends ByteBuf {
         }
     }
 
-
-    public void writeFullContainerName(FullContainerName fullContainerName) {
-        this.writeByte(fullContainerName.getContainer().getId());
-        this.writeIntLE(fullContainerName.getDynamicId());
-    }
-
-
-    public FullContainerName readFullContainerName() {
-        return new FullContainerName(ContainerSlotType.values()[this.readByte()], this.readIntLE());
-    }
-
-
     public void writeUUID(UUID uuid) {
         this.writeBytes(Binary.writeUUID(uuid));
     }
@@ -938,11 +936,15 @@ public class HandleByteBuf extends ByteBuf {
 
     public void writeFullContainerName(FullContainerName fullContainerName) {
         this.writeByte(fullContainerName.getContainer().getId());
-        this.writeIntLE(fullContainerName.getDynamicId());
+        this.writeOptional(OptionalValue.ofNullable(fullContainerName.getDynamicId()), this::writeIntLE);
+
     }
 
     public FullContainerName readFullContainerName() {
-        return new FullContainerName(ContainerSlotType.values()[this.readByte()], this.readIntLE());
+        return new FullContainerName(
+                ContainerSlotType.fromId(this.readByte()),
+                this.readOptional(null, this::readIntLE)
+        );
     }
 
     public void writeImage(SerializedImage image) {
