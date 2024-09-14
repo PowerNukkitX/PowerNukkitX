@@ -106,7 +106,9 @@ public final class PlayerChunkManager {
         chunkSendQueue.clear();
         //已经发送的区块不再二次发送
         Sets.SetView<Long> difference = Sets.difference(inRadiusChunks, sentChunks);
-        difference.forEach(v -> chunkSendQueue.enqueue(v.longValue()));
+        for(Long v : difference) {
+            chunkSendQueue.enqueue(v.longValue());
+        }
     }
 
     private void updateInRadiusChunks(int viewDistance, BlockVector3 currentPos) {
