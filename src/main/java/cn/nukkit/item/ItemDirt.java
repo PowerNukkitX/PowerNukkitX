@@ -1,7 +1,9 @@
 package cn.nukkit.item;
 
-public class ItemDirt extends Item {
+import cn.nukkit.block.BlockDirt;
+
+public class ItemDirt extends ItemBlock {
     public ItemDirt() {
-        super(DIRT);
+        super(new BlockDirt());
     }
 }
