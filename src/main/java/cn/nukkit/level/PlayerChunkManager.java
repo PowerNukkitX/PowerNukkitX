@@ -106,7 +106,9 @@ public final class PlayerChunkManager {
         chunkSendQueue.clear();
         //已经发送的区块不再二次发送
         Sets.SetView<Long> difference = Sets.difference(inRadiusChunks, sentChunks);
-        difference.forEach(v -> chunkSendQueue.enqueue(v.longValue()));
+        for(Long v : difference) {
+            chunkSendQueue.enqueue(v.longValue());
+        }
     }
 
     private void updateInRadiusChunks(int viewDistance, BlockVector3 currentPos) {
@@ -127,7 +129,7 @@ public final class PlayerChunkManager {
     private void removeOutOfRadiusChunks() {
         Sets.SetView<Long> difference = Sets.difference(sentChunks, inRadiusChunks);
         //卸载超出范围的区块
-        difference.forEach(hash -> {
+        for(Long hash : difference) {
             int x = Level.getHashX(hash);
             int z = Level.getHashZ(hash);
             if (player.level.unregisterChunkLoader(player, x, z)) {
@@ -137,7 +139,7 @@ public final class PlayerChunkManager {
                     }
                 }
             }
-        });
+        }
         //剩下sentChunks和inRadiusChunks的交集
         sentChunks.removeAll(difference);
     }
