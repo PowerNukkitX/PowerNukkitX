@@ -35,12 +35,6 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
-    protected void initEntity() {
-        this.setMaxHealth(16);
-        super.initEntity();
-    }
-
-    @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
                 this.tickSpread,
@@ -63,6 +57,13 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
         );
+    }
+
+    @Override
+    protected void initEntity() {
+        this.setMaxHealth(16);
+        this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
+        super.initEntity();
     }
 
     @Override
