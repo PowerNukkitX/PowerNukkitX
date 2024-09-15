@@ -64,6 +64,7 @@ public class EntitySlime extends EntityMob implements EntityWalkable {
     @Override
     protected void initEntity() {
         this.setMaxHealth(16);
+        this.diffHandDamage = new float[]{Math.max(0, scale-1), Math.max(0, 2*(scale-1)), Math.max(0, 3*(scale-1))};
         super.initEntity();
     }
 
