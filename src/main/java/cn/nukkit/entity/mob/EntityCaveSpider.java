@@ -3,8 +3,10 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityArthropod;
 import cn.nukkit.entity.EntityWalkable;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -47,5 +49,10 @@ public class EntityCaveSpider extends EntityMob implements EntityWalkable, Entit
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
+    }
+
+    @Override
+    public Item[] getDrops() {
+        return new Item[]{Item.get(Item.STRING, 0, Utils.rand(0, 2))};
     }
 }

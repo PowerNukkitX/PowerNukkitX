@@ -241,6 +241,10 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
          */
         WITHER,
         /**
+         * Damage caused by weather like a snowman takes damage by rain
+         */
+        WEATHER,
+        /**
          * Damage caused by thorns
          */
         THORNS,
