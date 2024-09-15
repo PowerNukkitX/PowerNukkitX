@@ -526,4 +526,9 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
         return addEntity;
     }
+
+    @Override
+    public boolean isBreedingItem(Item item) {
+        return item.getId().equals(Item.GOLDEN_APPLE) || item.getId().equals(Item.GOLDEN_CARROT);
+    }
 }
