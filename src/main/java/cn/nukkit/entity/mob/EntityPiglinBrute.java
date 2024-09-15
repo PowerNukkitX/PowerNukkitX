@@ -66,6 +66,7 @@ public class EntityPiglinBrute extends EntityMob implements EntityWalkable {
     @Override
     protected void initEntity() {
         this.setMaxHealth(50);
+        this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
     }
 
