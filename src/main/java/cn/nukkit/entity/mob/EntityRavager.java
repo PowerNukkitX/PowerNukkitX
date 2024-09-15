@@ -59,6 +59,7 @@ public class EntityRavager extends EntityMob implements EntityWalkable {
     @Override
     protected void initEntity() {
         this.setMaxHealth(100);
+        this.diffHandDamage = new float[]{7f, 12f, 18f};
         super.initEntity();
     }
 
