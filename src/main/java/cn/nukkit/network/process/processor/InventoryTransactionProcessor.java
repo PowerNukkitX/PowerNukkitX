@@ -336,10 +336,8 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 Item useItemDataItem = useItemData.itemInHand;
                 Vector3 directionVector = player.getDirectionVector();
                 //Removing the only clientsided NBT Tag
-                if(useItemDataItem instanceof ItemBlock || useItemDataItem instanceof ItemDurable) {
-                    if(Objects.requireNonNull(useItemDataItem.getNamedTag()).containsInt("Damage")) {
-                        useItemDataItem.getNamedTag().remove("Damage");
-                    }
+                if(Objects.requireNonNull(useItemDataItem.getNamedTag()).containsInt("Damage")) {
+                    useItemDataItem.getNamedTag().remove("Damage");
                 }
                 ////
                 if (player.isCreative()) {
