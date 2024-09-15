@@ -63,6 +63,7 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.PlayerAbility;
+import cn.nukkit.network.protocol.types.SpawnPointType;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
@@ -3325,15 +3326,9 @@ public class Level implements Metadatable {
         Position previousSpawn = this.getSpawnLocation();
         this.requireProvider().setSpawn(pos);
         this.server.getPluginManager().callEvent(new SpawnChangeEvent(this, previousSpawn));
-        SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
-        pk.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
-        pk.x = pos.getFloorX();
-        pk.y = pos.getFloorY();
-        pk.z = pos.getFloorZ();
-        pk.dimension = getDimension();
-        for (Player p : getPlayers().values()) {
-            p.dataPacket(pk);
-        }
+        this.getPlayers().values().stream().filter(player ->
+                player.getSpawn().second() == null || player.getSpawn().second() == SpawnPointType.WORLD
+        ).forEach(player -> player.setSpawn(this.getSpawnLocation(), SpawnPointType.WORLD));
     }
 
     public Position getFuzzySpawnLocation() {
@@ -3685,7 +3680,7 @@ public class Level implements Metadatable {
     }
 
     public Position getSafeSpawn(Vector3 spawn) {
-        return getSafeSpawn(spawn, 16);
+        return getSafeSpawn(spawn, getServer().getSettings().playerSettings().spawnRadius());
     }
 
     public Position getSafeSpawn(Vector3 spawn, int horizontalMaxOffset) {

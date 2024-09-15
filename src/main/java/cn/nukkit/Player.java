@@ -679,14 +679,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             scoreboardManager.onPlayerJoin(this);
         }
 
-        //update compass
-        SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
-        pk.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
-        pk.x = this.level.getSpawnLocation().getFloorX();
-        pk.y = this.level.getSpawnLocation().getFloorY();
-        pk.z = this.level.getSpawnLocation().getFloorZ();
-        pk.dimension = this.level.getDimension();
-        this.dataPacket(pk);
+        if(this.getSpawn().second() == null || this.getSpawn().second() == SpawnPointType.WORLD) {
+            this.setSpawn(this.level.getSafeSpawn(), SpawnPointType.WORLD);
+        } else {
+            //update compass
+            SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
+            pk.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
+            pk.x = this.getSpawn().first().getFloorX();
+            pk.y = this.getSpawn().first().getFloorY();
+            pk.z = this.getSpawn().first().getFloorZ();
+            pk.dimension = this.getSpawn().first().getLevel().getDimension();
+            this.dataPacket(pk);
+        }
 
         this.sendFogStack();
         this.sendCameraPresets();
