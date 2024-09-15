@@ -78,6 +78,7 @@ public class EntitySilverfish extends EntityMob implements EntityWalkable, Entit
     @Override
     public void initEntity() {
         this.setMaxHealth(8);
+        this.diffHandDamage = new float[]{1f, 1f, 1.5f};
         super.initEntity();
     }
 
