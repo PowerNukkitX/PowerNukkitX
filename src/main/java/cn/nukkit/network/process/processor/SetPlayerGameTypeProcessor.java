@@ -19,7 +19,7 @@ public class SetPlayerGameTypeProcessor extends DataPacketProcessor<SetPlayerGam
                 case 5 -> playerHandle.player.getServer().getDefaultGamemode();
                 default -> throw new IllegalStateException("Unexpected value: " + pk.gamemode);
             });
-            Command.broadcastCommandMessage(playerHandle.player, new TranslationContainer("commands.gamemode.success.self", Server.getGamemodeString(playerHandle.player.gamemode)));
+            Command.broadcastCommandMessage(playerHandle.player, new TranslationContainer("commands.gamemode.success.self", Server.getGamemodeString(playerHandle.player.gamemode, true)));
         }
     }
 
