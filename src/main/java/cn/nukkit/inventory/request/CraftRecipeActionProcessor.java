@@ -76,6 +76,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             Item item = first.clone().autoAssignStackNetworkId();
             List<Enchantment> enchantments = enchantOptionData.enchantments();
             item.addEnchantment(enchantments.toArray(Enchantment.EMPTY_ARRAY));
+            if((player.getGamemode() & 0x01) == 0) {
+                player.setExperience(player.getExperience(), player.getExperienceLevel() - enchantOptionData.minLevel());
+            }
             player.getCreativeOutputInventory().setItem(item);
             PlayerEnchantOptionsPacket.RECIPE_MAP.remove(action.getRecipeNetworkId());
             player.regenerateEnchantmentSeed();
