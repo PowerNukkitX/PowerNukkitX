@@ -43,7 +43,7 @@ import static cn.nukkit.utils.Utils.dynamic;
  */
 
 /**
- * Nukkit启动类，包含{@code main}函数。<br>
+ * Nukkit{@code main}<br>
  * The launcher class of Nukkit, including the {@code main} function.
  *
  * @author MagicDroidX(code) @ Nukkit Project
@@ -68,6 +68,11 @@ public class Nukkit {
     public static int CHROME_DEBUG_PORT = -1;
     public static List<String> JS_DEBUG_LIST = new LinkedList<>();
 
+    /**
+     * The main entry point for the Nukkit server.
+     *
+     * @param args Command-line arguments.
+     */
     public static void main(String[] args) {
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
 
@@ -133,7 +138,6 @@ public class Nukkit {
             verbosity = options.valueOf(verbositySpec);
         }
         if (verbosity != null) {
-
             try {
                 Level level = Level.valueOf(verbosity);
                 setLogLevel(level);
@@ -187,12 +191,22 @@ public class Nukkit {
         Runtime.getRuntime().halt(0); // force exit
     }
 
+    /**
+     * Determines if a short title is required based on the operating system.
+     *
+     * @return True if a short title is required, false otherwise.
+     */
     private static boolean requiresShortTitle() {
-        //Shorter title for windows 8/2012
+        // Shorter title for Windows 8/2012
         String osName = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
         return osName.contains("windows") && (osName.contains("windows 8") || osName.contains("2012"));
     }
 
+    /**
+     * Retrieves Git information from the `git.properties` file.
+     *
+     * @return A Properties object containing Git information.
+     */
     private static Properties getGitInfo() {
         InputStream gitFileStream = null;
         try {
@@ -212,6 +226,11 @@ public class Nukkit {
         return properties;
     }
 
+    /**
+     * Retrieves the version of the project from the `git.properties` file.
+     *
+     * @return The project version as a String.
+     */
     private static String getVersion() {
         InputStream resourceAsStream = null;
         try {
@@ -238,6 +257,11 @@ public class Nukkit {
         }
     }
 
+    /**
+     * Retrieves the Git commit ID from the `git.properties` file.
+     *
+     * @return The Git commit ID as a String.
+     */
     private static String getGitCommit() {
         StringBuilder version = new StringBuilder();
         version.append("git-");
@@ -248,6 +272,11 @@ public class Nukkit {
         return version.append(commitId).toString();
     }
 
+    /**
+     * Sets the logging level for the application.
+     *
+     * @param level The logging level to set.
+     */
     public static void setLogLevel(Level level) {
         Preconditions.checkNotNull(level, "level");
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
@@ -257,6 +286,11 @@ public class Nukkit {
         ctx.updateLoggers();
     }
 
+    /**
+     * Retrieves the current logging level for the application.
+     *
+     * @return The current logging level.
+     */
     public static Level getLogLevel() {
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration log4jConfig = ctx.getConfiguration();
