@@ -22,13 +22,11 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.block.property.CommonBlockProperties.ALLOW_UNDERWATER_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.EXPLODE_BIT;
 
 public class BlockTnt extends BlockSolid implements RedstoneComponent {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(TNT,
-            EXPLODE_BIT, ALLOW_UNDERWATER_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(TNT, EXPLODE_BIT);
 
     @Override
     @NotNull

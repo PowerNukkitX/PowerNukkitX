@@ -228,6 +228,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(ANDESITE_DOUBLE_SLAB, BlockAndesiteDoubleSlab.class);
             register(ANDESITE_SLAB, BlockAndesiteSlab.class);
             register(ANDESITE_STAIRS, BlockAndesiteStairs.class);
+            register(ANDESITE_WALL, BlockAndesiteWall.class);
             register(ANVIL, BlockAnvil.class);
             register(AZALEA, BlockAzalea.class);
             register(AZALEA_LEAVES, BlockAzaleaLeaves.class);
@@ -323,6 +324,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(BRICK_DOUBLE_SLAB, BlockBrickDoubleSlab.class);
             register(BRICK_SLAB, BlockBrickSlab.class);
             register(BRICK_STAIRS, BlockBrickStairs.class);
+            register(BRICK_WALL, BlockBrickWall.class);
             register(BROWN_CANDLE, BlockBrownCandle.class);
             register(BROWN_CANDLE_CAKE, BlockBrownCandleCake.class);
             register(BROWN_CARPET, BlockBrownCarpet.class);
@@ -534,6 +536,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(DIORITE_DOUBLE_SLAB, BlockDioriteDoubleSlab.class);
             register(DIORITE_SLAB, BlockDioriteSlab.class);
             register(DIORITE_STAIRS, BlockDioriteStairs.class);
+            register(DIORITE_WALL, BlockDioriteWall.class);
             register(DIRT, BlockDirt.class);
             register(DIRT_WITH_ROOTS, BlockDirtWithRoots.class);
             register(DISPENSER, BlockDispenser.class);
@@ -554,6 +557,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(END_STONE, BlockEndStone.class);
             register(END_STONE_BRICK_DOUBLE_SLAB, BlockEndStoneBrickDoubleSlab.class);
             register(END_STONE_BRICK_SLAB, BlockEndStoneBrickSlab.class);
+            register(END_STONE_BRICK_WALL, BlockEndStoneBrickWall.class);
             register(ENDER_CHEST, BlockEnderChest.class);
             register(EXPOSED_CHISELED_COPPER, BlockExposedChiseledCopper.class);
             register(EXPOSED_COPPER, BlockExposedCopper.class);
@@ -596,6 +600,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(GRANITE_DOUBLE_SLAB, BlockGraniteDoubleSlab.class);
             register(GRANITE_SLAB, BlockGraniteSlab.class);
             register(GRANITE_STAIRS, BlockGraniteStairs.class);
+            register(GRANITE_WALL, BlockGraniteWall.class);
             register(GRASS_BLOCK, BlockGrassBlock.class);
             register(GRASS_PATH, BlockGrassPath.class);
             register(GRAVEL, BlockGravel.class);
@@ -781,10 +786,12 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(MOSSY_COBBLESTONE_DOUBLE_SLAB, BlockMossyCobblestoneDoubleSlab.class);
             register(MOSSY_COBBLESTONE_SLAB, BlockMossyCobblestoneSlab.class);
             register(MOSSY_COBBLESTONE_STAIRS, BlockMossyCobblestoneStairs.class);
+            register(MOSSY_COBBLESTONE_WALL, BlockMossyCobblestoneWall.class);
             register(MOSSY_STONE_BRICK_DOUBLE_SLAB, BlockMossyStoneBrickDoubleSlab.class);
             register(MOSSY_STONE_BRICK_SLAB, BlockMossyStoneBrickSlab.class);
             register(MOSSY_STONE_BRICKS, BlockMossyStoneBricks.class);
             register(MOSSY_STONE_BRICK_STAIRS, BlockMossyStoneBrickStairs.class);
+            register(MOSSY_STONE_BRICK_WALL, BlockMossyStoneBrickWall.class);
             register(MOVING_BLOCK, BlockMovingBlock.class);
             register(MUD, BlockMud.class);
             register(MUD_BRICK_DOUBLE_SLAB, BlockMudBrickDoubleSlab.class);
@@ -799,6 +806,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(NETHER_BRICK_FENCE, BlockNetherBrickFence.class);
             register(NETHER_BRICK_SLAB, BlockNetherBrickSlab.class);
             register(NETHER_BRICK_STAIRS, BlockNetherBrickStairs.class);
+            register(NETHER_BRICK_WALL, BlockNetherBrickWall.class);
             register(NETHER_GOLD_ORE, BlockNetherGoldOre.class);
             register(NETHER_SPROUTS, BlockNetherSprouts.class);
             register(NETHER_WART, BlockNetherWart.class);
@@ -920,6 +928,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(PRISMARINE_DOUBLE_SLAB, BlockPrismarineDoubleSlab.class);
             register(PRISMARINE_SLAB, BlockPrismarineSlab.class);
             register(PRISMARINE_STAIRS, BlockPrismarineStairs.class);
+            register(PRISMARINE_WALL, BlockPrismarineWall.class);
             register(PUMPKIN, BlockPumpkin.class);
             register(PUMPKIN_STEM, BlockPumpkinStem.class);
             register(PURPLE_CANDLE, BlockPurpleCandle.class);
@@ -935,6 +944,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(PURPLE_WOOL, BlockPurpleWool.class);
             register(PURPUR_BLOCK, BlockPurpurBlock.class);
             register(PURPUR_DOUBLE_SLAB, BlockPurpurDoubleSlab.class);
+            register(PURPUR_PILLAR, BlockPurpurPillar.class);
             register(PURPUR_SLAB, BlockPurpurSlab.class);
             register(PURPUR_STAIRS, BlockPurpurStairs.class);
             register(QUARTZ_BLOCK, BlockQuartzBlock.class);
@@ -960,11 +970,13 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(RED_NETHER_BRICK_DOUBLE_SLAB, BlockRedNetherBrickDoubleSlab.class);
             register(RED_NETHER_BRICK_SLAB, BlockRedNetherBrickSlab.class);
             register(RED_NETHER_BRICK_STAIRS, BlockRedNetherBrickStairs.class);
+            register(RED_NETHER_BRICK_WALL, BlockRedNetherBrickWall.class);
             register(RED_SAND, BlockRedSand.class);
             register(RED_SANDSTONE, BlockRedSandstone.class);
             register(RED_SANDSTONE_DOUBLE_SLAB, BlockRedSandstoneDoubleSlab.class);
             register(RED_SANDSTONE_SLAB, BlockRedSandstoneSlab.class);
             register(RED_SANDSTONE_STAIRS, BlockRedSandstoneStairs.class);
+            register(RED_SANDSTONE_WALL, BlockRedSandstoneWall.class);
             register(RED_SHULKER_BOX, BlockRedShulkerBox.class);
             register(RED_STAINED_GLASS, BlockRedStainedGlass.class);
             register(RED_STAINED_GLASS_PANE, BlockRedStainedGlassPane.class);
@@ -987,6 +999,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(SANDSTONE_DOUBLE_SLAB, BlockSandstoneDoubleSlab.class);
             register(SANDSTONE_SLAB, BlockSandstoneSlab.class);
             register(SANDSTONE_STAIRS, BlockSandstoneStairs.class);
+            register(SANDSTONE_WALL, BlockSandstoneWall.class);
             register(SCAFFOLDING, BlockScaffolding.class);
             register(SCULK, BlockSculk.class);
             register(SCULK_CATALYST, BlockSculkCatalyst.class);
@@ -1057,6 +1070,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(STONE_BRICK_DOUBLE_SLAB, BlockStoneBrickDoubleSlab.class);
             register(STONE_BRICK_SLAB, BlockStoneBrickSlab.class);
             register(STONE_BRICK_STAIRS, BlockStoneBrickStairs.class);
+            register(STONE_BRICK_WALL, BlockStoneBrickWall.class);
             register(STONE_BUTTON, BlockStoneButton.class);
             register(STONE_PRESSURE_PLATE, BlockStonePressurePlate.class);
             register(STONE_STAIRS, BlockStoneStairs.class);
@@ -1201,6 +1215,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(WEATHERED_DOUBLE_CUT_COPPER_SLAB, BlockWeatheredDoubleCutCopperSlab.class);
             register(WEB, BlockWeb.class);
             register(WEEPING_VINES, BlockWeepingVines.class);
+            register(WET_SPONGE, BlockWetSponge.class);
             register(WHEAT, BlockWheat.class);
             register(WHITE_CANDLE, BlockWhiteCandle.class);
             register(WHITE_CANDLE_CAKE, BlockWhiteCandleCake.class);

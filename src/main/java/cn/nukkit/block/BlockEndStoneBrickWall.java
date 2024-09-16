@@ -6,11 +6,10 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.property.CommonBlockProperties.WALL_BLOCK_TYPE;
+public class BlockEndStoneBrickWall extends BlockWallBase {
 
-public class BlockCobblestoneWall extends BlockWallBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(
-            COBBLESTONE_WALL,
+            END_STONE_BRICK_WALL,
             CommonBlockProperties.WALL_CONNECTION_TYPE_EAST,
             CommonBlockProperties.WALL_CONNECTION_TYPE_NORTH,
             CommonBlockProperties.WALL_CONNECTION_TYPE_SOUTH,
@@ -24,17 +23,17 @@ public class BlockCobblestoneWall extends BlockWallBase {
         return PROPERTIES;
     }
 
-    public BlockCobblestoneWall() {
+    public BlockEndStoneBrickWall() {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockCobblestoneWall(BlockState blockstate) {
+    public BlockEndStoneBrickWall(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
     public String getName() {
-        return "Cobblestone Wall";
+        return "End Stone Brick Wall";
     }
 
     @Override

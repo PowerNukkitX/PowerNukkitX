@@ -3,6 +3,7 @@ package cn.nukkit.network.connection.netty.codec.packet;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.PlayerAuthInputPacket;
 import cn.nukkit.registry.Registries;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -52,6 +53,9 @@ public abstract class BedrockPacketCodec extends MessageToMessageCodec<ByteBuf, 
             if (dataPacket == null) {
                 log.info("Failed to decode packet for packetId {}", wrapper.getPacketId());
                 return;
+            }
+            if (!(dataPacket instanceof PlayerAuthInputPacket)) {
+                log.info("packet {}", dataPacket.toString());
             }
             dataPacket.decode(HandleByteBuf.of(msg));
             wrapper.setPacket(dataPacket);

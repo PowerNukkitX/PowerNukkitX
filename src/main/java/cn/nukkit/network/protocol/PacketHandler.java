@@ -61,7 +61,7 @@ public interface PacketHandler {
     default void handle(BossEventPacket pk) {
     }
 
-    default void handle(CameraAimAssistPacket pk){
+    default void handle(CameraAimAssistPacket pk) {
     }
 
     default void handle(CameraInstructionPacket pk) {
@@ -146,6 +146,9 @@ public interface PacketHandler {
     }
 
     default void handle(DebugInfoPacket pk) {
+    }
+
+    default void handle(ServerboundDiagnosticsPacket pk) {
     }
 
     default void handle(DimensionDataPacket pk) {

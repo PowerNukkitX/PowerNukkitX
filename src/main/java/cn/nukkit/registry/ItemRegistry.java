@@ -113,6 +113,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(CLOCK, ItemClock.class);
             register(COAL, ItemCoal.class);
             register(COAST_ARMOR_TRIM_SMITHING_TEMPLATE, ItemCoastArmorTrimSmithingTemplate.class);
+            register(COBBLESTONE_WALL, ItemCobblestoneWall.class);
             register(COCOA_BEANS, ItemCocoaBeans.class);
             register(COD, ItemCod.class);
             register(COD_BUCKET, ItemCodBucket.class);
@@ -379,6 +380,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(PUMPKIN_PIE, ItemPumpkinPie.class);
             register(PUMPKIN_SEEDS, ItemPumpkinSeeds.class);
             register(PURPLE_DYE, ItemPurpleDye.class);
+            register(PURPUR_BLOCK, ItemPurpurBlock.class);
             register(QUARTZ, ItemQuartz.class);
             register(QUARTZ_BLOCK, ItemQuartzBlock.class);
             register(RABBIT, ItemRabbit.class);
@@ -437,6 +439,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(SPIDER_SPAWN_EGG, ItemSpiderSpawnEgg.class);
             register(SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSpireArmorTrimSmithingTemplate.class);
             register(SPLASH_POTION, ItemSplashPotion.class);
+            register(SPONGE, ItemSponge.class);
             register(SPRUCE_BOAT, ItemSpruceBoat.class);
             register(SPRUCE_CHEST_BOAT, ItemSpruceChestBoat.class);
             register(SPRUCE_SIGN, ItemSpruceSign.class);
