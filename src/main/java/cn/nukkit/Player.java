@@ -1672,7 +1672,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void spawnTo(Player player) {
-        if (this.spawned && player.spawned && this.isAlive() && player.getLevel() == this.level && player.canSee(this)/* && !this.isSpectator()*/) {
+        if (player.spawned && this.isAlive() && player.getLevel() == this.level && player.canSee(this)/* && !this.isSpectator()*/) {
             super.spawnTo(player);
 
             if (this.isSpectator()) {
