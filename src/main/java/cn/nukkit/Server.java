@@ -166,7 +166,9 @@ public class Server {
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
     /**
-     * FJP thread pool responsible for terrain generation, data compression and other computing tasks
+     * ForkJoinPool (FJP) thread pool responsible for terrain generation, data compression,
+     * and other compute-intensive tasks. This thread pool allows parallelization of heavy
+     * operations to improve the overall server performance.
      */
     public final ForkJoinPool computeThreadPool;
     private SimpleCommandMap commandMap;
@@ -178,7 +180,7 @@ public class Server {
     private int maxPlayers;
     private boolean autoSave = true;
     /**
-     * Does the configuration item check the login time.
+     * Indicates whether the configuration item checks the login time.
      */
     public boolean checkLoginTime = false;
     private RCON rcon;
@@ -410,10 +412,11 @@ public class Server {
         log.info(this.getLanguage().tr("nukkit.server.license"));
         this.consoleSender = new ConsoleCommandSender();
 
-        // Initialize metrics
+        // Initialize server performance and usage metrics
         NukkitMetrics.startNow(this);
 
-        {//init
+        // Initialize the server's default
+        {
             Registries.POTION.init();
             Registries.PACKET.init();
             Registries.ENTITY.init();
@@ -441,8 +444,12 @@ public class Server {
             DispenseBehaviorRegister.init();
         }
 
-        if (useTerra) {//load terra
+        // Load Terra generator if enabled in the server properties
+        if (useTerra) {
             PNXPlatform instance = PNXPlatform.getInstance();
+            if (instance == null) {
+                log.warn("Failed to initialize Terra generator: PNXPlatform instance is null.");
+            }
         }
 
         freezableArrayManager = new FreezableArrayManager(
@@ -549,7 +556,7 @@ public class Server {
     private void loadLevels() {
         File file = new File(this.getDataPath() + "/worlds");
         if (!file.isDirectory()) throw new RuntimeException("worlds isn't directory");
-        //load all world from `worlds` folder
+        // Load all worlds from the `worlds` folder
         for (var f : Objects.requireNonNull(file.listFiles(File::isDirectory))) {
             LevelConfig levelConfig = getLevelConfig(f.getName());
             if (levelConfig != null && !levelConfig.enable()) {
@@ -570,10 +577,10 @@ public class Server {
             }
 
             if (!this.loadLevel(levelFolder)) {
-                //default world not exist
-                //generate the default world
+                // Default world does not exist
+                // Generate the default world
                 HashMap<Integer, LevelConfig.GeneratorConfig> generatorConfig = new HashMap<>();
-                //spawn seed
+                // Spawn seed
                 long seed;
                 String seedString = String.valueOf(this.properties.get(ServerPropertiesKeys.LEVEL_SEED, System.currentTimeMillis()));
                 try {
@@ -594,33 +601,57 @@ public class Server {
     // ─────────────────────────────────────────────────────
 
     /**
-     * Reload Server
+     * Reloads the server by saving the current state, disabling plugins, reloading properties, and re-enabling plugins.
+     * This method performs the following steps:
+     * 1. Saves all loaded levels.
+     * 2. Saves the scoreboard manager state.
+     * 3. Disables and clears all plugins.
+     * 4. Clears all registered commands.
+     * 5. Reloads server properties and updates the maximum number of players.
+     * 6. Reloads ban lists and whitelist.
+     * 7. Blocks IP addresses from the ban list.
+     * 8. Registers the Java plugin loader.
+     * 9. Reloads the scoreboard manager state.
+     * 10. Reloads various registries.
+     * 11. Loads plugins from the plugin path.
+     * 12. Reloads the function manager.
+     * 13. Enables plugins in the specified load order.
+     * 14. Calls the ServerStartedEvent.
      */
     public void reload() {
         log.info("Reloading...");
         log.info("Saving levels...");
 
+        // Save all loaded levels
         for (Level level : this.levelArray) {
             level.save();
         }
 
+        // Save the scoreboard manager state
         this.scoreboardManager.save();
+
+        // Disable and clear all plugins
         this.pluginManager.disablePlugins();
         this.pluginManager.clearPlugins();
+
+        // Clear all registered commands
         this.commandMap.clearCommands();
 
         log.info("Reloading properties...");
+        // Reload server properties
         this.properties.reload();
         this.maxPlayers = this.properties.get(ServerPropertiesKeys.MAX_PLAYERS, 20);
         if (this.properties.get(ServerPropertiesKeys.HARDCORE, false) && this.getDifficulty() < 3) {
             this.properties.get(ServerPropertiesKeys.DIFFICULTY, difficulty = 3);
         }
 
+        // Reload ban lists and whitelist
         this.banByIP.load();
         this.banByName.load();
         this.reloadWhitelist();
         this.operators.reload();
 
+        // Block IP addresses from the ban list
         for (BanEntry entry : this.getIPBans().getEntires().values()) {
             try {
                 this.getNetwork().blockAddress(InetAddress.getByName(entry.getName()), -1);
@@ -629,15 +660,19 @@ public class Server {
             }
         }
 
+        // Register the Java plugin loader
         this.pluginManager.registerInterface(JavaPluginLoader.class);
-        //todo enable js plugin when adapt
-//        JSIInitiator.reset();
-//        JSFeatures.clearFeatures();
-//        JSFeatures.initInternalFeatures();
-//        this.pluginManager.registerInterface(JSPluginLoader.class);
+        // todo enable js plugin when adapt
+        // JSIInitiator.reset();
+        // JSFeatures.clearFeatures();
+        // JSFeatures.initInternalFeatures();
+        // this.pluginManager.registerInterface(JSPluginLoader.class);
+
+        // Reload the scoreboard manager state
         this.scoreboardManager.read();
 
         log.info("Reloading Registries...");
+        // Reload various registries
         {
             Registries.POTION.reload();
             Registries.PACKET.reload();
@@ -658,11 +693,16 @@ public class Server {
             Enchantment.reload();
         }
 
+        // Load plugins from the plugin path
         this.pluginManager.loadPlugins(this.pluginPath);
+
+        // Reload the function manager
         this.functionManager.reload();
 
+        // Enable plugins in the specified load order
         this.enablePlugins(PluginLoadOrder.STARTUP);
         {
+            // Trim various registries to remove unused entries
             Registries.POTION.trim();
             Registries.PACKET.trim();
             Registries.ENTITY.trim();
@@ -681,19 +721,38 @@ public class Server {
             Registries.RECIPE.trim();
         }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
+
+        // Call the ServerStartedEvent
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
         getPluginManager().callEvent(serverStartedEvent);
     }
 
     /**
-     * Shut down the server
+     * Shuts down the server by setting the running state to false.
      */
     public void shutdown() {
         isRunning.compareAndSet(true, false);
     }
 
     /**
-     * Force Shut down the server
+     * Forcefully shuts down the server by stopping all tasks, saving data, and closing network interfaces.
+     * This method performs the following steps:
+     * 1. Sets the running state to false.
+     * 2. Calls the ServerStopEvent.
+     * 3. Closes the RCON connection if it exists.
+     * 4. Closes all player connections with a shutdown message.
+     * 5. Saves server settings.
+     * 6. Disables all plugins.
+     * 7. Removes all event handlers.
+     * 8. Saves scoreboard data.
+     * 9. Stops all scheduled tasks.
+     * 10. Unloads all levels.
+     * 11. Closes the position tracking service if it exists.
+     * 12. Closes the console thread.
+     * 13. Shuts down network interfaces.
+     * 14. Closes the player data database.
+     * 15. Stops the watchdog and metrics.
+     * 16. Shuts down the compute thread pool.
      */
     public void forceShutdown() {
         if (this.hasStopped) {
@@ -747,12 +806,12 @@ public class Server {
             log.debug("Stopping network interfaces");
             network.shutdown();
             playerDataDB.close();
-            //close watchdog and metrics
+            // Close the watchdog and stop the metrics
             if (this.watchdog != null) {
                 this.watchdog.running = false;
             }
             NukkitMetrics.closeNow(this);
-            //close threadPool
+            // Close the computeThreadPool to ensure all tasks are completed and resources are released
             ForkJoinPool.commonPool().shutdownNow();
             this.computeThreadPool.shutdownNow();
             //todo other things
@@ -762,6 +821,16 @@ public class Server {
         }
     }
 
+    /**
+     * Starts the server by initializing network interfaces, setting the tick counter, and calling the ServerStartedEvent.
+     * This method performs the following steps:
+     * 1. Blocks IP addresses from the ban list.
+     * 2. Initializes the tick counter.
+     * 3. Logs the default game mode and network start information.
+     * 4. Calls the ServerStartedEvent.
+     * 5. Starts the tick processor.
+     * 6. Forcefully shuts down the server.
+     */
     public void start() {
         for (BanEntry entry : this.getIPBans().getEntires().values()) {
             try {
@@ -771,7 +840,7 @@ public class Server {
         }
         this.tickCounter = 0;
 
-        log.info(this.getLanguage().tr("nukkit.server.defaultGameMode", getGamemodeString(this.getGamemode())));
+        log.info(this.getLanguage().tr("nukkit.server.defaultGameMode", getGamemodeString(this.getGamemode(), true)));
         log.info(this.getLanguage().tr("nukkit.server.networkStart", TextFormat.YELLOW + (this.getIp().isEmpty() ? "*" : this.getIp()), TextFormat.YELLOW + String.valueOf(this.getPort())));
         log.info(this.getLanguage().tr("nukkit.server.startFinished", String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
 
@@ -781,6 +850,13 @@ public class Server {
         this.forceShutdown();
     }
 
+    /**
+     * Processes server ticks by scheduling a garbage collection task and continuously ticking the server.
+     * This method performs the following steps:
+     * 1. Schedules a garbage collection task to run after 60 ticks.
+     * 2. Continuously ticks the server while it is running.
+     * 3. Sleeps for the allocated time to ensure consistent tick intervals.
+     */
     public void tickProcessor() {
         getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, new Task() {
             @Override
@@ -801,7 +877,7 @@ public class Server {
                     if (next - 0.1 > current) {
                         long allocated = next - current - 1;
                         if (allocated > 0) {
-                            //noinspection BusyWait
+                            // \@SuppressWarnings("BusyWait") - Intentional busy wait to ensure consistent tick intervals
                             Thread.sleep(allocated, 900000);
                         }
                     }
@@ -814,6 +890,16 @@ public class Server {
         }
     }
 
+    /**
+     * Checks and updates the tick rate for each level based on the current tick and tick time.
+     * This method performs the following steps:
+     * 1. Updates players if alwaysTickPlayers is enabled.
+     * 2. Processes ticks for each level.
+     * 3. Adjusts the tick rate for each level based on the tick time.
+     *
+     * @param currentTick The current tick count.
+     * @param tickTime    The time of the current tick in milliseconds.
+     */
     private void checkTickUpdates(int currentTick, long tickTime) {
         if (getSettings().levelSettings().alwaysTickPlayers()) {
             for (Player p : new ArrayList<>(this.players.values())) {
@@ -822,7 +908,7 @@ public class Server {
         }
 
         int baseTickRate = getSettings().levelSettings().baseTickRate();
-        //Do level ticks
+        // Process ticks for each level
         for (Level level : this.getLevels().values()) {
             if (level.getTickRate() > baseTickRate && --level.tickRateCounter > 0) {
                 continue;
@@ -830,7 +916,7 @@ public class Server {
 
             try {
                 long levelTime = System.currentTimeMillis();
-                //Ensures that the server won't try to tick a level without providers.
+                // Ensure the level has a provider before ticking
                 if (level.getProvider().getLevel() == null) {
                     log.warn("Tried to tick Level " + level.getName() + " without a provider!");
                     continue;
@@ -869,6 +955,12 @@ public class Server {
         }
     }
 
+    /**
+     * Performs an automatic save of all online players, levels, and the scoreboard manager.
+     * <p>
+     * This method checks if auto-save is enabled and then iterates through all players and levels,
+     * saving their current state. It also saves the state of the scoreboard manager.
+     */
     public void doAutoSave() {
         if (this.getAutoSave()) {
             for (Player player : new ArrayList<>(this.players.values())) {
@@ -886,6 +978,12 @@ public class Server {
         }
     }
 
+    /**
+     * Main server tick method, responsible for processing server ticks and managing tick timing.
+     * <p>
+     * This method performs various operations including processing network interfaces, checking RCON,
+     * updating players and levels, handling auto-save, and managing tick timing to ensure consistent intervals.
+     */
     private void tick() {
         long tickTime = System.currentTimeMillis();
 
@@ -971,24 +1069,40 @@ public class Server {
         } else {
             this.nextTick += 50;
         }
-
     }
 
+    /**
+     * Retrieves the time of the next scheduled tick.
+     *
+     * @return The time of the next scheduled tick in milliseconds.
+     */
     public long getNextTick() {
         return nextTick;
     }
 
     /**
-     * @return Returns the number of ticks recorded by the server
+     * Retrieves the number of ticks recorded by the server.
+     *
+     * @return The number of ticks recorded by the server.
      */
     public int getTick() {
         return tickCounter;
     }
 
+    /**
+     * Retrieves the current ticks per second (TPS) of the server.
+     *
+     * @return The current TPS of the server.
+     */
     public float getTicksPerSecond() {
         return ((float) Math.round(this.maxTick * 100)) / 100;
     }
 
+    /**
+     * Retrieves the average ticks per second (TPS) of the server.
+     *
+     * @return The average TPS of the server.
+     */
     public float getTicksPerSecondAverage() {
         float sum = 0;
         int count = this.tickAverage.length;
@@ -998,10 +1112,20 @@ public class Server {
         return (float) NukkitMath.round(sum / count, 2);
     }
 
+    /**
+     * Retrieves the current tick usage percentage of the server.
+     *
+     * @return The current tick usage percentage.
+     */
     public float getTickUsage() {
         return (float) NukkitMath.round(this.maxUse * 100, 2);
     }
 
+    /**
+     * Retrieves the average tick usage percentage of the server.
+     *
+     * @return The average tick usage percentage.
+     */
     public float getTickUsageAverage() {
         float sum = 0;
         int count = this.useAverage.length;
@@ -1011,7 +1135,12 @@ public class Server {
         return ((float) Math.round(sum / count * 100)) / 100;
     }
 
-    // TODO: Fix title tick
+    /**
+     * Updates the console title with server statistics.
+     * <p>
+     * This method updates the console title with information such as server version, online players,
+     * memory usage, TPS, and network usage.
+     */
     public void titleTick() {
         if (!Nukkit.ANSI || !Nukkit.TITLE) {
             return;
@@ -1036,6 +1165,11 @@ public class Server {
         System.out.print(title);
     }
 
+    /**
+     * Checks if the server is currently running.
+     *
+     * @return True if the server is running, false otherwise.
+     */
     public boolean isRunning() {
         return isRunning.get();
     }
@@ -1045,17 +1179,27 @@ public class Server {
      * Please remember to clear it after setting.
      *
      * @param busyTime Time in milliseconds
-     * @return id
+     * @return The index of the busy state in the busying time list.
      */
     public int addBusying(long busyTime) {
         this.busyingTime.add(busyTime);
         return this.busyingTime.size() - 1;
     }
 
+    /**
+     * Removes the busy state at the specified index.
+     *
+     * @param index The index of the busy state to be removed.
+     */
     public void removeBusying(int index) {
         this.busyingTime.removeLong(index);
     }
 
+    /**
+     * Retrieves the most recent busying time.
+     *
+     * @return The most recent busying time in milliseconds, or -1 if there are no busying times.
+     */
     public long getBusyingTime() {
         if (this.busyingTime.isEmpty()) {
             return -1;
@@ -1063,10 +1207,20 @@ public class Server {
         return this.busyingTime.getLong(this.busyingTime.size() - 1);
     }
 
+    /**
+     * Retrieves the ticking area manager.
+     *
+     * @return The TickingAreaManager instance.
+     */
     public TickingAreaManager getTickingAreaManager() {
         return tickingAreaManager;
     }
 
+    /**
+     * Retrieves the server launch time.
+     *
+     * @return The server launch time in milliseconds.
+     */
     public long getLaunchTime() {
         return launchTime;
     }
@@ -1075,6 +1229,11 @@ public class Server {
     // ──────── Start of [Server Singleton Region] ─────────
     // ─────────────────────────────────────────────────────
 
+    /**
+     * Retrieves the singleton instance of the Server.
+     *
+     * @return The singleton instance of the Server.
+     */
     public static Server getInstance() {
         return instance;
     }
@@ -1084,16 +1243,20 @@ public class Server {
     // ─────────────────────────────────────────────────────
 
     /**
-     * Broadcast a message to all players.
+     * Broadcasts a message to all players.
      *
-     * @param message The message
-     * @return int Number of players
+     * @param message The message to be broadcasted.
+     * @return The number of players who received the message.
      */
     public int broadcastMessage(String message) {
         return this.broadcast(message, BROADCAST_CHANNEL_USERS);
     }
 
     /**
+     * Broadcasts a message to all players.
+     *
+     * @param message The message to be broadcasted.
+     * @return The number of players who received the message.
      * @see #broadcastMessage(String)
      */
     public int broadcastMessage(TextContainer message) {
@@ -1101,10 +1264,11 @@ public class Server {
     }
 
     /**
-     * Broadcast a message to the specified {@link CommandSender recipients}.
+     * Broadcasts a message to the specified recipients.
      *
-     * @param message The message
-     * @return int Number of {@link CommandSender recipients}
+     * @param message    The message to be broadcasted.
+     * @param recipients The array of CommandSender recipients.
+     * @return The number of recipients who received the message.
      */
     public int broadcastMessage(String message, CommandSender[] recipients) {
         for (CommandSender recipient : recipients) {
@@ -1115,6 +1279,11 @@ public class Server {
     }
 
     /**
+     * Broadcasts a message to the specified recipients.
+     *
+     * @param message    The message to be broadcasted.
+     * @param recipients The collection of CommandSender recipients.
+     * @return The number of recipients who received the message.
      * @see #broadcastMessage(String, CommandSender[])
      */
     public int broadcastMessage(String message, Collection<? extends CommandSender> recipients) {
@@ -1126,6 +1295,11 @@ public class Server {
     }
 
     /**
+     * Broadcasts a message to the specified recipients.
+     *
+     * @param message    The message to be broadcasted.
+     * @param recipients The collection of CommandSender recipients.
+     * @return The number of recipients who received the message.
      * @see #broadcastMessage(String, CommandSender[])
      */
     public int broadcastMessage(TextContainer message, Collection<? extends CommandSender> recipients) {
@@ -1137,12 +1311,11 @@ public class Server {
     }
 
     /**
-     * Get the sender to broadcast a message from the specified permission name, multiple permissions can be specified, split by <b> ; </b><br>
-     * The permission corresponds to a {@link CommandSender Sender} set in {@code PluginManager#permSubs}.
+     * Broadcasts a message to recipients with the specified permissions.
      *
-     * @param message     Message content
-     * @param permissions Permissions name, need to register first through {@link PluginManager#subscribeToPermission subscribeToPermission}
-     * @return int Number of {@link CommandSender senders} who received the message
+     * @param message     The message content to be broadcasted.
+     * @param permissions The permissions required to receive the message, separated by semicolons.
+     * @return The number of recipients who received the message.
      */
     public int broadcast(String message, String permissions) {
         Set<CommandSender> recipients = new HashSet<>();
@@ -1163,6 +1336,11 @@ public class Server {
     }
 
     /**
+     * Broadcasts a message to recipients with the specified permissions.
+     *
+     * @param message     The message content to be broadcasted.
+     * @param permissions The permissions required to receive the message, separated by semicolons.
+     * @return The number of recipients who received the message.
      * @see #broadcast(String, String)
      */
     public int broadcast(TextContainer message, String permissions) {
@@ -1184,12 +1362,12 @@ public class Server {
     }
 
     /**
-     * Execute one line of command as sender.
+     * Executes a command as the specified sender.
      *
-     * @param sender      Command executor
-     * @param commandLine One line of command
-     * @return Returns 0 for failed execution, greater than or equal to 1 for successful execution
-     * @throws ServerException Server exception
+     * @param sender      The command executor.
+     * @param commandLine The command to be executed.
+     * @return 0 if the execution failed, 1 or greater if the execution succeeded.
+     * @throws ServerException If the sender is invalid or an error occurs during execution.
      */
     public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
         // First we need to check if this command is on the main thread or not, if not, warn the user
@@ -1211,21 +1389,21 @@ public class Server {
     }
 
     /**
-     * Execute these commands silently as the console, ignoring permissions.
+     * Executes commands silently as the console, ignoring permissions.
      *
-     * @param commands the commands
-     * @throws ServerException Server exception
+     * @param commands The commands to be executed.
+     * @throws ServerException If an error occurs during execution.
      */
     public void silentExecuteCommand(String... commands) {
         this.silentExecuteCommand(null, commands);
     }
 
     /**
-     * Execute these commands silently as this player, ignoring permissions.
+     * Executes commands silently as the specified player, ignoring permissions.
      *
-     * @param sender   command sender
-     * @param commands the commands
-     * @throws ServerException server exception
+     * @param sender   The command sender.
+     * @param commands The commands to be executed.
+     * @throws ServerException If an error occurs during execution.
      */
     public void silentExecuteCommand(@Nullable Player sender, String... commands) {
         final var revert = new ArrayList<Level>();
@@ -1252,19 +1430,29 @@ public class Server {
     }
 
     /**
-     * Get the console sender
+     * Retrieves the console sender.
      *
-     * @return {@link ConsoleCommandSender}
+     * @return The ConsoleCommandSender instance.
      */
-    //todo: use ticker to check console
     public ConsoleCommandSender getConsoleSender() {
         return consoleSender;
     }
 
+    /**
+     * Retrieves the command map.
+     *
+     * @return The SimpleCommandMap instance.
+     */
     public SimpleCommandMap getCommandMap() {
         return commandMap;
     }
 
+    /**
+     * Retrieves the plugin command by name.
+     *
+     * @param name The name of the command.
+     * @return The PluginIdentifiableCommand instance, or null if not found.
+     */
     public PluginIdentifiableCommand getPluginCommand(String name) {
         Command command = this.commandMap.getCommand(name);
         if (command instanceof PluginIdentifiableCommand) {
@@ -1274,19 +1462,33 @@ public class Server {
         }
     }
 
+    /**
+     * Retrieves the scoreboard manager.
+     *
+     * @return The IScoreboardManager instance.
+     */
     public IScoreboardManager getScoreboardManager() {
         return scoreboardManager;
     }
 
+    /**
+     * Retrieves the function manager.
+     *
+     * @return The FunctionManager instance.
+     */
     public FunctionManager getFunctionManager() {
         return functionManager;
     }
 
-    // endregion
-
-    // region networking
+    // ─────────────────────────────────────────────────────
+    // ──────── Start of [Networking Region] ───────────────
+    // ─────────────────────────────────────────────────────
 
     /**
+     * Broadcasts a data packet to a collection of players.
+     *
+     * @param players The collection of players to receive the data packet.
+     * @param packet  The data packet to be broadcasted.
      * @see #broadcastPacket(Player[], DataPacket)
      */
     public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
@@ -1296,10 +1498,10 @@ public class Server {
     }
 
     /**
-     * Broadcast a packet to the specified players.
+     * Broadcasts a data packet to an array of players.
      *
-     * @param players All players receiving the data package
-     * @param packet  Data packet
+     * @param players The array of players to receive the data packet.
+     * @param packet  The data packet to be broadcasted.
      */
     public static void broadcastPacket(Player[] players, DataPacket packet) {
         for (Player player : players) {
@@ -1307,10 +1509,20 @@ public class Server {
         }
     }
 
+    /**
+     * Retrieves the current query information event.
+     *
+     * @return The current QueryRegenerateEvent instance.
+     */
     public QueryRegenerateEvent getQueryInformation() {
         return this.queryRegenerateEvent;
     }
 
+    /**
+     * Retrieves the network instance.
+     *
+     * @return The Network instance.
+     */
     public Network getNetwork() {
         return network;
     }
@@ -1320,9 +1532,9 @@ public class Server {
     // ─────────────────────────────────────────────────────
 
     /**
-     * Enable plugins in the specified plugin loading order
+     * Enables plugins in the specified plugin loading order.
      *
-     * @param type Plugin loading order
+     * @param type The plugin loading order.
      */
     public void enablePlugins(PluginLoadOrder type) {
         for (Plugin plugin : new ArrayList<>(this.pluginManager.getPlugins().values())) {
@@ -1337,25 +1549,35 @@ public class Server {
     }
 
     /**
-     * Enable a specified plugin
+     * Enables a specified plugin.
      *
-     * @param plugin Plugin instance
+     * @param plugin The plugin instance to enable.
      */
     public void enablePlugin(Plugin plugin) {
         this.pluginManager.enablePlugin(plugin);
     }
 
     /**
-     * Disable all plugins
+     * Disables all plugins.
      */
     public void disablePlugins() {
         this.pluginManager.disablePlugins();
     }
 
+    /**
+     * Retrieves the plugin manager.
+     *
+     * @return The plugin manager instance.
+     */
     public PluginManager getPluginManager() {
         return this.pluginManager;
     }
 
+    /**
+     * Retrieves the service manager.
+     *
+     * @return The service manager instance.
+     */
     public ServiceManager getServiceManager() {
         return serviceManager;
     }
@@ -1364,10 +1586,21 @@ public class Server {
     // ──────── Start of [Players Region] ──────────────────
     // ─────────────────────────────────────────────────────
 
+    /**
+     * Completes the login sequence for a player by sending the full player list data.
+     *
+     * @param player The player who has completed the login sequence.
+     */
     public void onPlayerCompleteLoginSequence(Player player) {
         this.sendFullPlayerListData(player);
     }
 
+    /**
+     * Handles the player login process, including event calling and player registration.
+     *
+     * @param socketAddress The socket address of the player.
+     * @param player        The player who is logging in.
+     */
     public void onPlayerLogin(InetSocketAddress socketAddress, Player player) {
         PlayerLoginEvent ev;
         this.getPluginManager().callEvent(ev = new PlayerLoginEvent(player, "Plugin reason"));
@@ -1382,6 +1615,11 @@ public class Server {
         }
     }
 
+    /**
+     * Adds a player to the list of online players and updates the player list data.
+     *
+     * @param player The player to add to the online players list.
+     */
     @ApiStatus.Internal
     public void addOnlinePlayer(Player player) {
         this.playerList.put(player.getUniqueId(), player);
@@ -1389,6 +1627,11 @@ public class Server {
         this.getNetwork().getPong().playerCount(playerList.size()).update();
     }
 
+    /**
+     * Removes a player from the list of online players and updates the player list data.
+     *
+     * @param player The player to remove from the online players list.
+     */
     @ApiStatus.Internal
     public void removeOnlinePlayer(Player player) {
         if (this.playerList.containsKey(player.getUniqueId())) {
@@ -1400,40 +1643,56 @@ public class Server {
 
             Server.broadcastPacket(this.playerList.values(), pk);
             this.getNetwork().getPong().playerCount(playerList.size()).update();
-            ;
         }
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     * Updates the player list data for all players with the specified player's information.
+     *
+     * @param uuid     The UUID of the player.
+     * @param entityId The entity ID of the player.
+     * @param name     The name of the player.
+     * @param skin     The skin of the player.
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", this.playerList.values());
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     * Updates the player list data for all players with the specified player's information, including Xbox user ID.
+     *
+     * @param uuid       The UUID of the player.
+     * @param entityId   The entity ID of the player.
+     * @param name       The name of the player.
+     * @param skin       The skin of the player.
+     * @param xboxUserId The Xbox user ID of the player.
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, this.playerList.values());
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     * Updates the player list data for the specified players with the specified player's information.
+     *
+     * @param uuid     The UUID of the player.
+     * @param entityId The entity ID of the player.
+     * @param name     The name of the player.
+     * @param skin     The skin of the player.
+     * @param players  The players to receive the updated player list data.
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player[] players) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", players);
     }
 
     /**
-     * Update {@link PlayerListPacket} data packets (i.e. player list data) for specified players
+     * Updates the player list data for the specified players with the specified player's information, including Xbox user ID.
      *
-     * @param uuid       uuid
-     * @param entityId   entity id
-     * @param name       name
-     * @param skin       skin
-     * @param xboxUserId xbox user id
-     * @param players    specified players to receive the data packet
+     * @param uuid       The UUID of the player.
+     * @param entityId   The entity ID of the player.
+     * @param name       The name of the player.
+     * @param skin       The skin of the player.
+     * @param xboxUserId The Xbox user ID of the player.
+     * @param players    The players to receive the updated player list data.
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Player[] players) {
         PlayerListPacket pk = new PlayerListPacket();
@@ -1443,20 +1702,33 @@ public class Server {
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     * Updates the player list data for the specified players with the specified player's information, including Xbox user ID.
+     *
+     * @param uuid       The UUID of the player.
+     * @param entityId   The entity ID of the player.
+     * @param name       The name of the player.
+     * @param skin       The skin of the player.
+     * @param xboxUserId The Xbox user ID of the player.
+     * @param players    The players to receive the updated player list data.
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Collection<Player> players) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, players.toArray(Player.EMPTY_ARRAY));
     }
 
+    /**
+     * Removes the player list data for all players.
+     *
+     * @param uuid The UUID of the player to remove from the player list data.
+     */
     public void removePlayerListData(UUID uuid) {
         this.removePlayerListData(uuid, this.playerList.values());
     }
 
     /**
-     * Remove player list data for all players in the array.
+     * Removes the player list data for the specified players.
      *
-     * @param players Array of players
+     * @param uuid    The UUID of the player to remove from the player list data.
+     * @param players The players to remove the player list data from.
      */
     public void removePlayerListData(UUID uuid, Player[] players) {
         PlayerListPacket pk = new PlayerListPacket();
@@ -1466,11 +1738,11 @@ public class Server {
     }
 
     /**
-     * Remove this player's player list data.
+     * Removes the player list data for the specified player.
      *
-     * @param player Player
+     * @param uuid   The UUID of the player to remove from the player list data.
+     * @param player The player to remove the player list data from.
      */
-
     public void removePlayerListData(UUID uuid, Player player) {
         PlayerListPacket pk = new PlayerListPacket();
         pk.type = PlayerListPacket.TYPE_REMOVE;
@@ -1478,14 +1750,20 @@ public class Server {
         player.dataPacket(pk);
     }
 
+    /**
+     * Removes the player list data for the specified players.
+     *
+     * @param uuid    The UUID of the player to remove from the player list data.
+     * @param players The players to remove the player list data from.
+     */
     public void removePlayerListData(UUID uuid, Collection<Player> players) {
         this.removePlayerListData(uuid, players.toArray(Player.EMPTY_ARRAY));
     }
 
     /**
-     * Send a player list packet to a player.
+     * Sends the full player list data to the specified player.
      *
-     * @param player Player
+     * @param player The player to send the full player list data to.
      */
     public void sendFullPlayerListData(Player player) {
         PlayerListPacket pk = new PlayerListPacket();
@@ -1503,10 +1781,10 @@ public class Server {
     }
 
     /**
-     * Get the player instance from the specified UUID.
+     * Retrieves the player instance from the specified UUID.
      *
-     * @param uuid uuid
-     * @return Player instance, can be null
+     * @param uuid The UUID of the player.
+     * @return An Optional containing the Player instance, or empty if not found.
      */
     public Optional<Player> getPlayer(UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid");
@@ -1514,10 +1792,10 @@ public class Server {
     }
 
     /**
-     * Find the UUID corresponding to the specified player name from the database.
+     * Finds the UUID corresponding to the specified player name from the database.
      *
-     * @param name player name
-     * @return The player's UUID, which can be empty.
+     * @param name The name of the player.
+     * @return An Optional containing the player's UUID, or empty if not found.
      */
     public Optional<UUID> lookupName(String name) {
         byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
@@ -1527,7 +1805,7 @@ public class Server {
         }
 
         if (uuidBytes.length != 16) {
-            log.warn("Invalid uuid in name lookup database detected! Removing");
+            log.warn("Invalid UUID in name lookup database detected! Removing");
             playerDataDB.delete(nameBytes);
             return Optional.empty();
         }
@@ -1537,9 +1815,9 @@ public class Server {
     }
 
     /**
-     * Update the UUID of the specified player name in the database, or add it if it does not exist.
+     * Updates the UUID of the specified player name in the database, or adds it if it does not exist.
      *
-     * @param info the player info
+     * @param info The player info containing the UUID and username.
      */
     void updateName(PlayerInfo info) {
         var uniqueId = info.getUniqueId();
@@ -1561,6 +1839,12 @@ public class Server {
         }
     }
 
+    /**
+     * Retrieves an offline player by name.
+     *
+     * @param name The name of the player.
+     * @return An IPlayer instance representing the offline player.
+     */
     public IPlayer getOfflinePlayer(final String name) {
         IPlayer result = this.getPlayerExact(name.toLowerCase(Locale.ENGLISH));
         if (result != null) {
@@ -1572,10 +1856,10 @@ public class Server {
     }
 
     /**
-     * Get a player instance from the specified UUID, either online or offline.
+     * Retrieves a player instance from the specified UUID, either online or offline.
      *
-     * @param uuid uuid
-     * @return player
+     * @param uuid The UUID of the player.
+     * @return An IPlayer instance representing the player.
      */
     public IPlayer getOfflinePlayer(UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid");
@@ -1588,49 +1872,79 @@ public class Server {
     }
 
     /**
-     * create is false
+     * Retrieves the NBT data of the player specified by UUID.
+     * If the data does not exist, it will not be created.
      *
-     * @see #getOfflinePlayerData(UUID, boolean)
+     * @param uuid The UUID of the player.
+     * @return The CompoundTag containing the player's data.
      */
     public CompoundTag getOfflinePlayerData(UUID uuid) {
         return getOfflinePlayerData(uuid, false);
     }
 
     /**
-     * Get the NBT data of the player specified by UUID
+     * Retrieves the NBT data of the player specified by UUID.
+     * If the data does not exist and the create flag is true, it will create a new entry.
      *
-     * @param uuid   UUID of the player to get data from
-     * @param create If player data does not exist whether to create.
-     * @return {@link CompoundTag}
+     * @param uuid   The UUID of the player.
+     * @param create Whether to create a new entry if the data does not exist.
+     * @return The CompoundTag containing the player's data.
      */
     public CompoundTag getOfflinePlayerData(UUID uuid, boolean create) {
         return getOfflinePlayerDataInternal(uuid, create);
     }
 
+    /**
+     * Retrieves the NBT data of the player specified by name.
+     * If the data does not exist, it will not be created.
+     *
+     * @param name The name of the player.
+     * @return The CompoundTag containing the player's data.
+     */
     public CompoundTag getOfflinePlayerData(String name) {
         return getOfflinePlayerData(name, false);
     }
 
+    /**
+     * Retrieves the NBT data of the player specified by name.
+     * If the data does not exist and the create flag is true, it will create a new entry.
+     *
+     * @param name   The name of the player.
+     * @param create Whether to create a new entry if the data does not exist.
+     * @return The CompoundTag containing the player's data, or null if not found and not created.
+     */
     public CompoundTag getOfflinePlayerData(String name, boolean create) {
         Optional<UUID> uuid = lookupName(name);
         if (uuid.isEmpty()) {
-            log.warn("Invalid uuid in name lookup database detected! Removing");
+            log.warn("Invalid UUID in name lookup database detected! Removing");
             playerDataDB.delete(name.getBytes(StandardCharsets.UTF_8));
             return null;
         }
         return getOfflinePlayerDataInternal(uuid.get(), create);
     }
 
+    /**
+     * Checks if the offline player data exists for the specified name.
+     *
+     * @param name The name of the player.
+     * @return True if the data exists, false otherwise.
+     */
     public boolean hasOfflinePlayerData(String name) {
         Optional<UUID> uuid = lookupName(name);
         if (uuid.isEmpty()) {
-            log.warn("Invalid uuid in name lookup database detected! Removing");
+            log.warn("Invalid UUID in name lookup database detected! Removing");
             playerDataDB.delete(name.getBytes(StandardCharsets.UTF_8));
             return false;
         }
         return hasOfflinePlayerData(uuid.get());
     }
 
+    /**
+     * Checks if the offline player data exists for the specified UUID.
+     *
+     * @param uuid The UUID of the player.
+     * @return True if the data exists, false otherwise.
+     */
     public boolean hasOfflinePlayerData(UUID uuid) {
         ByteBuffer buffer = ByteBuffer.allocate(16);
         buffer.putLong(uuid.getMostSignificantBits());
@@ -1639,6 +1953,14 @@ public class Server {
         return bytes != null;
     }
 
+    /**
+     * Retrieves the offline player data for the specified UUID.
+     * If the data does not exist and the `create` flag is true, it will create a new entry.
+     *
+     * @param uuid   The UUID of the player.
+     * @param create Whether to create a new entry if the data does not exist.
+     * @return The CompoundTag containing the player's data, or null if not found and not created.
+     */
     private CompoundTag getOfflinePlayerDataInternal(UUID uuid, boolean create) {
         if (uuid == null) {
             log.error("UUID is empty, cannot query player data");
@@ -1694,32 +2016,42 @@ public class Server {
     }
 
     /**
-     * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
+     * Saves the offline player data for the specified UUID.
+     *
+     * @param uuid The UUID of the player.
+     * @param tag  The CompoundTag containing the player's data.
      */
     public void saveOfflinePlayerData(UUID uuid, CompoundTag tag) {
         this.saveOfflinePlayerData(uuid, tag, false);
     }
 
     /**
-     * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
+     * Saves the offline player data for the specified UUID, optionally asynchronously.
+     *
+     * @param uuid  The UUID of the player.
+     * @param tag   The CompoundTag containing the player's data.
+     * @param async Whether to save the data asynchronously.
      */
     public void saveOfflinePlayerData(UUID uuid, CompoundTag tag, boolean async) {
         this.saveOfflinePlayerData(uuid.toString(), tag, async);
     }
 
     /**
-     * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
+     * Saves the offline player data for the specified name.
+     *
+     * @param name The name of the player.
+     * @param tag  The CompoundTag containing the player's data.
      */
     public void saveOfflinePlayerData(String name, CompoundTag tag) {
         this.saveOfflinePlayerData(name, tag, false);
     }
 
     /**
-     * Save player data, players can be offline.
+     * Saves the offline player data, players can be offline.
      *
-     * @param nameOrUUid the name or uuid
-     * @param tag        NBT data
-     * @param async      Whether to save asynchronously
+     * @param nameOrUUid The name or UUID of the player.
+     * @param tag        The CompoundTag containing the player's data.
+     * @param async      Whether to save the data asynchronously.
      */
     public void saveOfflinePlayerData(String nameOrUUid, CompoundTag tag, boolean async) {
         UUID uuid = lookupName(nameOrUUid).orElse(UUID.fromString(nameOrUUid));
@@ -1732,7 +2064,7 @@ public class Server {
                     this.onCancel();
                 }
 
-                //doing it like this ensures that the playerdata will be saved in a server shutdown
+                // Ensures that the player data will be saved during a server shutdown
                 @Override
                 public void onCancel() {
                     if (!hasRun.getAndSet(true)) {
@@ -1743,6 +2075,12 @@ public class Server {
         }
     }
 
+    /**
+     * Internal method to save offline player data.
+     *
+     * @param tag  The CompoundTag containing the player's data.
+     * @param uuid The UUID of the player.
+     */
     private void saveOfflinePlayerDataInternal(CompoundTag tag, UUID uuid) {
         try {
             byte[] bytes = NBTIO.writeGZIPCompressed(tag, ByteOrder.BIG_ENDIAN);
@@ -1756,10 +2094,11 @@ public class Server {
     }
 
     /**
-     * Get an online player from the player name, this method is a fuzzy match and will be returned as long as the player name has the name prefix.
+     * Retrieves an online player by name using a fuzzy match.
+     * Returns the player whose name starts with the specified name.
      *
-     * @param name player name
-     * @return Player instance object, failed to get null
+     * @param name The name of the player.
+     * @return The Player instance, or null if not found.
      */
     public Player getPlayer(String name) {
         Player found = null;
@@ -1782,10 +2121,11 @@ public class Server {
     }
 
     /**
-     * Get an online player from a player name, this method is an exact match and returns when the player name string is identical.
+     * Retrieves an online player by name using an exact match.
+     * Returns the player whose name exactly matches the specified name.
      *
-     * @param name player name
-     * @return Player instance object, failed to get null
+     * @param name The name of the player.
+     * @return The Player instance, or null if not found.
      */
     public Player getPlayerExact(String name) {
         name = name.toLowerCase(Locale.ENGLISH);
@@ -1799,10 +2139,10 @@ public class Server {
     }
 
     /**
-     * Specify a partial player name and return all players with or equal to that name.
+     * Retrieves all players whose names contain the specified partial name.
      *
-     * @param partialName partial name
-     * @return All players matched, if not matched then an empty array
+     * @param partialName The partial name to match.
+     * @return An array of matched players, or an empty array if no matches are found.
      */
     public Player[] matchPlayer(String partialName) {
         partialName = partialName.toLowerCase(Locale.ENGLISH);
@@ -1818,6 +2158,11 @@ public class Server {
         return matchedPlayer.toArray(Player.EMPTY_ARRAY);
     }
 
+    /**
+     * Removes a player from the server.
+     *
+     * @param player The player to remove.
+     */
     @ApiStatus.Internal
     public void removePlayer(Player player) {
         Player toRemove = this.players.remove(player.getRawSocketAddress());
@@ -1835,9 +2180,9 @@ public class Server {
     }
 
     /**
-     * Get all online players Map.
+     * Retrieves a map of all online players.
      *
-     * @return All online players Map
+     * @return An immutable map of all online players.
      */
     public Map<UUID, Player> getOnlinePlayers() {
         return ImmutableMap.copyOf(playerList);
@@ -1848,32 +2193,64 @@ public class Server {
     // ─────────────────────────────────────────────────────
 
     /**
-     * @return The name of server
+     * Retrieves the name of the server.
+     *
+     * @return The name of the server, which is "PowerNukkitX".
      */
     public String getName() {
         return "PowerNukkitX";
     }
 
+    /**
+     * Retrieves the version of Nukkit.
+     *
+     * @return The version of Nukkit.
+     */
     public String getNukkitVersion() {
         return Nukkit.VERSION;
     }
 
+    /**
+     * Retrieves the version of Nukkit used for bStats.
+     *
+     * @return The version of Nukkit used for bStats.
+     */
     public String getBStatsNukkitVersion() {
         return Nukkit.VERSION;
     }
 
+    /**
+     * Retrieves the Git commit hash of the current build.
+     *
+     * @return The Git commit hash of the current build.
+     */
     public String getGitCommit() {
         return Nukkit.GIT_COMMIT;
     }
 
+    /**
+     * Retrieves the codename of the current build.
+     *
+     * @return The codename of the current build.
+     */
     public String getCodename() {
         return Nukkit.CODENAME;
     }
 
+    /**
+     * Retrieves the Minecraft version supported by this server.
+     *
+     * @return The Minecraft version supported by this server.
+     */
     public String getVersion() {
         return ProtocolInfo.MINECRAFT_VERSION;
     }
 
+    /**
+     * Retrieves the API version of Nukkit.
+     *
+     * @return The API version of Nukkit.
+     */
     public String getApiVersion() {
         return Nukkit.API_VERSION;
     }
@@ -1882,49 +2259,101 @@ public class Server {
     // ──────── Start of [File Region] ─────────────────────
     // ─────────────────────────────────────────────────────
 
+    /**
+     * Retrieves the file path of the server.
+     *
+     * @return the file path as a String.
+     */
     public String getFilePath() {
         return filePath;
     }
 
+    /**
+     * Retrieves the data path of the server.
+     *
+     * @return the data path as a String.
+     */
     public String getDataPath() {
         return dataPath;
     }
 
+    /**
+     * Retrieves the plugin path of the server.
+     *
+     * @return the plugin path as a String.
+     */
     public String getPluginPath() {
         return pluginPath;
     }
 
     /**
-     * @return server UUID
+     * Retrieves the unique identifier (UUID) of the server.
+     *
+     * @return the server's UUID.
      */
     public UUID getServerUniqueId() {
         return this.serverID;
     }
 
+    /**
+     * Retrieves the main logger instance for the server.
+     *
+     * @return the MainLogger instance.
+     */
     public MainLogger getLogger() {
         return MainLogger.getLogger();
     }
 
+    /**
+     * Retrieves the entity metadata store.
+     *
+     * @return the EntityMetadataStore instance.
+     */
     public EntityMetadataStore getEntityMetadata() {
         return entityMetadata;
     }
 
+    /**
+     * Retrieves the player metadata store.
+     *
+     * @return the PlayerMetadataStore instance.
+     */
     public PlayerMetadataStore getPlayerMetadata() {
         return playerMetadata;
     }
 
+    /**
+     * Retrieves the level metadata store.
+     *
+     * @return the LevelMetadataStore instance.
+     */
     public LevelMetadataStore getLevelMetadata() {
         return levelMetadata;
     }
 
+    /**
+     * Retrieves the resource pack manager.
+     *
+     * @return the ResourcePackManager instance.
+     */
     public ResourcePackManager getResourcePackManager() {
         return resourcePackManager;
     }
 
+    /**
+     * Retrieves the freezable array manager.
+     *
+     * @return the FreezableArrayManager instance.
+     */
     public FreezableArrayManager getFreezableArrayManager() {
         return freezableArrayManager;
     }
 
+    /**
+     * Retrieves the position tracking service.
+     *
+     * @return the PositionTrackingService instance.
+     */
     @NotNull
     public PositionTrackingService getPositionTrackingService() {
         return positionTrackingService;
@@ -1935,23 +2364,28 @@ public class Server {
     // ─────────────────────────────────────────────────────
 
     /**
-     * Send a recipe list packet to a player.
+     * Sends a recipe list packet to the specified player.
      *
-     * @param player Player
+     * @param player The player to send the recipe list packet to.
      */
     public void sendRecipeList(Player player) {
         player.getSession().sendRawPacket(ProtocolInfo.CRAFTING_DATA_PACKET, Registries.RECIPE.getCraftingPacket());
     }
 
     /**
-     * Register Recipe to Recipe Manager
+     * Registers a recipe with the Recipe Manager.
      *
-     * @param recipe Recipe
+     * @param recipe The recipe to register.
      */
     public void addRecipe(Recipe recipe) {
         Registries.RECIPE.register(recipe);
     }
 
+    /**
+     * Retrieves the Recipe Registry.
+     *
+     * @return The RecipeRegistry instance.
+     */
     public RecipeRegistry getRecipeRegistry() {
         return Registries.RECIPE;
     }
@@ -1961,21 +2395,27 @@ public class Server {
     // ─────────────────────────────────────────────────────
 
     /**
-     * @return Get all the game world
+     * Retrieves all the game worlds.
+     *
+     * @return a map containing all the game worlds, keyed by their IDs.
      */
     public Map<Integer, Level> getLevels() {
         return levels;
     }
 
     /**
-     * @return Get the default overworld
+     * Retrieves the default overworld.
+     *
+     * @return the default overworld level.
      */
     public Level getDefaultLevel() {
         return defaultLevel;
     }
 
     /**
-     * Set default overworld
+     * Sets the default overworld.
+     *
+     * @param defaultLevel the level to set as the default overworld.
      */
     public void setDefaultLevel(Level defaultLevel) {
         if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultLevel)) {
@@ -1984,14 +2424,18 @@ public class Server {
     }
 
     /**
-     * @return Get the default nether
+     * Retrieves the default nether level.
+     *
+     * @return the default nether level.
      */
     public Level getDefaultNetherLevel() {
         return defaultNether;
     }
 
     /**
-     * Set default nether
+     * Sets the default nether level.
+     *
+     * @param defaultLevel the level to set as the default nether.
      */
     public void setDefaultNetherLevel(Level defaultLevel) {
         if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultNether)) {
@@ -2000,14 +2444,18 @@ public class Server {
     }
 
     /**
-     * @return Get the default the_end level
+     * Retrieves the default end level.
+     *
+     * @return the default end level.
      */
     public Level getDefaultEndLevel() {
         return defaultLevel;
     }
 
     /**
-     * Set default the_end level
+     * Sets the default end level.
+     *
+     * @param defaultLevel the level to set as the default end.
      */
     public void setDefaultEndLevel(Level defaultLevel) {
         if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultEnd)) {
@@ -2018,8 +2466,10 @@ public class Server {
     public static final String levelDimPattern = "^.*Dim[0-9]$";
 
     /**
-     * @param name World name
-     * @return Whether the world is already loaded
+     * Checks if a world is already loaded.
+     *
+     * @param name the name of the world.
+     * @return true if the world is loaded, false otherwise.
      */
     public boolean isLevelLoaded(String name) {
         if (!name.matches(levelDimPattern)) {
@@ -2035,10 +2485,10 @@ public class Server {
     }
 
     /**
-     * Get world from world id, 0 OVERWORLD 1 NETHER 2 THE_END
+     * Retrieves a world by its ID.
      *
-     * @param levelId world id
-     * @return level instance
+     * @param levelId the ID of the world (0 for OVERWORLD, 1 for NETHER, 2 for THE_END).
+     * @return the level instance, or null if not found.
      */
     public Level getLevel(int levelId) {
         if (this.levels.containsKey(levelId)) {
@@ -2048,10 +2498,10 @@ public class Server {
     }
 
     /**
-     * Get world from world name, {@code overworld nether the_end}
+     * Retrieves a world by its name.
      *
-     * @param name world name
-     * @return level instance
+     * @param name the name of the world (e.g., "overworld", "nether", "the_end").
+     * @return the level instance, or null if not found.
      */
     public Level getLevelByName(String name) {
         if (!name.matches(levelDimPattern)) {
@@ -2065,16 +2515,23 @@ public class Server {
         return null;
     }
 
+    /**
+     * Unloads a specified level.
+     *
+     * @param level the level to unload.
+     * @return true if the level was successfully unloaded, false otherwise.
+     */
     public boolean unloadLevel(Level level) {
         return this.unloadLevel(level, false);
     }
 
     /**
-     * Unload level
+     * Unloads the specified level.
      *
-     * @param level       Level
-     * @param forceUnload Whether to force unload.
-     * @return Whether the unload was successful
+     * @param level       The level to unload.
+     * @param forceUnload Whether to force unload the level.
+     * @return true if the level was successfully unloaded, false otherwise.
+     * @throws IllegalStateException if attempting to unload the default level without forcing.
      */
     public boolean unloadLevel(Level level, boolean forceUnload) {
         if (level == this.getDefaultLevel() && !forceUnload) {
@@ -2082,9 +2539,15 @@ public class Server {
         }
 
         return level.unload(forceUnload);
-
     }
 
+    /**
+     * Retrieves the configuration for the specified level.
+     *
+     * @param levelFolderName The name of the level folder.
+     * @return The LevelConfig object for the specified level, or null if not found.
+     * @throws LevelException if the level name is empty.
+     */
     @Nullable
     public LevelConfig getLevelConfig(String levelFolderName) {
         if (Objects.equals(levelFolderName.trim(), "")) {
@@ -2113,14 +2576,14 @@ public class Server {
                 throw new RuntimeException(e);
             }
         } else {
-            //verify the provider
+            // Verify the provider
             Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
             if (provider == null) {
                 log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName, "Unknown provider"));
                 return null;
             }
             Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
-            //todo nether the_end overworld
+            // TODO: Add configurations for nether, the_end, and overworld
             map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(), false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
             levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), true, map);
             try {
@@ -2134,8 +2597,10 @@ public class Server {
     }
 
     /**
-     * @param levelFolderName the level folder name
-     * @return whether load success
+     * Loads the specified level.
+     *
+     * @param levelFolderName The name of the level folder.
+     * @return true if the level was successfully loaded, false otherwise.
      */
     public boolean loadLevel(String levelFolderName) {
         if (levelFolderName.matches(levelDimPattern)) {
@@ -2175,12 +2640,19 @@ public class Server {
             this.getPluginManager().callEvent(new LevelLoadEvent(level));
             level.setTickRate(getSettings().levelSettings().baseTickRate());
         }
-        if (tickCounter != 0) {//update world enum when load  
+        if (tickCounter != 0) { // Update world enum when load
             WorldCommand.WORLD_NAME_ENUM.updateSoftEnum();
         }
         return true;
     }
 
+    /**
+     * Generates a new level with the specified name and configuration.
+     *
+     * @param name        The name of the new level.
+     * @param levelConfig The configuration for the new level, or null to use default configuration.
+     * @return true if the level was successfully generated, false otherwise.
+     */
     public boolean generateLevel(String name, @Nullable LevelConfig levelConfig) {
         if (name.isBlank()) {
             return false;
@@ -2200,7 +2672,7 @@ public class Server {
                 levelConfig = JSONUtils.from(new FileReader(config), LevelConfig.class);
                 FileUtils.write(config, JSONUtils.toPretty(levelConfig), StandardCharsets.UTF_8);
             } catch (Exception e) {
-                log.error("The levelConfig is not exists under the {} path", path);
+                log.error("The levelConfig does not exist under the {} path", path);
                 return false;
             }
         } else if (levelConfig != null) {
@@ -2224,7 +2696,7 @@ public class Server {
                 provider.getMethod("generate", String.class, String.class, LevelConfig.GeneratorConfig.class).invoke(null, path, name, generatorConfig);
                 String levelName = name + " Dim" + entry.getKey();
                 if (this.isLevelLoaded(levelName)) {
-                    log.warn("level {} has already been loaded!", levelName);
+                    log.warn("Level {} has already been loaded!", levelName);
                     continue;
                 }
                 level = new Level(this, levelName, path, levelConfig.generators().size(), provider, generatorConfig);
@@ -2245,14 +2717,33 @@ public class Server {
     // ─────────────────────────────────────────────────────
     // ──────── Start of [Ban, OP, Whitelist Region] ───────
     // ─────────────────────────────────────────────────────
+
+    /**
+     * Retrieves the list of name bans.
+     *
+     * @return the BanList containing name bans
+     */
     public BanList getNameBans() {
         return this.banByName;
     }
 
+    /**
+     * Retrieves the list of IP bans.
+     *
+     * @return the BanList containing IP bans
+     */
     public BanList getIPBans() {
         return this.banByIP;
     }
 
+    /**
+     * Adds a player to the operator list.
+     * <p>
+     * This method sets the specified player as an operator, updates their permissions,
+     * and synchronizes their available commands.
+     *
+     * @param name the name of the player to add as an operator
+     */
     public void addOp(String name) {
         this.operators.set(name.toLowerCase(Locale.ENGLISH), true);
         Player player = this.getPlayerExact(name);
@@ -2265,6 +2756,14 @@ public class Server {
         this.operators.save(true);
     }
 
+    /**
+     * Removes a player from the operator list.
+     * <p>
+     * This method removes the specified player from the operator list, updates their permissions,
+     * and synchronizes their available commands.
+     *
+     * @param name the name of the player to remove from the operator list
+     */
     public void removeOp(String name) {
         this.operators.remove(name.toLowerCase(Locale.ENGLISH));
         Player player = this.getPlayerExact(name);
@@ -2277,32 +2776,77 @@ public class Server {
         this.operators.save();
     }
 
+    /**
+     * Adds a player to the whitelist.
+     * <p>
+     * This method adds the specified player to the whitelist and saves the whitelist configuration.
+     *
+     * @param name the name of the player to add to the whitelist
+     */
     public void addWhitelist(String name) {
         this.whitelist.set(name.toLowerCase(Locale.ENGLISH), true);
         this.whitelist.save(true);
     }
 
+    /**
+     * Removes a player from the whitelist.
+     * <p>
+     * This method removes the specified player from the whitelist and saves the whitelist configuration.
+     *
+     * @param name the name of the player to remove from the whitelist
+     */
     public void removeWhitelist(String name) {
         this.whitelist.remove(name.toLowerCase(Locale.ENGLISH));
         this.whitelist.save(true);
     }
 
+    /**
+     * Checks if a player is whitelisted.
+     * <p>
+     * This method checks if the specified player is in the whitelist or is an operator.
+     *
+     * @param name the name of the player to check
+     * @return true if the player is whitelisted or an operator, false otherwise
+     */
     public boolean isWhitelisted(String name) {
         return !this.hasWhitelist() || this.operators.exists(name, true) || this.whitelist.exists(name, true);
     }
 
+    /**
+     * Checks if a player is an operator.
+     * <p>
+     * This method checks if the specified player is in the operator list.
+     *
+     * @param name the name of the player to check
+     * @return true if the player is an operator, false otherwise
+     */
     public boolean isOp(String name) {
         return name != null && this.operators.exists(name, true);
     }
 
+    /**
+     * Retrieves the whitelist configuration.
+     *
+     * @return the Config object representing the whitelist
+     */
     public Config getWhitelist() {
         return whitelist;
     }
 
+    /**
+     * Retrieves the operator list configuration.
+     *
+     * @return the Config object representing the operator list
+     */
     public Config getOps() {
         return operators;
     }
 
+    /**
+     * Reloads the whitelist configuration.
+     * <p>
+     * This method reloads the whitelist configuration from the file.
+     */
     public void reloadWhitelist() {
         this.whitelist.reload();
     }
@@ -2311,14 +2855,22 @@ public class Server {
     // ──────── Start of [Configs Region] ──────────────────
     // ─────────────────────────────────────────────────────
 
+    /**
+     * Gets the maximum number of players allowed on the server.
+     *
+     * @return the maximum number of players
+     */
     public int getMaxPlayers() {
         return maxPlayers;
     }
 
     /**
-     * Set the players count is allowed
+     * Sets the maximum number of players allowed on the server.
+     * <p>
+     * This method updates the maximum player count and notifies the network pong
+     * to reflect the new player limit.
      *
-     * @param maxPlayers the max players
+     * @param maxPlayers the maximum number of players
      */
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
@@ -2326,37 +2878,58 @@ public class Server {
     }
 
     /**
-     * @return Server port
+     * Gets the server port.
+     * <p>
+     * This method retrieves the port number on which the server is running.
+     *
+     * @return the server port
      */
     public int getPort() {
         return this.properties.get(ServerPropertiesKeys.SERVER_PORT, 19132);
     }
 
     /**
-     * @return Server view distance
+     * Gets the server view distance.
+     * <p>
+     * This method retrieves the view distance setting of the server, which
+     * determines how far players can see in the game.
+     *
+     * @return the server view distance
      */
     public int getViewDistance() {
         return this.properties.get(ServerPropertiesKeys.VIEW_DISTANCE, 10);
     }
 
     /**
-     * @return Server ip
+     * Gets the server IP address.
+     * <p>
+     * This method retrieves the IP address on which the server is running.
+     *
+     * @return the server IP address
      */
     public String getIp() {
         return this.properties.get(ServerPropertiesKeys.SERVER_IP, "0.0.0.0");
     }
 
     /**
-     * @return Does the server automatically save
+     * Checks if the server automatically saves.
+     * <p>
+     * This method returns whether the server is configured to automatically save
+     * its state at regular intervals.
+     *
+     * @return true if the server automatically saves, false otherwise
      */
     public boolean getAutoSave() {
         return this.autoSave;
     }
 
     /**
-     * Set server autosave
+     * Sets whether the server automatically saves.
+     * <p>
+     * This method configures the server to automatically save its state at regular
+     * intervals and updates the auto-save setting for all loaded levels.
      *
-     * @param autoSave Whether to save automatically
+     * @param autoSave true to enable auto-save, false to disable it
      */
     public void setAutoSave(boolean autoSave) {
         this.autoSave = autoSave;
@@ -2366,9 +2939,12 @@ public class Server {
     }
 
     /**
-     * Get the gamemode of the server
+     * Retrieves the gamemode of the server.
+     * <p>
+     * This method attempts to get the gamemode from the server properties. If the value is not a valid integer,
+     * it falls back to parsing the gamemode from a string.
      *
-     * @return gamemode id
+     * @return the gamemode id
      */
     public int getGamemode() {
         try {
@@ -2378,23 +2954,26 @@ public class Server {
         }
     }
 
+    /**
+     * Checks if the server forces a specific gamemode.
+     * <p>
+     * This method returns whether the server is configured to force players into a specific gamemode.
+     *
+     * @return true if the server forces a specific gamemode, false otherwise
+     */
     public boolean getForceGamemode() {
         return this.properties.get(ServerPropertiesKeys.FORCE_GAMEMODE, false);
     }
 
     /**
-     * @see #getGamemodeString(int, boolean)
-     */
-    public static String getGamemodeString(int mode) {
-        return getGamemodeString(mode, false);
-    }
-
-    /**
-     * Get game mode string from gamemode id.
+     * Converts a gamemode id to its corresponding string representation.
+     * <p>
+     * This method returns the string representation of a gamemode based on its id. If the `direct` parameter is true,
+     * it returns the direct string, otherwise it returns a localized string.
      *
-     * @param mode   gamemode id
-     * @param direct If true, the string is returned directly, and if false, the hard-coded string representing the game mode is returned.
-     * @return Game Mode String
+     * @param mode   the gamemode id
+     * @param direct if true, returns the direct string representation; if false, returns the localized string
+     * @return the string representation of the gamemode
      */
     public static String getGamemodeString(int mode, boolean direct) {
         return switch (mode) {
@@ -2407,10 +2986,13 @@ public class Server {
     }
 
     /**
-     * Get gamemode from string
+     * Converts a string to its corresponding gamemode id.
+     * <p>
+     * This method parses a string to determine the gamemode id. It supports various string representations
+     * such as "0", "survival", "s", etc.
      *
-     * @param str A string representing the game mode, e.g. 0,survival...
-     * @return gamemode id
+     * @param str the string representing the gamemode
+     * @return the gamemode id
      */
     public static int getGamemodeFromString(String str) {
         return switch (str.trim().toLowerCase(Locale.ENGLISH)) {
@@ -2423,10 +3005,13 @@ public class Server {
     }
 
     /**
-     * Get game difficulty from string
+     * Converts a string to its corresponding game difficulty id.
+     * <p>
+     * This method parses a string to determine the game difficulty id. It supports various string representations
+     * such as "0", "peaceful", "p", etc.
      *
-     * @param str A string representing the game difficulty, e.g. 0,peaceful...
-     * @return game difficulty id
+     * @param str the string representing the game difficulty
+     * @return the game difficulty id
      */
     public static int getDifficultyFromString(String str) {
         switch (str.trim().toLowerCase(Locale.ENGLISH)) {
@@ -2454,9 +3039,12 @@ public class Server {
     }
 
     /**
-     * Get server game difficulty
+     * Retrieves the game difficulty of the server.
+     * <p>
+     * This method gets the game difficulty from the server properties. If the difficulty is not set,
+     * it defaults to "1" (easy).
      *
-     * @return Game difficulty id
+     * @return the game difficulty id
      */
     public int getDifficulty() {
         if (this.difficulty == Integer.MAX_VALUE) {
@@ -2466,9 +3054,12 @@ public class Server {
     }
 
     /**
-     * set server game difficulty
+     * Sets the server game difficulty.
+     * <p>
+     * This method sets the difficulty level of the server. The difficulty value
+     * is clamped between 0 and 3.
      *
-     * @param difficulty Game difficulty id
+     * @param difficulty the game difficulty id
      */
     public void setDifficulty(int difficulty) {
         int value = difficulty;
@@ -2479,21 +3070,34 @@ public class Server {
     }
 
     /**
-     * @return Whether to start server whitelist
+     * Checks if the server whitelist is enabled.
+     * <p>
+     * This method returns whether the server has the whitelist feature enabled.
+     *
+     * @return true if the whitelist is enabled, false otherwise
      */
     public boolean hasWhitelist() {
         return this.properties.get(ServerPropertiesKeys.WHITE_LIST, false);
     }
 
     /**
-     * @return Get server birth point protection radius
+     * Gets the server spawn protection radius.
+     * <p>
+     * This method returns the radius around the spawn point that is protected
+     * from player modifications.
+     *
+     * @return the spawn protection radius
      */
     public int getSpawnRadius() {
         return this.properties.get(ServerPropertiesKeys.SPAWN_PROTECTION, 16);
     }
 
     /**
-     * @return Whether the server allows flying
+     * Checks if flying is allowed on the server.
+     * <p>
+     * This method returns whether players are allowed to fly on the server.
+     *
+     * @return true if flying is allowed, false otherwise
      */
     public boolean getAllowFlight() {
         if (getAllowFlight == null) {
@@ -2503,14 +3107,23 @@ public class Server {
     }
 
     /**
-     * @return Whether the server is in hardcore mode
+     * Checks if the server is in hardcore mode.
+     * <p>
+     * This method returns whether the server is set to hardcore mode.
+     *
+     * @return true if the server is in hardcore mode, false otherwise
      */
     public boolean isHardcore() {
         return this.properties.get(ServerPropertiesKeys.HARDCORE, false);
     }
 
     /**
-     * @return Get default gamemode
+     * Gets the default game mode of the server.
+     * <p>
+     * This method returns the default game mode that players will have when they
+     * join the server.
+     *
+     * @return the default game mode
      */
     public int getDefaultGamemode() {
         if (this.defaultGamemode == Integer.MAX_VALUE) {
@@ -2520,9 +3133,12 @@ public class Server {
     }
 
     /**
-     * Set default gamemode for the server.
+     * Sets the default game mode for the server.
+     * <p>
+     * This method sets the default game mode that players will have when they
+     * join the server.
      *
-     * @param defaultGamemode the default gamemode
+     * @param defaultGamemode the default game mode
      */
     public void setDefaultGamemode(int defaultGamemode) {
         this.defaultGamemode = defaultGamemode;
@@ -2530,16 +3146,24 @@ public class Server {
     }
 
     /**
-     * @return Get server motd
+     * Gets the server message of the day (MOTD).
+     * <p>
+     * This method returns the message of the day that is displayed to players
+     * when they join the server.
+     *
+     * @return the server MOTD
      */
     public String getMotd() {
         return this.properties.get(ServerPropertiesKeys.MOTD, "PowerNukkitX Server");
     }
 
     /**
-     * Set the motd of server.
+     * Sets the server message of the day (MOTD).
+     * <p>
+     * This method sets the message of the day that is displayed to players
+     * when they join the server.
      *
-     * @param motd the motd content
+     * @param motd the message of the day
      */
     public void setMotd(String motd) {
         this.properties.get(ServerPropertiesKeys.MOTD, motd);
@@ -2547,7 +3171,12 @@ public class Server {
     }
 
     /**
-     * @return Get the server subheading
+     * Gets the server subheading (sub-MOTD).
+     * <p>
+     * This method returns the subheading that is displayed to players when they
+     * join the server.
+     *
+     * @return the server subheading
      */
     public String getSubMotd() {
         String subMotd = this.properties.get(ServerPropertiesKeys.SUB_MOTD, "v2.powernukkitx.com");
@@ -2558,9 +3187,12 @@ public class Server {
     }
 
     /**
-     * Set the sub motd of server.
+     * Sets the server subheading (sub-MOTD).
+     * <p>
+     * This method sets the subheading that is displayed to players when they
+     * join the server.
      *
-     * @param subMotd the sub motd
+     * @param subMotd the subheading
      */
     public void setSubMotd(String subMotd) {
         this.properties.get(ServerPropertiesKeys.SUB_MOTD, subMotd);
@@ -2568,14 +3200,24 @@ public class Server {
     }
 
     /**
-     * @return Whether to force the use of server resourcepack
+     * Checks if the server forces the use of a resource pack.
+     * <p>
+     * This method returns whether the server forces players to use a specific
+     * resource pack.
+     *
+     * @return true if the server forces the use of a resource pack, false otherwise
      */
     public boolean getForceResources() {
         return this.properties.get(ServerPropertiesKeys.FORCE_RESOURCES, false);
     }
 
     /**
-     * @return Whether to force the use of server resourcepack while allowing the loading of client resourcepack
+     * Checks if the server allows client resource packs while forcing the use of a server resource pack.
+     * <p>
+     * This method returns whether the server allows players to use their own
+     * resource packs in addition to the server's resource pack.
+     *
+     * @return true if client resource packs are allowed, false otherwise
      */
     public boolean getForceResourcesAllowOwnPacks() {
         return this.properties.get(ServerPropertiesKeys.FORCE_RESOURCES_ALLOW_CLIENT_PACKS, false);
@@ -2605,34 +3247,100 @@ public class Server {
         };
     }
 
+    /**
+     * Returns the current language of the server.
+     * <p>
+     * This method retrieves the `BaseLang` instance representing the current language
+     * configuration of the server.
+     *
+     * @return the current language of the server
+     */
     public BaseLang getLanguage() {
         return baseLang;
     }
 
+    /**
+     * Returns the language code of the server.
+     * <p>
+     * This method retrieves the `LangCode` instance representing the language code
+     * configuration of the server.
+     *
+     * @return the language code of the server
+     */
     public LangCode getLanguageCode() {
         return baseLangCode;
     }
 
+    /**
+     * Returns the server settings.
+     * <p>
+     * This method retrieves the `ServerSettings` instance containing various
+     * configuration settings of the server.
+     *
+     * @return the server settings
+     */
     public ServerSettings getSettings() {
         return settings;
     }
 
+    /**
+     * Returns the server properties.
+     * <p>
+     * This method retrieves the `ServerProperties` instance containing various
+     * properties of the server.
+     *
+     * @return the server properties
+     */
     public ServerProperties getProperties() {
         return properties;
     }
 
+    /**
+     * Checks if the Nether dimension is allowed on the server.
+     * <p>
+     * This method determines whether the Nether dimension is enabled and can be
+     * accessed by players on the server.
+     *
+     * @return true if the Nether is allowed, false otherwise
+     */
     public boolean isNetherAllowed() {
         return this.allowNether;
     }
 
+    /**
+     * Checks if the End dimension is allowed on the server.
+     * <p>
+     * This method determines whether the End dimension is enabled and can be
+     * accessed by players on the server.
+     *
+     * @return true if the End is allowed, false otherwise
+     */
     public boolean isTheEndAllowed() {
         return this.allowTheEnd;
     }
 
+    /**
+     * Checks if the specified packet class is ignored by the server.
+     * <p>
+     * This method determines whether the server is configured to ignore packets
+     * of the specified class. Ignored packets are not processed by the server.
+     *
+     * @param clazz the class of the packet to check
+     * @return true if the packet class is ignored, false otherwise
+     */
     public boolean isIgnoredPacket(Class<? extends DataPacket> clazz) {
         return this.getSettings().debugSettings().ignoredPackets().contains(clazz.getSimpleName());
     }
 
+    /**
+     * Returns the server authoritative movement mode.
+     * <p>
+     * The server authoritative movement mode determines how the server handles
+     * player movement and synchronization. This can be used to enforce stricter
+     * movement rules and prevent cheating.
+     *
+     * @return the server authoritative movement mode
+     */
     public int getServerAuthoritativeMovement() {
         return serverAuthoritativeMovementMode;
     }
@@ -2657,19 +3365,53 @@ public class Server {
         return (Thread.currentThread() == currentThread);
     }
 
+    /**
+     * Returns the primary thread of the server.
+     * <p>
+     * The primary thread is the main thread on which the server runs.
+     * This method can be used to retrieve the thread instance for
+     * operations that need to be performed on the main server thread.
+     *
+     * @return the primary thread of the server
+     */
     public Thread getPrimaryThread() {
         return currentThread;
     }
 
+    /**
+     * Returns the server scheduler.
+     * <p>
+     * The server scheduler is responsible for managing and executing scheduled tasks
+     * on the server. It handles the timing and execution of tasks that need to run
+     * periodically or after a certain delay.
+     *
+     * @return the server scheduler
+     */
     public ServerScheduler getScheduler() {
         return scheduler;
     }
 
+    /**
+     * Returns the compute thread pool used by the server.
+     * <p>
+     * The compute thread pool is a ForkJoinPool that is used for parallel computations
+     * and tasks that can be divided into smaller subtasks. This pool helps in efficiently
+     * utilizing multiple CPU cores for concurrent processing.
+     *
+     * @return the compute thread pool
+     */
     public ForkJoinPool getComputeThreadPool() {
         return computeThreadPool;
     }
 
     //todo NukkitConsole
+
+    /**
+     * Thread for handling console input and output.
+     * <p>
+     * This thread is responsible for starting the console and managing
+     * console interactions.
+     */
     private class ConsoleThread extends Thread implements InterruptibleThread {
         public ConsoleThread() {
             super("Console Thread");
@@ -2681,11 +3423,18 @@ public class Server {
         }
     }
 
+    /**
+     * Thread for handling tasks in the compute thread pool.
+     * <p>
+     * This thread operates within a ForkJoinPool and is used for parallel
+     * computations and tasks that can be divided into smaller subtasks.
+     */
     private static class ComputeThread extends ForkJoinWorkerThread {
         /**
          * Creates a ForkJoinWorkerThread operating in the given pool.
          *
-         * @param pool the pool this thread works in
+         * @param pool        the pool this thread works in
+         * @param threadCount the counter for naming threads
          * @throws NullPointerException if pool is null
          */
         ComputeThread(ForkJoinPool pool, AtomicInteger threadCount) {
@@ -2694,6 +3443,12 @@ public class Server {
         }
     }
 
+    /**
+     * Factory for creating compute threads in a ForkJoinPool.
+     * <p>
+     * This factory is responsible for creating and initializing
+     * ComputeThread instances with the necessary permissions.
+     */
     private static class ComputeThreadPoolThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
         private static final AtomicInteger threadCount = new AtomicInteger(0);
         @SuppressWarnings("removal")
@@ -2701,6 +3456,12 @@ public class Server {
                 new RuntimePermission("getClassLoader"),
                 new RuntimePermission("setContextClassLoader"));
 
+        /**
+         * Creates an AccessControlContext with the specified permissions.
+         *
+         * @param perms the permissions to include in the context
+         * @return the created AccessControlContext
+         */
         @SuppressWarnings("removal")
         static AccessControlContext contextWithPermissions(@NotNull Permission... perms) {
             Permissions permissions = new Permissions();
@@ -2709,6 +3470,12 @@ public class Server {
             return new AccessControlContext(new ProtectionDomain[]{new ProtectionDomain(null, permissions)});
         }
 
+        /**
+         * Creates a new ComputeThread for the given ForkJoinPool.
+         *
+         * @param pool the pool this thread works in
+         * @return the created ComputeThread
+         */
         @SuppressWarnings("removal")
         public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
             return AccessController.doPrivileged((PrivilegedAction<ForkJoinWorkerThread>) () -> new ComputeThread(pool, threadCount), ACC);
