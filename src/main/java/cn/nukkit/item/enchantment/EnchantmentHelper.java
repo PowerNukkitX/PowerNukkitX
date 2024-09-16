@@ -5,13 +5,11 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.PlayerEnchantOptionsPacket;
-import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -32,9 +30,9 @@ public final class EnchantmentHelper {
         int baseRequiredLevel = random.nextRange(1, 8) + (bookshelfCount >> 1) + random.nextRange(0, bookshelfCount);
 
         return List.of(
-                createEnchantOption(random, input, (int) Math.floor(Math.max(baseRequiredLevel / 3D, 1))),
-                createEnchantOption(random, input, (int) Math.floor(baseRequiredLevel * 2D / 3 + 1)),
-                createEnchantOption(random, input, Math.max(baseRequiredLevel, bookshelfCount * 2))
+                createEnchantOption(random, input, (int) Math.floor(Math.max((baseRequiredLevel / 3D) / 2, 1))),
+                createEnchantOption(random, input, (int) Math.floor(baseRequiredLevel * 2D / 3 + 1) / 2),
+                createEnchantOption(random, input, Math.max(baseRequiredLevel, bookshelfCount * 2) / 2)
         );
     }
 
