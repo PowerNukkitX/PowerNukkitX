@@ -87,9 +87,12 @@ public class JavaPluginLoader implements PluginLoader {
         try (JarFile jar = new JarFile(file)) {
             JarEntry entry = jar.getJarEntry("powernukkitx.yml");
             if (entry == null) {
-                entry = jar.getJarEntry("plugin.yml");
+                entry = jar.getJarEntry("nukkit.yml");
                 if (entry == null) {
-                    return null;
+                    entry = jar.getJarEntry("plugin.yml");
+                    if (entry == null) {
+                        return null;
+                    }
                 }
             }
             try (InputStream stream = jar.getInputStream(entry)) {
