@@ -1271,7 +1271,9 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
-        if (!Objects.equals(this.getId(), item.getId())) return false;
+        if (!Objects.equals(this.getId(), item.getId())) {
+            return false;
+        }
         if (checkDamage && this.hasMeta() && item.hasMeta() && this.getDamage() != item.getDamage()) {
             return false;
         }

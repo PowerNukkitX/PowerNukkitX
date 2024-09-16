@@ -81,7 +81,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if (player != null && player.isSneaking()) {
+        if (player != null && player.isSneaking() || (this.up().isAir() && blockFace.equals(BlockFace.UP) && item.isBlock() && item.getBlock() instanceof BlockSkull)) {
             return false;
         }
         this.increaseStrength();
@@ -182,7 +182,6 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     public void emitSound(@Nullable Player player) {
-        if (!this.up().isAir()) return;
 
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, this.add(0.5, 0.5, 0.5).clone(), VibrationType.BLOCK_CHANGE));
 
@@ -222,10 +221,11 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     public enum Instrument {
-        BASS(Sound.NOTE_BASS),
+        HARP(Sound.NOTE_HARP),
+        BASS_DRUM(Sound.NOTE_BD),
         SNARE_DRUM(Sound.NOTE_SNARE),
         CLICKS_AND_STICKS(Sound.NOTE_HAT),
-        BASS_DRUM(Sound.NOTE_BD),
+        BASS(Sound.NOTE_BASS),
         BELLS(Sound.NOTE_BELL),
         FLUTE(Sound.NOTE_FLUTE),
         CHIMES(Sound.NOTE_CHIME),
@@ -241,9 +241,8 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
         WITHER_SKELETON(Sound.NOTE_WITHERSKELETON),
         ZOMBIE(Sound.NOTE_ZOMBIE),
         CREEPER(Sound.NOTE_CREEPER),
-        PIGLIN(Sound.NOTE_PIGLIN),
         ENDER_DRAGON(Sound.NOTE_ENDERDRAGON),
-        HARP(Sound.NOTE_HARP);
+        PIGLIN(Sound.NOTE_PIGLIN);
 
         private final Sound sound;
 

@@ -2,8 +2,10 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityFlyable;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -51,5 +53,10 @@ public class EntityBlaze extends EntityMob implements EntityFlyable {
     @Override
     public int getFrostbiteInjury() {
         return 5;
+    }
+
+    @Override
+    public Item[] getDrops() {
+        return new Item[]{Item.get(Item.BLAZE_ROD, 0, Utils.rand(0, 1))};
     }
 }

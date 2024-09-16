@@ -4,16 +4,22 @@ import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.event.inventory.ItemStackRequestActionEvent;
+import cn.nukkit.event.player.PlayerTransferItemEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.fake.FakeInventory;
 import cn.nukkit.inventory.request.*;
+import cn.nukkit.item.Item;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ItemStackRequestPacket;
 import cn.nukkit.network.protocol.ItemStackResponsePacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequestSlotData;
+import cn.nukkit.network.protocol.types.itemstack.request.action.DropAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
+import cn.nukkit.network.protocol.types.itemstack.request.action.SwapAction;
+import cn.nukkit.network.protocol.types.itemstack.request.action.TransferItemStackRequestAction;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponse;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseSlot;
@@ -72,6 +78,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                 }
 
                 ItemStackRequestActionEvent event = new ItemStackRequestActionEvent(player, action, context);
+                TransferItemEventCaller.call(event);
                 Server.getInstance().getPluginManager().callEvent(event);
                 Optional<Inventory> topWindow = player.getTopWindow();
                 if (topWindow.isPresent() && topWindow.get() instanceof FakeInventory fakeInventory) {
@@ -95,7 +102,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                     }
 
                     for (var container : response.containers()) {
-                        responseContainerMap.compute(container.getContainer(), (key, oldValue) -> {
+                        responseContainerMap.compute(container.getContainerName().getContainer(), (key, oldValue) -> {
                             if (oldValue == null) {
                                 return container;
                             } else {
@@ -129,5 +136,76 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
     @Override
     public int getPacketId() {
         return ProtocolInfo.ITEM_STACK_REQUEST_PACKET;
+    }
+
+
+    private static class TransferItemEventCaller {
+
+        public static void call(ItemStackRequestActionEvent event) {
+            ItemStackRequestAction action = event.getAction();
+
+            TransferResult transferResult = handleAction(action);
+            if (transferResult == null)
+                return;
+
+            Player player = event.getPlayer();
+            Inventory sourceInventory = NetworkMapping.getInventory(player, transferResult.source.getContainerName().getContainer());
+            int sourceSlot = sourceInventory.fromNetworkSlot(transferResult.source.getSlot());
+
+            Optional<Inventory> destinationInventory = transferResult.destination
+                    .map(destination -> NetworkMapping.getInventory(player, destination.getContainerName().getContainer()));
+            Optional<Integer> destinationSlot = destinationInventory
+                    .flatMap(inventory -> transferResult.destination
+                            .map(destination -> inventory.fromNetworkSlot(destination.getSlot())));
+            Optional<Item> destinationItem = destinationSlot
+                    .flatMap(slot -> destinationInventory.flatMap(inventory -> Optional.of(inventory.getItem(slot))));
+
+            PlayerTransferItemEvent transferEvent = new PlayerTransferItemEvent(
+                    player,
+                    transferResult.type,
+                    sourceInventory.getItem(sourceSlot),
+                    destinationItem.orElse(null),
+                    sourceSlot,
+                    destinationSlot.orElse(-1),
+                    sourceInventory,
+                    destinationInventory.orElse(null)
+            );
+
+            Server.getInstance().getPluginManager().callEvent(transferEvent);
+            if (transferEvent.isCancelled()) {
+                event.setCancelled(true);
+            }
+        }
+
+
+        private static TransferResult handleAction(ItemStackRequestAction action) {
+            return switch (action) {
+                case TransferItemStackRequestAction transfer -> new TransferResult(
+                        transfer.getSource(),
+                        Optional.of(transfer.getDestination()),
+                        PlayerTransferItemEvent.Type.TRANSFER
+                );
+                case SwapAction swap -> new TransferResult(
+                        swap.getSource(),
+                        Optional.of(swap.getDestination()),
+                        PlayerTransferItemEvent.Type.SWAP
+                );
+                case DropAction drop -> new TransferResult(
+                        drop.getSource(),
+                        Optional.empty(),
+                        PlayerTransferItemEvent.Type.DROP
+                );
+                default -> null;
+            };
+        }
+
+
+        private record TransferResult(
+                ItemStackRequestSlotData source,
+                Optional<ItemStackRequestSlotData> destination,
+                PlayerTransferItemEvent.Type type
+        ) {
+        }
+
     }
 }

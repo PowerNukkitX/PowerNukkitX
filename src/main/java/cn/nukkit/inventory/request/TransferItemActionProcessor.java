@@ -81,7 +81,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
 
         Item resultSourItem;
         Item resultDestItem;
-        boolean sendSource = !(source instanceof SoleInventory);
+        boolean sendSource = false; //Previous "!(source instanceof SoleInventory);", Not sending the source fixes the drag item distribution. Shouldn't cause any problems because inventory management is serversided.
         boolean sendDest = !(destination instanceof SoleInventory);
         //first case：transfer all item
         if (sourItem.getCount() == count) {

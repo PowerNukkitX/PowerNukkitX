@@ -162,5 +162,7 @@ public final class ServerSettings extends OkaeriConfig {
         boolean forceSkinTrusted = false;
         @Comment("nukkit.server.settings.playersettings.checkMovement")
         boolean checkMovement = true;
+        @Comment("nukkit.server.settings.playersettings.spawnRadius")
+        int spawnRadius = 16;
     }
 }

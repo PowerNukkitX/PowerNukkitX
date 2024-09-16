@@ -3,9 +3,35 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityBeehive;
 import cn.nukkit.entity.EntityFlyable;
+import cn.nukkit.entity.ai.behavior.Behavior;
+import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
+import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
+import cn.nukkit.entity.ai.controller.FluctuateController;
+import cn.nukkit.entity.ai.controller.LiftController;
+import cn.nukkit.entity.ai.controller.LookController;
+import cn.nukkit.entity.ai.controller.SpaceMoveController;
+import cn.nukkit.entity.ai.controller.WalkController;
+import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
+import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
+import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
+import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
+import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.InLoveExecutor;
+import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
+import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
+import cn.nukkit.entity.ai.executor.SpaceRandomRoamExecutor;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
+import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
+import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
+import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
+import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Set;
 
 /**
  * @author joserobjr
@@ -17,7 +43,6 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     @NotNull public String getIdentifier() {
         return BEE;
     }
-    
 
     private final int beehiveTimer = 600;
 
@@ -26,7 +51,20 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         super(chunk, nbt);
     }
 
-    
+    @Override
+    public IBehaviorGroup requireBehaviorGroup() {
+        return new BehaviorGroup(
+                this.tickSpread,
+                Set.of(),
+                Set.of(
+                        new Behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10), (entity -> true), 1, 1)
+                ),
+                Set.of(),
+                Set.of(new SpaceMoveController(), new LookController(true, true), new LiftController()),
+                new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this),
+                this
+        );
+    }
 
     @Override
     public float getWidth() {

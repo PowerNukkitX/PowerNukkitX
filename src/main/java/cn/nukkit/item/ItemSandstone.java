@@ -1,7 +1,9 @@
 package cn.nukkit.item;
 
-public class ItemSandstone extends Item {
+import cn.nukkit.block.BlockSandstone;
+
+public class ItemSandstone extends ItemBlock {
     public ItemSandstone() {
-        super(SANDSTONE);
+        super(new BlockSandstone());
     }
 }

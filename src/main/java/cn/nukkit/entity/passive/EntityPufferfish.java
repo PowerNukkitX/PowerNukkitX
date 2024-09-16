@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author PetteriM1
  */
-public class EntityPufferfish extends EntityAnimal implements EntitySwimmable {
+public class EntityPufferfish extends EntityFish implements EntitySwimmable {
 
     @Override
     @NotNull public String getIdentifier() {
@@ -18,9 +18,6 @@ public class EntityPufferfish extends EntityAnimal implements EntitySwimmable {
     public EntityPufferfish(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    
-
 
     @Override
     public String getOriginalName() {

@@ -3,8 +3,10 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.entity.EntitySmite;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityWither extends EntityMob implements EntityFlyable, EntitySmite {
@@ -54,5 +56,10 @@ public class EntityWither extends EntityMob implements EntityFlyable, EntitySmit
     @Override
     public boolean isBoss() {
         return true;
+    }
+
+    @Override
+    public Item[] getDrops() {
+        return new Item[]{Item.get(Item.NETHER_STAR)};
     }
 }

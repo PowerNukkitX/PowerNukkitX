@@ -21,6 +21,7 @@ import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
@@ -332,10 +333,16 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
             }
             case InventoryTransactionPacket.USE_ITEM_ACTION_CLICK_AIR -> {
                 Item item;
+                Item useItemDataItem = useItemData.itemInHand;
                 Vector3 directionVector = player.getDirectionVector();
+                //Removing the only clientsided NBT Tag
+                if(useItemDataItem.hasCompoundTag() && Objects.requireNonNull(useItemDataItem.getNamedTag()).containsInt("Damage")) {
+                    useItemDataItem.getNamedTag().remove("Damage");
+                }
+                ////
                 if (player.isCreative()) {
                     item = player.getInventory().getItemInHand();
-                } else if (!player.getInventory().getItemInHand().equals(useItemData.itemInHand)) {
+                } else if (!player.getInventory().getItemInHand().equals(useItemDataItem)) {
                     player.getInventory().sendHeldItem(player);
                     return;
                 } else {

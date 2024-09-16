@@ -1,8 +1,10 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.entity.EntityWalkable;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -38,5 +40,10 @@ public class EntityShulker extends EntityMob implements EntityWalkable {
     @Override
     public String getOriginalName() {
         return "Shulker";
+    }
+
+    @Override
+    public Item[] getDrops() {
+        return new Item[]{Item.get(Item.SHULKER_SHELL, 0, Utils.rand(0, 1))};
     }
 }
