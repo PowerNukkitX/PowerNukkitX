@@ -121,7 +121,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
             int z1 = namedTag.getInt("pairz");
             int z2 = chest.namedTag.getInt("pairz");
 
-            if(!(this.x == x2 && this.z == z2) || !(chest.x == x1 && chest.z == z1)) {
+            if(!(chest.isPaired() && (this.x == x2 && this.z == z2)) || !(this.isPaired() && (chest.x == x1 && chest.z == z1))) {
                 return false;
             }
         }
