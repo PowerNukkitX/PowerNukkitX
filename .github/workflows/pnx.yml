@@ -160,7 +160,7 @@ jobs:
             4. Enjoy the latest features and bug fixes !
 
             Thank you for using PowerNukkitX ⭐
-          assets: build/powernukkitx-run.zip;build/powernukkitx.jar;build/libs.tar.gz;build/hash/sha256/powernukkitx.jar.sha256|text/plain;build/hash/sha256/libs.tar.gz.sha256|text/plain;build/hash/md5/powernukkitx.jar.md5|text/plain;build/hash/md5/libs.tar.gz.md5|text/plain;
+          assets: build/powernukkitx-shaded.jar;build/powernukkitx-run.zip;build/powernukkitx.jar;build/libs.tar.gz;build/hash/sha256/powernukkitx.jar.sha256|text/plain;build/hash/sha256/libs.tar.gz.sha256|text/plain;build/hash/md5/powernukkitx.jar.md5|text/plain;build/hash/md5/libs.tar.gz.md5|text/plain;
           replace_assets: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -168,7 +168,7 @@ jobs:
         uses: ncipollo/release-action@v1
         if: success() && contains(github.event.commits[0].message, '+u') && github.repository == 'PowerNukkitX/PowerNukkitX' && contains(github.ref_name, 'master')
         with:
-          artifacts: "build/powernukkitx-run.zip,build/powernukkitx.jar,build/libs.tar.gz,build/hash/sha256/powernukkitx.jar.sha256,build/hash/sha256/libs.tar.gz.sha256,build/hash/md5/powernukkitx.jar.md5,build/hash/md5/libs.tar.gz.md5"
+          artifacts: "build/powernukkitx-run.zip,build/powernukkitx.jar,build/libs.tar.gz,build/hash/sha256/powernukkitx.jar.sha256,build/hash/sha256/libs.tar.gz.sha256,build/hash/md5/powernukkitx.jar.md5,build/hash/md5/libs.tar.gz.md5,build/powernukkitx-shaded.jar"
           tag: ${{ steps.read_version.outputs.git-build-version }}
           body: ${{ steps.read_version.outputs.git-build-version }} - ${{ github.ref_name }} - ${{ github.sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
