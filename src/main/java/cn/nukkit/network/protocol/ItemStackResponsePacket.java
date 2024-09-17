@@ -23,8 +23,7 @@ public class ItemStackResponsePacket extends DataPacket {
             byteBuf.writeVarInt(r.getRequestId());
             if (r.getResult() != ItemStackResponseStatus.OK) return;
             byteBuf.writeArray(r.getContainers(), (container) -> {
-                byteBuf.writeByte((byte) container.getContainerName().getContainer().getId());
-                byteBuf.writeIntLE(container.getContainerName().getDynamicId());
+                byteBuf.writeFullContainerName(container.getContainerName());
                 byteBuf.writeArray(container.getItems(), (item) -> {
                     byteBuf.writeByte((byte) item.getSlot());
                     byteBuf.writeByte((byte) item.getHotbarSlot());

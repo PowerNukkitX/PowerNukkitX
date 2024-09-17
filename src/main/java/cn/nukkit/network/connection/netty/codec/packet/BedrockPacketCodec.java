@@ -54,9 +54,6 @@ public abstract class BedrockPacketCodec extends MessageToMessageCodec<ByteBuf, 
                 log.info("Failed to decode packet for packetId {}", wrapper.getPacketId());
                 return;
             }
-            if (!(dataPacket instanceof PlayerAuthInputPacket)) {
-                log.info("packet {}", dataPacket.toString());
-            }
             dataPacket.decode(HandleByteBuf.of(msg));
             wrapper.setPacket(dataPacket);
             out.add(wrapper.retain());

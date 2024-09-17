@@ -42,6 +42,11 @@ public class BlockPrismarineWall extends BlockWallBase {
     }
 
     @Override
+    public double getHardness() {
+        return 1.5;
+    }
+
+    @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

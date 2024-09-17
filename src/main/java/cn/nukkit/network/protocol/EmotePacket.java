@@ -1,8 +1,6 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.command.selector.args.impl.M;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import cn.nukkit.utils.VarInt;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -23,7 +21,7 @@ public class EmotePacket extends DataPacket {
 
     public byte flags;
 
-    public int emoteLengthTicks;
+    public int emoteDuration;
 
     @Override
     public int pid() {
@@ -34,7 +32,7 @@ public class EmotePacket extends DataPacket {
     public void decode(HandleByteBuf byteBuf) {
         this.runtimeId = byteBuf.readEntityRuntimeId();
         this.emoteID = byteBuf.readString();
-        this.emoteLengthTicks= byteBuf.readUnsignedVarInt();
+        this.emoteDuration = byteBuf.readUnsignedVarInt();
         this.xuid = byteBuf.readString();
         this.platformId = byteBuf.readString();
         this.flags = byteBuf.readByte();
@@ -44,7 +42,7 @@ public class EmotePacket extends DataPacket {
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeEntityRuntimeId(this.runtimeId);
         byteBuf.writeString(this.emoteID);
-        byteBuf.writeUnsignedVarInt(this.emoteLengthTicks);
+        byteBuf.writeUnsignedVarInt(this.emoteDuration);
         byteBuf.writeString(this.xuid);
         byteBuf.writeString(this.platformId);
         byteBuf.writeByte(flags);

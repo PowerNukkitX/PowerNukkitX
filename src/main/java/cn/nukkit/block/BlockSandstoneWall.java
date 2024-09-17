@@ -38,7 +38,12 @@ public class BlockSandstoneWall extends BlockWallBase {
 
     @Override
     public double getResistance() {
-        return 6;
+        return 0.8;
+    }
+
+    @Override
+    public double getHardness() {
+        return 0.8;
     }
 
     @Override

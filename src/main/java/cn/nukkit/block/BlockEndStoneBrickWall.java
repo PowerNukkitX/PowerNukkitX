@@ -38,7 +38,12 @@ public class BlockEndStoneBrickWall extends BlockWallBase {
 
     @Override
     public double getResistance() {
-        return 6;
+        return 9;
+    }
+
+    @Override
+    public double getHardness() {
+        return 3;
     }
 
     @Override

@@ -1637,10 +1637,7 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     private ItemStackRequestSlotData readStackRequestSlotInfo() {
-        FullContainerName containerName = new FullContainerName(
-                ContainerSlotType.fromId(readByte()),
-                readIntLE()
-        );
+        FullContainerName containerName = readFullContainerName();
         return new ItemStackRequestSlotData(
                 containerName.getContainer(),
                 readUnsignedByte(),
