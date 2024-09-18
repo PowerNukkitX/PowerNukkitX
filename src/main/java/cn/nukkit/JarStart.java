@@ -24,7 +24,7 @@ public final class JarStart {
             // If the library is not found, print an error message and exit
             System.out.println("No libraries detected. PowerNukkitX cannot work without them and will now exit.");
             System.out.println("Do NOT use java -jar to run PowerNukkitX!");
-            System.out.println("For more information, see https://docs.powernukkitx.com");
+            System.out.println("For more information, see https://docs-pnx.pages.dev");
             return;
         }
         usingJavaJar = true;
