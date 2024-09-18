@@ -6,6 +6,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -92,9 +94,15 @@ public class EntityArmorInventory extends BaseInventory {
 
         if (player == this.holder) {
             InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
-            inventorySlotPacket.inventoryId = player.getWindowId(this);
+            int id = player.getWindowId(this);
+            inventorySlotPacket.inventoryId = id;
             inventorySlotPacket.slot = index;
             inventorySlotPacket.item = this.getItem(index);
+            inventorySlotPacket.fullContainerName = new FullContainerName(
+                    this.getSlotType(index),
+                    id
+            );
+            inventorySlotPacket.dynamicContainerSize = this.getSize();
             player.dataPacket(inventorySlotPacket);
         } else {
             player.dataPacket(mobArmorEquipmentPacket);
@@ -116,8 +124,14 @@ public class EntityArmorInventory extends BaseInventory {
 
         if (player == this.holder) {
             InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-            inventoryContentPacket.inventoryId = player.getWindowId(this);
+            int id = player.getWindowId(this);
+            inventoryContentPacket.inventoryId = id;
             inventoryContentPacket.slots = new Item[]{this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
+            inventoryContentPacket.fullContainerName = new FullContainerName(
+                    ContainerSlotType.ARMOR,
+                    id
+            );
+            inventoryContentPacket.dynamicContainerSize = this.getSize();
             player.dataPacket(inventoryContentPacket);
         } else {
             player.dataPacket(mobArmorEquipmentPacket);

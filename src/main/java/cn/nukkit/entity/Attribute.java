@@ -3,7 +3,9 @@ package cn.nukkit.entity;
 
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ServerException;
+import lombok.Getter;
 
+import javax.annotation.processing.Generated;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,16 +58,20 @@ public class Attribute implements Cloneable {
     private final int id;
     protected float minValue;
     protected float maxValue;
+    protected float defaultMinimum;
+    protected float defaultMaximum;
     protected float defaultValue;
     protected float currentValue;
     protected String name;
     protected boolean shouldSend;
 
-    private Attribute(int id, String name, float minValue, float maxValue, float defaultValue, boolean shouldSend) {
+    private Attribute(int id, String name, float minValue, float maxValue, float defaultMinimum, float defaultMaximum, float defaultValue, boolean shouldSend) {
         this.id = id;
         this.name = name;
         this.minValue = minValue;
         this.maxValue = maxValue;
+        this.defaultMinimum = defaultMinimum;
+        this.defaultMaximum = defaultMaximum;
         this.defaultValue = defaultValue;
         this.shouldSend = shouldSend;
         this.currentValue = this.defaultValue;
@@ -89,15 +95,25 @@ public class Attribute implements Cloneable {
         addAttribute(HORSE_JUMP_STRENGTH, "minecraft:horse.jump_strength", 0, 0.7101778f, 0.7101778f);
     }
 
+    //SINCE 1.21.30
     public static Attribute addAttribute(int id, String name, float minValue, float maxValue, float defaultValue) {
         return addAttribute(id, name, minValue, maxValue, defaultValue, true);
     }
 
     public static Attribute addAttribute(int id, String name, float minValue, float maxValue, float defaultValue, boolean shouldSend) {
+        return addAttribute(id, name, minValue, maxValue, minValue, maxValue, defaultValue, shouldSend);
+    }
+    // END
+
+    public static Attribute addAttribute(int id, String name, float minValue, float maxValue, float defaultMinimum, float defaultMaximum, float defaultValue) {
+        return addAttribute(id, name, minValue, maxValue, defaultMinimum, defaultMaximum, defaultValue, true);
+    }
+
+    public static Attribute addAttribute(int id, String name, float minValue, float maxValue, float defaultMinimum, float defaultMaximum, float defaultValue, boolean shouldSend) {
         if (minValue > maxValue || defaultValue > maxValue || defaultValue < minValue) {
             throw new IllegalArgumentException("Invalid ranges: min value: " + minValue + ", max value: " + maxValue + ", defaultValue: " + defaultValue);
         }
-        return attributes.put(id, new Attribute(id, name, minValue, maxValue, defaultValue, shouldSend));
+        return attributes.put(id, new Attribute(id, name, minValue, maxValue, defaultMinimum, defaultMaximum, defaultValue, shouldSend));
     }
 
     /**
@@ -125,8 +141,8 @@ public class Attribute implements Cloneable {
         return new CompoundTag().putString("Name", attribute.getName())
                 .putFloat("Base", attribute.getDefaultValue())
                 .putFloat("Current", attribute.getValue())
-                .putFloat("DefaultMax", attribute.getMaxValue())
-                .putFloat("DefaultMin", attribute.getMinValue())
+                .putFloat("DefaultMax", attribute.getDefaultMaximum())
+                .putFloat("DefaultMin", attribute.getDefaultMinimum())
                 .putFloat("Max", attribute.getMaxValue())
                 .putFloat("Min", attribute.getMinValue());
     }
@@ -266,6 +282,14 @@ public class Attribute implements Cloneable {
 
     public boolean isSyncable() {
         return this.shouldSend;
+    }
+
+    public float getDefaultMinimum() {
+        return defaultMinimum;
+    }
+
+    public float getDefaultMaximum() {
+        return defaultMaximum;
     }
 
     @Override

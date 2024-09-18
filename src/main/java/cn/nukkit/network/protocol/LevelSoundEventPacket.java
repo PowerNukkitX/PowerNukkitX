@@ -524,7 +524,7 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_VAULT_DEACTIVATE = dynamic(507);
     public static final int SOUND_HURT_REDUCED = dynamic(508);
     public static final int SOUND_WIND_CHARGE_BURST = dynamic(509);
-    //Nothing 510 (minecraft broke)
+    public static final int SOUND_IMITATE_BOGGED = dynamic(510);
     public static final int SOUND_ARMOR_CRACK_WOLF = dynamic(511);
     public static final int SOUND_ARMOR_BREAK_WOLF = dynamic(512);
     public static final int SOUND_ARMOR_REPAIR_WOLF = dynamic(513);
@@ -543,8 +543,10 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_CREATOR = dynamic(527);
     public static final int SOUND_RECORD_CREATOR_MUSIC_BOX = dynamic(528);
     public static final int SOUND_RECORD_PRECIPICE = dynamic(529);
-    public static final int SOUND_IMITATE_BOGGED = dynamic(530);
-    public static final int SOUND_VAULT_REJECT_REWARDED_PLAYER = dynamic(531);
+    public static final int SOUND_VAULT_REJECT_REWARDED_PLAYER = dynamic(530);
+    public static final int IMITATE_ENDERMITE = dynamic(531);
+    public static final int BUNDLE_INSERT_FAIL = dynamic(532);
+    public static final int IMITATE_DROWNED = dynamic(533);
 
     public int sound;
     public float x;

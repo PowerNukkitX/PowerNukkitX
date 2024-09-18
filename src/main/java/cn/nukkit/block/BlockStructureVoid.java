@@ -16,7 +16,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.*;
  */
 public class BlockStructureVoid extends BlockSolid {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(STRUCTURE_VOID, STRUCTURE_VOID_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STRUCTURE_VOID);
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -34,14 +34,6 @@ public class BlockStructureVoid extends BlockSolid {
     @Override
     public String getName() {
         return "Structure Void";
-    }
-
-    @NotNull public StructureVoidType getType() {
-        return getPropertyValue(STRUCTURE_VOID_TYPE);
-    }
-
-    public void setType(@Nullable StructureVoidType type) {
-        setPropertyValue(STRUCTURE_VOID_TYPE, type);
     }
 
     @Override

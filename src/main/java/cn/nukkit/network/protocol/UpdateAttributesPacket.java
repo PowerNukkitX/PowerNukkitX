@@ -30,8 +30,6 @@ public class UpdateAttributesPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
-
         byteBuf.writeEntityRuntimeId(this.entityId);
 
         if (this.entries == null) {
@@ -42,6 +40,8 @@ public class UpdateAttributesPacket extends DataPacket {
                 byteBuf.writeFloatLE(entry.getMinValue());
                 byteBuf.writeFloatLE(entry.getMaxValue());
                 byteBuf.writeFloatLE(entry.getValue());
+                byteBuf.writeFloatLE(entry.getDefaultMinimum());
+                byteBuf.writeFloatLE(entry.getDefaultMaximum());
                 byteBuf.writeFloatLE(entry.getDefaultValue());
                 byteBuf.writeString(entry.getName());
                 byteBuf.writeUnsignedVarInt(0); // Modifiers

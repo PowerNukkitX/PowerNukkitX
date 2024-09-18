@@ -34,7 +34,8 @@ public final class CameraPreset {
         return PRESETS;
     }
 
-    public @Nullable static CameraPreset getPreset(String identifier) {
+    public @Nullable
+    static CameraPreset getPreset(String identifier) {
         return getPresets().get(identifier);
     }
 
@@ -86,12 +87,20 @@ public final class CameraPreset {
     private final Float yaw;
     @Nullable
     private final Float pitch;
-    private Vector2f viewOffset;
-    private Float radius;
     @Nullable
-    private CameraAudioListener listener;
+    private final Float rotationSpeed;
     @NotNull
-    private OptionalValue<Boolean> playEffect;
+    private final OptionalValue<Boolean> snapToTarget;
+    @Nullable
+    private final Vector2f viewOffset;
+    @Nullable
+    private final Vector3f entityOffset;
+    @Nullable
+    private final Float radius;
+    @Nullable
+    private final CameraAudioListener listener;
+    @NotNull
+    private final OptionalValue<Boolean> playEffect;
     private int id = 0;
 
     /**
@@ -99,12 +108,47 @@ public final class CameraPreset {
      */
     @Builder
     public CameraPreset(String identifier, String inheritFrom, @Nullable Vector3f pos, @Nullable Float yaw, @Nullable Float pitch, @Nullable CameraAudioListener listener, OptionalValue<Boolean> playEffect) {
+        this(
+                identifier,
+                inheritFrom,
+                pos,
+                yaw,
+                pitch,
+                null,
+                null,
+                null,
+                null,
+                null,
+                listener,
+                playEffect == null ? null : playEffect.orElseGet(null)
+        );
+    }
+
+    public CameraPreset(
+            String identifier,
+            String inheritFrom,
+            @Nullable Vector3f pos,
+            @Nullable Float yaw,
+            @Nullable Float pitch,
+            @Nullable Float rotationSpeed,
+            @Nullable Boolean snapToTarget,
+            @Nullable Vector2f viewOffset,
+            @Nullable Vector3f entityOffset,
+            @Nullable Float radius,
+            @Nullable CameraAudioListener listener,
+            @Nullable Boolean playEffect
+    ) {
         this.identifier = identifier;
         this.inheritFrom = inheritFrom != null ? inheritFrom : "";
         this.pos = pos;
         this.yaw = yaw;
         this.pitch = pitch;
+        this.rotationSpeed = rotationSpeed;
+        this.snapToTarget = OptionalValue.ofNullable(snapToTarget);
+        this.viewOffset = viewOffset;
+        this.entityOffset = entityOffset;
+        this.radius = radius;
         this.listener = listener;
-        this.playEffect = playEffect == null ? OptionalValue.empty() : playEffect;
+        this.playEffect = OptionalValue.ofNullable(playEffect);
     }
 }

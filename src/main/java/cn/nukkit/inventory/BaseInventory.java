@@ -11,6 +11,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -481,6 +482,11 @@ public abstract class BaseInventory implements Inventory {
                 continue;
             }
             pk.inventoryId = id;
+            pk.fullContainerName = new FullContainerName(
+                    ContainerSlotType.HOTBAR_AND_INVENTORY,
+                    id
+            );
+            pk.dynamicContainerSize = this.getSize();
             player.dataPacket(pk);
         }
     }
@@ -551,8 +557,10 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public void sendSlot(int index, Player... players) {
         InventorySlotPacket pk = new InventorySlotPacket();
-        pk.slot = toNetworkSlot(index);
+        int slot = toNetworkSlot(index);
+        pk.slot = slot;
         pk.item = this.getUnclonedItem(index);
+        pk.dynamicContainerSize = this.getSize();
 
         for (Player player : players) {
             int id = player.getWindowId(this);
@@ -561,6 +569,10 @@ public abstract class BaseInventory implements Inventory {
                 continue;
             }
             pk.inventoryId = id;
+            pk.fullContainerName = new FullContainerName(
+                    this.getSlotType(slot),
+                    id
+            );
             player.dataPacket(pk);
         }
     }

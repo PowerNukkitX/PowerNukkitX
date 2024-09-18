@@ -17,6 +17,7 @@ import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.PlayerArmorDamagePacket;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -474,8 +475,14 @@ public class HumanInventory extends BaseInventory {
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
                 InventoryContentPacket pk1 = new InventoryContentPacket();
-                pk1.inventoryId = SpecialWindowId.ARMOR.getId();
+                int id = SpecialWindowId.ARMOR.getId();
+                pk1.inventoryId = id;
                 pk1.slots = armor;
+                pk1.fullContainerName = new FullContainerName(
+                        ContainerSlotType.ARMOR,
+                        id
+                );
+                pk1.dynamicContainerSize = this.getSize();
                 player.dataPacket(pk1);
 
                 PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
@@ -555,9 +562,15 @@ public class HumanInventory extends BaseInventory {
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
                 InventorySlotPacket pk1 = new InventorySlotPacket();
-                pk1.inventoryId = SpecialWindowId.ARMOR.getId();
+                int id = SpecialWindowId.ARMOR.getId();
+                pk1.inventoryId = id;
                 pk1.slot = index;
                 pk1.item = this.getItem(ARMORS_INDEX + index);
+                pk1.fullContainerName = new FullContainerName(
+                        ContainerSlotType.ARMOR,
+                        id
+                );
+                pk1.dynamicContainerSize = this.getArmorInventory().getSize();
                 player.dataPacket(pk1);
 
                 PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
@@ -601,6 +614,11 @@ public class HumanInventory extends BaseInventory {
                 continue;
             }
             pk.inventoryId = id;
+            pk.fullContainerName = new FullContainerName(
+                    ContainerSlotType.HOTBAR_AND_INVENTORY,
+                    id
+            );
+            pk.dynamicContainerSize = this.getSize();
             player.dataPacket(pk);
         }
     }
@@ -620,10 +638,16 @@ public class HumanInventory extends BaseInventory {
         InventorySlotPacket pk = new InventorySlotPacket();
         pk.slot = index;
         pk.item = this.getItem(index).clone();
+        pk.dynamicContainerSize = this.getSize();
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
-                pk.inventoryId = SpecialWindowId.PLAYER.getId();
+                int id = SpecialWindowId.PLAYER.getId();
+                pk.inventoryId = id;
+                pk.fullContainerName = new FullContainerName(
+                        this.getSlotType(index),
+                        id
+                );
                 player.dataPacket(pk);
             } else {
                 int id = player.getWindowId(this);
@@ -632,6 +656,10 @@ public class HumanInventory extends BaseInventory {
                     continue;
                 }
                 pk.inventoryId = id;
+                pk.fullContainerName = new FullContainerName(
+                        this.getSlotType(index),
+                        id
+                );
                 player.dataPacket(pk);
             }
         }

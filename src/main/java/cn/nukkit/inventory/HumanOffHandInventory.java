@@ -5,6 +5,7 @@ import cn.nukkit.entity.IHuman;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
 
@@ -64,6 +65,11 @@ public class HumanOffHandInventory extends BaseInventory {
                 InventoryContentPacket pk2 = new InventoryContentPacket();
                 pk2.inventoryId = SpecialWindowId.OFFHAND.getId();
                 pk2.slots = new Item[]{item};
+                pk2.fullContainerName = new FullContainerName(
+                        ContainerSlotType.OFFHAND,
+                        0
+                );
+                pk2.dynamicContainerSize=player.getOffhandInventory().getSize();
                 player.dataPacket(pk2);
                 player.dataPacket(pk);
             } else {

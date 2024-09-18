@@ -78,7 +78,27 @@ public enum AuthInputAction {
     /**
      * @since v662
      */
-    PADDLE_RIGHT;
+    PADDLE_RIGHT,
+    /**
+     * @since v685
+     */
+    BLOCK_BREAKING_DELAY_ENABLED,
+    /**
+     * @since v729
+     */
+    HORIZONTAL_COLLISION,
+    /**
+     * @since v729
+     */
+    VERTICAL_COLLISION,
+    /**
+     * @since v729
+     */
+    DOWN_LEFT,
+    /**
+     * @since v729
+     */
+    DOWN_RIGHT;
 
     private static final AuthInputAction[] VALUES = values();
 

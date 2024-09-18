@@ -275,6 +275,10 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         /**
          * Damage caused by a lot of (>24) entities colliding together
          */
-        COLLIDE
+        COLLIDE,
+        /**
+         * Damage caused by mace attack
+         */
+        MACE_SMASH
     }
 }

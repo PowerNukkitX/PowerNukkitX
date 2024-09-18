@@ -39,7 +39,10 @@ public class CameraPresetsPacket extends DataPacket {
         byteBuf.writeNotNull(preset.getPos(), (v) -> byteBuf.writeFloatLE(v.getZ()));
         byteBuf.writeNotNull(preset.getPitch(), byteBuf::writeFloatLE);
         byteBuf.writeNotNull(preset.getYaw(), byteBuf::writeFloatLE);
+        byteBuf.writeNotNull(preset.getRotationSpeed(), byteBuf::writeFloatLE);
+        byteBuf.writeOptional(preset.getSnapToTarget(), byteBuf::writeBoolean);
         byteBuf.writeNotNull(preset.getViewOffset(), byteBuf::writeVector2f);
+        byteBuf.writeNotNull(preset.getEntityOffset(), byteBuf::writeVector3f);
         byteBuf.writeNotNull(preset.getRadius(), byteBuf::writeFloatLE);
         byteBuf.writeNotNull(preset.getListener(), (l) -> byteBuf.writeByte((byte) l.ordinal()));
         byteBuf.writeOptional(preset.getPlayEffect(), byteBuf::writeBoolean);

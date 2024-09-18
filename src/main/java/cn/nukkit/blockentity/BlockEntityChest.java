@@ -73,8 +73,8 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
         if (pair != null) {
             if (!pair.isPaired()) {
-                pair.createPair(this);
-                pair.checkPairing();
+                pair.pairWith(this);
+                this.pairWith(pair);
             }
 
             if (pair.doubleInventory != null) {
@@ -114,8 +114,16 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     public boolean pairWith(BlockEntityChest chest) {
-        if (this.isPaired() || chest.isPaired() || !this.getBlock().getId().equals(chest.getBlock().getId())) {
-            return false;
+        if ((this.isPaired() || chest.isPaired())) {
+            int x1 = namedTag.getInt("pairx");
+            int x2 = chest.namedTag.getInt("pairx");
+
+            int z1 = namedTag.getInt("pairz");
+            int z2 = chest.namedTag.getInt("pairz");
+
+            if(!(chest.isPaired() && (this.x == x2 && this.z == z2)) || !(this.isPaired() && (chest.x == x1 && chest.z == z1))) {
+                return false;
+            }
         }
 
         this.createPair(chest);
@@ -138,7 +146,6 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         if (!this.isPaired()) {
             return false;
         }
-
         BlockEntityChest chest = this.getPair();
 
         this.doubleInventory = null;

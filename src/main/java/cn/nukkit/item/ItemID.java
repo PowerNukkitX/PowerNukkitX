@@ -165,6 +165,8 @@ public interface ItemID {
 
     String COAST_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:coast_armor_trim_smithing_template";
 
+    String COBBLESTONE_WALL = "minecraft:cobblestone_wall";
+
     String COCOA_BEANS = "minecraft:cocoa_beans";
 
     String COD = "minecraft:cod";
@@ -697,6 +699,8 @@ public interface ItemID {
 
     String PURPLE_DYE = "minecraft:purple_dye";
 
+    String PURPUR_BLOCK = "minecraft:purpur_block";
+
     String QUARTZ = "minecraft:quartz";
 
     String QUARTZ_BLOCK = "minecraft:quartz_block";
@@ -812,6 +816,8 @@ public interface ItemID {
     String SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:spire_armor_trim_smithing_template";
 
     String SPLASH_POTION = "minecraft:splash_potion";
+
+    String SPONGE="minecraft:sponge";
 
     String SPRUCE_BOAT = "minecraft:spruce_boat";
 

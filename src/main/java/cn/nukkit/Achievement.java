@@ -14,11 +14,10 @@ import java.util.HashMap;
  * @since 9. 11. 2016
  */
 public class Achievement {
-
     /**
      * A map of all achievements, keyed by their ID.
      */
-    public static final HashMap<String, Achievement> achievements = new HashMap<String, Achievement>() {
+    public static final HashMap<String, Achievement> achievements = new HashMap<>() {
         {
             put("mineWood", new Achievement("Getting Wood"));
             put("buildWorkBench", new Achievement("Benchmarking", "mineWood"));

@@ -1,10 +1,12 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.block.BlockID;
 import cn.nukkit.utils.BinaryStream;
 import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * @author Cool_Loong
  */
+@Slf4j
 public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer> {
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     private static final Object2IntOpenHashMap<String> REGISTRY = new Object2IntOpenHashMap<>();

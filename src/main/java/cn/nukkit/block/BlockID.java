@@ -60,6 +60,8 @@ public interface BlockID {
 
     String ANDESITE_STAIRS = "minecraft:andesite_stairs";
 
+    String ANDESITE_WALL = "minecraft:andesite_wall";
+
     String ANVIL = "minecraft:anvil";
 
     String AZALEA = "minecraft:azalea";
@@ -249,6 +251,8 @@ public interface BlockID {
     String BRICK_SLAB = "minecraft:brick_slab";
 
     String BRICK_STAIRS = "minecraft:brick_stairs";
+
+    String BRICK_WALL = "minecraft:brick_wall";
 
     String BROWN_CANDLE = "minecraft:brown_candle";
 
@@ -690,6 +694,8 @@ public interface BlockID {
 
     String DIORITE_STAIRS = "minecraft:diorite_stairs";
 
+    String DIORITE_WALL = "minecraft:diorite_wall";
+
     String DIRT = "minecraft:dirt";
 
     String DIRT_WITH_ROOTS = "minecraft:dirt_with_roots";
@@ -976,6 +982,8 @@ public interface BlockID {
 
     String END_STONE_BRICK_SLAB = "minecraft:end_stone_brick_slab";
 
+    String END_STONE_BRICK_WALL = "minecraft:end_stone_brick_wall";
+
     String ENDER_CHEST = "minecraft:ender_chest";
 
     String EXPOSED_CHISELED_COPPER = "minecraft:exposed_chiseled_copper";
@@ -1059,6 +1067,8 @@ public interface BlockID {
     String GRANITE_SLAB = "minecraft:granite_slab";
 
     String GRANITE_STAIRS = "minecraft:granite_stairs";
+
+    String GRANITE_WALL = "minecraft:granite_wall";
 
     String GRASS_BLOCK = "minecraft:grass_block";
 
@@ -1498,6 +1508,8 @@ public interface BlockID {
 
     String MOSSY_COBBLESTONE_STAIRS = "minecraft:mossy_cobblestone_stairs";
 
+    String MOSSY_COBBLESTONE_WALL = "minecraft:mossy_cobblestone_wall";
+
     String MOSSY_STONE_BRICK_DOUBLE_SLAB = "minecraft:mossy_stone_brick_double_slab";
 
     String MOSSY_STONE_BRICK_SLAB = "minecraft:mossy_stone_brick_slab";
@@ -1505,6 +1517,8 @@ public interface BlockID {
     String MOSSY_STONE_BRICKS = "minecraft:mossy_stone_bricks";
 
     String MOSSY_STONE_BRICK_STAIRS = "minecraft:mossy_stone_brick_stairs";
+
+    String MOSSY_STONE_BRICK_WALL = "minecraft:mossy_stone_brick_wall";
 
     String MOVING_BLOCK = "minecraft:moving_block";
 
@@ -1533,6 +1547,8 @@ public interface BlockID {
     String NETHER_BRICK_SLAB = "minecraft:nether_brick_slab";
 
     String NETHER_BRICK_STAIRS = "minecraft:nether_brick_stairs";
+
+    String NETHER_BRICK_WALL = "minecraft:nether_brick_wall";
 
     String NETHER_GOLD_ORE = "minecraft:nether_gold_ore";
 
@@ -1776,6 +1792,8 @@ public interface BlockID {
 
     String PRISMARINE_STAIRS = "minecraft:prismarine_stairs";
 
+    String PRISMARINE_WALL = "minecraft:prismarine_wall";
+
     String PUMPKIN = "minecraft:pumpkin";
 
     String PUMPKIN_STEM = "minecraft:pumpkin_stem";
@@ -1805,6 +1823,8 @@ public interface BlockID {
     String PURPUR_BLOCK = "minecraft:purpur_block";
 
     String PURPUR_DOUBLE_SLAB = "minecraft:purpur_double_slab";
+
+    String PURPUR_PILLAR = "minecraft:purpur_pillar";
 
     String PURPUR_SLAB = "minecraft:purpur_slab";
 
@@ -1856,6 +1876,8 @@ public interface BlockID {
 
     String RED_NETHER_BRICK_STAIRS = "minecraft:red_nether_brick_stairs";
 
+    String RED_NETHER_BRICK_WALL = "minecraft:red_nether_brick_wall";
+
     String RED_SAND = "minecraft:red_sand";
 
     String RED_SANDSTONE = "minecraft:red_sandstone";
@@ -1865,6 +1887,8 @@ public interface BlockID {
     String RED_SANDSTONE_SLAB = "minecraft:red_sandstone_slab";
 
     String RED_SANDSTONE_STAIRS = "minecraft:red_sandstone_stairs";
+
+    String RED_SANDSTONE_WALL = "minecraft:red_sandstone_wall";
 
     String RED_SHULKER_BOX = "minecraft:red_shulker_box";
 
@@ -1909,6 +1933,8 @@ public interface BlockID {
     String SANDSTONE_SLAB = "minecraft:sandstone_slab";
 
     String SANDSTONE_STAIRS = "minecraft:sandstone_stairs";
+
+    String SANDSTONE_WALL = "minecraft:sandstone_wall";
 
     String SCAFFOLDING = "minecraft:scaffolding";
 
@@ -2057,6 +2083,8 @@ public interface BlockID {
     String STONE_BRICK_SLAB = "minecraft:stone_brick_slab";
 
     String STONE_BRICK_STAIRS = "minecraft:stone_brick_stairs";
+
+    String STONE_BRICK_WALL = "minecraft:stone_brick_wall";
 
     String STONE_BUTTON = "minecraft:stone_button";
 
@@ -2345,6 +2373,8 @@ public interface BlockID {
     String WEB = "minecraft:web";
 
     String WEEPING_VINES = "minecraft:weeping_vines";
+
+    String WET_SPONGE = "minecraft:wet_sponge";
 
     String WHEAT = "minecraft:wheat";
 

@@ -45,6 +45,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.SneakyThrows;
 import lombok.val;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,6 +69,7 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.function.ToLongFunction;
 
 public class HandleByteBuf extends ByteBuf {
@@ -901,6 +903,14 @@ public class HandleByteBuf extends ByteBuf {
         }
     }
 
+    public <T> T readOptional(T nonPresentValue, Supplier<T> valueReader) {
+        boolean isPresent = this.readBoolean();
+        if (isPresent) {
+            return valueReader.get();
+        }
+        return nonPresentValue;
+    }
+
     /**
      * Writes a list of Attributes to the packet buffer using the standard format.
      */
@@ -922,6 +932,19 @@ public class HandleByteBuf extends ByteBuf {
         byte[] bytes = new byte[16];
         this.readBytes(bytes);
         return Binary.readUUID(bytes);
+    }
+
+    public void writeFullContainerName(FullContainerName fullContainerName) {
+        this.writeByte(fullContainerName.getContainer().getId());
+        this.writeOptional(OptionalValue.ofNullable(fullContainerName.getDynamicId()), this::writeIntLE);
+
+    }
+
+    public FullContainerName readFullContainerName() {
+        return new FullContainerName(
+                ContainerSlotType.fromId(this.readByte()),
+                this.readOptional(null, this::readIntLE)
+        );
     }
 
     public void writeImage(SerializedImage image) {
@@ -1614,10 +1637,7 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     private ItemStackRequestSlotData readStackRequestSlotInfo() {
-        FullContainerName containerName = new FullContainerName(
-                ContainerSlotType.fromId(readByte()),
-                readIntLE()
-        );
+        FullContainerName containerName = readFullContainerName();
         return new ItemStackRequestSlotData(
                 containerName.getContainer(),
                 readUnsignedByte(),
