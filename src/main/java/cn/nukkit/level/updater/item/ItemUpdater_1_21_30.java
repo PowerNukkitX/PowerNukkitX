@@ -1,5 +1,6 @@
 package cn.nukkit.level.updater.item;
 
+import cn.nukkit.block.BlockID;
 import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 
@@ -33,6 +34,7 @@ public class ItemUpdater_1_21_30 implements Updater {
             case "end_brick" -> "minecraft:end_stone_brick_wall";
             case "brick" -> "minecraft:brick_wall";
             case "andesite" -> "minecraft:andesite_wall";
+            case "diorite" -> BlockID.DIORITE_WALL;
             default -> "minecraft:cobblestone_wall";
         });
 
