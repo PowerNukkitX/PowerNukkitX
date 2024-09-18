@@ -11,11 +11,11 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(712);
+    int CURRENT_PROTOCOL = dynamic(729);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.21.20");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.21.30");
 
-    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 21, 2, 0, 0);
+    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 21, 3, 0, 0);
 
     int BLOCK_STATE_VERSION_NO_REVISION = (MINECRAFT_SEMVERSION.major() << 24) | //major
             (MINECRAFT_SEMVERSION.minor() << 16) | //minor
@@ -296,4 +296,10 @@ public interface ProtocolInfo {
     int CLIENTBOUND_CLOSE_FORM_PACKET = 310;
 
     int SERVERBOUND_LOADING_SCREEN_PACKET = 312;
+
+    int SERVERBOUND_DIAGNOSTICS_PACKET = 315;
+
+    int CAMERA_AIM_ASSIST_PACKET = 316;
+
+    int CONTAINER_REGISTRY_CLEANUP_PACKET = 317;
 }

@@ -57,7 +57,8 @@ public final class BlockRegistryPopulator {
             BlockStateUpdater_1_20_80.INSTANCE,
             BlockStateUpdater_1_21_0.INSTANCE,
             BlockStateUpdater_1_21_10.INSTANCE,
-            BlockStateUpdater_1_21_20.INSTANCE
+            BlockStateUpdater_1_21_20.INSTANCE,
+            BlockStateUpdater_1_21_30.INSTANCE
     );
 
     public static BlockMappings initMapping() {

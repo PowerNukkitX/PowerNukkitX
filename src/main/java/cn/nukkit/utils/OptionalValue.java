@@ -21,7 +21,7 @@ public final class OptionalValue<T> {
     }
 
     public static <T> OptionalValue<T> ofNullable(T value) {
-        return value == null ? (OptionalValue<T>) EMPTY : of(value);
+        return value == null ? OptionalValue.empty() : of(value);
     }
 
     public static <T> OptionalValue<T> empty() {

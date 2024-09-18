@@ -11,18 +11,20 @@ public class TransferPacket extends DataPacket {
 
     public String address; // Server address
     public int port = 19132; // Server port
+    private boolean reloadWorld;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
         this.address = byteBuf.readString();
-        this.port = (short) byteBuf.readShortLE();
+        this.port = byteBuf.readShortLE();
+        this.reloadWorld = byteBuf.readBoolean();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeString(address);
         byteBuf.writeShortLE(port);
+        byteBuf.writeBoolean(this.reloadWorld);
     }
 
     @Override

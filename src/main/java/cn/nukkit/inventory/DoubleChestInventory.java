@@ -7,6 +7,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.BlockEventPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import org.jetbrains.annotations.NotNull;
 
@@ -94,7 +95,7 @@ public class DoubleChestInventory extends ContainerInventory {
 
     @Override
     public void setContents(Map<Integer, Item> items) {
-        if(items.size() > this.size) {
+        if (items.size() > this.size) {
             items.keySet().removeIf(slot -> slot >= this.size);
         }
 
@@ -198,6 +199,7 @@ public class DoubleChestInventory extends ContainerInventory {
         int i = inv == this.right ? this.left.getSize() + index : index;
         pk.slot = toNetworkSlot(i);
         pk.item = inv.getUnclonedItem(index);
+        pk.dynamicContainerSize = this.getSize();
 
         for (Player player : players) {
             int id = player.getWindowId(this);
@@ -206,6 +208,10 @@ public class DoubleChestInventory extends ContainerInventory {
                 continue;
             }
             pk.inventoryId = id;
+            pk.fullContainerName = new FullContainerName(
+                    this.getSlotType(pk.slot),
+                    id
+            );
             player.dataPacket(pk);
         }
     }

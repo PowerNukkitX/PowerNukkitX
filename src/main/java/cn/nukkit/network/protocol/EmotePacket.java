@@ -11,7 +11,6 @@ import lombok.ToString;
 public class EmotePacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.EMOTE_PACKET;
 
-
     public long runtimeId;
 
     public String xuid = "";
@@ -22,6 +21,8 @@ public class EmotePacket extends DataPacket {
 
     public byte flags;
 
+    public int emoteDuration;
+
     @Override
     public int pid() {
         return NETWORK_ID;
@@ -31,16 +32,17 @@ public class EmotePacket extends DataPacket {
     public void decode(HandleByteBuf byteBuf) {
         this.runtimeId = byteBuf.readEntityRuntimeId();
         this.emoteID = byteBuf.readString();
+        this.emoteDuration = byteBuf.readUnsignedVarInt();
         this.xuid = byteBuf.readString();
         this.platformId = byteBuf.readString();
-        this.flags = (byte) byteBuf.readByte();
+        this.flags = byteBuf.readByte();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeEntityRuntimeId(this.runtimeId);
         byteBuf.writeString(this.emoteID);
+        byteBuf.writeUnsignedVarInt(this.emoteDuration);
         byteBuf.writeString(this.xuid);
         byteBuf.writeString(this.platformId);
         byteBuf.writeByte(flags);
