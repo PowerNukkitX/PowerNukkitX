@@ -60,7 +60,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
             Pair<Item, Integer> pair = updateAnvilResult(player, anvilInventory, filterString);
             if (pair != null) {
                 player.getCreativeOutputInventory().setItem(pair.left());
-                player.setExperience(player.getExperience() - pair.right());
+                player.setExperience(player.getExperience(),player.getExperienceLevel() - pair.right());
             } else{
                 return context.error();
             }
