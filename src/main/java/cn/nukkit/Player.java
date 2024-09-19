@@ -162,19 +162,22 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
- * 游戏玩家对象，代表操控的角色
+ * Game player object, representing the controlled character.
  * <p>
- * Game player object, representing the controlled character
+ * This class represents a player in the game, including their state, actions, and interactions.
+ * </p>
  *
- * @author MagicDroidX &amp; Box (Nukkit Project)
+ * @see EntityHuman
+ * @see CommandSender
+ * @see ChunkLoader
+ * @see IPlayer
+ * @see IScoreboardViewer
+ * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 @Slf4j
 public class Player extends EntityHuman implements CommandSender, ChunkLoader, IPlayer, IScoreboardViewer {
-    /// static fields
     /**
-     * 一个承载玩家的空数组静态常量
-     * <p>
-     * An empty array of static constants that host the player
+     * An empty array of static constants that host the player.
      */
     public static final Player[] EMPTY_ARRAY = new Player[0];
     public static final int SURVIVAL = 0;
@@ -190,6 +193,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public static final int PERMISSION_MEMBER = 1;
     public static final int PERMISSION_VISITOR = 0;
     /// static fields
+
     public boolean playedBefore;
     public boolean spawned = false;
     public volatile boolean locallyInitialized = false;
@@ -200,15 +204,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public Vector3 speed = null;
     public long creationTime = 0;
     /**
-     * 正在挖掘的方块
-     * <p>
-     * block being dig
+     * Block being dug.
      */
     public Block breakingBlock = null;
     /**
-     * 正在挖掘的方向
-     * <p>
-     * direction of dig
+     * Direction of the dig.
      */
     public BlockFace breakingBlockFace = null;
     public int pickedXPOrb = 0;
@@ -225,9 +225,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected AtomicBoolean connected = new AtomicBoolean(true);
     protected InetSocketAddress socketAddress;
     /**
-     * 是否移除改玩家聊天中的颜色字符如 §c §1
-     * <p>
-     * Whether to remove the color character in the chat of the changed player as §c §1
+     * Whether to remove the color character in the chat of the changed player as §c §1.
      */
     protected boolean removeFormat = true;
     protected String displayName;
@@ -241,8 +239,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected Position spawnPoint;
     protected SpawnPointType spawnPointType;
     /**
-     * 代表玩家悬浮空中所经过的tick数.
-     * <p>
      * Represents the number of ticks the player has passed through the air.
      */
     protected int inAirTicks = 0;
@@ -255,13 +251,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected Map<Integer, FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
     protected Map<Integer, FormWindow> serverSettings = new Int2ObjectOpenHashMap<>();
     /**
-     * 我们使用google的cache来存储NPC对话框发送信息
-     * 原因是发送过去的对话框客户端有几率不响应，在特定情况下我们无法清除这些对话框，这会导致内存泄漏
-     * 5分钟后未响应的对话框会被清除
-     * <p>
-     * We use Google's cache to store NPC dialogs to send messages
-     * The reason is that there is a chance that the client will not respond to the dialogs sent, and in certain cases we cannot clear these dialogs, which can lead to memory leaks
-     * Unresponsive dialogs will be cleared after 5 minutes
+     * We use Google's cache to store NPC dialogs to send messages.
+     * The reason is that there is a chance that the client will not respond to the dialogs sent, and in certain cases we cannot clear these dialogs, which can lead to memory leaks.
+     * Unresponsive dialogs will be cleared after 5 minutes.
      */
     protected Cache<String, FormWindowDialog> dialogWindows = Caffeine.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
@@ -292,27 +284,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected AsyncTask preLoginEventTask = null;
     protected LoginChainData loginChainData;
     /**
-     * 玩家升级时播放音乐的时间
-     * <p>
-     * Time to play sound when player upgrades
+     * Time to play sound when player upgrades.
      */
     protected int lastPlayerdLevelUpSoundTime = 0;
     /**
-     * 玩家最后攻击的实体.
-     * <p>
      * The entity that the player attacked last.
      */
     protected Entity lastAttackEntity = null;
 
     /**
-     * 玩家迷雾设置
-     * <p>
-     * Player Fog Settings
+     * Player Fog Settings.
      */
     protected List<PlayerFogPacket.Fog> fogStack = new ArrayList<>();
     /**
-     * 最后攻击玩家的实体.
-     * <p>
      * The entity that the player is attacked last.
      */
     protected Entity lastBeAttackEntity = null;
@@ -324,9 +308,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /// lastUseItem System and item cooldown
     protected final HashMap<String, Integer> cooldownTickMap = new HashMap<>();
     protected final HashMap<String, Integer> lastUseItemMap = new HashMap<>(1);
-    ///
 
-    /// inventory system
+    /// Inventory system
     protected int windowsCnt = 1;
     protected int closingWindowId = Integer.MIN_VALUE;
     protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
@@ -336,22 +319,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected PlayerCursorInventory playerCursorInventory;
     protected CreativeOutputInventory creativeOutputInventory;
     /**
-     * Player opens it own inventory
+     * Player opens its own inventory.
      */
     protected boolean inventoryOpen;
     /**
-     * Player open it own ender chest inventory
+     * Player opens its own ender chest inventory.
      */
     protected boolean enderChestOpen;
     /**
-     * Player open a fake Inventory
+     * Player opens a fake Inventory.
      */
     protected boolean fakeInventoryOpen;
-    ///
 
-    ///todo hack for receive a error position after teleport
+    //todo A hack to handle receiving an erroneous position after teleportation
     private Pair<Location, Long> lastTeleportMessage;
-    ///
 
     private final @NotNull PlayerInfo info;
 
@@ -385,9 +366,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Get the network Session for the player
+     * Retrieves the network session for the player.
      *
-     * @return the network Session
+     * @return the network session
      */
     @NotNull
     public BedrockSession getSession() {
@@ -395,16 +376,22 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 将服务端侧游戏模式转换为网络包适用的游戏模式ID
-     * 此方法是为了解决NK观察者模式ID为3而原版ID为6的问题
+     * Converts the server-side game mode to the corresponding network packet game mode ID.
+     * This method addresses the issue where the NK spectator mode ID is 3, but the original ID is 6.
      *
-     * @param gamemode 服务端侧游戏模式
-     * @return 网络层游戏模式ID
+     * @param gamemode the server-side game mode
+     * @return the network layer game mode ID
      */
     public static int toNetworkGamemode(int gamemode) {
         return gamemode != SPECTATOR ? gamemode : GameType.SPECTATOR.ordinal();
     }
 
+    /**
+     * Continues the block breaking process.
+     *
+     * @param pos  the position of the block being broken
+     * @param face the face of the block being broken
+     */
     protected void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         if (this.isBreakingBlock()) {
             var time = System.currentTimeMillis();
@@ -438,6 +425,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Starts the block breaking process.
+     *
+     * @param pos  the position of the block being broken
+     * @param face the face of the block being broken
+     */
     protected void onBlockBreakStart(Vector3 pos, BlockFace face) {
         BlockVector3 blockPos = pos.asBlockVector3();
         long currentBreak = System.currentTimeMillis();
@@ -513,8 +506,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastBreakPosition = blockPos;
     }
 
+    /**
+     * Aborts the block breaking process.
+     *
+     * @param pos the position of the block being broken
+     */
     protected void onBlockBreakAbort(Vector3 pos) {
-        if (pos.distanceSquared(this) < 1000) {// same as with ACTION_START_BREAK
+        if (pos.distanceSquared(this) < 1000) { // same as with ACTION_START_BREAK
             LevelEventPacket pk = new LevelEventPacket();
             pk.evid = LevelEventPacket.EVENT_BLOCK_STOP_BREAK;
             pk.x = (float) pos.x;
@@ -528,6 +526,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.breakingBlockFace = null;
     }
 
+    /**
+     * Completes the block breaking process.
+     *
+     * @param blockPos the position of the block being broken
+     * @param face     the face of the block being broken
+     */
     protected void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
         if (!this.spawned || !this.isAlive()) {
             return;
@@ -570,6 +574,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Sets the title text for the player.
+     *
+     * @param text the title text
+     */
     private void setTitle(String text) {
         SetTitlePacket packet = new SetTitlePacket();
         packet.text = text;
@@ -577,7 +586,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(packet);
     }
 
-    //todo a lot on dimension
+    /**
+     * Changes the player's dimension.
+     *
+     * @param dimension the new dimension ID
+     */
     private void setDimension(int dimension) {
         ChangeDimensionPacket pk = new ChangeDimensionPacket();
         pk.dimension = dimension;
@@ -589,6 +602,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.needDimensionChangeACK = true;
     }
 
+    /**
+     * Updates the blocking flag based on the player's state.
+     */
     private void updateBlockingFlag() {
         boolean shouldBlock = this.isItemCoolDownEnd("shield")
                 && (this.isSneaking() || getRiding() != null)
@@ -599,6 +615,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Initializes the player entity.
+     */
     @Override
     protected void initEntity() {
         super.initEntity();
@@ -617,7 +636,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.addDefaultWindows();
         this.loggedIn = true;
 
-        //todo remove these
+        // Remove deprecated spawn block level data
         if (this.namedTag.containsString("SpawnBlockLevel")) {
             this.namedTag.remove("SpawnBlockLevel");
         }
@@ -629,7 +648,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 完成completeLoginSequence后执行
+     * Executes after completing the completeLoginSequence.
      */
     protected void doFirstSpawn() {
         this.spawned = true;
@@ -665,24 +684,24 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.sendExperienceLevel(this.getExperienceLevel());
         }
 
-        //Weather
+        // Update weather
         this.getLevel().sendWeather(this);
 
-        //FoodLevel
+        // Update food level
         PlayerFood food = this.getFoodData();
         if (food.isHungry()) {
             food.sendFood();
         }
 
         var scoreboardManager = this.getServer().getScoreboardManager();
-        if (scoreboardManager != null) {//in test environment sometimes the scoreboard level is null
+        if (scoreboardManager != null) { // In test environment sometimes the scoreboard level is null
             scoreboardManager.onPlayerJoin(this);
         }
 
-        if(this.getSpawn().second() == null || this.getSpawn().second() == SpawnPointType.WORLD) {
+        if (this.getSpawn().second() == null || this.getSpawn().second() == SpawnPointType.WORLD) {
             this.setSpawn(this.level.getSafeSpawn(), SpawnPointType.WORLD);
         } else {
-            //update compass
+            // Update compass
             SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
             pk.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
             pk.x = this.getSpawn().first().getFloorX();
@@ -695,11 +714,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendFogStack();
         this.sendCameraPresets();
 
-        log.debug("Send Player Spawn Status Packet to {},wait init packet", getName());
+        log.debug("Send Player Spawn Status Packet to {}, wait init packet", getName());
         this.sendPlayStatus(PlayStatusPacket.PLAYER_SPAWN);
 
-        //客户端初始化完毕再传送玩家，避免下落 (x)
-        //已经设置immobile了所以不用管下落了
+        // Teleport player after client initialization to avoid falling (x)
+        // Already set immobile so no need to worry about falling
         Location pos;
         if (this.server.getSettings().baseSettings().safeSpawn() && (this.gamemode & 0x01) == 0) {
             pos = this.level.getSafeSpawn(this).getLocation();
@@ -719,6 +738,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }, 5);
     }
 
+    /**
+     * Checks the ground state of the player based on movement and updates the collision status.
+     *
+     * @param movX Movement in the X direction.
+     * @param movY Movement in the Y direction.
+     * @param movZ Movement in the Z direction.
+     * @param dx   Delta X.
+     * @param dy   Delta Y.
+     * @param dz   Delta Z.
+     */
     @Override
     protected void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
         if (!this.onGround || movX != 0 || movY != 0 || movZ != 0) {
@@ -741,11 +770,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     level.getTickCachedBlock(getFloorX() - 1, getFloorY() - 1, getFloorZ() + 1)
             };
             if ((!b1.canPassThrough() && b1.collidesWithBB(realBB)) || (!b2.canPassThrough() && b2.collidesWithBB(realBB))) {
-//                level.addParticle(new BlockForceFieldParticle(b1.add(0.5, 0, 0.5)));
                 onGround = true;
             }
             for (Block block : blocks) {
-//                level.addParticle(new BlockForceFieldParticle(block.add(0.5, 0, 0.5)));
                 if (!block.canPassThrough() && block.collidesWithBB(realBB)) {
                     onGround = true;
                 }
@@ -756,6 +783,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.isCollided = this.onGround;
     }
 
+    /**
+     * Checks for block collisions and handles special block interactions such as portals and scaffolding.
+     */
     @Override
     protected void checkBlockCollision() {
         boolean portal = false;
@@ -788,7 +818,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         setDataFlagExtend(EntityFlag.IN_ASCENDABLE_BLOCK, scaffolding);
         setDataFlagExtend(EntityFlag.OVER_DESCENDABLE_BLOCK, scaffoldingUnder.length > 0);
 
-        if (endPortal) {//handle endPortal teleport
+        if (endPortal) { // Handle endPortal teleport
             if (!inEndPortal) {
                 inEndPortal = true;
                 if (this.getRiding() == null && this.getPassengers().isEmpty()) {
@@ -803,7 +833,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                                     server.getScheduler().scheduleDelayedTask(new Task() {
                                         @Override
                                         public void onRun(int currentTick) {
-                                            // dirty hack to make sure chunks are loaded and generated before spawning player
+                                            // Dirty hack to make sure chunks are loaded and generated before spawning player
                                             teleport(newPos, TeleportCause.END_PORTAL);
                                             BlockEndPortal.spawnObsidianPlatform(newPos);
                                         }
@@ -837,6 +867,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Checks for nearby entities and updates their state.
+     */
     protected void checkNearEntities() {
         for (Entity entity : this.level.getNearbyEntities(this.boundingBox.grow(1, 0.5, 1), this)) {
             entity.scheduleUpdate();
@@ -849,12 +882,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Handles player movement and checks for invalid motion.
+     *
+     * @param clientPos The new position of the player.
+     */
     protected void handleMovement(Location clientPos) {
         if (this.firstMove) this.firstMove = false;
         boolean invalidMotion = false;
         var revertPos = this.getLocation().clone();
         double distance = clientPos.distanceSquared(this);
-        //before check
+        // Before check
         if (distance > 128) {
             invalidMotion = true;
         } else if (this.chunk == null || !chunk.getChunkState().canSend()) {
@@ -875,20 +913,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        //update server-side position and rotation and aabb
+        // Update server-side position, rotation, and bounding box
         double diffX = clientPos.getX() - this.x;
         double diffY = clientPos.getY() - this.y;
         double diffZ = clientPos.getZ() - this.z;
         this.setRotation(clientPos.getYaw(), clientPos.getPitch(), clientPos.getHeadYaw());
         this.fastMove(diffX, diffY, diffZ);
 
-        //after check
+        // After check
         double corrX = this.x - clientPos.getX();
         double corrY = this.y - clientPos.getY();
         double corrZ = this.z - clientPos.getZ();
         if (this.checkMovement && (Math.abs(corrX) > 0.5 || Math.abs(corrY) > 0.5 || Math.abs(corrZ) > 0.5) && this.riding == null && !this.hasEffect(EffectType.LEVITATION) && !this.hasEffect(EffectType.SLOW_FALLING) && !server.getAllowFlight()) {
             double diff = corrX * corrX + corrZ * corrZ;
-            //这里放宽了判断，否则对角穿过脚手架会判断非法移动。
+            // Relaxed judgment to avoid illegal movement detection when crossing scaffolding diagonally.
             if (diff > 1.2) {
                 PlayerInvalidMoveEvent event = new PlayerInvalidMoveEvent(this, true);
                 this.getServer().getPluginManager().callEvent(event);
@@ -904,7 +942,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
-        //update server-side position and rotation and aabb
+        // Update server-side position, rotation, and bounding box
         Location last = new Location(this.lastX, this.lastY, this.lastZ, this.lastYaw, this.lastPitch, this.lastHeadYaw, this.level);
         Location now = this.getLocation();
         this.lastX = now.x;
@@ -929,8 +967,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             PlayerMoveEvent ev = new PlayerMoveEvent(this, last, now);
             this.server.getPluginManager().callEvent(ev);
 
-            if (!(invalidMotion = ev.isCancelled())) { //Yes, this is intended
-                if (!now.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
+            if (!(invalidMotion = ev.isCancelled())) { // Yes, this is intended
+                if (!now.equals(ev.getTo()) && this.riding == null) { // If plugins modify the destination
                     if (this.getGamemode() != Player.SPECTATOR)
                         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
                     this.teleport(ev.getTo(), null);
@@ -952,7 +990,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
-        //update speed
+        // Update speed
         if (this.speed == null) {
             this.speed = new Vector3(last.x - now.x, last.y - now.y, last.z - now.z);
         } else {
@@ -961,7 +999,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         handleLogicInMove(invalidMotion, distance);
 
-        //if plugin cancel move
+        // If plugin cancels move
         if (invalidMotion) {
             this.setPositionAndRotation(revertPos.asVector3f().asVector3(), revertPos.getYaw(), revertPos.getPitch(), revertPos.getHeadYaw());
             this.revertClientMotion(revertPos);
@@ -973,15 +1011,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Offers a movement task based on the new position.
+     *
+     * @param newPosition the new position of the player
+     */
     protected void offerMovementTask(Location newPosition) {
         var distance = newPosition.distance(this);
-        var updatePosition = distance > MOVEMENT_DISTANCE_THRESHOLD;//sqrt distance
+        var updatePosition = distance > MOVEMENT_DISTANCE_THRESHOLD; // sqrt distance
         var updateRotation = (float) Math.abs(this.getPitch() - newPosition.pitch) > ROTATION_UPDATE_THRESHOLD
                 || (float) Math.abs(this.getYaw() - newPosition.yaw) > ROTATION_UPDATE_THRESHOLD
                 || (float) Math.abs(this.getHeadYaw() - newPosition.headYaw) > ROTATION_UPDATE_THRESHOLD;
         var isHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
         if (isHandle) {
-            //todo hack for receive a error position after teleport
+            // TODO: Hack for receiving an error position after teleport
             long now = System.currentTimeMillis();
             if (lastTeleportMessage != null && (now - lastTeleportMessage.right()) < 200) {
                 var dis = newPosition.distance(lastTeleportMessage.left());
@@ -992,18 +1035,23 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-
+    /**
+     * Handles logic during movement, including hunger and enchantment effects.
+     *
+     * @param invalidMotion whether the motion is invalid
+     * @param distance      the distance moved
+     */
     protected void handleLogicInMove(boolean invalidMotion, double distance) {
         if (!invalidMotion) {
-            //处理饱食度更新
+            // Handle hunger update
             if (this.getFoodData().isEnabled() && this.getServer().getDifficulty() > 0) {
-                //UpdateFoodExpLevel
+                // Update food exhaustion level
                 if (distance >= 0.05) {
                     double jump = 0;
                     double swimming = this.isInsideOfWater() ? 0.01 * distance : 0;
                     double distance2 = distance;
                     if (swimming != 0) distance2 = 0;
-                    if (this.isSprinting()) {  //Running
+                    if (this.isSprinting()) {  // Running
                         if (this.inAirTicks == 3 && swimming == 0) {
                             jump = 0.2;
                         }
@@ -1017,7 +1065,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 }
             }
 
-            //处理冰霜行者附魔
+            // Handle Frost Walker enchantment
             Enchantment frostWalker = inventory.getBoots().getEnchantment(Enchantment.ID_FROST_WALKER);
             if (frostWalker != null && frostWalker.getLevel() > 0 && !this.isSpectator() && this.y >= 1 && this.y <= 255) {
                 int radius = 2 + frostWalker.getLevel();
@@ -1044,14 +1092,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 }
             }
 
-            //处理灵魂急行附魔
-            //Handling Soul Speed Enchantment
+            // Handle Soul Speed enchantment
             int soulSpeedLevel = this.getInventory().getBoots().getEnchantmentLevel(Enchantment.ID_SOUL_SPEED);
             if (soulSpeedLevel > 0) {
                 Block levelBlock = this.getLevelBlock();
                 this.soulSpeedMultiplier = (soulSpeedLevel * 0.105f) + 1.3f;
 
-                // levelBlock check is required because of soul sand being 1 pixel shorter than normal blocks
+                // Level block check is required because of soul sand being 1 pixel shorter than normal blocks
                 boolean isSoulSandCompatible = levelBlock.isSoulSpeedCompatible() || levelBlock.down().isSoulSpeedCompatible();
 
                 if (this.wasInSoulSandCompatible && !isSoulSandCompatible) {
@@ -1062,15 +1109,22 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     this.setMovementSpeed(this.getMovementSpeed() * this.soulSpeedMultiplier);
                 }
             }
-
         }
     }
 
+    /**
+     * Resets the client's movement state.
+     */
     protected void resetClientMovement() {
         this.newPosition = null;
         this.positionChanged = false;
     }
 
+    /**
+     * Reverts the client's motion to the original position.
+     *
+     * @param originalPos the original position to revert to
+     */
     protected void revertClientMotion(Location originalPos) {
         this.lastX = originalPos.getX();
         this.lastY = originalPos.getY();
@@ -1089,7 +1143,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 处理LOGIN_PACKET中执行
+     * Processes the LOGIN\_PACKET.
      */
     public void processLogin() {
         if (this.hasPermission(Server.BROADCAST_CHANNEL_USERS)) {
@@ -1128,7 +1182,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         server.updateName(this.info);
 
         this.playedBefore = (nbt.getLong("lastPlayed") - nbt.getLong("firstPlayed")) > 1;
-
 
         nbt.putString("NameTag", this.getName());
 
@@ -1213,7 +1266,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         this.hasSeenCredits = this.namedTag.getBoolean("HasSeenCredits");
 
-        //以下两个List的元素一一对应
+        // The following two lists correspond to each other
         if (!this.namedTag.contains("fogIdentifiers")) {
             this.namedTag.putList("fogIdentifiers", new ListTag<StringTag>());
         }
@@ -1241,6 +1294,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 String.valueOf(NukkitMath.round(this.z, 4))));
     }
 
+    /**
+     * Gets the safe spawn location for the player.
+     *
+     * @return the safe spawn location
+     */
     public Vector3 getSafeSpawn() {
         Vector3 worldSpawnPoint;
         if (this.spawnPoint == null) {
@@ -1252,13 +1310,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 玩家客户端初始化完成后调用
+     * Called after the player client has been locally initialized.
      */
     protected void onPlayerLocallyInitialized() {
         if (locallyInitialized) return;
         locallyInitialized = true;
 
-        //init entity data property
+        // Initialize entity data properties
         this.setDataProperty(NAME, info.getUsername(), false);
         this.setDataProperty(NAMETAG_ALWAYS_SHOW, 1, false);
 
@@ -1274,15 +1332,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.server.broadcastMessage(playerJoinEvent.getJoinMessage());
         }
 
-        /*
-          我们在玩家客户端初始化后才发送游戏模式，以解决观察者模式疾跑速度不正确的问题
-          只有在玩家客户端进入游戏显示后再设置观察者模式，疾跑速度才正常
-          强制更新游戏模式以确保客户端会收到模式更新包
-          After initializing the player client, we send the game mode to address the issue of incorrect
-          sprint speed in spectator mode. Only after the player client enters the game display is spectator mode set,
-          and the sprint speed behaves normally. We force an update of the game mode to ensure that the client receives the
-          mode update packet.
-         */
+    /*
+      After initializing the player client, we send the game mode to address the issue of incorrect
+      sprint speed in spectator mode. Only after the player client enters the game display is spectator mode set,
+      and the sprint speed behaves normally. We force an update of the game mode to ensure that the client receives the
+      mode update packet.
+     */
         this.setGamemode(this.gamemode, false, null, true);
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
         this.spawnToAll();
@@ -1290,14 +1345,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 判断重生锚是否有效如果重生锚有效则在重生锚上重生或者在床上重生
-     * 如果玩家以上2种都没有则在服务器重生点重生
-     * <p>
-     * Determine if the respawn anchor is valid if the respawn anchor is valid then the anchor is respawned at the respawn anchor or reborn in bed
-     * If the player has none of the above 2 then respawn at the server respawn point
+     * Determines if the respawn block is valid. If the respawn anchor is valid, respawn at the anchor or in bed.
+     * If the player has neither, respawn at the server spawn point.
      *
-     * @param block
-     * @return
+     * @param block the block to check
+     * @return true if the block is a valid respawn block, false otherwise
      */
     protected boolean isValidRespawnBlock(Block block) {
         if (block.getId().equals(BlockID.RESPAWN_ANCHOR) && block.getLevel().getDimension() == Level.DIMENSION_NETHER) {
@@ -1312,13 +1364,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return false;
     }
 
+    /**
+     * Checks if the player is banned.
+     *
+     * @return true if the player is banned, false otherwise
+     */
     @Override
     public boolean isBanned() {
         return this.server.getNameBans().isBanned(this.getName());
     }
 
+    /**
+     * Respawns the player. If the server is in hardcore mode, the player is banned.
+     */
     protected void respawn() {
-        //the player can't respawn if the server is hardcore
+        // The player can't respawn if the server is hardcore
         if (this.server.isHardcore()) {
             this.setBanned(true);
             return;
@@ -1326,13 +1386,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.resetInventory();
 
-        //level spawn point < block spawn = self spawn
+        // Determine the spawn point
         Pair<Position, SpawnPointType> spawnPair = this.getSpawn();
         PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, spawnPair);
-        if (spawnPair.right() == SpawnPointType.BLOCK) {//block spawn
+        if (spawnPair.right() == SpawnPointType.BLOCK) { // Block spawn
             Block spawnBlock = playerRespawnEvent.getRespawnPosition().first().getLevelBlock();
             if (spawnBlock != null && isValidRespawnBlock(spawnBlock)) {
-                // handle RESPAWN_ANCHOR state change when consume charge is true
+                // Handle RESPAWN_ANCHOR state change when consume charge is true
                 if (spawnBlock.getId().equals(BlockID.RESPAWN_ANCHOR)) {
                     BlockRespawnAnchor respawnAnchor = (BlockRespawnAnchor) spawnBlock;
                     int charge = respawnAnchor.getCharge();
@@ -1343,11 +1403,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         respawnAnchor.getLevel().addSound(this, Sound.RESPAWN_ANCHOR_DEPLETE, 1, 1, this);
                     }
                 }
-            } else {//block not available
+            } else { // Block not available
                 Position defaultSpawn = this.getServer().getDefaultLevel().getSpawnLocation();
                 this.setSpawn(defaultSpawn, SpawnPointType.WORLD);
                 playerRespawnEvent.setRespawnPosition(Pair.of(defaultSpawn, SpawnPointType.WORLD));
-                // handle spawn point change when block spawn not available
+                // Notify player that the spawn point is not valid
                 sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile." + (this.getLevel().getDimension() == Level.DIMENSION_OVERWORLD ? "bed" : "respawn_anchor") + ".notValid"));
             }
         }
@@ -1382,6 +1442,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.spawnToAll();
     }
 
+    /**
+     * Checks and updates the player's chunk.
+     */
     @Override
     protected void checkChunks() {
         if (this.chunk == null || (this.chunk.getX() != ((int) this.x >> 4) || this.chunk.getZ() != ((int) this.z >> 4))) {
@@ -1394,13 +1457,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 Map<Integer, Player> newChunk = this.level.getChunkPlayers((int) this.x >> 4, (int) this.z >> 4);
                 newChunk.remove(this.getLoaderId());
 
-                //List<Player> reload = new ArrayList<>();
                 for (Player player : new ArrayList<>(this.hasSpawned.values())) {
                     if (!newChunk.containsKey(player.getLoaderId())) {
                         this.despawnFrom(player);
                     } else {
                         newChunk.remove(player.getLoaderId());
-                        //reload.add(player);
                     }
                 }
 
@@ -1417,10 +1478,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Sends the play status to the client.
+     *
+     * @param status the play status
+     */
     protected void sendPlayStatus(int status) {
         sendPlayStatus(status, false);
     }
 
+    /**
+     * Sends the play status to the client, with an option for immediate sending.
+     *
+     * @param status    the play status
+     * @param immediate whether to send immediately
+     */
     protected void sendPlayStatus(int status, boolean immediate) {
         PlayStatusPacket pk = new PlayStatusPacket();
         pk.status = status;
@@ -1432,6 +1504,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Forces the client to send empty chunks.
+     */
     protected void forceSendEmptyChunks() {
         int chunkPositionX = this.getFloorX() >> 4;
         int chunkPositionZ = this.getFloorZ() >> 4;
@@ -1446,14 +1521,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Adds default windows to the player's inventory.
+     */
     protected void addDefaultWindows() {
         this.craftingGridInventory = new CraftingGridInventory(this);
         this.playerCursorInventory = new PlayerCursorInventory(this);
         this.creativeOutputInventory = new CreativeOutputInventory(this);
 
         this.addWindow(this.getInventory(), SpecialWindowId.PLAYER.getId());
-        //addDefaultWindows when the player doesn't have a spawn yet,
-        // so we need to manually open it to add the player to the viewer
         this.getInventory().open(this);
         this.permanentWindows.add(SpecialWindowId.PLAYER.getId());
 
@@ -1477,11 +1553,23 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.permanentWindows.add(SpecialWindowId.ENDER_CHEST.getId());
     }
 
+    /**
+     * Gets the base offset for the player.
+     *
+     * @return the base offset
+     */
     @Override
     protected float getBaseOffset() {
         return super.getBaseOffset();
     }
 
+    /**
+     * Handles blocking an entity's attack.
+     *
+     * @param entity  the attacking entity
+     * @param e       the damage event
+     * @param animate whether to animate the block
+     */
     @Override
     protected void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
         super.onBlock(entity, e, animate);
@@ -1498,54 +1586,66 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Gets the step height for the player.
+     *
+     * @return the step height
+     */
     @Override
     public double getStepHeight() {
         return 0.6f;
     }
 
     /**
-     * @return {@link #lastAttackEntity}
+     * Gets the last entity that attacked the player.
+     *
+     * @return the last attacking entity
      */
     public Entity getLastAttackEntity() {
         return lastAttackEntity;
     }
 
     /**
-     * @return {@link #lastBeAttackEntity}
+     * Gets the last entity that the player attacked.
+     *
+     * @return the last attacked entity
      */
     public Entity getLastBeAttackEntity() {
         return lastBeAttackEntity;
     }
 
     /**
-     * 返回灵魂急行带来的速度增加倍速
-     * <p>
-     * Return to the speed increase multiplier brought by SOUL_SPEED Enchantment
+     * Returns the speed increase multiplier brought by the SOUL_SPEED Enchantment.
+     *
+     * @return the speed increase multiplier
      */
     public float getSoulSpeedMultiplier() {
         return this.soulSpeedMultiplier;
     }
 
     /**
-     * 返回{@link Player#lastInAirTick}的值,代表玩家上次在空中的server tick
-     * <p>
-     * Returns the value of {@link Player#lastInAirTick},represent the last server tick the player was in the air
+     * Returns the value of {@link Player#lastInAirTick}, representing the last server tick the player was in the air.
      *
-     * @return int
+     * @return the last server tick the player was in the air
      */
     public int getLastInAirTick() {
         return this.lastInAirTick;
     }
 
     /**
-     * 获取玩家离开的消息
+     * Gets the player's leave message.
      *
-     * @return {@link TranslationContainer}
+     * @return the leave message
      */
     public TranslationContainer getLeaveMessage() {
         return new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.left", this.getDisplayName());
     }
 
+    /**
+     * Sets the banned status of the player.
+     *
+     * @param value True to ban the player, false to unban.
+     */
     public void setBanned(boolean value) {
         if (value) {
             this.server.getNameBans().addBan(this.getName(), null, null, null);
@@ -1555,11 +1655,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Checks if the player is whitelisted.
+     *
+     * @return True if the player is whitelisted, otherwise false.
+     */
     @Override
     public boolean isWhitelisted() {
         return this.server.isWhitelisted(this.getName().toLowerCase(Locale.ENGLISH));
     }
 
+    /**
+     * Sets the whitelisted status of the player.
+     *
+     * @param value True to whitelist the player, false to remove from whitelist.
+     */
     @Override
     public void setWhitelisted(boolean value) {
         if (value) {
@@ -1569,52 +1679,67 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Gets the player instance.
+     *
+     * @return The player instance.
+     */
     @Override
     public Player getPlayer() {
         return this;
     }
 
+    /**
+     * Gets the timestamp of the first time the player joined the server.
+     *
+     * @return The timestamp of the first time the player joined, or null if not available.
+     */
     @Override
     public Long getFirstPlayed() {
         return this.namedTag != null ? this.namedTag.getLong("firstPlayed") : null;
     }
 
+    /**
+     * Gets the timestamp of the last time the player joined the server.
+     *
+     * @return The timestamp of the last time the player joined, or null if not available.
+     */
     @Override
     public Long getLastPlayed() {
         return this.namedTag != null ? this.namedTag.getLong("lastPlayed") : null;
     }
 
+    /**
+     * Checks if the player has played before.
+     *
+     * @return True if the player has played before, otherwise false.
+     */
     @Override
     public boolean hasPlayedBefore() {
         return this.playedBefore;
     }
 
     /**
-     * 获得玩家权限设置.
-     * <p>
-     * Get player permission settings.
+     * Gets the player's permission settings.
+     *
+     * @return the player's permission settings
      */
     public AdventureSettings getAdventureSettings() {
         return adventureSettings;
     }
 
     /**
-     * 用于设置玩家权限，对应游戏中的玩家权限设置.
-     * <p>
-     * Used to set player permissions, corresponding to the game's player permissions settings.
+     * Sets the player's permission settings, corresponding to the game's player permissions settings.
      *
-     * @param adventureSettings 玩家权限设置<br>player permissions settings
+     * @param adventureSettings the player's permission settings
      */
     public void setAdventureSettings(AdventureSettings adventureSettings) {
         this.adventureSettings = adventureSettings.clone();
         this.adventureSettings.update();
     }
 
-
     /**
-     * 设置{@link #inAirTicks}为0
-     * <p>
-     * Set {@link #inAirTicks} to 0
+     * Sets {@link #inAirTicks} to 0.
      */
     public void resetInAirTicks() {
         this.inAirTicks = 0;
@@ -1629,13 +1754,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.getAdventureSettings().get(Type.ALLOW_FLIGHT);
     }
 
-
     /**
-     * 设置允许修改世界(未知原因设置完成之后，玩家不允许挖掘方块，但是可以放置方块)
-     * <p>
-     * Set allow to modify the world (after the unknown reason setting is completed, the player is not allowed to dig the blocks, but can place them)
+     * Sets whether the player is allowed to modify the world. After setting, the player is not allowed to dig blocks but can place them.
      *
-     * @param value 是否允许修改世界<br>Whether to allow modification of the world
+     * @param value whether to allow modification of the world
      */
     public void setAllowModifyWorld(boolean value) {
         this.getAdventureSettings().set(Type.WORLD_IMMUTABLE, !value);
@@ -1649,10 +1771,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 设置允许交互世界/容器
+     * Sets whether the player is allowed to interact with the world/containers.
      *
-     * @param value      是否允许交互世界
-     * @param containers 是否允许交互容器
+     * @param value      whether to allow interaction with the world
+     * @param containers whether to allow interaction with containers
      */
     public void setAllowInteract(boolean value, boolean containers) {
         this.getAdventureSettings().set(Type.WORLD_IMMUTABLE, !value);
@@ -1661,22 +1783,37 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.getAdventureSettings().update();
     }
 
+    /**
+     * Sets the auto-jump setting for the player.
+     *
+     * @param value True to enable auto-jump, false to disable.
+     */
     public void setAutoJump(boolean value) {
         this.getAdventureSettings().set(Type.AUTO_JUMP, value);
         this.getAdventureSettings().update();
     }
 
+    /**
+     * Checks if the auto-jump setting is enabled for the player.
+     *
+     * @return True if auto-jump is enabled, otherwise false.
+     */
     public boolean hasAutoJump() {
         return this.getAdventureSettings().get(Type.AUTO_JUMP);
     }
 
+    /**
+     * Spawns the player to another player.
+     *
+     * @param player The player to spawn to.
+     */
     @Override
     public void spawnTo(Player player) {
         if (player.spawned && this.isAlive() && player.getLevel() == this.level && player.canSee(this)/* && !this.isSpectator()*/) {
             super.spawnTo(player);
 
             if (this.isSpectator()) {
-                //发送旁观者的游戏模式给对方，使得对方客户端正确渲染玩家实体
+                // Send the spectator game mode to the other player so that the client correctly renders the player entity
                 var pk = new UpdatePlayerGameTypePacket();
                 pk.gameType = GameType.SPECTATOR;
                 pk.entityId = this.getId();
@@ -1685,26 +1822,29 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Gets the server instance.
+     *
+     * @return The server instance.
+     */
     @Override
     public Server getServer() {
         return this.server;
     }
 
     /**
-     * 得到{@link #removeFormat}
-     * <p>
-     * get {@link #removeFormat}
+     * Gets {@link #removeFormat}.
      *
-     * @return boolean
+     * @return whether to remove the formatting character
      */
     public boolean getRemoveFormat() {
         return removeFormat;
     }
 
     /**
-     * 设置{@link #removeFormat}为指定值
+     * Sets {@link #removeFormat} to the specified value.
      *
-     * @param remove 是否清楚格式化字符<br>Whether remove the formatting character
+     * @param remove whether to remove the formatting character
      */
     public void setRemoveFormat(boolean remove) {
         this.removeFormat = remove;
@@ -1715,19 +1855,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * @param player 玩家
-     * @return 是否可以看到该玩家<br>Whether the player can be seen
+     * Checks whether the player can see the specified player.
+     *
+     * @param player the player to check
+     * @return whether the player can see the specified player
      */
     public boolean canSee(Player player) {
         return !this.hiddenPlayers.containsKey(player.getUniqueId());
     }
 
     /**
-     * 从当前玩家实例的视角中隐藏指定玩家player
-     * <p>
-     * Hide the specified player from the view of the current player instance
+     * Hides the specified player from the view of the current player instance.
      *
-     * @param player 要隐藏的玩家<br>Players who want to hide
+     * @param player The player to hide.
      */
     public void hidePlayer(Player player) {
         if (this == player) {
@@ -1738,11 +1878,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 从当前玩家实例的视角中显示指定玩家player
-     * <p>
-     * Show the specified player from the view of the current player instance
+     * Shows the specified player from the view of the current player instance.
      *
-     * @param player 要显示的玩家<br>Players who want to show
+     * @param player The player to show.
      */
     public void showPlayer(Player player) {
         if (this == player) {
@@ -1754,16 +1892,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Determines if the player can collide with a specific entity.
+     *
+     * @param entity The entity to check collision with.
+     * @return False, as players cannot collide with entities.
+     */
     @Override
     public boolean canCollideWith(Entity entity) {
         return false;
     }
 
+    /**
+     * Determines if the player can collide with other entities or blocks.
+     *
+     * @return True if the player is not in spectator mode, otherwise false.
+     */
     @Override
     public boolean canCollide() {
         return gamemode != SPECTATOR;
     }
 
+    /**
+     * Resets the fall distance of the player.
+     */
     @Override
     public void resetFallDistance() {
         super.resetFallDistance();
@@ -1774,16 +1926,31 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.highestPosition = this.y;
     }
 
+    /**
+     * Checks if the player is currently online.
+     *
+     * @return True if the player is connected and logged in, otherwise false.
+     */
     @Override
     public boolean isOnline() {
         return this.connected.get() && this.loggedIn;
     }
 
+    /**
+     * Checks if the player has operator status.
+     *
+     * @return True if the player is an operator, otherwise false.
+     */
     @Override
     public boolean isOp() {
         return this.server.isOp(this.getName());
     }
 
+    /**
+     * Sets the operator status of the player.
+     *
+     * @param value True to grant operator status, false to revoke it.
+     */
     @Override
     public void setOp(boolean value) {
         if (value == this.isOp()) {
@@ -1797,46 +1964,99 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Checks if a specific permission is set for the player.
+     *
+     * @param name The name of the permission.
+     * @return True if the permission is set, otherwise false.
+     */
     @Override
     public boolean isPermissionSet(String name) {
         return this.perm.isPermissionSet(name);
     }
 
+    /**
+     * Checks if a specific permission is set for the player.
+     *
+     * @param permission The permission to check.
+     * @return True if the permission is set, otherwise false.
+     */
     @Override
     public boolean isPermissionSet(Permission permission) {
         return this.perm.isPermissionSet(permission);
     }
 
+    /**
+     * Checks if the player has a specific permission.
+     *
+     * @param name The name of the permission.
+     * @return True if the player has the permission, otherwise false.
+     */
     @Override
     public boolean hasPermission(String name) {
         return this.perm != null && this.perm.hasPermission(name);
     }
 
+    /**
+     * Checks if the player has a specific permission.
+     *
+     * @param permission The permission to check.
+     * @return True if the player has the permission, otherwise false.
+     */
     @Override
     public boolean hasPermission(Permission permission) {
         return this.perm.hasPermission(permission);
     }
 
+    /**
+     * Adds a permission attachment to the player.
+     *
+     * @param plugin The plugin to associate with the attachment.
+     * @return The created permission attachment.
+     */
     @Override
     public PermissionAttachment addAttachment(Plugin plugin) {
         return this.addAttachment(plugin, null);
     }
 
+    /**
+     * Adds a permission attachment to the player with a specific name.
+     *
+     * @param plugin The plugin to associate with the attachment.
+     * @param name   The name of the permission.
+     * @return The created permission attachment.
+     */
     @Override
     public PermissionAttachment addAttachment(Plugin plugin, String name) {
         return this.addAttachment(plugin, name, null);
     }
 
+    /**
+     * Adds a permission attachment to the player with a specific name and value.
+     *
+     * @param plugin The plugin to associate with the attachment.
+     * @param name   The name of the permission.
+     * @param value  The value of the permission.
+     * @return The created permission attachment.
+     */
     @Override
     public PermissionAttachment addAttachment(Plugin plugin, String name, Boolean value) {
         return this.perm.addAttachment(plugin, name, value);
     }
 
+    /**
+     * Removes a permission attachment from the player.
+     *
+     * @param attachment The permission attachment to remove.
+     */
     @Override
     public void removeAttachment(PermissionAttachment attachment) {
         this.perm.removeAttachment(attachment);
     }
 
+    /**
+     * Recalculates the player's permissions.
+     */
     @Override
     public void recalculatePermissions() {
         this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_USERS, this);
@@ -1861,69 +2081,117 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Checks if client commands are enabled for the player.
+     *
+     * @return True if client commands are enabled, otherwise false.
+     */
     public boolean isEnableClientCommand() {
         return this.enableClientCommand;
     }
 
+    /**
+     * Sets whether client commands are enabled for the player.
+     *
+     * @param enable True to enable client commands, false to disable.
+     */
     public void setEnableClientCommand(boolean enable) {
         this.enableClientCommand = enable;
         this.getSession().setEnableClientCommand(enable);
     }
 
+    /**
+     * Gets the effective permissions of the player.
+     *
+     * @return A map of the player's effective permissions.
+     */
     @Override
     public Map<String, PermissionAttachmentInfo> getEffectivePermissions() {
         return this.perm.getEffectivePermissions();
     }
 
+    /**
+     * Checks if the entity is a player.
+     *
+     * @return True, as this entity is a player.
+     */
     @Override
     public boolean isPlayer() {
         return true;
     }
 
+    /**
+     * Casts the entity to a player.
+     *
+     * @return The player instance.
+     */
     @Override
     public Player asPlayer() {
         return this;
     }
 
+    /**
+     * Checks if the entity is an entity.
+     *
+     * @return True, as this entity is an entity.
+     */
     @Override
     public boolean isEntity() {
         return true;
     }
 
+    /**
+     * Casts the entity to an entity.
+     *
+     * @return The entity instance.
+     */
     @Override
     public Entity asEntity() {
         return this;
     }
 
+    /**
+     * Removes an achievement from the player.
+     *
+     * @param achievementId The ID of the achievement to remove.
+     */
     public void removeAchievement(String achievementId) {
         achievements.remove(achievementId);
     }
 
+    /**
+     * Checks if the player has a specific achievement.
+     *
+     * @param achievementId The ID of the achievement to check.
+     * @return True if the player has the achievement, otherwise false.
+     */
     public boolean hasAchievement(String achievementId) {
         return achievements.contains(achievementId);
     }
 
+    /**
+     * Checks if the player is connected.
+     *
+     * @return True if the player is connected, otherwise false.
+     */
     public boolean isConnected() {
         return connected.get();
     }
 
     /**
-     * 得到该玩家的显示名称
-     * <p>
-     * Get the display name of the player
+     * Gets the display name of the player.
      *
-     * @return {@link #displayName}
+     * @return The display name.
      */
     public String getDisplayName() {
         return this.displayName;
     }
 
     /**
-     * 只是改变玩家聊天时和在服务器玩家列表中的显示名(不影响命令的玩家参数名,也不影响玩家头顶显示名称)
-     * <p>
-     * Just change the name displayed during player chat and in the server player list  (Does not affect the player parameter name of the command, nor does it affect the player header display name)
+     * Changes the name displayed during player chat and in the server player list.
+     * Does not affect the player parameter name of the command, nor the player header display name.
      *
-     * @param displayName 显示名称
+     * @param displayName The display name.
      */
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
@@ -1936,7 +2204,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setSkin(Skin skin) {
         super.setSkin(skin);
         if (this.spawned) {
-//            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), skin, this.getLoginChainData().getXUID());
             var skinPacket = new PlayerSkinPacket();
             skinPacket.uuid = this.getUniqueId();
             skinPacket.skin = this.getSkin();
@@ -1947,35 +2214,33 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 得到原始地址
+     * Gets the raw address.
      *
-     * @return {@link String}
+     * @return The raw address.
      */
     public String getRawAddress() {
         return this.rawSocketAddress.getAddress().getHostAddress();
     }
 
     /**
-     * 得到原始端口
+     * Gets the raw port.
      *
-     * @return int
+     * @return The raw port.
      */
     public int getRawPort() {
         return this.rawSocketAddress.getPort();
     }
 
-
     /**
-     * Close all form windows
+     * Closes all form windows.
      */
     public void closeFormWindows() {
         this.formWindows.clear();
         this.dataPacket(new ClientboundCloseFormPacket());
     }
 
-
     /**
-     * 得到原始套接字地址
+     * Gets the raw socket address.
      *
      * @return {@link InetSocketAddress}
      */
@@ -1984,9 +2249,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 得到地址,如果开启waterdogpe兼容，该地址是被修改为兼容waterdogpe型的，反之则与{@link #rawSocketAddress} 一样
-     * <p>
-     * If waterdogpe compatibility is enabled, the address is modified to be waterdogpe compatible, otherwise it is the same as {@link #rawSocketAddress}
+     * Gets the address. If WaterdogPE compatibility is enabled, the address is modified to be WaterdogPE compatible; otherwise, it is the same as {@link #rawSocketAddress}.
      *
      * @return {@link String}
      */
@@ -2002,9 +2265,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 得到套接字地址,如果开启waterdogpe兼容，该套接字地址是被修改为兼容waterdogpe型的，反正则与{@link #rawSocketAddress} 一样
-     * <p>
-     * If waterdogpe compatibility is enabled, the address is modified to be waterdogpe compatible, otherwise it is the same as {@link #rawSocketAddress}
+     * Gets the socket address. If WaterdogPE compatibility is enabled, the socket address is modified to be WaterdogPE compatible; otherwise, it is the same as {@link #rawSocketAddress}.
      *
      * @return {@link InetSocketAddress}
      */
@@ -2013,9 +2274,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 获得下一个tick客户端玩家将要移动的位置
-     * <p>
-     * Get the position where the next tick client player will move
+     * Gets the position where the client player will move in the next tick.
      *
      * @return the next position
      */
@@ -2024,16 +2283,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 玩家是否在睡觉
-     * <p>
-     * Whether the player is sleeping
+     * Checks whether the player is sleeping.
      *
      * @return boolean
      */
     public boolean isSleeping() {
         return this.sleeping != null;
     }
-
 
     /**
      * @return {@link #inAirTicks}
@@ -2043,19 +2299,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 返回玩家当前是否正在使用某项物品（右击并按住）。
-     * <p>
      * Returns whether the player is currently using an item (right-click and hold).
+     *
+     * @param itemId the item ID
+     * @return boolean
      */
     public boolean isUsingItem(String itemId) {
         return getLastUseTick(itemId) != -1 && this.getDataFlag(EntityFlag.USING_ITEM);
     }
 
     /**
-     * Sets the cooldown time for the specified item to use
+     * Sets the cooldown time for the specified item to use.
      *
-     * @param coolDownTick the cool down tick
-     * @param itemId       the item id
+     * @param coolDownTick the cooldown tick
+     * @param itemId       the item ID
      */
     public void setItemCoolDown(int coolDownTick, Identifier itemId) {
         var pk = new PlayerStartItemCoolDownPacket();
@@ -2066,10 +2323,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * the cooldown of specified item is end
+     * Checks if the cooldown of the specified item has ended.
      *
-     * @param itemId the item
-     * @return the boolean
+     * @param itemId the item ID
+     * @return boolean
      */
     public boolean isItemCoolDownEnd(Identifier itemId) {
         Integer tick = this.cooldownTickMap.getOrDefault(itemId.toString(), 0);
@@ -2080,6 +2337,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return result;
     }
 
+    /**
+     * Sets the cooldown time for the specified item category.
+     *
+     * @param coolDown The cooldown duration in ticks.
+     * @param category The item category.
+     */
     public void setItemCoolDown(int coolDown, String category) {
         var pk = new PlayerStartItemCoolDownPacket();
         pk.setCoolDownDuration(coolDown);
@@ -2088,6 +2351,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(pk);
     }
 
+    /**
+     * Checks if the cooldown for the specified item category has ended.
+     *
+     * @param category The item category.
+     * @return True if the cooldown has ended, otherwise false.
+     */
     public boolean isItemCoolDownEnd(String category) {
         Integer tick = this.cooldownTickMap.getOrDefault(category, 0);
         boolean result = this.getServer().getTick() - tick > 0;
@@ -2098,47 +2367,72 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Start last use tick for an item(right-click).
+     * Starts the last use tick for an item (right-click).
      *
-     * @param itemId the item id
+     * @param itemId the item ID
+     * @param tick   the tick
      */
     public void setLastUseTick(@NotNull String itemId, int tick) {
         lastUseItemMap.put(itemId, tick);
         this.setDataFlag(EntityFlag.USING_ITEM, true);
     }
 
+    /**
+     * Removes the last use tick for a specified item.
+     *
+     * @param itemId The ID of the item.
+     */
     public void removeLastUseTick(@NotNull String itemId) {
         lastUseItemMap.remove(itemId);
         this.setDataFlag(EntityFlag.USING_ITEM, false);
     }
 
+    /**
+     * Gets the last use tick for a specified item.
+     *
+     * @param itemId The ID of the item.
+     * @return The last use tick, or -1 if not found.
+     */
     public int getLastUseTick(String itemId) {
         return lastUseItemMap.getOrDefault(itemId, -1);
     }
 
     /**
-     * 获得移动设备玩家面对载具时出现的交互按钮的语言硬编码。
-     * <p>
-     * Get the language hardcoded for the interaction buttons that appear when mobile device players face the carrier.
+     * Gets the language hardcoded for the interaction buttons that appear when mobile device players face the carrier.
+     *
+     * @return the button text
      */
     public String getButtonText() {
         return this.buttonText;
     }
 
     /**
-     * 设置移动设备玩家面对载具时出现的交互按钮的语言硬编码。
-     * <p>
-     * Set the language hardcoded for the interaction buttons that appear when mobile device players face the carrier.
+     * Sets the language hardcoded for the interaction buttons that appear when mobile device players face the carrier.
+     *
+     * @param text the button text
      */
     public void setButtonText(String text) {
         this.buttonText = text;
         this.setDataProperty(INTERACT_TEXT, this.buttonText);
     }
 
+    /**
+     * Unloads a chunk at the specified coordinates.
+     *
+     * @param x The X coordinate of the chunk.
+     * @param z The Z coordinate of the chunk.
+     */
     public void unloadChunk(int x, int z) {
         this.unloadChunk(x, z, null);
     }
 
+    /**
+     * Unloads a chunk at the specified coordinates in the given level.
+     *
+     * @param x     The X coordinate of the chunk.
+     * @param z     The Z coordinate of the chunk.
+     * @param level The level in which the chunk is located. If null, the player's current level is used.
+     */
     public void unloadChunk(int x, int z, Level level) {
         level = level == null ? this.level : level;
         long index = Level.chunkHash(x, z);
@@ -2155,16 +2449,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * @return 玩家是否在主世界(维度为0)<br>Is the player in the world(Dimension equal 0)
+     * Checks if the player is in the Overworld (dimension 0).
+     *
+     * @return boolean
      */
     public boolean isInOverWorld() {
         return this.getLevel().getDimension() == 0;
     }
 
     /**
-     * 获取该玩家的可用重生点,
-     * <p>
-     * Get the player's Spawn point
+     * Gets the player's spawn point.
      *
      * @return {@link Position}
      */
@@ -2173,11 +2467,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 设置玩家的出生点/复活点。
-     * <p>
-     * Set the player's birth point.
+     * Sets the player's spawn point.
      *
-     * @param pos 出生点位置
+     * @param pos            the spawn point position
+     * @param spawnPointType the spawn point type
      */
     public void setSpawn(Position pos, SpawnPointType spawnPointType) {
         Preconditions.checkNotNull(pos);
@@ -2193,6 +2486,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(pk);
     }
 
+    /**
+     * Sends a chunk to the player.
+     *
+     * @param x      The X coordinate of the chunk.
+     * @param z      The Z coordinate of the chunk.
+     * @param packet The data packet containing the chunk information.
+     */
     public void sendChunk(int x, int z, DataPacket packet) {
         if (!this.isConnected()) {
             return;
@@ -2220,12 +2520,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-
+    /**
+     * Updates the tracking positions of the player.
+     */
     public void updateTrackingPositions() {
         updateTrackingPositions(false);
     }
 
-
+    /**
+     * Updates the tracking positions of the player, with an option to delay the update.
+     *
+     * @param delayed True to delay the update, otherwise false.
+     */
     public void updateTrackingPositions(boolean delayed) {
         Server server = getServer();
         if (delayed) {
@@ -2240,16 +2546,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * @param packet 发送的数据包<br>packet to send
+     * Sends a data packet to the player.
+     *
+     * @param packet the packet to send
      */
     public void dataPacket(DataPacket packet) {
         this.getSession().sendPacket(packet);
     }
 
     /**
-     * 得到该玩家的网络延迟。
-     * <p>
-     * Get the network latency of the player.
+     * Gets the network latency of the player.
      *
      * @return int
      */
@@ -2289,6 +2595,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return true;
     }
 
+    /**
+     * Stops the player from sleeping.
+     */
     public void stopSleep() {
         if (this.sleeping != null) {
             this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, this.level.getBlock(this.sleeping)));
@@ -2296,7 +2605,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.sleeping = null;
             this.setDataProperty(BED_POSITION, new BlockVector3(0, 0, 0));
             this.setPlayerFlag(PlayerFlag.SLEEP);
-
 
             this.level.sleepTicks = 0;
 
@@ -2307,6 +2615,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Awards an achievement to the player.
+     *
+     * @param achievementId The ID of the achievement to award.
+     * @return true if the achievement was awarded, false otherwise.
+     */
     public boolean awardAchievement(String achievementId) {
         if (!Server.getInstance().getProperties().get(ServerPropertiesKeys.ACHIEVEMENTS, true)) {
             return false;
@@ -2336,41 +2650,55 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 得到gamemode。
-     * <p>
-     * Get gamemode.
+     * Gets the player's game mode.
      *
-     * @return int
+     * @return The game mode as an integer.
      */
     public int getGamemode() {
         return gamemode;
     }
 
+    /**
+     * Sets the player's game mode.
+     *
+     * @param gamemode The game mode to set.
+     * @return true if the game mode was set, false otherwise.
+     */
     public boolean setGamemode(int gamemode) {
         return this.setGamemode(gamemode, false, null);
     }
 
     /**
-     * AdventureSettings=null
+     * Sets the player's game mode with server-side option.
      *
-     * @see #setGamemode(int, boolean, AdventureSettings)
+     * @param gamemode   The game mode to set.
+     * @param serverSide Whether to update only the server-side game mode.
+     * @return true if the game mode was set, false otherwise.
      */
     public boolean setGamemode(int gamemode, boolean serverSide) {
         return this.setGamemode(gamemode, serverSide, null);
     }
 
+    /**
+     * Sets the player's game mode with server-side option and new adventure settings.
+     *
+     * @param gamemode    The game mode to set.
+     * @param serverSide  Whether to update only the server-side game mode.
+     * @param newSettings The new adventure settings.
+     * @return true if the game mode was set, false otherwise.
+     */
     public boolean setGamemode(int gamemode, boolean serverSide, AdventureSettings newSettings) {
         return this.setGamemode(gamemode, serverSide, newSettings, false);
     }
 
     /**
-     * Set GameMode
+     * Sets the player's game mode with additional options.
      *
-     * @param gamemode    The player game mode to set
-     * @param serverSide  Whether to update only the game mode of players on the server side. If true, the game mode update package will not be sent to the client
-     * @param newSettings New Adventure Settings
-     * @param forceUpdate Whether to force an update. If true, the check for the parameter 'gamemode' will be canceled
-     * @return gamemode
+     * @param gamemode    The game mode to set.
+     * @param serverSide  Whether to update only the server-side game mode.
+     * @param newSettings The new adventure settings.
+     * @param forceUpdate Whether to force the update.
+     * @return true if the game mode was set, false otherwise.
      */
     public boolean setGamemode(int gamemode, boolean serverSide, AdventureSettings newSettings, boolean forceUpdate) {
         if (!forceUpdate && (gamemode < 0 || gamemode > 3 || this.gamemode == gamemode)) {
@@ -2419,12 +2747,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             pk.gameType = GameType.from(networkGamemode);
             pk.entityId = this.getId();
             var players = Sets.newHashSet(Server.getInstance().getOnlinePlayers().values());
-            //不向自身发送UpdatePlayerGameTypePacket，我们将使用SetPlayerGameTypePacket
+            // Do not send UpdatePlayerGameTypePacket to self, use SetPlayerGameTypePacket
             players.remove(this);
-            //我们需要给所有玩家发送此包，来使玩家客户端能正确渲染玩家实体
-            //eg: 观察者模式玩家对于gm 0 1 2的玩家不可见
+            // We need to send this packet to all players to correctly render the player entity
+            // e.g., Spectator mode players are invisible to players in gm 0, 1, 2
             Server.broadcastPacket(players, pk);
-            //对于自身，我们使用SetPlayerGameTypePacket来确保与WaterDog的兼容
+            // For self, use SetPlayerGameTypePacket to ensure compatibility with WaterDog
             var pk2 = new SetPlayerGameTypePacket();
             pk2.gamemode = networkGamemode;
             this.dataPacket(pk2);
@@ -2435,49 +2763,44 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return true;
     }
 
+    /**
+     * Sends the player's adventure settings.
+     */
     public void sendSettings() {
         this.getAdventureSettings().update();
     }
 
     /**
-     * 该玩家是否为生存模式。
-     * <p>
-     * Whether the player is in survival mode?
+     * Checks if the player is in survival mode.
      *
-     * @return boolean
+     * @return true if the player is in survival mode, false otherwise.
      */
     public boolean isSurvival() {
         return this.gamemode == SURVIVAL;
     }
 
     /**
-     * 该玩家是否为创造模式。
-     * <p>
-     * Whether the player is in creative mode?
+     * Checks if the player is in creative mode.
      *
-     * @return boolean
+     * @return true if the player is in creative mode, false otherwise.
      */
     public boolean isCreative() {
         return this.gamemode == CREATIVE;
     }
 
     /**
-     * 该玩家是否为观察者模式。
-     * <p>
-     * Whether the player is in spectator mode?
+     * Checks if the player is in spectator mode.
      *
-     * @return boolean
+     * @return true if the player is in spectator mode, false otherwise.
      */
     public boolean isSpectator() {
         return this.gamemode == SPECTATOR;
     }
 
     /**
-     * 该玩家是否为冒险模式。
-     * <p>
-     * Whether the player is in adventure mode?
+     * Checks if the player is in adventure mode.
      *
-     * @return boolean
+     * @return true if the player is in adventure mode, false otherwise.
      */
     public boolean isAdventure() {
         return this.gamemode == ADVENTURE;
@@ -2485,22 +2808,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public Item[] getDrops() {
+        // Return the drops if the player is not in creative or spectator mode
         if (!this.isCreative() && !this.isSpectator()) {
             return super.getDrops();
         }
 
+        // Return an empty array if the player is in creative or spectator mode
         return Item.EMPTY_ARRAY;
     }
 
     @ApiStatus.Internal
     public boolean fastMove(double dx, double dy, double dz) {
+        // Update the player's position
         this.x += dx;
         this.y += dy;
         this.z += dz;
         this.recalculateBoundingBox(true);
 
+        // Check the chunks the player is in
         this.checkChunks();
 
+        // Update ground state and fall state if the player is not in spectator mode
         if (!this.isSpectator()) {
             this.checkGroundState(dx, dy, dz, dx, dy, dz);
             this.updateFallState(this.onGround);
@@ -2508,9 +2836,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return true;
     }
 
-
     @ApiStatus.Internal
     public AxisAlignedBB reCalcOffsetBoundingBox() {
+        // Recalculate the offset bounding box based on the player's dimensions
         float dx = this.getWidth() / 2;
         float dz = this.getWidth() / 2;
         return this.offsetBoundingBox.setBounds(
@@ -2521,29 +2849,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
+        // Send the player's position to viewers
         this.sendPosition(new Vector3(x, y, z), yaw, pitch, MovePlayerPacket.MODE_NORMAL, this.getViewers().values().toArray(EMPTY_ARRAY));
     }
 
     /**
-     * 每次调用此方法都会向客户端发送motion包。若多次调用，motion将在客户端叠加<p/>
+     * Sends a motion packet to the client each time this method is called. If called multiple times, the motion will stack on the client.
      *
-     * @param motion 运动向量<br>a motion vector
-     * @return 调用是否成功
+     * @param motion A motion vector
+     * @return Whether the call was successful
      */
     @Override
     public boolean setMotion(Vector3 motion) {
         if (super.setMotion(motion)) {
             if (this.chunk != null) {
-                this.addMotion(this.motionX, this.motionY, this.motionZ);  //Send to others
+                this.addMotion(this.motionX, this.motionY, this.motionZ);  // Send to others
                 SetEntityMotionPacket pk = new SetEntityMotionPacket();
                 pk.eid = this.getId();
                 pk.motionX = (float) motion.x;
                 pk.motionY = (float) motion.y;
                 pk.motionZ = (float) motion.z;
-                this.dataPacket(pk);  //Send to self
+                this.dataPacket(pk);  // Send to self
             }
             if (this.motionY > 0) {
-                //todo: check this
+                // TODO: Check this
                 this.startAirTicks = (int) ((-(Math.log(this.getGravity() / (this.getGravity() + this.getDrag() * this.motionY))) / this.getDrag()) * 2 + 5);
             }
 
@@ -2554,7 +2883,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Send attributes to client
+     * Sends the player's attributes to the client.
      */
     public void sendAttributes() {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
@@ -2570,7 +2899,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Send the fog settings to the client
+     * Sends the fog settings to the client.
      */
     public void sendFogStack() {
         var pk = new PlayerFogPacket();
@@ -2579,7 +2908,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Send camera presets to cilent
+     * Sends camera presets to the client.
      */
     public void sendCameraPresets() {
         var pk = new CameraPresetsPacket();
@@ -2589,6 +2918,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public float getHeight() {
+        // Return a different height if the player is riding a horse
         if (this.riding instanceof EntityHorse) {
             return 1.1f;
         }
@@ -2597,7 +2927,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void setSwimming(boolean value) {
-        //Stopping a swim at a height of 1 block will still send a STOPSWIMMING ACTION from the client, but the player will still be swimming height,so skip the action
+        // Skip the action if stopping a swim at a height of 1 block
         if (!value && level.getBlock(up()).isSolid() && level.getBlock(down()).isSolid()) {
             return;
         }
@@ -2680,7 +3010,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     }
                 } else {
                     this.lastInAirTick = server.getTick();
-                    //check fly for player
+                    // Check if the player is flying
                     if (this.checkMovement && !this.isGliding() && !server.getAllowFlight() &&
                             !this.getAdventureSettings().get(Type.ALLOW_FLIGHT) &&
                             this.inAirTicks > 20 && !this.isSleeping() && !this.isImmobile() && !this.isSwimming() &&
@@ -2709,8 +3039,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         this.highestPosition = this.y;
                     }
 
-                    // Wiki: 使用鞘翅滑翔时在垂直高度下降率低于每刻 0.5 格的情况下，摔落高度被重置为 1 格。
-                    // Wiki: 玩家在较小的角度和足够低的速度上着陆不会受到坠落伤害。着陆时临界伤害角度为50°，伤害值等同于玩家从滑行的最高点直接摔落到着陆点受到的伤害。
+                    // Wiki: When gliding with an elytra, the fall height is reset to 1 block if the vertical descent rate is less than 0.5 blocks per tick.
+                    // Wiki: Players will not take fall damage if they land at a small angle and at a sufficiently low speed. The critical damage angle when landing is 50°, and the damage value is equivalent to the damage the player would take if they fell directly from the highest point of the glide to the landing point.
                     if (this.isGliding() && Math.abs(this.speed.y) < 0.5 && this.getPitch() <= 40) {
                         this.resetFallDistance();
                     }
@@ -2722,7 +3052,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     this.getFoodData().tick(tickDiff);
                 }
 
-                //鞘翅检查和耐久计算
+                // Elytra check and durability calculation
                 if (this.isGliding()) {
                     HumanInventory playerInventory = this.getInventory();
                     if (playerInventory != null) {
@@ -2746,11 +3076,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.timeSinceRest++;
             }
 
-            if (this.server.getServerAuthoritativeMovement() > 0) {//仅服务端权威使用，因为客户端权威continue break是正常的
+            if (this.server.getServerAuthoritativeMovement() > 0) { // Only used for server authoritative movement, as client authoritative continue break is normal
                 onBlockBreakContinue(breakingBlock, breakingBlockFace);
             }
 
-            //reset move status
+            // Reset move status
             this.newPosition = null;
             this.positionChanged = false;
             if (this.speed == null) {
@@ -2779,9 +3109,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 检查附近可交互的实体(插件一般不使用)
-     * <p>
-     * Check for nearby interactable entities (not generally used by plugins)
+     * Checks for nearby interactable entities (not generally used by plugins).
      */
     public void checkInteractNearby() {
         int interactDistance = isCreative() ? 5 : 3;
@@ -2797,6 +3125,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Returns the interactable entity at the specified position.
+     *
+     * @param nearbyEntities An array of nearby entities.
+     * @param x              The x-coordinate of the position.
+     * @param y              The y-coordinate of the position.
+     * @param z              The z-coordinate of the position.
+     * @return The interactable entity at the specified position, or null if none is found.
+     */
     private EntityInteractable getEntityAtPosition(Entity[] nearbyEntities, int x, int y, int z) {
         for (Entity nearestEntity : nearbyEntities) {
             if (nearestEntity.getFloorX() == x && nearestEntity.getFloorY() == y && nearestEntity.getFloorZ() == z
@@ -2809,21 +3146,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 返回玩家目前正在看的实体。
-     * <p>
-     * Returns the Entity the player is looking at currently
+     * Returns the entity the player is currently looking at.
      *
-     * @param maxDistance 检查实体的最大距离<br>the maximum distance to check for entities
-     * @return Entity|null    如果没有找到实体，则为NULL，或者是实体的一个实例。<br>either NULL if no entity is found or an instance of the entity
+     * @param maxDistance The maximum distance to check for entities.
+     * @return The entity the player is looking at, or null if none is found.
      */
     public EntityInteractable getEntityPlayerLookingAt(int maxDistance) {
         EntityInteractable entity = null;
 
-        // just a fix because player MAY not be fully initialized
+        // Ensure the player is fully initialized
         if (temporalVector != null) {
             Entity[] nearbyEntities = level.getNearbyEntities(boundingBox.grow(maxDistance, maxDistance, maxDistance), this);
 
-            // get all blocks in looking direction until the max interact distance is reached (it's possible that startblock isn't found!)
+            // Iterate through blocks in the looking direction until the max interact distance is reached
             try {
                 BlockIterator itr = new BlockIterator(level, getPosition(), getDirectionVector(), getEyeHeight(), maxDistance);
                 if (itr.hasNext()) {
@@ -2837,24 +3172,40 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     }
                 }
             } catch (Exception ex) {
-                // nothing to log here!
+                // No logging needed
             }
         }
         return entity;
     }
 
+    /**
+     * Gets the enchantment seed.
+     *
+     * @return The enchantment seed.
+     */
     public int getEnchantmentSeed() {
         return this.enchSeed;
     }
 
+    /**
+     * Sets the enchantment seed.
+     *
+     * @param seed The enchantment seed to set.
+     */
     public void setEnchantmentSeed(int seed) {
         this.enchSeed = seed;
     }
 
+    /**
+     * Regenerates the enchantment seed with a new random value.
+     */
     public void regenerateEnchantmentSeed() {
         this.enchSeed = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
     }
 
+    /**
+     * Checks the network status and updates the player's chunk loading state.
+     */
     public void checkNetwork() {
         if (!this.isOnline()) {
             return;
@@ -2869,10 +3220,25 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Checks if the player can interact with a position within a maximum distance.
+     *
+     * @param pos         The position to check.
+     * @param maxDistance The maximum distance to check.
+     * @return true if the player can interact, false otherwise.
+     */
     public boolean canInteract(Vector3 pos, double maxDistance) {
         return this.canInteract(pos, maxDistance, 6.0);
     }
 
+    /**
+     * Checks if the player can interact with a position within a maximum distance and difference.
+     *
+     * @param pos         The position to check.
+     * @param maxDistance The maximum distance to check.
+     * @param maxDiff     The maximum difference allowed.
+     * @return true if the player can interact, false otherwise.
+     */
     public boolean canInteract(Vector3 pos, double maxDistance, double maxDiff) {
         if (this.distanceSquared(pos) > maxDistance * maxDistance) {
             return false;
@@ -2885,13 +3251,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 以该玩家的身份发送一条聊天信息。如果消息以/（正斜杠）开头，它将被视为一个命令。
-     * <p>
-     * Sends a chat message as this player. If the message begins with a / (forward-slash) it will be treated
-     * as a command.
+     * Sends a chat message as this player. If the message begins with a / (forward-slash) it will be treated as a command.
      *
-     * @param message 发送的信息<br>message to send
-     * @return successful
+     * @param message The message to send.
+     * @return true if the message was sent successfully, false otherwise.
      */
     public boolean chat(String message) {
         if (!this.spawned || !this.isAlive()) {
@@ -2918,8 +3281,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * reason=empty string
+     * Kicks the player with an empty reason.
      *
+     * @return true if the player was kicked, false otherwise.
      * @see #kick(PlayerKickEvent.Reason, String, boolean)
      */
     public boolean kick() {
@@ -2927,8 +3291,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * {@link PlayerKickEvent.Reason} = {@link PlayerKickEvent.Reason#UNKNOWN}
+     * Kicks the player with a specified reason and admin flag.
      *
+     * @param reason  The reason for kicking.
+     * @param isAdmin Whether the kick is from an admin.
+     * @return true if the player was kicked, false otherwise.
      * @see #kick(PlayerKickEvent.Reason, String, boolean)
      */
     public boolean kick(String reason, boolean isAdmin) {
@@ -2936,8 +3303,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * {@link PlayerKickEvent.Reason} = {@link PlayerKickEvent.Reason#UNKNOWN}
+     * Kicks the player with a specified reason.
      *
+     * @param reason The reason for kicking.
+     * @return true if the player was kicked, false otherwise.
      * @see #kick(PlayerKickEvent.Reason, String, boolean)
      */
     public boolean kick(String reason) {
@@ -2945,6 +3314,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
+     * Kicks the player with a specified reason.
+     *
+     * @param reason The reason for kicking.
+     * @return true if the player was kicked, false otherwise.
      * @see #kick(PlayerKickEvent.Reason, String, boolean)
      */
     public boolean kick(PlayerKickEvent.Reason reason) {
@@ -2952,6 +3325,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
+     * Kicks the player with a specified reason and reason string.
+     *
+     * @param reason       The reason for kicking.
+     * @param reasonString The reason string.
+     * @return true if the player was kicked, false otherwise.
      * @see #kick(PlayerKickEvent.Reason, String, boolean)
      */
     public boolean kick(PlayerKickEvent.Reason reason, String reasonString) {
@@ -2959,6 +3337,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
+     * Kicks the player with a specified reason and admin flag.
+     *
+     * @param reason  The reason for kicking.
+     * @param isAdmin Whether the kick is from an admin.
+     * @return true if the player was kicked, false otherwise.
      * @see #kick(PlayerKickEvent.Reason, String, boolean)
      */
     public boolean kick(PlayerKickEvent.Reason reason, boolean isAdmin) {
@@ -2966,14 +3349,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 踢出该玩家
-     * <p>
-     * Kick out the player
+     * Kicks the player with a specified reason, reason string, and admin flag.
      *
-     * @param reason       原因枚举<br>Cause Enumeration
-     * @param reasonString 原因字符串<br>Reason String
-     * @param isAdmin      是否来自管理员踢出<br>Whether from the administrator kicked out
-     * @return boolean
+     * @param reason       The reason for kicking.
+     * @param reasonString The reason string.
+     * @param isAdmin      Whether the kick is from an admin.
+     * @return true if the player was kicked, false otherwise.
      */
     public boolean kick(PlayerKickEvent.Reason reason, String reasonString, boolean isAdmin) {
         PlayerKickEvent ev;
@@ -3003,11 +3384,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 设置玩家的可视距离(范围 0--{@link Server#getViewDistance})
-     * <p>
-     * Set the player's viewing distance (range 0--{@link Server#getViewDistance})
+     * Sets the player's viewing distance (range 0--{@link Server#getViewDistance}).
      *
-     * @param distance 可视距离
+     * @param distance The viewing distance.
      */
     public void setViewDistance(int distance) {
         this.chunkRadius = distance;
@@ -3019,11 +3398,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 得到玩家的可视距离
-     * <p>
-     * Get the player's viewing distance
+     * Gets the player's viewing distance.
      *
-     * @return int
+     * @return The player's viewing distance.
      */
     public int getViewDistance() {
         return this.chunkRadius;
@@ -3046,26 +3423,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendMessage(message.getText());
     }
 
-
+    /**
+     * Sends the command output to the player.
+     *
+     * @param container The command output container.
+     */
     public void sendCommandOutput(CommandOutputContainer container) {
         if (this.level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
             var pk = new CommandOutputPacket();
             pk.messages.addAll(container.getMessages());
-            pk.commandOriginData = new CommandOriginData(CommandOriginData.Origin.PLAYER, this.getUniqueId(), "", null);//Only players can effect
-            pk.type = CommandOutputType.ALL_OUTPUT;//Useless
-            pk.successCount = container.getSuccessCount();//Useless,maybe used for server-client interaction
+            pk.commandOriginData = new CommandOriginData(CommandOriginData.Origin.PLAYER, this.getUniqueId(), "", null);
+            pk.type = CommandOutputType.ALL_OUTPUT;
+            pk.successCount = container.getSuccessCount();
             this.dataPacket(pk);
         }
     }
 
     /**
-     * 在玩家聊天栏发送一个JSON文本
-     * <p>
-     * Send a JSON text in the player chat bar
+     * Sends a JSON text message in the player's chat bar.
      *
-     * @param text JSON文本<br>Json text
+     * @param text The JSON text.
      */
-
     public void sendRawTextMessage(RawText text) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_OBJECT;
@@ -3074,21 +3452,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * @see #sendTranslation(String, String[])
+     * Sends a translation message to the player.
+     *
+     * @param message The message to translate.
      */
     public void sendTranslation(String message) {
         this.sendTranslation(message, EmptyArrays.EMPTY_STRINGS);
     }
 
     /**
-     * 在玩家聊天栏发送一个多语言翻译文本，示例:<br>{@code message="Test Message {%0} {%1}" parameters=["Hello","World"]}<br>
-     * 实际消息内容{@code "Test Message Hello World"}
-     * <p>
-     * Send a multilingual translated text in the player chat bar, example:<br> {@code message="Test Message {%0} {%1}" parameters=["Hello", "World"]}<br>
-     * actual message content {@code "Test Message Hello World"}
+     * Sends a multilingual translated text in the player's chat bar.
      *
-     * @param message    消息
-     * @param parameters 参数
+     * @param message    The message.
+     * @param parameters The parameters for the translation.
      */
     public void sendTranslation(String message, String[] parameters) {
         TextPacket pk = new TextPacket();
@@ -3107,18 +3483,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * @see #sendChat(String, String)
+     * Sends a chat message in the player's chat bar.
+     *
+     * @param message The message.
      */
     public void sendChat(String message) {
         this.sendChat("", message);
     }
 
     /**
-     * 在玩家聊天栏发送一个文本
-     * <p>
-     * Send a text in the player chat bar
+     * Sends a chat message in the player's chat bar.
      *
-     * @param message 消息
+     * @param source  The source of the message.
+     * @param message The message.
      */
     public void sendChat(String source, String message) {
         TextPacket pk = new TextPacket();
@@ -3129,20 +3506,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * @see #sendPopup(String, String)
+     * Sends a popup message above the player's item bar.
+     *
+     * @param message The message.
      */
     public void sendPopup(String message) {
         this.sendPopup(message, "");
     }
 
     /**
-     * 在玩家物品栏上方发送一个弹出式的文本
-     * <p>
-     * Send a pop-up text above the player's item bar
+     * Sends a popup message above the player's item bar.
      *
-     * @param message 消息
+     * @param message  The message.
+     * @param subtitle The subtitle.
      */
-    // TODO: Support Translation Parameters
     public void sendPopup(String message, String subtitle) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_POPUP;
@@ -3151,11 +3528,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 在玩家物品栏上方发送一个提示文本
-     * <p>
-     * Send a tip text above the player's item bar
+     * Sends a tip message above the player's item bar.
      *
-     * @param message 消息
+     * @param message The message.
      */
     public void sendTip(String message) {
         TextPacket pk = new TextPacket();
@@ -3165,9 +3540,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 清除掉玩家身上正在显示的标题信息。
-     * <p>
-     * Clears away the title info being displayed on the player.
+     * Clears the title info being displayed on the player.
      */
     public void clearTitle() {
         SetTitlePacket pk = new SetTitlePacket();
@@ -3176,8 +3549,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 为下一个显示的标题重新设置标题动画时间和副标题。
-     * <p>
      * Resets both title animation times and subtitle for the next shown title.
      */
     public void resetTitleSettings() {
@@ -3187,11 +3558,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 设置副标题，在主标题下方显示。
-     * <p>
-     * Set subtitle to be displayed below the main title.
+     * Sets the subtitle to be displayed below the main title.
      *
-     * @param subtitle 副标题
+     * @param subtitle The subtitle text.
      */
     public void setSubtitle(String subtitle) {
         SetTitlePacket pk = new SetTitlePacket();
@@ -3201,13 +3570,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 设置一个JSON文本副标题。
-     * <p>
-     * Set a JSON text subtitle.
+     * Sets a JSON text subtitle.
      *
-     * @param text JSON文本<br>JSON text
+     * @param text The JSON text.
      */
-
     public void setRawTextSubTitle(RawText text) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_SUBTITLE_JSON;
@@ -3216,13 +3582,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 设置标题动画时间
-     * <p>
-     * Set title animation time
+     * Sets the title animation time.
      *
-     * @param fadein   淡入时间
-     * @param duration 持续时间
-     * @param fadeout  淡出时间
+     * @param fadein   The fade-in time.
+     * @param duration The duration time.
+     * @param fadeout  The fade-out time.
      */
     public void setTitleAnimationTimes(int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
@@ -3234,13 +3598,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 设置一个JSON文本标题。
-     * <p>
-     * Set a JSON text title.
+     * Sets a JSON text title.
      *
-     * @param text JSON文本<br>JSON text
+     * @param text The JSON text.
      */
-
     public void setRawTextTitle(RawText text) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_TITLE_JSON;
@@ -3248,10 +3609,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(pk);
     }
 
-
     /**
-     * {@code subtitle=null,fadeIn=20,stay=20,fadeOut=5}
+     * Sends a title with default animation times.
      *
+     * @param title The title text.
      * @see #sendTitle(String, String, int, int, int)
      */
     public void sendTitle(String title) {
@@ -3259,8 +3620,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * {@code fadeIn=20,stay=20,fadeOut=5}
+     * Sends a title and subtitle with default animation times.
      *
+     * @param title    The title text.
+     * @param subtitle The subtitle text.
      * @see #sendTitle(String, String, int, int, int)
      */
     public void sendTitle(String title, String subtitle) {
@@ -3268,29 +3631,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 在玩家视角正中央发送一个标题文本。
-     * <p>
-     * Send a title text in the center of the player's view.
+     * Sends a title text in the center of the player's view.
      *
-     * @param title    标题
-     * @param subtitle 副标题
-     * @param fadeIn   淡入时间<br>fadeIn time(tick)
-     * @param stay     持续时间<br>stay time
-     * @param fadeOut  淡出时间<br>fadeOut time
+     * @param title    The title text.
+     * @param subtitle The subtitle text.
+     * @param fadeIn   The fade-in time (in ticks).
+     * @param stay     The stay time.
+     * @param fadeOut  The fade-out time.
      */
     public void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         this.setTitleAnimationTimes(fadeIn, stay, fadeOut);
         if (!Strings.isNullOrEmpty(subtitle)) {
             this.setSubtitle(subtitle);
         }
-        // title won't send if an empty string is used.
+        // Title won't send if an empty string is used.
         this.setTitle(Strings.isNullOrEmpty(title) ? " " : title);
     }
 
-
     /**
-     * fadein=1,duration=0,fadeout=1
+     * Sends an ActionBar message with default animation times.
      *
+     * @param title The message text.
      * @see #sendActionBar(String, int, int, int)
      */
     public void sendActionBar(String title) {
@@ -3298,14 +3659,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 在玩家物品栏上方发送一个ActionBar消息。
-     * <p>
-     * Send a ActionBar text above the player's item bar.
+     * Sends an ActionBar message above the player's item bar.
      *
-     * @param title    消息
-     * @param fadein   淡入时间
-     * @param duration 持续时间
-     * @param fadeout  淡出时间
+     * @param title    The message text.
+     * @param fadein   The fade-in time.
+     * @param duration The duration time.
+     * @param fadeout  The fade-out time.
      */
     public void sendActionBar(String title, int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
@@ -3318,26 +3677,23 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * fadein=1,duration=0,fadeout=1
+     * Sets a JSON ActionBar message with default animation times.
      *
+     * @param text The JSON text.
      * @see #setRawTextActionBar(RawText, int, int, int)
      */
-
     public void setRawTextActionBar(RawText text) {
         this.setRawTextActionBar(text, 1, 0, 1);
     }
 
     /**
-     * 设置一个JSON ActionBar消息。
-     * <p>
-     * Set a JSON ActionBar text.
+     * Sets a JSON ActionBar message.
      *
-     * @param text     JSON文本<br>JSON text
-     * @param fadein   淡入时间
-     * @param duration 持续时间
-     * @param fadeout  淡出时间
+     * @param text     The JSON text.
+     * @param fadein   The fade-in time.
+     * @param duration The duration time.
+     * @param fadeout  The fade-out time.
      */
-
     public void setRawTextActionBar(RawText text, int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_ACTIONBAR_JSON;
@@ -3348,15 +3704,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(pk);
     }
 
-
     @Override
     public void close() {
         this.close("");
     }
 
     /**
-     * {@code notify=true}
+     * Closes the player's connection with a reason.
      *
+     * @param reason The reason for closing.
      * @see #close(TextContainer, String)
      */
     public void close(String reason) {
@@ -3368,8 +3724,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * {@code reason="generic",notify=true}
+     * Closes the player's connection with a message and a reason.
      *
+     * @param message The message to display.
+     * @param reason  The reason for closing.
      * @see #close(TextContainer, String)
      */
     public void close(TextContainer message) {
@@ -3377,18 +3735,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 关闭该玩家的连接及其一切活动，和{@link #kick}差不多效果，区别在于{@link #kick}是基于{@code close}实现的。
-     * <p>
-     * Closing the player's connection and all its activities is almost as function as {@link #kick}, the difference is that {@link #kick} is implemented based on {@code close}.
+     * Closes the player's connection and all its activities.
+     * Similar to {@link #kick}, but {@link #kick} is based on {@code close}.
      *
-     * @param message PlayerQuitEvent事件消息<br>PlayerQuitEvent message
-     * @param reason  登出原因<br>Reason for logout
+     * @param message The PlayerQuitEvent message.
+     * @param reason  The reason for logout.
      */
     public void close(TextContainer message, String reason) {
         if (!this.connected.compareAndSet(true, false) && this.closed) {
             return;
         }
-        //output logout infomation
+        // Output logout information
         log.info(this.getServer().getLanguage().tr("nukkit.player.logOut",
                 TextFormat.AQUA + this.getName() + TextFormat.WHITE,
                 this.getAddress(),
@@ -3405,20 +3762,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
-        //handle scoreboardManager#beforePlayerQuit
+        // Handle scoreboardManager#beforePlayerQuit
         var scoreboardManager = this.getServer().getScoreboardManager();
         if (scoreboardManager != null) {
             scoreboardManager.beforePlayerQuit(this);
         }
 
-        //dismount horse
+        // Dismount horse
         if (this.riding instanceof EntityRideable entityRideable) {
             entityRideable.dismountEntity(this);
         }
 
         unloadAllUsedChunk();
 
-        //send disconnection packet
+        // Send disconnection packet
         DisconnectPacket packet = new DisconnectPacket();
         if (reason == null || reason.isBlank()) {
             packet.hideDisconnectionScreen = true;
@@ -3427,7 +3784,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         packet.message = reason;
         this.getSession().sendPacketSync(packet);
 
-        //call quit event
+        // Call quit event
         PlayerQuitEvent ev = null;
         if (this.getName() != null && !this.getName().isEmpty()) {
             this.server.getPluginManager().callEvent(ev = new PlayerQuitEvent(this, message, true, reason));
@@ -3435,7 +3792,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.stopFishing(false);
             }
         }
-        // Close the temporary windows first, so they have chance to change all inventories before being disposed
+        // Close the temporary windows first, so they have a chance to change all inventories before being disposed
         if (ev != null && ev.getAutoSave() && namedTag != null) {
             this.save();
         }
@@ -3443,14 +3800,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.windows.clear();
         this.hiddenPlayers.clear();
-        //remove player from playerlist
+        // Remove player from player list
         this.server.removeOnlinePlayer(this);
-        //remove player from players map
+        // Remove player from players map
         this.server.removePlayer(this);
 
         this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_USERS, this);
         this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this);
-        // broadcast disconnection message
+        // Broadcast disconnection message
         if (ev != null && !Objects.equals(this.getName(), "") && this.spawned && !Objects.equals(ev.getQuitMessage().toString(), "")) {
             this.server.broadcastMessage(ev.getQuitMessage());
         }
@@ -3482,16 +3839,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.playerCursorInventory = null;
         }
 
-        //close player network session
+        // Close player network session
         log.debug("Closing player network session");
         log.debug(reason);
         assert this.session != null;
         this.session.close(null);
     }
 
+    /**
+     * Unloads all chunks used by the player.
+     */
     public synchronized void unloadAllUsedChunk() {
-        //save player data
-        //unload chunk for the player
+        // Save player data
+        // Unload chunk for the player
         LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
         while (iterator.hasNext()) {
             long l = iterator.nextLong();
@@ -3509,6 +3869,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.playerChunkManager.getUsedChunks().clear();
     }
 
+    /**
+     * Saves the player's data.
+     */
     public void save() {
         this.save(false);
     }
@@ -3517,24 +3880,29 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void saveNBT() {
         super.saveNBT();
         if (spawnPoint == null) {
+            // Remove spawn point tags if spawnPoint is null
             namedTag.remove("SpawnX")
                     .remove("SpawnY")
                     .remove("SpawnZ")
                     .remove("SpawnLevel")
                     .remove("SpawnDimension");
         } else {
+            // Save spawn point coordinates
             namedTag.putInt("SpawnX", this.spawnPoint.getFloorX())
                     .putInt("SpawnY", this.spawnPoint.getFloorY())
                     .putInt("SpawnZ", this.spawnPoint.getFloorZ());
             if (this.spawnPoint.getLevel() != null) {
+                // Save spawn level name and dimension if available
                 this.namedTag.putString("SpawnLevel", this.spawnPoint.getLevel().getName());
                 this.namedTag.putInt("SpawnDimension", this.spawnPoint.getLevel().getDimension());
             } else {
+                // Save default level name and dimension if spawn level is null
                 this.namedTag.putString("SpawnLevel", this.server.getDefaultLevel().getName());
                 this.namedTag.putInt("SpawnDimension", this.server.getDefaultLevel().getDimension());
             }
         }
 
+        // Save adventure settings
         this.adventureSettings.saveNBT();
     }
 
@@ -3546,14 +3914,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         saveNBT();
 
         if (this.level != null) {
+            // Save current level name
             this.namedTag.putString("Level", this.level.getName());
 
+            // Save achievements
             CompoundTag achievements = new CompoundTag();
             for (String achievement : this.achievements) {
                 achievements.putByte(achievement, 1);
             }
-
             this.namedTag.putCompound("Achievements", achievements);
+
+            // Save player data
             this.namedTag.putInt("playerGameType", this.gamemode);
             this.namedTag.putLong("lastPlayed", System.currentTimeMillis() / 1000);
             this.namedTag.putString("lastIP", this.getAddress());
@@ -3563,6 +3934,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.namedTag.putFloat("foodSaturationLevel", this.getFoodData().getSaturation());
             this.namedTag.putInt("enchSeed", this.enchSeed);
 
+            // Save fog identifiers
             var fogIdentifiers = new ListTag<StringTag>();
             var userProvidedFogIds = new ListTag<StringTag>();
             this.fogStack.forEach(fog -> {
@@ -3572,14 +3944,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.namedTag.putList("fogIdentifiers", fogIdentifiers);
             this.namedTag.putList("userProvidedFogIds", userProvidedFogIds);
 
+            // Save time since last rest
             this.namedTag.putInt("TimeSinceRest", this.timeSinceRest);
 
+            // Save offline player data if name is not blank and namedTag is not null
             if (!this.getName().isBlank() && this.namedTag != null) {
                 this.server.saveOfflinePlayerData(this.uuid, this.namedTag, async);
             }
         }
     }
-
 
     @Override
     public String getOriginalName() {
@@ -3591,7 +3964,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public String getName() {
         return this.info.getUsername();
     }
-
 
     public LangCode getLanguageCode() {
         LangCode code = LangCode.from(this.getLoginChainData().getLanguageCode());
@@ -3806,12 +4178,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void setHealth(float health) {
+        // Ensure health is not less than 0
         if (health < 1) {
             health = 0;
         }
         super.setHealth(health);
+
+        // Update the MAX_HEALTH attribute
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.MAX_HEALTH, Attribute::getAttribute);
-        attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+        attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth())
+                .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+
+        // Send updated attributes to the client if the player is spawned
         if (this.spawned) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attribute};
@@ -3824,8 +4202,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setMaxHealth(int maxHealth) {
         super.setMaxHealth(maxHealth);
 
+        // Update the MAX_HEALTH attribute
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.MAX_HEALTH, Attribute::getAttribute);
-        attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+        attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth())
+                .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+
+        // Send updated attributes to the client if the player is spawned
         if (this.spawned) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attribute};
@@ -3835,9 +4217,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 得到该玩家的经验值(并不会显示玩家从的经验值总数，而仅仅显示当前等级所在的经验值，即经验条)。
-     * <p>
-     * Get the experience value of the player (it does not show the total experience value of the player from, but only the experience value where the current level is, i.e. the experience bar).
+     * Get the experience value of the player (it does not show the total experience value of the player, but only the experience value where the current level is, i.e., the experience bar).
      *
      * @return int
      */
@@ -3846,8 +4226,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 得到该玩家的等级。
-     * <p>
      * Get the level of the player.
      *
      * @return int
@@ -3856,32 +4234,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.expLevel;
     }
 
-
     /**
-     * playLevelUpSound=false
+     * Add experience to the player.
      *
-     * @see #addExperience(int, boolean)
+     * @param add Amount of experience to add
      */
     public void addExperience(int add) {
         addExperience(add, false);
     }
 
     /**
-     * 增加该玩家的经验值
-     * <p>
-     * Increase the experience value of the player
+     * Add experience to the player.
      *
-     * @param add              经验值的数量
-     * @param playLevelUpSound 有无升级声音
+     * @param add              Amount of experience to add
+     * @param playLevelUpSound Whether to play the level-up sound
      */
-
     public void addExperience(int add, boolean playLevelUpSound) {
         if (add == 0) return;
         int now = this.getExperience();
         int added = now + add;
         int level = this.getExperienceLevel();
         int most = calculateRequireExperience(level);
-        while (added >= most) {  //Level Up!
+
+        // Level up if the added experience exceeds the required experience for the current level
+        while (added >= most) {
             added = added - most;
             level++;
             most = calculateRequireExperience(level);
@@ -3890,11 +4266,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 计算玩家到达某等级所需要的经验值
-     * <p>
-     * Calculates the amount of experience a player needs to reach a certain level
+     * Calculate the amount of experience a player needs to reach a certain level.
      *
-     * @param level 等级
+     * @param level The level to reach
      * @return int
      */
     public static int calculateRequireExperience(int level) {
@@ -3907,36 +4281,32 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-
     /**
-     * {@code level = this.getExperienceLevel(),playLevelUpSound=false}
+     * Set the experience value of the player.
      *
-     * @see #setExperience(int, int, boolean)
+     * @param exp The experience value
      */
     public void setExperience(int exp) {
         setExperience(exp, this.getExperienceLevel());
     }
 
-
     /**
-     * playLevelUpSound=false
+     * Set the experience value and level of the player.
      *
-     * @see #setExperience(int, int, boolean)
+     * @param exp   The experience value
+     * @param level The level
      */
     public void setExperience(int exp, int level) {
         setExperience(exp, level, false);
     }
 
     /**
-     * 设置该玩家的经验值和等级
-     * <p>
-     * set the experience value and level of the player
+     * Set the experience value and level of the player.
      *
-     * @param playLevelUpSound 有无升级声音
-     * @param exp              经验值
-     * @param level            等级
+     * @param exp              The experience value
+     * @param level            The level
+     * @param playLevelUpSound Whether to play the level-up sound
      */
-    //todo something on performance, lots of exp orbs then lots of packets, could crash client
     public void setExperience(int exp, int level, boolean playLevelUpSound) {
         var expEvent = new PlayerExperienceChangeEvent(this, this.getExperience(), this.getExperienceLevel(), exp, level);
         this.server.getPluginManager().callEvent(expEvent);
@@ -3952,6 +4322,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.sendExperienceLevel(level);
         this.sendExperience(exp);
+
+        // Play level-up sound if applicable
         if (playLevelUpSound && levelBefore < level && levelBefore / 5 != level / 5 && this.lastPlayerdLevelUpSoundTime < this.age - 100) {
             this.lastPlayerdLevelUpSoundTime = this.age;
             this.level.addLevelSoundEvent(
@@ -3965,18 +4337,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * @see #sendExperience(int)
+     * Send the current experience value to the client.
      */
     public void sendExperience() {
         sendExperience(this.getExperience());
     }
 
     /**
-     * setExperience的实现部分，用来设置当前等级所对应的经验值，即经验条
-     * <p>
-     * The implementation of setExperience is used to set the experience value corresponding to the current level, i.e. the experience bar
+     * Implementation of setExperience, used to set the experience value corresponding to the current level, i.e., the experience bar.
      *
-     * @param exp 经验值
+     * @param exp The experience value
      */
     public void sendExperience(int exp) {
         if (this.spawned) {
@@ -3988,7 +4358,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-
     /**
      * @see #sendExperienceLevel(int)
      */
@@ -3997,11 +4366,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * setExperience的实现部分，用来设置当前等级
-     * <p>
-     * The implementation of setExperience is used to set the level
+     * The implementation of setExperience is used to set the level.
      *
-     * @param level 等级
+     * @param level The level to set
      */
     public void sendExperienceLevel(int level) {
         if (this.spawned) {
@@ -4012,11 +4379,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 以指定{@link Attribute}发送UpdateAttributesPacket数据包到该玩家。
-     * <p>
      * Send UpdateAttributesPacket packets to this player with the specified {@link Attribute}.
      *
-     * @param attribute the attribute
+     * @param attribute The attribute to sync
      */
     public void syncAttribute(Attribute attribute) {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
@@ -4025,6 +4390,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(pk);
     }
 
+    /**
+     * Sync all attributes that are marked as syncable.
+     */
     public void syncAttributes() {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.entries = this.attributes.values().stream().filter(Attribute::isSyncable).toArray(Attribute[]::new);
@@ -4043,8 +4411,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * send=true
-     *
      * @see #setMovementSpeed(float, boolean)
      */
     @Override
@@ -4053,12 +4419,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 设置该玩家的移动速度
-     * <p>
      * Set the movement speed of this player.
      *
-     * @param speed 速度大小，注意默认移动速度为{@link #DEFAULT_SPEED}<br>Speed value, note that the default movement speed is {@link #DEFAULT_SPEED}
-     * @param send  是否发送数据包{@link UpdateAttributesPacket}到客户端<br>Whether to send {@link UpdateAttributesPacket} to the client
+     * @param speed The speed value, note that the default movement speed is {@link #DEFAULT_SPEED}
+     * @param send  Whether to send {@link UpdateAttributesPacket} to the client
      */
     public void setMovementSpeed(float speed, boolean send) {
         super.setMovementSpeed(speed);
@@ -4068,11 +4432,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 发送{@link Attribute#MOVEMENT_SPEED}属性到客户端
-     * <p>
-     * Send {@link Attribute#MOVEMENT_SPEED} Attribute to Client.
+     * Send {@link Attribute#MOVEMENT_SPEED} attribute to the client.
      *
-     * @param speed 属性值<br>the speed value
+     * @param speed The speed value
      */
     public void sendMovementSpeed(float speed) {
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.MOVEMENT_SPEED, Attribute::getAttribute);
@@ -4081,9 +4443,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 获取击杀该玩家的实体
-     * <p>
-     * Get the entity that killed this player
+     * Get the entity that killed this player.
      *
      * @return Entity | null
      */
@@ -4091,6 +4451,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return killer;
     }
 
+    /**
+     * Handles the attack event on the player.
+     * <p>
+     * This method processes the damage event for the player, checking various conditions such as
+     * whether the player is alive, in spectator or creative mode, or has fall damage immunity.
+     * It also handles specific block interactions like slime blocks to reset fall distance.
+     * If the attack is valid, it triggers the hurt animation and updates the last entity that attacked the player.
+     * </p>
+     *
+     * @param source The source of the damage event.
+     * @return True if the attack was successful, otherwise false.
+     */
     @Override
     public boolean attack(EntityDamageEvent source) {
         if (!this.isAlive()) {
@@ -4098,29 +4470,29 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.isSpectator() || this.isCreative()) {
-            //source.setCancelled();
+            // Cancel the damage if the player is in spectator or creative mode
             return false;
         } else if (this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && source.getCause() == DamageCause.FALL) {
-            //source.setCancelled();
+            // Cancel fall damage if the player has flight enabled
             return false;
         } else if (source.getCause() == DamageCause.FALL) {
             if (this.getLevel().getBlock(this.getPosition().floor().add(0.5, -1, 0.5)).getId().equals(Block.SLIME)) {
                 if (!this.isSneaking()) {
-                    //source.setCancelled();
+                    // Reset fall distance if the player lands on a slime block and is not sneaking
                     this.resetFallDistance();
                     return false;
                 }
             }
         }
 
-        if (super.attack(source)) { //!source.isCancelled()
+        if (super.attack(source)) { // Check if the attack was not cancelled
             if (this.getLastDamageCause() == source && this.spawned) {
                 if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
                     Entity damager = entityDamageByEntityEvent.getDamager();
                     if (damager instanceof Player) {
                         ((Player) damager).getFoodData().exhaust(0.1);
                     }
-                    //保存攻击玩家的实体在lastBeAttackEntity
+                    // Save the entity that attacked the player in lastBeAttackEntity
                     this.lastBeAttackEntity = entityDamageByEntityEvent.getDamager();
                 }
                 EntityEventPacket pk = new EntityEventPacket();
@@ -4135,12 +4507,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 在玩家面前的地面上掉落一个物品。如果物品投放成功，则返回。
-     * <p>
      * Drops an item on the ground in front of the player. Returns if the item drop was successful.
      *
-     * @param item 掉落的物品<br>to drop
-     * @return 一个bool值，丢弃物品成功或该物品为空<br>bool if the item was dropped or if the item was null
+     * @param item the item to drop
+     * @return boolean if the item was dropped or if the item was null
      */
     public boolean dropItem(Item item) {
         if (!this.spawned || !this.isAlive()) {
@@ -4161,14 +4531,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 在玩家面前的地面上扔下一个物品。返回值为该掉落的物品。
-     * <p>
      * Drops an item on the ground in front of the player. Returns the dropped item.
      *
-     * @param item 掉落的物品<br>to drop
-     * @return 如果物品被丢弃成功，则返回EntityItem；如果物品为空，则为null<br>EntityItem if the item was dropped or null if the item was null
+     * @param item the item to drop
+     * @return EntityItem if the item was dropped or null if the item was null
      */
-
     public @Nullable EntityItem dropAndGetItem(@NotNull Item item) {
         if (!this.spawned || !this.isAlive()) {
             return null;
@@ -4215,13 +4582,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * {@link Player#addMovement}的实现,仅发送{@link MovePlayerPacket}数据包到客户端
+     * Implementation of {@link Player#addMovement}, only sends {@link MovePlayerPacket} to the client
      *
-     * @param pos     the pos of MovePlayerPacket
+     * @param pos     the position of MovePlayerPacket
      * @param yaw     the yaw of MovePlayerPacket
      * @param pitch   the pitch of MovePlayerPacket
      * @param mode    the mode of MovePlayerPacket
-     * @param targets 接受数据包的玩家们<br>players of receive the packet
+     * @param targets players who receive the packet
      */
     public void sendPosition(Vector3 pos, double yaw, double pitch, int mode, Player[] targets) {
         MovePlayerPacket pk = new MovePlayerPacket();
@@ -4255,7 +4622,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastTeleportMessage = Pair.of(from, System.currentTimeMillis());
 
         Location to = location;
-        //event
+        // event
         if (cause != null) {
             PlayerTeleportEvent event = new PlayerTeleportEvent(this, from, to, cause);
             this.server.getPluginManager().callEvent(event);
@@ -4263,7 +4630,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             to = event.getTo();
         }
 
-        //remove inventory,ride,sign editor
+        // remove inventory, ride, sign editor
         for (Inventory window : new ArrayList<>(this.windows.keySet())) {
             if (window == this.inventory) {
                 continue;
@@ -4282,31 +4649,31 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!to.getLevel().equals(from.getLevel())) {
             switchLevel = true;
             unloadAllUsedChunk();
-            //unload entities for old level
+            // unload entities for old level
             Arrays.stream(from.getLevel().getEntities()).forEach(e -> e.despawnFrom(this));
         }
 
         clientMovements.clear();
-        //switch level, update pos and rotation, update aabb
+        // switch level, update pos and rotation, update aabb
         if (setPositionAndRotation(to, to.getYaw(), to.getPitch(), to.getHeadYaw())) {
-            //if switch level or the distance teleported is too far
+            // if switch level or the distance teleported is too far
             if (switchLevel) {
                 this.playerChunkManager.handleTeleport();
-                //set nextChunkOrderRun is zero means that the next tick immediately execute the playerChunkManager#tick
+                // set nextChunkOrderRun is zero means that the next tick immediately execute the playerChunkManager#tick
                 this.nextChunkOrderRun = 0;
             } else if ((Math.abs(from.getChunkX() - to.getChunkX()) >= this.getViewDistance())
                     || (Math.abs(from.getChunkZ() - to.getChunkZ()) >= this.getViewDistance())) {
                 this.playerChunkManager.handleTeleport();
                 this.nextChunkOrderRun = 0;
             }
-            //send to client
+            // send to client
             this.sendPosition(to, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
             this.newPosition = to;
         } else {
             this.sendPosition(this, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
             this.newPosition = this;
         }
-        //state update
+        // state update
         this.positionChanged = true;
 
         if (switchLevel) {
@@ -4314,14 +4681,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             refreshChunkRender();
         }
         this.resetFallDistance();
-        //DummyBossBar
+        // DummyBossBar
         this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
-        //Weather
+        // Weather
         this.getLevel().sendWeather(this);
-        //Update time
+        // Update time
         this.getLevel().sendTime(this);
         updateTrackingPositions(true);
-        //Update gamemode
+        // Update gamemode
         if (isSpectator()) {
             this.setGamemode(this.gamemode, false, null, true);
         }
@@ -4336,6 +4703,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setViewDistance(origin);
     }
 
+    /**
+     * Refreshes block entities after a specified delay.
+     *
+     * @param delay The delay in ticks before refreshing block entities.
+     */
     public void refreshBlockEntity(int delay) {
         Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             for (var b : this.level.getBlockEntities().values()) {
@@ -4362,8 +4734,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Automatic id assignment
+     * Shows a new FormWindow to the player.
+     * You can find out FormWindow result by listening to PlayerFormRespondedEvent.
      *
+     * @param window The FormWindow to show.
+     * @return The form id to use in PlayerFormRespondedEvent.
      * @see #showFormWindow(FormWindow, int)
      */
     public int showFormWindow(FormWindow window) {
@@ -4371,15 +4746,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 向玩家显示一个新的FormWindow。
-     * 你可以通过监听PlayerFormRespondedEvent来了解FormWindow的结果。
-     * <p>
-     * Shows a new FormWindow to the player
-     * You can find out FormWindow result by listening to PlayerFormRespondedEvent
+     * Shows a new FormWindow to the player.
+     * You can find out FormWindow result by listening to PlayerFormRespondedEvent.
      *
-     * @param window to show
-     * @param id     form id
-     * @return form id to use in {@link PlayerFormRespondedEvent}
+     * @param window The FormWindow to show.
+     * @param id     The form id.
+     * @return The form id to use in PlayerFormRespondedEvent.
      */
     public int showFormWindow(FormWindow window, int id) {
         if (this.formWindows.size() > 100) {
@@ -4395,10 +4767,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return id;
     }
 
-
     /**
-     * book=true
+     * Shows a dialog window to the player.
      *
+     * @param dialog The dialog window to show.
      * @see #showDialogWindow(FormWindowDialog, boolean)
      */
     public void showDialogWindow(FormWindowDialog dialog) {
@@ -4406,12 +4778,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 向玩家展示一个NPC对话框.
-     * <p>
-     * Show dialog window to the player.
+     * Shows a dialog window to the player.
      *
-     * @param dialog NPC对话框<br>the dialog
-     * @param book   如果为true,将会立即更新该{@link FormWindowDialog#getSceneName()}<br>If true, the {@link FormWindowDialog#getSceneName()} will be updated immediately.
+     * @param dialog The dialog window to show.
+     * @param book   If true, the FormWindowDialog scene name will be updated immediately.
      */
     public void showDialogWindow(FormWindowDialog dialog, boolean book) {
         String actionJson = dialog.getButtonJSONData();
@@ -4434,14 +4804,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 在游戏设置中显示一个新的设置页面。
-     * 你可以通过监听PlayerFormRespondedEvent来了解设置结果。
-     * <p>
      * Shows a new setting page in game settings.
-     * You can find out settings result by listening to PlayerFormRespondedEvent
+     * You can find out settings result by listening to PlayerFormRespondedEvent.
      *
-     * @param window to show on settings page
-     * @return form id to use in {@link PlayerFormRespondedEvent}
+     * @param window The FormWindow to show on settings page.
+     * @return The form id to use in PlayerFormRespondedEvent.
      */
     public int addServerSettings(FormWindow window) {
         int id = this.formWindowCount++;
@@ -4451,13 +4818,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 创建并发送一个BossBar给玩家。
-     * <p>
-     * Creates and sends a BossBar to the player
+     * Creates and sends a BossBar to the player.
      *
-     * @param text   BossBar信息<br>The BossBar message
-     * @param length BossBar百分比<br>The BossBar percentage
-     * @return bossBarId BossBar的ID，如果你想以后删除或更新BossBar，你应该存储它。<br>bossBarId The BossBar ID, you should store it if you want to remove or update the BossBar later
+     * @param text   The BossBar message.
+     * @param length The BossBar percentage.
+     * @return The BossBar ID. You should store it if you want to remove or update the BossBar later.
      */
     public long createBossBar(String text, int length) {
         DummyBossBar bossBar = new DummyBossBar.Builder(this).text(text).length(length).build();
@@ -4465,12 +4830,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 创建并发送一个BossBar给玩家。
-     * <p>
-     * Creates and sends a BossBar to the player
+     * Creates and sends a BossBar to the player.
      *
-     * @param dummyBossBar DummyBossBar对象（通过{@link DummyBossBar.Builder}实例化）。<br>DummyBossBar Object (Instantiate it by the Class Builder)
-     * @return bossBarId BossBar的ID，如果你想以后删除或更新BossBar，你应该储存它。<br>bossBarId  The BossBar ID, you should store it if you want to remove or update the BossBar later
+     * @param dummyBossBar The DummyBossBar object (Instantiate it by the Class Builder).
+     * @return The BossBar ID. You should store it if you want to remove or update the BossBar later.
      * @see DummyBossBar.Builder
      */
     public long createBossBar(DummyBossBar dummyBossBar) {
@@ -4480,39 +4843,33 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 获取一个DummyBossBar对象
-     * <p>
-     * Get a DummyBossBar object
+     * Gets a DummyBossBar object.
      *
-     * @param bossBarId 要查找的BossBar ID<br>The BossBar ID
-     * @return DummyBossBar对象<br>DummyBossBar object
-     * @see DummyBossBar#setText(String) Set BossBar text
-     * @see DummyBossBar#setLength(float) Set BossBar length
-     * @see DummyBossBar#setColor(BossBarColor) Set BossBar color
+     * @param bossBarId The BossBar ID.
+     * @return The DummyBossBar object.
+     * @see DummyBossBar#setText(String) Set BossBar text.
+     * @see DummyBossBar#setLength(float) Set BossBar length.
+     * @see DummyBossBar#setColor(BossBarColor) Set BossBar color.
      */
     public DummyBossBar getDummyBossBar(long bossBarId) {
         return this.dummyBossBars.getOrDefault(bossBarId, null);
     }
 
     /**
-     * 获取所有DummyBossBar对象
-     * <p>
-     * Get all DummyBossBar objects
+     * Gets all DummyBossBar objects.
      *
-     * @return DummyBossBars Map
+     * @return A map of DummyBossBars.
      */
     public Map<Long, DummyBossBar> getDummyBossBars() {
         return dummyBossBars;
     }
 
     /**
-     * 更新一个BossBar
-     * <p>
-     * Updates a BossBar
+     * Updates a BossBar.
      *
-     * @param text      The new BossBar message
-     * @param length    The new BossBar length
-     * @param bossBarId The BossBar ID
+     * @param text      The new BossBar message.
+     * @param length    The new BossBar length.
+     * @param bossBarId The BossBar ID.
      */
     public void updateBossBar(String text, int length, long bossBarId) {
         if (this.dummyBossBars.containsKey(bossBarId)) {
@@ -4523,11 +4880,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 移除一个BossBar
-     * <p>
-     * Removes a BossBar
+     * Removes a BossBar.
      *
-     * @param bossBarId The BossBar ID
+     * @param bossBarId The BossBar ID.
      */
     public void removeBossBar(long bossBarId) {
         if (this.dummyBossBars.containsKey(bossBarId)) {
@@ -4537,12 +4892,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 获取id从指定{@link Inventory}
-     * <p>
-     * Get id from the specified {@link Inventory}
+     * Gets the window id from the specified Inventory.
      *
-     * @param inventory the inventory
-     * @return the window id
+     * @param inventory The inventory.
+     * @return The window id.
      */
     public int getWindowId(@NotNull Inventory inventory) {
         Preconditions.checkNotNull(inventory);
@@ -4554,18 +4907,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 获取{@link Inventory}从指定id
-     * <p>
-     * Get {@link Inventory} from the specified id
+     * Gets the Inventory from the specified id.
      *
-     * @param id 窗口id<br>the window id
+     * @param id The window id.
+     * @return The Inventory.
      */
     public Inventory getWindowById(int id) {
         return this.windowIndex.get(id);
     }
 
     /**
-     * Add inventory to the current player.
+     * Adds an inventory to the current player.
      *
      * @param inventory The Inventory object representing the window, must not be null.
      * @return The unique identifier assigned to the window if successfully added and opened; -1 if the window fails to be added.
@@ -4591,6 +4943,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Adds an inventory to the current player with a specified id.
+     *
+     * @param inventory The Inventory object representing the window, must not be null.
+     * @param forceId   The id to force.
+     * @return The unique identifier assigned to the window if successfully added and opened; -1 if the window fails to be added.
+     */
     public int addWindow(@NotNull Inventory inventory, Integer forceId) {
         Preconditions.checkNotNull(inventory);
         if (this.windows.containsKey(inventory)) {
@@ -4598,7 +4957,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         int cnt;
         if (forceId == null) {
-            this.windowsCnt = cnt = Math.max(1, ++this.windowsCnt % 101);//1-100
+            this.windowsCnt = cnt = Math.max(1, ++this.windowsCnt % 101); // 1-100
         } else {
             cnt = forceId;
         }
@@ -4619,6 +4978,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return cnt;
     }
 
+    /**
+     * Gets the top window that is not permanent.
+     *
+     * @return An Optional containing the top Inventory if present, otherwise an empty Optional.
+     */
     public Optional<Inventory> getTopWindow() {
         for (Entry<Inventory, Integer> entry : this.windows.entrySet()) {
             if (!this.permanentWindows.contains(entry.getValue())) {
@@ -4629,11 +4993,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 移除该玩家身上的指定Inventory
-     * <p>
-     * Remove the specified Inventory from the player
+     * Removes the specified Inventory from the player.
      *
-     * @param inventory the inventory
+     * @param inventory The inventory to be removed.
      */
     public void removeWindow(Inventory inventory) {
         Preconditions.checkNotNull(inventory);
@@ -4647,9 +5009,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 常用于刷新。
-     * <p>
-     * Commonly used for refreshing.
+     * Commonly used for refreshing all inventories.
      */
     public void sendAllInventories() {
         for (Inventory inv : this.windows.keySet()) {
@@ -4660,29 +5020,36 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-
     /**
-     * 获取该玩家的{@link PlayerCursorInventory}
-     * <p>
-     * Gets cursor inventory of the player.
+     * Gets the cursor inventory of the player.
+     *
+     * @return The PlayerCursorInventory object.
      */
     public PlayerCursorInventory getCursorInventory() {
         return playerCursorInventory;
     }
 
     /**
-     * 获取该玩家的{@link CraftingGridInventory}
-     * <p>
-     * Gets crafting grid of the player.
+     * Gets the crafting grid of the player.
+     *
+     * @return The CraftingGridInventory object.
      */
     public CraftingGridInventory getCraftingGrid() {
         return this.craftingGridInventory;
     }
 
+    /**
+     * Gets the creative output inventory of the player.
+     *
+     * @return The CreativeOutputInventory object.
+     */
     public CreativeOutputInventory getCreativeOutputInventory() {
         return this.creativeOutputInventory;
     }
 
+    /**
+     * Resets the player's inventory.
+     */
     @ApiStatus.Internal
     public void resetInventory() {
         if (spawned) {
@@ -4711,16 +5078,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Removes all windows.
+     */
     public void removeAllWindows() {
         removeAllWindows(false);
     }
 
     /**
-     * 清空{@link #windows}
-     * <p>
-     * Remove all windows.
+     * Removes all windows.
      *
-     * @param permanent 如果为false则会跳过删除{@link #permanentWindows}里面对应的window<br>If false, it will skip deleting the corresponding window in {@link #permanentWindows}
+     * @param permanent If false, it will skip deleting the corresponding window in permanentWindows.
      */
     public void removeAllWindows(boolean permanent) {
         for (Entry<Integer, Inventory> entry : new ArrayList<>(this.windowIndex.entrySet())) {
@@ -4732,70 +5100,122 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 获取上一个关闭窗口对应的id
-     * <p>
-     * Get the id corresponding to the last closed window
+     * Gets the id corresponding to the last closed window.
+     *
+     * @return The id of the last closed window.
      */
     public int getClosingWindowId() {
         return this.closingWindowId;
     }
 
+    /**
+     * Sets metadata for the player.
+     *
+     * @param metadataKey      The key for the metadata.
+     * @param newMetadataValue The value for the metadata.
+     */
     @Override
     public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
         this.server.getPlayerMetadata().setMetadata(this, metadataKey, newMetadataValue);
     }
 
+    /**
+     * Gets metadata for the player.
+     *
+     * @param metadataKey The key for the metadata.
+     * @return A list of MetadataValue objects.
+     */
     @Override
     public List<MetadataValue> getMetadata(String metadataKey) {
         return this.server.getPlayerMetadata().getMetadata(this, metadataKey);
     }
 
+    /**
+     * Checks if the player has metadata.
+     *
+     * @param metadataKey The key for the metadata.
+     * @return True if the player has the metadata, otherwise false.
+     */
     @Override
     public boolean hasMetadata(String metadataKey) {
         return this.server.getPlayerMetadata().hasMetadata(this, metadataKey);
     }
 
+    /**
+     * Removes metadata for the player.
+     *
+     * @param metadataKey  The key for the metadata.
+     * @param owningPlugin The plugin that owns the metadata.
+     */
     @Override
     public void removeMetadata(String metadataKey, Plugin owningPlugin) {
         this.server.getPlayerMetadata().removeMetadata(this, metadataKey, owningPlugin);
     }
 
+    /**
+     * Called when a chunk changes.
+     *
+     * @param chunk The chunk that changed.
+     */
     @Override
     public void onChunkChanged(IChunk chunk) {
         this.playerChunkManager.addSendChunk(chunk.getX(), chunk.getZ());
     }
 
+    /**
+     * Called when a chunk is loaded.
+     *
+     * @param chunk The chunk that was loaded.
+     */
     @Override
     public void onChunkLoaded(IChunk chunk) {
     }
 
-
+    /**
+     * Called when a chunk is unloaded.
+     *
+     * @param chunk The chunk that was unloaded.
+     */
     @Override
     public void onChunkUnloaded(IChunk chunk) {
         this.unloadChunk(chunk.getX(), chunk.getZ(), chunk.getProvider().getLevel());
     }
 
+    /**
+     * Gets the loader id.
+     *
+     * @return The loader id.
+     */
     @Override
     public int getLoaderId() {
         return this.loaderId;
     }
 
+    /**
+     * Checks if the loader is active.
+     *
+     * @return True if the loader is active, otherwise false.
+     */
     @Override
     public boolean isLoaderActive() {
         return this.isConnected();
     }
 
     /**
-     * 获取玩家的{@link PlayerFood}
-     * <p>
-     * Get the player's {@link PlayerFood}
+     * Gets the player's food data.
      *
-     * @return the food data
+     * @return The PlayerFood object.
      */
     public PlayerFood getFoodData() {
         return this.foodData;
     }
 
+    /**
+     * Switches the player's level.
+     *
+     * @param level The new level.
+     * @return True if the level switch was successful, otherwise false.
+     */
     @Override
     public boolean switchLevel(Level level) {
         Level oldLevel = this.level;
@@ -4836,36 +5256,57 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 设置是否检查该玩家移动
-     * <p>
-     * Set whether to check for this player movement
+     * Sets whether to check for this player's movement.
      *
-     * @param checkMovement the check movement
+     * @param checkMovement True to check movement, otherwise false.
      */
     public void setCheckMovement(boolean checkMovement) {
         this.checkMovement = checkMovement;
     }
 
     /**
+     * Checks if the player's movement is being checked.
+     *
+     * @return True if the player's movement is being checked, otherwise false.
      * @since 1.2.1.0-PN
      */
     public boolean isCheckingMovement() {
         return this.checkMovement;
     }
 
+    /**
+     * Gets the locale of the player.
+     *
+     * @return The locale of the player.
+     */
     public synchronized Locale getLocale() {
         return this.locale.get();
     }
 
+    /**
+     * Sets the locale of the player.
+     *
+     * @param locale The new locale to set.
+     */
     public synchronized void setLocale(Locale locale) {
         this.locale.set(locale);
     }
 
+    /**
+     * Gets the set of used chunks.
+     *
+     * @return An unmodifiable set of used chunks.
+     */
     @UnmodifiableView
     public Set<Long> getUsedChunks() {
         return Collections.unmodifiableSet(playerChunkManager.getUsedChunks());
     }
 
+    /**
+     * Sets the sprinting state of the player.
+     *
+     * @param value True to set the player sprinting, otherwise false.
+     */
     @Override
     public void setSprinting(boolean value) {
         if (value && this.getFreezingTicks() > 0) return;
@@ -4881,11 +5322,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 传送该玩家到另一个服务器
-     * <p>
-     * Teleport the player to another server
+     * Teleports the player to another server.
      *
-     * @param address the address
+     * @param address The address of the server to teleport to.
      */
     public void transfer(InetSocketAddress address) {
         String hostName = address.getAddress().getHostAddress();
@@ -4897,16 +5336,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 获取该玩家的登录链数据
-     * <p>
-     * Get the login chain data of this player
+     * Gets the login chain data of the player.
      *
-     * @return the login chain data
+     * @return The login chain data of the player.
      */
     public LoginChainData getLoginChainData() {
         return this.loginChainData;
     }
 
+    /**
+     * Handles the pickup of an entity by the player.
+     *
+     * @param entity The entity to pick up.
+     * @param near   True if the entity is near, otherwise false.
+     * @return True if the entity was successfully picked up, otherwise false.
+     */
     @ApiStatus.Internal
     public boolean pickupEntity(Entity entity, boolean near) {
         if (!this.spawned || !this.isAlive() || !this.isOnline() || this.isSpectator() || entity.isClosed()) {
@@ -5040,7 +5484,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.getLevel().addLevelEvent(LevelEventPacket.EVENT_SOUND_EXPERIENCE_ORB_PICKUP, 0, this);
                 pickedXPOrb = tick;
 
-                //Mending
+                // Mending
                 ArrayList<Integer> itemsWithMending = new ArrayList<>();
                 for (int i = 0; i < 4; i++) {
                     if (inventory.getArmorItem(i).getEnchantment((short) Enchantment.ID_MENDING) != null) {
@@ -5080,7 +5524,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if ((this.hash == 0) || (this.hash == 485)) {
             this.hash = (485 + (getUniqueId() != null ? getUniqueId().hashCode() : 0));
         }
-
         return this.hash;
     }
 
@@ -5093,22 +5536,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 玩家是否在挖掘方块
-     * <p>
-     * Whether the player is digging block
+     * Checks if the player is digging a block.
      *
-     * @return the boolean
+     * @return True if the player is digging a block, otherwise false.
      */
     public boolean isBreakingBlock() {
         return this.breakingBlock != null;
     }
 
     /**
-     * 显示一个XBOX账户的资料窗口
-     * <p>
-     * Show a window of a XBOX account's profile
+     * Shows a window of an Xbox account's profile.
      *
-     * @param xuid XUID
+     * @param xuid The Xbox User ID.
      */
     public void showXboxProfile(String xuid) {
         ShowProfilePacket pk = new ShowProfilePacket();
@@ -5117,9 +5556,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Start fishing
+     * Starts fishing with the given fishing rod item.
      *
-     * @param fishingRod fishing rod item
+     * @param fishingRod The fishing rod item.
      */
     public void startFishing(Item fishingRod) {
         CompoundTag nbt = new CompoundTag()
@@ -5153,9 +5592,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Stop fishing
+     * Stops fishing.
      *
-     * @param click clicked or forced
+     * @param click True if the stop was triggered by a click, otherwise false.
      */
     public void stopFishing(boolean click) {
         if (this.fishing != null && click) {
@@ -5163,15 +5602,31 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         } else if (this.fishing != null) {
             this.fishing.close();
         }
-
         this.fishing = null;
     }
 
+    /**
+     * Checks if the player triggers pressure plates.
+     * <p>
+     * This method determines whether the player can trigger pressure plates based on their game mode.
+     * Players in spectator mode do not trigger pressure plates.
+     * </p>
+     *
+     * @return True if the player can trigger pressure plates, otherwise false.
+     */
     @Override
     public boolean doesTriggerPressurePlate() {
         return this.gamemode != SPECTATOR;
     }
 
+    /**
+     * Returns a string representation of the player.
+     * <p>
+     * This method provides a string that includes the player's name and location.
+     * </p>
+     *
+     * @return A string representation of the player.
+     */
     @Override
     public String toString() {
         return "Player(name='" + getName() +
@@ -5180,9 +5635,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 将物品添加到玩家的主要库存中，并将任何多余的物品丢在地上。
-     * <p>
-     * Adds the items to the main player inventory and drops on the floor any excess.
+     * Adds the items to the main player inventory and drops any excess on the floor.
      *
      * @param items The items to give to the player.
      */
@@ -5192,20 +5645,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-
     /**
-     * How many ticks have passed since the player last sleeped, 1 tick = 0.05 s
+     * Gets the number of ticks since the player last slept. 1 tick = 0.05 seconds.
      *
-     * @return the ticks
+     * @return The number of ticks since the player last slept.
      */
     public int getTimeSinceRest() {
         return timeSinceRest;
     }
 
-
     /**
-     * Set the timeSinceRest ticks
+     * Sets the number of ticks since the player last slept.
      *
+     * @param timeSinceRest The number of ticks since the player last slept.
      * @see #getTimeSinceRest()
      */
     public void setTimeSinceRest(int timeSinceRest) {
@@ -5227,11 +5679,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(pk);
     }
 
-
     public void sendWhisper(String message) {
         this.sendWhisper("", message);
     }
-
 
     public void sendWhisper(String source, String message) {
         TextPacket pk = new TextPacket();
@@ -5241,11 +5691,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(pk);
     }
 
-
     public void sendAnnouncement(String message) {
         this.sendAnnouncement("", message);
     }
-
 
     public void sendAnnouncement(String source, String message) {
         TextPacket pk = new TextPacket();
@@ -5255,7 +5703,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(pk);
     }
 
-
     public void completeUsingItem(int itemId, int action) {
         CompletedUsingItemPacket pk = new CompletedUsingItemPacket();
         pk.itemId = itemId;
@@ -5263,12 +5710,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(pk);
     }
 
-
+    /**
+     * Checks if the player is showing credits.
+     *
+     * @return True if the player is showing credits, otherwise false.
+     */
     public boolean isShowingCredits() {
         return showingCredits;
     }
 
-
+    /**
+     * Sets whether the player is showing credits.
+     *
+     * @param showingCredits True to show credits, otherwise false.
+     */
     public void setShowingCredits(boolean showingCredits) {
         this.showingCredits = showingCredits;
         if (showingCredits) {
@@ -5279,22 +5734,37 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-
+    /**
+     * Shows the credits to the player.
+     */
     public void showCredits() {
         this.setShowingCredits(true);
     }
 
-
+    /**
+     * Checks if the player has seen the credits.
+     *
+     * @return True if the player has seen the credits, otherwise false.
+     */
     public boolean hasSeenCredits() {
         return showingCredits;
     }
 
-
+    /**
+     * Sets whether the player has seen the credits.
+     *
+     * @param hasSeenCredits True if the player has seen the credits, otherwise false.
+     */
     public void setHasSeenCredits(boolean hasSeenCredits) {
         this.hasSeenCredits = hasSeenCredits;
     }
 
-
+    /**
+     * Sends a data packet immediately to the player.
+     *
+     * @param packet The data packet to send.
+     * @return True if the packet was sent, otherwise false.
+     */
     public boolean dataPacketImmediately(DataPacket packet) {
         if (!this.isConnected()) {
             return false;
@@ -5309,16 +5779,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 玩家屏幕振动效果
-     * <p>
-     * Player screen shake effect
+     * Applies a screen shake effect to the player.
      *
-     * @param intensity   the intensity
-     * @param duration    the duration
-     * @param shakeType   the shake type
-     * @param shakeAction the shake action
+     * @param intensity   The intensity of the shake.
+     * @param duration    The duration of the shake.
+     * @param shakeType   The type of shake.
+     * @param shakeAction The action of the shake.
      */
-
     public void shakeCamera(float intensity, float duration, CameraShakePacket.CameraShakeType shakeType, CameraShakePacket.CameraShakeAction shakeAction) {
         CameraShakePacket packet = new CameraShakePacket();
         packet.intensity = intensity;
@@ -5329,12 +5796,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 发送一个下弹消息框给玩家
-     * <p>
-     * Send a Toast message box to the player
+     * Sends a Toast message box to the player.
      *
-     * @param title   the title
-     * @param content the content
+     * @param title   The title of the toast.
+     * @param content The content of the toast.
      */
     public void sendToast(String title, String content) {
         ToastRequestPacket pk = new ToastRequestPacket();
@@ -5343,6 +5808,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(pk);
     }
 
+    /**
+     * Removes a line from the scoreboard.
+     * <p>
+     * This method sends a packet to remove a specific line from the player's scoreboard.
+     * It checks if the line's scorer matches the player's scorer and updates the score tag accordingly.
+     * </p>
+     *
+     * @param line The scoreboard line to remove.
+     */
     @Override
     public void removeLine(IScoreboardLine line) {
         SetScorePacket packet = new SetScorePacket();
@@ -5358,6 +5832,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Updates a line on the scoreboard.
+     * <p>
+     * This method sends a packet to update a specific line on the player's scoreboard.
+     * It checks if the line's scorer matches the player's scorer and updates the score tag accordingly.
+     * </p>
+     *
+     * @param line The scoreboard line to update.
+     */
     @Override
     public void updateScore(IScoreboardLine line) {
         SetScorePacket packet = new SetScorePacket();
@@ -5373,6 +5856,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Displays the scoreboard to the player in the specified slot.
+     *
+     * @param scoreboard The scoreboard to display.
+     * @param slot       The display slot for the scoreboard.
+     */
     @Override
     public void display(IScoreboard scoreboard, DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
@@ -5383,7 +5872,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.sortOrder = scoreboard.getSortOrder();
         this.dataPacket(pk);
 
-        //client won't storage the score of a scoreboard,so we should send the score to client
+        // Client won't store the score of a scoreboard, so we should send the score to the client
         SetScorePacket pk2 = new SetScorePacket();
         pk2.infos = scoreboard.getLines().values().stream().map(IScoreboardLine::toNetworkInfo).filter(Objects::nonNull).collect(Collectors.toList());
         pk2.action = SetScorePacket.Action.SET;
@@ -5396,6 +5885,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Hides the scoreboard from the specified display slot.
+     *
+     * @param slot The display slot to hide the scoreboard from.
+     */
     @Override
     public void hide(DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
@@ -5411,22 +5905,31 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Removes the specified scoreboard from the player.
+     *
+     * @param scoreboard The scoreboard to remove.
+     */
     @Override
     public void removeScoreboard(IScoreboard scoreboard) {
         RemoveObjectivePacket pk = new RemoveObjectivePacket();
         pk.objectiveName = scoreboard.getObjectiveName();
-
         this.dataPacket(pk);
     }
 
+    /**
+     * Checks if the player is opening the front side of a sign.
+     *
+     * @return True if the player is opening the front side of a sign, otherwise false.
+     */
     public Boolean isOpenSignFront() {
         return openSignFront;
     }
 
     /**
-     * Set the status of the current player opening sign
+     * Sets the status of the current player opening a sign.
      *
-     * @param frontSide true means open sign front, vice versa. If it is null, it means that the player has not opened sign
+     * @param frontSide True means open sign front, vice versa. If it is null, it means that the player has not opened a sign.
      */
     public void setOpenSignFront(Boolean frontSide) {
         openSignFront = frontSide;
@@ -5434,6 +5937,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     /**
      * Opens the player's sign editor GUI for the sign at the given position.
+     *
+     * @param position  The position of the sign.
+     * @param frontSide True if the front side of the sign should be opened.
      */
     public void openSignEditor(Vector3 position, boolean frontSide) {
         if (openSignFront == null) {
@@ -5453,53 +5959,91 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Sets the fly sneaking status of the player.
+     *
+     * @param sneaking True if the player is fly sneaking.
+     */
     public void setFlySneaking(boolean sneaking) {
         this.flySneaking = sneaking;
     }
 
-
+    /**
+     * Checks if the player is fly sneaking.
+     *
+     * @return True if the player is fly sneaking, otherwise false.
+     */
     public boolean isFlySneaking() {
         return this.flySneaking;
     }
 
+    /**
+     * Gets the number of chunks sent per tick.
+     *
+     * @return The number of chunks sent per tick.
+     */
     public int getChunkSendCountPerTick() {
         return chunksPerTick;
     }
 
+    /**
+     * Sets the ender chest open status.
+     *
+     * @param v True if the ender chest is open.
+     */
     public void setEnderChestOpen(boolean v) {
         this.enderChestOpen = v;
     }
 
+    /**
+     * Checks if the ender chest is open.
+     *
+     * @return True if the ender chest is open, otherwise false.
+     */
     public boolean getEnderChestOpen() {
         return this.enderChestOpen;
     }
 
+    /**
+     * Checks if the fake inventory is open.
+     *
+     * @return True if the fake inventory is open, otherwise false.
+     */
     public boolean getFakeInventoryOpen() {
         return fakeInventoryOpen;
     }
 
+    /**
+     * Sets the fake inventory open status.
+     *
+     * @param fakeInventoryOpen True if the fake inventory is open.
+     */
     public void setFakeInventoryOpen(boolean fakeInventoryOpen) {
         this.fakeInventoryOpen = fakeInventoryOpen;
     }
 
     /**
-     * Gets fog stack.
+     * Gets the fog stack.
+     *
+     * @return The fog stack.
      */
     public List<PlayerFogPacket.Fog> getFogStack() {
         return fogStack;
     }
 
     /**
-     * Set the fog stack, if you want to client effect,you need {@link #sendFogStack}
+     * Sets the fog stack. To apply the effect to the client, you need to call {@link #sendFogStack}.
      *
-     * @param fogStack the fog stack
+     * @param fogStack The fog stack to set.
      */
     public void setFogStack(List<PlayerFogPacket.Fog> fogStack) {
         this.fogStack = fogStack;
     }
 
     /**
-     * Get the player info.
+     * Gets the player info.
+     *
+     * @return The player info.
      */
     @NotNull
     public PlayerInfo getPlayerInfo() {
