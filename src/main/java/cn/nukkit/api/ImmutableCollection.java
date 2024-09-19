@@ -5,7 +5,9 @@ import java.lang.annotation.*;
 /**
  * ImmutableCollection is used to mark a collection as immutable.
  * <p>
- * ImmutableCollection是用来标记一个集合为不可变的。
+ * This annotation is used to indicate that a collection should not be modified after its creation.
+ * It serves as a warning to developers to maintain the integrity of the annotated collection.
+ * </p>
  */
 @Documented
 @Retention(RetentionPolicy.SOURCE)
