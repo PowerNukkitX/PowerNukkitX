@@ -70,4 +70,9 @@ public class EntityAllay extends EntityAnimal implements EntityFlyable {
     public String getOriginalName() {
         return "Allay";
     }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 0;
+    }
 }

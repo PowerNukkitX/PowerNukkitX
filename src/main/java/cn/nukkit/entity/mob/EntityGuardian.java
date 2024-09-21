@@ -54,4 +54,9 @@ public class EntityGuardian extends EntityMob implements EntitySwimmable {
     public Item[] getDrops() {
         return new Item[]{Item.get(Item.PRISMARINE_SHARD, 0, Utils.rand(0, 2))};
     }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 10;
+    }
 }

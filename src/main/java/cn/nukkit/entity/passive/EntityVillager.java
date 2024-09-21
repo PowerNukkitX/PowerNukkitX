@@ -5,6 +5,8 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * @author Pub4Game
  * @since 21.06.2016
@@ -64,5 +66,10 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
 
     public void setProfession(int profession) {
         this.namedTag.putInt("Profession", profession);
+    }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 0;
     }
 }

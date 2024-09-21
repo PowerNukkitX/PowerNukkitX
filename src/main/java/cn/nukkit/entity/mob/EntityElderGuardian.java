@@ -49,4 +49,9 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
     public boolean isPreventingSleep(Player player) {
         return true;
     }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 10;
+    }
 }

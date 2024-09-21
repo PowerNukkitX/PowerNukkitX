@@ -46,4 +46,9 @@ public class EntityEvocationIllager extends EntityMob implements EntityWalkable 
     public boolean isPreventingSleep(Player player) {
         return true;
     }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 10;
+    }
 }

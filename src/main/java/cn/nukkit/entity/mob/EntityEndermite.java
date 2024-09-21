@@ -48,4 +48,9 @@ public class EntityEndermite extends EntityMob implements EntityWalkable, Entity
     public boolean isPreventingSleep(Player player) {
         return true;
     }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 3;
+    }
 }

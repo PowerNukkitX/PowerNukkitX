@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityVillagerV2 extends EntityIntelligent implements InventoryHolder, IEntityNPC {
     @Override
@@ -424,6 +425,11 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         if (inventory == null) {
             inventory = new TradeInventory(this);
         }
+    }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 0;
     }
 
 }

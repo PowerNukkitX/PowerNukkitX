@@ -248,4 +248,9 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     public boolean attackTarget(Entity entity) {
         return entity instanceof Player;
     }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 5;
+    }
 }
