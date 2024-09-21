@@ -8,6 +8,8 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * @author PikyCZ
  */
@@ -59,5 +61,10 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
     public boolean onUpdate(int currentTick) {
         burn(this);
         return super.onUpdate(currentTick);
+    }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return isBaby() ? 7 : 5;
     }
 }

@@ -5,6 +5,8 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class EntityWanderingTrader extends EntityCreature implements IEntityNPC {
     @Override
     @NotNull public String getIdentifier() {
@@ -30,11 +32,14 @@ public class EntityWanderingTrader extends EntityCreature implements IEntityNPC 
         return "Wandering Trader";
     }
 
-
-
     @Override
     public void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();
+    }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 0;
     }
 }

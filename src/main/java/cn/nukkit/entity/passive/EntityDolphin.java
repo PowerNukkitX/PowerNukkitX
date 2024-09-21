@@ -16,6 +16,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author PetteriM1
@@ -73,5 +74,10 @@ public class EntityDolphin extends EntityAnimal implements EntitySwimmable {
     @Override
     public Item[] getDrops() {
         return new Item[]{Item.get(Item.COD)};
+    }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 0;
     }
 }

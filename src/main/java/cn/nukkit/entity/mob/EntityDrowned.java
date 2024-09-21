@@ -66,4 +66,9 @@ public class EntityDrowned extends EntityMob implements EntitySwimmable, EntityW
         burn(this);
         return super.onUpdate(currentTick);
     }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return isBaby() ? 7 : 5;
+    }
 }

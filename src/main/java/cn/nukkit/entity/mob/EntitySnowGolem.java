@@ -89,4 +89,10 @@ public class EntitySnowGolem extends EntityMob implements EntityWalkable {
         }
         return super.onUpdate(currentTick);
     }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 0;
+    }
+
 }

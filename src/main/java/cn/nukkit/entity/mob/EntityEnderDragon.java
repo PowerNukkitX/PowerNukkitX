@@ -53,4 +53,9 @@ public class EntityEnderDragon extends EntityMob implements EntityFlyable {
     public boolean isBoss() {
         return true;
     }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 12000;
+    }
 }
