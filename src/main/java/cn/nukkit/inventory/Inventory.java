@@ -76,10 +76,6 @@ public interface Inventory {
      */
     boolean setItem(int index, Item item, boolean send);
 
-    default boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
-        return setItem(index, item, send);
-    }
-
     /**
      * Add some items to the inventory
      *

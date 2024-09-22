@@ -39,22 +39,16 @@ public abstract class SmeltingInventory extends ContainerInventory {
     }
 
     @Override
-    public boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
-        if (index == 2 && (item.isNull() || item.getCount() == 0)) {
-            var holder = getHolder();
-            var xp = holder.calculateXpDrop();
-            if (xp > 0) {
-                holder.setStoredXP(0);
-                holder.level.dropExpOrb(player, xp);
-            }
-        }
-        return setItem(index, item, send);
-    }
-
-    @Override
     public void onSlotChange(int index, Item before, boolean send) {
         super.onSlotChange(index, before, send);
-
+        if (index == 2 && (before.isNull() || before.getCount() > 0)) {
+            var holder = getHolder();
+            short xp = holder.calculateXpDrop();
+            if (xp > 0) {
+                holder.setStoredXP(0);
+                holder.level.dropExpOrb(holder, xp);
+            }
+        }
         this.getHolder().scheduleUpdate();
     }
 }
