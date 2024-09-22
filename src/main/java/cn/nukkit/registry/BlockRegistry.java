@@ -37,9 +37,14 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     public static final Set<String> skipBlockSet = Set.of(
             "minecraft:camera",
             "minecraft:chemical_heat",
-            "minecraft:chemistry_table",
-            "minecraft:colored_torch_bp",
-            "minecraft:colored_torch_rg",
+            "minecraft:compound_creator",
+            "minecraft:element_constructor",
+            "minecraft:lab_table",
+            "minecraft:material_reducer",
+            "minecraft:colored_torch_purple",
+            "minecraft:colored_torch_blue",
+            "minecraft:colored_torch_red",
+            "minecraft:colored_torch_green",
             "minecraft:element_0",
             "minecraft:element_1",
             "minecraft:element_10",
@@ -193,7 +198,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             "minecraft:hard_white_stained_glass_pane",
             "minecraft:hard_yellow_stained_glass",
             "minecraft:hard_yellow_stained_glass_pane",
-            "minecraft:underwater_torch"
+            "minecraft:underwater_torch",
+            "minecraft:underwater_tnt"
     );
 
     @Override
