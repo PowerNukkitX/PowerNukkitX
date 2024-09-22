@@ -21,10 +21,13 @@ public class CraftItemEvent extends Event implements Cancellable {
 
     private final Player player;
 
-    public CraftItemEvent(Player player, Item[] input, Recipe recipe) {
+    private final int crafts;
+
+    public CraftItemEvent(Player player, Item[] input, Recipe recipe, int crafts) {
         this.player = player;
         this.input = input;
         this.recipe = recipe;
+        this.crafts = crafts;
     }
 
     public Item[] getInput() {
