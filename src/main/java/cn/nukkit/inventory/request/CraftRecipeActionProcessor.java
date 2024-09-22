@@ -133,7 +133,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         for (var d : data) {
             Collections.addAll(items, d);
         }
-        CraftItemEvent craftItemEvent = new CraftItemEvent(player, items.toArray(Item.EMPTY_ARRAY), recipe);
+        CraftItemEvent craftItemEvent = new CraftItemEvent(player, items.toArray(Item.EMPTY_ARRAY), recipe, numberOfRequestedCrafts);
         player.getServer().getPluginManager().callEvent(craftItemEvent);
         if (craftItemEvent.isCancelled()) {
             return context.error();

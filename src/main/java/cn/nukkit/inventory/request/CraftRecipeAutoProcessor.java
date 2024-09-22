@@ -30,7 +30,7 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
 
         Item[] eventItems = action.getIngredients().stream().map(ItemDescriptor::toItem).toArray(Item[]::new);
 
-        CraftItemEvent craftItemEvent = new CraftItemEvent(player, eventItems, recipe);
+        CraftItemEvent craftItemEvent = new CraftItemEvent(player, eventItems, recipe, 1);
         player.getServer().getPluginManager().callEvent(craftItemEvent);
         if (craftItemEvent.isCancelled()) {
             return context.error();
