@@ -80,6 +80,9 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     @Override
     public int onUpdate(int type) {
+
+        System.out.println(type);
+
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Optional<BlockFace> ascendingDirection = this.getOrientation().ascendingDirection();
             if (!checkCanBePlace(this.down()) || (ascendingDirection.isPresent() && !checkCanBePlace(this.getSide(ascendingDirection.get())))) {
@@ -91,7 +94,8 @@ public class BlockRail extends BlockFlowable implements Faceable {
             var connect = checkRailsConnected().values();
             List<BlockFace> railFace = new ArrayList<>();
             for (BlockFace face : connect) {
-                if (this.getSide(face.getOpposite()).getId().equals(BlockID.RAIL)) {
+                String adjacentBlockId = this.getSide(face.getOpposite()).getId();
+                if (adjacentBlockId.equals(BlockID.RAIL) || adjacentBlockId.equals(BlockID.GOLDEN_RAIL) || adjacentBlockId.equals(BlockID.DETECTOR_RAIL) || adjacentBlockId.equals(BlockID.ACTIVATOR_RAIL)) {
                     railFace.add(face.getOpposite());
                 } else {
                     railFace.add(face);
