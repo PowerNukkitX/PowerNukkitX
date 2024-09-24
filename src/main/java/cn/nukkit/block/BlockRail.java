@@ -80,9 +80,6 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     @Override
     public int onUpdate(int type) {
-
-        System.out.println(type);
-
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Optional<BlockFace> ascendingDirection = this.getOrientation().ascendingDirection();
             if (!checkCanBePlace(this.down()) || (ascendingDirection.isPresent() && !checkCanBePlace(this.getSide(ascendingDirection.get())))) {
