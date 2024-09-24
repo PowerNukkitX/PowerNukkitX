@@ -21,10 +21,13 @@ public class CraftItemEvent extends Event implements Cancellable {
 
     private final Player player;
 
-    public CraftItemEvent(Player player, Item[] input, Recipe recipe) {
+    private final int count;
+
+    public CraftItemEvent(Player player, Item[] input, Recipe recipe, int count) {
         this.player = player;
         this.input = input;
         this.recipe = recipe;
+        this.count = count;
     }
 
     public Item[] getInput() {
@@ -37,5 +40,9 @@ public class CraftItemEvent extends Event implements Cancellable {
 
     public Player getPlayer() {
         return this.player;
+    }
+
+    public int getCount() {
+        return this.count;
     }
 }
