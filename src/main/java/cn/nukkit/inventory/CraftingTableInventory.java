@@ -26,6 +26,7 @@ public class CraftingTableInventory extends BaseInventory implements CraftTypeIn
         Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
         for (int i = 0; i < getSize(); i++) {
             map2.put(i, ContainerSlotType.CRAFTING_INPUT);
+            map2.put(i+32, ContainerSlotType.CRAFTING_INPUT);
         }
     }
 
