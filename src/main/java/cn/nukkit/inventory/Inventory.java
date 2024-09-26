@@ -280,6 +280,10 @@ public interface Inventory {
 
     @ApiStatus.Internal
     default ContainerSlotType getSlotType(int nativeSlot) {
-        return slotTypeMap().get(nativeSlot);
+        ContainerSlotType type = slotTypeMap().get(nativeSlot);
+        if(type == null) {
+            throw new RuntimeException("ContainerSlotType " + nativeSlot + " does not exist!");
+        }
+        return type;
     }
 }
