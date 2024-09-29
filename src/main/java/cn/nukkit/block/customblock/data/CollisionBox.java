@@ -5,6 +5,10 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 
 
+/**
+ * Represents a collision box with specified origin and size.
+ * Implements the NBTData interface.
+ */
 public record CollisionBox(double originX, double originY, double originZ, double sizeX, double sizeY,
                            double sizeZ) implements NBTData {
     public CompoundTag toCompoundTag() {

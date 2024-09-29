@@ -9,6 +9,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 
+/**
+ * Represents a crafting table with a table name and optional crafting tags.
+ * Implements the NBTData interface.
+ */
 public record CraftingTable(@NotNull String tableName, @Nullable List<String> craftingTags) implements NBTData {
     public CompoundTag toCompoundTag() {
         var listTag = new ListTag<StringTag>();
