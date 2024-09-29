@@ -9,10 +9,12 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Describes an offline player.
- * This class provides methods to interact with and modify the state of a player who is not currently online.
+ * Represents an offline player in the game.
+ * This class implements the {@link IPlayer} interface.
+ * An offline player is a player who is not currently connected to the server.
+ * OfflinePlayer objects can be used to retrieve information about the player,
+ * such as their name, UUID, and various player-related properties.
  *
- * @see cn.nukkit.Player
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 public class OfflinePlayer implements IPlayer {
@@ -22,7 +24,7 @@ public class OfflinePlayer implements IPlayer {
     /**
      * Initializes the object {@code OfflinePlayer}.
      *
-     * @param server The server this player is in, as a {@code Server} object.
+     * @param server {@code Server}
      * @param uuid   UUID of this player.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
@@ -33,7 +35,7 @@ public class OfflinePlayer implements IPlayer {
     /**
      * Initializes the object {@code OfflinePlayer} with a player name.
      *
-     * @param server The server this player is in, as a {@code Server} object.
+     * @param server {@code Server}
      * @param name   Name of this player.
      */
     public OfflinePlayer(Server server, String name) {
@@ -43,7 +45,7 @@ public class OfflinePlayer implements IPlayer {
     /**
      * Initializes the object {@code OfflinePlayer} with a player UUID and name.
      *
-     * @param server The server this player is in, as a {@code Server} object.
+     * @param server {@code Server}
      * @param uuid   UUID of this player.
      * @param name   Name of this player.
      */
