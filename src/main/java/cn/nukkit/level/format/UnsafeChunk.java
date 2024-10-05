@@ -103,6 +103,7 @@ public class UnsafeChunk {
     private ChunkSection getOrCreateSection(int sectionY) {
         int minSectionY = getDimensionData().getMinSectionY();
         int offsetY = sectionY - minSectionY;
+        if(offsetY < 0) return null;
         for (int i = 0; i <= offsetY; i++) {
             if (chunk.sections[i] == null) {
                 chunk.sections[i] = new ChunkSection((byte) (i + minSectionY));
@@ -147,7 +148,10 @@ public class UnsafeChunk {
     }
 
     public void setBlockSkyLight(int x, int y, int z, int level) {
-        getOrCreateSection(y >> 4).setBlockSkyLight(x, y & 0x0f, z, (byte) level);
+        ChunkSection section = getOrCreateSection(y >> 4);
+        if(section != null) {
+            section.setBlockSkyLight(x, y & 0x0f, z, (byte) level);
+        }
     }
 
     public int getBlockLight(int x, int y, int z) {
