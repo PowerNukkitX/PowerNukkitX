@@ -64,19 +64,6 @@ public class BlockDetectorRail extends BlockRail implements RedstoneComponent {
         return isActive() ? (side == BlockFace.UP ? 15 : 0) : 0;
     }
 
-    @Override
-    public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_NORMAL) {
-            checkMinecart();
-            return type;
-        }
-        return super.onUpdate(type);
-    }
-
-    public void checkMinecart() {
-        updateState(findMinecart() != null);
-    }
-
     public @Nullable EntityMinecartAbstract findMinecart() {
         for (Entity entity : level.getNearbyEntities(new SimpleAxisAlignedBB(
                 getFloorX() + 0.2,
