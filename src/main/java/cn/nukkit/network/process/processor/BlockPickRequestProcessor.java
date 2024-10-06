@@ -5,6 +5,7 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.event.player.PlayerBlockPickEvent;
+import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -79,7 +80,7 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
                 Item itemInHand = player.getInventory().getItemInHand();
                 player.getInventory().setItemInHand(pickEvent.getItem());
                 if (!player.getInventory().isFull()) {
-                    for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
+                    for (int slot = 0; slot < HumanInventory.ARMORS_INDEX; slot++) {
                         if (player.getInventory().getItem(slot).isNull()) {
                             player.getInventory().setItem(slot, itemInHand);
                             break;
