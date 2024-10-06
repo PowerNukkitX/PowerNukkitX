@@ -132,7 +132,6 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     }
 
     public int onUpdate(int type) {
-        //if(true) throw new RuntimeException("test");
         if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED) {
             if (!this.level.getServer().getSettings().levelSettings().enableRedstone())
                 return 0;
