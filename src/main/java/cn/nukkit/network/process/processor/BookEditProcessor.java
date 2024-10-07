@@ -17,8 +17,13 @@ public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull BookEditPacket pk) {
         Player player = playerHandle.player;
+        if(player.getInventory().isValidSlot(pk.inventorySlot)) {
+            player.close("§cPacket handling error");
+            return;
+        }
+
         Item oldBook = player.getInventory().getItem(pk.inventorySlot);
-        if (oldBook.getId() != Item.WRITABLE_BOOK) {
+        if (!oldBook.getId().equals(Item.WRITABLE_BOOK)) {
             return;
         }
 

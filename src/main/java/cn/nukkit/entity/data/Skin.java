@@ -85,7 +85,11 @@ public class Skin {
                 (skinColor == null || skinColor.length() < 100) &&
                 (armSize == null || armSize.length() < 100) &&
                 (fullSkinId == null || fullSkinId.length() < 200) &&
-                (geometryDataEngineVersion == null || geometryDataEngineVersion.length() < 100);
+                (geometryDataEngineVersion == null || geometryDataEngineVersion.length() < 100) &&
+                (animationData == null || animationData.length() < 1000) &&
+                animations.size() <= 100 &&
+                personaPieces.size() <= 100 &&
+                tintColors.size() <= 100;
     }
 
     private boolean isValidResourcePatch() {

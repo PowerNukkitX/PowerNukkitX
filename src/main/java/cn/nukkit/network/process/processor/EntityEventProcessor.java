@@ -3,6 +3,9 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemFood;
+import cn.nukkit.item.ItemGoldenApple;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -21,7 +24,18 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
                 return;
             }
 
+            Item hand = player.getInventory().getItemInHand();
+            if(!(hand instanceof ItemFood)) {
+                return;
+            }
+
+            int predictedData = (hand.getRuntimeId() << 16) | hand.getDamage();
+            if(pk.data != predictedData) {
+                return;
+            }
+
             pk.eid = player.getId();
+            pk.data = predictedData;
 
             player.dataPacket(pk);
             Server.broadcastPacket(player.getViewers().values(), pk);
