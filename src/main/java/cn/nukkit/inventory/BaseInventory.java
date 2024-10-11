@@ -486,7 +486,6 @@ public abstract class BaseInventory implements Inventory {
                     ContainerSlotType.HOTBAR_AND_INVENTORY,
                     id
             );
-            pk.dynamicContainerSize = this.getSize();
             player.dataPacket(pk);
         }
     }
@@ -560,7 +559,6 @@ public abstract class BaseInventory implements Inventory {
         int slot = toNetworkSlot(index);
         pk.slot = slot;
         pk.item = this.getUnclonedItem(index);
-        pk.dynamicContainerSize = this.getSize();
 
         for (Player player : players) {
             int id = player.getWindowId(this);

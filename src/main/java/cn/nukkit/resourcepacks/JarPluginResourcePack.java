@@ -157,4 +157,9 @@ public class JarPluginResourcePack extends AbstractResourcePack {
     public boolean isAddonPack() {
         return false;
     }
+
+    @Override
+    public String cdnUrl() {
+        return "";
+    }
 }

@@ -199,7 +199,6 @@ public class DoubleChestInventory extends ContainerInventory {
         int i = inv == this.right ? this.left.getSize() + index : index;
         pk.slot = toNetworkSlot(i);
         pk.item = inv.getUnclonedItem(index);
-        pk.dynamicContainerSize = this.getSize();
 
         for (Player player : players) {
             int id = player.getWindowId(this);

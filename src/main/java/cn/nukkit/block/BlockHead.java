@@ -1,16 +1,11 @@
 package cn.nukkit.block;
 
-/**
- * @author Justin
- */
-
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySkull;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemSkull;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
@@ -23,21 +18,10 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-public class BlockSkull extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntitySkull>, Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SKULL, CommonBlockProperties.FACING_DIRECTION);
+public abstract class BlockHead extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntitySkull>, Faceable {
 
-    @Override
-    @NotNull
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    public BlockSkull() {
-        this(PROPERTIES.getDefaultState());
-    }
-
-    public BlockSkull(BlockState blockstate) {
-        super(blockstate);
+    public BlockHead(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -83,24 +67,14 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
     }
 
     @Override
-    public String getName() {
-        int itemMeta = 0;
-
-        if (this.level != null) {
-            BlockEntitySkull blockEntity = getBlockEntity();
-            if (blockEntity != null) {
-                itemMeta = blockEntity.namedTag.getByte("SkullType");
-            }
-        }
-
-        return ItemSkull.getItemSkullName(itemMeta);
-    }
-
-    @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (face == BlockFace.DOWN) {
             return false;
         }
+
+        if (player == null)
+            return false;
+
         setBlockFace(face);
         CompoundTag nbt = new CompoundTag()
                 .putByte("SkullType", item.getDamage())
@@ -133,30 +107,6 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
 
         entity.setMouthMoving(this.isGettingPower());
         return Level.BLOCK_UPDATE_REDSTONE;
-    }
-
-    @Override
-    public Item[] getDrops(Item item) {
-        BlockEntitySkull entitySkull = getBlockEntity();
-        int dropMeta = 0;
-        if (entitySkull != null) {
-            dropMeta = entitySkull.namedTag.getByte("SkullType");
-        }
-        return new Item[]{
-                new ItemSkull(dropMeta)
-        };
-    }
-
-    @Override
-    public Item toItem() {
-        if (getLevel() != null) {
-            BlockEntitySkull blockEntity = getBlockEntity();
-            int itemMeta = 0;
-            if (blockEntity != null) {
-                itemMeta = blockEntity.namedTag.getByte("SkullType");
-            }
-            return new ItemSkull(itemMeta);
-        } else return new ItemSkull();
     }
 
     @Override
@@ -195,4 +145,6 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
             default -> bb;
         };
     }
+
+
 }

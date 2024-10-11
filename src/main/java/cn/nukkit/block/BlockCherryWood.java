@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 public class BlockCherryWood extends BlockWood {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_WOOD, CommonBlockProperties.PILLAR_AXIS, CommonBlockProperties.STRIPPED_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_WOOD, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -25,24 +25,11 @@ public class BlockCherryWood extends BlockWood {
 
     @Override
     public String getName() {
-        return (isStripped() ? "Stripped " : "") + "Cherry Wood";
-    }
-
-    public boolean isStripped() {
-        return getPropertyValue(CommonBlockProperties.STRIPPED_BIT);
-    }
-
-    public void setStripped(boolean stripped) {
-        setPropertyValue(CommonBlockProperties.STRIPPED_BIT, stripped);
+        return "Cherry Wood";
     }
 
     @Override
     public WoodType getWoodType() {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public BlockState getStrippedState() {
-        return Registries.BLOCK.getBlockProperties(STRIPPED_CHERRY_WOOD).getBlockState(PILLAR_AXIS, getPillarAxis());
     }
 }

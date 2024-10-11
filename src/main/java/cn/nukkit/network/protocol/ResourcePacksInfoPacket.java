@@ -21,13 +21,12 @@ public class ResourcePacksInfoPacket extends DataPacket {
     public boolean scripting;
     public boolean hasAddonPacks;
 
-//    public boolean forceServerPacks;
-//    public ResourcePack[] behaviourPackEntries = ResourcePack.EMPTY_ARRAY;
     public ResourcePack[] resourcePackEntries = ResourcePack.EMPTY_ARRAY;
-    /**
-     * @since v618
-     */
-    private List<CDNEntry> CDNEntries = new ObjectArrayList<>();
+
+//    /**
+//     * @since v618
+//     */
+//    private List<CDNEntry> CDNEntries = new ObjectArrayList<>();
 
 
     @Override
@@ -40,14 +39,7 @@ public class ResourcePacksInfoPacket extends DataPacket {
         byteBuf.writeBoolean(this.mustAccept);
         byteBuf.writeBoolean(this.hasAddonPacks);
         byteBuf.writeBoolean(this.scripting);
-//        byteBuf.writeBoolean(this.forceServerPacks);
-//        this.encodePacks(byteBuf, this.behaviourPackEntries, true);
         this.encodePacks(byteBuf, this.resourcePackEntries, false);
-        byteBuf.writeUnsignedVarInt(getCDNEntries().size());
-        for (var cdn : getCDNEntries()) {
-            byteBuf.writeString(cdn.packId);
-            byteBuf.writeString(cdn.remoteUrl);
-        }
     }
 
     private void encodePacks(HandleByteBuf byteBuf, ResourcePack[] packs, boolean behaviour) {
@@ -61,6 +53,7 @@ public class ResourcePacksInfoPacket extends DataPacket {
             byteBuf.writeString(!entry.getEncryptionKey().isEmpty() ? entry.getPackId().toString() : ""); // content identity
             byteBuf.writeBoolean(false); // scripting
             byteBuf.writeBoolean(false);    // isAddonPack
+            byteBuf.writeString(entry.cdnUrl());    // cdnUrl
             if (!behaviour) {
                 byteBuf.writeBoolean(false); // raytracing capable
             }
@@ -88,42 +81,12 @@ public class ResourcePacksInfoPacket extends DataPacket {
         this.scripting = scripting;
     }
 
-//    public ResourcePack[] getBehaviourPackEntries() {
-//        return behaviourPackEntries;
-//    }
-//
-//    public void setBehaviourPackEntries(ResourcePack[] behaviourPackEntries) {
-//        this.behaviourPackEntries = behaviourPackEntries;
-//    }
-
     public ResourcePack[] getResourcePackEntries() {
         return resourcePackEntries;
     }
 
     public void setResourcePackEntries(ResourcePack[] resourcePackEntries) {
         this.resourcePackEntries = resourcePackEntries;
-    }
-
-//    public boolean isForcingServerPacksEnabled() {
-//        return forceServerPacks;
-//    }
-//
-//    public void setForcingServerPacksEnabled(boolean forcingServerPacksEnabled) {
-//        this.forceServerPacks = forcingServerPacksEnabled;
-//    }
-
-    public void setCDNEntries(List<CDNEntry> CDNEntries) {
-        this.CDNEntries = CDNEntries;
-    }
-
-    public List<CDNEntry> getCDNEntries() {
-        return CDNEntries;
-    }
-
-    @Value
-    public static class CDNEntry {
-        private final String packId;
-        private final String remoteUrl;
     }
 
     public void handle(PacketHandler handler) {

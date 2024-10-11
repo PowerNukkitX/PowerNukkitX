@@ -18,7 +18,7 @@ public class InventoryContentPacket extends DataPacket {
     public int inventoryId;
     public Item[] slots = Item.EMPTY_ARRAY;
     public FullContainerName fullContainerName;
-    public int dynamicContainerSize;
+    public Item storageItem = Item.AIR; // is air if the item is not a bundle
 
     @Override
     public int pid() {
@@ -38,7 +38,7 @@ public class InventoryContentPacket extends DataPacket {
             byteBuf.writeSlot(slot);
         }
         byteBuf.writeFullContainerName(this.fullContainerName);
-        byteBuf.writeUnsignedVarInt(this.dynamicContainerSize);
+        byteBuf.writeSlot(this.storageItem);
     }
 
     public void handle(PacketHandler handler) {

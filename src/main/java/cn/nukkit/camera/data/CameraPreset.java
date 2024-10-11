@@ -96,6 +96,14 @@ public final class CameraPreset {
     @Nullable
     private final Vector3f entityOffset;
     @Nullable
+    private final Vector2f horizontalRotationLimit;
+    @Nullable
+    private final Vector2f verticalRotationLimit;
+    @NotNull
+    private final OptionalValue<Boolean> continueTargeting;
+    @NotNull
+    private final OptionalValue<Boolean> alignTargetAndCameraForward;
+    @Nullable
     private final Float radius;
     @Nullable
     private final CameraAudioListener listener;
@@ -120,7 +128,11 @@ public final class CameraPreset {
                 null,
                 null,
                 listener,
-                playEffect == null ? null : playEffect.orElseGet(null)
+                playEffect == null ? null : playEffect.orElseGet(null),
+                null,
+                null,
+                null,
+                null
         );
     }
 
@@ -136,7 +148,11 @@ public final class CameraPreset {
             @Nullable Vector3f entityOffset,
             @Nullable Float radius,
             @Nullable CameraAudioListener listener,
-            @Nullable Boolean playEffect
+            @Nullable Boolean playEffect,
+            @Nullable Vector2f horizontalRotationLimit,
+            @Nullable Vector2f verticalRotationLimit,
+            @Nullable Boolean continueTargeting,
+            @Nullable Boolean alignTargetAndCameraForward
     ) {
         this.identifier = identifier;
         this.inheritFrom = inheritFrom != null ? inheritFrom : "";
@@ -150,5 +166,9 @@ public final class CameraPreset {
         this.radius = radius;
         this.listener = listener;
         this.playEffect = OptionalValue.ofNullable(playEffect);
+        this.horizontalRotationLimit = horizontalRotationLimit;
+        this.verticalRotationLimit = verticalRotationLimit;
+        this.continueTargeting = OptionalValue.ofNullable(continueTargeting);
+        this.alignTargetAndCameraForward = OptionalValue.ofNullable(alignTargetAndCameraForward);
     }
 }

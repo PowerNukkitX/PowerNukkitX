@@ -44,6 +44,8 @@ public interface ResourcePack {
     
     boolean isAddonPack();
 
+    String cdnUrl();
+
     /**
      * @return 资源包密钥（若加密）
      */

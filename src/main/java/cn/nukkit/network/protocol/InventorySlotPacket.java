@@ -18,9 +18,9 @@ public class InventorySlotPacket extends DataPacket {
 
     public int inventoryId;
     public int slot;
-    public Item item;
     public FullContainerName fullContainerName;
-    public int dynamicContainerSize;
+    public Item storageItem = Item.AIR; // is air if the item is not a bundle
+    public Item item;
 
 
     @Override
@@ -33,7 +33,7 @@ public class InventorySlotPacket extends DataPacket {
         this.inventoryId = byteBuf.readUnsignedVarInt();
         this.slot = byteBuf.readUnsignedVarInt();
         this.fullContainerName = byteBuf.readFullContainerName();
-        this.dynamicContainerSize = byteBuf.readUnsignedVarInt();
+        this.storageItem = byteBuf.readSlot();
         this.item = byteBuf.readSlot();
     }
 
@@ -42,7 +42,7 @@ public class InventorySlotPacket extends DataPacket {
         byteBuf.writeUnsignedVarInt(this.inventoryId);
         byteBuf.writeUnsignedVarInt(this.slot);
         byteBuf.writeFullContainerName(this.fullContainerName);
-        byteBuf.writeUnsignedVarInt(this.dynamicContainerSize);
+        byteBuf.writeSlot(this.storageItem);
         byteBuf.writeSlot(this.item);
     }
 
