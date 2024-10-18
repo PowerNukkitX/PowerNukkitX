@@ -27,7 +27,7 @@ public class Geometry implements NBTData {
     public Geometry boneVisibility(@NotNull String boneName, boolean isVisibility) {
         Preconditions.checkNotNull(boneName);
         Preconditions.checkArgument(!boneName.isBlank());
-        this.boneVisibilities.put(boneName, isVisibility ? "1.000000" : "0.000000");
+        this.boneVisibilities.put(boneName, isVisibility ? "true" : "false");
         return this;
     }
 
@@ -53,14 +53,12 @@ public class Geometry implements NBTData {
     public CompoundTag toCompoundTag() {
         var boneVisibility = new CompoundTag();
         for (var entry : boneVisibilities.entrySet()) {
-            boneVisibility.putCompound(entry.getKey(), new CompoundTag()
-                    .putString("expression", entry.getValue())
-                    .putInt("version", 1)
-            );
+            boneVisibility.putString(entry.getKey(), entry.getValue());
         }
         CompoundTag compoundTag = new CompoundTag()
                 .putString("identifier", geometryName)
-                .putString("culling", culling);
+                .putByte("legacyBlockLightAbsorption", 0)
+                .putByte("legacyTopRotation", 0);
         if (!boneVisibilities.isEmpty()) {
             compoundTag.putCompound("bone_visibility", boneVisibility);
         }
