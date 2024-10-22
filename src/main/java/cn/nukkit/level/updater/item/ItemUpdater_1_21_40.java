@@ -12,7 +12,25 @@ public class ItemUpdater_1_21_40 implements Updater {
 
     @Override
     public void registerUpdaters(CompoundTagUpdaterContext context) {
-        //TODO
+        // Skull blocks was now split into individual blocks
+        // however, skull type was determined by block entity or item data, and we do not have that information here
+        context.addUpdater(1, 21, 40)
+                .match("Name", "minecraft:skull")
+                .edit("Name", helper -> {
+                    helper.replaceWith("Name", "minecraft:skeleton_skull");
+                });
+        // these are not vanilla updaters
+        // but use this one to bump the version to 18163713 as that's what vanilla does
+        context.addUpdater(1, 21, 40)
+                .match("Name", "minecraft:cherry_wood")
+                .visit("Block")
+                .visit("states")
+                .remove("stripped_bit");
+        context.addUpdater(1, 21, 40, false, false)
+                .match("Name", "minecraft:mangrove_wood")
+                .visit("Block")
+                .visit("states")
+                .remove("stripped_bit");
     }
 
     private void addTypeUpdater(CompoundTagUpdaterContext context, String identifier, String typeState, Function<String, String> rename) {
@@ -31,4 +49,5 @@ public class ItemUpdater_1_21_40 implements Updater {
                     }
                 });
     }
+
 }
