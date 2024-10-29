@@ -187,7 +187,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             return context.error();
         }
         if (!(topWindow.get() instanceof SmithingInventory smithingInventory)) {
-            log.error("the player's haven't open smithing inventory!");
+            log.error("the player's haven't open smithing inventory! Instead " + topWindow.get().getClass().getSimpleName());
             return context.error();
         }
         Item equipment = smithingInventory.getEquipment();
@@ -202,7 +202,10 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         match &= expectTemplate.match(template);
         if (match) {
             Item result = recipe.getResult().clone();
-            result.addEnchantment(smithingInventory.getIngredient().getEnchantments());
+            Enchantment[] enchantments = smithingInventory.getIngredient().getEnchantments();
+            if(enchantments.length != 0) {
+                result.addEnchantment();
+            }
             player.getCreativeOutputInventory().setItem(result);
             return null;
         }
