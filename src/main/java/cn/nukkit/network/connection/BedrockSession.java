@@ -6,6 +6,7 @@ import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.event.player.PlayerCreationEvent;
+import cn.nukkit.event.server.DataPacketDecodeEvent;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
@@ -33,6 +34,8 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.PlatformDependent;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.ApiStatus;
@@ -67,6 +70,8 @@ public class BedrockSession {
     private PlayerInfo info;
     protected @Nullable PacketHandler packetHandler;
     private InetSocketAddress address;
+    @Getter
+    protected boolean authenticated = false;
 
 
     public BedrockSession(BedrockPeer peer, int subClientId) {
@@ -284,6 +289,22 @@ public class BedrockSession {
     protected void onPacket(BedrockPacketWrapper wrapper) {
         DataPacket packet = wrapper.getPacket();
         this.logInbound(packet);
+
+        DataPacketDecodeEvent ev = new DataPacketDecodeEvent(this.getPlayer(), wrapper);
+        Server.getInstance().getPluginManager().callEvent(ev);
+
+        int predictMaxBuffer = switch (ev.getPacketId()) {
+            case ProtocolInfo.LOGIN_PACKET -> 10_000_000;
+            case ProtocolInfo.PLAYER_SKIN_PACKET -> 5_000_000;
+            default -> 25_000;
+        };
+        if(ev.getPacketBuffer().length() > predictMaxBuffer) {
+            ev.setCancelled();
+        }
+
+        if (ev.isCancelled())
+            return;
+
         if (this.nettyThreadOwned.get()) {
             var c = this.consumer.get();
             if (c != null) {
@@ -518,6 +539,10 @@ public class BedrockSession {
         if (enable) {
             this.syncAvailableCommands();
         }
+    }
+
+    public void setAuthenticated() {
+        authenticated = true;
     }
 
     public @NotNull Server getServer() {
