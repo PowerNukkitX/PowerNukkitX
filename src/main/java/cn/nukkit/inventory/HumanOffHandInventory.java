@@ -69,7 +69,6 @@ public class HumanOffHandInventory extends BaseInventory {
                         ContainerSlotType.OFFHAND,
                         0
                 );
-                pk2.dynamicContainerSize=player.getOffhandInventory().getSize();
                 player.dataPacket(pk2);
                 player.dataPacket(pk);
             } else {

@@ -51,7 +51,6 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
                     ContainerSlotType.HOTBAR,
                     id
             );
-            inventorySlotPacket.dynamicContainerSize = player.getInventory().getHotbarSize();
             player.dataPacket(inventorySlotPacket);
         }
         var itemStackResponseSlot =

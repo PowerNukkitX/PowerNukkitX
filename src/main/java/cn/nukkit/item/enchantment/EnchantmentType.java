@@ -6,7 +6,7 @@ import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemBow;
 import cn.nukkit.item.ItemCrossbow;
 import cn.nukkit.item.ItemFishingRod;
-import cn.nukkit.item.ItemSkull;
+import cn.nukkit.item.ItemHead;
 import cn.nukkit.item.ItemTrident;
 import org.jetbrains.annotations.NotNull;
 
@@ -58,7 +58,7 @@ public enum EnchantmentType {
             case DIGGER -> item.isPickaxe() || item.isShovel() || item.isAxe() || item.isHoe();
             case BOW -> item instanceof ItemBow;
             case FISHING_ROD -> item instanceof ItemFishingRod;
-            case WEARABLE -> item instanceof ItemSkull || item.getBlock() instanceof BlockCarvedPumpkin;
+            case WEARABLE -> item instanceof ItemHead || item.getBlock() instanceof BlockCarvedPumpkin;
             case TRIDENT -> item instanceof ItemTrident;
             case CROSSBOW -> item instanceof ItemCrossbow;
             default -> false;

@@ -430,6 +430,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(CRACKED_STONE_BRICKS, BlockCrackedStoneBricks.class);
             register(CRAFTER, BlockCrafter.class);
             register(CRAFTING_TABLE, BlockCraftingTable.class);
+            register(CREEPER_HEAD, BlockCreeperHead.class);
             register(CRIMSON_BUTTON, BlockCrimsonButton.class);
             register(CRIMSON_DOOR, BlockCrimsonDoor.class);
             register(CRIMSON_DOUBLE_SLAB, BlockCrimsonDoubleSlab.class);
@@ -548,6 +549,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(DISPENSER, BlockDispenser.class);
             register(DOUBLE_CUT_COPPER_SLAB, BlockDoubleCutCopperSlab.class);
             register(DRAGON_EGG, BlockDragonEgg.class);
+            register(DRAGON_HEAD, BlockDragonHead.class);
             register(DRIED_KELP_BLOCK, BlockDriedKelpBlock.class);
             register(DRIPSTONE_BLOCK, BlockDripstoneBlock.class);
             register(DROPPER, BlockDropper.class);
@@ -806,6 +808,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(MUD_BRICK_WALL, BlockMudBrickWall.class);
             register(MUD_BRICKS, BlockMudBricks.class);
             register(MUDDY_MANGROVE_ROOTS, BlockMuddyMangroveRoots.class);
+            register(MUSHROOM_STEM, BlockMushroomStem.class);
             register(MYCELIUM, BlockMycelium.class);
             register(NETHER_BRICK, BlockNetherBrick.class);
             register(NETHER_BRICK_DOUBLE_SLAB, BlockNetherBrickDoubleSlab.class);
@@ -866,6 +869,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(PEONY, BlockPeony.class);
             register(PETRIFIED_OAK_DOUBLE_SLAB, BlockPetrifiedOakDoubleSlab.class);
             register(PETRIFIED_OAK_SLAB, BlockPetrifiedOakSlab.class);
+            register(PIGLIN_HEAD, BlockPiglinHead.class);
             register(PINK_CANDLE, BlockPinkCandle.class);
             register(PINK_CANDLE_CAKE, BlockPinkCandleCake.class);
             register(PINK_CARPET, BlockPinkCarpet.class);
@@ -883,6 +887,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(PISTON_ARM_COLLISION, BlockPistonArmCollision.class);
             register(PITCHER_CROP, BlockPitcherCrop.class);
             register(PITCHER_PLANT, BlockPitcherPlant.class);
+            register(PLAYER_HEAD, BlockPlayerHead.class);
             register(PODZOL, BlockPodzol.class);
             register(POINTED_DRIPSTONE, BlockPointedDripstone.class);
             register(POLISHED_ANDESITE, BlockPolishedAndesite.class);
@@ -1018,7 +1023,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(SHORT_GRASS, BlockShortGrass.class);
             register(SHROOMLIGHT, BlockShroomlight.class);
             register(SILVER_GLAZED_TERRACOTTA, BlockSilverGlazedTerracotta.class);
-            register(SKULL, BlockSkull.class);
+            register(SKELETON_SKULL, BlockSkeletonSkull.class);
             register(SLIME, BlockSlime.class);
             register(SMALL_AMETHYST_BUD, BlockSmallAmethystBud.class);
             register(SMALL_DRIPLEAF_BLOCK, BlockSmallDripleafBlock.class);
@@ -1236,6 +1241,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(WHITE_TULIP, BlockWhiteTulip.class);
             register(WHITE_WOOL, BlockWhiteWool.class);
             register(WITHER_ROSE, BlockWitherRose.class);
+            register(WITHER_SKELETON_SKULL, BlockWitherSkeletonSkull.class);
             register(WOODEN_BUTTON, BlockWoodenButton.class);
             register(WOODEN_DOOR, BlockWoodenDoor.class);
             register(WOODEN_PRESSURE_PLATE, BlockWoodenPressurePlate.class);
@@ -1251,6 +1257,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(YELLOW_STAINED_GLASS_PANE, BlockYellowStainedGlassPane.class);
             register(YELLOW_TERRACOTTA, BlockYellowTerracotta.class);
             register(YELLOW_WOOL, BlockYellowWool.class);
+            register(ZOMBIE_HEAD, BlockZombieHead.class);
         } catch (RegisterException ignore) {
         }
     }

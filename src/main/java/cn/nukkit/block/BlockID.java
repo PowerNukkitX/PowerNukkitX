@@ -468,6 +468,8 @@ public interface BlockID {
 
     String CRAFTING_TABLE = "minecraft:crafting_table";
 
+    String CREEPER_HEAD = "minecraft:creeper_head";
+
     String CRIMSON_BUTTON = "minecraft:crimson_button";
 
     String CRIMSON_DOOR = "minecraft:crimson_door";
@@ -713,6 +715,8 @@ public interface BlockID {
     String DOUBLE_STONE_BLOCK_SLAB4 = "minecraft:double_stone_block_slab4";
 
     String DRAGON_EGG = "minecraft:dragon_egg";
+
+    String DRAGON_HEAD = "minecraft:dragon_head";
 
     String DRIED_KELP_BLOCK = "minecraft:dried_kelp_block";
 
@@ -1536,6 +1540,8 @@ public interface BlockID {
 
     String MUDDY_MANGROVE_ROOTS = "minecraft:muddy_mangrove_roots";
 
+    String MUSHROOM_STEM = "minecraft:mushroom_stem";
+
     String MYCELIUM = "minecraft:mycelium";
 
     String NETHER_BRICK = "minecraft:nether_brick";
@@ -1656,6 +1662,8 @@ public interface BlockID {
 
     String PETRIFIED_OAK_SLAB = "minecraft:petrified_oak_slab";
 
+    String PIGLIN_HEAD = "minecraft:piglin_head";
+
     String PINK_CANDLE = "minecraft:pink_candle";
 
     String PINK_CANDLE_CAKE = "minecraft:pink_candle_cake";
@@ -1689,6 +1697,8 @@ public interface BlockID {
     String PITCHER_CROP = "minecraft:pitcher_crop";
 
     String PITCHER_PLANT = "minecraft:pitcher_plant";
+
+    String PLAYER_HEAD = "minecraft:player_head";
 
     String PODZOL = "minecraft:podzol";
 
@@ -1959,6 +1969,8 @@ public interface BlockID {
     String SHROOMLIGHT = "minecraft:shroomlight";
 
     String SILVER_GLAZED_TERRACOTTA = "minecraft:silver_glazed_terracotta";
+
+    String SKELETON_SKULL = "minecraft:skeleton_skull";
 
     String SKULL = "minecraft:skull";
 
@@ -2404,6 +2416,8 @@ public interface BlockID {
 
     String WITHER_ROSE = "minecraft:wither_rose";
 
+    String WITHER_SKELETON_SKULL = "minecraft:wither_skeleton_skull";
+
     String WOODEN_BUTTON = "minecraft:wooden_button";
 
     String WOODEN_DOOR = "minecraft:wooden_door";
@@ -2431,4 +2445,6 @@ public interface BlockID {
     String YELLOW_TERRACOTTA = "minecraft:yellow_terracotta";
 
     String YELLOW_WOOL = "minecraft:yellow_wool";
+
+    String ZOMBIE_HEAD = "minecraft:zombie_head";
 }

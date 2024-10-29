@@ -1,7 +1,9 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.utils.BinaryStream;
+import cn.nukkit.utils.Config;
 import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -9,6 +11,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
@@ -62,15 +65,24 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
 
     @Override
     public void init() {
-        if (isLoad.getAndSet(true)) return;
-        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("runtime_item_states.json")) {
+        if (isLoad.getAndSet(true))
+            return;
+
+        Config data = new Config(Config.JSON);
+
+        try (InputStream stream = ItemRegistry.class.getClassLoader().getResourceAsStream("runtime_item_states.json")){
             assert stream != null;
-            Gson gson = new Gson();
-            List<Map<String, Object>> data = gson.fromJson(new InputStreamReader(stream), List.class);
-            for (var tag : data) {
-                register0(tag.get("name").toString(), ((Number) tag.get("id")).intValue());
+
+            data.load(stream);
+
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> items = (List<Map<String, Object>>) data.getList("items");
+
+            for (var item : items) {
+                register0(item.get("name").toString(), ((Number) item.get("id")).intValue());
             }
             trim();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

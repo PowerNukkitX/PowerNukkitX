@@ -1,512 +1,1174 @@
 {
-    "acacia": [
-        "minecraft:acacia_log"
+    "minecraft:acacia_button": [
+        "wood"
     ],
-    "birch": [
-        "minecraft:birch_log"
+    "minecraft:acacia_door": [
+        "one_way_collidable",
+        "wood"
     ],
-    "dark_oak": [
-        "minecraft:dark_oak_log"
+    "minecraft:acacia_double_slab": [
+        "wood"
     ],
-    "diamond_pick_diggable": [
-        "minecraft:coal_ore",
-        "minecraft:deepslate_coal_ore",
-        "minecraft:deepslate_diamond_ore",
-        "minecraft:deepslate_emerald_ore",
-        "minecraft:deepslate_gold_ore",
-        "minecraft:deepslate_iron_ore",
-        "minecraft:deepslate_redstone_ore",
-        "minecraft:diamond_ore",
-        "minecraft:emerald_ore",
-        "minecraft:flowing_lava",
-        "minecraft:gold_ore",
-        "minecraft:iron_ore",
-        "minecraft:lapis_ore",
-        "minecraft:lit_deepslate_redstone_ore",
-        "minecraft:lit_redstone_ore",
-        "minecraft:obsidian",
-        "minecraft:raw_gold_block",
-        "minecraft:raw_iron_block",
-        "minecraft:redstone_ore"
+    "minecraft:acacia_fence": [
+        "wood"
     ],
-    "dirt": [
-        "minecraft:coarse_dirt",
-        "minecraft:dirt",
-        "minecraft:dirt_with_roots",
-        "minecraft:farmland",
-        "minecraft:grass_block",
-        "minecraft:moss_block",
-        "minecraft:mud",
-        "minecraft:muddy_mangrove_roots",
-        "minecraft:mycelium",
-        "minecraft:podzol"
+    "minecraft:acacia_fence_gate": [
+        "one_way_collidable",
+        "wood"
     ],
-    "fertilize_area": [
-        "minecraft:allium",
-        "minecraft:azure_bluet",
-        "minecraft:blue_orchid",
-        "minecraft:cornflower",
-        "minecraft:crimson_nylium",
-        "minecraft:dandelion",
-        "minecraft:grass_block",
-        "minecraft:lily_of_the_valley",
-        "minecraft:moss_block",
-        "minecraft:orange_tulip",
-        "minecraft:oxeye_daisy",
-        "minecraft:pink_tulip",
-        "minecraft:poppy",
-        "minecraft:red_tulip",
-        "minecraft:warped_nylium",
-        "minecraft:white_tulip"
+    "minecraft:acacia_hanging_sign": [
+        "text_sign",
+        "wood"
     ],
-    "grass": [
-        "minecraft:coarse_dirt",
-        "minecraft:dirt",
-        "minecraft:grass_block",
-        "minecraft:grass_path"
+    "minecraft:acacia_log": [
+        "acacia",
+        "log",
+        "wood"
     ],
-    "gravel": [
-        "minecraft:gravel",
-        "minecraft:suspicious_gravel"
+    "minecraft:acacia_planks": [
+        "wood"
     ],
-    "iron_pick_diggable": [
-        "minecraft:coal_ore",
-        "minecraft:deepslate_coal_ore",
-        "minecraft:deepslate_diamond_ore",
-        "minecraft:deepslate_emerald_ore",
-        "minecraft:deepslate_gold_ore",
-        "minecraft:deepslate_iron_ore",
-        "minecraft:deepslate_redstone_ore",
-        "minecraft:diamond_ore",
-        "minecraft:emerald_ore",
-        "minecraft:gold_ore",
-        "minecraft:iron_ore",
-        "minecraft:lapis_ore",
-        "minecraft:lit_deepslate_redstone_ore",
-        "minecraft:lit_redstone_ore",
-        "minecraft:raw_gold_block",
-        "minecraft:raw_iron_block",
-        "minecraft:redstone_ore"
+    "minecraft:acacia_pressure_plate": [
+        "wood"
     ],
-    "jungle": [
-        "minecraft:jungle_log"
+    "minecraft:acacia_sapling": [
+        "plant"
     ],
-    "log": [
-        "minecraft:acacia_log",
-        "minecraft:birch_log",
-        "minecraft:dark_oak_log",
-        "minecraft:jungle_log",
-        "minecraft:oak_log",
-        "minecraft:spruce_log"
+    "minecraft:acacia_slab": [
+        "wood"
     ],
-    "metal": [
-        "minecraft:cauldron",
-        "minecraft:gold_block",
-        "minecraft:iron_bars",
-        "minecraft:iron_block",
-        "minecraft:iron_door"
+    "minecraft:acacia_stairs": [
+        "wood"
     ],
-    "minecraft:crop": [
-        "minecraft:beetroot",
-        "minecraft:carrots",
-        "minecraft:pitcher_crop",
-        "minecraft:potatoes",
-        "minecraft:sweet_berry_bush",
-        "minecraft:torchflower_crop",
-        "minecraft:wheat"
+    "minecraft:acacia_standing_sign": [
+        "text_sign",
+        "wood"
     ],
-    "mob_spawner": [
-        "minecraft:mob_spawner"
+    "minecraft:acacia_trapdoor": [
+        "one_way_collidable",
+        "trapdoors",
+        "wood"
     ],
-    "not_feature_replaceable": [
-        "minecraft:bedrock",
-        "minecraft:chest",
-        "minecraft:chiseled_bookshelf",
-        "minecraft:end_portal_frame",
-        "minecraft:mob_spawner",
-        "minecraft:trial_spawner",
-        "minecraft:vault"
+    "minecraft:acacia_wall_sign": [
+        "text_sign",
+        "wood"
     ],
-    "oak": [
-        "minecraft:oak_log"
+    "minecraft:acacia_wood": [
+        "wood"
     ],
-    "one_way_collidable": [
-        "minecraft:acacia_door",
-        "minecraft:acacia_fence_gate",
-        "minecraft:acacia_trapdoor",
-        "minecraft:bamboo_door",
-        "minecraft:bamboo_fence_gate",
-        "minecraft:bamboo_trapdoor",
-        "minecraft:birch_door",
-        "minecraft:birch_fence_gate",
-        "minecraft:birch_trapdoor",
-        "minecraft:cherry_door",
-        "minecraft:cherry_fence_gate",
-        "minecraft:cherry_trapdoor",
-        "minecraft:copper_door",
-        "minecraft:copper_trapdoor",
-        "minecraft:crimson_door",
-        "minecraft:crimson_fence_gate",
-        "minecraft:crimson_trapdoor",
-        "minecraft:dark_oak_door",
-        "minecraft:dark_oak_fence_gate",
-        "minecraft:dark_oak_trapdoor",
-        "minecraft:exposed_copper_door",
-        "minecraft:exposed_copper_trapdoor",
-        "minecraft:fence_gate",
-        "minecraft:iron_door",
-        "minecraft:iron_trapdoor",
-        "minecraft:jungle_door",
-        "minecraft:jungle_fence_gate",
-        "minecraft:jungle_trapdoor",
-        "minecraft:mangrove_door",
-        "minecraft:mangrove_fence_gate",
-        "minecraft:mangrove_trapdoor",
-        "minecraft:oxidized_copper_door",
-        "minecraft:oxidized_copper_trapdoor",
-        "minecraft:spruce_door",
-        "minecraft:spruce_fence_gate",
-        "minecraft:spruce_trapdoor",
-        "minecraft:trapdoor",
-        "minecraft:warped_door",
-        "minecraft:warped_fence_gate",
-        "minecraft:warped_trapdoor",
-        "minecraft:waxed_copper_door",
-        "minecraft:waxed_copper_trapdoor",
-        "minecraft:waxed_exposed_copper_door",
-        "minecraft:waxed_exposed_copper_trapdoor",
-        "minecraft:waxed_oxidized_copper_door",
-        "minecraft:waxed_oxidized_copper_trapdoor",
-        "minecraft:waxed_weathered_copper_door",
-        "minecraft:waxed_weathered_copper_trapdoor",
-        "minecraft:weathered_copper_door",
-        "minecraft:weathered_copper_trapdoor",
-        "minecraft:wooden_door"
+    "minecraft:activator_rail": [
+        "rail"
     ],
-    "plant": [
-        "minecraft:acacia_sapling",
-        "minecraft:birch_sapling",
-        "minecraft:dark_oak_sapling",
-        "minecraft:jungle_sapling",
-        "minecraft:large_fern",
-        "minecraft:lilac",
-        "minecraft:oak_sapling",
-        "minecraft:peony",
-        "minecraft:pitcher_crop",
-        "minecraft:pitcher_plant",
-        "minecraft:rose_bush",
-        "minecraft:spruce_sapling",
-        "minecraft:sunflower",
-        "minecraft:tall_grass"
+    "minecraft:allium": [
+        "fertilize_area"
     ],
-    "pumpkin": [
-        "minecraft:carved_pumpkin",
-        "minecraft:lit_pumpkin",
-        "minecraft:pumpkin"
+    "minecraft:andesite": [
+        "stone"
     ],
-    "rail": [
-        "minecraft:activator_rail",
-        "minecraft:detector_rail",
-        "minecraft:golden_rail",
-        "minecraft:rail"
+    "minecraft:andesite_wall": [
+        "stone"
     ],
-    "sand": [
-        "minecraft:red_sand",
-        "minecraft:sand",
-        "minecraft:suspicious_sand"
+    "minecraft:azure_bluet": [
+        "fertilize_area"
     ],
-    "snow": [
-        "minecraft:snow_layer"
+    "minecraft:bamboo_button": [
+        "wood"
     ],
-    "spruce": [
-        "minecraft:spruce_log"
+    "minecraft:bamboo_door": [
+        "one_way_collidable"
     ],
-    "stone": [
-        "minecraft:andesite",
-        "minecraft:brick_block",
-        "minecraft:brick_double_slab",
-        "minecraft:brick_slab",
-        "minecraft:cobblestone",
-        "minecraft:cobblestone_double_slab",
-        "minecraft:cobblestone_slab",
-        "minecraft:cobblestone_wall",
-        "minecraft:diorite",
-        "minecraft:dripstone_block",
-        "minecraft:granite",
-        "minecraft:mossy_cobblestone",
-        "minecraft:nether_brick_double_slab",
-        "minecraft:nether_brick_slab",
-        "minecraft:petrified_oak_double_slab",
-        "minecraft:petrified_oak_slab",
-        "minecraft:polished_andesite",
-        "minecraft:polished_diorite",
-        "minecraft:polished_granite",
-        "minecraft:quartz_double_slab",
-        "minecraft:quartz_slab",
-        "minecraft:sandstone_double_slab",
-        "minecraft:sandstone_slab",
-        "minecraft:smooth_stone_double_slab",
-        "minecraft:smooth_stone_slab",
-        "minecraft:stone",
-        "minecraft:stone_brick_double_slab",
-        "minecraft:stone_brick_slab",
-        "minecraft:stone_button",
-        "minecraft:stone_pressure_plate",
-        "minecraft:stone_stairs"
+    "minecraft:bamboo_fence_gate": [
+        "one_way_collidable",
+        "wood"
     ],
-    "stone_pick_diggable": [
-        "minecraft:chiseled_copper",
-        "minecraft:copper_block",
-        "minecraft:copper_bulb",
-        "minecraft:copper_grate",
-        "minecraft:copper_ore",
-        "minecraft:cut_copper",
-        "minecraft:cut_copper_stairs",
-        "minecraft:deepslate_copper_ore",
-        "minecraft:exposed_chiseled_copper",
-        "minecraft:exposed_copper",
-        "minecraft:exposed_copper_bulb",
-        "minecraft:exposed_copper_grate",
-        "minecraft:exposed_cut_copper",
-        "minecraft:exposed_cut_copper_stairs",
-        "minecraft:oxidized_chiseled_copper",
-        "minecraft:oxidized_copper",
-        "minecraft:oxidized_copper_bulb",
-        "minecraft:oxidized_copper_grate",
-        "minecraft:oxidized_cut_copper",
-        "minecraft:oxidized_cut_copper_stairs",
-        "minecraft:raw_copper_block",
-        "minecraft:waxed_chiseled_copper",
-        "minecraft:waxed_copper",
-        "minecraft:waxed_copper_bulb",
-        "minecraft:waxed_copper_grate",
-        "minecraft:waxed_cut_copper",
-        "minecraft:waxed_cut_copper_stairs",
-        "minecraft:waxed_exposed_chiseled_copper",
-        "minecraft:waxed_exposed_copper",
-        "minecraft:waxed_exposed_copper_bulb",
-        "minecraft:waxed_exposed_copper_grate",
-        "minecraft:waxed_exposed_cut_copper",
-        "minecraft:waxed_exposed_cut_copper_stairs",
-        "minecraft:waxed_oxidized_chiseled_copper",
-        "minecraft:waxed_oxidized_copper",
-        "minecraft:waxed_oxidized_copper_bulb",
-        "minecraft:waxed_oxidized_copper_grate",
-        "minecraft:waxed_oxidized_cut_copper",
-        "minecraft:waxed_oxidized_cut_copper_slab",
-        "minecraft:waxed_oxidized_cut_copper_stairs",
-        "minecraft:waxed_oxidized_double_cut_copper_slab",
-        "minecraft:waxed_weathered_chiseled_copper",
-        "minecraft:waxed_weathered_copper",
-        "minecraft:waxed_weathered_copper_bulb",
-        "minecraft:waxed_weathered_copper_grate",
-        "minecraft:waxed_weathered_cut_copper",
-        "minecraft:waxed_weathered_cut_copper_stairs",
-        "minecraft:weathered_chiseled_copper",
-        "minecraft:weathered_copper",
-        "minecraft:weathered_copper_bulb",
-        "minecraft:weathered_copper_grate",
-        "minecraft:weathered_cut_copper",
-        "minecraft:weathered_cut_copper_stairs"
+    "minecraft:bamboo_hanging_sign": [
+        "text_sign",
+        "wood"
     ],
-    "text_sign": [
-        "minecraft:acacia_hanging_sign",
-        "minecraft:acacia_standing_sign",
-        "minecraft:acacia_wall_sign",
-        "minecraft:bamboo_hanging_sign",
-        "minecraft:bamboo_standing_sign",
-        "minecraft:bamboo_wall_sign",
-        "minecraft:birch_hanging_sign",
-        "minecraft:birch_standing_sign",
-        "minecraft:birch_wall_sign",
-        "minecraft:cherry_hanging_sign",
-        "minecraft:cherry_standing_sign",
-        "minecraft:cherry_wall_sign",
-        "minecraft:crimson_hanging_sign",
-        "minecraft:crimson_standing_sign",
-        "minecraft:crimson_wall_sign",
-        "minecraft:dark_oak_hanging_sign",
-        "minecraft:darkoak_standing_sign",
-        "minecraft:darkoak_wall_sign",
-        "minecraft:jungle_hanging_sign",
-        "minecraft:jungle_standing_sign",
-        "minecraft:jungle_wall_sign",
-        "minecraft:mangrove_hanging_sign",
-        "minecraft:mangrove_standing_sign",
-        "minecraft:mangrove_wall_sign",
-        "minecraft:oak_hanging_sign",
-        "minecraft:spruce_hanging_sign",
-        "minecraft:spruce_standing_sign",
-        "minecraft:spruce_wall_sign",
-        "minecraft:standing_sign",
-        "minecraft:wall_sign",
-        "minecraft:warped_hanging_sign",
-        "minecraft:warped_standing_sign",
-        "minecraft:warped_wall_sign"
+    "minecraft:bamboo_pressure_plate": [
+        "wood"
     ],
-    "trapdoors": [
-        "minecraft:acacia_trapdoor",
-        "minecraft:bamboo_trapdoor",
-        "minecraft:birch_trapdoor",
-        "minecraft:cherry_trapdoor",
-        "minecraft:copper_trapdoor",
-        "minecraft:crimson_trapdoor",
-        "minecraft:dark_oak_trapdoor",
-        "minecraft:exposed_copper_trapdoor",
-        "minecraft:iron_trapdoor",
-        "minecraft:jungle_trapdoor",
-        "minecraft:mangrove_trapdoor",
-        "minecraft:oxidized_copper_trapdoor",
-        "minecraft:spruce_trapdoor",
-        "minecraft:trapdoor",
-        "minecraft:warped_trapdoor",
-        "minecraft:waxed_copper_trapdoor",
-        "minecraft:waxed_exposed_copper_trapdoor",
-        "minecraft:waxed_oxidized_copper_trapdoor",
-        "minecraft:waxed_weathered_copper_trapdoor",
-        "minecraft:weathered_copper_trapdoor"
+    "minecraft:bamboo_standing_sign": [
+        "text_sign",
+        "wood"
     ],
-    "water": [
-        "minecraft:flowing_water",
-        "minecraft:water"
+    "minecraft:bamboo_trapdoor": [
+        "one_way_collidable",
+        "trapdoors",
+        "wood"
     ],
-    "wood": [
-        "minecraft:acacia_button",
-        "minecraft:acacia_door",
-        "minecraft:acacia_double_slab",
-        "minecraft:acacia_fence",
-        "minecraft:acacia_fence_gate",
-        "minecraft:acacia_hanging_sign",
-        "minecraft:acacia_log",
-        "minecraft:acacia_planks",
-        "minecraft:acacia_pressure_plate",
-        "minecraft:acacia_slab",
-        "minecraft:acacia_stairs",
-        "minecraft:acacia_standing_sign",
-        "minecraft:acacia_trapdoor",
-        "minecraft:acacia_wall_sign",
-        "minecraft:acacia_wood",
-        "minecraft:bamboo_button",
-        "minecraft:bamboo_fence_gate",
-        "minecraft:bamboo_hanging_sign",
-        "minecraft:bamboo_pressure_plate",
-        "minecraft:bamboo_standing_sign",
-        "minecraft:bamboo_trapdoor",
-        "minecraft:bamboo_wall_sign",
-        "minecraft:barrel",
-        "minecraft:birch_button",
-        "minecraft:birch_door",
-        "minecraft:birch_double_slab",
-        "minecraft:birch_fence",
-        "minecraft:birch_fence_gate",
-        "minecraft:birch_hanging_sign",
-        "minecraft:birch_log",
-        "minecraft:birch_planks",
-        "minecraft:birch_pressure_plate",
-        "minecraft:birch_slab",
-        "minecraft:birch_stairs",
-        "minecraft:birch_standing_sign",
-        "minecraft:birch_trapdoor",
-        "minecraft:birch_wall_sign",
-        "minecraft:birch_wood",
-        "minecraft:cherry_button",
-        "minecraft:cherry_fence_gate",
-        "minecraft:cherry_hanging_sign",
-        "minecraft:cherry_log",
-        "minecraft:cherry_pressure_plate",
-        "minecraft:cherry_standing_sign",
-        "minecraft:cherry_trapdoor",
-        "minecraft:cherry_wall_sign",
-        "minecraft:cherry_wood",
-        "minecraft:crimson_hanging_sign",
-        "minecraft:dark_oak_button",
-        "minecraft:dark_oak_door",
-        "minecraft:dark_oak_double_slab",
-        "minecraft:dark_oak_fence",
-        "minecraft:dark_oak_fence_gate",
-        "minecraft:dark_oak_hanging_sign",
-        "minecraft:dark_oak_log",
-        "minecraft:dark_oak_planks",
-        "minecraft:dark_oak_pressure_plate",
-        "minecraft:dark_oak_slab",
-        "minecraft:dark_oak_stairs",
-        "minecraft:dark_oak_trapdoor",
-        "minecraft:dark_oak_wood",
-        "minecraft:darkoak_standing_sign",
-        "minecraft:darkoak_wall_sign",
-        "minecraft:fence_gate",
-        "minecraft:fletching_table",
-        "minecraft:jungle_button",
-        "minecraft:jungle_door",
-        "minecraft:jungle_double_slab",
-        "minecraft:jungle_fence",
-        "minecraft:jungle_fence_gate",
-        "minecraft:jungle_hanging_sign",
-        "minecraft:jungle_log",
-        "minecraft:jungle_planks",
-        "minecraft:jungle_pressure_plate",
-        "minecraft:jungle_slab",
-        "minecraft:jungle_stairs",
-        "minecraft:jungle_standing_sign",
-        "minecraft:jungle_trapdoor",
-        "minecraft:jungle_wall_sign",
-        "minecraft:jungle_wood",
-        "minecraft:ladder",
-        "minecraft:mangrove_button",
-        "minecraft:mangrove_fence_gate",
-        "minecraft:mangrove_hanging_sign",
-        "minecraft:mangrove_log",
-        "minecraft:mangrove_pressure_plate",
-        "minecraft:mangrove_standing_sign",
-        "minecraft:mangrove_trapdoor",
-        "minecraft:mangrove_wall_sign",
-        "minecraft:mangrove_wood",
-        "minecraft:oak_double_slab",
-        "minecraft:oak_fence",
-        "minecraft:oak_hanging_sign",
-        "minecraft:oak_log",
-        "minecraft:oak_planks",
-        "minecraft:oak_slab",
-        "minecraft:oak_stairs",
-        "minecraft:oak_wood",
-        "minecraft:smithing_table",
-        "minecraft:spruce_button",
-        "minecraft:spruce_door",
-        "minecraft:spruce_double_slab",
-        "minecraft:spruce_fence",
-        "minecraft:spruce_fence_gate",
-        "minecraft:spruce_hanging_sign",
-        "minecraft:spruce_log",
-        "minecraft:spruce_planks",
-        "minecraft:spruce_pressure_plate",
-        "minecraft:spruce_slab",
-        "minecraft:spruce_stairs",
-        "minecraft:spruce_standing_sign",
-        "minecraft:spruce_trapdoor",
-        "minecraft:spruce_wall_sign",
-        "minecraft:spruce_wood",
-        "minecraft:standing_sign",
-        "minecraft:stripped_acacia_log",
-        "minecraft:stripped_acacia_wood",
-        "minecraft:stripped_birch_log",
-        "minecraft:stripped_birch_wood",
-        "minecraft:stripped_cherry_log",
-        "minecraft:stripped_cherry_wood",
-        "minecraft:stripped_dark_oak_log",
-        "minecraft:stripped_dark_oak_wood",
-        "minecraft:stripped_jungle_log",
-        "minecraft:stripped_jungle_wood",
-        "minecraft:stripped_mangrove_log",
-        "minecraft:stripped_mangrove_wood",
-        "minecraft:stripped_oak_log",
-        "minecraft:stripped_oak_wood",
-        "minecraft:stripped_spruce_log",
-        "minecraft:stripped_spruce_wood",
-        "minecraft:trapdoor",
-        "minecraft:wall_sign",
-        "minecraft:warped_hanging_sign",
-        "minecraft:wooden_button",
-        "minecraft:wooden_door",
-        "minecraft:wooden_pressure_plate"
+    "minecraft:bamboo_wall_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:barrel": [
+        "wood"
+    ],
+    "minecraft:bedrock": [
+        "not_feature_replaceable"
+    ],
+    "minecraft:beetroot": [
+        "minecraft:crop"
+    ],
+    "minecraft:birch_button": [
+        "wood"
+    ],
+    "minecraft:birch_door": [
+        "one_way_collidable",
+        "wood"
+    ],
+    "minecraft:birch_double_slab": [
+        "wood"
+    ],
+    "minecraft:birch_fence": [
+        "wood"
+    ],
+    "minecraft:birch_fence_gate": [
+        "one_way_collidable",
+        "wood"
+    ],
+    "minecraft:birch_hanging_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:birch_log": [
+        "birch",
+        "log",
+        "wood"
+    ],
+    "minecraft:birch_planks": [
+        "wood"
+    ],
+    "minecraft:birch_pressure_plate": [
+        "wood"
+    ],
+    "minecraft:birch_sapling": [
+        "plant"
+    ],
+    "minecraft:birch_slab": [
+        "wood"
+    ],
+    "minecraft:birch_stairs": [
+        "wood"
+    ],
+    "minecraft:birch_standing_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:birch_trapdoor": [
+        "one_way_collidable",
+        "trapdoors",
+        "wood"
+    ],
+    "minecraft:birch_wall_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:birch_wood": [
+        "wood"
+    ],
+    "minecraft:blue_orchid": [
+        "fertilize_area"
+    ],
+    "minecraft:brick_block": [
+        "stone"
+    ],
+    "minecraft:brick_double_slab": [
+        "stone"
+    ],
+    "minecraft:brick_slab": [
+        "stone"
+    ],
+    "minecraft:brick_wall": [
+        "stone"
+    ],
+    "minecraft:carrots": [
+        "minecraft:crop"
+    ],
+    "minecraft:carved_pumpkin": [
+        "pumpkin"
+    ],
+    "minecraft:cauldron": [
+        "metal"
+    ],
+    "minecraft:cherry_button": [
+        "wood"
+    ],
+    "minecraft:cherry_door": [
+        "one_way_collidable"
+    ],
+    "minecraft:cherry_fence_gate": [
+        "one_way_collidable",
+        "wood"
+    ],
+    "minecraft:cherry_hanging_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:cherry_log": [
+        "wood"
+    ],
+    "minecraft:cherry_pressure_plate": [
+        "wood"
+    ],
+    "minecraft:cherry_standing_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:cherry_trapdoor": [
+        "one_way_collidable",
+        "trapdoors",
+        "wood"
+    ],
+    "minecraft:cherry_wall_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:cherry_wood": [
+        "wood"
+    ],
+    "minecraft:chest": [
+        "not_feature_replaceable"
+    ],
+    "minecraft:chiseled_bookshelf": [
+        "not_feature_replaceable"
+    ],
+    "minecraft:chiseled_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:coal_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:coarse_dirt": [
+        "dirt",
+        "grass"
+    ],
+    "minecraft:cobblestone": [
+        "stone"
+    ],
+    "minecraft:cobblestone_double_slab": [
+        "stone"
+    ],
+    "minecraft:cobblestone_slab": [
+        "stone"
+    ],
+    "minecraft:cobblestone_wall": [
+        "stone"
+    ],
+    "minecraft:copper_block": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:copper_bulb": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:copper_door": [
+        "one_way_collidable"
+    ],
+    "minecraft:copper_grate": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:copper_ore": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:copper_trapdoor": [
+        "one_way_collidable",
+        "trapdoors"
+    ],
+    "minecraft:cornflower": [
+        "fertilize_area"
+    ],
+    "minecraft:crimson_door": [
+        "one_way_collidable"
+    ],
+    "minecraft:crimson_fence_gate": [
+        "one_way_collidable"
+    ],
+    "minecraft:crimson_hanging_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:crimson_nylium": [
+        "fertilize_area"
+    ],
+    "minecraft:crimson_standing_sign": [
+        "text_sign"
+    ],
+    "minecraft:crimson_trapdoor": [
+        "one_way_collidable",
+        "trapdoors"
+    ],
+    "minecraft:crimson_wall_sign": [
+        "text_sign"
+    ],
+    "minecraft:cut_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:cut_copper_stairs": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:dandelion": [
+        "fertilize_area"
+    ],
+    "minecraft:dark_oak_button": [
+        "wood"
+    ],
+    "minecraft:dark_oak_door": [
+        "one_way_collidable",
+        "wood"
+    ],
+    "minecraft:dark_oak_double_slab": [
+        "wood"
+    ],
+    "minecraft:dark_oak_fence": [
+        "wood"
+    ],
+    "minecraft:dark_oak_fence_gate": [
+        "one_way_collidable",
+        "wood"
+    ],
+    "minecraft:dark_oak_hanging_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:dark_oak_log": [
+        "dark_oak",
+        "log",
+        "wood"
+    ],
+    "minecraft:dark_oak_planks": [
+        "wood"
+    ],
+    "minecraft:dark_oak_pressure_plate": [
+        "wood"
+    ],
+    "minecraft:dark_oak_sapling": [
+        "plant"
+    ],
+    "minecraft:dark_oak_slab": [
+        "wood"
+    ],
+    "minecraft:dark_oak_stairs": [
+        "wood"
+    ],
+    "minecraft:dark_oak_trapdoor": [
+        "one_way_collidable",
+        "trapdoors",
+        "wood"
+    ],
+    "minecraft:dark_oak_wood": [
+        "wood"
+    ],
+    "minecraft:darkoak_standing_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:darkoak_wall_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:deepslate_coal_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:deepslate_copper_ore": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:deepslate_diamond_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:deepslate_emerald_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:deepslate_gold_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:deepslate_iron_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:deepslate_redstone_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:detector_rail": [
+        "rail"
+    ],
+    "minecraft:diamond_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:diorite": [
+        "stone"
+    ],
+    "minecraft:diorite_wall": [
+        "stone"
+    ],
+    "minecraft:dirt": [
+        "dirt",
+        "grass"
+    ],
+    "minecraft:dirt_with_roots": [
+        "dirt"
+    ],
+    "minecraft:dripstone_block": [
+        "stone"
+    ],
+    "minecraft:emerald_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:end_portal_frame": [
+        "not_feature_replaceable"
+    ],
+    "minecraft:end_stone_brick_wall": [
+        "stone"
+    ],
+    "minecraft:exposed_chiseled_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:exposed_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:exposed_copper_bulb": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:exposed_copper_door": [
+        "one_way_collidable"
+    ],
+    "minecraft:exposed_copper_grate": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:exposed_copper_trapdoor": [
+        "one_way_collidable",
+        "trapdoors"
+    ],
+    "minecraft:exposed_cut_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:exposed_cut_copper_stairs": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:farmland": [
+        "dirt"
+    ],
+    "minecraft:fence_gate": [
+        "one_way_collidable",
+        "wood"
+    ],
+    "minecraft:fletching_table": [
+        "wood"
+    ],
+    "minecraft:flowing_water": [
+        "water"
+    ],
+    "minecraft:gold_block": [
+        "metal"
+    ],
+    "minecraft:gold_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:golden_rail": [
+        "rail"
+    ],
+    "minecraft:granite": [
+        "stone"
+    ],
+    "minecraft:granite_wall": [
+        "stone"
+    ],
+    "minecraft:grass_block": [
+        "dirt",
+        "fertilize_area",
+        "grass"
+    ],
+    "minecraft:grass_path": [
+        "grass"
+    ],
+    "minecraft:gravel": [
+        "gravel"
+    ],
+    "minecraft:iron_bars": [
+        "metal"
+    ],
+    "minecraft:iron_block": [
+        "metal"
+    ],
+    "minecraft:iron_door": [
+        "metal",
+        "one_way_collidable"
+    ],
+    "minecraft:iron_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:iron_trapdoor": [
+        "one_way_collidable",
+        "trapdoors"
+    ],
+    "minecraft:jungle_button": [
+        "wood"
+    ],
+    "minecraft:jungle_door": [
+        "one_way_collidable",
+        "wood"
+    ],
+    "minecraft:jungle_double_slab": [
+        "wood"
+    ],
+    "minecraft:jungle_fence": [
+        "wood"
+    ],
+    "minecraft:jungle_fence_gate": [
+        "one_way_collidable",
+        "wood"
+    ],
+    "minecraft:jungle_hanging_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:jungle_log": [
+        "jungle",
+        "log",
+        "wood"
+    ],
+    "minecraft:jungle_planks": [
+        "wood"
+    ],
+    "minecraft:jungle_pressure_plate": [
+        "wood"
+    ],
+    "minecraft:jungle_sapling": [
+        "plant"
+    ],
+    "minecraft:jungle_slab": [
+        "wood"
+    ],
+    "minecraft:jungle_stairs": [
+        "wood"
+    ],
+    "minecraft:jungle_standing_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:jungle_trapdoor": [
+        "one_way_collidable",
+        "trapdoors",
+        "wood"
+    ],
+    "minecraft:jungle_wall_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:jungle_wood": [
+        "wood"
+    ],
+    "minecraft:ladder": [
+        "wood"
+    ],
+    "minecraft:lapis_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:large_fern": [
+        "plant"
+    ],
+    "minecraft:lilac": [
+        "plant"
+    ],
+    "minecraft:lily_of_the_valley": [
+        "fertilize_area"
+    ],
+    "minecraft:lit_deepslate_redstone_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:lit_pumpkin": [
+        "pumpkin"
+    ],
+    "minecraft:lit_redstone_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:mangrove_button": [
+        "wood"
+    ],
+    "minecraft:mangrove_door": [
+        "one_way_collidable"
+    ],
+    "minecraft:mangrove_fence_gate": [
+        "one_way_collidable",
+        "wood"
+    ],
+    "minecraft:mangrove_hanging_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:mangrove_log": [
+        "wood"
+    ],
+    "minecraft:mangrove_pressure_plate": [
+        "wood"
+    ],
+    "minecraft:mangrove_standing_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:mangrove_trapdoor": [
+        "one_way_collidable",
+        "trapdoors",
+        "wood"
+    ],
+    "minecraft:mangrove_wall_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:mangrove_wood": [
+        "wood"
+    ],
+    "minecraft:mob_spawner": [
+        "mob_spawner",
+        "not_feature_replaceable"
+    ],
+    "minecraft:moss_block": [
+        "dirt",
+        "fertilize_area"
+    ],
+    "minecraft:mossy_cobblestone": [
+        "stone"
+    ],
+    "minecraft:mossy_cobblestone_wall": [
+        "stone"
+    ],
+    "minecraft:mossy_stone_brick_wall": [
+        "stone"
+    ],
+    "minecraft:mud": [
+        "dirt"
+    ],
+    "minecraft:muddy_mangrove_roots": [
+        "dirt"
+    ],
+    "minecraft:mycelium": [
+        "dirt"
+    ],
+    "minecraft:nether_brick_double_slab": [
+        "stone"
+    ],
+    "minecraft:nether_brick_slab": [
+        "stone"
+    ],
+    "minecraft:nether_brick_wall": [
+        "stone"
+    ],
+    "minecraft:oak_double_slab": [
+        "wood"
+    ],
+    "minecraft:oak_fence": [
+        "wood"
+    ],
+    "minecraft:oak_hanging_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:oak_log": [
+        "log",
+        "oak",
+        "wood"
+    ],
+    "minecraft:oak_planks": [
+        "wood"
+    ],
+    "minecraft:oak_sapling": [
+        "plant"
+    ],
+    "minecraft:oak_slab": [
+        "wood"
+    ],
+    "minecraft:oak_stairs": [
+        "wood"
+    ],
+    "minecraft:oak_wood": [
+        "wood"
+    ],
+    "minecraft:obsidian": [
+        "diamond_pick_diggable"
+    ],
+    "minecraft:orange_tulip": [
+        "fertilize_area"
+    ],
+    "minecraft:oxeye_daisy": [
+        "fertilize_area"
+    ],
+    "minecraft:oxidized_chiseled_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:oxidized_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:oxidized_copper_bulb": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:oxidized_copper_door": [
+        "one_way_collidable"
+    ],
+    "minecraft:oxidized_copper_grate": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:oxidized_copper_trapdoor": [
+        "one_way_collidable",
+        "trapdoors"
+    ],
+    "minecraft:oxidized_cut_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:oxidized_cut_copper_stairs": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:peony": [
+        "plant"
+    ],
+    "minecraft:petrified_oak_double_slab": [
+        "stone"
+    ],
+    "minecraft:petrified_oak_slab": [
+        "stone"
+    ],
+    "minecraft:pink_tulip": [
+        "fertilize_area"
+    ],
+    "minecraft:pitcher_crop": [
+        "minecraft:crop",
+        "plant"
+    ],
+    "minecraft:pitcher_plant": [
+        "plant"
+    ],
+    "minecraft:podzol": [
+        "dirt"
+    ],
+    "minecraft:polished_andesite": [
+        "stone"
+    ],
+    "minecraft:polished_diorite": [
+        "stone"
+    ],
+    "minecraft:polished_granite": [
+        "stone"
+    ],
+    "minecraft:poppy": [
+        "fertilize_area"
+    ],
+    "minecraft:potatoes": [
+        "minecraft:crop"
+    ],
+    "minecraft:prismarine_wall": [
+        "stone"
+    ],
+    "minecraft:pumpkin": [
+        "pumpkin"
+    ],
+    "minecraft:quartz_double_slab": [
+        "stone"
+    ],
+    "minecraft:quartz_slab": [
+        "stone"
+    ],
+    "minecraft:rail": [
+        "rail"
+    ],
+    "minecraft:raw_copper_block": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:raw_gold_block": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:raw_iron_block": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:red_nether_brick_wall": [
+        "stone"
+    ],
+    "minecraft:red_sand": [
+        "sand"
+    ],
+    "minecraft:red_sandstone_wall": [
+        "stone"
+    ],
+    "minecraft:red_tulip": [
+        "fertilize_area"
+    ],
+    "minecraft:redstone_ore": [
+        "diamond_pick_diggable",
+        "iron_pick_diggable"
+    ],
+    "minecraft:rose_bush": [
+        "plant"
+    ],
+    "minecraft:sand": [
+        "sand"
+    ],
+    "minecraft:sandstone_double_slab": [
+        "stone"
+    ],
+    "minecraft:sandstone_slab": [
+        "stone"
+    ],
+    "minecraft:sandstone_wall": [
+        "stone"
+    ],
+    "minecraft:smithing_table": [
+        "wood"
+    ],
+    "minecraft:smooth_stone_double_slab": [
+        "stone"
+    ],
+    "minecraft:smooth_stone_slab": [
+        "stone"
+    ],
+    "minecraft:snow_layer": [
+        "snow"
+    ],
+    "minecraft:spruce_button": [
+        "wood"
+    ],
+    "minecraft:spruce_door": [
+        "one_way_collidable",
+        "wood"
+    ],
+    "minecraft:spruce_double_slab": [
+        "wood"
+    ],
+    "minecraft:spruce_fence": [
+        "wood"
+    ],
+    "minecraft:spruce_fence_gate": [
+        "one_way_collidable",
+        "wood"
+    ],
+    "minecraft:spruce_hanging_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:spruce_log": [
+        "log",
+        "spruce",
+        "wood"
+    ],
+    "minecraft:spruce_planks": [
+        "wood"
+    ],
+    "minecraft:spruce_pressure_plate": [
+        "wood"
+    ],
+    "minecraft:spruce_sapling": [
+        "plant"
+    ],
+    "minecraft:spruce_slab": [
+        "wood"
+    ],
+    "minecraft:spruce_stairs": [
+        "wood"
+    ],
+    "minecraft:spruce_standing_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:spruce_trapdoor": [
+        "one_way_collidable",
+        "trapdoors",
+        "wood"
+    ],
+    "minecraft:spruce_wall_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:spruce_wood": [
+        "wood"
+    ],
+    "minecraft:standing_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:stone": [
+        "stone"
+    ],
+    "minecraft:stone_brick_double_slab": [
+        "stone"
+    ],
+    "minecraft:stone_brick_slab": [
+        "stone"
+    ],
+    "minecraft:stone_brick_wall": [
+        "stone"
+    ],
+    "minecraft:stone_button": [
+        "stone"
+    ],
+    "minecraft:stone_pressure_plate": [
+        "stone"
+    ],
+    "minecraft:stone_stairs": [
+        "stone"
+    ],
+    "minecraft:stripped_acacia_log": [
+        "wood"
+    ],
+    "minecraft:stripped_acacia_wood": [
+        "wood"
+    ],
+    "minecraft:stripped_birch_log": [
+        "wood"
+    ],
+    "minecraft:stripped_birch_wood": [
+        "wood"
+    ],
+    "minecraft:stripped_cherry_log": [
+        "wood"
+    ],
+    "minecraft:stripped_cherry_wood": [
+        "wood"
+    ],
+    "minecraft:stripped_dark_oak_log": [
+        "wood"
+    ],
+    "minecraft:stripped_dark_oak_wood": [
+        "wood"
+    ],
+    "minecraft:stripped_jungle_log": [
+        "wood"
+    ],
+    "minecraft:stripped_jungle_wood": [
+        "wood"
+    ],
+    "minecraft:stripped_mangrove_log": [
+        "wood"
+    ],
+    "minecraft:stripped_mangrove_wood": [
+        "wood"
+    ],
+    "minecraft:stripped_oak_log": [
+        "wood"
+    ],
+    "minecraft:stripped_oak_wood": [
+        "wood"
+    ],
+    "minecraft:stripped_spruce_log": [
+        "wood"
+    ],
+    "minecraft:stripped_spruce_wood": [
+        "wood"
+    ],
+    "minecraft:sunflower": [
+        "plant"
+    ],
+    "minecraft:suspicious_gravel": [
+        "gravel"
+    ],
+    "minecraft:suspicious_sand": [
+        "sand"
+    ],
+    "minecraft:sweet_berry_bush": [
+        "minecraft:crop"
+    ],
+    "minecraft:tall_grass": [
+        "plant"
+    ],
+    "minecraft:torchflower_crop": [
+        "minecraft:crop"
+    ],
+    "minecraft:trapdoor": [
+        "one_way_collidable",
+        "trapdoors",
+        "wood"
+    ],
+    "minecraft:trial_spawner": [
+        "not_feature_replaceable"
+    ],
+    "minecraft:vault": [
+        "not_feature_replaceable"
+    ],
+    "minecraft:wall_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:warped_door": [
+        "one_way_collidable"
+    ],
+    "minecraft:warped_fence_gate": [
+        "one_way_collidable"
+    ],
+    "minecraft:warped_hanging_sign": [
+        "text_sign",
+        "wood"
+    ],
+    "minecraft:warped_nylium": [
+        "fertilize_area"
+    ],
+    "minecraft:warped_standing_sign": [
+        "text_sign"
+    ],
+    "minecraft:warped_trapdoor": [
+        "one_way_collidable",
+        "trapdoors"
+    ],
+    "minecraft:warped_wall_sign": [
+        "text_sign"
+    ],
+    "minecraft:water": [
+        "water"
+    ],
+    "minecraft:waxed_chiseled_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_copper_bulb": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_copper_door": [
+        "one_way_collidable"
+    ],
+    "minecraft:waxed_copper_grate": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_copper_trapdoor": [
+        "one_way_collidable",
+        "trapdoors"
+    ],
+    "minecraft:waxed_cut_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_cut_copper_stairs": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_exposed_chiseled_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_exposed_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_exposed_copper_bulb": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_exposed_copper_door": [
+        "one_way_collidable"
+    ],
+    "minecraft:waxed_exposed_copper_grate": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_exposed_copper_trapdoor": [
+        "one_way_collidable",
+        "trapdoors"
+    ],
+    "minecraft:waxed_exposed_cut_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_exposed_cut_copper_stairs": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_oxidized_chiseled_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_oxidized_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_oxidized_copper_bulb": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_oxidized_copper_door": [
+        "one_way_collidable"
+    ],
+    "minecraft:waxed_oxidized_copper_grate": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_oxidized_copper_trapdoor": [
+        "one_way_collidable",
+        "trapdoors"
+    ],
+    "minecraft:waxed_oxidized_cut_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_oxidized_cut_copper_slab": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_oxidized_cut_copper_stairs": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_oxidized_double_cut_copper_slab": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_weathered_chiseled_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_weathered_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_weathered_copper_bulb": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_weathered_copper_door": [
+        "one_way_collidable"
+    ],
+    "minecraft:waxed_weathered_copper_grate": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_weathered_copper_trapdoor": [
+        "one_way_collidable",
+        "trapdoors"
+    ],
+    "minecraft:waxed_weathered_cut_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:waxed_weathered_cut_copper_stairs": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:weathered_chiseled_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:weathered_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:weathered_copper_bulb": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:weathered_copper_door": [
+        "one_way_collidable"
+    ],
+    "minecraft:weathered_copper_grate": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:weathered_copper_trapdoor": [
+        "one_way_collidable",
+        "trapdoors"
+    ],
+    "minecraft:weathered_cut_copper": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:weathered_cut_copper_stairs": [
+        "stone_pick_diggable"
+    ],
+    "minecraft:wheat": [
+        "minecraft:crop"
+    ],
+    "minecraft:white_tulip": [
+        "fertilize_area"
+    ],
+    "minecraft:wooden_button": [
+        "wood"
+    ],
+    "minecraft:wooden_door": [
+        "one_way_collidable",
+        "wood"
+    ],
+    "minecraft:wooden_pressure_plate": [
+        "wood"
     ]
 }

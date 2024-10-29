@@ -18620,5 +18620,175 @@
       "wall_connection_type_east": "none",
       "wall_post_bit": false
     }
+  ],
+  "minecraft:creeper_head": [
+    {
+      "facing_direction": 0
+    },
+    {
+      "facing_direction": 1
+    },
+    {
+      "facing_direction": 2
+    },
+    {
+      "facing_direction": 3
+    },
+    {
+      "facing_direction": 4
+    },
+    {
+      "facing_direction": 5
+    }
+  ],
+  "minecraft:dragon_head": [
+    {
+      "facing_direction": 0
+    },
+    {
+      "facing_direction": 1
+    },
+    {
+      "facing_direction": 2
+    },
+    {
+      "facing_direction": 3
+    },
+    {
+      "facing_direction": 4
+    },
+    {
+      "facing_direction": 5
+    }
+  ],
+  "minecraft:piglin_head": [
+    {
+      "facing_direction": 0
+    },
+    {
+      "facing_direction": 1
+    },
+    {
+      "facing_direction": 2
+    },
+    {
+      "facing_direction": 3
+    },
+    {
+      "facing_direction": 4
+    },
+    {
+      "facing_direction": 5
+    }
+  ],
+  "minecraft:player_head": [
+    {
+      "facing_direction": 0
+    },
+    {
+      "facing_direction": 1
+    },
+    {
+      "facing_direction": 2
+    },
+    {
+      "facing_direction": 3
+    },
+    {
+      "facing_direction": 4
+    },
+    {
+      "facing_direction": 5
+    }
+  ],
+  "minecraft:wither_skeleton_skull": [
+    {
+      "facing_direction": 0
+    },
+    {
+      "facing_direction": 1
+    },
+    {
+      "facing_direction": 2
+    },
+    {
+      "facing_direction": 3
+    },
+    {
+      "facing_direction": 4
+    },
+    {
+      "facing_direction": 5
+    }
+  ],
+  "minecraft:zombie_head": [
+    {
+      "facing_direction": 0
+    },
+    {
+      "facing_direction": 1
+    },
+    {
+      "facing_direction": 2
+    },
+    {
+      "facing_direction": 3
+    },
+    {
+      "facing_direction": 4
+    },
+    {
+      "facing_direction": 5
+    }
+  ],
+  "minecraft:mushroom_stem": [
+    {
+      "huge_mushroom_bits": 0
+    },
+    {
+      "huge_mushroom_bits": 1
+    },
+    {
+      "huge_mushroom_bits": 2
+    },
+    {
+      "huge_mushroom_bits": 3
+    },
+    {
+      "huge_mushroom_bits": 4
+    },
+    {
+      "huge_mushroom_bits": 5
+    },
+    {
+      "huge_mushroom_bits": 6
+    },
+    {
+      "huge_mushroom_bits": 7
+    },
+    {
+      "huge_mushroom_bits": 8
+    },
+    {
+      "huge_mushroom_bits": 9
+    },
+    {
+      "huge_mushroom_bits": 10
+    },
+    {
+      "huge_mushroom_bits": 11
+    },
+    {
+      "huge_mushroom_bits": 12
+    },
+    {
+      "huge_mushroom_bits": 13
+    },
+    {
+      "huge_mushroom_bits": 14
+    },
+    {
+      "huge_mushroom_bits": 15
+    }
   ]
 }

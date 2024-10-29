@@ -47,6 +47,7 @@ public class CameraInstructionPacket extends DataPacket {
             byteBuf.writeNotNull(s.getRot(), byteBuf::writeVector2f);
             byteBuf.writeNotNull(s.getFacing(), byteBuf::writeVector3f);
             byteBuf.writeNotNull(s.getViewOffset(), byteBuf::writeVector2f);
+            byteBuf.writeNotNull(s.getEntityOffset(), byteBuf::writeVector3f);
             byteBuf.writeOptional(s.getDefaultPreset(), byteBuf::writeBoolean);
         });
 

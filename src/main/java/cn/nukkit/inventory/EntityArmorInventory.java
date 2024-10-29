@@ -102,7 +102,6 @@ public class EntityArmorInventory extends BaseInventory {
                     this.getSlotType(index),
                     id
             );
-            inventorySlotPacket.dynamicContainerSize = this.getSize();
             player.dataPacket(inventorySlotPacket);
         } else {
             player.dataPacket(mobArmorEquipmentPacket);
@@ -131,7 +130,6 @@ public class EntityArmorInventory extends BaseInventory {
                     ContainerSlotType.ARMOR,
                     id
             );
-            inventoryContentPacket.dynamicContainerSize = this.getSize();
             player.dataPacket(inventoryContentPacket);
         } else {
             player.dataPacket(mobArmorEquipmentPacket);
