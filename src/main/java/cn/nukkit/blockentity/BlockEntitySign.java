@@ -238,7 +238,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             return false;
         }
         if (player.isOpenSignFront() == null) return false;
-        if(!nbt.containsCompound(TAG_FRONT_TEXT) || !nbt.containsCompound(TAG_BACK_TEXT) || !nbt.containsCompound(TAG_TEXT_COLOR)) {
+        if(!nbt.containsCompound(TAG_FRONT_TEXT) || !nbt.containsCompound(TAG_BACK_TEXT)) {
             return false;
         }
 
