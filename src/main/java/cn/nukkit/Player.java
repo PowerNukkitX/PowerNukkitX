@@ -5056,18 +5056,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     Item toRepair = inventory.getItem(itemToRepair);
                     if (toRepair instanceof ItemTool || toRepair instanceof ItemArmor) {
                         if (toRepair.getDamage() > 0) {
-                            int dmg = toRepair.getDamage() - 2;
+                            int dmg = toRepair.getDamage() - exp;
                             if (dmg < 0) {
+                                exp = Math.abs(dmg);
                                 dmg = 0;
                             }
                             toRepair.setDamage(dmg);
                             inventory.setItem(itemToRepair, toRepair);
-                            return true;
                         }
                     }
                 }
 
-                this.addExperience(exp, true);
+                if(exp > 0) this.addExperience(exp, true);
                 return true;
             }
         }
