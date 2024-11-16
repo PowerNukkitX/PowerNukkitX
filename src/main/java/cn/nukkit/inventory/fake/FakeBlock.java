@@ -42,7 +42,7 @@ public interface FakeBlock {
      */
     void remove(Player player);
 
-    HashSet<Vector3> getLastPositions();
+    HashSet<Vector3> getLastPositions(Player player);
 
     default List<Vector3> getPlacePositions(Player player) {
         return List.of(getOffset(player));

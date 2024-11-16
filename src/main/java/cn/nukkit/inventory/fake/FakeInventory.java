@@ -105,7 +105,7 @@ public class FakeInventory extends BaseInventory implements InputInventory {
             packet.windowId = player.getWindowId(this);
             packet.type = this.getType().getNetworkType();
 
-            Optional<Vector3> first = this.fakeBlock.getLastPositions().stream().findFirst();
+            Optional<Vector3> first = this.fakeBlock.getLastPositions(player).stream().findFirst();
             if (first.isPresent()) {
                 Vector3 position = first.get();
                 packet.x = position.getFloorX();

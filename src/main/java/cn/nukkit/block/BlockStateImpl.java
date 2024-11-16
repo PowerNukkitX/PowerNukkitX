@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author Cool_Loong
  */
-record BlockStateImpl(String identifier,
+public record BlockStateImpl(String identifier,
                       int blockhash,
                       short specialValue,
                       BlockPropertyType.BlockPropertyValue<?, ?, ?>[] blockPropertyValues,
