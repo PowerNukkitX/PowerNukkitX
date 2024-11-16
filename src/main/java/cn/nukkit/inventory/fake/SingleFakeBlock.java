@@ -7,14 +7,16 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 
 public class SingleFakeBlock implements FakeBlock {
     protected final Block block;
     protected final String tileId;
-    protected HashSet<Vector3> lastPositions = new HashSet<>();
+    protected Object2ObjectArrayMap<Player, HashSet<Vector3>> lastPositions = new Object2ObjectArrayMap<>();
 
     public SingleFakeBlock(String blockId) {
         this.block = Block.get(blockId);
@@ -38,8 +40,8 @@ public class SingleFakeBlock implements FakeBlock {
 
     @Override
     public void create(Player player, String titleName) {
-        lastPositions.addAll(this.getPlacePositions(player));
-        lastPositions.forEach(position -> {
+        createAndGetLastPositions(player).addAll(this.getPlacePositions(player));
+        lastPositions.get(player).forEach(position -> {
             UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
             updateBlockPacket.blockRuntimeId = block.getRuntimeId();
             updateBlockPacket.flags = UpdateBlockPacket.FLAG_NETWORK;
@@ -60,7 +62,7 @@ public class SingleFakeBlock implements FakeBlock {
 
     @Override
     public void remove(Player player) {
-        this.lastPositions.forEach(position -> {
+        getLastPositions(player).forEach(position -> {
             UpdateBlockPacket packet = new UpdateBlockPacket();
             packet.blockRuntimeId = player.getLevel().getBlock(position).getRuntimeId();
             packet.flags = UpdateBlockPacket.FLAG_NETWORK;
@@ -69,7 +71,7 @@ public class SingleFakeBlock implements FakeBlock {
             packet.z = position.getFloorZ();
             player.dataPacket(packet);
         });
-        lastPositions.clear();
+        lastPositions.remove(player);
     }
 
     protected CompoundTag getBlockEntityDataAt(Vector3 position, String title) {
@@ -78,7 +80,12 @@ public class SingleFakeBlock implements FakeBlock {
                 .putString("CustomName", title);
     }
 
-    public HashSet<Vector3> getLastPositions() {
-        return lastPositions;
+    public HashSet<Vector3> createAndGetLastPositions(Player player) {
+        if(!lastPositions.containsKey(player)) lastPositions.put(player, new HashSet<>());
+        return lastPositions.get(player);
+    }
+
+    public HashSet<Vector3> getLastPositions(Player player) {
+        return lastPositions.getOrDefault(player, new HashSet<>());
     }
 }
