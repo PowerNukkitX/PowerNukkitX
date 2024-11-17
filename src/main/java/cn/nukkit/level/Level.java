@@ -1039,9 +1039,9 @@ public class Level implements Metadatable {
             if (!this.updateEntities.isEmpty()) {
                 CompletableFuture.runAsync(() -> updateEntities.keySet()
                         .longParallelStream().forEach(id -> {
-                            var entity = this.updateEntities.get(id);
+                            Entity entity = this.updateEntities.get(id);
                             if (entity != null && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
-                                entityAsyncPrepare.asyncPrepare(currentTick);
+                                entityAsyncPrepare.asyncPrepare(getServer().getTick());
                             }
                         }), Server.getInstance().getComputeThreadPool()).join();
                 for (long id : this.updateEntities.keySetLong()) {
