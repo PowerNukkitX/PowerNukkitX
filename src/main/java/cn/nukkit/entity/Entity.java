@@ -570,7 +570,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 this.close(false);
             } else {
                 this.scheduleUpdate();
-                this.lastUpdate = this.server.getTick();
+                this.lastUpdate = this.level.getTick();
             }
         } catch (Exception e) {
             this.close(false);
@@ -2022,7 +2022,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.setLevel(targetLevel);
         this.level.addEntity(this);
         this.chunk = null;
-
+        this.lastUpdate = level.getTick();
         return true;
     }
 

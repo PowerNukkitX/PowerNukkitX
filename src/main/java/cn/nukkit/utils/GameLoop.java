@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  */
 @Slf4j
 public final class GameLoop {
-    private final AtomicBoolean isRunning = new AtomicBoolean(true);
+    private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private final Runnable onStart;
     private final Consumer<GameLoop> onTick;
     private final Runnable onStop;
@@ -25,7 +25,7 @@ public final class GameLoop {
     private final float[] tickSummary = new float[20];
     private final float[] MSPTSummary = new float[20];
     @Getter
-    private long tick;
+    private int tick;
 
     private GameLoop(Runnable onStart, Consumer<GameLoop> onTick, Runnable onStop, int loopCountPerSec) {
         if (loopCountPerSec <= 0)
@@ -65,6 +65,7 @@ public final class GameLoop {
     }
 
     public void startLoop() {
+        isRunning.set(true);
         onStart.run();
         long nanoSleepTime = 0;
         long idealNanoSleepPerTick = 1000000000 / loopCountPerSec;

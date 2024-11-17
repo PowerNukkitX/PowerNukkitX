@@ -244,7 +244,8 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                                 TextFormat.RED + level.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." +
                                 " Time " + ((level.getTickRate() > 1 || level.getTickRateTime() > 40) ? TextFormat.RED : TextFormat.YELLOW) + NukkitMath.round(level.getTickRateTime(), 2) + "ms" +
                                 (" [delayOpt " + (level.tickRateOptDelay - 1) + "]") +
-                                (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "")
+                                (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "") +
+                                (level.getBaseTickGameLoop().isRunning() ? " (" + ((level.getBaseTickGameLoop().getTps() >= 19) ? TextFormat.GREEN : ((level.getBaseTickGameLoop().getTps() < 5) ? TextFormat.RED : TextFormat.YELLOW)) + level.getBaseTickGameLoop().getTps() + " TPS, " + level.getBaseTickGameLoop().getMSPT() + " MSPT)" : "")
                 );
             }
         } else {

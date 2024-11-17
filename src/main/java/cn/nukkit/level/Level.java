@@ -92,6 +92,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -308,10 +309,13 @@ public class Level implements Metadatable {
     private long levelCurrentTick = 0;
     private final Map<Long, Map<Integer, Object>> lightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
     private final int dimensionCount;
-
+    ///base tick system
+    private final Thread baseTickThread;
+    @Getter
+    private final GameLoop baseTickGameLoop;
     ///sub tick system
     private final Thread subTickThread;
-    private final GameLoop gameLoop;
+    private final GameLoop subTickGameLoop;
     ///antiXray system
     private AntiXraySystem antiXraySystem;
     ///weather system
@@ -394,7 +398,22 @@ public class Level implements Metadatable {
 
         this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
         final String levelName = getName();
-        gameLoop = GameLoop.builder()
+        baseTickGameLoop = GameLoop.builder()
+                .onTick(this::doTick)
+                .onStop(() -> log.info(levelName + " BaseTick is closed!"))
+                .loopCountPerSec(20)
+                .build();
+        this.baseTickThread = new Thread() {
+            {
+                setName("Level " + Level.this.getName() + " BaseTick Thread");
+            }
+
+            @Override
+            public void run() {
+                baseTickGameLoop.startLoop();
+            }
+        };
+        subTickGameLoop = GameLoop.builder()
                 .onTick(this::subTick)
                 .onStop(() -> log.info(levelName + " SubTick is closed!"))
                 .loopCountPerSec(20)
@@ -406,10 +425,13 @@ public class Level implements Metadatable {
 
             @Override
             public void run() {
-                gameLoop.startLoop();
+                subTickGameLoop.startLoop();
             }
         };
         this.subTickThread.start();
+        if(getServer().getSettings().levelSettings().levelThread()) {
+            this.baseTickThread.start();
+        }
     }
 
     public static boolean canRandomTick(String blockId) {
@@ -572,7 +594,8 @@ public class Level implements Metadatable {
     }
 
     public void close() {
-        this.gameLoop.stop();
+        this.baseTickGameLoop.stop();
+        this.subTickGameLoop.stop();
         LevelProvider levelProvider = this.provider.get();
         if (levelProvider != null) {
             if (this.getAutoSave()) {
@@ -933,6 +956,33 @@ public class Level implements Metadatable {
         synchronized (this.tickCachedBlocks) {
             for (var each : tickCachedBlocks.values()) {
                 each.clearCachedStore();
+            }
+        }
+    }
+
+    private void doTick(GameLoop gameLoop) {
+        int baseTickRate = getServer().getSettings().levelSettings().baseTickRate();
+        long levelTime = System.currentTimeMillis();
+        int tickMs = (int) (System.currentTimeMillis() - levelTime);
+        doTick(gameLoop.getTick());
+        if (getServer().getSettings().levelSettings().autoTickRate()) {
+            if (tickMs < 50 && this.getTickRate() > baseTickRate) {
+                int r;
+                this.setTickRate(r = this.getTickRate() - 1);
+                if (r > baseTickRate) {
+                    this.tickRateCounter = this.getTickRate();
+                }
+                log.debug("Raising level \"{}\" tick rate to {} ticks", this.getName(), this.getTickRate());
+            } else if (tickMs >= 50) {
+                int autoTickRateLimit = getServer().getSettings().levelSettings().autoTickRateLimit();
+                if (this.getTickRate() == baseTickRate) {
+                    this.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
+                    log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), NukkitMath.round(tickMs, 2), this.getTickRate());
+                } else if ((tickMs / this.getTickRate()) >= 50 && this.getTickRate() < autoTickRateLimit) {
+                    this.setTickRate(this.getTickRate() + 1);
+                    log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), NukkitMath.round(tickMs, 2), this.getTickRate());
+                }
+                this.tickRateCounter = this.getTickRate();
             }
         }
     }
@@ -4600,6 +4650,10 @@ public class Level implements Metadatable {
      */
     public boolean isAntiXrayEnabled() {
         return this.antiXraySystem != null;
+    }
+
+    public int getTick() {
+        return getServer().getSettings().levelSettings().levelThread() ? this.getBaseTickGameLoop().getTick() : getServer().getTick();
     }
 
     /**
