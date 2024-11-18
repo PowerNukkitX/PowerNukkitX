@@ -594,6 +594,7 @@ public class Level implements Metadatable {
     }
 
     public void close() {
+        this.server.getLevels().remove(this.levelId);
         this.baseTickGameLoop.stop();
         this.subTickGameLoop.stop();
         LevelProvider levelProvider = this.provider.get();
@@ -605,7 +606,6 @@ public class Level implements Metadatable {
         }
         this.provider.set(null);
         this.blockMetadata = null;
-        this.server.getLevels().remove(this.levelId);
     }
 
     public void addSound(Vector3 pos, Sound sound) {
@@ -989,7 +989,6 @@ public class Level implements Metadatable {
 
     public void doTick(int currentTick) {
         requireProvider();
-
         try {
             updateBlockLight(lightQueue);
             this.checkTime();
@@ -1013,7 +1012,6 @@ public class Level implements Metadatable {
                     }
                 }
             }
-
             checkWeather();
 
             this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
@@ -1035,13 +1033,12 @@ public class Level implements Metadatable {
                     }
                 }
             }
-
             if (!this.updateEntities.isEmpty()) {
                 CompletableFuture.runAsync(() -> updateEntities.keySet()
                         .longParallelStream().forEach(id -> {
                             Entity entity = this.updateEntities.get(id);
                             if (entity != null && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
-                                entityAsyncPrepare.asyncPrepare(getServer().getTick());
+                                entityAsyncPrepare.asyncPrepare(getTick());
                             }
                         }), Server.getInstance().getComputeThreadPool()).join();
                 for (long id : this.updateEntities.keySetLong()) {
@@ -1061,11 +1058,9 @@ public class Level implements Metadatable {
                     }
                 }
             }
-
             this.updateBlockEntities.removeIf(blockEntity -> !blockEntity.isValid() || !blockEntity.onUpdate());
 
             this.tickChunks();
-
             synchronized (changedBlocks) {
                 if (!this.changedBlocks.isEmpty()) {
                     if (!this.players.isEmpty()) {
@@ -1103,7 +1098,6 @@ public class Level implements Metadatable {
                     this.changedBlocks.clear();
                 }
             }
-
             if (this.sleepTicks > 0 && --this.sleepTicks <= 0) {
                 this.checkSleep();
             }
