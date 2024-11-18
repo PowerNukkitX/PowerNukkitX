@@ -7,6 +7,8 @@ import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import me.sunlan.fastreflection.FastConstructor;
 import me.sunlan.fastreflection.FastMemberLoader;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -624,6 +626,12 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ObjectSet<String> getAll() {
+        ObjectSet<String> ids = CACHE_CONSTRUCTORS.keySet();
+        ids.addAll(CUSTOM_ITEM_DEFINITIONS.keySet());
+        return ids;
     }
 
     public void trim() {
