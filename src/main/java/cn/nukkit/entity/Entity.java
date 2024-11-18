@@ -2023,6 +2023,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.level.addEntity(this);
         this.chunk = null;
         this.lastUpdate = level.getTick();
+        this.blocksAround = null;
+        this.collisionBlocks = null;
         return true;
     }
 
