@@ -4801,7 +4801,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         Level oldLevel = this.level;
         if (super.switchLevel(level)) {
             this.clientMovements.clear();
-            this.collisionBlocks.clear();
             SetSpawnPositionPacket spawnPosition = new SetSpawnPositionPacket();
             spawnPosition.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
             Position spawn = level.getSpawnLocation();
