@@ -2620,7 +2620,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.lastUpdate = currentTick;
 
-        if (this.fishing != null && this.server.getTick() % 20 == 0) {
+        if (this.fishing != null && this.level.getTick() % 20 == 0) {
             if (this.distance(fishing) > 33) {
                 this.stopFishing(false);
             }
@@ -2679,7 +2679,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         this.setGliding(false);
                     }
                 } else {
-                    this.lastInAirTick = server.getTick();
+                    this.lastInAirTick = level.getTick();
                     //check fly for player
                     if (this.checkMovement && !this.isGliding() && !server.getAllowFlight() &&
                             !this.getAdventureSettings().get(Type.ALLOW_FLIGHT) &&
@@ -4800,6 +4800,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public boolean switchLevel(Level level) {
         Level oldLevel = this.level;
         if (super.switchLevel(level)) {
+            this.clientMovements.clear();
+            this.collisionBlocks.clear();
             SetSpawnPositionPacket spawnPosition = new SetSpawnPositionPacket();
             spawnPosition.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
             Position spawn = level.getSpawnLocation();
