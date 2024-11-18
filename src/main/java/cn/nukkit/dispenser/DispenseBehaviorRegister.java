@@ -1,13 +1,17 @@
 package cn.nukkit.dispenser;
 
 import cn.nukkit.block.BlockID;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.registry.ItemRegistry;
+import cn.nukkit.registry.Registries;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author CreeperFace
@@ -32,6 +36,8 @@ public final class DispenseBehaviorRegister {
     public static void init() {
         registerBehavior(ItemID.SHEARS, new ShearsDispenseBehavior());
         registerBehavior(ItemID.BUCKET, new BucketDispenseBehavior());
+        registerBehavior(ItemID.WATER_BUCKET, new BucketDispenseBehavior());
+        registerBehavior(ItemID.LAVA_BUCKET, new BucketDispenseBehavior());
         registerBehavior(ItemID.DYE, new DyeDispenseBehavior());
         registerBehavior(ItemID.FIREWORK_ROCKET, new FireworksDispenseBehavior());
         registerBehavior(ItemID.FLINT_AND_STEEL, new FlintAndSteelDispenseBehavior());
@@ -64,9 +70,13 @@ public final class DispenseBehaviorRegister {
         registerBehavior(BlockID.RED_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
         registerBehavior(BlockID.BLACK_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
 
-        registerBehavior(ItemID.SPAWN_EGG, new SpawnEggDispenseBehavior());
+        Pattern pattern = Pattern.compile("minecraft:.*_spawn_egg");
+        Registries.ITEM.getAll().stream().filter(pattern.asPredicate()).forEach(id -> {
+            registerBehavior(id, new SpawnEggDispenseBehavior());
+        });
+
         registerBehavior(BlockID.TNT, new TNTDispenseBehavior());
-        registerBehavior(ItemID.ARROW, new ProjectileDispenseBehavior("Arrow") {
+        registerBehavior(ItemID.ARROW, new ProjectileDispenseBehavior(EntityID.ARROW) {
             @Override
             protected double getMotion() {
                 return super.getMotion() * 1.5;
@@ -74,9 +84,9 @@ public final class DispenseBehaviorRegister {
         });
         //TODO: tipped arrow
         //TODO: spectral arrow
-        registerBehavior(ItemID.EGG, new ProjectileDispenseBehavior("Egg"));
-        registerBehavior(ItemID.SNOWBALL, new ProjectileDispenseBehavior("Snowball"));
-        registerBehavior(ItemID.FIRE_CHARGE, new ProjectileDispenseBehavior("Small FireBall") {
+        registerBehavior(ItemID.EGG, new ProjectileDispenseBehavior(EntityID.EGG));
+        registerBehavior(ItemID.SNOWBALL, new ProjectileDispenseBehavior(EntityID.SNOWBALL));
+        registerBehavior(ItemID.FIRE_CHARGE, new ProjectileDispenseBehavior(EntityID.SMALL_FIREBALL) {
             @Override
             protected float getAccuracy() {
                 return 0;
@@ -96,7 +106,7 @@ public final class DispenseBehaviorRegister {
                 return Sound.MOB_BLAZE_SHOOT;
             }
         });
-        registerBehavior(ItemID.EXPERIENCE_BOTTLE, new ProjectileDispenseBehavior("ThrownExpBottle") {
+        registerBehavior(ItemID.EXPERIENCE_BOTTLE, new ProjectileDispenseBehavior(EntityID.XP_BOTTLE) {
             @Override
             protected float getAccuracy() {
                 return super.getAccuracy() * 0.5f;
@@ -107,7 +117,7 @@ public final class DispenseBehaviorRegister {
                 return super.getMotion() * 1.25;
             }
         });
-        registerBehavior(ItemID.SPLASH_POTION, new ProjectileDispenseBehavior("ThrownPotion") {
+        registerBehavior(ItemID.SPLASH_POTION, new ProjectileDispenseBehavior(EntityID.SPLASH_POTION) {
             @Override
             protected float getAccuracy() {
                 return super.getAccuracy() * 0.5f;
@@ -119,7 +129,7 @@ public final class DispenseBehaviorRegister {
             }
         });
 //        registerBehavior(ItemID.LINGERING_POTION, new ProjectileDispenseBehavior("LingeringPotion")); //TODO
-        registerBehavior(ItemID.TRIDENT, new ProjectileDispenseBehavior("ThrownTrident") {
+        registerBehavior(ItemID.TRIDENT, new ProjectileDispenseBehavior(EntityID.THROWN_TRIDENT) {
             @Override
             protected float getAccuracy() {
                 return super.getAccuracy() * 0.5f;
@@ -137,10 +147,10 @@ public final class DispenseBehaviorRegister {
         });
         registerBehavior(ItemID.GLASS_BOTTLE, new GlassBottleDispenseBehavior());
         registerBehavior(ItemID.POTION, new WaterBottleDispenseBehavior());
-        registerBehavior(ItemID.MINECART, new MinecartDispenseBehavior("MinecartRideable"));
-        registerBehavior(ItemID.CHEST_MINECART, new MinecartDispenseBehavior("MinecartChest"));
-        registerBehavior(ItemID.HOPPER_MINECART, new MinecartDispenseBehavior("MinecartHopper"));
-        registerBehavior(ItemID.TNT_MINECART, new MinecartDispenseBehavior("MinecartTnt"));
+        registerBehavior(ItemID.MINECART, new MinecartDispenseBehavior(EntityID.MINECART));
+        registerBehavior(ItemID.CHEST_MINECART, new MinecartDispenseBehavior(EntityID.CHEST_MINECART));
+        registerBehavior(ItemID.HOPPER_MINECART, new MinecartDispenseBehavior(EntityID.HOPPER_MINECART));
+        registerBehavior(ItemID.TNT_MINECART, new MinecartDispenseBehavior(EntityID.TNT_MINECART));
         //TODO: 命令方块矿车
     }
 }
