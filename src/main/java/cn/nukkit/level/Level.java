@@ -400,7 +400,7 @@ public class Level implements Metadatable {
         final String levelName = getName();
         baseTickGameLoop = GameLoop.builder()
                 .onTick(this::doTick)
-                .onStop(() -> log.info(levelName + " BaseTick is closed!"))
+                .onStop(this::remove)
                 .loopCountPerSec(20)
                 .build();
         this.baseTickThread = new Thread() {
@@ -594,9 +594,14 @@ public class Level implements Metadatable {
     }
 
     public void close() {
-        this.server.getLevels().remove(this.levelId);
-        this.baseTickGameLoop.stop();
+        if(getServer().getSettings().levelSettings().levelThread()) {
+            this.baseTickGameLoop.stop();
+        } else remove();
+    }
+
+    private void remove() {
         this.subTickGameLoop.stop();
+        this.server.getLevels().remove(this.levelId);
         LevelProvider levelProvider = this.provider.get();
         if (levelProvider != null) {
             if (this.getAutoSave()) {
