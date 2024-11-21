@@ -3493,20 +3493,23 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         //save player data
         //unload chunk for the player
         LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
-        while (iterator.hasNext()) {
-            long l = iterator.nextLong();
-            int chunkX = Level.getHashX(l);
-            int chunkZ = Level.getHashZ(l);
-            if (level.unregisterChunkLoader(this, chunkX, chunkZ, false)) {
-                for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
-                    if (entity != this) {
-                        entity.despawnFrom(this);
+        try {
+            while (iterator.hasNext()) {
+                long l = iterator.nextLong();
+                int chunkX = Level.getHashX(l);
+                int chunkZ = Level.getHashZ(l);
+                if (level.unregisterChunkLoader(this, chunkX, chunkZ, false)) {
+                    for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
+                        if (entity != this) {
+                            entity.despawnFrom(this);
+                        }
                     }
+                    iterator.remove();
                 }
-                iterator.remove();
             }
+        } finally {
+            this.playerChunkManager.getUsedChunks().clear();
         }
-        this.playerChunkManager.getUsedChunks().clear();
     }
 
     public void save() {
