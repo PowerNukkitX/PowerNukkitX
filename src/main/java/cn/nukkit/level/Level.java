@@ -3786,6 +3786,12 @@ public class Level implements Metadatable {
                     && (blockUpper.isAir() || block.canPassThrough());
     }
 
+    public boolean isTicked() {
+        if(getServer().getSettings().levelSettings().levelThread()) {
+            return baseTickGameLoop.isRunning();
+        } else return this.server.getLevels().containsKey(this.levelId);
+    }
+
     /**
      * 获取这个地图经历的时间(一直会累加)
      * <p>
