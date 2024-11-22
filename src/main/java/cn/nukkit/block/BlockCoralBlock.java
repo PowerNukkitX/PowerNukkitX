@@ -77,7 +77,7 @@ public abstract class BlockCoralBlock extends BlockSolid {
             if (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null) {
                 return new Item[]{toItem()};
             } else {
-                return new Item[]{new ItemBlock(clone(), this.getPropertyValue(CORAL_COLOR).ordinal())};//0 - 4
+                return new Item[]{toDead().toItem()};
             }
         } else {
             return Item.EMPTY_ARRAY;
