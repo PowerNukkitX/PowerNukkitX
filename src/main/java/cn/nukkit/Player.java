@@ -2061,7 +2061,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         var pk = new PlayerStartItemCoolDownPacket();
         pk.setCoolDownDuration(coolDownTick);
         pk.setItemCategory(itemId.toString());
-        this.cooldownTickMap.put(itemId.toString(), this.server.getTick() + coolDownTick);
+        this.cooldownTickMap.put(itemId.toString(), this.level.getTick() + coolDownTick);
         this.dataPacket(pk);
     }
 
@@ -2073,7 +2073,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public boolean isItemCoolDownEnd(Identifier itemId) {
         Integer tick = this.cooldownTickMap.getOrDefault(itemId.toString(), 0);
-        boolean result = this.getServer().getTick() - tick > 0;
+        boolean result = this.getLevel().getTick() - tick > 0;
         if (result) {
             cooldownTickMap.remove(itemId.toString());
         }
@@ -2084,13 +2084,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         var pk = new PlayerStartItemCoolDownPacket();
         pk.setCoolDownDuration(coolDown);
         pk.setItemCategory(category);
-        this.cooldownTickMap.put(category, this.server.getTick() + coolDown);
+        this.cooldownTickMap.put(category, this.getLevel().getTick() + coolDown);
         this.dataPacket(pk);
     }
 
     public boolean isItemCoolDownEnd(String category) {
         Integer tick = this.cooldownTickMap.getOrDefault(category, 0);
-        boolean result = this.getServer().getTick() - tick > 0;
+        boolean result = this.getLevel().getTick() - tick > 0;
         if (result) {
             cooldownTickMap.remove(category);
         }
@@ -5036,7 +5036,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
-        int tick = this.getServer().getTick();
+        int tick = this.getLevel().getTick();
         if (pickedXPOrb < tick && entity instanceof EntityXpOrb xpOrb && this.boundingBox.isVectorInside(entity)) {
             if (xpOrb.getPickupDelay() <= 0) {
                 int exp = xpOrb.getExp();

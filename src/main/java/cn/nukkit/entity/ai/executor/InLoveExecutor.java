@@ -21,7 +21,7 @@ public class InLoveExecutor implements IBehaviorExecutor {
 //            var memory = entity.getMemoryStorage().get(InLoveMemory.class);
 //            memory.setData(Server.getInstance().getTick());
 //            memory.setInLove(true);
-            entity.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, Server.getInstance().getTick());
+            entity.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, entity.getLevel().getTick());
             entity.getMemoryStorage().put(CoreMemoryTypes.IS_IN_LOVE, true);
         }
         currentTick++;

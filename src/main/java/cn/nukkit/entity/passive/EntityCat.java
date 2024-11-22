@@ -244,7 +244,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
                 if (healable != 0) {
                     this.setHealth(Math.max(this.getMaxHealth(), this.getHealth() + healable));
                 }
-                getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FEED_TIME, Server.getInstance().getTick());
+                getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FEED_TIME, getLevel().getTick());
                 getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
                 return true;
             }

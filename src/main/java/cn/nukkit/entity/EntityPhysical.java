@@ -104,7 +104,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             this.addFreezingTicks(-1);
             //this.setMovementSpeed();
         }
-        if (this.getFreezingTicks() == 140 && this.getServer().getTick() % 40 == 0) {
+        if (this.getFreezingTicks() == 140 && this.getLevel().getTick() % 40 == 0) {
             this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.FREEZING, getFrostbiteInjury()));
         }
         return hasUpdate;

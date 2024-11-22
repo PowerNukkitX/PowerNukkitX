@@ -12,7 +12,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 public class BlockEntityCalibratedSculkSensor extends BlockEntity implements VibrationListener {
 
-    protected int lastActiveTime = Server.getInstance().getTick();
+    protected int lastActiveTime = getLevel().getTick();
     protected VibrationEvent lastVibrationEvent;
 
     protected int power = 0;
@@ -59,7 +59,7 @@ public class BlockEntityCalibratedSculkSensor extends BlockEntity implements Vib
     @Override
     public boolean onVibrationOccur(VibrationEvent event) {
         if (this.isBlockEntityValid() && level.getServer().getSettings().levelSettings().enableRedstone() && !(this.level.getBlock(event.source()) instanceof BlockCalibratedSculkSensor)) {
-            boolean canBeActive = (Server.getInstance().getTick() - lastActiveTime) > 40 && !waitForVibration;
+            boolean canBeActive = (getLevel().getTick() - lastActiveTime) > 40 && !waitForVibration;
             if (canBeActive) waitForVibration = true;
             return canBeActive;
         } else {
@@ -105,12 +105,12 @@ public class BlockEntityCalibratedSculkSensor extends BlockEntity implements Vib
     }
 
     protected void updateLastActiveTime() {
-        this.lastActiveTime = Server.getInstance().getTick();
+        this.lastActiveTime = getLevel().getTick();
     }
 
     public void calPower() {
         var event = this.getLastVibrationEvent();
-        if ((this.level.getServer().getTick() - this.getLastActiveTime()) >= 40 || event == null) {
+        if ((this.level.getTick() - this.getLastActiveTime()) >= 40 || event == null) {
             power = 0;
             comparatorPower = 0;
             return;
