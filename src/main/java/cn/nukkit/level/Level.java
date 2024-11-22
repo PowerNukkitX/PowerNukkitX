@@ -1125,6 +1125,8 @@ public class Level implements Metadatable {
                 Server.broadcastPacket(players.values().toArray(Player.EMPTY_ARRAY), packet);
                 gameRules.refresh();
             }
+        } catch (Exception e) {
+            throw new LevelException("Failed to tick level " + getName(), e);
         } finally {
             // 清除所有tick缓存的方块
             releaseTickCachedBlocks();
