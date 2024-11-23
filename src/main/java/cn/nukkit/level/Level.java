@@ -68,6 +68,7 @@ import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.BlockUpdateScheduler;
+import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.GameLoop;
@@ -316,6 +317,9 @@ public class Level implements Metadatable {
     ///sub tick system
     private final Thread subTickThread;
     private final GameLoop subTickGameLoop;
+    //Scheduler
+    @Getter
+    ServerScheduler scheduler;
     ///antiXray system
     private AntiXraySystem antiXraySystem;
     ///weather system
@@ -394,6 +398,7 @@ public class Level implements Metadatable {
         this.clearChunksOnTick = this.server.getSettings().chunkSettings().clearTickList();
         this.chunkTickList.clear();
         this.temporalVector = new Vector3(0, 0, 0);
+        this.scheduler = new ServerScheduler();
         this.tickRate = 1;
 
         this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
@@ -601,6 +606,8 @@ public class Level implements Metadatable {
 
     private void remove() {
         this.subTickGameLoop.stop();
+        this.scheduler.cancelAllTasks();
+        this.scheduler.mainThreadHeartbeat(this.getTick() + 10000);
         this.server.getLevels().remove(this.levelId);
         LevelProvider levelProvider = this.provider.get();
         if (levelProvider != null) {
@@ -995,6 +1002,7 @@ public class Level implements Metadatable {
     public void doTick(int currentTick) {
         requireProvider();
         try {
+            getScheduler().mainThreadHeartbeat(currentTick);
             updateBlockLight(lightQueue);
             this.checkTime();
             if (currentTick >= nextTimeSendTick) { // Send time to client every 30 seconds to make sure it
@@ -1063,7 +1071,7 @@ public class Level implements Metadatable {
                     }
                 }
             }
-            this.updateBlockEntities.removeIf(blockEntity -> !blockEntity.isValid() || !blockEntity.onUpdate());
+            this.updateBlockEntities.removeIf(blockEntity -> blockEntity.closed || !blockEntity.isValid() || !blockEntity.onUpdate());
 
             this.tickChunks();
             synchronized (changedBlocks) {
@@ -3577,7 +3585,7 @@ public class Level implements Metadatable {
                 chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
             }
             return chunk;
-        }, Server.getInstance().getScheduler().getAsyncTaskThreadPool());
+        }, this.getScheduler().getAsyncTaskThreadPool());
     }
 
 
