@@ -66,7 +66,7 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
                 final int finalIndex = index;
                 final boolean finalOffhand = offhand;
                 //TODO: 并行计算
-                Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
+                player.getLevel().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
                     @Override
                     public void onRun() {
                         map.renderMap(player.getLevel(), (player.getFloorX() / 128) << 7, (player.getFloorZ() / 128) << 7, 1);

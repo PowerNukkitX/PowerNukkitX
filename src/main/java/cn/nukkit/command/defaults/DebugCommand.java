@@ -56,7 +56,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 }
                 var player = sender.asPlayer();
                 if (player.getInventory().getItemInHand() instanceof ItemFilledMap itemFilledMap) {
-                    Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
+                    player.getLevel().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
                         @Override
                         public void onRun() {
                             itemFilledMap.renderMap(player.getLevel(), player.getFloorX() - 64, player.getFloorZ() - 64, zoom);

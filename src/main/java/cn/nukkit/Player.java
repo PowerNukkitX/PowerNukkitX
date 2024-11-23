@@ -714,7 +714,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.setHealth(0);
         }
 
-        Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+        getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             this.session.getMachine().fire(SessionState.IN_GAME);
         }, 5);
     }
@@ -800,7 +800,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
                                 if (teleport(newPos, TeleportCause.END_PORTAL)) {
-                                    server.getScheduler().scheduleDelayedTask(new Task() {
+                                    newPos.getLevel().getScheduler().scheduleDelayedTask(new Task() {
                                         @Override
                                         public void onRun(int currentTick) {
                                             // dirty hack to make sure chunks are loaded and generated before spawning player
@@ -1490,7 +1490,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         if (animate) {
             this.setDataFlag(EntityFlag.BLOCKED_USING_DAMAGED_SHIELD, true);
-            this.getServer().getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
+            getLevel().getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
                 if (this.isOnline()) {
                     this.setDataFlag(EntityFlag.BLOCKED_USING_DAMAGED_SHIELD, false);
                 }
@@ -2232,7 +2232,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (delayedPosTrackingUpdate != null) {
                 delayedPosTrackingUpdate.cancel();
             }
-            delayedPosTrackingUpdate = server.getScheduler().scheduleDelayedTask(null, this::updateTrackingPositions, 10);
+            delayedPosTrackingUpdate = level.getScheduler().scheduleDelayedTask(null, this::updateTrackingPositions, 10);
             return;
         }
         PositionTrackingService positionTrackingService = server.getPositionTrackingService();
@@ -2631,7 +2631,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.despawnFromAll();
                 return true;
             }
-            server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::despawnFromAll, 10);
+            getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::despawnFromAll, 10);
             return true;
         }
 
@@ -4340,7 +4340,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public void refreshBlockEntity(int delay) {
-        Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+        getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             for (var b : this.level.getBlockEntities().values()) {
                 if (b instanceof BlockEntitySpawnable blockEntitySpawnable) {
                     UpdateBlockPacket setAir = new UpdateBlockPacket();
