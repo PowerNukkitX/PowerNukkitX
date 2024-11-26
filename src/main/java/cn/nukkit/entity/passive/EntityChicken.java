@@ -81,7 +81,7 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
                         new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
                         new Behavior(new FlatRandomRoamExecutor(0.22f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1),
                         new Behavior(entity -> {
-                            entity.getMemoryStorage().put(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, Server.getInstance().getTick());
+                            entity.getMemoryStorage().put(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, getLevel().getTick());
                             entity.getLevel().dropItem(entity, Item.get(Item.EGG));
                             entity.getLevel().addSound(entity, Sound.MOB_CHICKEN_PLOP);
                             return false;

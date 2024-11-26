@@ -93,7 +93,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
             } catch (IOException e) {
                 log.warn("Failed to make the player {} track {} at {}", player.getName(), trackingHandle, getLocation(),  e);
             }
-            getLevel().getServer().getScheduler().scheduleTask(null, player::updateTrackingPositions);
+            getLevel().getScheduler().scheduleTask(null, player::updateTrackingPositions);
         }
         
         return true;

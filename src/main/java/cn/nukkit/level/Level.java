@@ -68,6 +68,7 @@ import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.BlockUpdateScheduler;
+import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.GameLoop;
@@ -92,6 +93,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -308,10 +310,16 @@ public class Level implements Metadatable {
     private long levelCurrentTick = 0;
     private final Map<Long, Map<Integer, Object>> lightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
     private final int dimensionCount;
-
+    ///base tick system
+    private final Thread baseTickThread;
+    @Getter
+    private final GameLoop baseTickGameLoop;
     ///sub tick system
     private final Thread subTickThread;
-    private final GameLoop gameLoop;
+    private final GameLoop subTickGameLoop;
+    //Scheduler
+    @Getter
+    ServerScheduler scheduler;
     ///antiXray system
     private AntiXraySystem antiXraySystem;
     ///weather system
@@ -390,11 +398,27 @@ public class Level implements Metadatable {
         this.clearChunksOnTick = this.server.getSettings().chunkSettings().clearTickList();
         this.chunkTickList.clear();
         this.temporalVector = new Vector3(0, 0, 0);
+        this.scheduler = new ServerScheduler();
         this.tickRate = 1;
 
         this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
         final String levelName = getName();
-        gameLoop = GameLoop.builder()
+        baseTickGameLoop = GameLoop.builder()
+                .onTick(this::doTick)
+                .onStop(this::remove)
+                .loopCountPerSec(20)
+                .build();
+        this.baseTickThread = new Thread() {
+            {
+                setName("Level " + Level.this.getName() + " BaseTick Thread");
+            }
+
+            @Override
+            public void run() {
+                baseTickGameLoop.startLoop();
+            }
+        };
+        subTickGameLoop = GameLoop.builder()
                 .onTick(this::subTick)
                 .onStop(() -> log.info(levelName + " SubTick is closed!"))
                 .loopCountPerSec(20)
@@ -406,10 +430,13 @@ public class Level implements Metadatable {
 
             @Override
             public void run() {
-                gameLoop.startLoop();
+                subTickGameLoop.startLoop();
             }
         };
         this.subTickThread.start();
+        if(getServer().getSettings().levelSettings().levelThread()) {
+            this.baseTickThread.start();
+        }
     }
 
     public static boolean canRandomTick(String blockId) {
@@ -572,7 +599,16 @@ public class Level implements Metadatable {
     }
 
     public void close() {
-        this.gameLoop.stop();
+        if(getServer().getSettings().levelSettings().levelThread()) {
+            this.baseTickGameLoop.stop();
+        } else remove();
+    }
+
+    private void remove() {
+        this.subTickGameLoop.stop();
+        this.scheduler.cancelAllTasks();
+        this.scheduler.mainThreadHeartbeat(this.getTick() + 10000);
+        this.server.getLevels().remove(this.levelId);
         LevelProvider levelProvider = this.provider.get();
         if (levelProvider != null) {
             if (this.getAutoSave()) {
@@ -582,7 +618,6 @@ public class Level implements Metadatable {
         }
         this.provider.set(null);
         this.blockMetadata = null;
-        this.server.getLevels().remove(this.levelId);
     }
 
     public void addSound(Vector3 pos, Sound sound) {
@@ -817,7 +852,14 @@ public class Level implements Metadatable {
         }
 
         this.close();
-
+        if(force && getServer().getSettings().levelSettings().levelThread()) {
+            getServer().getScheduler().scheduleDelayedTask(() -> {
+                if(baseTickThread.isAlive()) {
+                    getServer().getLogger().critical(getName() + " failed to unload. Trying to stop the thread.");
+                    baseTickThread.interrupt();
+                }
+            }, 100);
+        }
         return true;
     }
 
@@ -937,10 +979,37 @@ public class Level implements Metadatable {
         }
     }
 
+    private void doTick(GameLoop gameLoop) {
+        int baseTickRate = getServer().getSettings().levelSettings().baseTickRate();
+        long levelTime = System.currentTimeMillis();
+        int tickMs = (int) (System.currentTimeMillis() - levelTime);
+        doTick(gameLoop.getTick());
+        if (getServer().getSettings().levelSettings().autoTickRate()) {
+            if (tickMs < 50 && this.getTickRate() > baseTickRate) {
+                int r;
+                this.setTickRate(r = this.getTickRate() - 1);
+                if (r > baseTickRate) {
+                    this.tickRateCounter = this.getTickRate();
+                }
+                log.debug("Raising level \"{}\" tick rate to {} ticks", this.getName(), this.getTickRate());
+            } else if (tickMs >= 50) {
+                int autoTickRateLimit = getServer().getSettings().levelSettings().autoTickRateLimit();
+                if (this.getTickRate() == baseTickRate) {
+                    this.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
+                    log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), NukkitMath.round(tickMs, 2), this.getTickRate());
+                } else if ((tickMs / this.getTickRate()) >= 50 && this.getTickRate() < autoTickRateLimit) {
+                    this.setTickRate(this.getTickRate() + 1);
+                    log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), NukkitMath.round(tickMs, 2), this.getTickRate());
+                }
+                this.tickRateCounter = this.getTickRate();
+            }
+        }
+    }
+
     public void doTick(int currentTick) {
         requireProvider();
-
         try {
+            getScheduler().mainThreadHeartbeat(currentTick);
             updateBlockLight(lightQueue);
             this.checkTime();
             if (currentTick >= nextTimeSendTick) { // Send time to client every 30 seconds to make sure it
@@ -963,7 +1032,6 @@ public class Level implements Metadatable {
                     }
                 }
             }
-
             checkWeather();
 
             this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
@@ -985,13 +1053,12 @@ public class Level implements Metadatable {
                     }
                 }
             }
-
             if (!this.updateEntities.isEmpty()) {
                 CompletableFuture.runAsync(() -> updateEntities.keySet()
                         .longParallelStream().forEach(id -> {
-                            var entity = this.updateEntities.get(id);
+                            Entity entity = this.updateEntities.get(id);
                             if (entity != null && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
-                                entityAsyncPrepare.asyncPrepare(currentTick);
+                                entityAsyncPrepare.asyncPrepare(getTick());
                             }
                         }), Server.getInstance().getComputeThreadPool()).join();
                 for (long id : this.updateEntities.keySetLong()) {
@@ -1011,11 +1078,9 @@ public class Level implements Metadatable {
                     }
                 }
             }
-
-            this.updateBlockEntities.removeIf(blockEntity -> !blockEntity.isValid() || !blockEntity.onUpdate());
+            this.updateBlockEntities.removeIf(blockEntity -> blockEntity.closed || !blockEntity.isValid() || !blockEntity.onUpdate());
 
             this.tickChunks();
-
             synchronized (changedBlocks) {
                 if (!this.changedBlocks.isEmpty()) {
                     if (!this.players.isEmpty()) {
@@ -1053,7 +1118,6 @@ public class Level implements Metadatable {
                     this.changedBlocks.clear();
                 }
             }
-
             if (this.sleepTicks > 0 && --this.sleepTicks <= 0) {
                 this.checkSleep();
             }
@@ -1076,6 +1140,8 @@ public class Level implements Metadatable {
                 Server.broadcastPacket(players.values().toArray(Player.EMPTY_ARRAY), packet);
                 gameRules.refresh();
             }
+        } catch (Exception e) {
+            throw new LevelException("Failed to tick level " + getName(), e);
         } finally {
             // 清除所有tick缓存的方块
             releaseTickCachedBlocks();
@@ -3526,7 +3592,7 @@ public class Level implements Metadatable {
                 chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
             }
             return chunk;
-        }, Server.getInstance().getScheduler().getAsyncTaskThreadPool());
+        }, this.getScheduler().getAsyncTaskThreadPool());
     }
 
 
@@ -3735,6 +3801,12 @@ public class Level implements Metadatable {
             return (!blockUnder.canPassThrough() || blockUnder instanceof BlockFlowingWater)
                     && (block.isAir() || block.canPassThrough())
                     && (blockUpper.isAir() || block.canPassThrough());
+    }
+
+    public boolean isTicked() {
+        if(getServer().getSettings().levelSettings().levelThread()) {
+            return baseTickGameLoop.isRunning();
+        } else return this.server.getLevels().containsKey(this.levelId);
     }
 
     /**
@@ -4600,6 +4672,10 @@ public class Level implements Metadatable {
      */
     public boolean isAntiXrayEnabled() {
         return this.antiXraySystem != null;
+    }
+
+    public int getTick() {
+        return getServer().getSettings().levelSettings().levelThread() ? this.getBaseTickGameLoop().getTick() : getServer().getTick();
     }
 
     /**

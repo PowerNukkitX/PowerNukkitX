@@ -50,7 +50,7 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
                 updateMove(entity, another);
 
                 if (currentTick > duration) {
-                    bear(entity, another);
+                    bear(entity);
                     clearData(entity);
                     clearData(another);
 
@@ -147,12 +147,12 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
         return entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ENTITY_SPOUSE);
     }
 
-    protected void bear(T entity1, T entity2) {
+    protected void bear(T entity) {
         var rand = ThreadLocalRandom.current();
-        T baby = (T) Entity.createEntity(entity1.getNetworkId(), entity1.getPosition());
+        T baby = (T) Entity.createEntity(entity.getNetworkId(), entity.getPosition());
         baby.setBaby(true);
         //防止小屁孩去生baby
-        baby.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, Server.getInstance().getTick());
+        baby.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, entity.level.getTick());
         baby.spawnToAll();
     }
 }

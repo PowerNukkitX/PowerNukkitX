@@ -34,7 +34,7 @@ public class ServerScheduler {
         this.currentTaskId = new AtomicInteger();
         this.queueMap = new ConcurrentHashMap<>();
         this.taskMap = new ConcurrentHashMap<>();
-        this.asyncPool = new AsyncPool(Server.getInstance(), WORKERS);
+        this.asyncPool = new AsyncPool(WORKERS);
     }
 
     /**

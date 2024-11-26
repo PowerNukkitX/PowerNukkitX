@@ -41,7 +41,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
         super(chunk, nbt);
         var storage = getMemoryStorage();
         if (storage != null) {
-            storage.put(CoreMemoryTypes.ENTITY_SPAWN_TIME, Server.getInstance().getTick());
+            storage.put(CoreMemoryTypes.ENTITY_SPAWN_TIME, getLevel().getTick());
             MemoryType.getPersistentMemories().forEach(memory -> {
                 var mem = (MemoryType<Object>) memory;
                 var codec = mem.getCodec();
@@ -110,7 +110,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
         var storage = getMemoryStorage();
         if (storage != null) {
             storage.put(CoreMemoryTypes.BE_ATTACKED_EVENT, source);
-            storage.put(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, Server.getInstance().getTick());
+            storage.put(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, getLevel().getTick());
         }
         return result;
     }
