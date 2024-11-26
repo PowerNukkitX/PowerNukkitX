@@ -198,7 +198,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         chunk.setChanged();
 
         if (!this.getLevelBlock().isAir()) {
-            getLevel().getScheduler().scheduleTask(new Task() {
+            getLevel().getServer().getScheduler().scheduleTask(new Task() {
                 @Override
                 public void onRun(int currentTick) {
                     if (isValid() && isBlockEntityValid()) {

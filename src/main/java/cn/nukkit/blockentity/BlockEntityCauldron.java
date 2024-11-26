@@ -129,7 +129,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         this.level.sendBlocks(viewers, new Vector3[]{block});
         super.spawnToAll();
         Location location = getLocation();
-        getLevel().getScheduler().scheduleTask(null, () -> {
+        Server.getInstance().getScheduler().scheduleTask(null, () -> {
             if (isValid()) {
                 BlockEntity cauldron = this.level.getBlockEntity(location);
                 if (cauldron == BlockEntityCauldron.this) {

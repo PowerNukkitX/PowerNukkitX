@@ -62,7 +62,7 @@ public interface ICommandBlock extends CommandSender, InventoryHolder {
 
         int delay = this.getTickDelay();
         if (delay > 0) {
-            getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, new CommandBlockTrigger(this, chain), delay);
+            Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, new CommandBlockTrigger(this, chain), delay);
             return false;
         }
 
