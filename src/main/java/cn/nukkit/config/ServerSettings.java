@@ -112,8 +112,6 @@ public final class ServerSettings extends OkaeriConfig {
         boolean tickRedstone = true;
         @Comment("nukkit.server.settings.levelSettings.chunkUnloadDelay")
         int chunkUnloadDelay = 15000;
-        @Comment("nukkit.server.settings.levelSettings.levelThread")
-        boolean levelThread = false;
     }
 
     @EqualsAndHashCode(callSuper = true)

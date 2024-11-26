@@ -32,7 +32,7 @@ public class TestUtils {
     public static GameLoop gameLoop0(TestPlayer p) {
         GameLoop loop = GameLoop.builder().loopCountPerSec(100).onTick((d) -> {
             try {
-                p.getLevel().getScheduler().mainThreadHeartbeat((int) d.getTick());
+                Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
                 Server.getInstance().getNetwork().process();
                 p.getLevel().subTick(d);
                 p.checkNetwork();

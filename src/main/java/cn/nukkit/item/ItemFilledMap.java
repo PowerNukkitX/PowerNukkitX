@@ -132,7 +132,7 @@ public class ItemFilledMap extends Item {
         pk.image = image;
 
         player.dataPacket(pk);
-        player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> player.dataPacket(pk), 20);
+        Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> player.dataPacket(pk), 20);
     }
 
     public boolean trySendImage(Player p) {
