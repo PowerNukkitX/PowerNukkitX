@@ -12,15 +12,13 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class AsyncPool extends ThreadPoolExecutor {
-    private final Server server;
 
-    public AsyncPool(Server server, int size) {
+    public AsyncPool(int size) {
         super(size, Integer.MAX_VALUE, 60, TimeUnit.MILLISECONDS, new SynchronousQueue<>());
         this.setThreadFactory(runnable -> new Thread(runnable) {{
             setDaemon(true);
             setName(String.format("Nukkit Asynchronous Task Handler #%s", getPoolSize()));
         }});
-        this.server = server;
     }
 
     @Override
@@ -28,9 +26,5 @@ public class AsyncPool extends ThreadPoolExecutor {
         if (throwable != null) {
             log.error("Exception in asynchronous task", throwable);
         }
-    }
-
-    public Server getServer() {
-        return server;
     }
 }

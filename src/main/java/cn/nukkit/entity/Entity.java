@@ -570,7 +570,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 this.close(false);
             } else {
                 this.scheduleUpdate();
-                this.lastUpdate = this.server.getTick();
+                this.lastUpdate = this.level.getTick();
             }
         } catch (Exception e) {
             this.close(false);
@@ -1487,7 +1487,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                     } else {
                         final Position finalPos = newPos.add(1.5, 1, 1.5);
                         if (teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)) {
-                            server.getScheduler().scheduleDelayedTask(new Task() {
+                            level.getScheduler().scheduleDelayedTask(new Task() {
                                 @Override
                                 public void onRun(int currentTick) {
                                     // dirty hack to make sure chunks are loaded and generated before spawning
@@ -2022,7 +2022,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.setLevel(targetLevel);
         this.level.addEntity(this);
         this.chunk = null;
-
+        this.lastUpdate = level.getTick();
+        this.blocksAround = null;
+        this.collisionBlocks = null;
         return true;
     }
 
@@ -2406,7 +2408,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
                                 if (teleport(newPos.add(0.5, 1, 0.5), PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
-                                    server.getScheduler().scheduleDelayedTask(new Task() {
+                                    newPos.getLevel().getScheduler().scheduleDelayedTask(new Task() {
                                         @Override
                                         public void onRun(int currentTick) {
                                             // dirty hack to make sure chunks are loaded and generated before spawning player
@@ -2417,7 +2419,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                                 }
                             } else {
                                 if (teleport(newPos, PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
-                                    server.getScheduler().scheduleDelayedTask(new Task() {
+                                    newPos.getLevel().getScheduler().scheduleDelayedTask(new Task() {
                                         @Override
                                         public void onRun(int currentTick) {
                                             // dirty hack to make sure chunks are loaded and generated before spawning player

@@ -71,7 +71,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         if (lastUseTick != -1) {
                             Item item = player.getInventory().getItemInHand();
 
-                            int ticksUsed = player.getServer().getTick() - lastUseTick;
+                            int ticksUsed = player.getLevel().getTick() - lastUseTick;
                             if (!item.onRelease(player, ticksUsed)) {
                                 player.getInventory().sendContents(player);
                             }
@@ -367,11 +367,11 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     }
                     if (!player.isUsingItem(item.getId())) {
                         lastUsedItem = item;
-                        player.setLastUseTick(item.getId(), player.getServer().getTick());//set lastUsed tick
+                        player.setLastUseTick(item.getId(), player.getLevel().getTick());//set lastUsed tick
                         return;
                     }
 
-                    int ticksUsed = player.getServer().getTick() - player.getLastUseTick(lastUsedItem.getId());
+                    int ticksUsed = player.getLevel().getTick() - player.getLastUseTick(lastUsedItem.getId());
                     if (lastUsedItem.onUse(player, ticksUsed)) {
                         lastUsedItem.afterUse(player);
                         player.removeLastUseTick(item.getId());

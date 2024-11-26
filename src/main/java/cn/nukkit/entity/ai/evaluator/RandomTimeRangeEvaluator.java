@@ -22,19 +22,19 @@ public class RandomTimeRangeEvaluator implements IBehaviorEvaluator {
     @Override
     public boolean evaluate(EntityIntelligent entity) {
         if (this.nextTargetTime == -1) {
-            this.updateNextTargetTime();
+            this.updateNextTargetTime(entity);
             return false;
         }
-        var currentTime = Server.getInstance().getTick();
+        var currentTime = entity.getLevel().getTick();
         if (currentTime >= nextTargetTime) {
-            this.updateNextTargetTime();
+            this.updateNextTargetTime(entity);
             return true;
         } else {
             return false;
         }
     }
 
-    protected void updateNextTargetTime() {
-        this.nextTargetTime = Server.getInstance().getTick() + ThreadLocalRandom.current().nextInt(minTime, maxTime + 1);
+    protected void updateNextTargetTime(EntityIntelligent entity) {
+        this.nextTargetTime = entity.getLevel().getTick() + ThreadLocalRandom.current().nextInt(minTime, maxTime + 1);
     }
 }

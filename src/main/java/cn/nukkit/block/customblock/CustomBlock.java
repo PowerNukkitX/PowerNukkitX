@@ -89,7 +89,7 @@ public interface CustomBlock {
         if (comp.containsCompound("minecraft:destructible_by_mining")) {
             var clientBreakTime = comp.getCompound("minecraft:destructible_by_mining").getFloat("value");
             if (player != null) {
-                if (player.getServer().getTick() - player.getLastInAirTick() < 5) {
+                if (player.getLevel().getTick() - player.getLastInAirTick() < 5) {
                     clientBreakTime *= 6;
                 }
             }
