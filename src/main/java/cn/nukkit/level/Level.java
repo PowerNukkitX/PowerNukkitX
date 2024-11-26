@@ -852,7 +852,14 @@ public class Level implements Metadatable {
         }
 
         this.close();
-
+        if(force && getServer().getSettings().levelSettings().levelThread()) {
+            getServer().getScheduler().scheduleDelayedTask(() -> {
+                if(baseTickThread.isAlive()) {
+                    getServer().getLogger().critical(getName() + " failed to unload. Trying to stop the thread.");
+                    baseTickThread.interrupt();
+                }
+            }, 100);
+        }
         return true;
     }
 
