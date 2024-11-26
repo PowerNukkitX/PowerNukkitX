@@ -116,6 +116,7 @@ import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.scheduler.AsyncTask;
+import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.scheduler.TaskHandler;
 import cn.nukkit.scoreboard.IScoreboard;
@@ -2232,7 +2233,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (delayedPosTrackingUpdate != null) {
                 delayedPosTrackingUpdate.cancel();
             }
-            delayedPosTrackingUpdate = level.getScheduler().scheduleDelayedTask(null, this::updateTrackingPositions, 10);
+            ServerScheduler scheduler = level == null ? server.getScheduler() : level.getScheduler();
+            delayedPosTrackingUpdate = scheduler.scheduleDelayedTask(null, this::updateTrackingPositions, 10);
             return;
         }
         PositionTrackingService positionTrackingService = server.getPositionTrackingService();
