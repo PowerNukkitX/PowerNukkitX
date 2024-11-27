@@ -75,6 +75,7 @@ import cn.nukkit.utils.GameLoop;
 import cn.nukkit.utils.Hash;
 import cn.nukkit.utils.LevelException;
 import cn.nukkit.utils.TextFormat;
+import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Int2ObjectNonBlockingMap;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
@@ -599,7 +600,7 @@ public class Level implements Metadatable {
     }
 
     public void close() {
-        if(getServer().getSettings().levelSettings().levelThread()) {
+        if(getServer().getSettings().levelSettings().levelThread() && baseTickThread.isAlive()) {
             this.baseTickGameLoop.stop();
         } else remove();
     }
@@ -1078,7 +1079,7 @@ public class Level implements Metadatable {
                     }
                 }
             }
-            this.updateBlockEntities.removeIf(blockEntity -> blockEntity.closed || !blockEntity.isValid() || !blockEntity.onUpdate());
+            this.updateBlockEntities.removeIf(blockEntity -> !(!blockEntity.closed && blockEntity.isValid() && blockEntity.onUpdate()));
 
             this.tickChunks();
             synchronized (changedBlocks) {
@@ -1141,9 +1142,9 @@ public class Level implements Metadatable {
                 gameRules.refresh();
             }
         } catch (Exception e) {
-            throw new LevelException("Failed to tick level " + getName(), e);
+            log.error(getServer().getLanguage().tr("nukkit.level.tickError",
+                    this.getFolderPath(), Utils.getExceptionMessage(e)), e);
         } finally {
-            // 清除所有tick缓存的方块
             releaseTickCachedBlocks();
         }
     }
