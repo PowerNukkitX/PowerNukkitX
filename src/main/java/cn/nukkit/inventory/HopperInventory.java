@@ -24,6 +24,15 @@ public class HopperInventory extends ContainerInventory {
     }
 
     @Override
+    public Map<Integer, ContainerSlotType> slotTypeMap() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        for (int i = 0; i < this.getSize(); i++) {
+            map.put(i, ContainerSlotType.INVENTORY);
+        }
+        return map;
+    }
+
+    @Override
     public BlockEntityHopper getHolder() {
         return (BlockEntityHopper) super.getHolder();
     }

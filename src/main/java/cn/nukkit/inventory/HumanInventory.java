@@ -613,7 +613,7 @@ public class HumanInventory extends BaseInventory {
             }
             pk.inventoryId = id;
             pk.fullContainerName = new FullContainerName(
-                    ContainerSlotType.HOTBAR_AND_INVENTORY,
+                    this.getSlotType(id),
                     id
             );
             player.dataPacket(pk);

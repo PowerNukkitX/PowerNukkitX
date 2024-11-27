@@ -149,6 +149,16 @@ public final class ClientChainData implements LoginChainData {
     }
 
     @Override
+    public int getMaxViewDistance() {
+        return this.maxViewDistance;
+    }
+
+    @Override
+    public int getMemoryTier() {
+        return this.memoryTier;
+    }
+
+    @Override
     public JsonObject getRawData() {
         return rawData;
     }
@@ -202,6 +212,8 @@ public final class ClientChainData implements LoginChainData {
     private int defaultInputMode;
     private String waterdogIP;
     private String waterdogXUID;
+    private int maxViewDistance;
+    private int memoryTier;
 
     private int UIProfile;
 
@@ -209,7 +221,7 @@ public final class ClientChainData implements LoginChainData {
 
     private JsonObject rawData;
 
-    private BinaryStream bs;
+    private final BinaryStream bs;
 
     private ClientChainData(BinaryStream buffer) {
         buffer.setOffset(0);
@@ -240,6 +252,8 @@ public final class ClientChainData implements LoginChainData {
         if (skinToken.has("CapeData")) this.capeData = skinToken.get("CapeData").getAsString();
         if (skinToken.has("Waterdog_IP")) this.waterdogIP = skinToken.get("Waterdog_IP").getAsString();
         if (skinToken.has("Waterdog_XUID")) this.waterdogXUID = skinToken.get("Waterdog_XUID").getAsString();
+        if (skinToken.has("MaxViewDistance")) this.maxViewDistance = skinToken.get("MaxViewDistance").getAsInt();
+        if (skinToken.has("MemoryTier")) this.memoryTier = skinToken.get("MemoryTier").getAsInt();
 
         if (this.isWaterdog()) {
             xboxAuthed = true;

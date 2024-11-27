@@ -7,7 +7,7 @@ import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.extern.slf4j.Slf4j;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import me.sunlan.fastreflection.FastConstructor;
 import me.sunlan.fastreflection.FastMemberLoader;
@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * @author Cool_Loong
  */
+@Slf4j
 public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class<? extends Item>> {
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Item>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final Map<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();

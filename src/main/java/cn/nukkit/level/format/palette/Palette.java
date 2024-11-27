@@ -109,6 +109,10 @@ public class Palette<V> {
         byteBuf.writeIntLE(this.palette.size());
         try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(byteBuf)) {
             for (V value : this.palette) {
+
+                if (value == null)
+                    continue;
+
                 if (value instanceof BlockState blockState && blockState.getIdentifier().equals(BlockID.UNKNOWN)) {
                     NBTIO.write(blockState.getBlockStateTag().getCompound("Block"), bufOutputStream, ByteOrder.LITTLE_ENDIAN);
                 } else {

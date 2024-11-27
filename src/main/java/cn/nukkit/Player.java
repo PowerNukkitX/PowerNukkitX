@@ -680,7 +680,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             scoreboardManager.onPlayerJoin(this);
         }
 
-        if(this.getSpawn().second() == null || this.getSpawn().second() == SpawnPointType.WORLD) {
+        if (this.getSpawn().second() == null || this.getSpawn().second() == SpawnPointType.WORLD) {
             this.setSpawn(this.level.getSafeSpawn(), SpawnPointType.WORLD);
         } else {
             //update compass
@@ -1093,6 +1093,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * 处理LOGIN_PACKET中执行
      */
     public void processLogin() {
+
         if (this.hasPermission(Server.BROADCAST_CHANNEL_USERS)) {
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_USERS, this);
         }
@@ -5073,7 +5074,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     }
                 }
 
-                if(exp > 0) this.addExperience(exp, true);
+                if (exp > 0) this.addExperience(exp, true);
                 return true;
             }
         }

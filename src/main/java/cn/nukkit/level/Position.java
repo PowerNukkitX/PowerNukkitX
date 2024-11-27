@@ -8,6 +8,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.positiontracking.NamedPosition;
 import cn.nukkit.utils.LevelException;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -17,6 +18,7 @@ import java.util.Set;
  * @author MagicDroidX (Nukkit Project)
  */
 
+@Slf4j
 public class Position extends NamedPosition {
     public Level level;
 
