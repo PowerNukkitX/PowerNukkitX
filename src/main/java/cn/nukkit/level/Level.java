@@ -411,7 +411,7 @@ public class Level implements Metadatable {
                 .build();
         this.baseTickThread = new Thread() {
             {
-                setName("Level " + Level.this.getName() + " BaseTick Thread");
+                setName(Level.this.getFolderName());
             }
 
             @Override
@@ -421,12 +421,12 @@ public class Level implements Metadatable {
         };
         subTickGameLoop = GameLoop.builder()
                 .onTick(this::subTick)
-                .onStop(() -> log.info(levelName + " SubTick is closed!"))
+                .onStop(() -> log.debug(levelName + " SubTick is closed!"))
                 .loopCountPerSec(20)
                 .build();
         this.subTickThread = new Thread() {
             {
-                setName("Level " + Level.this.getName() + " SubTick Thread");
+                setName(Level.this.getFolderName() + " SubTick");
             }
 
             @Override
@@ -434,10 +434,6 @@ public class Level implements Metadatable {
                 subTickGameLoop.startLoop();
             }
         };
-        this.subTickThread.start();
-        if(getServer().getSettings().levelSettings().levelThread()) {
-            this.baseTickThread.start();
-        }
     }
 
     public static boolean canRandomTick(String blockId) {
@@ -555,6 +551,10 @@ public class Level implements Metadatable {
         Position spawn = this.getSpawnLocation();
         if (!getChunk(spawn.getChunkX(), spawn.getChunkZ(), true).getChunkState().canSend()) {
             this.generateChunk(spawn.getChunkX(), spawn.getChunkZ());
+        }
+        this.subTickThread.start();
+        if(getServer().getSettings().levelSettings().levelThread()) {
+            this.baseTickThread.start();
         }
         log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getFolderName() + TextFormat.RESET));
     }
