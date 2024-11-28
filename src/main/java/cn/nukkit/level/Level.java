@@ -1008,6 +1008,7 @@ public class Level implements Metadatable {
     }
 
     public void doTick(int currentTick) {
+        players.values().forEach(player -> player.getSession().tick());
         requireProvider();
         try {
             getScheduler().mainThreadHeartbeat(currentTick);
@@ -1145,6 +1146,7 @@ public class Level implements Metadatable {
             log.error(getServer().getLanguage().tr("nukkit.level.tickError",
                     this.getFolderPath(), Utils.getExceptionMessage(e)), e);
         } finally {
+            getPlayers().values().forEach(Player::checkNetwork);
             releaseTickCachedBlocks();
         }
     }
@@ -3808,6 +3810,10 @@ public class Level implements Metadatable {
         if(getServer().getSettings().levelSettings().levelThread()) {
             return baseTickGameLoop.isRunning();
         } else return this.server.getLevels().containsKey(this.levelId);
+    }
+
+    public boolean isThreadRunning() {
+        return baseTickThread.isAlive();
     }
 
     /**
