@@ -739,8 +739,8 @@ public class Server {
             log.debug("Unloading all levels");
             for (Level level : this.levelArray) {
                 this.unloadLevel(level, true);
+                while(level.isThreadRunning()) Thread.sleep(1);
             }
-
             if (positionTrackingService != null) {
                 log.debug("Closing position tracking service");
                 positionTrackingService.close();
@@ -920,10 +920,6 @@ public class Server {
         this.getScheduler().mainThreadHeartbeat(this.tickCounter);
 
         this.checkTickUpdates(this.tickCounter);
-
-        for (Player player : this.players.values()) {
-            player.checkNetwork();
-        }
 
         if ((this.tickCounter & 0b1111) == 0) {
             this.titleTick();
@@ -1203,11 +1199,8 @@ public class Server {
      * @throws ServerException 服务器异常
      */
     public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
-        // First we need to check if this command is on the main thread or not, if not, warn the user
+        // First we need to check if this command is on the main thread or not, if not, merge it in the main thread.
         if (!this.isPrimaryThread()) {
-            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
-                    new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
-
             this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
             return 1;
         }

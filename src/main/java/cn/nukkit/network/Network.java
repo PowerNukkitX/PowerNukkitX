@@ -1,6 +1,7 @@
 package cn.nukkit.network;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.network.connection.BedrockPeer;
@@ -283,12 +284,7 @@ public class Network {
      * A function of tick for network session
      */
     public void process() {
-        for (BedrockSession session : this.sessionMap.values()) {
-            if (session.isDisconnected()) {
-                continue;
-            }
-            session.tick();
-        }
+        this.sessionMap.values().stream().filter(session -> session.isConnected() && session.getPlayer() == null).forEach(BedrockSession::tick);
     }
 
     /**
