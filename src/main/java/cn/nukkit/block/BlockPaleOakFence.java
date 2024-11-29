@@ -2,24 +2,24 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWarpedRoots extends BlockHanging implements BlockFlowerPot.FlowerPotBlock {
-    public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_ROOTS);
+public class BlockPaleOakFence extends BlockFence {
+    public static final BlockProperties PROPERTIES = new BlockProperties(PALE_OAK_FENCE);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    public BlockWarpedRoots() {
+    public BlockPaleOakFence() {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockWarpedRoots(BlockState blockstate) {
+    public BlockPaleOakFence(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
     public String getName() {
-        return "Warped Roots";
+        return "Pale Oak Fence";
     }
 }

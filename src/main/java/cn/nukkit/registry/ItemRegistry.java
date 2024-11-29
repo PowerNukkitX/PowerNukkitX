@@ -145,6 +145,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(CORAL_FAN, ItemCoralFan.class);
             register(CORAL_FAN_DEAD, ItemCoralFanDead.class);
             register(COW_SPAWN_EGG, ItemCowSpawnEgg.class);
+            register(CREAKING_SPAWN_EGG, ItemCreakingSpawnEgg.class);
             register(CREEPER_BANNER_PATTERN, ItemCreeperBannerPattern.class);
             register(CREEPER_HEAD, ItemCreeperHead.class);
             register(CREEPER_SPAWN_EGG, ItemCreeperSpawnEgg.class);
@@ -366,6 +367,10 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(ORANGE_BUNDLE, ItemOrangeBundle.class);
             register(ORANGE_DYE, ItemOrangeDye.class);
             register(PAINTING, ItemPainting.class);
+            register(PALE_OAK_BOAT, ItemPaleOakBoat.class);
+            register(PALE_OAK_CHEST_BOAT, ItemPaleOakChestBoat.class);
+            register(PALE_OAK_HANGING_SIGN, ItemPaleOakHangingSign.class);
+            register(PALE_OAK_SIGN, ItemPaleOakSign.class);
             register(PANDA_SPAWN_EGG, ItemPandaSpawnEgg.class);
             register(PAPER, ItemPaper.class);
             register(PARROT_SPAWN_EGG, ItemParrotSpawnEgg.class);
@@ -422,6 +427,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(RED_SANDSTONE, ItemRedSandstone.class);
             register(REDSTONE, ItemRedstone.class);
             register(REPEATER, ItemRepeater.class);
+            register(RESIN_BRICK, ItemResinBrick.class);
             register(RIB_ARMOR_TRIM_SMITHING_TEMPLATE, ItemRibArmorTrimSmithingTemplate.class);
             register(ROTTEN_FLESH, ItemRottenFlesh.class);
             register(SADDLE, ItemSaddle.class);

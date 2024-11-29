@@ -223,6 +223,8 @@ public interface ItemID {
 
     String COW_SPAWN_EGG = "minecraft:cow_spawn_egg";
 
+    String CREAKING_SPAWN_EGG = "minecraft:creaking_spawn_egg";
+
     String CREEPER_BANNER_PATTERN = "minecraft:creeper_banner_pattern";
 
     String CREEPER_HEAD = "minecraft:creeper_head";
@@ -665,6 +667,14 @@ public interface ItemID {
 
     String PAINTING = "minecraft:painting";
 
+    String PALE_OAK_BOAT = "minecraft:pale_oak_boat";
+
+    String PALE_OAK_CHEST_BOAT = "minecraft:pale_oak_chest_boat";
+
+    String PALE_OAK_HANGING_SIGN = "minecraft:pale_oak_hanging_sign";
+
+    String PALE_OAK_SIGN = "minecraft:pale_oak_sign";
+
     String PANDA_SPAWN_EGG = "minecraft:panda_spawn_egg";
 
     String PAPER = "minecraft:paper";
@@ -776,6 +786,8 @@ public interface ItemID {
     String REDSTONE = "minecraft:redstone";
 
     String REPEATER = "minecraft:repeater";
+
+    String RESIN_BRICK = "minecraft:resin_brick";
 
     String RIB_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:rib_armor_trim_smithing_template";
 

@@ -129,6 +129,7 @@ public abstract class LegacyTreeGenerator {
             case ACACIA -> BlockAcaciaLog.PROPERTIES.getBlockState(pillarAxisValue);
             case BIRCH -> BlockBirchLog.PROPERTIES.getBlockState(pillarAxisValue);
             case OAK -> BlockOakLog.PROPERTIES.getBlockState(pillarAxisValue);
+            case PALE_OAK -> BlockPaleOakLog.PROPERTIES.getBlockState(pillarAxisValue);
         };
     }
 

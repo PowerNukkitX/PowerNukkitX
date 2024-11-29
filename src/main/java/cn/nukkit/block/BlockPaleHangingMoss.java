@@ -1,23 +1,24 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockHangingRoots extends BlockHanging {
-    public static final BlockProperties PROPERTIES = new BlockProperties(HANGING_ROOTS);
+public class BlockPaleHangingMoss extends BlockHanging {
+    public static final BlockProperties PROPERTIES = new BlockProperties(PALE_HANGING_MOSS, CommonBlockProperties.TIP);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    public BlockHangingRoots() {
+    public BlockPaleHangingMoss() {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockHangingRoots(BlockState blockstate) {
+    public BlockPaleHangingMoss(BlockState blockstate) {
         super(blockstate);
     }
 

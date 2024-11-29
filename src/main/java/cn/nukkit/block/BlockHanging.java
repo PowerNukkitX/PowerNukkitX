@@ -6,9 +6,9 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class BlockRoots extends BlockFlowable {
+public abstract class BlockHanging extends BlockFlowable {
 
-    public BlockRoots(BlockState blockState) {
+    public BlockHanging(BlockState blockState) {
         super(blockState);
     }
 

@@ -123,6 +123,11 @@
       "materialId": "amethyst",
       "color": "§u",
       "itemName": "minecraft:amethyst_shard"
+    },
+    {
+      "materialId": "resin",
+      "color": "§v",
+      "itemName": "minecraft:resin_brick"
     }
   ]
 }
