@@ -9,6 +9,7 @@ import org.checkerframework.framework.qual.Unused;
 @Getter
 @Setter
 public class CameraAimAssistPacket extends DataPacket {
+    private String presetId;
     private Vector2f viewAngle;
     private float distance;
     private TargetMode targetMode;
@@ -22,6 +23,7 @@ public class CameraAimAssistPacket extends DataPacket {
     @SuppressWarnings("unused")
     @Override
     public void decode(HandleByteBuf byteBuf) {
+        this.setPresetId(byteBuf.readString());
         this.setViewAngle(byteBuf.readVector2f());
         this.setDistance(byteBuf.readFloatLE());
         this.setTargetMode(CameraAimAssistPacket.TargetMode.values()[byteBuf.readUnsignedByte()]);
@@ -30,6 +32,7 @@ public class CameraAimAssistPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeString(this.presetId);
         byteBuf.writeVector2f(this.getViewAngle());
         byteBuf.writeFloatLE(this.getDistance());
         byteBuf.writeByte(this.getTargetMode().ordinal());
@@ -43,11 +46,13 @@ public class CameraAimAssistPacket extends DataPacket {
 
     public enum TargetMode {
         ANGLE,
-        DISTANCE
+        DISTANCE,
+        COUNT
     }
 
     public enum Action {
         SET,
-        CLEAR
+        CLEAR,
+        COUNT
     }
 }

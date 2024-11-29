@@ -12,6 +12,8 @@ import cn.nukkit.resourcepacks.ResourcePack;
 import cn.nukkit.utils.version.Version;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.UUID;
+
 @Slf4j
 public class ResourcePackHandler extends BedrockSessionPacketHandler {
 
@@ -20,6 +22,8 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
         ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
         infoPacket.resourcePackEntries = session.getServer().getResourcePackManager().getResourceStack();
         infoPacket.mustAccept = session.getServer().getForceResources();
+        infoPacket.worldTemplateId = UUID.randomUUID();
+        infoPacket.worldTemplateVersion = "";
         session.sendPacket(infoPacket);
     }
 

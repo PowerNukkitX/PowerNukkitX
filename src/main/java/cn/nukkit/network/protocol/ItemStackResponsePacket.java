@@ -25,9 +25,9 @@ public class ItemStackResponsePacket extends DataPacket {
             byteBuf.writeArray(r.getContainers(), (container) -> {
                 byteBuf.writeFullContainerName(container.getContainerName());
                 byteBuf.writeArray(container.getItems(), (item) -> {
+                    byteBuf.writeByte((byte) item.getRequestedSlot());
                     byteBuf.writeByte((byte) item.getSlot());
-                    byteBuf.writeByte((byte) item.getHotbarSlot());
-                    byteBuf.writeByte((byte) item.getCount());
+                    byteBuf.writeByte((byte) item.getAmount());
                     byteBuf.writeVarInt(item.getStackNetworkId());
                     byteBuf.writeString(item.getCustomName());
                     byteBuf.writeVarInt(item.getDurabilityCorrection());
