@@ -25,17 +25,17 @@ public class ItemStackResponsePacket extends DataPacket {
             byteBuf.writeArray(r.getContainers(), (container) -> {
                 byteBuf.writeFullContainerName(container.getContainerName());
                 byteBuf.writeArray(container.getItems(), (item) -> {
-                    byteBuf.writeByte((byte) item.getRequestedSlot());
                     byteBuf.writeByte((byte) item.getSlot());
-                    byteBuf.writeByte((byte) item.getAmount());
+                    byteBuf.writeByte((byte) item.getHotbarSlot());
+                    byteBuf.writeByte((byte) item.getCount());
                     byteBuf.writeVarInt(item.getStackNetworkId());
                     byteBuf.writeString(item.getCustomName());
+                    byteBuf.writeString(item.getFilteredCustomName());
                     byteBuf.writeVarInt(item.getDurabilityCorrection());
                 });
             });
         });
     }
-
     @Override
     public void decode(HandleByteBuf byteBuf) {
         throw new UnsupportedOperationException();//client bound

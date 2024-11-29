@@ -121,7 +121,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
             for (var c : r.getContainers()) {
                 LinkedHashMap<Integer, ItemStackResponseSlot> newItems = new LinkedHashMap<>();
                 for (var i : c.getItems()) {
-                    newItems.put(Objects.hash(i.getRequestedSlot(), i.getSlot()), i);
+                    newItems.put(Objects.hash(i.getSlot(), i.getHotbarSlot()), i);
                 }
                 c.getItems().clear();
                 c.getItems().addAll(newItems.values());

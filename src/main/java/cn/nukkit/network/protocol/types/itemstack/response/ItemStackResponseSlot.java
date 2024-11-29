@@ -8,9 +8,9 @@ import lombok.Value;
  */
 @Value
 public class ItemStackResponseSlot {
-    int requestedSlot;
     int slot;
-    int amount;
+    int hotbarSlot;
+    int count;
 
     /**
      * stackNetworkID is the network ID of the new stack at a specific slot.
@@ -38,10 +38,10 @@ public class ItemStackResponseSlot {
         this(requestedSlot, slot, amount, stackNetworkId, customName, "", durabilityCorrection);
     }
 
-    public ItemStackResponseSlot(int requestedSlot, int slot, int amount, int stackNetworkId, String customName, String filteredCustomName, int durabilityCorrection) {
-        this.requestedSlot = requestedSlot;
+    public ItemStackResponseSlot(int slot, int hotbarSlot, int count, int stackNetworkId, String customName, String filteredCustomName,int durabilityCorrection) {
         this.slot = slot;
-        this.amount = amount;
+        this.hotbarSlot = hotbarSlot;
+        this.count = count;
         this.stackNetworkId = stackNetworkId;
         this.customName = customName;
         this.filteredCustomName = filteredCustomName;
