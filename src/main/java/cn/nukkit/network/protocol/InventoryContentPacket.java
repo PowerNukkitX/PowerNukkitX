@@ -3,12 +3,10 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.*;
 
 @ToString
 @NoArgsConstructor
@@ -17,8 +15,8 @@ public class InventoryContentPacket extends DataPacket {
 
     public int inventoryId;
     public Item[] slots = Item.EMPTY_ARRAY;
-    public FullContainerName fullContainerName;
-    public int dynamicContainerSize;
+    public FullContainerName fullContainerName = new FullContainerName(ContainerSlotType.ANVIL_INPUT, null);
+    public Item storageItem = Item.AIR; // is air if the item is not a bundle
 
     @Override
     public int pid() {
@@ -38,7 +36,7 @@ public class InventoryContentPacket extends DataPacket {
             byteBuf.writeSlot(slot);
         }
         byteBuf.writeFullContainerName(this.fullContainerName);
-        byteBuf.writeUnsignedVarInt(this.dynamicContainerSize);
+        byteBuf.writeSlot(this.storageItem);
     }
 
     public void handle(PacketHandler handler) {

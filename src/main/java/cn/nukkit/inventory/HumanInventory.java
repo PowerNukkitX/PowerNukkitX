@@ -482,7 +482,6 @@ public class HumanInventory extends BaseInventory {
                         ContainerSlotType.ARMOR,
                         id
                 );
-                pk1.dynamicContainerSize = this.getSize();
                 player.dataPacket(pk1);
 
                 PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
@@ -570,7 +569,6 @@ public class HumanInventory extends BaseInventory {
                         ContainerSlotType.ARMOR,
                         id
                 );
-                pk1.dynamicContainerSize = this.getArmorInventory().getSize();
                 player.dataPacket(pk1);
 
                 PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
@@ -615,10 +613,9 @@ public class HumanInventory extends BaseInventory {
             }
             pk.inventoryId = id;
             pk.fullContainerName = new FullContainerName(
-                    ContainerSlotType.HOTBAR_AND_INVENTORY,
+                    this.getSlotType(id),
                     id
             );
-            pk.dynamicContainerSize = this.getSize();
             player.dataPacket(pk);
         }
     }
@@ -638,7 +635,6 @@ public class HumanInventory extends BaseInventory {
         InventorySlotPacket pk = new InventorySlotPacket();
         pk.slot = index;
         pk.item = this.getItem(index).clone();
-        pk.dynamicContainerSize = this.getSize();
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {

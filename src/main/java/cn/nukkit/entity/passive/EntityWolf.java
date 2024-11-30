@@ -252,7 +252,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
             }
 
             getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
-            getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FEED_TIME, Server.getInstance().getTick());
+            getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FEED_TIME, getLevel().getTick());
             return true;
         } else if (this.hasOwner() && player.getName().equals(getOwnerName()) && !this.isTouchingWater()) {
             this.setSitting(!this.isSitting());

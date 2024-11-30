@@ -100,12 +100,12 @@ public class FakeInventory extends BaseInventory implements InputInventory {
     public void onOpen(Player player) {
         player.setFakeInventoryOpen(true);
         this.fakeBlock.create(player, this.getTitle());
-        Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+        player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             ContainerOpenPacket packet = new ContainerOpenPacket();
             packet.windowId = player.getWindowId(this);
             packet.type = this.getType().getNetworkType();
 
-            Optional<Vector3> first = this.fakeBlock.getLastPositions().stream().findFirst();
+            Optional<Vector3> first = this.fakeBlock.getLastPositions(player).stream().findFirst();
             if (first.isPresent()) {
                 Vector3 position = first.get();
                 packet.x = position.getFloorX();
@@ -128,7 +128,7 @@ public class FakeInventory extends BaseInventory implements InputInventory {
         packet.wasServerInitiated = player.getClosingWindowId() != packet.windowId;
         packet.type = getType();
         player.dataPacket(packet);
-        Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+        player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             this.fakeBlock.remove(player);
         }, 5);
         super.onClose(player);

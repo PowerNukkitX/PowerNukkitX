@@ -43,7 +43,7 @@ public class ItemCrossbow extends ItemTool {
 
     public boolean onUse(Player player, int ticksUsed) {
         if (isLoaded()) return true;
-        this.loadTick = Server.getInstance().getTick();
+        this.loadTick = player.getLevel().getTick();
         int needTickUsed = 25;
         Enchantment enchantment = this.getEnchantment(Enchantment.ID_CROSSBOW_QUICK_CHARGE);
         if (enchantment != null) {
@@ -105,7 +105,7 @@ public class ItemCrossbow extends ItemTool {
     }
 
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        if (this.isLoaded() && Server.getInstance().getTick() - this.loadTick > 5) {
+        if (this.isLoaded() && player.getLevel().getTick() - this.loadTick > 5) {
             double mX;
             double mY;
             double mZ;

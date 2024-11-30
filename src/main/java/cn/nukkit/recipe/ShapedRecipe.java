@@ -146,7 +146,8 @@ public class ShapedRecipe extends CraftingRecipe {
      * @return the ingredient
      */
     public ItemDescriptor getIngredient(int x, int y) {
-        var res = this.shapedIngredients.get(this.shape[y].charAt(x));
+        String shape = this.shape[y];
+        var res = x < shape.length() ? this.shapedIngredients.get(shape.charAt(x)) : null;
         return res == null ? new DefaultDescriptor(Item.AIR) : res;
     }
 

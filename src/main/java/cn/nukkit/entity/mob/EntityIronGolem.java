@@ -80,4 +80,9 @@ public class EntityIronGolem extends EntityMob implements EntityWalkable {
 
         return drops;
     }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 0;
+    }
 }

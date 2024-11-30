@@ -225,13 +225,10 @@ public class EntityThrownTrident extends SlenderProjectile {
         if (this.noClip) {
             if (this.canReturnToShooter()) {
                 Entity shooter = this.shootingEntity;
-                double force = 0.05d * (double) loyaltyLevel;
                 Vector3 vector3 = new Vector3(shooter.x - this.x, shooter.y + shooter.getEyeHeight() - this.y, shooter.z - this.z);
                 BVector3 bVector = BVector3.fromPos(vector3);
-                vector3 = bVector.addToPos();
-                this.setPosition(new Vector3(this.x + vector3.x * force, this.y + vector3.y * force, this.z + vector3.z * force));
                 this.setRotation(bVector.getYaw(), bVector.getPitch());
-                this.setMotion(vector3.multiply(force));
+                this.setMotion(this.getMotion().multiply(-1));
                 hasUpdate = true;
             } else {
                 if (level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS) && !this.closed) {
@@ -267,12 +264,11 @@ public class EntityThrownTrident extends SlenderProjectile {
 
     @Override
     public void onCollideWithEntity(Entity entity) {
-        if (this.noClip) {
+        if (this.noClip || this.closed) {
             return;
         }
 
         if (this.alreadyCollided) {
-            this.move(this.motionX, this.motionY, this.motionZ);
             return;
         }
 
@@ -291,6 +287,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         entity.attack(ev);
         this.getLevel().addSound(this, Sound.ITEM_TRIDENT_HIT);
         this.hadCollision = true;
+        this.alreadyCollided = true;
         this.setCollisionPos(this);
         this.setMotion(new Vector3(this.getMotion().getX() * -0.01, this.getMotion().getY() * -0.1, this.getMotion().getZ() * -0.01));
 

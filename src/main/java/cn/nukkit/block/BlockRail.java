@@ -91,7 +91,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
             var connect = checkRailsConnected().values();
             List<BlockFace> railFace = new ArrayList<>();
             for (BlockFace face : connect) {
-                if (this.getSide(face.getOpposite()).getId().equals(BlockID.RAIL)) {
+                if (this.getSide(face.getOpposite()) instanceof BlockRail) {
                     railFace.add(face.getOpposite());
                 } else {
                     railFace.add(face);

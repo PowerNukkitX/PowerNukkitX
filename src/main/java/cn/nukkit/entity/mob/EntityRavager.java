@@ -82,4 +82,9 @@ public class EntityRavager extends EntityMob implements EntityWalkable {
     public boolean isPreventingSleep(Player player) {
         return true;
     }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 20;
+    }
 }

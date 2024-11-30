@@ -33,5 +33,6 @@ public class SetInstruction implements CameraInstruction {
     @NotNull
     private final CameraPreset preset;
     private final Vector2f viewOffset;
+    private final Vector3f entityOffset;
     private final OptionalValue<Boolean> defaultPreset = OptionalValue.empty();
 }

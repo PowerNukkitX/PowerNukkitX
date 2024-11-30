@@ -179,7 +179,7 @@ public class BlockSnowLayer extends BlockFallable {
         level.setBlock(this, 0, layer1, true, false);
         level.setBlock(this, 1, get(AIR), true, false);
         level.setBlock(this, 0, newBlock, true, false);
-        Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+        getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             Player[] target = level.getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(Player.EMPTY_ARRAY);
             Vector3[] blocks = {getLocation()};
             level.sendBlocks(target, blocks, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0, false);

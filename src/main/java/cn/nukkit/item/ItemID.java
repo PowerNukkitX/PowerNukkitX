@@ -69,6 +69,8 @@ public interface ItemID {
 
     String BIRCH_SIGN = "minecraft:birch_sign";
 
+    String BLACK_BUNDLE = "minecraft:black_bundle";
+
     String BLACK_DYE = "minecraft:black_dye";
 
     String BLADE_POTTERY_SHERD = "minecraft:blade_pottery_sherd";
@@ -80,6 +82,8 @@ public interface ItemID {
     String BLAZE_SPAWN_EGG = "minecraft:blaze_spawn_egg";
 
     String BLEACH = "minecraft:bleach";
+
+    String BLUE_BUNDLE = "minecraft:blue_bundle";
 
     String BLUE_DYE = "minecraft:blue_dye";
 
@@ -111,11 +115,15 @@ public interface ItemID {
 
     String BRICK = "minecraft:brick";
 
+    String BROWN_BUNDLE = "minecraft:brown_bundle";
+
     String BROWN_DYE = "minecraft:brown_dye";
 
     String BRUSH = "minecraft:brush";
 
     String BUCKET = "minecraft:bucket";
+
+    String BUNDLE = "minecraft:bundle";
 
     String BURN_POTTERY_SHERD = "minecraft:burn_pottery_sherd";
 
@@ -217,11 +225,15 @@ public interface ItemID {
 
     String CREEPER_BANNER_PATTERN = "minecraft:creeper_banner_pattern";
 
+    String CREEPER_HEAD = "minecraft:creeper_head";
+
     String CREEPER_SPAWN_EGG = "minecraft:creeper_spawn_egg";
 
     String CRIMSON_SIGN = "minecraft:crimson_sign";
 
     String CROSSBOW = "minecraft:crossbow";
+
+    String CYAN_BUNDLE = "minecraft:cyan_bundle";
 
     String CYAN_DYE = "minecraft:cyan_dye";
 
@@ -266,6 +278,8 @@ public interface ItemID {
     String DOUBLE_PLANT = "minecraft:double_plant";
 
     String DRAGON_BREATH = "minecraft:dragon_breath";
+
+    String DRAGON_HEAD = "minecraft:dragon_head";
 
     String DRIED_KELP = "minecraft:dried_kelp";
 
@@ -399,7 +413,11 @@ public interface ItemID {
 
     String GOLDEN_SWORD = "minecraft:golden_sword";
 
+    String GRAY_BUNDLE = "minecraft:gray_bundle";
+
     String GRAY_DYE = "minecraft:gray_dye";
+
+    String GREEN_BUNDLE = "minecraft:green_bundle";
 
     String GREEN_DYE = "minecraft:green_dye";
 
@@ -495,9 +513,15 @@ public interface ItemID {
 
     String LEAVES2 = "minecraft:leaves2";
 
+    String LIGHT_BLUE_BUNDLE = "minecraft:light_blue_bundle";
+
     String LIGHT_BLUE_DYE = "minecraft:light_blue_dye";
 
+    String LIGHT_GRAY_BUNDLE = "minecraft:light_gray_bundle";
+
     String LIGHT_GRAY_DYE = "minecraft:light_gray_dye";
+
+    String LIME_BUNDLE = "minecraft:lime_bundle";
 
     String LIME_DYE = "minecraft:lime_dye";
 
@@ -512,6 +536,8 @@ public interface ItemID {
     String LOG2 = "minecraft:log2";
 
     String MACE = "minecraft:mace";
+
+    String MAGENTA_BUNDLE = "minecraft:magenta_bundle";
 
     String MAGENTA_DYE = "minecraft:magenta_dye";
 
@@ -633,6 +659,8 @@ public interface ItemID {
 
     String OMINOUS_TRIAL_KEY = "minecraft:ominous_trial_key";
 
+    String ORANGE_BUNDLE = "minecraft:orange_bundle";
+
     String ORANGE_DYE = "minecraft:orange_dye";
 
     String PAINTING = "minecraft:painting";
@@ -653,15 +681,21 @@ public interface ItemID {
 
     String PIGLIN_BRUTE_SPAWN_EGG = "minecraft:piglin_brute_spawn_egg";
 
+    String PIGLIN_HEAD = "minecraft:piglin_head";
+
     String PIGLIN_SPAWN_EGG = "minecraft:piglin_spawn_egg";
 
     String PILLAGER_SPAWN_EGG = "minecraft:pillager_spawn_egg";
+
+    String PINK_BUNDLE = "minecraft:pink_bundle";
 
     String PINK_DYE = "minecraft:pink_dye";
 
     String PITCHER_POD = "minecraft:pitcher_pod";
 
     String PLANKS = "minecraft:planks";
+
+    String PLAYER_HEAD = "minecraft:player_head";
 
     String PLENTY_POTTERY_SHERD = "minecraft:plenty_pottery_sherd";
 
@@ -697,6 +731,8 @@ public interface ItemID {
 
     String PUMPKIN_SEEDS = "minecraft:pumpkin_seeds";
 
+    String PURPLE_BUNDLE = "minecraft:purple_bundle";
+
     String PURPLE_DYE = "minecraft:purple_dye";
 
     String PURPUR_BLOCK = "minecraft:purpur_block";
@@ -728,6 +764,8 @@ public interface ItemID {
     String RAW_IRON = "minecraft:raw_iron";
 
     String RECOVERY_COMPASS = "minecraft:recovery_compass";
+
+    String RED_BUNDLE = "minecraft:red_bundle";
 
     String RED_DYE = "minecraft:red_dye";
 
@@ -785,6 +823,8 @@ public interface ItemID {
 
     String SKELETON_HORSE_SPAWN_EGG = "minecraft:skeleton_horse_spawn_egg";
 
+    String SKELETON_SKULL = "minecraft:skeleton_skull";
+
     String SKELETON_SPAWN_EGG = "minecraft:skeleton_spawn_egg";
 
     String SKULL_BANNER_PATTERN = "minecraft:skull_banner_pattern";
@@ -817,7 +857,7 @@ public interface ItemID {
 
     String SPLASH_POTION = "minecraft:splash_potion";
 
-    String SPONGE="minecraft:sponge";
+    String SPONGE = "minecraft:sponge";
 
     String SPRUCE_BOAT = "minecraft:spruce_boat";
 
@@ -919,6 +959,8 @@ public interface ItemID {
 
     String WHEAT_SEEDS = "minecraft:wheat_seeds";
 
+    String WHITE_BUNDLE = "minecraft:white_bundle";
+
     String WHITE_DYE = "minecraft:white_dye";
 
     String WILD_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:wild_armor_trim_smithing_template";
@@ -926,6 +968,8 @@ public interface ItemID {
     String WIND_CHARGE = "minecraft:wind_charge";
 
     String WITCH_SPAWN_EGG = "minecraft:witch_spawn_egg";
+
+    String WITHER_SKELETON_SKULL = "minecraft:wither_skeleton_skull";
 
     String WITHER_SKELETON_SPAWN_EGG = "minecraft:wither_skeleton_spawn_egg";
 
@@ -955,9 +999,13 @@ public interface ItemID {
 
     String WRITTEN_BOOK = "minecraft:written_book";
 
+    String YELLOW_BUNDLE = "minecraft:yellow_bundle";
+
     String YELLOW_DYE = "minecraft:yellow_dye";
 
     String ZOGLIN_SPAWN_EGG = "minecraft:zoglin_spawn_egg";
+
+    String ZOMBIE_HEAD = "minecraft:zombie_head";
 
     String ZOMBIE_HORSE_SPAWN_EGG = "minecraft:zombie_horse_spawn_egg";
 

@@ -81,7 +81,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if (player != null && player.isSneaking() || (this.up().isAir() && blockFace.equals(BlockFace.UP) && item.isBlock() && item.getBlock() instanceof BlockSkull)) {
+        if (player != null && player.isSneaking() || (this.up().isAir() && blockFace.equals(BlockFace.UP) && item.isBlock() && item.getBlock() instanceof BlockHead)) {
             return false;
         }
         this.increaseStrength();
@@ -156,7 +156,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
             case BlockHayBlock ignored -> Instrument.BANJO;
             case BlockGlowstone ignored -> Instrument.PLING;
             default -> {
-                if (this.up() instanceof BlockSkull skull) {
+                if (this.up() instanceof BlockHead skull) {
                     int meta = 0;
                     if (skull.getBlockEntity() != null) {
                         meta = skull.getBlockEntity().namedTag.getByte("SkullType");

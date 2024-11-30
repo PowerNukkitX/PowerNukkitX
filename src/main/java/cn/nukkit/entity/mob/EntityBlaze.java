@@ -8,6 +8,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * @author PikyCZ
  */
@@ -58,5 +60,10 @@ public class EntityBlaze extends EntityMob implements EntityFlyable {
     @Override
     public Item[] getDrops() {
         return new Item[]{Item.get(Item.BLAZE_ROD, 0, Utils.rand(0, 1))};
+    }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 10;
     }
 }

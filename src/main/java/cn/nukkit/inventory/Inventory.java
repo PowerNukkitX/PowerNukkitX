@@ -7,8 +7,10 @@ import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jline.utils.Log;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -75,10 +77,6 @@ public interface Inventory {
      * @return the item
      */
     boolean setItem(int index, Item item, boolean send);
-
-    default boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
-        return setItem(index, item, send);
-    }
 
     /**
      * Add some items to the inventory
@@ -284,6 +282,10 @@ public interface Inventory {
 
     @ApiStatus.Internal
     default ContainerSlotType getSlotType(int nativeSlot) {
-        return slotTypeMap().get(nativeSlot);
+        ContainerSlotType type = slotTypeMap().get(nativeSlot);
+        if (type == null) {
+            throw new RuntimeException("ContainerSlotType " + nativeSlot + " does not exist!");
+        }
+        return type;
     }
 }

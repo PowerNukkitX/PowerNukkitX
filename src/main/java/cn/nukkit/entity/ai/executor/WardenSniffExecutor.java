@@ -19,7 +19,7 @@ public class WardenSniffExecutor implements IBehaviorExecutor {
 
     @Override
     public boolean execute(EntityIntelligent entity) {
-        if (Server.getInstance().getTick() >= this.endTime) {
+        if (entity.getLevel().getTick() >= this.endTime) {
             sniff(entity);
             return false;
         } else {
@@ -29,7 +29,7 @@ public class WardenSniffExecutor implements IBehaviorExecutor {
 
     @Override
     public void onStart(EntityIntelligent entity) {
-        this.endTime = Server.getInstance().getTick() + this.duration;
+        this.endTime = entity.getLevel().getTick() + this.duration;
         entity.setDataFlag(EntityFlag.SNIFFING, true);
         entity.setDataFlagExtend(EntityFlag.SNIFFING, true);
         entity.level.addSound(entity.clone(), Sound.MOB_WARDEN_SNIFF);

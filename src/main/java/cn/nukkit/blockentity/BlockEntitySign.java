@@ -238,6 +238,10 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             return false;
         }
         if (player.isOpenSignFront() == null) return false;
+        if(!nbt.containsCompound(TAG_FRONT_TEXT) || !nbt.containsCompound(TAG_BACK_TEXT)) {
+            return false;
+        }
+
         String[] lines = new String[4];
         String[] splitLines = player.isOpenSignFront() ? nbt.getCompound(TAG_FRONT_TEXT).getString(TAG_TEXT_BLOB).split("\n", 4)
                 : nbt.getCompound(TAG_BACK_TEXT).getString(TAG_TEXT_BLOB).split("\n", 4);

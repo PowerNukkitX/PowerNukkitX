@@ -12,6 +12,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -36,7 +37,7 @@ public abstract class EntityAnimal extends EntityIntelligent {
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (isBreedingItem(item)) {
             getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
-            getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FEED_TIME, Server.getInstance().getTick());
+            getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FEED_TIME, getLevel().getTick());
             sendBreedingAnimation(item);
             item.count--;
             return player.getInventory().setItemInHand(item) && superResult;
@@ -67,6 +68,11 @@ public abstract class EntityAnimal extends EntityIntelligent {
     @Override
     protected double getStepHeight() {
         return 0.5;
+    }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return ThreadLocalRandom.current().nextInt(3) + 1;
     }
 
 }

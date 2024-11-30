@@ -93,7 +93,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     }
 
     public BlockEntity(IChunk chunk, CompoundTag nbt) {
-        if (chunk == null || chunk.getProvider() == null) {
+        if (chunk == null || chunk.getProvider() == null || chunk.getProvider().getLevel() == null) {
             throw new ChunkException("Invalid garbage Chunk given to Block Entity");
         }
 
@@ -198,7 +198,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         chunk.setChanged();
 
         if (!this.getLevelBlock().isAir()) {
-            getLevel().getServer().getScheduler().scheduleTask(new Task() {
+            getLevel().getScheduler().scheduleTask(new Task() {
                 @Override
                 public void onRun(int currentTick) {
                     if (isValid() && isBlockEntityValid()) {

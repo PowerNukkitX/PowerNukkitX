@@ -31,6 +31,7 @@ import cn.nukkit.utils.TickCachedBlockIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class EntityLiving extends Entity implements EntityDamageable {
     public final static float DEFAULT_SPEED = 0.1f;
@@ -202,6 +203,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             for (cn.nukkit.item.Item item : ev.getDrops()) {
                 this.getLevel().dropItem(this, item);
             }
+            this.getLevel().dropExpOrb(this, getExperienceDrops());
         }
     }
 
@@ -310,6 +312,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
      */
     public Item[] getDrops() {
         return Item.EMPTY_ARRAY;
+    }
+
+    public Integer getExperienceDrops() {
+        return 0;
     }
 
     public Block[] getLineOfSight(int maxDistance) {

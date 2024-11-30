@@ -123,6 +123,11 @@ public class ZippedResourcePack extends AbstractResourcePack {
     }
 
     @Override
+    public String cdnUrl() {
+        return "";
+    }
+
+    @Override
     public int getPackSize() {
         return (int) this.file.length();
     }

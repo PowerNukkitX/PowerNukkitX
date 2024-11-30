@@ -138,7 +138,7 @@ public class EntityHuman extends EntityHumanType {
             this.addFreezingTicks(-1);
             this.setMovementSpeed((float) Math.min(Player.DEFAULT_SPEED, getMovementSpeed() + 3.58e-4));//This magic number is to change the player's 0.05 speed within 140tick
         }
-        if (this.getFreezingTicks() == 140 && this.getServer().getTick() % 40 == 0) {
+        if (this.getFreezingTicks() == 140 && this.getLevel().getTick() % 40 == 0) {
             this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.FREEZING, getFrostbiteInjury()));
         }
         return hasUpdate;

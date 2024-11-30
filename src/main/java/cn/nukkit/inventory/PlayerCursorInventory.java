@@ -42,7 +42,6 @@ public class PlayerCursorInventory extends BaseInventory {
         InventorySlotPacket pk = new InventorySlotPacket();
         pk.item = this.getUnclonedItem(index);
         pk.slot = index;
-        pk.dynamicContainerSize = this.getSize();
 
         for (Player player : players) {
             int id = SpecialWindowId.CURSOR.getId();
@@ -66,7 +65,6 @@ public class PlayerCursorInventory extends BaseInventory {
                 ContainerSlotType.CURSOR,
                 id
         );
-        inventorySlotPacket.dynamicContainerSize = this.getSize();
         Server.broadcastPacket(players, inventorySlotPacket);
     }
 }

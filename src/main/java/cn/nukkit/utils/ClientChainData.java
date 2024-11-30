@@ -109,6 +109,10 @@ public final class ClientChainData implements LoginChainData {
         }
     }
 
+    public String getTitleId() {
+        return titleId;
+    }
+
     private boolean xboxAuthed;
 
     @Override
@@ -145,6 +149,16 @@ public final class ClientChainData implements LoginChainData {
     }
 
     @Override
+    public int getMaxViewDistance() {
+        return this.maxViewDistance;
+    }
+
+    @Override
+    public int getMemoryTier() {
+        return this.memoryTier;
+    }
+
+    @Override
     public JsonObject getRawData() {
         return rawData;
     }
@@ -178,6 +192,7 @@ public final class ClientChainData implements LoginChainData {
     private String username;
     private UUID clientUUID;
     private String xuid;
+    private String titleId;
 
     private static ECPublicKey generateKey(String base64) throws NoSuchAlgorithmException, InvalidKeySpecException {
         return (ECPublicKey) KeyFactory.getInstance("EC").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(base64)));
@@ -197,6 +212,8 @@ public final class ClientChainData implements LoginChainData {
     private int defaultInputMode;
     private String waterdogIP;
     private String waterdogXUID;
+    private int maxViewDistance;
+    private int memoryTier;
 
     private int UIProfile;
 
@@ -204,7 +221,7 @@ public final class ClientChainData implements LoginChainData {
 
     private JsonObject rawData;
 
-    private BinaryStream bs;
+    private final BinaryStream bs;
 
     private ClientChainData(BinaryStream buffer) {
         buffer.setOffset(0);
@@ -235,6 +252,8 @@ public final class ClientChainData implements LoginChainData {
         if (skinToken.has("CapeData")) this.capeData = skinToken.get("CapeData").getAsString();
         if (skinToken.has("Waterdog_IP")) this.waterdogIP = skinToken.get("Waterdog_IP").getAsString();
         if (skinToken.has("Waterdog_XUID")) this.waterdogXUID = skinToken.get("Waterdog_XUID").getAsString();
+        if (skinToken.has("MaxViewDistance")) this.maxViewDistance = skinToken.get("MaxViewDistance").getAsInt();
+        if (skinToken.has("MemoryTier")) this.memoryTier = skinToken.get("MemoryTier").getAsInt();
 
         if (this.isWaterdog()) {
             xboxAuthed = true;
@@ -273,6 +292,7 @@ public final class ClientChainData implements LoginChainData {
                 if (extra.has("displayName")) this.username = extra.get("displayName").getAsString();
                 if (extra.has("identity")) this.clientUUID = UUID.fromString(extra.get("identity").getAsString());
                 if (extra.has("XUID")) this.xuid = extra.get("XUID").getAsString();
+                if (extra.has("titleId")) this.titleId = extra.get("titleId").getAsString();
             }
             if (chainMap.has("identityPublicKey"))
                 this.identityPublicKey = chainMap.get("identityPublicKey").getAsString();

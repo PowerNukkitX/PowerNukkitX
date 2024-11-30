@@ -1,6 +1,7 @@
 package cn.nukkit.level;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.player.PlayerChunkRequestEvent;
 import cn.nukkit.level.format.IChunk;
@@ -15,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -106,7 +109,7 @@ public final class PlayerChunkManager {
         chunkSendQueue.clear();
         //已经发送的区块不再二次发送
         Sets.SetView<Long> difference = Sets.difference(inRadiusChunks, sentChunks);
-        for(Long v : difference) {
+        for (Long v : difference) {
             chunkSendQueue.enqueue(v.longValue());
         }
     }
@@ -127,9 +130,9 @@ public final class PlayerChunkManager {
     }
 
     private void removeOutOfRadiusChunks() {
-        Sets.SetView<Long> difference = Sets.difference(sentChunks, inRadiusChunks);
-        //卸载超出范围的区块
-        for(Long hash : difference) {
+        Set<Long> difference = new HashSet<>(Sets.difference(sentChunks, inRadiusChunks));
+        // Unload blocks that are out of range
+        for (Long hash : difference) {
             int x = Level.getHashX(hash);
             int z = Level.getHashZ(hash);
             if (player.level.unregisterChunkLoader(player, x, z)) {
@@ -140,7 +143,7 @@ public final class PlayerChunkManager {
                 }
             }
         }
-        //剩下sentChunks和inRadiusChunks的交集
+        // The intersection of the remaining sentChunks and inRadiusChunks
         sentChunks.removeAll(difference);
     }
 

@@ -292,7 +292,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                 return true;
             }
         }
-        if (this.getLastExecution() != this.getServer().getTick()) {
+        if (this.getLastExecution() != this.getLevel().getTick()) {
             this.setConditionMet();
             if (this.isConditionMet() && (this.isAuto() || this.isPowered())) {
                 String cmd = this.getCommand();
@@ -320,7 +320,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                 }
             }
 
-            this.lastExecution = this.getServer().getTick();
+            this.lastExecution = this.getLevel().getTick();
             this.lastOutputCommandMode = this.getMode();
             this.lastOutputCondionalMode = this.isConditional();
             this.lastOutputRedstoneMode = !this.isAuto();

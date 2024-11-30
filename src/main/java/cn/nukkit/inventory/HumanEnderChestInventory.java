@@ -81,6 +81,13 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
     }
 
     @Override
+    public Map<Integer, ContainerSlotType> slotTypeMap() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        map.put(SpecialWindowId.ENDER_CHEST.getId(), ContainerSlotType.ANVIL_INPUT);
+        return map;
+    }
+
+    @Override
     public void onClose(Player who) {
         if (who != this.getHolder()) {
             return;

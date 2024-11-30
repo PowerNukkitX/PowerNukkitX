@@ -62,4 +62,9 @@ public class EntityWither extends EntityMob implements EntityFlyable, EntitySmit
     public Item[] getDrops() {
         return new Item[]{Item.get(Item.NETHER_STAR)};
     }
+
+    @Override
+    public Integer getExperienceDrops() {
+        return 50;
+    }
 }

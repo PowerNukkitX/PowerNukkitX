@@ -3,6 +3,7 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -18,9 +19,9 @@ public class InventorySlotPacket extends DataPacket {
 
     public int inventoryId;
     public int slot;
+    public FullContainerName fullContainerName = new FullContainerName(ContainerSlotType.ANVIL_INPUT, null);
+    public Item storageItem = Item.AIR; // is air if the item is not a bundle
     public Item item;
-    public FullContainerName fullContainerName;
-    public int dynamicContainerSize;
 
 
     @Override
@@ -33,7 +34,7 @@ public class InventorySlotPacket extends DataPacket {
         this.inventoryId = byteBuf.readUnsignedVarInt();
         this.slot = byteBuf.readUnsignedVarInt();
         this.fullContainerName = byteBuf.readFullContainerName();
-        this.dynamicContainerSize = byteBuf.readUnsignedVarInt();
+        this.storageItem = byteBuf.readSlot();
         this.item = byteBuf.readSlot();
     }
 
@@ -42,7 +43,7 @@ public class InventorySlotPacket extends DataPacket {
         byteBuf.writeUnsignedVarInt(this.inventoryId);
         byteBuf.writeUnsignedVarInt(this.slot);
         byteBuf.writeFullContainerName(this.fullContainerName);
-        byteBuf.writeUnsignedVarInt(this.dynamicContainerSize);
+        byteBuf.writeSlot(this.storageItem);
         byteBuf.writeSlot(this.item);
     }
 

@@ -35,7 +35,7 @@ public class PlayerAuthInputPacket extends DataPacket {
     public InputMode inputMode;
     public ClientPlayMode playMode;
     public AuthInteractionModel interactionModel;
-    public Vector3f vrGazeDirection;
+    public Vector2f interactRotation;
     public long tick;
     public Vector3f delta;
     /**
@@ -54,6 +54,7 @@ public class PlayerAuthInputPacket extends DataPacket {
      * @since 662
      */
     public Vector2f vehicleRotation;
+    public Vector3f cameraOrientation;
 
 
     @Override
@@ -76,13 +77,11 @@ public class PlayerAuthInputPacket extends DataPacket {
             }
         }
 
-        this.inputMode = InputMode.fromOrdinal((int) byteBuf.readUnsignedVarInt());
-        this.playMode = ClientPlayMode.fromOrdinal((int) byteBuf.readUnsignedVarInt());
-        this.interactionModel = AuthInteractionModel.fromOrdinal((int) byteBuf.readUnsignedVarInt());
+        this.inputMode = InputMode.fromOrdinal(byteBuf.readUnsignedVarInt());
+        this.playMode = ClientPlayMode.fromOrdinal(byteBuf.readUnsignedVarInt());
+        this.interactionModel = AuthInteractionModel.fromOrdinal(byteBuf.readUnsignedVarInt());
 
-        if (this.playMode == ClientPlayMode.REALITY) {
-            this.vrGazeDirection = byteBuf.readVector3f();
-        }
+        this.interactRotation = byteBuf.readVector2f();
 
         this.tick = byteBuf.readUnsignedVarLong();
         this.delta = byteBuf.readVector3f();
@@ -116,6 +115,8 @@ public class PlayerAuthInputPacket extends DataPacket {
 
         // since 1.19.70-r1, v575
         this.analogMoveVector = byteBuf.readVector2f();
+
+        this.cameraOrientation = byteBuf.readVector3f();
     }
 
     @Override

@@ -268,6 +268,10 @@ public interface PacketHandler {
     default void handle(MoveEntityDeltaPacket pk) {
     }
 
+    default void handle(MovementEffectPacket pk) {
+
+    }
+
     default void handle(MovePlayerPacket pk) {
     }
 

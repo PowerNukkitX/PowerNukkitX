@@ -47,6 +47,10 @@ public interface LoginChainData {
 
     String getWaterdogIP();
 
+    int getMaxViewDistance();
+
+    int getMemoryTier();
+
 
     JsonObject getRawData();
 }

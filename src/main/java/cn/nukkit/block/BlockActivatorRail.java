@@ -1,10 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.level.Level;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.OptionalBoolean;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.RedstoneComponent;
+
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DATA_BIT;
@@ -50,9 +52,9 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
             // Avoid Block mistake
             if (wasPowered != isPowered) {
                 setActive(isPowered);
-                RedstoneComponent.updateAroundRedstone(down());
+                RedstoneComponent.updateAroundRedstone(down(), BlockFace.UP);
                 if (getOrientation().isAscending()) {
-                    RedstoneComponent.updateAroundRedstone(up());
+                    RedstoneComponent.updateAroundRedstone(up(), BlockFace.DOWN);
                 }
             }
             return type;
