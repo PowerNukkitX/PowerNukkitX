@@ -12,7 +12,9 @@ import cn.nukkit.level.generator.object.NewJungleTree;
 import cn.nukkit.level.generator.object.ObjectDarkOakTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectJungleBigTree;
+import cn.nukkit.level.generator.object.ObjectPaleOakTree;
 import cn.nukkit.level.generator.object.ObjectSavannaTree;
+import cn.nukkit.level.generator.object.ObjectSmallPaleOakTree;
 import cn.nukkit.level.generator.object.legacytree.LegacyBigSpruceTree;
 import cn.nukkit.level.generator.object.legacytree.LegacyTreeGenerator;
 import cn.nukkit.level.particle.BoneMealParticle;
@@ -145,6 +147,18 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
 
                 if (!bigTree) {
                     return;
+                }
+                break;
+            case PALE_OAK:
+                if ((vector2 = this.findSaplings(WoodType.PALE_OAK)) != null) {
+                    vector3 = this.add(vector2.getFloorX(), 0, vector2.getFloorY());
+                    generator = new ObjectPaleOakTree();
+                    bigTree = true;
+                }
+
+                if (!bigTree) {
+                    generator = new ObjectSmallPaleOakTree(4, 7);
+                    vector3 = this.add(0, 0, 0);
                 }
                 break;
             case SPRUCE:

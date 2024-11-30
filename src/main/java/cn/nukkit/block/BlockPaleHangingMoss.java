@@ -29,6 +29,6 @@ public class BlockPaleHangingMoss extends BlockHanging {
 
     @Override
     protected boolean isSupportValid() {
-        return this.up().isSolid();
+        return this.up().isSolid() || this.up() instanceof BlockPaleHangingMoss;
     }
 }
