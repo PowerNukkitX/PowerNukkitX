@@ -5,7 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockHangingRoots extends BlockRoots {
+public class BlockHangingRoots extends BlockHanging {
     public static final BlockProperties PROPERTIES = new BlockProperties(HANGING_ROOTS);
 
     @Override

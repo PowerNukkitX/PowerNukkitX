@@ -64,6 +64,9 @@ public interface PacketHandler {
     default void handle(CameraAimAssistPacket pk) {
     }
 
+    default void handle(CameraAimAssistPresetsPacket pk) {
+    }
+
     default void handle(CameraInstructionPacket pk) {
     }
 

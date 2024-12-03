@@ -42,6 +42,10 @@ public class BlockManager {
         return block.getId();
     }
 
+    public Block getBlockAt(Vector3 vector3) {
+        return getBlockAt(vector3.getFloorX(), vector3.getFloorY(), vector3.getFloorZ());
+    }
+
     public Block getBlockAt(int x, int y, int z) {
         return this.caches.computeIfAbsent(hashXYZ(x, y, z, 0), k -> level.getBlock(x, y, z));
     }

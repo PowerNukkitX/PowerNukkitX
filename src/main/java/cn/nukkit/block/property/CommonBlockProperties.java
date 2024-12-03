@@ -274,6 +274,18 @@ public interface CommonBlockProperties {
 
     EnumPropertyType<WallConnectionType> WALL_CONNECTION_TYPE_WEST = EnumPropertyType.of("wall_connection_type_west", WallConnectionType.class, WallConnectionType.values()[0]);
 
+    EnumPropertyType<PaleMossCarpetSide> PALE_MOSS_CARPET_SIDE_EAST = EnumPropertyType.of("pale_moss_carpet_side_east", PaleMossCarpetSide.class, PaleMossCarpetSide.values()[0]);
+
+    EnumPropertyType<PaleMossCarpetSide> PALE_MOSS_CARPET_SIDE_NORTH = EnumPropertyType.of("pale_moss_carpet_side_north", PaleMossCarpetSide.class, PaleMossCarpetSide.values()[0]);
+
+    EnumPropertyType<PaleMossCarpetSide> PALE_MOSS_CARPET_SIDE_SOUTH = EnumPropertyType.of("pale_moss_carpet_side_south", PaleMossCarpetSide.class, PaleMossCarpetSide.values()[0]);
+
+    EnumPropertyType<PaleMossCarpetSide> PALE_MOSS_CARPET_SIDE_WEST = EnumPropertyType.of("pale_moss_carpet_side_west", PaleMossCarpetSide.class, PaleMossCarpetSide.values()[0]);
+
+    BooleanPropertyType TIP = BooleanPropertyType.of("tip", false);
+
+    BooleanPropertyType NATURAL = BooleanPropertyType.of("natural", false);
+
     BooleanPropertyType WALL_POST_BIT = BooleanPropertyType.of("wall_post_bit", false);
 
     IntPropertyType WEEPING_VINES_AGE = IntPropertyType.of("weeping_vines_age", 0, 25, 0);

@@ -145,7 +145,7 @@ public class VanillaRecipeParser {
             for (var tag : tags) {
                 Recipe recipe = switch (tag) {
                     case CRAFTING_TABLE_TAG -> new ShapelessRecipe(description(recipeData), prior, re, itemDescriptors);
-                    case SHULKER_BOX_TAG -> new ShulkerBoxRecipe(description(recipeData), prior, re, itemDescriptors);
+                    case SHULKER_BOX_TAG -> new UserDataShapelessRecipe(description(recipeData), prior, re, itemDescriptors);
                     case STONE_CUTTER_TAG ->
                             new StonecutterRecipe(description(recipeData), prior, re, itemDescriptors.get(0).toItem());
                     case CARTOGRAPHY_TABLE_TAG ->

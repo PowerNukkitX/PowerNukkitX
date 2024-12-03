@@ -10,11 +10,13 @@ import cn.nukkit.network.protocol.types.ClientPlayMode;
 import cn.nukkit.network.protocol.types.InputMode;
 import cn.nukkit.network.protocol.types.PlayerActionType;
 import cn.nukkit.network.protocol.types.PlayerBlockActionData;
+import cn.nukkit.network.protocol.types.PlayerInputTick;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.math.BigInteger;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
@@ -36,7 +38,7 @@ public class PlayerAuthInputPacket extends DataPacket {
     public ClientPlayMode playMode;
     public AuthInteractionModel interactionModel;
     public Vector2f interactRotation;
-    public long tick;
+    public PlayerInputTick tick;
     public Vector3f delta;
     /**
      * {@link #inputData} must contain {@link AuthInputAction#PERFORM_ITEM_STACK_REQUEST} in order for this to not be null.
@@ -56,6 +58,10 @@ public class PlayerAuthInputPacket extends DataPacket {
     public Vector2f vehicleRotation;
     public Vector3f cameraOrientation;
 
+    /**
+     * @since 766
+     */
+    public Vector2f rawMoveVector;
 
     @Override
     public int pid() {
@@ -70,9 +76,9 @@ public class PlayerAuthInputPacket extends DataPacket {
         this.motion = new Vector2(byteBuf.readFloatLE(), byteBuf.readFloatLE());
         this.headYaw = byteBuf.readFloatLE();
 
-        long inputData = byteBuf.readUnsignedVarLong();
+        BigInteger inputData = byteBuf.readUnsignedBigVarInt(AuthInputAction.size());
         for (int i = 0; i < AuthInputAction.size(); i++) {
-            if ((inputData & (1L << i)) != 0) {
+            if (inputData.testBit(i)) {
                 this.inputData.add(AuthInputAction.from(i));
             }
         }
@@ -83,7 +89,7 @@ public class PlayerAuthInputPacket extends DataPacket {
 
         this.interactRotation = byteBuf.readVector2f();
 
-        this.tick = byteBuf.readUnsignedVarLong();
+        this.tick = byteBuf.readPlayerInputTick();
         this.delta = byteBuf.readVector3f();
 
         if (this.inputData.contains(AuthInputAction.PERFORM_ITEM_STACK_REQUEST)) {
@@ -117,6 +123,8 @@ public class PlayerAuthInputPacket extends DataPacket {
         this.analogMoveVector = byteBuf.readVector2f();
 
         this.cameraOrientation = byteBuf.readVector3f();
+
+        this.rawMoveVector = byteBuf.readVector2f();
     }
 
     @Override

@@ -30,12 +30,12 @@ public class ItemStackResponsePacket extends DataPacket {
                     byteBuf.writeByte((byte) item.getCount());
                     byteBuf.writeVarInt(item.getStackNetworkId());
                     byteBuf.writeString(item.getCustomName());
+                    byteBuf.writeString(item.getFilteredCustomName());
                     byteBuf.writeVarInt(item.getDurabilityCorrection());
                 });
             });
         });
     }
-
     @Override
     public void decode(HandleByteBuf byteBuf) {
         throw new UnsupportedOperationException();//client bound

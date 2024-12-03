@@ -92,6 +92,8 @@ public final class ServerSettings extends OkaeriConfig {
         boolean command = false;
         @Comment("nukkit.server.settings.debugSettings.ignoredPackets")
         ArrayList<String> ignoredPackets = new ArrayList<>();
+        @Comment("nukkit.server.settings.debugSettings.allowBeta")
+        boolean allowBeta = false;
     }
 
     @EqualsAndHashCode(callSuper = true)

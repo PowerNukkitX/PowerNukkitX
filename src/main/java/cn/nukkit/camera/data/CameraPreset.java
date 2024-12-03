@@ -7,7 +7,8 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
-import cn.nukkit.network.protocol.types.CameraAudioListener;
+import cn.nukkit.network.protocol.types.camera.CameraAudioListener;
+import cn.nukkit.network.protocol.types.camera.aimassist.CameraPresetAimAssist;
 import cn.nukkit.utils.OptionalValue;
 import lombok.Builder;
 import lombok.Getter;
@@ -92,23 +93,29 @@ public final class CameraPreset {
     @NotNull
     private final OptionalValue<Boolean> snapToTarget;
     @Nullable
-    private final Vector2f viewOffset;
-    @Nullable
-    private final Vector3f entityOffset;
-    @Nullable
     private final Vector2f horizontalRotationLimit;
     @Nullable
     private final Vector2f verticalRotationLimit;
     @NotNull
     private final OptionalValue<Boolean> continueTargeting;
     @NotNull
-    private final OptionalValue<Boolean> alignTargetAndCameraForward;
+    private final OptionalValue<Float> blockListeningRadius;
+    @Nullable
+    private final Vector2f viewOffset;
+    @Nullable
+    private final Vector3f entityOffset;
     @Nullable
     private final Float radius;
     @Nullable
     private final CameraAudioListener listener;
     @NotNull
     private final OptionalValue<Boolean> playEffect;
+    @NotNull
+    private final OptionalValue<Boolean> alignTargetAndCameraForward;
+    @NotNull
+    private final OptionalValue<CameraPresetAimAssist> aimAssist;
+
+
     private int id = 0;
 
     /**
@@ -127,8 +134,10 @@ public final class CameraPreset {
                 null,
                 null,
                 null,
+                null,
                 listener,
                 playEffect == null ? null : playEffect.orElseGet(null),
+                null,
                 null,
                 null,
                 null,
@@ -144,6 +153,7 @@ public final class CameraPreset {
             @Nullable Float pitch,
             @Nullable Float rotationSpeed,
             @Nullable Boolean snapToTarget,
+            @Nullable Float blockListeningRadius,
             @Nullable Vector2f viewOffset,
             @Nullable Vector3f entityOffset,
             @Nullable Float radius,
@@ -152,7 +162,8 @@ public final class CameraPreset {
             @Nullable Vector2f horizontalRotationLimit,
             @Nullable Vector2f verticalRotationLimit,
             @Nullable Boolean continueTargeting,
-            @Nullable Boolean alignTargetAndCameraForward
+            @Nullable Boolean alignTargetAndCameraForward,
+            @Nullable CameraPresetAimAssist aimAssist
     ) {
         this.identifier = identifier;
         this.inheritFrom = inheritFrom != null ? inheritFrom : "";
@@ -161,6 +172,7 @@ public final class CameraPreset {
         this.pitch = pitch;
         this.rotationSpeed = rotationSpeed;
         this.snapToTarget = OptionalValue.ofNullable(snapToTarget);
+        this.blockListeningRadius = OptionalValue.ofNullable(blockListeningRadius);
         this.viewOffset = viewOffset;
         this.entityOffset = entityOffset;
         this.radius = radius;
@@ -170,5 +182,6 @@ public final class CameraPreset {
         this.verticalRotationLimit = verticalRotationLimit;
         this.continueTargeting = OptionalValue.ofNullable(continueTargeting);
         this.alignTargetAndCameraForward = OptionalValue.ofNullable(alignTargetAndCameraForward);
+        this.aimAssist = OptionalValue.ofNullable(aimAssist);
     }
 }

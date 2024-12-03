@@ -17,5 +17,7 @@ public enum WoodType {
 
     OAK,
 
-    SPRUCE
+    SPRUCE,
+
+    PALE_OAK
 }

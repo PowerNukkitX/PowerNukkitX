@@ -249,6 +249,8 @@ public interface EntityID {
 
   String BOGGED = "minecraft:bogged";
 
+  String CREAKING = "minecraft:creaking";
+
   String OMINOUS_ITEM_SPAWNER = "minecraft:ominous_item_spawner";
 
   String TRADER_LLAMA = "minecraft:trader_llama";

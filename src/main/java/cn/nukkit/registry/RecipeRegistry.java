@@ -1,6 +1,5 @@
 package cn.nukkit.registry;
 
-import ca.solostudios.strata.parser.tokenizer.Char;
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -32,7 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 @Slf4j
 @SuppressWarnings("unchecked")
@@ -433,7 +431,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         r.add(recipe);
         ++RECIPE_COUNT;
         switch (recipe.getType()) {
-            case STONECUTTER, SHAPELESS, CARTOGRAPHY, SHULKER_BOX, SMITHING_TRANSFORM, SMITHING_TRIM,
+            case STONECUTTER, SHAPELESS, CARTOGRAPHY, USER_DATA_SHAPELESS_RECIPE, SMITHING_TRANSFORM, SMITHING_TRIM,
                  SHAPED, MULTI -> this.networkIdRecipeList.add(recipe);
         }
     }
@@ -969,7 +967,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             case "crafting_table", "deprecated" ->
                     new ShapelessRecipe(id, uuid, priority, resultItem, itemDescriptors, recipeUnlockingRequirement);
             case "shulker_box" ->
-                    new ShulkerBoxRecipe(id, uuid, priority, resultItem, itemDescriptors, recipeUnlockingRequirement);
+                    new UserDataShapelessRecipe(id, uuid, priority, resultItem, itemDescriptors, recipeUnlockingRequirement);
             case "stonecutter" ->
                     new StonecutterRecipe(id, uuid, priority, resultItem, itemDescriptors.get(0).toItem(), recipeUnlockingRequirement);
             case "cartography_table" ->

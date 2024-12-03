@@ -2,11 +2,16 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.camera.data.CameraPreset;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.network.protocol.types.camera.aimassist.CameraAimAssist;
+import cn.nukkit.network.protocol.types.camera.aimassist.CameraAimAssistPreset;
+import cn.nukkit.network.protocol.types.camera.aimassist.CameraPresetAimAssist;
+import cn.nukkit.utils.OptionalValue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 
 @ToString
@@ -44,15 +49,38 @@ public class CameraPresetsPacket extends DataPacket {
         byteBuf.writeNotNull(preset.getHorizontalRotationLimit(), byteBuf::writeVector2f);
         byteBuf.writeNotNull(preset.getVerticalRotationLimit(), byteBuf::writeVector2f);
         byteBuf.writeOptional(preset.getContinueTargeting(), byteBuf::writeBoolean);
+        byteBuf.writeOptional(preset.getBlockListeningRadius(), byteBuf::writeFloatLE);
         byteBuf.writeNotNull(preset.getViewOffset(), byteBuf::writeVector2f);
         byteBuf.writeNotNull(preset.getEntityOffset(), byteBuf::writeVector3f);
         byteBuf.writeNotNull(preset.getRadius(), byteBuf::writeFloatLE);
         byteBuf.writeNotNull(preset.getListener(), (l) -> byteBuf.writeByte((byte) l.ordinal()));
         byteBuf.writeOptional(preset.getPlayEffect(), byteBuf::writeBoolean);
         byteBuf.writeOptional(preset.getAlignTargetAndCameraForward(), byteBuf::writeBoolean);
+        writeCameraPresetAimAssist(byteBuf, preset.getAimAssist());
     }
 
     public void handle(PacketHandler handler) {
         handler.handle(this);
     }
+
+    public void writeCameraPresetAimAssist(HandleByteBuf byteBuf, OptionalValue<CameraPresetAimAssist> data) {
+        boolean present = data.isPresent();
+        byteBuf.writeBoolean(present);
+        if (present) {
+            CameraPresetAimAssist value = data.get();
+            byteBuf.writeOptional(value.getPresetId(), byteBuf::writeString);
+            writeTargetMode(byteBuf, value.getTargetMode());
+            byteBuf.writeOptional(value.getAngle(), byteBuf::writeVector2f);
+            byteBuf.writeOptional(value.getDistance(), byteBuf::writeFloatLE);
+        }
+    }
+
+    private void writeTargetMode(HandleByteBuf byteBuf, OptionalValue<CameraAimAssist> data) {
+        boolean present = data.isPresent();
+        byteBuf.writeBoolean(present);
+        if (present) {
+            byteBuf.writeIntLE(data.get().ordinal());
+        }
+    }
+
 }

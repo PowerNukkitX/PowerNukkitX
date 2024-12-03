@@ -3,8 +3,14 @@ package cn.nukkit.utils;
 import io.netty.buffer.ByteBuf;
 import lombok.experimental.UtilityClass;
 
+import java.math.BigInteger;
+
 @UtilityClass
 public class ByteBufVarInt {
+
+    private static final BigInteger BIG_INTEGER_7F = BigInteger.valueOf(0x7f);
+    private static final BigInteger BIG_INTEGER_80 = BigInteger.valueOf(0x80);
+
     public void writeInt(ByteBuf buffer, int value) {
         encode(buffer, ((value << 1) ^ (value >> 31)) & 0xFFFFFFFFL);
     }
@@ -37,6 +43,35 @@ public class ByteBufVarInt {
 
     public long readUnsignedLong(ByteBuf buffer) {
         return decode(buffer, 64);
+    }
+
+    public static void writeUnsignedBigVarInt(ByteBuf buffer, BigInteger value) {
+        while (true) {
+            BigInteger bits = value.and(BIG_INTEGER_7F);
+            value = value.shiftRight(7);
+            if (value.compareTo(BigInteger.ZERO) == 0) {
+                buffer.writeByte(bits.intValue());
+                return;
+            }
+            buffer.writeByte(bits.or(BIG_INTEGER_80).intValue());
+        }
+    }
+
+    public static BigInteger readUnsignedBigVarInt(ByteBuf buffer, int maxBits) {
+        BigInteger value = BigInteger.ZERO;
+        int shift = 0;
+        while (true) {
+            if (shift >= maxBits) {
+                throw new ArithmeticException("VarInt was too large");
+            }
+
+            byte b = buffer.readByte();
+            value = value.or(BigInteger.valueOf(b & 0x7F).shiftLeft(shift));
+            if ((b & 0x80) == 0) {
+                return value;
+            }
+            shift += 7;
+        }
     }
 
     // Based off of Andrew Steinborn's blog post:
