@@ -1662,6 +1662,8 @@ public interface BlockID {
 
     String PACKED_MUD = "minecraft:packed_mud";
 
+    String PALE_OAK_DOUBLE_SLAB = "minecraft:pale_oak_double_slab";
+
     String PALE_OAK_PLANKS = "minecraft:pale_oak_planks";
 
     String PALE_OAK_FENCE = "minecraft:pale_oak_fence";
