@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,5 +58,15 @@ public class BlockCreakingHeart extends BlockSolid {
     @Override
     public int getLightLevel() {
         return getBlockState().getPropertyValue(CommonBlockProperties.ACTIVE) ? 15 : 0;
+    }
+
+    @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
     }
 }
