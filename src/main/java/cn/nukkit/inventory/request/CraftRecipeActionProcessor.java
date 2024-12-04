@@ -239,6 +239,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                     .putString("Pattern", trimPattern.patternId());
             CompoundTag compound = result.getOrCreateNamedTag();
             compound.putCompound("Trim", trim);
+            result.setNamedTag(compound);
             player.getCreativeOutputInventory().setItem(result);
             return null;
         }
