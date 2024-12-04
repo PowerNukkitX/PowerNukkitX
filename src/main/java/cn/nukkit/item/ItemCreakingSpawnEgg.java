@@ -7,7 +7,7 @@ public class ItemCreakingSpawnEgg extends ItemSpawnEgg {
 
     @Override
     public int getEntityNetworkId() {
-        return 145;
+        return 146;
     }
 
     @Override
