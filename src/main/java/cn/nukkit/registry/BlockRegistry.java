@@ -879,6 +879,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(PALE_OAK_HANGING_SIGN, BlockPaleOakHangingSign.class);
             register(PALE_OAK_LEAVES, BlockPaleOakLeaves.class);
             register(PALE_OAK_LOG, BlockPaleOakLog.class);
+            register(PALE_OAK_DOUBLE_SLAB, BlockPaleOakDoubleSlab.class);
             register(PALE_OAK_PLANKS, BlockPaleOakPlanks.class);
             register(PALE_OAK_PRESSURE_PLATE, BlockPaleOakPressurePlate.class);
             register(PALE_OAK_SAPLING, BlockPaleOakSapling.class);

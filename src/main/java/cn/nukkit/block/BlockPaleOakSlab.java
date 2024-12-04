@@ -13,7 +13,7 @@ public class BlockPaleOakSlab extends BlockWoodenSlab {
     }
 
     public BlockPaleOakSlab(BlockState blockstate) {
-        super(blockstate, ACACIA_DOUBLE_SLAB);
+        super(blockstate, PALE_OAK_DOUBLE_SLAB);
     }
 
     @Override
