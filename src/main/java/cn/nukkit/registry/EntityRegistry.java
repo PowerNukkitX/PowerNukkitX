@@ -174,7 +174,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(BREEZE, "", 140, true, true), EntityBreeze.class);
         registerInternal(new EntityDefinition(WIND_CHARGE_PROJECTILE, "", 143, false, false), EntityWindCharge.class);
         registerInternal(new EntityDefinition(BOGGED, "", 144, true, true), EntityBogged.class);
-        registerInternal(new EntityDefinition(CREAKING, "", 145, true, true), EntityCreaking.class);
+        registerInternal(new EntityDefinition(CREAKING, "", 146, true, true), EntityCreaking.class);
     }
 
     public Class<? extends Entity> getEntityClass(String id) {
