@@ -165,6 +165,6 @@ public abstract class BlockLichen extends BlockTransparent {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this);
+        return new ItemBlock(this.getProperties().getDefaultState().toBlock());
     }
 }
