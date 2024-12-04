@@ -1,7 +1,9 @@
 package cn.nukkit.item;
 
-public class ItemAnvil extends Item {
+import cn.nukkit.block.BlockAnvil;
+
+public class ItemAnvil extends ItemBlock {
     public ItemAnvil() {
-        super(ANVIL);
+        super(new BlockAnvil());
     }
 }
