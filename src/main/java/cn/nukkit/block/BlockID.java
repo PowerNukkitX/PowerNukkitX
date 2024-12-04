@@ -1980,6 +1980,8 @@ public interface BlockID {
 
     String RESIN_CLUMP = "minecraft:resin_clump";
 
+    String RESIN_BRICK_DOUBLE_SLAB = "minecraft:resin_brick_double_slab";
+
     String RESIN_BRICK_WALL = "minecraft:resin_brick_wall";
 
     String RESIN_BRICK_STAIRS = "minecraft:resin_brick_stairs";

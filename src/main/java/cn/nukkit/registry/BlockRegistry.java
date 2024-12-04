@@ -1029,6 +1029,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(RESERVED6, BlockReserved6.class);
             register(RESIN_BLOCK, BlockResin.class);
             register(RESIN_BRICKS, BlockResinBricks.class);
+            register(RESIN_BRICK_DOUBLE_SLAB, BlockResinBrickDoubleSlab.class);
             register(RESIN_BRICK_SLAB, BlockResinBrickSlab.class);
             register(RESIN_BRICK_STAIRS, BlockResinBrickStairs.class);
             register(RESIN_BRICK_WALL, BlockResinBrickWall.class);

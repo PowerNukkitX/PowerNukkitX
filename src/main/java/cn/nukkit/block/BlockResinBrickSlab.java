@@ -8,7 +8,7 @@ public class BlockResinBrickSlab extends BlockSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(RESIN_BRICK_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     public BlockResinBrickSlab(BlockState blockState) {
-        super(blockState, BRICK_DOUBLE_SLAB);
+        super(blockState, RESIN_BRICK_DOUBLE_SLAB);
     }
 
     @Override

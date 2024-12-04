@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.Damage;
 import cn.nukkit.inventory.AnvilInventory;
@@ -20,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-import static cn.nukkit.block.property.CommonBlockProperties.DAMAGE;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 
 /**
