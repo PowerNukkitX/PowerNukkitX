@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.TorchFacingDirection;
 import cn.nukkit.blockentity.BlockEntity;
@@ -18,8 +17,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.plugin.InternalPlugin;
-import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import com.google.common.collect.Lists;
@@ -132,13 +129,13 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     }
 
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED) {
+        if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED || type == Level.BLOCK_UPDATE_NORMAL) {
             if (!this.level.getServer().getSettings().levelSettings().enableRedstone())
                 return 0;
-            level.scheduleUpdate(this, 1);
+            level.scheduleUpdate(this, 2);
             return type;
         }
-        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (!this.level.getServer().getSettings().levelSettings().enableRedstone())
                 return 0;
             // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
@@ -155,13 +152,13 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 if (powered && !isExtended())
                     //推出未成功,下一个计划刻再次自检
                     //TODO: 这里可以记录阻挡的方块并在阻挡因素移除后同步更新到活塞，而不是使用计划刻
-                    level.scheduleUpdate(this, 1);
+                    level.scheduleUpdate(this, 2);
                 return type;
             }
             //上一次推出未成功
             if (type == Level.BLOCK_UPDATE_SCHEDULED && powered && !isExtended() && !checkState(true))
                 //依然不成功，下一个计划刻继续自检
-                level.scheduleUpdate(this, 1);
+                level.scheduleUpdate(this, 2);
             return type;
         }
         return 0;
