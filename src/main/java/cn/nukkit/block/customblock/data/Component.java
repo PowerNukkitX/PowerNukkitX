@@ -9,6 +9,11 @@ import lombok.Getter;
 import javax.annotation.Nullable;
 
 
+/**
+ * Represents a component of a custom block.
+ * Implements the NBTData interface.
+ * This class contains various properties that define the behavior and appearance of the custom block.
+ */
 @Builder
 @Getter
 public class Component implements NBTData {
