@@ -3419,7 +3419,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             entityRideable.dismountEntity(this);
         }
 
-        unloadAllUsedChunk();
+        this.getLevel().getScheduler().scheduleTask(this::unloadAllUsedChunk);
 
         //send disconnection packet
         DisconnectPacket packet = new DisconnectPacket();
@@ -4287,7 +4287,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         boolean switchLevel = false;
         if (!to.getLevel().equals(from.getLevel())) {
             switchLevel = true;
-            unloadAllUsedChunk();
+            from.getLevel().getScheduler().scheduleTask(this::unloadAllUsedChunk);
             //unload entities for old level
             Arrays.stream(from.getLevel().getEntities()).forEach(e -> e.despawnFrom(this));
         }
