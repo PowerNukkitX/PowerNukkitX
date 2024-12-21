@@ -16,6 +16,8 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Identifier;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -30,6 +32,9 @@ public class BlockEntityBeehive extends BlockEntity {
 
     private List<Occupant> occupants;
 
+    @Getter
+    @Setter
+    private Entity interactingEntity;
 
     public BlockEntityBeehive(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -97,8 +102,8 @@ public class BlockEntityBeehive extends BlockEntity {
 
     public int getHoneyLevel() {
         Block block = getBlock();
-        if (block instanceof BlockBeehive) {
-            return ((BlockBeehive) block).getHoneyLevel();
+        if (block instanceof BlockBeehive hive) {
+            return hive.getHoneyLevel();
         } else {
             return 0;
         }
@@ -106,8 +111,8 @@ public class BlockEntityBeehive extends BlockEntity {
 
     public void setHoneyLevel(int honeyLevel) {
         Block block = getBlock();
-        if (block instanceof BlockBeehive) {
-            ((BlockBeehive) block).setHoneyLevel(honeyLevel);
+        if (block instanceof BlockBeehive hive) {
+            hive.setHoneyLevel(honeyLevel);
             block.getLevel().setBlock(block, block, true, true);
         }
     }
@@ -124,7 +129,7 @@ public class BlockEntityBeehive extends BlockEntity {
     public Occupant addOccupant(Entity entity) {
         if (entity instanceof EntityBee) {
             EntityBee bee = (EntityBee) entity;
-            boolean hasNectar = bee.getHasNectar();
+            boolean hasNectar = bee.hasNectar();
             return addOccupant(bee, hasNectar ? 2400 : 600, hasNectar, true);
         } else {
             return addOccupant(entity, 600, false, true);
@@ -141,7 +146,7 @@ public class BlockEntityBeehive extends BlockEntity {
 
     public Occupant addOccupant(Entity entity, int ticksLeftToStay, boolean hasNectar, boolean playSound) {
         entity.saveNBT();
-        Occupant occupant = new Occupant(ticksLeftToStay, entity.getIdentifier(), entity.namedTag.copy());
+        Occupant occupant = new Occupant(ticksLeftToStay, entity.getIdentifier(), hasNectar, entity.namedTag.copy());
         if (!addOccupant(occupant)) {
             return null;
         }
@@ -209,6 +214,20 @@ public class BlockEntityBeehive extends BlockEntity {
         }
 
         return validFaces;
+    }
+
+    public Entity spawnOccupant(Occupant occupant) {
+        return this.spawnOccupant(occupant, Collections.singletonList(BlockFace.UP));
+    }
+
+    @Override
+    public void onBreak(boolean isSilkTouch) {
+        for(Occupant occupant : getOccupants()) {
+            if(spawnOccupant(occupant) instanceof EntityBee bee && getInteractingEntity() != null) {
+                bee.setAngry(getInteractingEntity());
+            }
+        }
+        super.onBreak(isSilkTouch);
     }
 
     public Entity spawnOccupant(Occupant occupant, List<BlockFace> validFaces) {
@@ -300,23 +319,6 @@ public class BlockEntityBeehive extends BlockEntity {
         return entity;
     }
 
-    @Override
-    public void onBreak(boolean isSilkTouch) {
-        if (!isSilkTouch) {
-            if (!isEmpty()) {
-                for (BlockEntityBeehive.Occupant occupant : getOccupants()) {
-                    Entity entity = spawnOccupant(occupant, null);
-                    if (level == null || level.getBlock(down()).getId() != BlockID.CAMPFIRE) {
-                        if (entity instanceof EntityBee) {
-                            ((EntityBee) entity).setAngry(true);
-                        } else {
-                            // TODO attack nearest player
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     public void angerBees(Player player) {
         if (!isEmpty()) {
@@ -336,8 +338,6 @@ public class BlockEntityBeehive extends BlockEntity {
                     } else {
                         bee.setAngry(true);
                     }
-                } else {
-                    // TODO attack player
                 }
             }
         }
@@ -353,7 +353,7 @@ public class BlockEntityBeehive extends BlockEntity {
 
         // getOccupants will avoid ConcurrentModificationException if plugins changes the contents while iterating
         for (Occupant occupant : getOccupants()) {
-            if (--occupant.ticksLeftToStay <= 0) {
+            if (--occupant.ticksLeftToStay <= 0 && !(getLevel().isRaining() || !getLevel().isDay())) {
                 if (validSpawnFaces == null) {
                     validSpawnFaces = scanValidSpawnFaces(true);
                 }
@@ -389,9 +389,10 @@ public class BlockEntityBeehive extends BlockEntity {
         private boolean muted;
 
 
-        public Occupant(int ticksLeftToStay, String actorIdentifier, CompoundTag saveData) {
+        public Occupant(int ticksLeftToStay, String actorIdentifier, boolean hasNectar, CompoundTag saveData) {
             this.ticksLeftToStay = ticksLeftToStay;
             this.actorIdentifier = actorIdentifier;
+            this.hasNectar = true;
             this.saveData = saveData;
         }
 
