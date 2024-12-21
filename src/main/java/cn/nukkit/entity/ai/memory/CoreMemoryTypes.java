@@ -2,6 +2,7 @@ package cn.nukkit.entity.ai.memory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.memory.codec.BooleanMemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.NumberMemoryCodec;
@@ -160,6 +161,10 @@ public interface CoreMemoryTypes {
      * 最近的骷髅目标
      */
     MemoryType<Entity> NEAREST_SKELETON = new MemoryType<>("minecraft:nearest_skeleton");
+
+    MemoryType<Class<? extends Block>> LOOKING_BLOCK = new MemoryType<>("minecraft:looking_block");
+
+    MemoryType<Block> NEAREST_BLOCK = new MemoryType<>("minecraft:nearest_block");
     /**
      * 实体的主人
      */

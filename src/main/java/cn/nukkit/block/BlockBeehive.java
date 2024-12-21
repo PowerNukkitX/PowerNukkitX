@@ -4,6 +4,9 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBeehive;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.passive.EntityBee;
+import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
@@ -16,6 +19,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -123,6 +127,12 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     }
 
     @Override
+    public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
+        if(player != null) this.getOrCreateBlockEntity().setInteractingEntity(player);
+        super.onTouch(vector, item, face, fx, fy, fz, player, action);
+    }
+
+    @Override
     public boolean canBeActivated() {
         return true;
     }
@@ -132,7 +142,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     }
 
     public void honeyCollected(Player player, boolean angerBees) {
-        setHoneyLevel(0);
+        getOrCreateBlockEntity().setHoneyLevel(0);
         if (!down().getId().equals(BlockID.CAMPFIRE) && angerBees) {
             angerBees(player);
         }
