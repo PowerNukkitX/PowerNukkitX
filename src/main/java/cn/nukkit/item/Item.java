@@ -834,6 +834,10 @@ public abstract class Item implements Cloneable, ItemID {
         return this.hasCustomName() ? this.getCustomName() : idConvertToName();
     }
 
+    String getTranslatorString() {
+        return "%item." + this.id.split(":")[1] + ".name";
+    }
+
     public final boolean canBePlaced() {
         return ((this.block != null) && this.block.canBePlaced());
     }
