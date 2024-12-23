@@ -51,7 +51,7 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
 
     @Override
     public String getName() {
-        return getWoodType().name() + " Sapling";
+        return getWoodType().getName() + " Sapling";
     }
 
     @Override
