@@ -38,7 +38,7 @@ public class BlockCherryLeaves extends BlockLeaves {
 
     @Override
     public WoodType getType() {
-        return WoodType.valueOf(OldLeafType.BIRCH.name().toUpperCase(Locale.ENGLISH));
+        return WoodType.CHERRY;
     }
 
     @Override

@@ -38,7 +38,7 @@ public class BlockCherrySapling extends BlockSapling implements BlockFlowerPot.F
 
     @Override
     public WoodType getWoodType() {
-        return null;
+        return WoodType.CHERRY;
     }
 
     @Override

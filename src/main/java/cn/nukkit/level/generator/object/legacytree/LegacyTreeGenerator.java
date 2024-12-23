@@ -129,6 +129,7 @@ public abstract class LegacyTreeGenerator {
             case ACACIA -> BlockAcaciaLog.PROPERTIES.getBlockState(pillarAxisValue);
             case BIRCH -> BlockBirchLog.PROPERTIES.getBlockState(pillarAxisValue);
             case OAK -> BlockOakLog.PROPERTIES.getBlockState(pillarAxisValue);
+            case CHERRY -> BlockCherryLog.PROPERTIES.getBlockState(pillarAxisValue);
             case PALE_OAK -> BlockPaleOakLog.PROPERTIES.getBlockState(pillarAxisValue);
         };
     }
@@ -152,6 +153,12 @@ public abstract class LegacyTreeGenerator {
             }
             case DARK_OAK -> {
                 return BlockDarkOakLeaves.PROPERTIES.getDefaultState();
+            }
+            case CHERRY -> {
+                return BlockCherryLeaves.PROPERTIES.getDefaultState();
+            }
+            case PALE_OAK -> {
+                return BlockPaleOakLeaves.PROPERTIES.getDefaultState();
             }
             default -> throw new IllegalArgumentException();
         }
