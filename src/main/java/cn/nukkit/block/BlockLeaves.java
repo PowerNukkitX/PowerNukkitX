@@ -49,7 +49,7 @@ public abstract class BlockLeaves extends BlockTransparent {
 
     @Override
     public String getName() {
-        return getType().name() + " Leaves";
+        return getType().getName() + " Leaves";
     }
 
     @Override

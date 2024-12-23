@@ -30,6 +30,6 @@ public class BlockCherryWood extends BlockWood {
 
     @Override
     public WoodType getWoodType() {
-        throw new UnsupportedOperationException();
+        return WoodType.CHERRY;
     }
 }
