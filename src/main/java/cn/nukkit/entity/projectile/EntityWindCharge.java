@@ -4,6 +4,9 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
+import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.GenericParticle;
@@ -13,6 +16,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static cn.nukkit.item.ItemID.WIND_CHARGE;
@@ -35,8 +39,20 @@ public class EntityWindCharge extends EntityProjectile{
     @Override
     protected boolean onCollideWithBlock(Position position, Vector3 motion, Block collisionBlock) {
 
-        if (this.shootingEntity instanceof Player player) {
-            //system motion
+        for(Entity entity : level.getEntities()) {
+            if(entity instanceof EntityLiving entityLiving) {
+                if(entityLiving.distance(this) < 2) {
+                    Vector3 knockback = new Vector3(entity.motionX, entity.motionY, entity.motionZ);
+                    knockback.x /= 2d;
+                    knockback.y /= 2d;
+                    knockback.z /= 2d;
+                    knockback.x -= (this.getX() - entityLiving.getX()) * 0.2f;
+                    knockback.y += 0.3f;
+                    knockback.z -= (this.getZ() - entityLiving.getZ()) * 0.2f;
+
+                    entityLiving.setMotion(knockback);
+                }
+            }
         }
         level.addLevelSoundEvent(position.add(0, 1), LevelSoundEventPacket.SOUND_WIND_CHARGE_BURST);
         this.kill();
@@ -46,7 +62,7 @@ public class EntityWindCharge extends EntityProjectile{
 
     @Override
     public void onCollideWithEntity(Entity entity) {
-        //system motion
+        entity.attack(new EntityDamageByEntityEvent(this, entity, EntityDamageEvent.DamageCause.PROJECTILE, 1f));
         level.addLevelSoundEvent(entity.getPosition().add(0, 1), LevelSoundEventPacket.SOUND_WIND_CHARGE_BURST);
         this.level.addParticle(new GenericParticle(this, Particle.TYPE_WIND_EXPLOSION));
         this.kill();
