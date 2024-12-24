@@ -1,15 +1,10 @@
 package cn.nukkit.entity.ai.sensor;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockFlower;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.level.Location;
-import cn.nukkit.level.ParticleEffect;
-import cn.nukkit.math.Vector3;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
 //存储最近的玩家的Memory
 
