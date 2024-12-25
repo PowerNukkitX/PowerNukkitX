@@ -210,16 +210,6 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
                 //toughness += armor.getToughness();
             }
 
-            if(source instanceof EntityDamageByEntityEvent event) {
-                Optional<Enchantment> breach = Arrays.stream(event.getWeaponEnchantments()).filter(enchantment -> enchantment.getId() == Enchantment.ID_BREACH).findAny();
-                if(breach.isPresent()) {
-                    Enchantment enchantment = breach.get();
-                    int reducedEffect = 100 - (enchantment.getLevel() * 15) / 100;
-                    armorPoints *= reducedEffect;
-                    epf *= reducedEffect;
-                }
-            }
-
             if (source.canBeReducedByArmor()) {
                 source.setDamage(-source.getFinalDamage() * armorPoints * 0.04f, EntityDamageEvent.DamageModifier.ARMOR);
             }
