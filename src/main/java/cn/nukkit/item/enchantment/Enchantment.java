@@ -1,6 +1,7 @@
 package cn.nukkit.item.enchantment;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.bow.EnchantmentBowFlame;
@@ -632,6 +633,7 @@ public abstract class Enchantment implements Cloneable {
      * @param damager the entity that deals the damage
      * @return the damage value
      */
+
     public double getDamageBonus(Entity target, Entity damager) {
         return 0;
     }
@@ -647,15 +649,7 @@ public abstract class Enchantment implements Cloneable {
     public void doPostAttack(Entity attacker, Entity entity) {
     }
 
-    /**
-     * 当实体attacker使用具有附魔的武器攻击实体entity时触发
-     * <p>
-     * 覆写该方法实现该过程中的逻辑
-     *
-     * @param attacker the attacker
-     * @param entity   the entity
-     */
-    public void doAttack(Entity attacker, Entity entity) {
+    public void doAttack(EntityDamageByEntityEvent event) {
     }
 
     /**
@@ -741,7 +735,6 @@ public abstract class Enchantment implements Cloneable {
     }
 
     private static class UnknownEnchantment extends Enchantment {
-
         protected UnknownEnchantment(int id) {
             super(id, "unknown", Rarity.VERY_RARE, EnchantmentType.ALL);
         }
