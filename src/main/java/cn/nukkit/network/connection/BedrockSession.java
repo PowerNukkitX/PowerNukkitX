@@ -126,7 +126,7 @@ public class BedrockSession {
 
                     var player = this.createPlayer();
                     if (player == null) {
-                        this.close("Failed to crate player");
+                        this.close("Failed to create player");
                         return;
                     }
                     this.onPlayerCreated(player);
