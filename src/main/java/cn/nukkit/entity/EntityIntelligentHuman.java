@@ -29,7 +29,10 @@ import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -205,6 +208,16 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
                 armorPoints += armor.getArmorPoints();
                 epf += calculateEnchantmentProtectionFactor(armor, source);
                 //toughness += armor.getToughness();
+            }
+
+            if(source instanceof EntityDamageByEntityEvent event) {
+                Optional<Enchantment> breach = Arrays.stream(event.getWeaponEnchantments()).filter(enchantment -> enchantment.getId() == Enchantment.ID_BREACH).findAny();
+                if(breach.isPresent()) {
+                    Enchantment enchantment = breach.get();
+                    int reducedEffect = 100 - (enchantment.getLevel() * 15) / 100;
+                    armorPoints *= reducedEffect;
+                    epf *= reducedEffect;
+                }
             }
 
             if (source.canBeReducedByArmor()) {
