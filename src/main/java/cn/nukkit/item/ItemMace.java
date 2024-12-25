@@ -19,10 +19,12 @@ public class ItemMace extends Item implements ItemDurable {
         if(height < 1.5f) return 6;
         int damage = 0;
         for(int i = 0; i <= height; i++) {
-            if(i < 3) i+=4;
-            else if(i < 8) i+=2;
-            else i++;
+            if(i < 3) damage+=4;
+            else if(i < 8) damage+=2;
+            else damage++;
         }
+
+        entity.resetFallDistance();
         return damage;
     }
 }
