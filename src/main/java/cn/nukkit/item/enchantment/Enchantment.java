@@ -149,6 +149,11 @@ public abstract class Enchantment implements Cloneable {
     public static final String NAME_SOUL_SPEED = "soul_speed";
     public static final int ID_SWIFT_SNEAK = 37;
     public static final String NAME_SWIFT_SNEAK = "swift_sneak";
+    public static final int ID_DENSITY = 39;
+    public static final String NAME_DENSITY = "density";
+    public static final int ID_BREACH = 40;
+    public static final String NAME_BREACH = "breach";
+
 
     public static void init() {
         enchantments = new Enchantment[256];
@@ -190,6 +195,9 @@ public abstract class Enchantment implements Cloneable {
         enchantments[ID_CROSSBOW_QUICK_CHARGE] = new EnchantmentCrossbowQuickCharge();
         enchantments[ID_SOUL_SPEED] = new EnchantmentSoulSpeed();
         enchantments[ID_SWIFT_SNEAK] = new EnchantmentSwiftSneak();
+        enchantments[38] = null;
+        enchantments[ID_DENSITY] = new EnchantmentDensity();
+        enchantments[ID_BREACH] = new EnchantmentBreach();
         //custom
         namedEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_ALL), enchantments[0]);
         namedEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_FIRE), enchantments[1]);
@@ -229,6 +237,9 @@ public abstract class Enchantment implements Cloneable {
         namedEnchantments.put(new Identifier("minecraft", NAME_CROSSBOW_QUICK_CHARGE), enchantments[35]);
         namedEnchantments.put(new Identifier("minecraft", NAME_SOUL_SPEED), enchantments[36]);
         namedEnchantments.put(new Identifier("minecraft", NAME_SWIFT_SNEAK), enchantments[37]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_DENSITY), enchantments[39]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_BREACH), enchantments[40]);
+
     }
 
     private static String getLevelString(int level) {
@@ -617,10 +628,11 @@ public abstract class Enchantment implements Cloneable {
      * <p>
      * 目前只生效于{@link cn.nukkit.Player Player} 和 使用了{@link cn.nukkit.entity.ai.executor.MeleeAttackExecutor MeleeAttackExecutor}行为的实体
      *
-     * @param entity 攻击的目标实体
+     * @param target 攻击的目标实体
+     * @param damager the entity that deals the damage
      * @return the damage value
      */
-    public double getDamageBonus(Entity entity) {
+    public double getDamageBonus(Entity target, Entity damager) {
         return 0;
     }
 
