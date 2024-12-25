@@ -7,6 +7,7 @@ import cn.nukkit.item.ItemBow;
 import cn.nukkit.item.ItemCrossbow;
 import cn.nukkit.item.ItemFishingRod;
 import cn.nukkit.item.ItemHead;
+import cn.nukkit.item.ItemMace;
 import cn.nukkit.item.ItemTrident;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +28,8 @@ public enum EnchantmentType {
     BOW,
     WEARABLE,
     TRIDENT,
-    CROSSBOW;
+    CROSSBOW,
+    MACE;
 
 
     public boolean canEnchantItem(@NotNull Item item) {
@@ -61,6 +63,7 @@ public enum EnchantmentType {
             case WEARABLE -> item instanceof ItemHead || item.getBlock() instanceof BlockCarvedPumpkin;
             case TRIDENT -> item instanceof ItemTrident;
             case CROSSBOW -> item instanceof ItemCrossbow;
+            case MACE -> item instanceof ItemMace;
             default -> false;
         };
     }

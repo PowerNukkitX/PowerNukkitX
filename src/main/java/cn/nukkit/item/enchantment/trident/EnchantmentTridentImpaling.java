@@ -24,8 +24,8 @@ public class EnchantmentTridentImpaling extends EnchantmentTrident {
     }
     
     @Override
-    public double getDamageBonus(Entity entity) {
-        if (entity.isTouchingWater() || (entity.getLevel().isRaining() && entity.getLevel().canBlockSeeSky(entity))) {
+    public double getDamageBonus(Entity target, Entity damager) {
+        if (target.isTouchingWater() || (target.getLevel().isRaining() && target.getLevel().canBlockSeeSky(target))) {
             return 2.5 * getLevel();
         }
         

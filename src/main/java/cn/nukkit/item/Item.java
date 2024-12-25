@@ -1101,6 +1101,10 @@ public abstract class Item implements Cloneable, ItemID {
         return 1;
     }
 
+    public int getAttackDamage(Entity entity) {
+        return getAttackDamage();
+    }
+
     /**
      * 定义物品的护甲值
      * <p>
