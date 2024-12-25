@@ -1118,11 +1118,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
 
         // Make fire aspect to set the target in fire before dealing any damage so the target is in fire on death even if killed by the first hit
-        if (source instanceof EntityDamageByEntityEvent) {
-            Enchantment[] enchantments = ((EntityDamageByEntityEvent) source).getWeaponEnchantments();
+        if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
+            Enchantment[] enchantments = entityDamageByEntityEvent.getWeaponEnchantments();
             if (enchantments != null) {
                 for (Enchantment enchantment : enchantments) {
-                    enchantment.doAttack(((EntityDamageByEntityEvent) source).getDamager(), this);
+                    enchantment.doAttack(entityDamageByEntityEvent);
                 }
             }
         }

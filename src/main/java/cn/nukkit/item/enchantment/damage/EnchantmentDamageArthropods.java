@@ -4,6 +4,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityArthropod;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -36,7 +37,8 @@ public class EnchantmentDamageArthropods extends EnchantmentDamage {
     }
 
     @Override
-    public void doAttack(Entity attacker, Entity entity) {
+    public void doAttack(EntityDamageByEntityEvent event) {
+        Entity entity = event.getEntity();
         if (entity instanceof EntityArthropod) {
             int duration = 20 + ThreadLocalRandom.current().nextInt(10 * this.level);
             entity.addEffect(Effect.get(EffectType.SLOWNESS).setDuration(duration).setAmplifier(3));
