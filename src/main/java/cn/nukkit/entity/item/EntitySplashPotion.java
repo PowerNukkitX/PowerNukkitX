@@ -1,7 +1,10 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.projectile.EntityProjectile;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.potion.PotionCollideEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -105,6 +108,12 @@ public class EntitySplashPotion extends EntityProjectile {
         potion = event.getPotion();
         if (potion == null) {
             return;
+        }
+
+        if(potion.equals(PotionType.WATER)) {
+            if(collidedWith instanceof EntityBlaze blaze) {
+                blaze.attack(new EntityDamageByEntityEvent(this, blaze, EntityDamageEvent.DamageCause.MAGIC, 1));
+            }
         }
 
         int[] color = new int[3];
