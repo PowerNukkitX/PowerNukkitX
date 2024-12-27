@@ -20,7 +20,6 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.plugin.InternalPlugin;
-import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -157,21 +156,21 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
         double p = 1;
         double f = Math.min((p * p + p * 2) / 3, 1) * 3;
 
-        Entity arrow = Entity.createEntity(EntityID.SMALL_FIREBALL, entity.level.getChunk(entity.getChunkX(), entity.getChunkZ()), nbt);
+        Entity projectile = Entity.createEntity(EntityID.SMALL_FIREBALL, entity.level.getChunk(entity.getChunkX(), entity.getChunkZ()), nbt);
 
-        if (arrow == null) {
+        if (projectile == null) {
             return;
         }
-        if(arrow instanceof EntitySmallFireball fireball) {
+        if(projectile instanceof EntitySmallFireball fireball) {
             fireball.shootingEntity = entity;
         }
 
-        ProjectileLaunchEvent projectev = new ProjectileLaunchEvent((EntityProjectile) arrow, entity);
+        ProjectileLaunchEvent projectev = new ProjectileLaunchEvent((EntityProjectile) projectile, entity);
         Server.getInstance().getPluginManager().callEvent(projectev);
         if (projectev.isCancelled()) {
-            arrow.kill();
+            projectile.kill();
         } else {
-            arrow.spawnToAll();
+            projectile.spawnToAll();
             entity.level.addLevelEvent(entity, LevelEventPacket.EVENT_SOUND_BLAZE_FIREBALL);
         }
     }
