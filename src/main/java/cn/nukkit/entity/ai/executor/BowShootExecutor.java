@@ -25,7 +25,7 @@ import cn.nukkit.nbt.tag.ListTag;
 
 import java.util.function.Supplier;
 
-public class ShootExecutor implements EntityControl, IBehaviorExecutor {
+public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
     protected MemoryType<? extends Entity> memory;
     protected float speed;
     protected int maxShootDistanceSquared;
@@ -56,7 +56,7 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
      * @param coolDownTick      攻击冷却时间(单位tick)<br>Attack cooldown (tick)
      * @param pullBowTick       每次攻击动画用时(单位tick)<br>Attack Animation time(tick)
      */
-    public ShootExecutor(Supplier<Item> item, MemoryType<? extends Entity> memory, float speed, int maxShootDistance, boolean clearDataWhenLose, int coolDownTick, int pullBowTick) {
+    public BowShootExecutor(Supplier<Item> item, MemoryType<? extends Entity> memory, float speed, int maxShootDistance, boolean clearDataWhenLose, int coolDownTick, int pullBowTick) {
         this.item = item;
         this.memory = memory;
         this.speed = speed;
