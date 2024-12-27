@@ -63,7 +63,7 @@ public class EntityBlaze extends EntityMob implements EntityFlyable {
                                         if (e instanceof Player player) {
                                             return player.isSurvival() || player.isAdventure();
                                         }
-                                        return true;
+                                        return !e.closed;
                                     }
                                 }, 3, 1),
                         new Behavior(new BlazeShootExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 100, 40),
