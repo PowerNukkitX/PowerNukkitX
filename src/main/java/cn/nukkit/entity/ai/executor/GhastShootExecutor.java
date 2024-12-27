@@ -9,8 +9,8 @@ import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.projectile.EntityFireball;
 import cn.nukkit.entity.projectile.EntityProjectile;
-import cn.nukkit.entity.projectile.EntitySmallFireball;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
@@ -23,13 +23,13 @@ import cn.nukkit.plugin.InternalPlugin;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
+public class GhastShootExecutor implements EntityControl, IBehaviorExecutor {
     protected MemoryType<? extends Entity> memory;
     protected float speed;
     protected int maxShootDistanceSquared;
     protected boolean clearDataWhenLose;
     protected final int coolDownTick;
-    protected final int fireTick;
+    protected final int attackDelay;
     /**
      * <p>
      * Used to specify a specific attack target.
@@ -46,15 +46,15 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
      * @param maxShootDistance  <br>The maximum distance at which it is permissible to shoot, and only at this distance can be fired
      * @param clearDataWhenLose <br>Clear your memory when you lose your target
      * @param coolDownTick      <br>Attack cooldown (tick)
-     * @param fireTick          <br>Attack Animation time(tick)
+     * @param attackDelay          <br>Attack Animation time(tick)
      */
-    public BlazeShootExecutor(MemoryType<? extends Entity> memory, float speed, int maxShootDistance, boolean clearDataWhenLose, int coolDownTick, int fireTick) {
+    public GhastShootExecutor(MemoryType<? extends Entity> memory, float speed, int maxShootDistance, boolean clearDataWhenLose, int coolDownTick, int attackDelay) {
         this.memory = memory;
         this.speed = speed;
         this.maxShootDistanceSquared = maxShootDistance * maxShootDistance;
         this.clearDataWhenLose = clearDataWhenLose;
         this.coolDownTick = coolDownTick;
-        this.fireTick = fireTick;
+        this.attackDelay = attackDelay;
     }
 
     @Override
@@ -92,15 +92,13 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
             if (entity.distanceSquared(target) <= maxShootDistanceSquared) {
                 this.tick1 = 0;
                 this.tick2++;
-                startOnFire(entity);
+                startShootSequence(entity);
             }
         } else if (tick2 != 0) {
             tick2++;
-            if (tick2 > fireTick) {
-                for(int i = 0; i < 3; i++) {
-                    entity.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> shootFireball(entity), i*6);
-                }
-                entity.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> stopOnFire(entity), 20);
+            if (tick2 > attackDelay) {
+                shootFireball(entity);
+                entity.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> endShootSequence(entity), 20);
                 tick2 = 0;
                 return target.getHealth() != 0;
             }
@@ -117,7 +115,7 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
         entity.setEnablePitch(false);
-        stopOnFire(entity);
+        endShootSequence(entity);
         this.target = null;
     }
 
@@ -130,7 +128,7 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
         entity.setEnablePitch(false);
-        stopOnFire(entity);
+        endShootSequence(entity);
         this.target = null;
     }
 
@@ -156,12 +154,12 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
         double p = 1;
         double f = Math.min((p * p + p * 2) / 3, 1) * 3;
 
-        Entity projectile = Entity.createEntity(EntityID.SMALL_FIREBALL, entity.level.getChunk(entity.getChunkX(), entity.getChunkZ()), nbt);
+        Entity projectile = Entity.createEntity(EntityID.FIREBALL, entity.level.getChunk(entity.getChunkX(), entity.getChunkZ()), nbt);
 
         if (projectile == null) {
             return;
         }
-        if(projectile instanceof EntitySmallFireball fireball) {
+        if(projectile instanceof EntityFireball fireball) {
             fireball.shootingEntity = entity;
         }
 
@@ -171,17 +169,20 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
             projectile.kill();
         } else {
             projectile.spawnToAll();
-            entity.level.addLevelEvent(entity, LevelEventPacket.EVENT_SOUND_BLAZE_FIREBALL);
         }
     }
 
-    private void startOnFire(Entity entity) {
+    private void startShootSequence(Entity entity) {
         entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
         entity.setDataFlag(EntityFlag.CHARGED, true);
+        entity.setDataProperty(EntityDataTypes.CHARGE_AMOUNT, 0x1);
+        entity.level.addLevelEvent(entity, LevelEventPacket.EVENT_SOUND_GHAST_WARNING);
     }
 
-    private void stopOnFire(Entity entity) {
+    private void endShootSequence(Entity entity) {
         entity.setDataProperty(EntityDataTypes.TARGET_EID, 0L);
         entity.setDataFlag(EntityFlag.CHARGED, false);
+        entity.setDataProperty(EntityDataTypes.CHARGE_AMOUNT, 0x0);
+        entity.level.addLevelEvent(entity, LevelEventPacket.EVENT_SOUND_GHAST_FIREBALL);
     }
 }
