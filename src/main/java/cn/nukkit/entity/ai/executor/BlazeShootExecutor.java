@@ -20,6 +20,9 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.utils.random.NukkitRandom;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
     protected MemoryType<? extends Entity> memory;
@@ -135,8 +138,7 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
     protected void shootFireball(EntityLiving entity) {
 
         Location fireballLocation = entity.getLocation();
-        Vector3 directionVector = entity.getDirectionVector().multiply(1.1f);
-        fireballLocation = fireballLocation.add(directionVector.getX(), 0, directionVector.getZ());
+        Vector3 directionVector = entity.getDirectionVector().multiply(1 + ThreadLocalRandom.current().nextFloat(0.2f));
         fireballLocation.setY(entity.y + entity.getEyeHeight() + directionVector.getY());
         CompoundTag nbt = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
