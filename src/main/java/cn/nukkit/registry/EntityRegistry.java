@@ -9,6 +9,7 @@ import cn.nukkit.entity.passive.*;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityEgg;
 import cn.nukkit.entity.projectile.EntityEnderPearl;
+import cn.nukkit.entity.projectile.EntityFireball;
 import cn.nukkit.entity.projectile.EntitySmallFireball;
 import cn.nukkit.entity.projectile.EntitySnowball;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
@@ -120,7 +121,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(EGG, "", 82, false, true), EntityEgg.class);
         registerInternal(new EntityDefinition(PAINTING, "", 83, false, false), EntityPainting.class);
         registerInternal(new EntityDefinition(MINECART, "", 84, false, true), EntityMinecart.class);
-//        registerInternal(new EntityDefinition(FIREBALL, "", 85, false, false), EntityFireball.class);
+        registerInternal(new EntityDefinition(FIREBALL, "", 85, false, false), EntityFireball.class);
         registerInternal(new EntityDefinition(SPLASH_POTION, "", 86, false, true), EntitySplashPotion.class);
         registerInternal(new EntityDefinition(ENDER_PEARL, "", 87, false, false), EntityEnderPearl.class);
 //        registerInternal(new EntityDefinition(LEASH_KNOT, "", 88, false, true), EntityLeashKnot.class);
