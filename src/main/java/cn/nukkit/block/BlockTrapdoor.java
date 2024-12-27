@@ -227,13 +227,15 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         if (player != null) {
             Item itemInHand = player.getInventory().getItemInHand();
             if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) return false;
-            return toggle(player);
-        } else return false;
+        }
+        return toggle(player);
     }
 
     public boolean toggle(Player player) {
-        if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
-            return false;
+        if(player != null) {
+            if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
+                return false;
+        }
         return this.setOpen(player, !this.isOpen());
     }
 

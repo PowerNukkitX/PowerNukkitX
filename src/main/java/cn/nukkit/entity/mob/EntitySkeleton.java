@@ -9,6 +9,8 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
+import cn.nukkit.entity.ai.evaluator.AttackCheckEvaluator;
+import cn.nukkit.entity.ai.evaluator.NearestCheckEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.BowShootExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
@@ -89,27 +91,8 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
                 this.tickSpread,
                 Set.of(),
                 Set.of(
-                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 20),
-                                entity -> {
-                                    if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
-                                        return false;
-                                    } else {
-                                        Entity e = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
-                                        if (e instanceof Player player) {
-                                            return player.isSurvival() || player.isAdventure();
-                                        }
-                                        return true;
-                                    }
-                                }, 3, 1),
-                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 20),
-                                entity -> {
-                                    if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) {
-                                        return false;
-                                    } else {
-                                        Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                        return player.isSurvival() || player.isAdventure();
-                                    }
-                                }, 2, 1),
+                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 20), new AttackCheckEvaluator(), 3, 1),
+                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 20), new NearestCheckEvaluator(), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
                 Set.of(new NearestPlayerSensor(16, 0, 20)),

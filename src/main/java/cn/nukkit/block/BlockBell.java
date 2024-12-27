@@ -115,7 +115,7 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (entity instanceof EntityItem && entity.positionChanged) {
+        if (entity.positionChanged) {
             AxisAlignedBB boundingBox = entity.getBoundingBox();
             AxisAlignedBB blockBoundingBox = this.getCollisionBoundingBox();
             if (boundingBox.intersectsWith(blockBoundingBox)) {
@@ -137,11 +137,14 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
                         blockBoundingBox.getMinZ() - z + blockCenter.z
                 );
 
-                Vector3 entityVector = entityPos.subtract(blockPos);
-                entityVector = entityVector.normalize().multiply(0.4);
-                entityVector.y = Math.max(0.15, entityVector.y);
+
                 if (ring(entity, BellRingEvent.RingCause.DROPPED_ITEM)) {
-                    entity.setMotion(entityVector);
+                    if(entity instanceof EntityItem) {
+                        Vector3 entityVector = entityPos.subtract(blockPos);
+                        entityVector = entityVector.normalize().multiply(0.4);
+                        entityVector.y = Math.max(0.15, entityVector.y);
+                        entity.setMotion(entityVector);
+                    }
                 }
             }
         }

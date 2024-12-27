@@ -7,6 +7,7 @@ import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.mob.*;
 import cn.nukkit.entity.passive.*;
 import cn.nukkit.entity.projectile.EntityArrow;
+import cn.nukkit.entity.projectile.EntityBreezeWindCharge;
 import cn.nukkit.entity.projectile.EntityEgg;
 import cn.nukkit.entity.projectile.EntityEnderPearl;
 import cn.nukkit.entity.projectile.EntityFireball;
@@ -173,6 +174,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(CHEST_BOAT, "", 218, false, true), EntityChestBoat.class);
         registerInternal(new EntityDefinition(ARMADILLO, "", 142, true, true), EntityArmadillo.class);
         registerInternal(new EntityDefinition(BREEZE, "", 140, true, true), EntityBreeze.class);
+        registerInternal(new EntityDefinition(BREEZE_WIND_CHARGE_PROJECTILE, "", 141, false, false), EntityBreezeWindCharge.class);
         registerInternal(new EntityDefinition(WIND_CHARGE_PROJECTILE, "", 143, false, false), EntityWindCharge.class);
         registerInternal(new EntityDefinition(BOGGED, "", 144, true, true), EntityBogged.class);
         registerInternal(new EntityDefinition(CREAKING, "", 146, true, true), EntityCreaking.class);

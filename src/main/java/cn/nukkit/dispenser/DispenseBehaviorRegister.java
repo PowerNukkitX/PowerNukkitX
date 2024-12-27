@@ -86,6 +86,7 @@ public final class DispenseBehaviorRegister {
         //TODO: spectral arrow
         registerBehavior(ItemID.EGG, new ProjectileDispenseBehavior(EntityID.EGG));
         registerBehavior(ItemID.SNOWBALL, new ProjectileDispenseBehavior(EntityID.SNOWBALL));
+        registerBehavior(ItemID.WIND_CHARGE, new ProjectileDispenseBehavior(EntityID.WIND_CHARGE_PROJECTILE));
         registerBehavior(ItemID.FIRE_CHARGE, new ProjectileDispenseBehavior(EntityID.SMALL_FIREBALL) {
             @Override
             protected float getAccuracy() {
