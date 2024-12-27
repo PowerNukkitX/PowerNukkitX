@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityFireball extends EntitySmallFireball implements EntityExplosive {
 
-    public Player directionChanged;
+    public Entity directionChanged;
 
     @Override
     @NotNull public String getIdentifier() {
@@ -70,10 +70,8 @@ public class EntityFireball extends EntitySmallFireball implements EntityExplosi
     @Override
     public boolean attack(EntityDamageEvent source) {
         if (this.directionChanged == null && source instanceof EntityDamageByEntityEvent event) {
-            if (event.getDamager() instanceof Player player) {
-                this.directionChanged = player;
-                this.setMotion(player.getDirectionVector());
-            }
+            this.directionChanged = event.getDamager();
+            this.setMotion(event.getDamager().getDirectionVector());
         }
         return true;
     }
