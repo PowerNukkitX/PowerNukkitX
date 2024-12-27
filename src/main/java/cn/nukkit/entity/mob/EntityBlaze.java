@@ -10,6 +10,7 @@ import cn.nukkit.entity.ai.controller.LiftController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.SpaceMoveController;
 import cn.nukkit.entity.ai.executor.BlazeShootExecutor;
+import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
 import cn.nukkit.entity.ai.executor.SpaceRandomRoamExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
@@ -44,6 +45,15 @@ public class EntityBlaze extends EntityMob implements EntityFlyable {
                 this.tickSpread,
                 Set.of(),
                 Set.of(
+                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 1, false, 30),
+                                entity -> {
+                                    if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) {
+                                        return false;
+                                    } else {
+                                        Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                        return (player.isSurvival() || player.isAdventure()) && player.distance(entity) < 1;
+                                    }
+                                }, 4, 1),
                         new Behavior(new BlazeShootExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 100, 40),
                                 entity -> {
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
@@ -77,6 +87,7 @@ public class EntityBlaze extends EntityMob implements EntityFlyable {
     @Override
     protected void initEntity() {
         this.setMaxHealth(20);
+        this.diffHandDamage = new float[]{4f, 6f, 9f};
         super.initEntity();
     }
 
