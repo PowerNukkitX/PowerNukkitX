@@ -161,7 +161,7 @@ public class BlockTurtleEgg extends BlockFlowable {
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return new SimpleAxisAlignedBB(getMinX(), getMinY(), getMinZ(), getMaxX(), getMaxY() + 0.25, getMaxZ());
+        return this;
     }
 
     @Override
