@@ -222,10 +222,14 @@ public class BehaviorGroup implements IBehaviorGroup {
         if (evalSucceed.isEmpty()) return;
         IBehavior first = runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
         int runningBehaviorPriority = first != null ? first.getPriority() : Integer.MIN_VALUE;
+        boolean firstEval = true;
+        if(first != null) {
+            firstEval = first.evaluate(entity);
+        }
         //如果result的优先级低于当前运行的行为，则不执行
-        if (highestPriority < runningBehaviorPriority) {
+        if (highestPriority < runningBehaviorPriority && firstEval) {
             //do nothing
-        } else if (highestPriority > runningBehaviorPriority) {
+        } else if (highestPriority > runningBehaviorPriority || !firstEval) {
             //如果result的优先级比当前运行的行为的优先级高，则替换当前运行的所有行为
             interruptAllRunningBehaviors(entity);
             addToRunningBehaviors(entity, evalSucceed);
