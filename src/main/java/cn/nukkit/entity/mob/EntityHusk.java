@@ -16,6 +16,7 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.effect.EffectType;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -104,5 +105,13 @@ public class EntityHusk extends EntityZombie {
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
+    }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        if(currentTick%20 == 0) {
+            EntityZombie.pickupItems(this);
+        }
+        return super.onUpdate(currentTick);
     }
 }

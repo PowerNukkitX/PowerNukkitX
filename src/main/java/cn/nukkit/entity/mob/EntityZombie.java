@@ -1,6 +1,9 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.block.BlockTurtleEgg;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -9,15 +12,24 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.AttackCheckEvaluator;
+import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
+import cn.nukkit.entity.ai.evaluator.NearestCheckEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.JumpExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
+import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
+import cn.nukkit.entity.ai.executor.NearestBlockIncementExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import cn.nukkit.entity.ai.sensor.NearestBlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.item.EntityItem;
+import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,8 +37,9 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * @author Dr. Nick Doran
+ * @author Dr. Nick Doran, Buddelbubi
  * @since 4/23/2017
+ * @updated 12/28/2024
  */
 public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmite {
     @Override
@@ -44,21 +57,20 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
                 this.tickSpread,
-                Set.of(),
                 Set.of(
+                        new Behavior(new NearestBlockIncementExecutor(), entity -> !getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK) && getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK) instanceof BlockTurtleEgg, 1, 1)
+                ),
+                Set.of(
+                        new Behavior(new JumpExecutor(), all(entity -> !getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK), entity -> entity.getCollisionBlocks().stream().anyMatch(block -> block instanceof BlockTurtleEgg)), 7, 1, 10),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.3f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK), 6, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), new AttackCheckEvaluator(), 3, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 30),
-                                entity -> {
-                                    if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) {
-                                        return false;
-                                    } else {
-                                        Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                        return player.isSurvival() || player.isAdventure();
-                                    }
-                                }, 2, 1),
+                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 30), new NearestCheckEvaluator(), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
-                Set.of(new NearestPlayerSensor(40, 0, 20)),
+                Set.of(
+                        new NearestPlayerSensor(40, 0, 0),
+                        new NearestBlockSensor(11, 5, 20)
+                ),
                 Set.of(new WalkController(), new LookController(true, true)),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
@@ -71,6 +83,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         this.setMaxHealth(20);
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
+        getMemoryStorage().put(CoreMemoryTypes.LOOKING_BLOCK, BlockTurtleEgg.class);
     }
 
     @Override
@@ -105,6 +118,9 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
             return super.onUpdate(currentTick);
         }
         burn(this);
+        if(currentTick%20 == 0) {
+            pickupItems(this);
+        }
         return super.onUpdate(currentTick);
     }
 
@@ -125,5 +141,24 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
             };
         }
         return new Item[]{Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
+    }
+
+    public static void pickupItems(Entity entity) {
+        if(entity instanceof EntityInventoryHolder holder) {
+            for(Entity i : entity.level.getCollidingEntities(entity.getBoundingBox())) {
+                if(i instanceof EntityItem entityItem) {
+                    Item item = entityItem.getItem();
+                    if(item.isArmor() || item.isTool()) {
+                        if(holder.equip(item)) {
+                            TakeItemEntityPacket pk = new TakeItemEntityPacket();
+                            pk.entityId = entity.getId();
+                            pk.target = i.getId();
+                            Server.broadcastPacket(entity.getViewers().values(), pk);
+                            i.close();
+                        }
+                    }
+                }
+            }
+        }
     }
 }

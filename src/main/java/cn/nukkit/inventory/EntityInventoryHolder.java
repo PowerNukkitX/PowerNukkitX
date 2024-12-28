@@ -69,4 +69,32 @@ public interface EntityInventoryHolder extends InventoryHolder {
     default boolean setItemInOffhand(Item item, boolean send) {
         return this.getEquipmentInventory().setItemInOffhand(item, send);
     }
+    
+    default boolean equip(Item item) {
+        if(item.isHelmet()) {
+            if(this.getHelmet().isNull()) {
+                this.setHelmet(item);
+                return true;
+            }
+        } else if(item.isChestplate()) {
+            if(this.getHelmet().isNull()) {
+                this.setHelmet(item);
+                return true;
+            }
+        } else if(item.isLeggings()) {
+            if(this.getLeggings().isNull()) {
+                this.setLeggings(item);
+                return true;
+            }
+        } else if(item.isBoots()) {
+            if(this.getBoots().isNull()) {
+                this.setBoots(item);
+                return true;
+            }
+        } else if(this.getItemInHand().isNull()) {
+            this.setItemInHand(item);
+            return true;
+        }
+        return false;
+    }
 }
