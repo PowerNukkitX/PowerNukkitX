@@ -220,8 +220,8 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
         //如果没有评估结果，则返回空
         if (evalSucceed.isEmpty()) return;
-        var first = runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
-        var runningBehaviorPriority = first != null ? first.getPriority() : Integer.MIN_VALUE;
+        IBehavior first = runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
+        int runningBehaviorPriority = first != null ? first.getPriority() : Integer.MIN_VALUE;
         //如果result的优先级低于当前运行的行为，则不执行
         if (highestPriority < runningBehaviorPriority) {
             //do nothing
