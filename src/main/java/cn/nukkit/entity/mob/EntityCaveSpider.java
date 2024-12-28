@@ -65,6 +65,7 @@ public class EntityCaveSpider extends EntityMob implements EntityWalkable, Entit
     @Override
     protected void initEntity() {
         this.setMaxHealth(12);
+        this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
     }
 

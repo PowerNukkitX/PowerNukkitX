@@ -20,6 +20,7 @@ public class Behavior extends AbstractBehavior {
     protected final int period;
     protected IBehaviorExecutor executor;
     protected IBehaviorEvaluator evaluator;
+    protected boolean reevaluate;
 
     public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator) {
         this(executor, evaluator, 1);
@@ -34,11 +35,16 @@ public class Behavior extends AbstractBehavior {
     }
 
     public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator, int priority, int weight, int period) {
+        this(executor, evaluator, priority, weight, period, true);
+    }
+
+    public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator, int priority, int weight, int period, boolean reevaluate) {
         this.executor = executor;
         this.evaluator = evaluator;
         this.priority = priority;
         this.weight = weight;
         this.period = period;
+        this.reevaluate = reevaluate;
     }
 
     @Override

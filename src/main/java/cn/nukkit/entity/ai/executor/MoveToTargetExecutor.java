@@ -1,5 +1,6 @@
 package cn.nukkit.entity.ai.executor;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.level.Position;
@@ -56,6 +57,10 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
 
         if (target instanceof Position position && !position.level.getName().equals(entity.level.getName()))
             return false;
+
+        if(target instanceof Block) {
+            target = target.add(0.5f, 0, 0.5f);
+        }
 
         if (enableRangeTest) {
             var distanceSquared = target.distanceSquared(entity);

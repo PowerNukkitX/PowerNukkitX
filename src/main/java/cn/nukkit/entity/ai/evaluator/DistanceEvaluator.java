@@ -7,17 +7,18 @@ import cn.nukkit.math.Vector3;
 public class DistanceEvaluator implements IBehaviorEvaluator {
 
     private final MemoryType<? extends Vector3> type;
-    private final double minDistance ;
     private final double maxDistance;
+    private final double minDistance ;
+
 
     public DistanceEvaluator(MemoryType<? extends Vector3> type, double maxDistance) {
-        this(type, 0, maxDistance);
+        this(type, maxDistance, 0);
     }
 
-    public DistanceEvaluator(MemoryType<? extends Vector3> type, double minDistance, double maxDistance) {
+    public DistanceEvaluator(MemoryType<? extends Vector3> type, double maxDistance, double minDistance) {
         this.type = type;
-        this.minDistance = minDistance;
         this.maxDistance = maxDistance;
+        this.minDistance = minDistance;
     }
 
     @Override
