@@ -1,7 +1,15 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.EntityCreature;
+import cn.nukkit.entity.mob.EntityDrowned;
+import cn.nukkit.entity.mob.EntityZombie;
+import cn.nukkit.entity.mob.EntityZombieVillager;
+import cn.nukkit.entity.projectile.EntityThrownTrident;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
@@ -66,6 +74,32 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
 
     public void setProfession(int profession) {
         this.namedTag.putInt("Profession", profession);
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if(getHealth()-source.getFinalDamage() <= 1) {
+            if(source instanceof EntityDamageByEntityEvent entityEvent) {
+                if(entityEvent.getDamager() instanceof EntityThrownTrident trident) {
+                    if(trident.shootingEntity instanceof EntityDrowned) {
+                        transform();
+                        return true;
+                    }
+                } else if(entityEvent.getDamager() instanceof EntityZombie) {
+                    transform();
+                    return true;
+                }
+            }
+        }
+        return super.attack(source);
+    }
+
+    private void transform() {
+        this.close();
+        EntityZombieVillager cow = new EntityZombieVillager(this.getChunk(), this.namedTag);
+        cow.setPosition(this);
+        cow.setRotation(this.yaw, this.pitch);
+        cow.spawnToAll();
     }
 
     @Override
