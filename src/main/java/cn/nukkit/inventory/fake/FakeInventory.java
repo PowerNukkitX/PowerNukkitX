@@ -15,6 +15,7 @@ import cn.nukkit.network.protocol.ContainerOpenPacket;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequestSlotData;
+import cn.nukkit.network.protocol.types.itemstack.request.action.DropAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.SwapAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.TransferItemStackRequestAction;
@@ -163,6 +164,8 @@ public class FakeInventory extends BaseInventory implements InputInventory {
         } else if (action instanceof SwapAction swapAction) {
             source = swapAction.getSource();
             destination = swapAction.getDestination();
+        } else if(action instanceof DropAction dropAction) {
+            source = dropAction.getSource();
         }
         if (source != null) {
             ContainerSlotType sourceSlotType = source.getContainerName().getContainer();
