@@ -1,14 +1,18 @@
 package cn.nukkit.entity.mob;
 
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.AttackCheckEvaluator;
+import cn.nukkit.entity.ai.evaluator.DistanceEvaluator;
 import cn.nukkit.entity.ai.evaluator.NearestCheckEvaluator;
+import cn.nukkit.entity.ai.executor.BreezeJumpExecutor;
 import cn.nukkit.entity.ai.executor.BreezeShootExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
@@ -36,13 +40,16 @@ public class EntityBreeze extends EntityMob {
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                        new Behavior(new BreezeShootExecutor(CoreMemoryTypes.ATTACK_TARGET, 1f, 15, true, 30, 20), new AttackCheckEvaluator(), 2, 1),
-                        new Behavior(new BreezeShootExecutor(CoreMemoryTypes.NEAREST_PLAYER, 1f, 15, true, 30, 20), new NearestCheckEvaluator(), 1, 1)
+                        new Behavior(new BreezeShootExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.4f, 15, true, 30, 20), new AttackCheckEvaluator(), 2, 1),
+                        new Behavior(new BreezeShootExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.4f, 15, true, 30, 20), new NearestCheckEvaluator(), 2, 1)
                 ),
                 Set.of(
-                        new Behavior(new FlatRandomRoamExecutor(1f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
+                        new Behavior(new BreezeJumpExecutor(), all(any(Entity::isOnGround, Entity::isInsideOfWater), entity -> getRiding() == null, entity -> !isInsideOfLava()), 5, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 1.2f, true), all(new AttackCheckEvaluator(), new DistanceEvaluator(CoreMemoryTypes.ATTACK_TARGET, 24)), 4, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 1.2f, true), all(new NearestCheckEvaluator(), new DistanceEvaluator(CoreMemoryTypes.NEAREST_PLAYER, 24)), 3, 1),
+                     new Behavior(new FlatRandomRoamExecutor(1f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
-                Set.of(new NearestPlayerSensor(16, 0, 20)),
+                Set.of(new NearestPlayerSensor(24, 0, 20)),
                 Set.of(new WalkController(), new LookController(true, true)),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
@@ -77,6 +84,9 @@ public class EntityBreeze extends EntityMob {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
+        if(source.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            return false;
+        }
         return super.attack(source);
     }
 }
