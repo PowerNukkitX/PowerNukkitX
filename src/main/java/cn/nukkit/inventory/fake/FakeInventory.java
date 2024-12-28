@@ -12,6 +12,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequestSlotData;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
@@ -163,21 +164,23 @@ public class FakeInventory extends BaseInventory implements InputInventory {
             source = swapAction.getSource();
             destination = swapAction.getDestination();
         }
-        if (source != null && destination != null) {
-            ContainerSlotType sourceSlotType = source.getContainer();
-            ContainerSlotType destinationSlotType = destination.getContainer();
+        if (source != null) {
+            ContainerSlotType sourceSlotType = source.getContainerName().getContainer();
             Inventory sourceI = NetworkMapping.getInventory(event.getPlayer(), sourceSlotType);
-            Inventory destinationI = NetworkMapping.getInventory(event.getPlayer(), destinationSlotType);
             int sourceSlot = sourceI.fromNetworkSlot(source.getSlot());
-            int destinationSlot = destinationI.fromNetworkSlot(destination.getSlot());
-            var sourItem = sourceI.getItem(sourceSlot);
-            var destItem = destinationI.getItem(destinationSlot);
+            Item sourItem = sourceI.getItem(sourceSlot);
             if (sourceI.equals(this)) {
                 ItemHandler handler = this.handlers.getOrDefault(sourceSlot, this.defaultItemHandler);
                 handler.handle(this, sourceSlot, sourItem, Item.AIR, event);
-            } else if (destinationI.equals(this)) {
-                ItemHandler handler = this.handlers.getOrDefault(destinationSlot, this.defaultItemHandler);
-                handler.handle(this, destinationSlot, destItem, sourItem, event);
+            } else if(destination != null) {
+                ContainerSlotType destinationSlotType = destination.getContainerName().getContainer();
+                Inventory destinationI = NetworkMapping.getInventory(event.getPlayer(), destinationSlotType);
+                int destinationSlot = destinationI.fromNetworkSlot(destination.getSlot());
+                Item destItem = destinationI.getItem(destinationSlot);
+                if (destinationI.equals(this)) {
+                    ItemHandler handler = this.handlers.getOrDefault(destinationSlot, this.defaultItemHandler);
+                    handler.handle(this, destinationSlot, destItem, sourItem, event);
+                }
             }
         }
     }
