@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 
-public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Natural {
     public BlockFungus(BlockState blockState) {
         super(blockState);
     }

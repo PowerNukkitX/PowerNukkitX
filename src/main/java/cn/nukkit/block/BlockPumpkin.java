@@ -11,7 +11,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockPumpkin extends BlockSolid implements Faceable {
+public class BlockPumpkin extends BlockSolid implements Faceable, Natural {
 
 
     public static final BlockProperties PROPERTIES = new BlockProperties(PUMPKIN, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);

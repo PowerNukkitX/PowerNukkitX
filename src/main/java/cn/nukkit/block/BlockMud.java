@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockMud extends BlockSolid {
+public class BlockMud extends BlockSolid implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(MUD);
 
     public BlockMud() {
