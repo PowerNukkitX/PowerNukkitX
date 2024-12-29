@@ -25,18 +25,17 @@ public class PlayerCheckEvaluator implements IBehaviorEvaluator {
     }
     @Override
     public boolean evaluate(EntityIntelligent entity) {
-        if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
+        if (entity.getMemoryStorage().isEmpty(memoryType)) {
             return false;
         } else {
-            Entity e = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
+            Entity e = entity.getMemoryStorage().get(memoryType);
             if(e.distance(entity) >= minRange) {
                 if (e instanceof Player player) {
-                    player.sendMessage(e.distance(entity) + " ");
-                    return player.isSurvival() || player.isAdventure();
+                    return (player.isSurvival() || player.isAdventure());
                 }
                 return true;
             }
-            if(ThreadLocalRandom.current().nextDouble() < ignoreMinDistanceProbability) {
+            if(ignoreMinDistanceProbability != 0 && ThreadLocalRandom.current().nextDouble() < ignoreMinDistanceProbability) {
                 return true;
             }
             return false;

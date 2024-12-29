@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 
-public abstract class BlockNylium extends BlockSolid {
+public abstract class BlockNylium extends BlockSolid implements Natural {
     public BlockNylium(BlockState blockState) {
         super(blockState);
     }

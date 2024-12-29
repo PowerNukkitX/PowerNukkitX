@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public abstract class BlockMushroom extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+public abstract class BlockMushroom extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Natural {
 
     public BlockMushroom(BlockState blockState) {
         super(blockState);

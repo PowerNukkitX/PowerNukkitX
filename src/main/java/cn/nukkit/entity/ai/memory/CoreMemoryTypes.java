@@ -10,6 +10,7 @@ import cn.nukkit.entity.ai.memory.codec.StringMemoryCodec;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.item.EntityItem;
+import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
@@ -131,6 +132,8 @@ public interface CoreMemoryTypes {
      * 最近的玩家
      */
     MemoryType<Player> NEAREST_PLAYER = new MemoryType<>("minecraft:nearest_player");
+
+    MemoryType<Player> STARING_PLAYER = new MemoryType<>("minecraft:staring_player");
     /**
      * 玩家上一次攻击的实体
      */
@@ -164,6 +167,9 @@ public interface CoreMemoryTypes {
      */
     MemoryType<Entity> NEAREST_SKELETON = new MemoryType<>("minecraft:nearest_skeleton");
 
+    MemoryType<Entity> NEAREST_ENDERMITE = new MemoryType<>("minecraft:nearest_endermite");
+
+
     MemoryType<Class<? extends Block>> LOOKING_BLOCK = new MemoryType<>("minecraft:looking_block");
 
     MemoryType<Class<? extends Item>> LOOKING_ITEM = new MemoryType<>("minecraft:looking_item");
@@ -171,6 +177,7 @@ public interface CoreMemoryTypes {
     MemoryType<Block> NEAREST_BLOCK = new MemoryType<>("minecraft:nearest_block");
 
     MemoryType<EntityItem> NEAREST_ITEM = new MemoryType<>("minecraft:nearest_item");
+
     /**
      * 实体的主人
      */

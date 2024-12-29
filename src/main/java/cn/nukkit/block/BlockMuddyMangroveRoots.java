@@ -8,7 +8,7 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockMuddyMangroveRoots extends BlockSolid {
+public class BlockMuddyMangroveRoots extends BlockSolid implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(MUDDY_MANGROVE_ROOTS, CommonBlockProperties.PILLAR_AXIS);
 
     public BlockMuddyMangroveRoots() {

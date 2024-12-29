@@ -41,4 +41,9 @@ public class BlockLitPumpkin extends BlockPumpkin {
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         return false;
     }
+
+    @Override
+    public boolean canBePickedUp() {
+        return false;
+    }
 }
