@@ -3080,12 +3080,30 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         Server.broadcastPacket(players, pk);
     }
 
+    public double getLookingAngleAt(Vector3 location) {
+        double anglePosition = Math.abs(Math.toDegrees(Math.atan2(location.x - this.x, location.z - this.z)));
+        double angleVector = Math.abs(Math.toDegrees(Math.atan2(this.getDirectionVector().x, this.getDirectionVector().z)));
+        return Math.abs(anglePosition - angleVector);
+    }
+
+    public double getLookingAngleAtPitch(Vector3 location) {
+        double anglePosition = Math.abs(Math.toDegrees(Math.atan2(location.y - (this.y + getEyeHeight()), 0)));
+        double angleVector = Math.abs(getPitch());
+        return Math.abs(Math.abs(anglePosition - angleVector)-90);
+    }
+
+    public boolean isLookingAt(Vector3 location, double tollerance) {
+        if(getLookingAngleAt(location) <= tollerance && getLookingAngleAtPitch(location) <= tollerance) {
+            return true;
+        }
+        return false;
+    }
+
     private boolean validateAndSetIntProperty(String identifier, int value) {
         if (!intProperties.containsKey(identifier)) return false;
         intProperties.put(identifier, value);
         return true;
     }
-
 
     public final boolean setIntEntityProperty(String identifier, int value) {
         return validateAndSetIntProperty(identifier, value);

@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.SandType;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX (Nukkit Project)
  */
 
-public class BlockSand extends BlockFallable {
+public class BlockSand extends BlockFallable implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(SAND);
 
     @Override

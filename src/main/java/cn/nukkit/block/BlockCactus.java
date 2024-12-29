@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 import static cn.nukkit.block.property.CommonBlockProperties.AGE_16;
-public class BlockCactus extends BlockTransparent implements BlockFlowerPot.FlowerPotBlock {
+public class BlockCactus extends BlockTransparent implements BlockFlowerPot.FlowerPotBlock, Natural {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CACTUS,
             AGE_16);

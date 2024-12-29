@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
-public class BlockMelonBlock extends BlockSolid {
+public class BlockMelonBlock extends BlockSolid implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(MELON_BLOCK);
 
     @Override
