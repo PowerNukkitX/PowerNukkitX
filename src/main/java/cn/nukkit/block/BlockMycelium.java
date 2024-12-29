@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Pub4Game
  * @since 03.01.2016
  */
-public class BlockMycelium extends BlockSolid {
+public class BlockMycelium extends BlockDirt {
     public static final BlockProperties PROPERTIES = new BlockProperties(MYCELIUM);
 
     @Override

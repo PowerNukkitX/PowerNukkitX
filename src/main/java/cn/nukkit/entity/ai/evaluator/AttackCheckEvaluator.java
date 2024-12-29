@@ -17,7 +17,7 @@ public class AttackCheckEvaluator implements IBehaviorEvaluator {
         } else {
             Entity e = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
             if (e instanceof Player player) {
-                return player.isSurvival() || player.isAdventure();
+                return (player.isSurvival() || player.isAdventure()) && player.isOnline();
             }
             return true;
         }

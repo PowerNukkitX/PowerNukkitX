@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWarpedRoots extends BlockHanging implements BlockFlowerPot.FlowerPotBlock {
+public class BlockWarpedRoots extends BlockHanging implements BlockFlowerPot.FlowerPotBlock, Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_ROOTS);
 
     @Override
