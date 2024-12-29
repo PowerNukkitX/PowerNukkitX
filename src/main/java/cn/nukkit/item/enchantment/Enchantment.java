@@ -434,6 +434,16 @@ public abstract class Enchantment implements Cloneable {
      * @return The objects can be modified without affecting the registry and the collection will not have null values.
      */
     public static Collection<Enchantment> getRegisteredEnchantments() {
+        return getRegisteredEnchantments(false);
+    }
+
+    public static Collection<Enchantment> getRegisteredEnchantments(boolean allowCustom) {
+        if(!allowCustom) {
+            return namedEnchantments.values().stream().filter(e -> {
+                assert e.getIdentifier() != null;
+                return e.getIdentifier().getNamespace().equals("minecraft");
+            }).collect(Collectors.toList());
+        }
         return new ArrayList<>(namedEnchantments.values());
     }
 
