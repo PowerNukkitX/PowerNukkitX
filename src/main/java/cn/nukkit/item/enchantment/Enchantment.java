@@ -440,8 +440,7 @@ public abstract class Enchantment implements Cloneable {
     public static Collection<Enchantment> getRegisteredEnchantments(boolean allowCustom) {
         if(!allowCustom) {
             return namedEnchantments.values().stream().filter(e -> {
-                assert e.getIdentifier() != null;
-                return e.getIdentifier().getNamespace().equals("minecraft");
+                return e.getIdentifier() != null && e.getIdentifier().getNamespace().equals("minecraft");
             }).collect(Collectors.toList());
         }
         return new ArrayList<>(namedEnchantments.values());
