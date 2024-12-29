@@ -439,13 +439,17 @@ public abstract class Enchantment implements Cloneable {
 
     public static Collection<Enchantment> getRegisteredEnchantments(boolean allowCustom) {
         if(!allowCustom) {
-            return namedEnchantments.values().stream().filter(e -> {
-                return e.getIdentifier() != null && e.getIdentifier().getNamespace().equals("minecraft");
-            }).collect(Collectors.toList());
+            Collection<Enchantment> enchantments = new LinkedHashSet<>();
+            namedEnchantments.forEach((i,v) -> {
+                if (i.getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
+                    enchantments.add(v);
+                }
+            });
+
+            return enchantments;
         }
         return new ArrayList<>(namedEnchantments.values());
     }
-
     public static Map<String, Integer> getEnchantmentName2IDMap() {
         return namedEnchantments.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().getId()));
     }
