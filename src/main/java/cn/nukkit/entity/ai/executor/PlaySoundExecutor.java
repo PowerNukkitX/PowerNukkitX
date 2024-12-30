@@ -15,6 +15,10 @@ public class PlaySoundExecutor implements IBehaviorExecutor {
 
     public PlaySoundExecutor(Sound sound) {
         this.sound = sound;
+        this.minPitch = 0.8f;
+        this.maxPitch = 1.2f;
+        this.minVolume = 1;
+        this.maxVolume = 1;
     }
 
 
