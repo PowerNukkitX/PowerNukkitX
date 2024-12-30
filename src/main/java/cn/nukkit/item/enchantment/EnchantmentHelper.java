@@ -115,6 +115,10 @@ public final class EnchantmentHelper {
     private static List<Enchantment> getAvailableEnchantments(int enchantingPower, Item item) {
         List<Enchantment> list = new ArrayList<>();
         for (Enchantment enchantment : getPrimaryEnchantmentsForItem(item)) {
+            if (!enchantment.isObtainableFromEnchantingTable()) {
+                continue;
+            }
+
             for (int lvl = enchantment.getMaxLevel(); lvl > 0; lvl--) {
                 if (enchantingPower >= enchantment.getMinEnchantAbility(lvl) && enchantingPower <= enchantment.getMaxEnchantAbility(lvl)) {
                     if(!(enchantment.getId() == Enchantment.ID_MENDING)) {
