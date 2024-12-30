@@ -51,7 +51,7 @@ public class ServerProperties {
         defaults.put(ServerPropertiesKeys.XBOX_AUTH.toString(), true);
         defaults.put(ServerPropertiesKeys.CHECK_LOGIN_TIME.toString(), false);
         defaults.put(ServerPropertiesKeys.DISABLE_AUTO_BUG_REPORT.toString(), false);
-        defaults.put(ServerPropertiesKeys.ALLOW_SHADED.toString(), false);
+        defaults.put(ServerPropertiesKeys.ALLOW_SHADED.toString(), true);
         defaults.put(ServerPropertiesKeys.SERVER_AUTHORITATIVE_MOVEMENT.toString(), "server-auth");
         defaults.put(ServerPropertiesKeys.NETWORK_ENCRYPTION.toString(), true);
         return defaults;
