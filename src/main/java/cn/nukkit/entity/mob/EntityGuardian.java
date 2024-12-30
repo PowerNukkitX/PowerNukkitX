@@ -39,9 +39,7 @@ public class EntityGuardian extends EntityMob implements EntitySwimmable {
                 this.tickSpread,
                 Set.of(),
                 Set.of(
-                        new Behavior(
-                                new SpaceRandomRoamExecutor(0.36f, 12, 1, 80, false, -1, false, 10),
-                                entity -> true, 1)
+                        new Behavior(new SpaceRandomRoamExecutor(0.36f, 12, 1, 80, false, -1, false, 10), none(), 1)
                 ),
                 Set.of(),
                 Set.of(new SpaceMoveController(), new LookController(true, true), new DiveController()),

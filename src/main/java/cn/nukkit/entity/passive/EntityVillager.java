@@ -96,10 +96,10 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
 
     private void transform() {
         this.close();
-        EntityZombieVillager cow = new EntityZombieVillager(this.getChunk(), this.namedTag);
-        cow.setPosition(this);
-        cow.setRotation(this.yaw, this.pitch);
-        cow.spawnToAll();
+        EntityZombieVillager zombieVillager = new EntityZombieVillager(this.getChunk(), this.namedTag);
+        zombieVillager.setPosition(this);
+        zombieVillager.setRotation(this.yaw, this.pitch);
+        zombieVillager.spawnToAll();
     }
 
     @Override
