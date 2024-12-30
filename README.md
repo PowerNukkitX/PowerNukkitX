@@ -15,11 +15,11 @@
 
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://feedback.minecraft.net/hc/en-us/articles/26247797084173--Minecraft-1-21-1-Bedrock">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.40%20(Bedrock)-56383E" />
+   <a href="https://feedback.minecraft.net/hc/en-us/articles/32611282671245-Minecraft-1-21-51-Bedrock">
+      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.51%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
-      <img alt="Minecraft" src="https://img.shields.io/badge/protocol-748-blue" />
+      <img alt="Minecraft" src="https://img.shields.io/badge/protocol-766-blue" />
    </a>
    <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
       <img alt="Action" src="https://github.com/PowerNukkitX/PowerNukkitX/actions/workflows/pnx.yml/badge.svg?branch=master" />
@@ -63,15 +63,25 @@
 ## Install
 
 1. Make sure you have `JDK21` installed, if not [download from here](https://www.graalvm.org/downloads)
-2. Download
-   the [`PowerNukkitX-Run.zip`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx-run.zip)
+2. Download the [`PowerNukkitX-Run.zip`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx-run.zip)
 3. Unzip `PowerNukkitX-Run.zip` to the directory you want.
 4. Set Java environment variables or unzip JDK to the same directory as the previous step.
 
+You want to use PowerNukkitX without the CLI?
+
+1. Make sure you have `JDK21` installed, if not [download from here](https://www.graalvm.org/downloads)
+2. Download the [`powernukkitx-shaded.jar`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx-shaded.jar)
+
 ## Usage
 
+Start PowerNukkitX when using the CLI
 ```sh
 java -jar cli.jar
+```
+
+Starting PowerNukkitX when using the shaded jar (Without CLI)
+```sh
+java -jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED .\powernukkitx-2.0.0-SNAPSHOT-all.jar
 ```
 
 ## Community & Support
