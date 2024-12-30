@@ -478,7 +478,7 @@ public abstract class Enchantment implements Cloneable {
     protected final Identifier identifier;
 
     protected boolean fishable = true;
-    protected boolean isObtainableFromEnchantingTable = true;
+    protected boolean obtainableFromEnchantingTable = true;
 
     /**
      * Constructs this instance using the given data and with level 1.
@@ -679,7 +679,7 @@ public abstract class Enchantment implements Cloneable {
      * @return true if it can be obtained
      */
     public boolean isObtainableFromEnchantingTable() {
-        return isObtainableFromEnchantingTable;
+        return obtainableFromEnchantingTable;
     }
 
     /**
@@ -688,7 +688,7 @@ public abstract class Enchantment implements Cloneable {
      * @param obtainableFromEnchantingTable true if it is obtainable
      */
     public void setObtainableFromEnchantingTable(boolean obtainableFromEnchantingTable) {
-        this.isObtainableFromEnchantingTable = obtainableFromEnchantingTable;
+        this.obtainableFromEnchantingTable = obtainableFromEnchantingTable;
     }
 
     /**
