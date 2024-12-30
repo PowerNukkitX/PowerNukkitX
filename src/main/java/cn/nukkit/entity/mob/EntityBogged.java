@@ -9,14 +9,19 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
+import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
+import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
+import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.BowShootExecutor;
+import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
@@ -78,28 +83,10 @@ public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmi
                 this.tickSpread,
                 Set.of(),
                 Set.of(
-                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 35, 20),
-                                entity -> {
-                                    if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
-                                        return false;
-                                    } else {
-                                        Entity e = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
-                                        if (e instanceof Player player) {
-                                            return player.isSurvival() || player.isAdventure();
-                                        }
-                                        return true;
-                                    }
-                                }, 3, 1),
-                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 35, 20),
-                                entity -> {
-                                    if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) {
-                                        return false;
-                                    } else {
-                                        Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                        return player.isSurvival() || player.isAdventure();
-                                    }
-                                }, 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
+                        new Behavior(new PlaySoundExecutor(Sound.MOB_SKELETON_SAY), new RandomSoundEvaluator(), 4, 1),
+                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 35, 20), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1),
+                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 35, 20), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
+                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
                 Set.of(new NearestPlayerSensor(16, 0, 20)),
                 Set.of(new WalkController(), new LookController(true, true)),
