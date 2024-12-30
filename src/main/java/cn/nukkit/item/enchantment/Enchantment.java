@@ -655,7 +655,7 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * This value is for treasures of {@link cn.nukkit.item.randomitem.Fishing}, specifically {@link cn.nukkit.item.randomitem.EnchantmentItemSelector}
+     * This value is for treasures of {@link cn.nukkit.item.randomitem.Fishing}, specifically {@link cn.nukkit.item.randomitem.fishing.FishingEnchantmentItemSelector}
      * If false, this enchantment cannot be fished using a {@link cn.nukkit.item.ItemFishingRod}
      *
      * @return whether this enchantment can be fished or not
@@ -665,7 +665,7 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * Decides whether this enchantment can be fished ({@link cn.nukkit.item.randomitem.EnchantmentItemSelector}) using a {@link cn.nukkit.item.ItemFishingRod}
+     * Decides whether this enchantment can be fished ({@link cn.nukkit.item.randomitem.fishing.FishingEnchantmentItemSelector}) using a {@link cn.nukkit.item.ItemFishingRod}
      *
      * @param fishable true if it is fishable
      */

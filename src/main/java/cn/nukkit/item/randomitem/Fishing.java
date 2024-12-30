@@ -4,6 +4,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.randomitem.fishing.FishingEnchantmentItemSelector;
 import cn.nukkit.math.NukkitMath;
 
 import static cn.nukkit.item.randomitem.RandomItem.*;
@@ -22,7 +23,7 @@ public final class Fishing {
     public static final Selector TROPICAL_FISH = putSelector(new ConstantItemSelector(ItemID.TROPICAL_FISH, FISHES), 0.02F);
     public static final Selector PUFFERFISH = putSelector(new ConstantItemSelector(ItemID.PUFFERFISH, FISHES), 0.13F);
     public static final Selector TREASURE_BOW = putSelector(new ConstantItemSelector(ItemID.BOW, TREASURES), 0.1667F);
-    public static final Selector TREASURE_ENCHANTED_BOOK = putSelector(new EnchantmentItemSelector(ItemID.ENCHANTED_BOOK, TREASURES),  0.1667F);
+    public static final Selector TREASURE_ENCHANTED_BOOK = putSelector(new FishingEnchantmentItemSelector(ItemID.ENCHANTED_BOOK, TREASURES),  0.1667F);
     public static final Selector JUNK_BOWL = putSelector(new ConstantItemSelector(ItemID.BOWL, JUNKS), 0.12F);
     public static final Selector JUNK_FISHING_ROD = putSelector(new ConstantItemSelector(ItemID.FISHING_ROD, JUNKS), 0.024F);
     public static final Selector JUNK_LEATHER = putSelector(new ConstantItemSelector(ItemID.LEATHER, JUNKS), 0.12F);
