@@ -477,8 +477,8 @@ public abstract class Enchantment implements Cloneable {
     @Nullable
     protected final Identifier identifier;
 
-    protected boolean fishable;
-    protected boolean isObtainableFromEnchantingTable;
+    protected boolean fishable = true;
+    protected boolean isObtainableFromEnchantingTable = true;
 
     /**
      * Constructs this instance using the given data and with level 1.

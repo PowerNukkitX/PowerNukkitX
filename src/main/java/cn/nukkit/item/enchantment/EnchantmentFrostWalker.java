@@ -3,6 +3,8 @@ package cn.nukkit.item.enchantment;
 public class EnchantmentFrostWalker extends Enchantment {
     protected EnchantmentFrostWalker() {
         super(ID_FROST_WALKER, "frostwalker", Rarity.VERY_RARE, EnchantmentType.ARMOR_FEET);
+
+        this.setObtainableFromEnchantingTable(false);
     }
 
     @Override

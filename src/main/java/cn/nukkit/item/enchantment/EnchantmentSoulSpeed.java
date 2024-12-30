@@ -6,6 +6,8 @@ public class EnchantmentSoulSpeed extends Enchantment {
 
     protected EnchantmentSoulSpeed() {
         super(ID_SOUL_SPEED, "soul_speed", Rarity.VERY_RARE, EnchantmentType.ARMOR_FEET);
+
+        this.setObtainableFromEnchantingTable(false);
     }
 
     @Override
