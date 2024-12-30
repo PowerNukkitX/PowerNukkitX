@@ -29,6 +29,8 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
@@ -141,15 +143,17 @@ public class EntitySnowGolem extends EntityIntelligent implements EntityWalkable
             if(block instanceof BlockPumpkin) {
                 faces:
                 for(BlockFace blockFace : BlockFace.values()) {
-                    for(int i = 1; i<2; i++) {
+                    for(int i = 1; i<=2; i++) {
                         if(!(block.getSide(blockFace, i) instanceof BlockSnow)) {
                             continue faces;
                         }
                     }
                     for(int i = 0; i<=2; i++) {
-                        block.level.setBlock(block.getSide(blockFace, i), Block.get(Block.AIR));
-                        block.level.addParticle(new DestroyBlockParticle(block.add(0.5), block));
-                        block.level.addSound(block, Sound.RANDOM_BREAK);
+                        Block location = block.getSide(blockFace, i);
+                        block.level.setBlock(location, Block.get(Block.AIR));
+                        block.level.addParticle(new DestroyBlockParticle(location.add(0.5, 0.5, 0.5), block));
+                        block.level.getVibrationManager().callVibrationEvent(new VibrationEvent(null, location.add(0.5, 0.5, 0.5), VibrationType.BLOCK_DESTROY));
+
                     }
                     Block pos = block.getSide(blockFace, 2);
                     CompoundTag nbt = new CompoundTag()
