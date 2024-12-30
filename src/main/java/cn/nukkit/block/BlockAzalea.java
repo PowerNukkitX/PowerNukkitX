@@ -46,6 +46,16 @@ public class BlockAzalea extends BlockSolid implements BlockFlowerPot.FlowerPotB
     }
 
     @Override
+    public double getHardness() {
+        return 0;
+    }
+
+    @Override
+    public double getResistance() {
+        return 0;
+    }
+
+    @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal
             if (player != null && !player.isCreative()) {
