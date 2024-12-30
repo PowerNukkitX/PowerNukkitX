@@ -55,7 +55,7 @@ public class EntityEndermite extends EntityMob implements EntityWalkable, Entity
                 this.tickSpread,
                 Set.of(),
                 Set.of(
-                       new Behavior(new PlaySoundExecutor(Sound.MOB_ENDERMITE_SAY), new RandomSoundEvaluator(), 6, 1),
+                        new Behavior(new PlaySoundExecutor(Sound.MOB_ENDERMITE_SAY), new RandomSoundEvaluator(), 6, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 16, true, 30), new AttackCheckEvaluator(), 4, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.3f, 16, true, 30), new PlayerCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY), 3, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 16, false, 30), new NearestCheckEvaluator(), 2, 1),
