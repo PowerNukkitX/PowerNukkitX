@@ -6,6 +6,8 @@ package cn.nukkit.item.enchantment;
 public class EnchantmentMending extends Enchantment {
     protected EnchantmentMending() {
         super(ID_MENDING, "mending", Rarity.RARE, EnchantmentType.BREAKABLE);
+
+        this.setObtainableFromEnchantingTable(false);
     }
 
     @Override

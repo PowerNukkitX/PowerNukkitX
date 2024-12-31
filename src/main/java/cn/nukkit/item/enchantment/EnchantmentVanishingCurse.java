@@ -7,6 +7,8 @@ import cn.nukkit.item.ItemID;
 public class EnchantmentVanishingCurse extends Enchantment {
     protected EnchantmentVanishingCurse() {
         super(ID_VANISHING_CURSE, "curse.vanishing", Rarity.VERY_RARE, EnchantmentType.BREAKABLE);
+
+        this.setObtainableFromEnchantingTable(false);
     }
 
     @Override
