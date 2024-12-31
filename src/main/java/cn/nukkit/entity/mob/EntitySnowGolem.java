@@ -22,16 +22,17 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShears;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
@@ -43,7 +44,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 
 
-public class EntitySnowGolem extends EntityIntelligent implements EntityWalkable {
+public class EntitySnowGolem extends EntityGolem {
     @Override
     @NotNull public String getIdentifier() {
         return SNOW_GOLEM;
@@ -73,12 +74,12 @@ public class EntitySnowGolem extends EntityIntelligent implements EntityWalkable
     }
 
     @Override
-    public boolean onInteract(Player player, Item item) {
+    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if(item instanceof ItemShears) {
             if(!isSheared()) {
-                this.setSheared();
+                this.setSheared(true);
                 this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_SHEAR);
-                player.getInventory().getItemInHand().setDamage(item.getDamage() + 1);
+                if(player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInHand().setDamage(item.getDamage() + 1);
                 this.level.dropItem(this.add(0, this.getEyeHeight(), 0), Item.get(Block.CARVED_PUMPKIN));
             }
         }
@@ -103,11 +104,12 @@ public class EntitySnowGolem extends EntityIntelligent implements EntityWalkable
     @Override
     protected void initEntity() {
         this.setMaxHealth(4);
+        setSheared(false);
         super.initEntity();
     }
 
-    public void setSheared() {
-        setDataFlag(EntityFlag.SHEARED);
+    public void setSheared(boolean sheared) {
+        setDataFlag(EntityFlag.SHEARED, sheared);
     }
 
     public boolean isSheared() {
@@ -131,11 +133,6 @@ public class EntitySnowGolem extends EntityIntelligent implements EntityWalkable
             this.waterTicks = 0;
         }
         return super.onUpdate(currentTick);
-    }
-
-    @Override
-    public Integer getExperienceDrops() {
-        return 0;
     }
 
     public static void checkAndSpawnGolem(Block block) {
@@ -176,5 +173,4 @@ public class EntitySnowGolem extends EntityIntelligent implements EntityWalkable
             }
         }
     }
-
 }

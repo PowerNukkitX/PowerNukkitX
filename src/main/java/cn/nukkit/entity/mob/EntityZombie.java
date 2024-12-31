@@ -13,7 +13,6 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
-import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.JumpExecutor;
@@ -25,10 +24,9 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestBlockSensor;
+import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.entity.projectile.EntityThrownTrident;
-import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.item.Item;
@@ -67,15 +65,17 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
                         new Behavior(new NearestBlockIncementExecutor(), entity -> !getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK) && getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK) instanceof BlockTurtleEgg, 1, 1)
                 ),
                 Set.of(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_HUSK_AMBIENT, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1), new RandomSoundEvaluator(), 4, 1),
-                        new Behavior(new JumpExecutor(), all(entity -> !getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK), entity -> entity.getCollisionBlocks().stream().anyMatch(block -> block instanceof BlockTurtleEgg)), 7, 1, 10),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.3f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK), 6, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1),
+                        new Behavior(new PlaySoundExecutor(Sound.MOB_HUSK_AMBIENT, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1), new RandomSoundEvaluator(), 7, 1),
+                        new Behavior(new JumpExecutor(), all(entity -> !getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK), entity -> entity.getCollisionBlocks().stream().anyMatch(block -> block instanceof BlockTurtleEgg)), 6, 1, 10),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.3f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK), 5, 1),
+                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
+                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_GOLEM, 0.3f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_GOLEM), 3, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
                 Set.of(
                         new NearestPlayerSensor(40, 0, 0),
+                        new NearestEntitySensor(EntityGolem.class, CoreMemoryTypes.NEAREST_GOLEM, 42, 0),
                         new NearestBlockSensor(11, 5, 20)
                 ),
                 Set.of(new WalkController(), new LookController(true, true)),

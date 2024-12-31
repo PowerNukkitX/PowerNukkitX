@@ -20,7 +20,7 @@ public class EntityWither extends EntityMob implements EntityFlyable, EntitySmit
         super(chunk, nbt);
     }
 
-    
+    //Note: Withers do attack golems!
 
     @Override
     public float getWidth() {

@@ -18,6 +18,7 @@ import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -94,12 +95,16 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
                 this.tickSpread,
                 Set.of(),
                 Set.of(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_SKELETON_SAY), new RandomSoundEvaluator(), 4, 1),
-                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1),
+                        new Behavior(new PlaySoundExecutor(Sound.MOB_SKELETON_SAY), new RandomSoundEvaluator(), 5, 1),
+                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
+                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_GOLEM, 0.3f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_GOLEM), 3, 1),
                         new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
-                Set.of(new NearestPlayerSensor(16, 0, 20)),
+                Set.of(
+                        new NearestPlayerSensor(16, 0, 20),
+                        new NearestEntitySensor(EntityGolem.class, CoreMemoryTypes.NEAREST_GOLEM, 42, 0)
+                ),
                 Set.of(new WalkController(), new LookController(true, true)),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
