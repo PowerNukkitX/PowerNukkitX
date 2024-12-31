@@ -20,6 +20,7 @@ public class EntityEvocationIllager extends EntityMob implements EntityWalkable 
         return EntityID.EVOCATION_ILLAGER;
     }
 
+    //Attack Golems!
 
     @Override
     protected void initEntity() {
