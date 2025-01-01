@@ -1,6 +1,5 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBeehive;
 import cn.nukkit.block.BlockFlower;
@@ -14,11 +13,11 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LiftController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.SpaceMoveController;
+import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.executor.BeeAttackExecutor;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.SpaceRandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.WolfAttackExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
@@ -34,9 +33,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.Set;
 
-/**
- * @author joserobjr
- */
 
 public class EntityBee extends EntityAnimal implements EntityFlyable {
 
@@ -49,6 +45,8 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
 
     private boolean stayAtFlower = false;
 
+    public int dieInTicks = -1;
+
     public EntityBee(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -60,8 +58,10 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                 Set.of(),
                 Set.of(
                         new Behavior(new BeeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 20),
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
-                                , 6, 1),
+                                all(
+                                        new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
+                                        entity -> hasSting()
+                                ), 6, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.22f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK), 4, 1),
                         new Behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
@@ -72,6 +72,10 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                 new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this),
                 this
         );
+    }
+
+    public boolean hasSting() {
+        return dieInTicks == -1;
     }
 
     @Override
@@ -122,7 +126,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         }
         if(source instanceof EntityDamageByEntityEvent event) {
             for(Entity entity : getLevel().getCollidingEntities(this.getBoundingBox().grow(4, 4, 4))) {
-                if(entity instanceof EntityBee bee) {
+                if(entity instanceof EntityBee bee && bee.hasSting()) {
                     bee.setAngry(event.getDamager());
                 }
             }
@@ -132,7 +136,13 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
 
     @Override
     public boolean onUpdate(int currentTick) {
-        if(currentTick % 20 == 0) {
+        if(!hasSting() && isAlive()) {
+            dieInTicks--;
+            if(dieInTicks < 0) {
+                kill();
+            }
+        }
+        if(currentTick % 20 == 0 && hasSting()) {
             getMemoryStorage().put(CoreMemoryTypes.LOOKING_BLOCK, shouldSearchBeehive() ? BlockBeehive.class : BlockFlower.class);
             Class<? extends Block> blockClass = this.getMemoryStorage().get(CoreMemoryTypes.LOOKING_BLOCK);
             if (blockClass.isAssignableFrom(BlockFlower.class)) {
