@@ -63,7 +63,10 @@ public class EntitySnowGolem extends EntityGolem {
                 Set.of(),
                 Set.of(
                         new Behavior(new SnowGolemShootExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.4f, 16, true, 20, 0), all(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), entity -> !(getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof EntitySnowGolem)), 3, 1),
-                        new Behavior(new SnowGolemShootExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.4f, 10, true, 20, 0), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY), 2, 1),
+                        new Behavior(new SnowGolemShootExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.4f, 10, true, 20, 0), all(
+                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
+                                entity -> attackTarget(getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET))
+                        ), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
                 Set.of(new NearestEntitySensor(EntityMob.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 16, 0)),
@@ -122,7 +125,7 @@ public class EntitySnowGolem extends EntityGolem {
         if(this.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
             if(this.getLevelBlock().isAir()) {
                 if(this.getLevelBlock().down().isFullBlock() && this.isOnGround()){
-                    this.getLevel().setBlock(this.round(), Block.get(Block.SNOW_LAYER));
+                    this.getLevel().setBlock(this.getLevelBlock(), Block.get(Block.SNOW_LAYER));
                 }
             }
         }
