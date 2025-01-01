@@ -68,7 +68,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author joserobjr
  * @since 2021-01-13
  */
-public class EntityIronGolem extends EntityGolem implements EntityOwnable, EntityCanAttack {
+public class EntityIronGolem extends EntityGolem implements EntityOwnable {
     @Override
     @NotNull public String getIdentifier() {
         return IRON_GOLEM;
@@ -97,6 +97,7 @@ public class EntityIronGolem extends EntityGolem implements EntityOwnable, Entit
                         ), 3, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.2f, 40, true, 30), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
+                                entity -> attackTarget(getMemoryStorage().get(CoreMemoryTypes.NEAREST_SHARED_ENTITY)),
                                 not(entity -> attackingPlayer = false)
                         ), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), none(), 1, 1)
@@ -198,11 +199,6 @@ public class EntityIronGolem extends EntityGolem implements EntityOwnable, Entit
             }
         }
         return ThreadLocalRandom.current().nextFloat(7.5f, 11.75f);
-    }
-
-    @Override
-    public boolean attackTarget(Entity entity) {
-        return true;
     }
 
     public static void checkAndSpawnGolem(Block block, Player player) {

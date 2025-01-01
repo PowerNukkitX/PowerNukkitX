@@ -222,9 +222,16 @@ public class BlockEntityBeehive extends BlockEntity {
 
     @Override
     public void onBreak(boolean isSilkTouch) {
-        for(Occupant occupant : getOccupants()) {
-            if(spawnOccupant(occupant) instanceof EntityBee bee && getInteractingEntity() != null) {
-                bee.setAngry(getInteractingEntity());
+        if(!isSilkTouch) {
+            Entity interactingEntity = getInteractingEntity();
+            for(Occupant occupant : getOccupants()) {
+                if(spawnOccupant(occupant) instanceof EntityBee bee && interactingEntity != null) {
+                    if(getInteractingEntity() instanceof Player player) {
+                        if(player.isSurvival() || player.isAdventure()) {
+                            bee.setAngry(player);
+                        }
+                    } else bee.setAngry(interactingEntity);
+                }
             }
         }
         super.onBreak(isSilkTouch);
