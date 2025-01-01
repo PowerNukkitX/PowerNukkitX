@@ -62,6 +62,8 @@ public final class ServerSettings extends OkaeriConfig {
         int autosave = 6000;
         @Comment("nukkit.server.settings.baseSettings.saveUnknownBlock")
         boolean saveUnknownBlock = true;
+        @Comment("nukkit.server.settings.baseSettings.enableCommandBlocks")
+        boolean enableCommandBlocks = true;
     }
 
     @EqualsAndHashCode(callSuper = true)
