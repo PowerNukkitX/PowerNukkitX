@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;
 import cn.nukkit.item.Item;
@@ -95,7 +96,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
             Item itemInHand = player.getInventory().getItemInHand();
-            if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
+            if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull()) || !Server.getInstance().getSettings().gameplaySettings().enableCommandBlocks()) {
                 return false;
             }
             BlockEntityCommandBlock tile = this.getOrCreateBlockEntity();
