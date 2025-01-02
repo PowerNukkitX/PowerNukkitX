@@ -43,6 +43,8 @@
   "nukkit.server.settings.playersettings.skinChangeCooldown": "玩家改变皮肤的冷却时间",
   "nukkit.server.settings.playersettings.forceSkinTrusted": "是否强制信任玩家皮肤，允许玩家随意使用第三方皮肤",
   "nukkit.server.settings.playersettings.checkMovement": "是否检查玩家移动",
+  "nukkit.server.settings.gameplaysettings": "Server's gameplay configuration",
+  "nukkit.server.settings.gameplaysettings.enableCommandBlocks": "Whether to allow players to use command blocks\nNote: If enabled, per-world gamerules still apply.",
   "chat.type.achievement": "{%0} 刚刚获得了 {%1} 成就！",
   "chat.type.admin": "[{%0}: {%1}]",
   "chat.type.announcement": "[{%0}] {%1}",
