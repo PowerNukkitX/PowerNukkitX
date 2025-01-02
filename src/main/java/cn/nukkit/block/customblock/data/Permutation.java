@@ -5,15 +5,25 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 
 /**
- * The type Permutation builder.
+ * The Permutation class represents a permutation with a component, a condition, and an array of block tags.
  */
-
-
 public record Permutation(Component component, String condition, String[] blockTags) implements NBTData {
+
+    /**
+     * Constructs a Permutation with the specified component and condition.
+     *
+     * @param component The component associated with this permutation.
+     * @param condition The condition for this permutation.
+     */
     public Permutation(Component component, String condition) {
         this(component, condition, new String[]{});
     }
 
+    /**
+     * Converts the Permutation instance to a CompoundTag.
+     *
+     * @return A CompoundTag representing the Permutation instance.
+     */
     @Override
     public CompoundTag toCompoundTag() {
         CompoundTag result = new CompoundTag()

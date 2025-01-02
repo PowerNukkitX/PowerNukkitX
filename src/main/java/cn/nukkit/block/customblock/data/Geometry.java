@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
 public class Geometry implements NBTData {
     private final String geometryName;
     private String culling = "";
@@ -20,9 +19,11 @@ public class Geometry implements NBTData {
     }
 
     /**
-     * 控制模型对应骨骼是否显示
-     * <p>
-     * Control the visibility that the bone of geometry
+     * Controls the visibility of the specified bone in the geometry.
+     *
+     * @param boneName     The name of the bone.
+     * @param isVisibility The visibility state of the bone.
+     * @return The current Geometry instance.
      */
     public Geometry boneVisibility(@NotNull String boneName, boolean isVisibility) {
         Preconditions.checkNotNull(boneName);
@@ -32,9 +33,11 @@ public class Geometry implements NBTData {
     }
 
     /**
-     * 控制模型对应骨骼是否显示
-     * <p>
-     * Control the visibility that the bone of geometry
+     * Controls the visibility of the specified bone in the geometry based on a condition.
+     *
+     * @param boneName  The name of the bone.
+     * @param condition The condition for the bone's visibility.
+     * @return The current Geometry instance.
      */
     public Geometry boneVisibility(@NotNull String boneName, String condition) {
         Preconditions.checkNotNull(boneName);
@@ -43,12 +46,23 @@ public class Geometry implements NBTData {
         return this;
     }
 
+    /**
+     * Sets the culling name for the geometry.
+     *
+     * @param cullingName The name of the culling.
+     * @return The current Geometry instance.
+     */
     public Geometry culling(@NotNull String cullingName) {
         Preconditions.checkNotNull(cullingName);
         this.culling = cullingName;
         return this;
     }
 
+    /**
+     * Converts the Geometry instance to a CompoundTag.
+     *
+     * @return A CompoundTag representing the Geometry instance.
+     */
     @Override
     public CompoundTag toCompoundTag() {
         var boneVisibility = new CompoundTag();
