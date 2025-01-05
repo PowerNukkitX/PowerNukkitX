@@ -10,7 +10,6 @@ import cn.nukkit.entity.ai.memory.codec.StringMemoryCodec;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
@@ -169,6 +168,9 @@ public interface CoreMemoryTypes {
 
     MemoryType<Entity> NEAREST_ENDERMITE = new MemoryType<>("minecraft:nearest_endermite");
 
+    MemoryType<Entity> NEAREST_GOLEM = new MemoryType<>("minecraft:nearest_golem");
+
+    MemoryType<Entity> NEAREST_SHARED_ENTITY = new MemoryType<>("minecraft:nearest_shared_entity");
 
     MemoryType<Class<? extends Block>> LOOKING_BLOCK = new MemoryType<>("minecraft:looking_block");
 

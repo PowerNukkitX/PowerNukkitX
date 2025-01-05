@@ -178,24 +178,13 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     }
 
     @Override
-    public boolean isSilkTouch(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
-        if (player != null) {
-            BlockEntityBeehive beehive = getBlockEntity();
-            if (beehive != null && !beehive.isEmpty()) {
-                return true;
-            }
-        }
-        return super.isSilkTouch(vector, layer, face, item, player);
-    }
-
-    @Override
     public boolean canHarvestWithHand() {
         return true;
     }
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{Item.get(BlockID.BEEHIVE)};
+        return Item.EMPTY_ARRAY;
     }
 
     @Override

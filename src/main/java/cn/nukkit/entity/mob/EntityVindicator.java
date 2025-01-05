@@ -21,7 +21,7 @@ public class EntityVindicator extends EntityMob implements EntityWalkable {
         super(chunk, nbt);
     }
 
-    
+    //Attack Golems!
 
     @Override
     protected void initEntity() {

@@ -66,7 +66,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
                                     return player.isSurvival();
                                 }
                         ), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
+                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
                 Set.of(new NearestPlayerSensor(16, 0, 20), entity -> {
                     var memoryStorage = entity.getMemoryStorage();

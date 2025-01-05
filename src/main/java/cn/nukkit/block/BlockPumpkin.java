@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.CommonPropertyMap;
+import cn.nukkit.entity.mob.EntitySnowGolem;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
@@ -85,6 +86,7 @@ public class BlockPumpkin extends BlockSolid implements Faceable, Natural {
             setBlockFace(player.getDirection().getOpposite());
         }
         this.level.setBlock(block, this, true, true);
+        EntitySnowGolem.checkAndSpawnGolem(this);
         return true;
     }
 

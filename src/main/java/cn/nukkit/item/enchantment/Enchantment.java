@@ -439,13 +439,17 @@ public abstract class Enchantment implements Cloneable {
 
     public static Collection<Enchantment> getRegisteredEnchantments(boolean allowCustom) {
         if(!allowCustom) {
-            return namedEnchantments.values().stream().filter(e -> {
-                return e.getIdentifier() != null && e.getIdentifier().getNamespace().equals("minecraft");
-            }).collect(Collectors.toList());
+            Collection<Enchantment> enchantments = new LinkedHashSet<>();
+            namedEnchantments.forEach((i,v) -> {
+                if (i.getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
+                    enchantments.add(v);
+                }
+            });
+
+            return enchantments;
         }
         return new ArrayList<>(namedEnchantments.values());
     }
-
     public static Map<String, Integer> getEnchantmentName2IDMap() {
         return namedEnchantments.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().getId()));
     }
@@ -472,6 +476,9 @@ public abstract class Enchantment implements Cloneable {
     protected final String name;
     @Nullable
     protected final Identifier identifier;
+
+    protected boolean fishable = true;
+    protected boolean obtainableFromEnchantingTable = true;
 
     /**
      * Constructs this instance using the given data and with level 1.
@@ -645,6 +652,43 @@ public abstract class Enchantment implements Cloneable {
 
     public double getDamageBonus(Entity target, Entity damager) {
         return 0;
+    }
+
+    /**
+     * This value is for treasures of {@link cn.nukkit.item.randomitem.Fishing}, specifically {@link cn.nukkit.item.randomitem.fishing.FishingEnchantmentItemSelector}
+     * If false, this enchantment cannot be fished using a {@link cn.nukkit.item.ItemFishingRod}
+     *
+     * @return whether this enchantment can be fished or not
+     */
+    public boolean isFishable() {
+        return fishable;
+    }
+
+    /**
+     * Decides whether this enchantment can be fished ({@link cn.nukkit.item.randomitem.fishing.FishingEnchantmentItemSelector}) using a {@link cn.nukkit.item.ItemFishingRod}
+     *
+     * @param fishable true if it is fishable
+     */
+    public void setFishable(boolean fishable) {
+        this.fishable = fishable;
+    }
+
+    /**
+     * This value is used for deciding which enchantments can be obtained within the {@link cn.nukkit.block.BlockEnchantingTable}, used within {@link EnchantmentHelper}
+     *
+     * @return true if it can be obtained
+     */
+    public boolean isObtainableFromEnchantingTable() {
+        return obtainableFromEnchantingTable;
+    }
+
+    /**
+     * Decides whether this enchantment can be obtained from a {@link cn.nukkit.block.BlockEnchantingTable}
+     *
+     * @param obtainableFromEnchantingTable true if it is obtainable
+     */
+    public void setObtainableFromEnchantingTable(boolean obtainableFromEnchantingTable) {
+        this.obtainableFromEnchantingTable = obtainableFromEnchantingTable;
     }
 
     /**

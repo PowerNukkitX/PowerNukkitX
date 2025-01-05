@@ -2,8 +2,8 @@ package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.evaluator.AttackCheckEvaluator;
-import cn.nukkit.entity.ai.evaluator.PlayerCheckEvaluator;
+import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
+import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.level.Sound;
@@ -13,7 +13,7 @@ public class StaringAttackTargetExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
         if(entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
-            if(!entity.getMemoryStorage().isEmpty(CoreMemoryTypes.STARING_PLAYER) && new PlayerCheckEvaluator(CoreMemoryTypes.STARING_PLAYER).evaluate(entity)) {
+            if(!entity.getMemoryStorage().isEmpty(CoreMemoryTypes.STARING_PLAYER) && new EntityCheckEvaluator(CoreMemoryTypes.STARING_PLAYER).evaluate(entity)) {
                 entity.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity.getMemoryStorage().get(CoreMemoryTypes.STARING_PLAYER));
                 entity.level.addSound(entity, Sound.MOB_ENDERMEN_STARE);
             } else if(!entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_ENDERMITE)) {
@@ -32,7 +32,7 @@ public class StaringAttackTargetExecutor implements IBehaviorExecutor {
                 entity.setDataFlag(EntityFlag.ANGRY, false);
             }
         } else {
-            if(new AttackCheckEvaluator().evaluate(entity)) {
+            if(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET).evaluate(entity)) {
                 if (!entity.getDataFlag(EntityFlag.ANGRY)) {
                     entity.setDataFlag(EntityFlag.ANGRY);
                 }

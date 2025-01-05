@@ -1,5 +1,7 @@
 package cn.nukkit.entity.ai.executor;
 
+import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
@@ -7,6 +9,7 @@ import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.passive.EntityBee;
+import cn.nukkit.network.protocol.EntityEventPacket;
 
 import static cn.nukkit.Server.getInstance;
 
@@ -28,19 +31,26 @@ public class BeeAttackExecutor extends MeleeAttackExecutor {
 
     @Override
     public boolean execute(EntityIntelligent entity) {
-        if (entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
-            if (!entity.isEnablePitch()) entity.setEnablePitch(true);
-             Entity entity1 = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
-            if (entity1 != null) {
-                this.lookTarget = entity1.clone();
-                if (getInstance().getDifficulty() == 2) {
-                    entity1.addEffect(Effect.get(EffectType.POISON).setDuration(200));
-                } else if (getInstance().getDifficulty() == 3) {
-                    entity1.addEffect(Effect.get(EffectType.POISON).setDuration(360));
+        if(entity instanceof EntityBee bee) {
+            if (entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
+                if (!entity.isEnablePitch()) entity.setEnablePitch(true);
+                Entity entity1 = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
+                if (entity1 != null) {
+                    this.lookTarget = entity1.clone();
+                    if (getInstance().getDifficulty() == 2) {
+                        entity1.addEffect(Effect.get(EffectType.POISON).setDuration(200));
+                    } else if (getInstance().getDifficulty() == 3) {
+                        entity1.addEffect(Effect.get(EffectType.POISON).setDuration(360));
+                    }
                 }
             }
+
+            if (entity.distanceSquared(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET)) <= 2.5 && attackTick > coolDown && bee.hasSting()) {
+                bee.dieInTicks = 700;
+            }
+            return super.execute(entity);
         }
-        return super.execute(entity);
+        return false;
     }
 
     @Override

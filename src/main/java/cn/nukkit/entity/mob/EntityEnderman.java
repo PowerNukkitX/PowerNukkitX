@@ -2,7 +2,6 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -10,11 +9,10 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.evaluator.AttackCheckEvaluator;
-import cn.nukkit.entity.ai.evaluator.DistanceEvaluator;
+import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
-import cn.nukkit.entity.ai.evaluator.PlayerCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
+import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.EndermanBlockExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
@@ -22,30 +20,23 @@ import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.executor.StaringAttackTargetExecutor;
 import cn.nukkit.entity.ai.executor.TeleportExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
-import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.ai.sensor.PlayerStaringSensor;
-import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author PikyCZ
@@ -67,19 +58,11 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                        new Behavior(new StaringAttackTargetExecutor(), (entity -> true), 1, 1, 1, true)
+                        new Behavior(new StaringAttackTargetExecutor(), none(), 1, 1, 1, true)
                 ),
                 Set.of(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_ENDERMEN_IDLE, 0.8f, 1.2f, 1, 1), all(
-                                entity -> getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET),
-                                entity -> getLevel().getTick()%10 == 0,
-                                new ProbabilityEvaluator(1, 10)
-                        ), 6, 1, 1, true),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_ENDERMEN_SCREAM, 0.8f, 1.2f, 1, 1), all(
-                                entity -> !getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET),
-                                entity -> getLevel().getTick()%10 == 0,
-                                new ProbabilityEvaluator(1, 7)
-                        ), 5, 1, 1, true),
+                        new Behavior(new PlaySoundExecutor(Sound.MOB_ENDERMEN_IDLE, 0.8f, 1.2f, 1, 1), all(not(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET)), new RandomSoundEvaluator()), 6, 1, 1, true),
+                        new Behavior(new PlaySoundExecutor(Sound.MOB_ENDERMEN_SCREAM, 0.8f, 1.2f, 1, 1), all(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), new RandomSoundEvaluator(10, 7)), 5, 1, 1, true),
                         new Behavior(new TeleportExecutor(16, 5, 16), any(
                                 all(entity -> getLevel().isRaining(),
                                         entity -> !isUnderBlock(),
@@ -96,7 +79,7 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
                                 )
                         ), 4, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.45f, 64, true, 30), all(
-                                new AttackCheckEvaluator(),
+                                new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 any(
                                         entity -> getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player holder && holder.getInventory() != null && !holder.getInventory().getHelmet().getId().equals(Block.CARVED_PUMPKIN),
                                         entity -> getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof EntityIntelligent
@@ -107,7 +90,7 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
                                 entity -> getLevel().getTick()%60 == 0,
                                 new ProbabilityEvaluator(1,20)
                         ), 2, 1, 1, true),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
+                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
                 Set.of(
                         new PlayerStaringSensor(64, 30),
