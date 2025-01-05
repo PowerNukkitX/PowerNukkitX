@@ -29,7 +29,7 @@ import java.util.*;
  */
 @Slf4j
 public abstract class BaseInventory implements Inventory {
-    protected final Int2ObjectOpenHashMap<Item> slots = new Int2ObjectOpenHashMap<>();
+    protected final HashMap<Integer, Item> slots = new HashMap<>();
     protected final InventoryType type;
     protected final Set<Player> viewers = new HashSet<>();
     protected final int size;

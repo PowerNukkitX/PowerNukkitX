@@ -1890,6 +1890,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 if (onPhysicalInteraction(down, false)) {
                     return;
                 }
+                if(this instanceof EntityFlyable) return;
                 var farmEvent = new FarmLandDecayEvent(this, down);
                 this.server.getPluginManager().callEvent(farmEvent);
                 if (farmEvent.isCancelled()) return;

@@ -28,7 +28,7 @@ public abstract class BlockCoralBlock extends BlockSolid {
 
     @Override
     public double getHardness() {
-        return 7;
+        return 1.5;
     }
 
     @Override
