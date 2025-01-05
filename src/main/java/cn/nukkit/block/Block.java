@@ -459,7 +459,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public boolean canHarvest(Item item) {
-        return getToolTier() == 0 || getToolType() == 0 || correctTool0(getToolType(), item, this) && item.getTier() >= getToolTier();
+        return (getToolTier() == 0 || getToolType() == 0) ||
+                (correctTool0(getToolType(), item, this) && item.getTier() >= getToolTier());
     }
 
     /**
