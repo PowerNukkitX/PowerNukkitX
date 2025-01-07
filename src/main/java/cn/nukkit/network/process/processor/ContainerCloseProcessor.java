@@ -25,9 +25,6 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
                 playerHandle.setClosingWindowId(pk.windowId);
                 player.getInventory().close(player);
                 playerHandle.setInventoryOpen(false);
-            } else if (pk.windowId == SpecialWindowId.ENDER_CHEST.getId()) {
-                playerHandle.setClosingWindowId(pk.windowId);
-                player.getEnderChestInventory().close(player);
             } else {
                 playerHandle.removeWindow(playerHandle.getWindowIndex().get(pk.windowId));
             }
