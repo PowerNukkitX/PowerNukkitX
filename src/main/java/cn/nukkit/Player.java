@@ -1474,9 +1474,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.addWindow(this.getCursorInventory(), SpecialWindowId.CURSOR.getId());
         this.getCursorInventory().open(this);
         this.permanentWindows.add(SpecialWindowId.CURSOR.getId());
-
-        this.addWindow(this.getEnderChestInventory(), SpecialWindowId.ENDER_CHEST.getId());
-        this.permanentWindows.add(SpecialWindowId.ENDER_CHEST.getId());
     }
 
     @Override

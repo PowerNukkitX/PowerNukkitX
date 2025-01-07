@@ -6,6 +6,7 @@ import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEnderChest;
 import cn.nukkit.inventory.HumanEnderChestInventory;
+import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -146,7 +147,7 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
 
         HumanEnderChestInventory enderChestInventory = player.getEnderChestInventory();
         enderChestInventory.setBlockEntityEnderChest(player, chest);
-        enderChestInventory.open(player);
+        player.addWindow(enderChestInventory);
         return true;
     }
 
