@@ -173,6 +173,10 @@ public class CreatureSpawnEvent extends Event implements Cancellable {
         /**
          * When turtles hatches from turtle eggs
          */
-        TURTLE_EGG
+        TURTLE_EGG,
+        /**
+         * When an creaking heart spawns an entity
+         */
+        CREAKING_HEART
     }
 }
