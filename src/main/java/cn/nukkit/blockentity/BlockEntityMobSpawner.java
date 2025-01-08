@@ -8,6 +8,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.entity.passive.EntityAnimal;
 import cn.nukkit.event.entity.CreatureSpawnEvent;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -110,6 +111,8 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
         if (this.closed) {
             return false;
         }
+
+        if(!getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) return true;
 
         if (this.delay++ >= Utils.rand(this.minSpawnDelay, this.maxSpawnDelay)) {
             this.delay = 0;
