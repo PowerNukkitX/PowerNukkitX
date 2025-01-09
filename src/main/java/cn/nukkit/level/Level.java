@@ -1636,6 +1636,23 @@ public class Level implements Metadatable {
         return this.updateQueue.isBlockTickPending(pos, block);
     }
 
+    public List<Block> raycastBlocks(Vector3 start, Vector3 end) {
+        return raycastBlocks(start, end, true, false);
+    }
+
+    public List<Block> raycastBlocks(Vector3 start, Vector3 end, boolean ignoreAir, boolean load) {
+        List<Block> result = new ArrayList<>();
+        Vector3 direction = end.subtract(start).normalize();
+        Vector3 currentPos = start.clone();
+
+        for (double i = 0; i < start.distance(end); i += 1) {
+            Block block = this.getBlock(currentPos.floor(), load);
+            currentPos = currentPos.add(direction);
+            if(!block.isAir() || !ignoreAir) result.add(block);
+        }
+        return Collections.unmodifiableList(result);
+    }
+
     public Set<BlockUpdateEntry> getPendingBlockUpdates(IChunk chunk) {
         int minX = (chunk.getX() << 4) - 2;
         int maxX = minX + 16 + 2;
