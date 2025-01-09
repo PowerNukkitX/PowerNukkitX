@@ -1,6 +1,8 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.event.item.ItemWearEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.ByteTag;
@@ -103,8 +105,12 @@ abstract public class ItemArmor extends Item implements ItemDurable {
 
     @Override
     public void setDamage(int damage) {
-        super.setDamage(damage);
-        this.getOrCreateNamedTag().putInt("Damage", damage);
+        ItemWearEvent event = new ItemWearEvent(this, damage);
+        Server.getInstance().getPluginManager().callEvent(event);
+        if(!event.isCancelled()) {
+            super.setDamage(event.getNewDurability());
+            this.getOrCreateNamedTag().putInt("Damage", event.getNewDurability());
+        }
     }
 
     @Override

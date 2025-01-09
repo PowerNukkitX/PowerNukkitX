@@ -1,7 +1,9 @@
 package cn.nukkit.item;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.item.ItemWearEvent;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -131,8 +133,12 @@ public abstract class ItemTool extends Item implements ItemDurable {
 
     @Override
     public void setDamage(int damage) {
-        super.setDamage(damage);
-        this.getOrCreateNamedTag().putInt("Damage", damage);
+        ItemWearEvent event = new ItemWearEvent(this, damage);
+        Server.getInstance().getPluginManager().callEvent(event);
+        if(!event.isCancelled()) {
+            super.setDamage(event.getNewDurability());
+            this.getOrCreateNamedTag().putInt("Damage", event.getNewDurability());
+        }
     }
 
     public void incDamage(int v) {
