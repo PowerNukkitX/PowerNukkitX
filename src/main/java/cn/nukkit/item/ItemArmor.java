@@ -7,6 +7,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.plugin.PluginManager;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
@@ -106,7 +107,8 @@ abstract public class ItemArmor extends Item implements ItemDurable {
     @Override
     public void setDamage(int damage) {
         ItemWearEvent event = new ItemWearEvent(this, damage);
-        Server.getInstance().getPluginManager().callEvent(event);
+        PluginManager pluginManager = Server.getInstance().getPluginManager();
+        if(pluginManager != null) pluginManager.callEvent(event); //Method gets called on server start before plugin manager is initiated
         if(!event.isCancelled()) {
             super.setDamage(event.getNewDurability());
             this.getOrCreateNamedTag().putInt("Damage", event.getNewDurability());

@@ -7,6 +7,7 @@ import cn.nukkit.event.item.ItemWearEvent;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -134,7 +135,8 @@ public abstract class ItemTool extends Item implements ItemDurable {
     @Override
     public void setDamage(int damage) {
         ItemWearEvent event = new ItemWearEvent(this, damage);
-        Server.getInstance().getPluginManager().callEvent(event);
+        PluginManager pluginManager = Server.getInstance().getPluginManager();
+        if(pluginManager != null) pluginManager.callEvent(event); //Method gets called on server start before plugin manager is initiated
         if(!event.isCancelled()) {
             super.setDamage(event.getNewDurability());
             this.getOrCreateNamedTag().putInt("Damage", event.getNewDurability());
