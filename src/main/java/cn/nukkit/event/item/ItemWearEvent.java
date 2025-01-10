@@ -16,6 +16,7 @@ public class ItemWearEvent extends ItemEvent implements Cancellable {
 
     public ItemWearEvent(Item item, int newDurability) {
         super(item);
+        this.newDurability = newDurability;
     }
 
     public int getNewDurability() {
