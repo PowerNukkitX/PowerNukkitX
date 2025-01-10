@@ -224,8 +224,7 @@ public class NukkitMetrics {
             case 4 -> "Fire OS";
             case 5 -> "Gear VR";
             case 6 -> "HoloLens";
-            case 7 -> "Windows 10";
-            case 8 -> "Windows";
+            case 7, 8 -> "Windows";
             case 9 -> "Dedicated";
             case 10 -> "tvOS";
             case 11 -> "PlayStation";
