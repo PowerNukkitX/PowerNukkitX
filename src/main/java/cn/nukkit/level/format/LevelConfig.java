@@ -24,7 +24,7 @@ public class LevelConfig {
     @Accessors(fluent = true)
     public static class GeneratorConfig {
         String name;
-        long seed = ThreadLocalRandom.current().nextLong(-9999999999L, 999999999L);
+        long seed = ThreadLocalRandom.current().nextLong(Long.MIN_VALUE, Long.MAX_VALUE);
         boolean enableAntiXray = false;
         AntiXrayMode antiXrayMode = AntiXrayMode.LOW;
         boolean preDeobfuscate = true;
