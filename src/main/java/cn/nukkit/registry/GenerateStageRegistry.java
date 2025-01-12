@@ -4,6 +4,8 @@ import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.stages.FinishedStage;
 import cn.nukkit.level.generator.stages.FlatGenerateStage;
 import cn.nukkit.level.generator.stages.LightPopulationStage;
+import cn.nukkit.level.generator.stages.RedstoneReadyGenerateStage;
+import cn.nukkit.level.generator.stages.VoidGenerateStage;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.lang.reflect.InvocationTargetException;
@@ -20,6 +22,8 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
         try {
             this.register(FinishedStage.NAME, FinishedStage.class);
             this.register(FlatGenerateStage.NAME, FlatGenerateStage.class);
+            this.register(VoidGenerateStage.NAME, VoidGenerateStage.class);
+            this.register(RedstoneReadyGenerateStage.NAME, RedstoneReadyGenerateStage.class);
             this.register(LightPopulationStage.NAME, LightPopulationStage.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
