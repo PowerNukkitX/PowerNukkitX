@@ -5,6 +5,7 @@ import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerToggleFlightEvent;
+import cn.nukkit.event.player.PlayerIllegalFlightEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.RequestAbilityPacket;
@@ -24,6 +25,10 @@ public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityP
         }
 
         if (!player.getServer().getAllowFlight() && pk.boolValue && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
+            PlayerIllegalFlightEvent pife = new PlayerIllegalFlightEvent(player);
+            this.server.getPluginManager().callEvent(pife);
+            if (!pife.isKick())
+                return;
             player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
             return;
         }
