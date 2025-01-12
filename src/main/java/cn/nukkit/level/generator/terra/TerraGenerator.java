@@ -84,7 +84,7 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
         return config.getGeneratorProvider().newInstance(config);
     }
 
-    class TerraStage extends GenerateStage {
+    public class TerraStage extends GenerateStage {
         @Override
         public void apply(ChunkGenerateContext context) {
             final IChunk chunk = context.getChunk();
