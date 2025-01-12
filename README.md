@@ -81,7 +81,7 @@ java -jar cli.jar
 
 Starting PowerNukkitX when using the shaded jar (Without CLI)
 ```sh
-java -jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED .\powernukkitx-2.0.0-SNAPSHOT-all.jar
+java -jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED .\powernukkitx-shaded.jar
 ```
 
 ## Community & Support

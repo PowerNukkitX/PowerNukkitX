@@ -1,6 +1,7 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -13,6 +14,7 @@ import cn.nukkit.level.particle.SpellParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.PotionType;
+import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -119,12 +121,20 @@ public class EntitySplashPotion extends EntityProjectile {
         int[] color = new int[3];
         int count = 0;
 
-        for (Effect effect : potion.getEffects(true)) {
-            Color effectColor = effect.getColor();
-            color[0] += effectColor.getRed() * effect.getLevel();
-            color[1] += effectColor.getGreen() * effect.getLevel();
-            color[2] += effectColor.getBlue() * effect.getLevel();
-            count += effect.getLevel();
+        if(!potion.getEffects(true).isEmpty()) {
+            for (Effect effect : potion.getEffects(true)) {
+                Color effectColor = effect.getColor();
+                color[0] += effectColor.getRed() * effect.getLevel();
+                color[1] += effectColor.getGreen() * effect.getLevel();
+                color[2] += effectColor.getBlue() * effect.getLevel();
+                count += effect.getLevel();
+            }
+        } else {
+            BlockColor water = BlockColor.WATER_BLOCK_COLOR;
+            color[0] = water.getRed();
+            color[1] = water.getGreen();
+            color[2] = water.getBlue();
+            count = 1;
         }
 
         int r = (color[0] / count) & 0xff;
