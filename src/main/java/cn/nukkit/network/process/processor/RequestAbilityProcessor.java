@@ -26,7 +26,7 @@ public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityP
 
         if (!player.getServer().getAllowFlight() && pk.boolValue && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
             PlayerIllegalFlightEvent pife = new PlayerIllegalFlightEvent(player);
-            this.server.getPluginManager().callEvent(pife);
+            player.getServer().getPluginManager().callEvent(pife);
             if (!pife.isKick())
                 return;
             player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
