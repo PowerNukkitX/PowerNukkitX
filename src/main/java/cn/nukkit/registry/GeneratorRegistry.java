@@ -1,6 +1,8 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.Flat;
+import cn.nukkit.level.generator.RedstoneReady;
+import cn.nukkit.level.generator.Void;
 import cn.nukkit.level.generator.Generator;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -18,6 +20,8 @@ public class GeneratorRegistry implements IRegistry<String, Class<? extends Gene
         try {
             register("flat", Flat.class);
             register("normal", Flat.class);
+            register("void", Void.class);
+            register("redstoneready", RedstoneReady.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
