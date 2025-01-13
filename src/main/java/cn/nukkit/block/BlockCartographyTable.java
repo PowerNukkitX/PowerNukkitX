@@ -67,7 +67,7 @@ public class BlockCartographyTable extends BlockSolid implements BlockInventoryH
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
-        player.addWindow(getOrCreateInventory());
+        player.addWindow(getInventory());
         return true;
     }
 

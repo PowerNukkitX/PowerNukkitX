@@ -66,7 +66,7 @@ public class BlockCraftingTable extends BlockSolid implements BlockInventoryHold
             if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
                 return false;
             }
-            player.addWindow(getOrCreateInventory());
+            player.addWindow(getInventory());
         }
         return true;
     }
