@@ -211,7 +211,7 @@ public class BlockGrindstone extends BlockTransparent implements Faceable, Block
             if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
                 return false;
             }
-            player.addWindow(getOrCreateInventory());
+            player.addWindow(getInventory());
         }
         return true;
     }
