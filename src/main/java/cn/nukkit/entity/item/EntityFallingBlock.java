@@ -16,6 +16,7 @@ import cn.nukkit.event.entity.EntityBlockChangeEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
@@ -281,7 +282,7 @@ public class EntityFallingBlock extends Entity {
     }
 
     private void dropItems() {
-        getLevel().dropItem(this, blockState.toItem());
+        getLevel().dropItem(this, blockState.getIdentifier().equals(BlockID.SNOW_LAYER) ? Item.get(SNOWBALL) : blockState.toItem());
     }
 
     @Override
