@@ -2353,7 +2353,7 @@ public class Level implements Metadatable {
             BlockUpdateEvent ev = new BlockUpdateEvent(block);
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                for (Entity entity : this.getNearbyEntities(new SimpleAxisAlignedBB(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1))) {
+                for (Entity entity : this.getNearbyEntitiesSafe(new SimpleAxisAlignedBB(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1))) {
                     entity.scheduleUpdate();
                 }
 
@@ -3005,6 +3005,18 @@ public class Level implements Metadatable {
         } else {
             return Stream.empty();
         }
+    }
+
+    public Entity[] getNearbyEntitiesSafe(AxisAlignedBB bb) {
+        return this.getNearbyEntitiesSafe(bb, null);
+    }
+
+    public Entity[] getNearbyEntitiesSafe(AxisAlignedBB bb, Entity entity) {
+        return getNearbyEntitiesSafe(bb, entity, false);
+    }
+
+    public Entity[] getNearbyEntitiesSafe(AxisAlignedBB bb, Entity entity, boolean loadChunks) {
+        return Arrays.stream(getNearbyEntities(bb, entity, loadChunks)).filter(Objects::nonNull).toList().toArray(Entity.EMPTY_ARRAY);
     }
 
     public Entity[] getNearbyEntities(AxisAlignedBB bb) {
