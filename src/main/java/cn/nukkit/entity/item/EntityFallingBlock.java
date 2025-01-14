@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockAnvil;
+import cn.nukkit.block.BlockFallable;
 import cn.nukkit.block.BlockFlowingLava;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockLiquid;
@@ -282,7 +283,8 @@ public class EntityFallingBlock extends Entity {
     }
 
     private void dropItems() {
-        getLevel().dropItem(this, blockState.getIdentifier().equals(BlockID.SNOW_LAYER) ? Item.get(SNOWBALL) : blockState.toItem());
+        Block block = this.getBlock();
+        getLevel().dropItem(this, block instanceof BlockFallable ? ((BlockFallable) block).toFallingItem() : block.toItem());
     }
 
     @Override
