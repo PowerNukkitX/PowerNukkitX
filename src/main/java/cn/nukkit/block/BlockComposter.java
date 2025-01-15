@@ -234,26 +234,85 @@ public class BlockComposter extends BlockSolid {
                 ItemID.PUMPKIN_SEEDS,
                 ItemID.SWEET_BERRIES,
                 ItemID.WHEAT_SEEDS,
-                ItemID.GLOW_BERRIES
+                ItemID.GLOW_BERRIES,
+                ItemID.PITCHER_POD,
+                ItemID.TORCHFLOWER_SEEDS
         );
-        registerItems(50, ItemID.MELON_SLICE, ItemID.SUGAR_CANE, BlockID.NETHER_SPROUTS);
+        registerItems(50, ItemID.MELON_SLICE, ItemID.SUGAR_CANE);
         registerItems(65, ItemID.APPLE, BlockID.BEETROOT, ItemID.CARROT, ItemID.COCOA_BEANS, ItemID.POTATO);
-        registerItems(85, ItemID.BAKED_POTATO, ItemID.BREAD, ItemID.COOKIE, ItemID.MUSHROOM_STEW);
-        registerItems(100, BlockID.CAKE, ItemID.PUMPKIN_PIE);
+        registerItems(85, ItemID.BAKED_POTATO, ItemID.BREAD, ItemID.COOKIE);
+        registerItems(100, ItemID.PUMPKIN_PIE);
 
-        registerBlocks(30, PINK_PETALS, ItemID.LEAVES, ItemID.LEAVES2, ItemID.SAPLING, SEAGRASS, SWEET_BERRY_BUSH, MOSS_CARPET, HANGING_ROOTS, SMALL_DRIPLEAF_BLOCK);
-        registerBlocks(50, GLOW_LICHEN, GRASS_BLOCK, CACTUS, DRIED_KELP_BLOCK, VINE, NETHER_SPROUTS,
-                TWISTING_VINES, WEEPING_VINES, GLOW_LICHEN);
-        registerBlock(50, TALL_GRASS, 0);
-        registerBlock(50, TALL_GRASS, 1);
-        registerBlock(65, TALL_GRASS, 2);
-        registerBlock(65, TALL_GRASS, 3);
-        //todo support all DOUBLE_PLANT
-        registerBlocks(65, DANDELION, ItemID.RED_FLOWER, WITHER_ROSE, WATERLILY, MELON_BLOCK,
-                PUMPKIN, CARVED_PUMPKIN, SEA_PICKLE, BROWN_MUSHROOM, RED_MUSHROOM,
-                WARPED_ROOTS, CRIMSON_ROOTS, SHROOMLIGHT, AZALEA, BIG_DRIPLEAF, MOSS_BLOCK,
-                SPORE_BLOSSOM, WHEAT);
-        registerBlocks(85, HAY_BLOCK, BROWN_MUSHROOM_BLOCK, RED_MUSHROOM_BLOCK);
+        registerBlocks(30,
+                GRASS_BLOCK,
+                PINK_PETALS,
+                OAK_LEAVES,
+                SPRUCE_LEAVES,
+                BIRCH_LEAVES,
+                JUNGLE_LEAVES,
+                ACACIA_LEAVES,
+                DARK_OAK_LEAVES,
+                MANGROVE_LEAVES,
+                CHERRY_LEAVES,
+                AZALEA_LEAVES,
+                PALE_OAK_LEAVES,
+                OAK_SAPLING,
+                SPRUCE_SAPLING,
+                BIRCH_SAPLING,
+                JUNGLE_SAPLING,
+                ACACIA_SAPLING,
+                DARK_OAK_SAPLING,
+                CHERRY_SAPLING,
+                PALE_OAK_SAPLING,
+                MANGROVE_ROOTS,
+                MANGROVE_PROPAGULE,
+                SEAGRASS,
+                SHORT_GRASS,
+                SWEET_BERRY_BUSH,
+                MOSS_CARPET, HANGING_ROOTS,
+                SMALL_DRIPLEAF_BLOCK);
+        registerBlocks(50, GLOW_LICHEN, CACTUS, DRIED_KELP_BLOCK, VINE, NETHER_SPROUTS,
+                TWISTING_VINES, WEEPING_VINES, TALL_GRASS);
+        registerBlocks(65,
+                LARGE_FERN,
+                FERN,
+                WITHER_ROSE,
+                WATERLILY,
+                MELON_BLOCK,
+                PUMPKIN,
+                CARVED_PUMPKIN,
+                PALE_MOSS_BLOCK,
+                SEA_PICKLE,
+                BROWN_MUSHROOM,
+                RED_MUSHROOM,
+                MUSHROOM_STEM,
+                CRIMSON_FUNGUS,
+                WARPED_FUNGUS,
+                WARPED_ROOTS,
+                CRIMSON_ROOTS,
+                SHROOMLIGHT,
+                NETHER_WART,
+                AZALEA,
+                BIG_DRIPLEAF,
+                MOSS_BLOCK,
+                SPORE_BLOSSOM,
+                WHEAT,
+                DANDELION,
+                POPPY,
+                BLUE_ORCHID,
+                ALLIUM,
+                AZURE_BLUET,
+                RED_TULIP,
+                ORANGE_TULIP,
+                PINK_TULIP,
+                WHITE_TULIP,
+                OXEYE_DAISY,
+                CORNFLOWER,
+                LILY_OF_THE_VALLEY,
+                CLOSED_EYEBLOSSOM,
+                OPEN_EYEBLOSSOM
+        );
+        registerBlocks(85, HAY_BLOCK, BROWN_MUSHROOM_BLOCK, RED_MUSHROOM_BLOCK, FLOWERING_AZALEA, NETHER_WART_BLOCK, PITCHER_PLANT, TORCHFLOWER, WARPED_WART_BLOCK);
         registerBlocks(100, CAKE);
     }
 }
