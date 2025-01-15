@@ -278,4 +278,9 @@ public class BlockSnowLayer extends BlockFallable {
     public boolean isSolid(BlockFace side) {
         return side == BlockFace.UP && getSnowHeight() == HEIGHT.getMax();
     }
+
+    @Override
+    public Item toFallingItem() {
+        return Item.get(ItemID.SNOWBALL);
+    }
 }
