@@ -202,7 +202,10 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         match &= expectTemplate.match(template);
         if (match) {
             Item result = recipe.getResult().clone();
-            result.setCompoundTag(ingredient.getOrCreateNamedTag().copy());
+            CompoundTag tag = ingredient.getNamedTag();
+            if (tag != null) {
+                result.setCompoundTag(tag.copy());
+            }
             player.getCreativeOutputInventory().setItem(result);
             return null;
         }
@@ -234,7 +237,10 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             Item result = equipment.clone();
             CompoundTag trim = new CompoundTag().putString("Material", trimMaterial.materialId())
                     .putString("Pattern", trimPattern.patternId());
-            CompoundTag compound = ingredient.getOrCreateNamedTag().copy();
+            CompoundTag compound = ingredient.getNamedTag();
+            if (compound == null) {
+                compound = result.getOrCreateNamedTag();
+            } else compound = compound.copy(); // Ensure no cached CompoundTags are used double
             compound.putCompound("Trim", trim);
             result.setNamedTag(compound);
             player.getCreativeOutputInventory().setItem(result);
