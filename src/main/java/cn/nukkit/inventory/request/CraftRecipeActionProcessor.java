@@ -202,10 +202,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         match &= expectTemplate.match(template);
         if (match) {
             Item result = recipe.getResult().clone();
-            Enchantment[] enchantments = smithingInventory.getIngredient().getEnchantments();
-            if(enchantments.length != 0) {
-                result.addEnchantment();
-            }
+            result.setCompoundTag(ingredient.getOrCreateNamedTag().copy());
             player.getCreativeOutputInventory().setItem(result);
             return null;
         }
@@ -237,7 +234,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             Item result = equipment.clone();
             CompoundTag trim = new CompoundTag().putString("Material", trimMaterial.materialId())
                     .putString("Pattern", trimPattern.patternId());
-            CompoundTag compound = result.getOrCreateNamedTag();
+            CompoundTag compound = ingredient.getOrCreateNamedTag().copy();
             compound.putCompound("Trim", trim);
             result.setNamedTag(compound);
             player.getCreativeOutputInventory().setItem(result);
