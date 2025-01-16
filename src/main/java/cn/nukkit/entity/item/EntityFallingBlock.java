@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockAnvil;
+import cn.nukkit.block.BlockFallable;
 import cn.nukkit.block.BlockFlowingLava;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockLiquid;
@@ -16,6 +17,7 @@ import cn.nukkit.event.entity.EntityBlockChangeEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
@@ -281,7 +283,8 @@ public class EntityFallingBlock extends Entity {
     }
 
     private void dropItems() {
-        getLevel().dropItem(this, blockState.toItem());
+        Block block = this.getBlock();
+        getLevel().dropItem(this, block instanceof BlockFallable ? ((BlockFallable) block).toFallingItem() : block.toItem());
     }
 
     @Override
