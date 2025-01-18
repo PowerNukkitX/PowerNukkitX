@@ -124,7 +124,8 @@ public class EntitySnowGolem extends EntityGolem {
         this.waterTicks++;
         if(this.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
             if(this.getLevelBlock().isAir()) {
-                if(this.getLevelBlock().down().isFullBlock() && this.isOnGround()){
+                Block support = this.getLevelBlock().down();
+                if(support.isFullBlock() && !support.isAir()){
                     this.getLevel().setBlock(this.getLevelBlock(), Block.get(Block.SNOW_LAYER));
                 }
             }
