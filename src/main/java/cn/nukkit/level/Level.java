@@ -3469,10 +3469,14 @@ public class Level implements Metadatable {
     }
 
     public void subTick(GameLoop currentTick) {
-        processChunkRequest();
+        try {
+            processChunkRequest();
 
-        if (currentTick.getTick() % 100 == 0) {
-            doLevelGarbageCollection(false);
+            if (currentTick.getTick() % 100 == 0) {
+                doLevelGarbageCollection(false);
+            }
+        } catch (Exception e) {
+            getServer().getLogger().error("Subtick Thread for level " + getFolderName() + " failed.", e);
         }
     }
 
