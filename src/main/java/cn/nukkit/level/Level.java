@@ -3983,7 +3983,7 @@ public class Level implements Metadatable {
      */
     public void doLevelGarbageCollection(boolean force) {
         //gcBlockInventoryMetaData
-        for (var entry : this.getBlockMetadata().getBlockMetadataMap().entrySet()) {
+        for (var entry : new HashMap<>(this.getBlockMetadata().getBlockMetadataMap()).entrySet()) {
             String key = entry.getKey();
             String[] split = key.split(":");
             Map<Plugin, MetadataValue> value = entry.getValue();
