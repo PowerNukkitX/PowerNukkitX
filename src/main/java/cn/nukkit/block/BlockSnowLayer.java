@@ -270,6 +270,16 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
     public boolean canPassThrough() {
         return getSnowHeight() < 3;
     }
