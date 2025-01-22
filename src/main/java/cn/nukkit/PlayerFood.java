@@ -8,26 +8,30 @@ import cn.nukkit.event.player.PlayerFoodLevelChangeEvent;
 import cn.nukkit.item.ItemFood;
 
 /**
- * @author funcraft
+ * Manages the food and hunger system for a player.
+ * 
  * @since 2015/11/11
  */
 public class PlayerFood {
 
-    private final Player player;
+    private static final int MAX_FOOD = 20;
+    private static final float MAX_EXHAUSTION = 4.0f;
+    private static final int FOOD_TICK_INTERVAL = 80;
+    private static final int HEAL_INTERVAL = 20;
+    private static final int HUNGER_DAMAGE_INTERVAL = 10;
 
+    private final Player player;
     private int food;
     private final int maxFood;
     private float saturation;
     private double exhaustion;
-
     private int foodTickTimer;
-
     private boolean enabled = true;
 
     public PlayerFood(Player player, int food, float saturation) {
         this.player = player;
         this.food = food;
-        this.maxFood = 20;
+        this.maxFood = MAX_FOOD;
         this.saturation = saturation;
     }
 
@@ -40,7 +44,7 @@ public class PlayerFood {
     }
 
     public void setFood(int food, float saturation) {
-        food = Math.max(0, Math.min(food, 20));
+        food = Math.max(0, Math.min(food, MAX_FOOD));
 
         if (food <= 6 && this.food > 6 && this.player.isSprinting()) {
             this.player.setSprinting(false);
@@ -114,18 +118,12 @@ public class PlayerFood {
     }
 
     public void setExhaustion(float exhaustion) {
-        while (exhaustion >= 4.0f) {
-            exhaustion -= 4.0f;
-            float saturation = this.saturation;
+        while (exhaustion >= MAX_EXHAUSTION) {
+            exhaustion -= MAX_EXHAUSTION;
             if (saturation > 0) {
-                saturation = Math.max(0, saturation - 1.0f);
-                this.setSaturation(saturation);
-            } else {
-                int food = this.food;
-                if (food > 0) {
-                    food--;
-                    this.setFood(Math.max(food, 0));
-                }
+                setSaturation(Math.max(0, saturation - 1.0f));
+            } else if (food > 0) {
+                setFood(Math.max(food - 1, 0));
             }
         }
         this.exhaustion = exhaustion;
@@ -136,21 +134,15 @@ public class PlayerFood {
             return;
         }
 
-        double exhaustion = this.exhaustion + amount;
+        double newExhaustion = this.exhaustion + amount;
 
-        while (exhaustion >= 4.0f) {
-            exhaustion -= 4.0f;
+        while (exhaustion >= MAX_EXHAUSTION) {
+            exhaustion -= MAX_EXHAUSTION;
 
-            float saturation = this.saturation;
             if (saturation > 0) {
-                saturation = Math.max(0, saturation - 1.0f);
-                this.setSaturation(saturation);
-            } else {
-                int food = this.food;
-                if (food > 0) {
-                    food--;
-                    this.setFood(Math.max(food, 0));
-                }
+                setSaturation(Math.max(0, saturation - 1.0f));
+            } else if (food > 0) {
+                setFood(Math.max(food - 1, 0));
             }
         }
 
@@ -162,8 +154,8 @@ public class PlayerFood {
     }
 
     public void reset() {
-        this.food = 20;
-        this.saturation = 20;
+        this.food = MAX_FOOD;
+        this.saturation = MAX_FOOD;
         this.exhaustion = 0;
         this.foodTickTimer = 0;
         this.sendFood();
@@ -175,38 +167,42 @@ public class PlayerFood {
         }
 
         double health = player.getHealth();
-
         this.foodTickTimer += tickDiff;
-        if (this.foodTickTimer >= 80) {
+
+        if (this.foodTickTimer >= FOOD_TICK_INTERVAL) {
             this.foodTickTimer = 0;
         }
 
         int difficulty = Server.getInstance().getDifficulty();
 
-        if (difficulty == 0 && this.foodTickTimer % 10 == 0) {
+        if (difficulty == 0 && this.foodTickTimer % HUNGER_DAMAGE_INTERVAL == 0) {
             if (this.isHungry()) {
                 this.addFood(1, 0);
             }
-            if (this.foodTickTimer % 20 == 0 && health < this.player.getMaxHealth()) {
+            if (this.foodTickTimer % HEAL_INTERVAL == 0 && health < this.player.getMaxHealth()) {
                 this.player.heal(new EntityRegainHealthEvent(this.player, 1, EntityRegainHealthEvent.CAUSE_EATING));
             }
         }
 
         if (this.foodTickTimer == 0) {
-            if (this.food >= 18) {
-                if (health < player.getMaxHealth()) {
-                    this.player.heal(new EntityRegainHealthEvent(this.player, 1, EntityRegainHealthEvent.CAUSE_EATING));
-                    this.exhaust(6);
-                }
-            } else if (food <= 0) {
-                if ((difficulty == 1 && health > 10) || (difficulty == 2 && health > 1) || difficulty == 3) {
-                    this.player.attack(new EntityDamageEvent(this.player, EntityDamageEvent.DamageCause.HUNGER, 1));
-                }
-            }
+            handleFoodTick(health, difficulty);
         }
 
         if (this.food <= 6) {
             this.player.setSprinting(false);
+        }
+    }
+
+    private void handleFoodTick(double health, int difficulty) {
+        if (this.food >= 18) {
+            if (health < player.getMaxHealth()) {
+                this.player.heal(new EntityRegainHealthEvent(this.player, 1, EntityRegainHealthEvent.CAUSE_EATING));
+                this.exhaust(6);
+            }
+        } else if (food <= 0) {
+            if ((difficulty == 1 && health > 10) || (difficulty == 2 && health > 1) || difficulty == 3) {
+                this.player.attack(new EntityDamageEvent(this.player, EntityDamageEvent.DamageCause.HUNGER, 1));
+            }
         }
     }
 
