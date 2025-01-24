@@ -174,4 +174,9 @@ public class BlockKelp extends BlockFlowable {
     public boolean canBeActivated() {
         return true;
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

@@ -100,4 +100,8 @@ public class BlockNetherrack extends BlockSolid {
         return false;
     }
 
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

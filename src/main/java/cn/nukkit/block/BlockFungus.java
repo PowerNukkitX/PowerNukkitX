@@ -75,4 +75,9 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
     }
 
     public abstract boolean grow(@Nullable Player cause);
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

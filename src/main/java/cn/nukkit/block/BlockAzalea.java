@@ -56,6 +56,11 @@ public class BlockAzalea extends BlockSolid implements BlockFlowerPot.FlowerPotB
     }
 
     @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
+    @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal
             if (player != null && !player.isCreative()) {

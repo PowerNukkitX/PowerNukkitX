@@ -187,4 +187,9 @@ public class BlockSeaPickle extends BlockFlowable {
     public Item[] getDrops(Item item) {
         return new Item[]{new ItemBlock(new BlockSeaPickle(), 0, getPropertyValue(CLUSTER_COUNT))};
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }
