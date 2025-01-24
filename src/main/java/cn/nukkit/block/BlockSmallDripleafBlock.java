@@ -161,4 +161,9 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
         }
         return false;
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

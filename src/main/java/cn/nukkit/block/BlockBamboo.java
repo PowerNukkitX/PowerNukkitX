@@ -323,4 +323,9 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
     public boolean breaksWhenMoved() {
         return true;
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

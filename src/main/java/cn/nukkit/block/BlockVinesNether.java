@@ -401,4 +401,9 @@ public abstract class BlockVinesNether extends BlockTransparent {
     public BlockVinesNether clone() {
         return (BlockVinesNether) super.clone();
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

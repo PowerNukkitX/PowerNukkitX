@@ -208,4 +208,9 @@ public class BlockSweetBerryBush extends BlockFlowable {
     public Item toItem() {
         return new ItemSweetBerries();
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

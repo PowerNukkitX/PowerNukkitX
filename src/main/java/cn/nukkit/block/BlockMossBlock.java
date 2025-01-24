@@ -155,4 +155,9 @@ public class BlockMossBlock extends BlockSolid implements Natural {
     public Item[] getDrops(Item item) {
         return new Item[]{new ItemBlock(Block.get(BlockID.MOSS_BLOCK))};
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

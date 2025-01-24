@@ -135,4 +135,9 @@ public class BlockGrassBlock extends BlockDirt {
     public Item[] getDrops(Item item) {
         return new Item[]{Block.get(DIRT).toItem()};
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

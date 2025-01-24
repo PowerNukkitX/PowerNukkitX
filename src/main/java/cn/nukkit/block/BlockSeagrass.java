@@ -140,4 +140,9 @@ public class BlockSeagrass extends BlockFlowable {
     public Item toItem() {
         return new ItemBlock(new BlockSeagrass(), 0);
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }
