@@ -69,7 +69,7 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable,
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
-            player.addWindow(getOrCreateInventory());
+            player.addWindow(getInventory());
         }
         return true;
     }

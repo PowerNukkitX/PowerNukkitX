@@ -90,4 +90,9 @@ public abstract class BlockNylium extends BlockSolid implements Natural {
     public boolean canHarvestWithHand() {
         return false;
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

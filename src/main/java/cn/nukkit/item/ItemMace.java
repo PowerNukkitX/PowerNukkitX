@@ -3,7 +3,7 @@ package cn.nukkit.item;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.math.NukkitMath;
 
-public class ItemMace extends Item implements ItemDurable {
+public class ItemMace extends ItemTool {
     public ItemMace() {
         super(MACE);
     }

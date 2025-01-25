@@ -38,9 +38,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-/**
- * @author PikyCZ
- */
 public class EntityEnderman extends EntityMob implements EntityWalkable {
 
     @Override
@@ -93,7 +90,7 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
                 Set.of(
-                        new PlayerStaringSensor(64, 30),
+                        new PlayerStaringSensor(64, 20),
                         new NearestEntitySensor(EntityEndermite.class, CoreMemoryTypes.NEAREST_ENDERMITE, 64, 0)
                 ),
                 Set.of(new WalkController(), new LookController(true, true)),

@@ -36,10 +36,10 @@ dependencies {
     api(libs.guava)
     api(libs.commonsio)
     api(libs.fastutil)
-    api(libs.leveldbjni)
     api(libs.snakeyaml)
     api(libs.stateless4j)
 
+    implementation(libs.bundles.leveldb)
     implementation(libs.rng.simple)
     implementation(libs.rng.sampling)
     implementation(libs.asm)

@@ -18,20 +18,7 @@ public interface BlockInventoryHolder extends InventoryHolder {
 
     @Override
     default Inventory getInventory() {
-        return getOrCreateInventory();
+        return blockInventorySupplier().get();
     }
 
-    default Inventory getOrCreateInventory() {
-        Block block = getBlock();
-        MetadataValue meta = block.getMetadata(KEY, InternalPlugin.INSTANCE);
-        if (meta == null) {
-            final Inventory containerInventory = blockInventorySupplier().get();
-            if (containerInventory instanceof SoleInventory) return containerInventory;
-
-            block.setMetadata(KEY, new FixedMetadataValue(InternalPlugin.INSTANCE, containerInventory));
-            return containerInventory;
-        } else {
-            return (Inventory) meta.value();
-        }
-    }
 }

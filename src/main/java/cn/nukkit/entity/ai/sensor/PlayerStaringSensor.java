@@ -22,7 +22,7 @@ public class PlayerStaringSensor implements ISensor {
         for(Player player : entity.getViewers().values()) {
             if(player.distance(entity) <= range) {
                 if(Math.abs(Math.abs(player.headYaw-entity.headYaw)-180) <= this.triggerDiff) { //checks if enderman and player look at each other.
-                    if(player.isLookingAt(entity.add(entity.getEyeHeight()), triggerDiff)) {
+                    if(player.isLookingAt(entity.add(0, entity.getEyeHeight(), 0), triggerDiff, true)) {
                         entity.getMemoryStorage().put(CoreMemoryTypes.STARING_PLAYER, player);
                         return;
                     }

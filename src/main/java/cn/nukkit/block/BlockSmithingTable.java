@@ -52,7 +52,7 @@ public class BlockSmithingTable extends BlockSolid implements BlockInventoryHold
             return false;
         }
 
-        player.addWindow(getOrCreateInventory());
+        player.addWindow(getInventory());
         return true;
     }
 

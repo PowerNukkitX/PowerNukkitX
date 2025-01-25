@@ -13,7 +13,7 @@ public enum Platform {
     FIRE_OS("FireOS", 4),
     GEAR_VR("Gear VR", 5),
     HOLOLENS("Hololens", 6),
-    WINDOWS_10("Windows 10", 7),
+    WINDOWS_10("Windows", 7),
     WINDOWS("Windows", 8),
     DEDICATED("Dedicated", 9),
     TVOS("TVOS", 10),

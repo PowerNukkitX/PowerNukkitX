@@ -270,6 +270,16 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
     public boolean canPassThrough() {
         return getSnowHeight() < 3;
     }
@@ -277,5 +287,10 @@ public class BlockSnowLayer extends BlockFallable {
     @Override
     public boolean isSolid(BlockFace side) {
         return side == BlockFace.UP && getSnowHeight() == HEIGHT.getMax();
+    }
+
+    @Override
+    public Item toFallingItem() {
+        return Item.get(ItemID.SNOWBALL);
     }
 }

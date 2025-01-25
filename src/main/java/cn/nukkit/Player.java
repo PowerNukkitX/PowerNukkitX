@@ -3507,6 +3507,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     iterator.remove();
                 }
             }
+        } catch (Exception e) {
+            getServer().getLogger().error("Failed to unload all used chunks.", e);
         } finally {
             this.playerChunkManager.getUsedChunks().clear();
         }

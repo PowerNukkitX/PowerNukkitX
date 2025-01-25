@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.event.block.BlockFallEvent;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.nbt.tag.*;
 
@@ -68,5 +69,9 @@ public abstract class BlockFallable extends BlockSolid {
         }
 
         return fall;
+    }
+
+    public Item toFallingItem() {
+        return this.toItem();
     }
 }

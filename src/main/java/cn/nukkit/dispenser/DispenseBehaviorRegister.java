@@ -38,19 +38,31 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.BUCKET, new BucketDispenseBehavior());
         registerBehavior(ItemID.WATER_BUCKET, new BucketDispenseBehavior());
         registerBehavior(ItemID.LAVA_BUCKET, new BucketDispenseBehavior());
-        registerBehavior(ItemID.DYE, new DyeDispenseBehavior());
+        registerBehavior(ItemID.BONE_MEAL, new DyeDispenseBehavior());
         registerBehavior(ItemID.FIREWORK_ROCKET, new FireworksDispenseBehavior());
         registerBehavior(ItemID.FLINT_AND_STEEL, new FlintAndSteelDispenseBehavior());
 
-        registerBehavior(ItemID.BOAT, new BoatDispenseBehavior());
-        registerBehavior(ItemID.CHEST_BOAT, new ChestBoatDispenseBehavior());
+        registerBehavior(ItemID.OAK_BOAT, new BoatDispenseBehavior());
+        registerBehavior(ItemID.BIRCH_BOAT, new BoatDispenseBehavior());
+        registerBehavior(ItemID.ACACIA_BOAT, new BoatDispenseBehavior());
+        registerBehavior(ItemID.DARK_OAK_BOAT, new BoatDispenseBehavior());
+        registerBehavior(ItemID.JUNGLE_BOAT, new BoatDispenseBehavior());
+        registerBehavior(ItemID.SPRUCE_BOAT, new BoatDispenseBehavior());
+        registerBehavior(ItemID.MANGROVE_BOAT, new BoatDispenseBehavior());
+        registerBehavior(ItemID.CHERRY_BOAT, new BoatDispenseBehavior());
+        registerBehavior(ItemID.PALE_OAK_BOAT, new BoatDispenseBehavior());
+        registerBehavior(ItemID.BAMBOO_RAFT, new BoatDispenseBehavior());
+
+        registerBehavior(ItemID.OAK_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.BIRCH_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.ACACIA_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.DARK_OAK_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.JUNGLE_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.SPRUCE_CHEST_BOAT, new ChestBoatDispenseBehavior());
-        registerBehavior(ItemID.OAK_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.MANGROVE_CHEST_BOAT, new ChestBoatDispenseBehavior());
+        registerBehavior(ItemID.CHERRY_CHEST_BOAT, new ChestBoatDispenseBehavior());
+        registerBehavior(ItemID.PALE_OAK_CHEST_BOAT, new ChestBoatDispenseBehavior());
+        registerBehavior(ItemID.BAMBOO_CHEST_RAFT, new ChestBoatDispenseBehavior());
 
         registerBehavior(BlockID.UNDYED_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
         registerBehavior(BlockID.WHITE_SHULKER_BOX, new ShulkerBoxDispenseBehavior());

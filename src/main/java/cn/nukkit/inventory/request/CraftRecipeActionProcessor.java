@@ -1,6 +1,7 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.event.inventory.CraftItemEvent;
 import cn.nukkit.inventory.InputInventory;
 import cn.nukkit.inventory.Inventory;
@@ -18,6 +19,7 @@ import cn.nukkit.network.protocol.types.itemstack.request.action.CraftRecipeActi
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.recipe.Input;
+import cn.nukkit.recipe.Recipe;
 import cn.nukkit.recipe.SmithingTransformRecipe;
 import cn.nukkit.recipe.SmithingTrimRecipe;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -125,8 +128,8 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         } else {
             craft = player.getCraftingGrid();
         }
-        var numberOfRequestedCrafts = action.getNumberOfRequestedCrafts();
-        var recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetworkId());
+        int numberOfRequestedCrafts = action.getNumberOfRequestedCrafts();
+        Recipe recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetworkId());
         Input input = craft.getInput();
         Item[][] data = input.getData();
         ArrayList<Item> items = new ArrayList<>();
@@ -164,7 +167,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             var consumeActions = findAllConsumeActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1);
             var consumeActionCountNeeded = input.canConsumerItemCount();
             if (consumeActions.size() != consumeActionCountNeeded) {
-                log.warn("Mismatched consume action count! Expected: " + consumeActionCountNeeded + ", Actual: " + consumeActions.size());
+                log.warn("Mismatched consume action count! Expected: " + consumeActionCountNeeded + ", Actual: " + consumeActions.size() + " on inventory " + craft.getClass().getSimpleName());
                 return context.error();
             }
             if (recipe.getResults().size() == 1) {
@@ -202,9 +205,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         match &= expectTemplate.match(template);
         if (match) {
             Item result = recipe.getResult().clone();
-            Enchantment[] enchantments = smithingInventory.getIngredient().getEnchantments();
-            if(enchantments.length != 0) {
-                result.addEnchantment();
+            CompoundTag tag = equipment.getNamedTag();
+            if (tag != null) {
+                result.setCompoundTag(tag.copy());
             }
             player.getCreativeOutputInventory().setItem(result);
             return null;
@@ -237,7 +240,10 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             Item result = equipment.clone();
             CompoundTag trim = new CompoundTag().putString("Material", trimMaterial.materialId())
                     .putString("Pattern", trimPattern.patternId());
-            CompoundTag compound = result.getOrCreateNamedTag();
+            CompoundTag compound = ingredient.getNamedTag();
+            if (compound == null) {
+                compound = result.getOrCreateNamedTag();
+            } else compound = compound.copy(); // Ensure no cached CompoundTags are used double
             compound.putCompound("Trim", trim);
             result.setNamedTag(compound);
             player.getCreativeOutputInventory().setItem(result);

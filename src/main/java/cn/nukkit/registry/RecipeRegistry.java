@@ -622,15 +622,72 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                             ));
                         }
                     }
-                    case "crafting_table", "stonecutter", "cartography_table" -> {
+                    case "stonecutter" -> {
+                        ParseType inputParseType = ParseType.STONECUTTER_INPUT;
+                        ParseType outputParseType = ParseType.STONECUTTER_OUTPUT;
+
+                        String recipeId = (String) recipe.get("id");
+                        UUID uuid = UUID.fromString((String) recipe.get("uuid"));
+                        int priority = (int) ((double) recipe.get("priority"));
+
+                        List<Map<String, Object>> outputs = (List<Map<String, Object>>) recipe.get("output");
+                        Map<String, Object> primaryResultData = outputs.removeFirst();
+                        ItemDescriptor primaryResult = parseDescription(primaryResultData, outputParseType);
+
+                        List<ItemDescriptor> ingredients = new ArrayList<>();
+                        List<Map<String, Object>> inputs = (List<Map<String, Object>>) recipe.get("input");
+
+                        for (Map<String, Object> input : inputs) {
+                            ingredients.add(parseDescription(input, inputParseType));
+                        }
+
+                        this.register(new StonecutterRecipe(
+                                recipeId,
+                                uuid,
+                                priority,
+                                primaryResult.toItem(),
+                                ingredients.getFirst().toItem(),
+                                new RecipeUnlockingRequirement(
+                                        RecipeUnlockingRequirement.UnlockingContext.ALWAYS_UNLOCKED
+                                )
+                        ));
+                    }
+                    case "cartography_table" -> {
+                        ParseType inputParseType = ParseType.CARTOGRAPHY_TABLE_INPUT;
+                        ParseType outputParseType = ParseType.CARTOGRAPHY_TABLE_OUTPUT;
+
+                        String recipeId = (String) recipe.get("id");
+                        UUID uuid = UUID.fromString((String) recipe.get("uuid"));
+                        int priority = (int) ((double) recipe.get("priority"));
+
+                        List<Map<String, Object>> outputs = (List<Map<String, Object>>) recipe.get("output");
+                        Map<String, Object> primaryResultData = outputs.removeFirst();
+                        ItemDescriptor primaryResult = parseDescription(primaryResultData, outputParseType);
+
+                        List<ItemDescriptor> ingredients = new ArrayList<>();
+                        List<Map<String, Object>> inputs = (List<Map<String, Object>>) recipe.get("input");
+
+                        for (Map<String, Object> input : inputs) {
+                            ingredients.add(parseDescription(input, inputParseType));
+                        }
+
+                        this.register(new CartographyRecipe(
+                                recipeId,
+                                uuid,
+                                priority,
+                                primaryResult.toItem(),
+                                ingredients,
+                                new RecipeUnlockingRequirement(
+                                        RecipeUnlockingRequirement.UnlockingContext.ALWAYS_UNLOCKED
+                                )
+                        ));
+                    }
+
+                    case "crafting_table" -> {
                         ParseType inputParseType = ParseType.CRAFTING_TABLE_INPUT;
                         ParseType outputParseType = ParseType.CRAFTING_TABLE_OUTPUT;
 
                         switch (block) {
-                            case "stonecutter" -> {
-                                inputParseType = ParseType.STONECUTTER_INPUT;
-                                outputParseType = ParseType.STONECUTTER_OUTPUT;
-                            }
                             case "cartography_table" -> {
                                 inputParseType = ParseType.CARTOGRAPHY_TABLE_INPUT;
                                 outputParseType = ParseType.CARTOGRAPHY_TABLE_OUTPUT;

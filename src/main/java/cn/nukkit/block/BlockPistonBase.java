@@ -8,6 +8,7 @@ import cn.nukkit.blockentity.BlockEntityMovingBlock;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.event.block.BlockPistonEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
@@ -249,9 +250,10 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             //破坏需要破坏的方块
             for (int i = destroyBlocks.size() - 1; i >= 0; --i) {
                 var block = destroyBlocks.get(i);
+                var item = ItemTool.getBestTool(block.getToolType());
                 //清除位置上所含的水等
-                level.setBlock(block, 1, Block.get(BlockID.AIR), true, false);
-                this.level.useBreakOn(block);
+                this.level.setBlock(block, 1, Block.get(BlockID.AIR), true, false);
+                this.level.useBreakOn(block, item);
             }
             var blocksToMove = calculator.getBlocksToMove();
             toMoveBlockVec = blocksToMove.stream().map(Vector3::asBlockVector3).collect(Collectors.toList());
