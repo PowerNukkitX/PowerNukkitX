@@ -3093,8 +3093,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return Math.abs(Math.abs(anglePosition - angleVector)-90);
     }
 
-    public boolean isLookingAt(Vector3 location, double tollerance) {
-        if(getLookingAngleAt(location) <= tollerance && getLookingAngleAtPitch(location) <= tollerance) {
+    public boolean isLookingAt(Vector3 location, double tolerance, boolean checkRaycast) {
+        if(getLookingAngleAt(location) <= tolerance && getLookingAngleAtPitch(location) <= tolerance && (!checkRaycast || getLevel().raycastBlocks(location, this.add(0, getEyeHeight(), 0)).isEmpty())) {
             return true;
         }
         return false;
