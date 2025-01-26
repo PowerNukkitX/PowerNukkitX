@@ -1,7 +1,6 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -11,9 +10,7 @@ import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
-import cn.nukkit.entity.ai.executor.BowShootExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
 import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.executor.PotionThrowExecutor;
 import cn.nukkit.entity.ai.executor.UsePotionExecutor;
@@ -22,18 +19,14 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
-import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
-import cn.nukkit.entity.effect.Effect;
-import cn.nukkit.entity.effect.EffectType;
-import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
-import org.jose4j.jwk.Use;
 
-import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author PikyCZ
@@ -102,4 +95,19 @@ public class EntityWitch extends EntityMob implements EntityWalkable {
         return true;
     }
 
+    @Override
+    public Item[] getDrops() {
+        String itemId = switch (ThreadLocalRandom.current().nextInt(7)) {
+            case 0 -> Item.STICK;
+            case 1 -> Item.SPIDER_EYE;
+            case 2 -> Item.GLOWSTONE_DUST;
+            case 3 -> Item.GUNPOWDER;
+            case 4 -> Item.REDSTONE;
+            case 5 -> Item.SUGAR;
+            default -> Item.GLASS_BOTTLE;
+        };
+        return new Item[] {
+                Item.get(itemId,0, ThreadLocalRandom.current().nextInt(5))
+        };
+    }
 }
