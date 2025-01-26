@@ -63,19 +63,21 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
     }
 
     protected void testAxis() {
-        boolean active = true;
-        for(BlockFace face : BlockFace.values()) {
-            if(getPillarAxis().test(face)) {
-                Block block = getSide(face);
-                if(block instanceof BlockPaleOakLog log) {
-                    if(log.getPillarAxis() != getPillarAxis()) active = false;
-                } else active = false;
+        if(getBlockEntity().getLinkedCreaking() == null) {
+            boolean active = true;
+            for (BlockFace face : BlockFace.values()) {
+                if (getPillarAxis().test(face)) {
+                    Block block = getSide(face);
+                    if (block instanceof BlockPaleOakLog log) {
+                        if (log.getPillarAxis() != getPillarAxis()) active = false;
+                    } else active = false;
+                }
             }
-        }
-        boolean property = isActive();
-        if(property != active) {
-            setPropertyValue(CommonBlockProperties.ACTIVE, active);
-            getLevel().setBlock(this, this);
+            boolean property = isActive();
+            if (property != active) {
+                setPropertyValue(CommonBlockProperties.ACTIVE, active);
+                getLevel().setBlock(this, this);
+            }
         }
     }
 
