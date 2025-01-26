@@ -292,100 +292,103 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return 1;
     }
 
-    /**
-     * 这个值越大，这个方块本身越容易起火
-     * 返回-1,这个方块不能被点燃
-     * <p>
-     * The higher this value, the more likely the block itself is to catch fire
+        /**
+     * The higher this value, the more likely the block itself is to catch fire.
+     * Returns -1 if the block cannot be ignited.
      *
      * @return the burn chance
      */
     public int getBurnChance() {
         return 0;
     }
-
+    
     /**
-     * 这个值越大，越有可能被旁边的火焰引燃
-     * <p>
-     * The higher this value, the more likely it is to be ignited by the fire next to it
+     * The higher this value, the more likely it is to be ignited by the fire next to it.
+     *
+     * @return the burn ability
      */
     public int getBurnAbility() {
         return 0;
     }
-
+    
     /**
-     * 控制挖掘方块的工具类型
+     * Controls the tool type required to mine the block.
      *
-     * @return 挖掘方块的工具类型
+     * @return the tool type required to mine the block
      */
     public int getToolType() {
         return ItemTool.TYPE_NONE;
     }
-
+    
     /**
-     * 服务端侧的摩擦系数，用于控制玩家丢弃物品、实体、船其在上方移动的速度。值越大，移动越快。
-     * <p>
-     * The friction on the server side, which is used to control the speed that player drops item,entity walk and boat movement on the block.The larger the value, the faster the movement.
+     * The friction on the server side, which is used to control the speed that player drops item, entity walk and boat movement on the block. The larger the value, the faster the movement.
+     *
+     * @return the friction factor
      */
     public double getFrictionFactor() {
         return DEFAULT_FRICTION_FACTOR;
     }
-
+    
     /**
-     * 控制方块的通过阻力因素（0-1）。此值越小阻力越大<p/>
-     * 对于不可穿过的方块，若未覆写，此值始终为1（无效）<p/>
+     * Controls the passable block friction factor (0-1). The smaller the value, the greater the resistance.
+     * For non-passable blocks, if not overridden, this value is always 1 (invalid).
+     *
+     * @return the passable block friction factor
      */
     public double getPassableBlockFrictionFactor() {
         if (!this.canPassThrough()) return 1;
         return DEFAULT_AIR_FLUID_FRICTION;
     }
-
+    
     /**
-     * 获取走过这个方块所需要的额外代价，通常用于水、浆果丛等难以让实体经过的方块
+     * Gets the extra cost required to walk through this block, usually used for blocks that are difficult for entities to pass through, such as water or berry bushes.
      *
-     * @return 走过这个方块所需要的额外代价
+     * @return the extra cost required to walk through this block
      */
     public int getWalkThroughExtraCost() {
         return 0;
     }
-
+    
     /**
-     * 控制方块的发光等级
+     * Controls the light level emitted by the block.
      *
-     * @return 发光等级(0 - 15)
+     * @return the light level (0 - 15)
      */
     public int getLightLevel() {
         return 0;
     }
-
+    
     public boolean canBePlaced() {
         return true;
     }
-
+    
     public boolean canBeReplaced() {
         return false;
     }
-
+    
     /**
-     * 控制方块是否透明(默认为false)
+     * Controls whether the block is transparent (default is false).
      *
-     * @return 方块是否透明
+     * @return whether the block is transparent
      */
     public boolean isTransparent() {
         return false;
     }
-
+    
     public boolean isSolid() {
         return true;
     }
-
+    
     /**
-     * Check if blocks can be attached in the given side.
+     * Check if blocks can be attached on the given side.
+     *
+     * @param side the side to check
+     * @return whether blocks can be attached on the given side
      */
     public boolean isSolid(BlockFace side) {
         return isSideFull(side);
     }
-
+    
     // https://minecraft.wiki/w/Opacity#Lighting
     public boolean diffusesSkyLight() {
         return false;
@@ -415,67 +418,67 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return false;
     }
 
-    /**
-     * @return 方块是否可以被活塞推动
+        /**
+     * @return whether the block can be pushed by a piston
      */
     public boolean canBePushed() {
         return true;
     }
-
+    
     /**
-     * @return 方块是否可以被活塞拉动
+     * @return whether the block can be pulled by a piston
      */
     public boolean canBePulled() {
         return true;
     }
-
+    
     /**
-     * @return 当被活塞移动时是否会被破坏
+     * @return whether the block breaks when moved by a piston
      */
     public boolean breaksWhenMoved() {
         return false;
     }
-
+    
     /**
-     * @return 是否可以粘在粘性活塞上
+     * @return whether the block can stick to a sticky piston
      */
     public boolean sticksToPiston() {
         return true;
     }
-
+    
     /**
-     * @return 被活塞移动的时候是否可以粘住其他方块。eg:粘液块，蜂蜜块
+     * @return whether the block can stick to other blocks when moved by a piston (e.g., slime blocks, honey blocks)
      */
     public boolean canSticksBlock() {
         return false;
     }
-
+    
     public boolean hasComparatorInputOverride() {
         return false;
     }
-
+    
     public int getComparatorInputOverride() {
         return 0;
     }
-
+    
     public boolean canHarvest(Item item) {
         return (getToolTier() == 0 || getToolType() == 0) ||
                 (correctTool0(getToolType(), item, this) && item.getTier() >= getToolTier());
     }
-
+    
     /**
-     * 控制挖掘方块的最低工具级别(木质、石质...)
+     * Controls the minimum tool tier required to mine the block (wood, stone, etc.)
      *
-     * @return 挖掘方块的最低工具级别
+     * @return the minimum tool tier required to mine the block
      */
     public int getToolTier() {
         return 0;
     }
-
+    
     public boolean canBeClimbed() {
         return false;
     }
-
+    
     public BlockColor getColor() {
         if (color != null) return color;
         else color = VANILLA_BLOCK_COLOR_MAP.get(this.blockstate.blockStateHash());
@@ -486,7 +489,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         }
         return color;
     }
-
+    
     public String getName() {
         var path = this.blockstate.getIdentifier().split(":")[1];
         StringBuilder result = new StringBuilder();
@@ -498,83 +501,83 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         }
         return result.toString().trim();
     }
-
+    
     /**
      * The properties that fully describe all possible and valid states that this block can have.
      */
     @NotNull
     public abstract BlockProperties getProperties();
-
+    
     @NotNull
     public final String getId() {
         return this.getProperties().getIdentifier();
     }
-
+    
     @NotNull
     public String getItemId() {
         return getId();
     }
-
+    
     public List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> getPropertyValues() {
         return this.blockstate.getBlockPropertyValues();
     }
-
+    
     public boolean isAir() {
         return this.blockstate == BlockAir.PROPERTIES.getDefaultState();
     }
-
+    
     public BlockState getBlockState() {
         return blockstate;
     }
-
+    
     public boolean is(final String blockTag) {
         return BlockTags.getTagSet(this.getId()).contains(blockTag);
     }
-
+    
     public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> DATATYPE getPropertyValue(PROPERTY p) {
         return blockstate.getPropertyValue(p);
     }
-
+    
     public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> Block setPropertyValue(PROPERTY property, DATATYPE value) {
         this.blockstate = blockstate.setPropertyValue(getProperties(), property, value);
         return this;
     }
-
+    
     public Block setPropertyValue(BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue) {
         this.blockstate = blockstate.setPropertyValue(getProperties(), propertyValue);
         return this;
     }
-
+    
     public Block setPropertyValues(BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
         this.blockstate = blockstate.setPropertyValues(getProperties(), values);
         return this;
     }
-
+    
     public Block setPropertyValues(List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> values) {
         this.blockstate = blockstate.setPropertyValues(getProperties(), values.toArray(BlockPropertyType.BlockPropertyValue<?, ?, ?>[]::new));
         return this;
     }
-
+    
     public final int getRuntimeId() {
         return this.blockstate.blockStateHash();
     }
-
+    
     public void addVelocityToEntity(Entity entity, Vector3 vector) {
     }
-
+    
     public final void position(Position v) {
         this.x = (int) v.x;
         this.y = (int) v.y;
         this.z = (int) v.z;
         this.level = v.level;
     }
-
+    
     private double toolBreakTimeBonus0(Item item) {
         if (item instanceof ItemCustomTool itemCustomTool && itemCustomTool.getSpeed() != null) {
             return customToolBreakTimeBonus(customToolType(item), itemCustomTool.getSpeed());
         } else return toolBreakTimeBonus0(toolType0(item, this), item.getTier(), getId());
     }
-
+    
     private double customToolBreakTimeBonus(int toolType, @Nullable Integer speed) {
         if (speed != null) return speed;
         else if (toolType == ItemTool.TYPE_SWORD) {
@@ -692,50 +695,50 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return calculateBreakTime(item, null);
     }
 
-    /**
-     * 计算方块挖掘时间
+        /**
+     * Calculates the break time of the block.
      *
-     * @param item   挖掘该方块的物品
-     * @param player 挖掘该方块的玩家
-     * @return 方块的挖掘时间
+     * @param item   The item used to break the block.
+     * @param player The player breaking the block.
+     * @return The break time of the block.
      */
     public double calculateBreakTime(@NotNull Item item, @Nullable Player player) {
         double seconds = this.calculateBreakTimeNotInAir(item, player);
-
+    
         if (player != null) {
-            //玩家距离上次在空中过去5tick之后，才认为玩家是在地上挖掘。
-            //如果单纯用onGround检测，这个方法返回的时间将会不连续。
+            // If the player has been in the air for less than 5 ticks, consider the player as breaking the block while in the air.
+            // Using onGround alone would result in non-continuous break times.
             if (player.getLevel().getTick() - player.getLastInAirTick() < 5) {
                 seconds *= 5;
             }
         }
         return seconds;
     }
-
+    
     /**
-     * 忽略玩家在空中时，计算方块的挖掘时间
+     * Calculates the break time of the block, ignoring whether the player is in the air.
      *
-     * @param item   挖掘该方块的物品
-     * @param player 挖掘该方块的玩家
-     * @return 方块的挖掘时间
+     * @param item   The item used to break the block.
+     * @param player The player breaking the block.
+     * @return The break time of the block.
      */
     public double calculateBreakTimeNotInAir(@NotNull Item item, @Nullable Player player) {
         double seconds;
         double blockHardness = getHardness();
         boolean canHarvest = canHarvest(item);
-
+    
         if (canHarvest) {
             seconds = blockHardness * 1.5;
         } else {
             seconds = blockHardness * 5;
         }
-
+    
         double speedMultiplier = 1;
         boolean hasConduitPower = false;
         boolean hasAquaAffinity = false;
         int hasteEffectLevel = 0;
         int miningFatigueLevel = 0;
-
+    
         if (player != null) {
             hasConduitPower = player.hasEffect(EffectType.CONDUIT_POWER);
             hasAquaAffinity = Optional.ofNullable(player.getInventory().getHelmet().getEnchantment(Enchantment.ID_WATER_WORKER))
@@ -745,30 +748,30 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             miningFatigueLevel = Optional.ofNullable(player.getEffect(EffectType.MINING_FATIGUE))
                     .map(Effect::getAmplifier).orElse(0);
         }
-
+    
         if (correctTool0(getToolType(), item, this)) {
             speedMultiplier = toolBreakTimeBonus0(item);
-
+    
             int efficiencyLevel = Optional.ofNullable(item.getEnchantment(Enchantment.ID_EFFICIENCY))
                     .map(Enchantment::getLevel).orElse(0);
-
+    
             if (canHarvest && efficiencyLevel > 0) {
                 speedMultiplier += efficiencyLevel * efficiencyLevel + 1;
             }
-
+    
             if (hasConduitPower) hasteEffectLevel = Integer.max(hasteEffectLevel, 2);
-
+    
             if (hasteEffectLevel > 0) {
                 speedMultiplier *= 1 + (0.2 * hasteEffectLevel);
             }
         }
-
+    
         if (miningFatigueLevel > 0) {
             speedMultiplier /= Math.pow(miningFatigueLevel, 3);
         }
-
+    
         seconds /= speedMultiplier;
-
+    
         if (player != null) {
             if (player.isInsideOfWater() && !hasAquaAffinity) {
                 seconds *= hasConduitPower && blockHardness >= 0.5 ? 2.5 : 5;
@@ -776,26 +779,26 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         }
         return seconds;
     }
-
+    
     public boolean canBeBrokenWith(Item item) {
         return this.getHardness() != -1;
     }
-
+    
     public Block getTickCachedSide(BlockFace face) {
         return getTickCachedSideAtLayer(layer, face);
     }
-
+    
     public Block getTickCachedSide(BlockFace face, int step) {
         return getTickCachedSideAtLayer(layer, face, step);
     }
-
+    
     public Block getTickCachedSideAtLayer(int layer, BlockFace face) {
         if (this.isValid()) {
             return this.getLevel().getTickCachedBlock((int) x + face.getXOffset(), (int) y + face.getYOffset(), (int) z + face.getZOffset(), layer);
         }
         return this.getTickCachedSide(face, 1);
     }
-
+    
     public Block getTickCachedSideAtLayer(int layer, BlockFace face, int step) {
         if (this.isValid()) {
             if (step == 1) {
@@ -811,24 +814,24 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         block.layer = layer;
         return block;
     }
-
+    
     @Override
     public Block getSide(BlockFace face) {
         return getSideAtLayer(layer, face);
     }
-
+    
     @Override
     public Block getSide(BlockFace face, int step) {
         return getSideAtLayer(layer, face, step);
     }
-
+    
     public Block getSideAtLayer(int layer, BlockFace face) {
         if (this.isValid()) {
             return this.getLevel().getBlock((int) x + face.getXOffset(), (int) y + face.getYOffset(), (int) z + face.getZOffset(), layer);
         }
         return this.getSide(face, 1);
     }
-
+    
     public Block getSideAtLayer(int layer, BlockFace face, int step) {
         if (this.isValid()) {
             if (step == 1) {
@@ -844,123 +847,123 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         block.layer = layer;
         return block;
     }
-
+    
     @Override
     public Block up() {
         return up(1);
     }
-
+    
     @Override
     public Block up(int step) {
         return getSide(BlockFace.UP, step);
     }
-
+    
     public Block up(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.UP, step);
     }
-
+    
     @Override
     public Block down() {
         return down(1);
     }
-
+    
     @Override
     public Block down(int step) {
         return getSide(BlockFace.DOWN, step);
     }
-
+    
     public Block down(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.DOWN, step);
     }
-
+    
     @Override
     public Block north() {
         return north(1);
     }
-
+    
     @Override
     public Block north(int step) {
         return getSide(BlockFace.NORTH, step);
     }
-
+    
     public Block north(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.NORTH, step);
     }
-
+    
     @Override
     public Block south() {
         return south(1);
     }
-
+    
     @Override
     public Block south(int step) {
         return getSide(BlockFace.SOUTH, step);
     }
-
+    
     public Block south(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.SOUTH, step);
     }
-
+    
     @Override
     public Block east() {
         return east(1);
     }
-
+    
     @Override
     public Block east(int step) {
         return getSide(BlockFace.EAST, step);
     }
-
+    
     public Block east(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.EAST, step);
     }
-
+    
     @Override
     public Block west() {
         return west(1);
     }
-
+    
     @Override
     public Block west(int step) {
         return getSide(BlockFace.WEST, step);
     }
-
+    
     public Block west(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.WEST, step);
     }
-
+    
     @Override
     public String toString() {
         return this.blockstate.toString() + " at " + super.toString();
     }
-
+    
     public boolean collidesWithBB(AxisAlignedBB bb) {
         return collidesWithBB(bb, false);
     }
-
+    
     public boolean collidesWithBB(AxisAlignedBB bb, boolean collisionBB) {
         AxisAlignedBB bb1 = collisionBB ? this.getCollisionBoundingBox() : this.getBoundingBox();
         return bb1 != null && bb.intersectsWith(bb1);
     }
-
+    
     public void onEntityCollide(Entity entity) {
     }
-
+    
     public void onEntityFallOn(Entity entity, float fallDistance) {
     }
-
+    
     public boolean useDefaultFallDamage() {
         return true;
     }
-
+    
     public AxisAlignedBB getBoundingBox() {
         return this.recalculateBoundingBox();
     }
-
+    
     public AxisAlignedBB getCollisionBoundingBox() {
         return this.recalculateCollisionBoundingBox();
     }
-
+    
     protected AxisAlignedBB recalculateBoundingBox() {
         return this;
     }
@@ -1339,9 +1342,9 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * 控制方块吸收的光亮
+     * Controls the light absorption of the block.
      *
-     * @return 方块吸收的光亮
+     * @return the light absorption of the block
      */
     public int getLightFilter() {
         return isSolid() && !isTransparent() ? 15 : 1;
@@ -1381,24 +1384,24 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return cloneTo(pos, true);
     }
 
-    /**
-     * 将方块克隆到指定位置<p/>
-     * 此方法会连带克隆方块实体<p/>
-     * 注意，此方法会先清除指定位置的方块为空气再进行克隆
+        /**
+     * Clone the block to the specified position.
+     * This method will also clone the block entity.
+     * Note that this method will first clear the block at the specified position to air before cloning.
      *
-     * @param pos    要克隆到的位置
-     * @param update 是否需要更新克隆的方块
-     * @return 是否克隆成功
+     * @param pos    The position to clone to.
+     * @param update Whether to update the cloned block.
+     * @return Whether the cloning was successful.
      */
     @SuppressWarnings("null")
     public boolean cloneTo(Position pos, boolean update) {
-        //清除旧方块
+        // Clear the old block
         level.setBlock(pos, this.layer, Block.get(Block.AIR), false, false);
         if (this instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() != null) {
             var clonedBlock = this.clone();
             clonedBlock.position(pos);
             CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
-            //方块实体要求direct=true
+            // Block entity requires direct=true
             return BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, true, update, tag) != null;
         } else {
             return pos.level.setBlock(pos, this.layer, this.clone(), true, update);
