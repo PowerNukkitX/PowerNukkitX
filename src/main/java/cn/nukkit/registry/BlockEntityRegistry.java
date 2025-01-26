@@ -32,6 +32,7 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
         register0(BANNER, BlockEntityBanner.class);
         register0(MUSIC, BlockEntityMusic.class);
         register0(MOB_SPAWNER, BlockEntityMobSpawner.class);
+        register0(CREAKING_HEART, BlockEntityCreakingHeart.class);
         register0(LECTERN, BlockEntityLectern.class);
         register0(BLAST_FURNACE, BlockEntityBlastFurnace.class);
         register0(SMOKER, BlockEntitySmoker.class);

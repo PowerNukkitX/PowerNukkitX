@@ -90,7 +90,7 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
                 Set.of(
-                        new PlayerStaringSensor(64, 20),
+                        new PlayerStaringSensor(64, 20, false),
                         new NearestEntitySensor(EntityEndermite.class, CoreMemoryTypes.NEAREST_ENDERMITE, 64, 0)
                 ),
                 Set.of(new WalkController(), new LookController(true, true)),
