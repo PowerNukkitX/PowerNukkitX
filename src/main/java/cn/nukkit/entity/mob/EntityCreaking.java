@@ -4,6 +4,8 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCreakingHeart;
 import cn.nukkit.block.BlockPaleOakLog;
+import cn.nukkit.block.BlockResinClump;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntityCreakingHeart;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -23,6 +25,7 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.PlayerStaringSensor;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
@@ -35,6 +38,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityCreaking extends EntityMob {
 
@@ -101,9 +105,21 @@ public class EntityCreaking extends EntityMob {
             storage.put(CoreMemoryTypes.BE_ATTACKED_EVENT, source);
             storage.put(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, getLevel().getTick());
         }
-        Arrays.stream(getLevel().getCollisionBlocks(creakingHeart.getLevelBlock().getBoundingBox().grow(2, 2, 2))).filter(block -> block instanceof BlockPaleOakLog).findAny().ifPresent(block -> {
-            
-        });
+
+        Block[] paleLogs = Arrays.stream(getLevel().getCollisionBlocks(creakingHeart.getLevelBlock().getBoundingBox().grow(2, 2, 2))).filter(block -> block instanceof BlockPaleOakLog).toArray(Block[]::new);
+        Block log = paleLogs[ThreadLocalRandom.current().nextInt(paleLogs.length)];
+        int maxResinSpawn = ThreadLocalRandom.current().nextInt(1, 3);
+        int resinSpawned = 0;
+        for(BlockFace face : BlockFace.values()) {
+            Block side = log.getSide(face);
+            if(side.isAir()) {
+                BlockResinClump clump = (BlockResinClump) Block.get(Block.RESIN_CLUMP);
+                clump.setPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS, clump.getPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS) | (0b000001 << face.getOpposite().getDUSWNEIndex()));
+                side.getLevel().setBlock(side, clump);
+                resinSpawned++;
+                if(resinSpawned >= maxResinSpawn) break;
+            }
+        }
         return true;
     }
 

@@ -4,10 +4,9 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockLeaves;
 import cn.nukkit.block.BlockPaleHangingMoss;
 import cn.nukkit.block.BlockPaleOakLeaves;
-import cn.nukkit.block.BlockPaleOakWood;
+import cn.nukkit.block.BlockPaleOakLog;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.NukkitRandom;
@@ -17,7 +16,7 @@ public class ObjectPaleOakTree extends TreeGenerator {
     /**
      * The metadata value of the wood to use in tree generation.
      */
-    private final BlockState PALE_OAK_WOOD = BlockPaleOakWood.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y);
+    private final BlockState PALE_OAK_LOG = BlockPaleOakLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y);
 
     /**
      * The metadata value of the leaves to use in tree generation.
@@ -171,7 +170,7 @@ public class ObjectPaleOakTree extends TreeGenerator {
 
     private void placeLogAt(BlockManager worldIn, Vector3 pos) {
         if (this.canGrowInto(worldIn.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()))) {
-            worldIn.setBlockStateAt(pos, PALE_OAK_WOOD);
+            worldIn.setBlockStateAt(pos, PALE_OAK_LOG);
         }
     }
 
