@@ -2,6 +2,7 @@ package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
 import cn.nukkit.event.inventory.CraftItemEvent;
+import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.itemstack.request.action.AutoCraftRecipeAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
@@ -37,8 +38,8 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
         }
 
         int success = 0;
-        for (var clientInputItem : eventItems) {
-            for (var serverExpect : action.getIngredients()) {
+        for (Item clientInputItem : eventItems) {
+            for (ItemDescriptor serverExpect : action.getIngredients()) {
                 boolean match = false;
                 if (serverExpect instanceof ItemTagDescriptor tagDescriptor) {
                     match = tagDescriptor.match(clientInputItem);
@@ -52,7 +53,7 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
             }
         }
 
-        var matched = success == action.getIngredients().size();
+        boolean matched = success == action.getIngredients().size();
         if (!matched) {
             log.warn("Mismatched recipe! Network id: {},Recipe name: {},Recipe type: {}", action.getRecipeNetworkId(), recipe.getRecipeId(), recipe.getType());
             return context.error();
@@ -71,9 +72,9 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
                 return context.error();
             }
             if (recipe.getResults().size() == 1) {
-                var output = recipe.getResults().getFirst();
+                Item output = recipe.getResults().getFirst().clone();
                 output.setCount(output.getCount() * action.getTimesCrafted());
-                var createdOutput = player.getCreativeOutputInventory();
+                CreativeOutputInventory createdOutput = player.getCreativeOutputInventory();
                 createdOutput.setItem(0, output.clone().autoAssignStackNetworkId(), false);
             }
         }
