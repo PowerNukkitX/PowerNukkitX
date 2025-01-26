@@ -1,5 +1,6 @@
 package cn.nukkit.entity.mob;
 
+import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCreakingHeart;
@@ -7,6 +8,7 @@ import cn.nukkit.block.BlockPaleOakLog;
 import cn.nukkit.block.BlockResinClump;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntityCreakingHeart;
+import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -17,6 +19,7 @@ import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.DoNothingExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
+import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -25,7 +28,6 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.PlayerStaringSensor;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
@@ -67,8 +69,8 @@ public class EntityCreaking extends EntityMob {
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
                 Set.of(
-                        new PlayerStaringSensor(40, 70, true),
-                        new NearestPlayerSensor(40, 0, 0)
+                        new PlayerStaringCreakingSensor(40, 70, true),
+                        new NearestPlayerCreakingSensor(40, 0, 0)
                 ),
                 Set.of(new WalkController(), new LookController(true, true)),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
@@ -107,17 +109,19 @@ public class EntityCreaking extends EntityMob {
         }
 
         Block[] paleLogs = Arrays.stream(getLevel().getCollisionBlocks(creakingHeart.getLevelBlock().getBoundingBox().grow(2, 2, 2))).filter(block -> block instanceof BlockPaleOakLog).toArray(Block[]::new);
-        Block log = paleLogs[ThreadLocalRandom.current().nextInt(paleLogs.length)];
         int maxResinSpawn = ThreadLocalRandom.current().nextInt(1, 3);
         int resinSpawned = 0;
-        for(BlockFace face : BlockFace.values()) {
-            Block side = log.getSide(face);
-            if(side.isAir()) {
-                BlockResinClump clump = (BlockResinClump) Block.get(Block.RESIN_CLUMP);
-                clump.setPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS, clump.getPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS) | (0b000001 << face.getOpposite().getDUSWNEIndex()));
-                side.getLevel().setBlock(side, clump);
-                resinSpawned++;
-                if(resinSpawned >= maxResinSpawn) break;
+        logs:
+        for(Block log : paleLogs) {
+            for(BlockFace face : BlockFace.values()) {
+                Block side = log.getSide(face);
+                if(side.isAir()) {
+                    BlockResinClump clump = (BlockResinClump) Block.get(Block.RESIN_CLUMP);
+                    clump.setPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS, clump.getPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS) | (0b000001 << face.getOpposite().getDUSWNEIndex()));
+                    side.getLevel().setBlock(side, clump);
+                    resinSpawned++;
+                    if(resinSpawned >= maxResinSpawn) break logs;
+                }
             }
         }
         return true;
@@ -145,6 +149,7 @@ public class EntityCreaking extends EntityMob {
 
     @Override
     public void kill() {
+        //ToDo: Creaking Death Animation
         super.kill();
         if(creakingHeart != null && creakingHeart.isBlockEntityValid()) {
             creakingHeart.setLinkedCreaking(null);
@@ -169,6 +174,10 @@ public class EntityCreaking extends EntityMob {
             this.kill();
         }
         if(creakingHeart != null) {
+            if(this.distance(creakingHeart) > 32) {
+                setMoveTarget(creakingHeart);
+                setLookTarget(creakingHeart);
+            }
             if(getMemoryStorage().notEmpty(CoreMemoryTypes.LAST_BE_ATTACKED_TIME)) {
                 if(getLevel().getTick() - getMemoryStorage().get(CoreMemoryTypes.LAST_BE_ATTACKED_TIME) < 51) {
                     sendParticleTrail();
@@ -199,5 +208,48 @@ public class EntityCreaking extends EntityMob {
         if(creakingHeart != null && creakingHeart.isBlockEntityValid()) {
             creakingHeart.getHeart().updateAroundRedstone(BlockFace.UP, BlockFace.DOWN);
         } else kill();
+    }
+
+    private class NearestPlayerCreakingSensor extends NearestPlayerSensor {
+
+        public NearestPlayerCreakingSensor(double range, double minRange, int period) {
+            super(range, minRange, period);
+        }
+
+        @Override
+        public void sense(EntityIntelligent entity) {
+            Player before = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+            super.sense(entity);
+            Player after = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+            if(before != after) {
+                if(before == null) {
+                    entity.level.addSound(entity, Sound.MOB_CREAKING_ACTIVATE);
+                } else if(after == null) {
+                    entity.level.addSound(entity, Sound.MOB_CREAKING_DEACTIVATE);
+                }
+            }
+        }
+    }
+
+    private class PlayerStaringCreakingSensor extends PlayerStaringSensor {
+
+        public PlayerStaringCreakingSensor(double range, double triggerDiff, boolean ignoreRotation) {
+            super(range, triggerDiff, ignoreRotation);
+        }
+
+        @Override
+        public void sense(EntityIntelligent entity) {
+            Player before = entity.getMemoryStorage().get(CoreMemoryTypes.STARING_PLAYER);
+            super.sense(entity);
+            Player after = entity.getMemoryStorage().get(CoreMemoryTypes.STARING_PLAYER);
+            if(before != after) {
+                if(before == null) {
+                    entity.level.addSound(entity, Sound.MOB_CREAKING_FREEZE);
+                } else if(after == null) {
+                    entity.level.addSound(entity, Sound.MOB_CREAKING_UNFREEZE);
+                }
+            }
+        }
+
     }
 }
