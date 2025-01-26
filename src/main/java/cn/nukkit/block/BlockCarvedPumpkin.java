@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.entity.mob.EntityIronGolem;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
@@ -37,5 +38,12 @@ public class BlockCarvedPumpkin extends BlockPumpkin {
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         return false;
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+        if(!super.place(item, block, target, face, fx, fy, fz, player)) return false;
+        EntityIronGolem.checkAndSpawnGolem(this, player);
+        return true;
     }
 }

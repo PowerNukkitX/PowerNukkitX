@@ -329,4 +329,9 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         level.addSound(this, Sound.TILT_DOWN_BIG_DRIPLEAF);
         return true;
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

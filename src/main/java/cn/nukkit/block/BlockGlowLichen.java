@@ -130,4 +130,8 @@ public class BlockGlowLichen extends BlockLichen {
         return false;
     }
 
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

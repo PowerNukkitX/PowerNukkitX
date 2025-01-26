@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * @author CoolLoong
  * @since 02.12.2022
  */
-public class BlockDirtWithRoots extends BlockSolid {
+public class BlockDirtWithRoots extends BlockDirt {
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRT_WITH_ROOTS);
 
     @Override

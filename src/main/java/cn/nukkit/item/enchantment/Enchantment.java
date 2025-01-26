@@ -1,6 +1,7 @@
 package cn.nukkit.item.enchantment;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.bow.EnchantmentBowFlame;
@@ -149,6 +150,11 @@ public abstract class Enchantment implements Cloneable {
     public static final String NAME_SOUL_SPEED = "soul_speed";
     public static final int ID_SWIFT_SNEAK = 37;
     public static final String NAME_SWIFT_SNEAK = "swift_sneak";
+    public static final int ID_DENSITY = 39;
+    public static final String NAME_DENSITY = "density";
+    public static final int ID_BREACH = 40;
+    public static final String NAME_BREACH = "breach";
+
 
     public static void init() {
         enchantments = new Enchantment[256];
@@ -190,6 +196,9 @@ public abstract class Enchantment implements Cloneable {
         enchantments[ID_CROSSBOW_QUICK_CHARGE] = new EnchantmentCrossbowQuickCharge();
         enchantments[ID_SOUL_SPEED] = new EnchantmentSoulSpeed();
         enchantments[ID_SWIFT_SNEAK] = new EnchantmentSwiftSneak();
+        enchantments[38] = null;
+        enchantments[ID_DENSITY] = new EnchantmentDensity();
+        enchantments[ID_BREACH] = new EnchantmentBreach();
         //custom
         namedEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_ALL), enchantments[0]);
         namedEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_FIRE), enchantments[1]);
@@ -229,6 +238,9 @@ public abstract class Enchantment implements Cloneable {
         namedEnchantments.put(new Identifier("minecraft", NAME_CROSSBOW_QUICK_CHARGE), enchantments[35]);
         namedEnchantments.put(new Identifier("minecraft", NAME_SOUL_SPEED), enchantments[36]);
         namedEnchantments.put(new Identifier("minecraft", NAME_SWIFT_SNEAK), enchantments[37]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_DENSITY), enchantments[39]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_BREACH), enchantments[40]);
+
     }
 
     private static String getLevelString(int level) {
@@ -422,9 +434,22 @@ public abstract class Enchantment implements Cloneable {
      * @return The objects can be modified without affecting the registry and the collection will not have null values.
      */
     public static Collection<Enchantment> getRegisteredEnchantments() {
-        return new ArrayList<>(namedEnchantments.values());
+        return getRegisteredEnchantments(false);
     }
 
+    public static Collection<Enchantment> getRegisteredEnchantments(boolean allowCustom) {
+        if(!allowCustom) {
+            Collection<Enchantment> enchantments = new LinkedHashSet<>();
+            namedEnchantments.forEach((i,v) -> {
+                if (i.getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
+                    enchantments.add(v);
+                }
+            });
+
+            return enchantments;
+        }
+        return new ArrayList<>(namedEnchantments.values());
+    }
     public static Map<String, Integer> getEnchantmentName2IDMap() {
         return namedEnchantments.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().getId()));
     }
@@ -451,6 +476,9 @@ public abstract class Enchantment implements Cloneable {
     protected final String name;
     @Nullable
     protected final Identifier identifier;
+
+    protected boolean fishable = true;
+    protected boolean obtainableFromEnchantingTable = true;
 
     /**
      * Constructs this instance using the given data and with level 1.
@@ -617,11 +645,50 @@ public abstract class Enchantment implements Cloneable {
      * <p>
      * 目前只生效于{@link cn.nukkit.Player Player} 和 使用了{@link cn.nukkit.entity.ai.executor.MeleeAttackExecutor MeleeAttackExecutor}行为的实体
      *
-     * @param entity 攻击的目标实体
+     * @param target 攻击的目标实体
+     * @param damager the entity that deals the damage
      * @return the damage value
      */
-    public double getDamageBonus(Entity entity) {
+
+    public double getDamageBonus(Entity target, Entity damager) {
         return 0;
+    }
+
+    /**
+     * This value is for treasures of {@link cn.nukkit.item.randomitem.Fishing}, specifically {@link cn.nukkit.item.randomitem.fishing.FishingEnchantmentItemSelector}
+     * If false, this enchantment cannot be fished using a {@link cn.nukkit.item.ItemFishingRod}
+     *
+     * @return whether this enchantment can be fished or not
+     */
+    public boolean isFishable() {
+        return fishable;
+    }
+
+    /**
+     * Decides whether this enchantment can be fished ({@link cn.nukkit.item.randomitem.fishing.FishingEnchantmentItemSelector}) using a {@link cn.nukkit.item.ItemFishingRod}
+     *
+     * @param fishable true if it is fishable
+     */
+    public void setFishable(boolean fishable) {
+        this.fishable = fishable;
+    }
+
+    /**
+     * This value is used for deciding which enchantments can be obtained within the {@link cn.nukkit.block.BlockEnchantingTable}, used within {@link EnchantmentHelper}
+     *
+     * @return true if it can be obtained
+     */
+    public boolean isObtainableFromEnchantingTable() {
+        return obtainableFromEnchantingTable;
+    }
+
+    /**
+     * Decides whether this enchantment can be obtained from a {@link cn.nukkit.block.BlockEnchantingTable}
+     *
+     * @param obtainableFromEnchantingTable true if it is obtainable
+     */
+    public void setObtainableFromEnchantingTable(boolean obtainableFromEnchantingTable) {
+        this.obtainableFromEnchantingTable = obtainableFromEnchantingTable;
     }
 
     /**
@@ -635,15 +702,7 @@ public abstract class Enchantment implements Cloneable {
     public void doPostAttack(Entity attacker, Entity entity) {
     }
 
-    /**
-     * 当实体attacker使用具有附魔的武器攻击实体entity时触发
-     * <p>
-     * 覆写该方法实现该过程中的逻辑
-     *
-     * @param attacker the attacker
-     * @param entity   the entity
-     */
-    public void doAttack(Entity attacker, Entity entity) {
+    public void doAttack(EntityDamageByEntityEvent event) {
     }
 
     /**
@@ -729,7 +788,6 @@ public abstract class Enchantment implements Cloneable {
     }
 
     private static class UnknownEnchantment extends Enchantment {
-
         protected UnknownEnchantment(int id) {
             super(id, "unknown", Rarity.VERY_RARE, EnchantmentType.ALL);
         }

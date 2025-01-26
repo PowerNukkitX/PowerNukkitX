@@ -2,13 +2,16 @@ package cn.nukkit.entity.ai.memory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.memory.codec.BooleanMemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.NumberMemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.StringMemoryCodec;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 
 import java.util.HashMap;
@@ -128,6 +131,8 @@ public interface CoreMemoryTypes {
      * 最近的玩家
      */
     MemoryType<Player> NEAREST_PLAYER = new MemoryType<>("minecraft:nearest_player");
+
+    MemoryType<Player> STARING_PLAYER = new MemoryType<>("minecraft:staring_player");
     /**
      * 玩家上一次攻击的实体
      */
@@ -160,6 +165,21 @@ public interface CoreMemoryTypes {
      * 最近的骷髅目标
      */
     MemoryType<Entity> NEAREST_SKELETON = new MemoryType<>("minecraft:nearest_skeleton");
+
+    MemoryType<Entity> NEAREST_ENDERMITE = new MemoryType<>("minecraft:nearest_endermite");
+
+    MemoryType<Entity> NEAREST_GOLEM = new MemoryType<>("minecraft:nearest_golem");
+
+    MemoryType<Entity> NEAREST_SHARED_ENTITY = new MemoryType<>("minecraft:nearest_shared_entity");
+
+    MemoryType<Class<? extends Block>> LOOKING_BLOCK = new MemoryType<>("minecraft:looking_block");
+
+    MemoryType<Class<? extends Item>> LOOKING_ITEM = new MemoryType<>("minecraft:looking_item");
+
+    MemoryType<Block> NEAREST_BLOCK = new MemoryType<>("minecraft:nearest_block");
+
+    MemoryType<EntityItem> NEAREST_ITEM = new MemoryType<>("minecraft:nearest_item");
+
     /**
      * 实体的主人
      */

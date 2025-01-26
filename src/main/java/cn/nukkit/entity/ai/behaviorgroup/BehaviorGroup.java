@@ -2,6 +2,7 @@ package cn.nukkit.entity.ai.behaviorgroup;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behavior.BehaviorState;
 import cn.nukkit.entity.ai.behavior.IBehavior;
 import cn.nukkit.entity.ai.controller.IController;
@@ -148,6 +149,9 @@ public class BehaviorGroup implements IBehaviorGroup {
         var iterator = runningCoreBehaviors.iterator();
         while (iterator.hasNext()) {
             IBehavior coreBehavior = iterator.next();
+            if(coreBehavior instanceof Behavior behavior) {
+                if(behavior.isReevaluate() && !behavior.evaluate(entity)) continue;
+            }
             if (!coreBehavior.execute(entity)) {
                 coreBehavior.onStop(entity);
                 coreBehavior.setBehaviorState(BehaviorState.STOP);
@@ -220,12 +224,20 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
         //如果没有评估结果，则返回空
         if (evalSucceed.isEmpty()) return;
-        var first = runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
-        var runningBehaviorPriority = first != null ? first.getPriority() : Integer.MIN_VALUE;
+        IBehavior first = runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
+        int runningBehaviorPriority = first != null ? first.getPriority() : Integer.MIN_VALUE;
+        boolean firstEval = true;
+        if(first != null) {
+            if(first instanceof Behavior behavior) {
+                if(behavior.isReevaluate()) {
+                    firstEval = first.evaluate(entity);
+                }
+            }
+        }
         //如果result的优先级低于当前运行的行为，则不执行
-        if (highestPriority < runningBehaviorPriority) {
+        if (highestPriority < runningBehaviorPriority && firstEval) {
             //do nothing
-        } else if (highestPriority > runningBehaviorPriority) {
+        } else if (highestPriority > runningBehaviorPriority || !firstEval) {
             //如果result的优先级比当前运行的行为的优先级高，则替换当前运行的所有行为
             interruptAllRunningBehaviors(entity);
             addToRunningBehaviors(entity, evalSucceed);

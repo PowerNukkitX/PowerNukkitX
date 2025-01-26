@@ -1636,6 +1636,23 @@ public class Level implements Metadatable {
         return this.updateQueue.isBlockTickPending(pos, block);
     }
 
+    public List<Block> raycastBlocks(Vector3 start, Vector3 end) {
+        return raycastBlocks(start, end, true, false);
+    }
+
+    public List<Block> raycastBlocks(Vector3 start, Vector3 end, boolean ignoreAir, boolean load) {
+        List<Block> result = new ArrayList<>();
+        Vector3 direction = end.subtract(start).normalize();
+        Vector3 currentPos = start.clone();
+
+        for (double i = 0; i < start.distance(end); i += 1) {
+            Block block = this.getBlock(currentPos.floor(), load);
+            currentPos = currentPos.add(direction);
+            if(!block.isAir() || !ignoreAir) result.add(block);
+        }
+        return Collections.unmodifiableList(result);
+    }
+
     public Set<BlockUpdateEntry> getPendingBlockUpdates(IChunk chunk) {
         int minX = (chunk.getX() << 4) - 2;
         int maxX = minX + 16 + 2;
@@ -2336,7 +2353,7 @@ public class Level implements Metadatable {
             BlockUpdateEvent ev = new BlockUpdateEvent(block);
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                for (Entity entity : this.getNearbyEntities(new SimpleAxisAlignedBB(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1))) {
+                for (Entity entity : this.getNearbyEntitiesSafe(new SimpleAxisAlignedBB(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1))) {
                     entity.scheduleUpdate();
                 }
 
@@ -2990,6 +3007,18 @@ public class Level implements Metadatable {
         }
     }
 
+    public Entity[] getNearbyEntitiesSafe(AxisAlignedBB bb) {
+        return this.getNearbyEntitiesSafe(bb, null);
+    }
+
+    public Entity[] getNearbyEntitiesSafe(AxisAlignedBB bb, Entity entity) {
+        return getNearbyEntitiesSafe(bb, entity, false);
+    }
+
+    public Entity[] getNearbyEntitiesSafe(AxisAlignedBB bb, Entity entity, boolean loadChunks) {
+        return Arrays.stream(getNearbyEntities(bb, entity, loadChunks)).filter(Objects::nonNull).toList().toArray(Entity.EMPTY_ARRAY);
+    }
+
     public Entity[] getNearbyEntities(AxisAlignedBB bb) {
         return this.getNearbyEntities(bb, null);
     }
@@ -3440,10 +3469,14 @@ public class Level implements Metadatable {
     }
 
     public void subTick(GameLoop currentTick) {
-        processChunkRequest();
+        try {
+            processChunkRequest();
 
-        if (currentTick.getTick() % 100 == 0) {
-            doLevelGarbageCollection(false);
+            if (currentTick.getTick() % 100 == 0) {
+                doLevelGarbageCollection(false);
+            }
+        } catch (Exception e) {
+            getServer().getLogger().error("Subtick Thread for level " + getFolderName() + " failed.", e);
         }
     }
 
@@ -3825,6 +3858,18 @@ public class Level implements Metadatable {
         return (int) time;
     }
 
+    public int getDayTime() {
+        return this.getTime() % Level.TIME_FULL;
+    }
+
+    public boolean isDay() {
+        return (getDayTime() < 13184 || getDayTime() > 22800);
+    }
+
+    public boolean isNight() {
+        return (getDayTime() > 13184 && getDayTime() < 22800);
+    }
+
     /**
      * 设置这个地图经历的时间
      * <p>
@@ -3938,7 +3983,7 @@ public class Level implements Metadatable {
      */
     public void doLevelGarbageCollection(boolean force) {
         //gcBlockInventoryMetaData
-        for (var entry : this.getBlockMetadata().getBlockMetadataMap().entrySet()) {
+        for (var entry : new HashMap<>(this.getBlockMetadata().getBlockMetadataMap()).entrySet()) {
             String key = entry.getKey();
             String[] split = key.split(":");
             Map<Plugin, MetadataValue> value = entry.getValue();

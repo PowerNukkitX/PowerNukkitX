@@ -189,7 +189,7 @@ public abstract class EntityProjectile extends Entity {
 
             Vector3 moveVector = new Vector3(this.x + this.motionX, this.y + this.motionY, this.z + this.motionZ);
 
-            Entity[] list = this.getLevel().getCollidingEntities(this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expand(1, 1, 1), this);
+            Entity[] list = this.getLevel().getCollidingEntities(this.getBoundingBox().addCoord(this.motionX, this.motionY, this.motionZ).expand(1, 1, 1), this);
 
             double nearDistance = Integer.MAX_VALUE;
             Entity nearEntity = null;
@@ -199,7 +199,7 @@ public abstract class EntityProjectile extends Entity {
                     continue;
                 }
 
-                AxisAlignedBB axisalignedbb = entity.boundingBox.grow(0.3, 0.3, 0.3);
+                AxisAlignedBB axisalignedbb = entity.getBoundingBox().grow(0.3, 0.3, 0.3);
                 MovingObjectPosition ob = axisalignedbb.calculateIntercept(this, moveVector);
 
                 if (ob == null) {

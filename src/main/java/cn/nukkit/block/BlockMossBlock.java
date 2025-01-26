@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class BlockMossBlock extends BlockSolid {
+public class BlockMossBlock extends BlockSolid implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(MOSS_BLOCK);
 
     @Override
@@ -31,7 +31,7 @@ public class BlockMossBlock extends BlockSolid {
 
     @Override
     public String getName() {
-        return "MOSS";
+        return "Moss";
     }
 
     @Override
@@ -141,7 +141,7 @@ public class BlockMossBlock extends BlockSolid {
 
     public boolean canGrowPlant(Position pos) {
         return switch (pos.add(0, -1, 0).getLevelBlock().getId()) {
-            case GRASS_BLOCK, DIRT, PODZOL, FARMLAND, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
+            case GRASS_BLOCK, DIRT, PODZOL, FARMLAND, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK, PALE_MOSS_BLOCK -> true;
             default -> false;
         };
     }
@@ -154,5 +154,10 @@ public class BlockMossBlock extends BlockSolid {
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{new ItemBlock(Block.get(BlockID.MOSS_BLOCK))};
+    }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
     }
 }

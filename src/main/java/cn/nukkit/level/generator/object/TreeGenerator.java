@@ -25,7 +25,9 @@ public abstract class TreeGenerator extends ObjectGenerator {
                  BlockID.JUNGLE_LEAVES,
                  BlockID.MANGROVE_LEAVES,
                  BlockID.OAK_LEAVES,
-                 BlockID.SPRUCE_LEAVES, Block.GRASS_BLOCK, Block.DIRT, Block.ACACIA_LOG, Block.BIRCH_LOG, Block.OAK_LOG,
+                 BlockID.SPRUCE_LEAVES,
+                 BlockID.PALE_OAK_LEAVES,
+                 Block.GRASS_BLOCK, Block.DIRT, Block.ACACIA_LOG, Block.BIRCH_LOG, Block.OAK_LOG, Block.PALE_OAK_LOG,
                  Block.DARK_OAK_LOG,
                  Block.JUNGLE_LOG, Block.MANGROVE_LOG, Block.SPRUCE_LOG, Block.VINE,
                  Block.DIRT_WITH_ROOTS,
@@ -37,6 +39,7 @@ public abstract class TreeGenerator extends ObjectGenerator {
                  BlockID.OAK_SAPLING,
                  BlockID.JUNGLE_SAPLING,
                  BlockID.DARK_OAK_SAPLING,
+                 BlockID.PALE_OAK_SAPLING,
                  BlockID.BIRCH_SAPLING -> true;
             default -> false;
         };

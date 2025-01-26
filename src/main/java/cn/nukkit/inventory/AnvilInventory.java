@@ -92,7 +92,7 @@ public class AnvilInventory extends ContainerInventory implements CraftTypeInven
 
     @Override
     public void sendContents(Player... players) {
-        for (int slot = 0; slot < getSize(); slot++) {
+        for (int slot = 0; slot < getSize()-1; slot++) {
             sendSlot(slot, players);
         }
     }

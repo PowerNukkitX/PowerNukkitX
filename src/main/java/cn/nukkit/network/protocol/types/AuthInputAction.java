@@ -22,8 +22,8 @@ public enum AuthInputAction {
     WANT_DOWN_SLOW,
     WANT_UP_SLOW,
     SPRINTING,
-    ASCEND_SCAFFOLDING,
-    DESCEND_SCAFFOLDING,
+    ASCEND_BLOCK,
+    DESCEND_BLOCK,
     SNEAK_TOGGLE_DOWN,
     PERSIST_SNEAK,
     START_SPRINTING,
@@ -38,6 +38,9 @@ public enum AuthInputAction {
     PERFORM_ITEM_INTERACTION,
     PERFORM_BLOCK_ACTIONS,
     PERFORM_ITEM_STACK_REQUEST,
+    /**
+     * @since v567
+     */
     HANDLE_TELEPORT,
     /**
      * @since v575
@@ -106,11 +109,11 @@ public enum AuthInputAction {
     /**
      * @since v748
      */
-    IS_CAMERA_RELATIVE_MOVEMENT_ENABLED,
+    CAMERA_RELATIVE_MOVEMENT_ENABLED,
     /**
      * @since v748
      */
-    IS_ROT_CONTROLLED_BY_MOVE_DIRECTION,
+    ROT_CONTROLLED_BY_MOVE_DIRECTION,
     /**
      * @since v748
      */
@@ -118,7 +121,35 @@ public enum AuthInputAction {
     /**
      * @since v748
      */
-    STOP_SPIN_ATTACK;
+    STOP_SPIN_ATTACK,
+    /**
+     * @since v765
+     */
+    IS_HOTBAR_ONLY_TOUCH,
+    /**
+     * @since v765
+     */
+    JUMP_RELEASED_RAW,
+    /**
+     * @since v765
+     */
+    JUMP_PRESSED_RAW,
+    /**
+     * @since v765
+     */
+    JUMP_CURRENT_RAW,
+    /**
+     * @since v765
+     */
+    SNEAK_RELEASED_RAW,
+    /**
+     * @since v765
+     */
+    SNEAK_PRESSED_RAW,
+    /**
+     * @since v765
+     */
+    SNEAK_CURRENT_RAW;
 
     private static final AuthInputAction[] VALUES = values();
 

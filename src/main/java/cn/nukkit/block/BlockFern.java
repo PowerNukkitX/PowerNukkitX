@@ -47,6 +47,11 @@ public class BlockFern extends BlockFlowable implements BlockFlowerPot.FlowerPot
     }
 
     @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
+    @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (BlockSweetBerryBush.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true);

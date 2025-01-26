@@ -382,6 +382,8 @@ public interface BlockID {
 
     String CHISELED_RED_SANDSTONE = "minecraft:chiseled_red_sandstone";
 
+    String CHISELED_RESIN_BRICKS = "minecraft:chiseled_resin_bricks";
+
     String CHISELED_SANDSTONE = "minecraft:chiseled_sandstone";
 
     String CHISELED_STONE_BRICKS = "minecraft:chiseled_stone_bricks";
@@ -397,6 +399,8 @@ public interface BlockID {
     String CLAY = "minecraft:clay";
 
     String CLIENT_REQUEST_PLACEHOLDER_BLOCK = "minecraft:client_request_placeholder_block";
+
+    String CLOSED_EYEBLOSSOM = "minecraft:closed_eyeblossom";
 
     String COAL_BLOCK = "minecraft:coal_block";
 
@@ -467,6 +471,8 @@ public interface BlockID {
     String CRAFTER = "minecraft:crafter";
 
     String CRAFTING_TABLE = "minecraft:crafting_table";
+
+    String CREAKING_HEART = "minecraft:creaking_heart";
 
     String CREEPER_HEAD = "minecraft:creeper_head";
 
@@ -1604,6 +1610,8 @@ public interface BlockID {
 
     String OCHRE_FROGLIGHT = "minecraft:ochre_froglight";
 
+    String OPEN_EYEBLOSSOM = "minecraft:open_eyeblossom";
+
     String ORANGE_CANDLE = "minecraft:orange_candle";
 
     String ORANGE_CANDLE_CAKE = "minecraft:orange_candle_cake";
@@ -1653,6 +1661,46 @@ public interface BlockID {
     String PACKED_ICE = "minecraft:packed_ice";
 
     String PACKED_MUD = "minecraft:packed_mud";
+
+    String PALE_OAK_DOUBLE_SLAB = "minecraft:pale_oak_double_slab";
+
+    String PALE_OAK_PLANKS = "minecraft:pale_oak_planks";
+
+    String PALE_OAK_FENCE = "minecraft:pale_oak_fence";
+
+    String PALE_OAK_FENCE_GATE = "minecraft:pale_oak_fence_gate";
+
+    String PALE_OAK_STAIRS = "minecraft:pale_oak_stairs";
+
+    String PALE_OAK_WOOD = "minecraft:pale_oak_wood";
+
+    String PALE_OAK_DOOR = "minecraft:pale_oak_door";
+
+    String PALE_OAK_TRAPDOOR = "minecraft:pale_oak_trapdoor";
+
+    String PALE_OAK_SLAB = "minecraft:pale_oak_slab";
+
+    String PALE_OAK_LOG = "minecraft:pale_oak_log";
+
+    String PALE_OAK_LEAVES = "minecraft:pale_oak_leaves";
+
+    String PALE_OAK_SAPLING = "minecraft:pale_oak_sapling";
+
+    String PALE_OAK_STANDING_SIGN = "minecraft:pale_oak_standing_sign";
+
+    String PALE_OAK_BUTTON = "minecraft:pale_oak_button";
+
+    String PALE_OAK_HANGING_SIGN = "minecraft:pale_oak_hanging_sign";
+
+    String PALE_OAK_PRESSURE_PLATE = "minecraft:pale_oak_pressure_plate";
+
+    String PALE_OAK_WALL_SIGN = "minecraft:pale_oak_wall_sign";
+
+    String PALE_MOSS_CARPET = "minecraft:pale_moss_carpet";
+
+    String PALE_MOSS_BLOCK = "minecraft:pale_moss_block";
+
+    String PALE_HANGING_MOSS = "minecraft:pale_hanging_moss";
 
     String PEARLESCENT_FROGLIGHT = "minecraft:pearlescent_froglight";
 
@@ -1930,6 +1978,20 @@ public interface BlockID {
 
     String RESERVED6 = "minecraft:reserved6";
 
+    String RESIN_CLUMP = "minecraft:resin_clump";
+
+    String RESIN_BRICK_DOUBLE_SLAB = "minecraft:resin_brick_double_slab";
+
+    String RESIN_BRICK_WALL = "minecraft:resin_brick_wall";
+
+    String RESIN_BRICK_STAIRS = "minecraft:resin_brick_stairs";
+
+    String RESIN_BRICK_SLAB = "minecraft:resin_brick_slab";
+
+    String RESIN_BLOCK = "minecraft:resin_block";
+
+    String RESIN_BRICKS = "minecraft:resin_bricks";
+
     String RESPAWN_ANCHOR = "minecraft:respawn_anchor";
 
     String ROSE_BUSH = "minecraft:rose_bush";
@@ -2141,6 +2203,10 @@ public interface BlockID {
     String STRIPPED_OAK_LOG = "minecraft:stripped_oak_log";
 
     String STRIPPED_OAK_WOOD = "minecraft:stripped_oak_wood";
+
+    String STRIPPED_PALE_OAK_LOG = "minecraft:stripped_pale_oak_log";
+
+    String STRIPPED_PALE_OAK_WOOD = "minecraft:stripped_pale_oak_wood";
 
     String STRIPPED_SPRUCE_LOG = "minecraft:stripped_spruce_log";
 

@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityCombustByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -29,7 +30,9 @@ public class EnchantmentFireAspect extends Enchantment {
     }
 
     @Override
-    public void doAttack(Entity attacker, Entity entity) {
+    public void doAttack(EntityDamageByEntityEvent event) {
+        Entity entity = event.getEntity();
+        Entity attacker = event.getDamager();
         if ((!(entity instanceof Player) || !((Player) entity).isCreative())) {
             int duration = Math.max(entity.fireTicks / 20, getLevel() << 2);
 

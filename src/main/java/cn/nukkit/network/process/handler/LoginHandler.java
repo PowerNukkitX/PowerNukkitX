@@ -89,7 +89,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         }
 
         //Verify if the GameVersion has valid format
-        if(chainData.getGameVersion().split("\\.").length != 3) {
+        if(chainData.getGameVersion().split("\\.").length != 3 && !Server.getInstance().getSettings().debugSettings().allowBeta()) {
             session.close("§cPacket handling error");
             return;
         }

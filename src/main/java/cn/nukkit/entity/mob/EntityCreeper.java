@@ -26,6 +26,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.apache.logging.log4j.core.Core;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -52,7 +53,13 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
                 Set.of(),
                 Set.of(new Behavior(
                                 new EntityExplosionExecutor(30, 3, CoreMemoryTypes.SHOULD_EXPLODE),
-                                entity -> entity.getMemoryStorage().compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true), 4, 1
+                                all(
+                                        entity -> entity.getMemoryStorage().compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true),
+                                        any(
+                                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) != null && getLevel().raycastBlocks(this, getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER)).isEmpty(),
+                                                entity -> getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) != null && getLevel().raycastBlocks(this, getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET)).isEmpty()
+                                        )
+                                ), 4, 1
                         ),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, true, 16f, 3f, true), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET),
@@ -66,7 +73,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
                                     return player.isSurvival();
                                 }
                         ), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
+                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
                 Set.of(new NearestPlayerSensor(16, 0, 20), entity -> {
                     var memoryStorage = entity.getMemoryStorage();

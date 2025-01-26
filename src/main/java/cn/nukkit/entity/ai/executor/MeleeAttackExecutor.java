@@ -132,12 +132,12 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             if (entity instanceof EntityCanAttack entityCanAttack) {
                 defaultDamage = entityCanAttack.getDiffHandDamage(entity.getServer().getDifficulty());
             }
-            float itemDamage = item.getAttackDamage() + defaultDamage;
+            float itemDamage = item.getAttackDamage(entity) + defaultDamage;
 
             Enchantment[] enchantments = item.getEnchantments();
             if (item.applyEnchantments()) {
                 for (Enchantment enchantment : enchantments) {
-                    itemDamage += enchantment.getDamageBonus(target);
+                    itemDamage += enchantment.getDamageBonus(target, entity);
                 }
             }
 

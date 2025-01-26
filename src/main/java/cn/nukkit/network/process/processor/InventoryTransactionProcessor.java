@@ -190,11 +190,11 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         return;
                     }
                 }
-                float itemDamage = item.getAttackDamage();
+                float itemDamage = item.getAttackDamage(player);
                 Enchantment[] enchantments = item.getEnchantments();
                 if (item.applyEnchantments()) {
                     for (Enchantment enchantment : enchantments) {
-                        itemDamage += enchantment.getDamageBonus(target);
+                        itemDamage += enchantment.getDamageBonus(target, player);
                     }
                 }
                 Map<EntityDamageEvent.DamageModifier, Float> damage = new EnumMap<>(EntityDamageEvent.DamageModifier.class);

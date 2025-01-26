@@ -43,7 +43,12 @@ public class BlockSporeBlossom extends BlockTransparent {
     }
 
     @Override
-    public boolean isTransparent() {
-        return true;
+    public double getHardness() {
+        return 0;
+    }
+
+    @Override
+    public double getResistance() {
+        return 0;
     }
 }

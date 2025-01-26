@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author Nukkit Project Team
  */
-public class BlockClay extends BlockSolid {
+public class BlockClay extends BlockSolid implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(CLAY);
 
     public BlockClay() {

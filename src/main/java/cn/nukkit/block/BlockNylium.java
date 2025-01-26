@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 
-public abstract class BlockNylium extends BlockSolid {
+public abstract class BlockNylium extends BlockSolid implements Natural {
     public BlockNylium(BlockState blockState) {
         super(blockState);
     }
@@ -89,5 +89,10 @@ public abstract class BlockNylium extends BlockSolid {
     @Override
     public boolean canHarvestWithHand() {
         return false;
+    }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
     }
 }

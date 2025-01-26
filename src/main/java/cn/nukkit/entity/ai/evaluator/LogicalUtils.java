@@ -29,4 +29,14 @@ public interface LogicalUtils {
         return new AllMatchEvaluator(evaluators);
     }
 
+    default IBehaviorEvaluator not(@NotNull IBehaviorEvaluator evaluator) {
+        return new NotMatchEvaluator(evaluator);
+    }
+
+    default IBehaviorEvaluator none() {
+        return entity -> true;
+    }
+
+
+
 }

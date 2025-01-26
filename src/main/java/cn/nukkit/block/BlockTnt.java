@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 
 import static cn.nukkit.block.property.CommonBlockProperties.EXPLODE_BIT;
 
-public class BlockTnt extends BlockSolid implements RedstoneComponent {
+public class BlockTnt extends BlockSolid implements RedstoneComponent, Natural {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(TNT, EXPLODE_BIT);
 

@@ -57,7 +57,7 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
             return;
         }
         ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
-        containerOpenPacket.windowId = SpecialWindowId.ENDER_CHEST.getId();
+        containerOpenPacket.windowId = who.getWindowId(this);
         containerOpenPacket.type = this.getType().getNetworkType();
         containerOpenPacket.x = (int) enderChest.getX();
         containerOpenPacket.y = (int) enderChest.getY();
@@ -83,7 +83,7 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
     @Override
     public Map<Integer, ContainerSlotType> slotTypeMap() {
         Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-        map.put(SpecialWindowId.ENDER_CHEST.getId(), ContainerSlotType.ANVIL_INPUT);
+        map.put(SpecialWindowId.CONTAINER_ID_REGISTRY.getId(), ContainerSlotType.ANVIL_INPUT);
         return map;
     }
 
@@ -97,7 +97,7 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
         }
 
         ContainerClosePacket containerClosePacket = new ContainerClosePacket();
-        containerClosePacket.windowId = SpecialWindowId.ENDER_CHEST.getId();
+        containerClosePacket.windowId = who.getWindowId(this);
         containerClosePacket.wasServerInitiated = who.getClosingWindowId() != containerClosePacket.windowId;
         containerClosePacket.type = getType();
         who.dataPacket(containerClosePacket);
@@ -114,7 +114,6 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
             level.addSound(this.getHolder().getVector3().add(0.5, 0.5, 0.5), Sound.RANDOM_ENDERCHESTCLOSED);
             level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, blockEventPacket);
         }
-
         setBlockEntityEnderChest(who, null);
         super.onClose(who);
     }

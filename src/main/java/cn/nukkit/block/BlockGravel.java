@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class BlockGravel extends BlockFallable {
+public class BlockGravel extends BlockFallable implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(GRAVEL);
 
     public BlockGravel() {

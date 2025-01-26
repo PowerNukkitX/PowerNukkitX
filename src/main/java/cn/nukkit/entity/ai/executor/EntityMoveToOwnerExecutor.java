@@ -1,5 +1,6 @@
 package cn.nukkit.entity.ai.executor;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
@@ -21,14 +22,21 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor {
     protected float speed;
     protected int maxFollowRangeSquared;
+    public int minFollowRangeSquared;
     protected Vector3 oldTarget;
     protected boolean updateRouteImmediatelyWhenTargetChange;
 
     public EntityMoveToOwnerExecutor(float speed, boolean updateRouteImmediatelyWhenTargetChange, int maxFollowRange) {
+        this(speed, updateRouteImmediatelyWhenTargetChange, maxFollowRange, 9);
+    }
+    public EntityMoveToOwnerExecutor(float speed, boolean updateRouteImmediatelyWhenTargetChange, int maxFollowRange, int minFollowRange) {
         this.speed = speed;
         this.updateRouteImmediatelyWhenTargetChange = updateRouteImmediatelyWhenTargetChange;
         if (maxFollowRange >= 0) {
             this.maxFollowRangeSquared = maxFollowRange * maxFollowRange;
+        }
+        if (minFollowRange >= 0) {
+            this.minFollowRangeSquared = minFollowRange * minFollowRange;
         }
     }
 
@@ -37,12 +45,12 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
 
         if (entity instanceof EntityOwnable entityOwnable) {
-            var player = entity.getServer().getPlayer(entityOwnable.getOwnerName());
+            Player player = entityOwnable.getOwner();
             if (player == null) return false;
 
             //获取目的地位置（这个clone很重要）
-            var target = player.clone();
-            if (target.distanceSquared(entity) <= 9) return false;
+            Player target = (Player) player.clone();
+            if (target.distanceSquared(entity) <= minFollowRangeSquared) return false;
 
             //不允许跨世界
             if (!target.level.getName().equals(entity.level.getName()))

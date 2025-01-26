@@ -19,6 +19,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.network.protocol.types.PlayerInputTick;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
@@ -50,6 +51,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
@@ -1102,6 +1104,14 @@ public class HandleByteBuf extends ByteBuf {
         return ByteBufVarInt.readUnsignedLong(this);
     }
 
+    public void writeUnsignedBigVarInt(BigInteger value) {
+        ByteBufVarInt.writeUnsignedBigVarInt(this, value);
+    }
+
+    public BigInteger readUnsignedBigVarInt(int length) {
+        return ByteBufVarInt.readUnsignedBigVarInt(this, length);
+    }
+
     public void writeVarLong(long value) {
         ByteBufVarInt.writeLong(this, value);
     }
@@ -1492,6 +1502,14 @@ public class HandleByteBuf extends ByteBuf {
         );
     }
 
+    public PlayerInputTick readPlayerInputTick() {
+        return new PlayerInputTick(readUnsignedVarLong());
+    }
+
+    public void writePlayerInputTick(PlayerInputTick value) {
+        writeUnsignedVarLong(value.getInputTick());
+    }
+
     public <T> void writeArray(Collection<T> collection, Consumer<T> writer) {
         if (collection == null || collection.isEmpty()) {
             writeUnsignedVarInt(0);
@@ -1551,6 +1569,7 @@ public class HandleByteBuf extends ByteBuf {
     public void writeTag(CompoundTag tag) {
         writeBytes(NBTIO.write(tag));
     }
+
 
     public ItemStackRequest readItemStackRequest() {
         int requestId = readVarInt();

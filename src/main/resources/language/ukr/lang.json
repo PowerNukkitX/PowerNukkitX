@@ -43,6 +43,8 @@
   "nukkit.server.settings.playersettings.skinChangeCooldown": "Cooldown time for players changing skins",
   "nukkit.server.settings.playersettings.forceSkinTrusted": "Whether to force trust player skins, allowing players to use third-party skins freely",
   "nukkit.server.settings.playersettings.checkMovement": "Whether to check player movement",
+  "nukkit.server.settings.gameplaysettings": "Server's gameplay configuration",
+  "nukkit.server.settings.gameplaysettings.enableCommandBlocks": "Whether to allow players to use command blocks\nNote: If enabled, per-world gamerules still apply.",
   "chat.type.achievement": "{%0} отримав досягнення {%1}",
   "chat.type.admin": "[{%0}: {%1}]",
   "chat.type.announcement": "[{%0}] {%1}",

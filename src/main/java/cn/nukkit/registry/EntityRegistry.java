@@ -7,8 +7,10 @@ import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.mob.*;
 import cn.nukkit.entity.passive.*;
 import cn.nukkit.entity.projectile.EntityArrow;
+import cn.nukkit.entity.projectile.EntityBreezeWindCharge;
 import cn.nukkit.entity.projectile.EntityEgg;
 import cn.nukkit.entity.projectile.EntityEnderPearl;
+import cn.nukkit.entity.projectile.EntityFireball;
 import cn.nukkit.entity.projectile.EntitySmallFireball;
 import cn.nukkit.entity.projectile.EntitySnowball;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
@@ -120,7 +122,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(EGG, "", 82, false, true), EntityEgg.class);
         registerInternal(new EntityDefinition(PAINTING, "", 83, false, false), EntityPainting.class);
         registerInternal(new EntityDefinition(MINECART, "", 84, false, true), EntityMinecart.class);
-//        registerInternal(new EntityDefinition(FIREBALL, "", 85, false, false), EntityFireball.class);
+        registerInternal(new EntityDefinition(FIREBALL, "", 85, false, false), EntityFireball.class);
         registerInternal(new EntityDefinition(SPLASH_POTION, "", 86, false, true), EntitySplashPotion.class);
         registerInternal(new EntityDefinition(ENDER_PEARL, "", 87, false, false), EntityEnderPearl.class);
 //        registerInternal(new EntityDefinition(LEASH_KNOT, "", 88, false, true), EntityLeashKnot.class);
@@ -172,8 +174,10 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(CHEST_BOAT, "", 218, false, true), EntityChestBoat.class);
         registerInternal(new EntityDefinition(ARMADILLO, "", 142, true, true), EntityArmadillo.class);
         registerInternal(new EntityDefinition(BREEZE, "", 140, true, true), EntityBreeze.class);
+        registerInternal(new EntityDefinition(BREEZE_WIND_CHARGE_PROJECTILE, "", 141, false, false), EntityBreezeWindCharge.class);
         registerInternal(new EntityDefinition(WIND_CHARGE_PROJECTILE, "", 143, false, false), EntityWindCharge.class);
         registerInternal(new EntityDefinition(BOGGED, "", 144, true, true), EntityBogged.class);
+        registerInternal(new EntityDefinition(CREAKING, "", 146, true, true), EntityCreaking.class);
     }
 
     public Class<? extends Entity> getEntityClass(String id) {

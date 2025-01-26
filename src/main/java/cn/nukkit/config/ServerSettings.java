@@ -35,6 +35,9 @@ public final class ServerSettings extends OkaeriConfig {
     @Comment("nukkit.server.settings.playersettings")
     @CustomKey("player-settings")
     private PlayerSettings playerSettings = new PlayerSettings();
+    @Comment("nukkit.server.settings.gameplaysettings")
+    @CustomKey("gameplay-settings")
+    private GameplaySettings gameplaySettings = new GameplaySettings();
 
     @EqualsAndHashCode(callSuper = true)
     @Data
@@ -92,6 +95,8 @@ public final class ServerSettings extends OkaeriConfig {
         boolean command = false;
         @Comment("nukkit.server.settings.debugSettings.ignoredPackets")
         ArrayList<String> ignoredPackets = new ArrayList<>();
+        @Comment("nukkit.server.settings.debugSettings.allowBeta")
+        boolean allowBeta = false;
     }
 
     @EqualsAndHashCode(callSuper = true)
@@ -166,5 +171,13 @@ public final class ServerSettings extends OkaeriConfig {
         boolean checkMovement = true;
         @Comment("nukkit.server.settings.playersettings.spawnRadius")
         int spawnRadius = 16;
+    }
+
+    @EqualsAndHashCode(callSuper = true)
+    @Data
+    @Accessors(fluent = true)
+    public static class GameplaySettings extends OkaeriConfig {
+        @Comment("nukkit.server.settings.gameplaysettings.enableCommandBlocks")
+        boolean enableCommandBlocks = true;
     }
 }

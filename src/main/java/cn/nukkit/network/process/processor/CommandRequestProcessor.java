@@ -2,6 +2,7 @@ package cn.nukkit.network.process.processor;
 
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.event.player.PlayerCommandPreprocessEvent;
+import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.CommandRequestPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -17,7 +18,10 @@ public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestP
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull CommandRequestPacket pk) {
         int length = pk.command.length();
         if (!rateLimiter.tryAcquire(length, 300, TimeUnit.MILLISECONDS)) {
-            playerHandle.player.getSession().close("kick because hack");
+            PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(playerHandle.player, PlayerHackDetectedEvent.HackType.COMMAND_SPAM);
+            playerHandle.player.getServer().getPluginManager().callEvent(event);
+
+            if(event.isKick()) playerHandle.player.getSession().close("kick because hack");
             return;
         }
         if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {

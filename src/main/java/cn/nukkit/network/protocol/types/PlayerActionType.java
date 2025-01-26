@@ -56,7 +56,11 @@ public enum PlayerActionType {
     /**
      * @since v622
      */
-    RECEIVED_SERVER_DATA;
+    RECEIVED_SERVER_DATA,
+    /**
+     * @since v766
+     */
+    START_ITEM_USE;
 
     private static final PlayerActionType[] VALUES = values();
 

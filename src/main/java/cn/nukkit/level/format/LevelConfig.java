@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,7 +24,7 @@ public class LevelConfig {
     @Accessors(fluent = true)
     public static class GeneratorConfig {
         String name;
-        long seed = 0L;
+        long seed = ThreadLocalRandom.current().nextLong(Long.MIN_VALUE, Long.MAX_VALUE);
         boolean enableAntiXray = false;
         AntiXrayMode antiXrayMode = AntiXrayMode.LOW;
         boolean preDeobfuscate = true;

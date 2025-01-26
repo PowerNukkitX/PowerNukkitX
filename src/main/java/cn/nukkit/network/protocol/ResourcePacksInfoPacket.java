@@ -9,6 +9,7 @@ import lombok.ToString;
 import lombok.Value;
 
 import java.util.List;
+import java.util.UUID;
 
 @ToString
 @NoArgsConstructor
@@ -18,8 +19,17 @@ public class ResourcePacksInfoPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACKS_INFO_PACKET;
 
     public boolean mustAccept;
-    public boolean scripting;
     public boolean hasAddonPacks;
+    public boolean scripting;
+
+    /**
+     * @since v766
+     */
+    public UUID worldTemplateId;
+    /**
+     * @since v766
+     */
+    public String worldTemplateVersion;
 
     public ResourcePack[] resourcePackEntries = ResourcePack.EMPTY_ARRAY;
 
@@ -39,13 +49,15 @@ public class ResourcePacksInfoPacket extends DataPacket {
         byteBuf.writeBoolean(this.mustAccept);
         byteBuf.writeBoolean(this.hasAddonPacks);
         byteBuf.writeBoolean(this.scripting);
+        byteBuf.writeUUID(this.worldTemplateId);
+        byteBuf.writeString(this.worldTemplateVersion);
         this.encodePacks(byteBuf, this.resourcePackEntries, false);
     }
 
     private void encodePacks(HandleByteBuf byteBuf, ResourcePack[] packs, boolean behaviour) {
         byteBuf.writeShortLE(packs.length);
         for (ResourcePack entry : packs) {
-            byteBuf.writeString(entry.getPackId().toString());
+            byteBuf.writeUUID(entry.getPackId());
             byteBuf.writeString(entry.getPackVersion());
             byteBuf.writeLongLE(entry.getPackSize());
             byteBuf.writeString(entry.getEncryptionKey()); // encryption key

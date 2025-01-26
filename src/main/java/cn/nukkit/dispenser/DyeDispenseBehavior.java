@@ -23,10 +23,8 @@ public class DyeDispenseBehavior extends DefaultDispenseBehavior {
             } else {
                 this.success = false;
             }
-
             return null;
         }
-
         return super.dispense(block, face, item);
     }
 

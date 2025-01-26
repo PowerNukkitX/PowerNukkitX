@@ -72,7 +72,7 @@ public class BlockLoom extends BlockSolid implements Faceable, BlockInventoryHol
             if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
                 return false;
             }
-            player.addWindow(getOrCreateInventory());
+            player.addWindow(getInventory());
         }
         return true;
     }

@@ -1118,11 +1118,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
 
         // Make fire aspect to set the target in fire before dealing any damage so the target is in fire on death even if killed by the first hit
-        if (source instanceof EntityDamageByEntityEvent) {
-            Enchantment[] enchantments = ((EntityDamageByEntityEvent) source).getWeaponEnchantments();
+        if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
+            Enchantment[] enchantments = entityDamageByEntityEvent.getWeaponEnchantments();
             if (enchantments != null) {
                 for (Enchantment enchantment : enchantments) {
-                    enchantment.doAttack(((EntityDamageByEntityEvent) source).getDamager(), this);
+                    enchantment.doAttack(entityDamageByEntityEvent);
                 }
             }
         }
@@ -1890,6 +1890,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 if (onPhysicalInteraction(down, false)) {
                     return;
                 }
+                if(this instanceof EntityFlyable) return;
                 var farmEvent = new FarmLandDecayEvent(this, down);
                 this.server.getPluginManager().callEvent(farmEvent);
                 if (farmEvent.isCancelled()) return;
@@ -3080,12 +3081,30 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         Server.broadcastPacket(players, pk);
     }
 
+    public double getLookingAngleAt(Vector3 location) {
+        double anglePosition = Math.abs(Math.toDegrees(Math.atan2(location.x - this.x, location.z - this.z)));
+        double angleVector = Math.abs(Math.toDegrees(Math.atan2(this.getDirectionVector().x, this.getDirectionVector().z)));
+        return Math.abs(anglePosition - angleVector);
+    }
+
+    public double getLookingAngleAtPitch(Vector3 location) {
+        double anglePosition = Math.abs(Math.toDegrees(Math.atan2(location.y - (this.y + getEyeHeight()), 0)));
+        double angleVector = Math.abs(getPitch());
+        return Math.abs(Math.abs(anglePosition - angleVector)-90);
+    }
+
+    public boolean isLookingAt(Vector3 location, double tolerance, boolean checkRaycast) {
+        if(getLookingAngleAt(location) <= tolerance && getLookingAngleAtPitch(location) <= tolerance && (!checkRaycast || getLevel().raycastBlocks(location, this.add(0, getEyeHeight(), 0)).isEmpty())) {
+            return true;
+        }
+        return false;
+    }
+
     private boolean validateAndSetIntProperty(String identifier, int value) {
         if (!intProperties.containsKey(identifier)) return false;
         intProperties.put(identifier, value);
         return true;
     }
-
 
     public final boolean setIntEntityProperty(String identifier, int value) {
         return validateAndSetIntProperty(identifier, value);

@@ -9,6 +9,7 @@ import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.event.server.DataPacketDecodeEvent;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
+import cn.nukkit.item.Item;
 import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec;
@@ -126,7 +127,7 @@ public class BedrockSession {
 
                     var player = this.createPlayer();
                     if (player == null) {
-                        this.close("Failed to crate player");
+                        this.close("Failed to create player");
                         return;
                     }
                     this.onPlayerCreated(player);
@@ -521,7 +522,7 @@ public class BedrockSession {
     }
 
     public void syncInventory() {
-        var player = getPlayer();
+        Player player = getPlayer();
         if (player != null) {
             player.getInventory().sendHeldItem(player);
             player.getInventory().sendContents(player);

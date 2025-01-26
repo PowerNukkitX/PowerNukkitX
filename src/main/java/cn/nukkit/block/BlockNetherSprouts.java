@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockNetherSprouts extends BlockRoots {
+public class BlockNetherSprouts extends BlockHanging {
     public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_SPROUTS);
 
     @Override
