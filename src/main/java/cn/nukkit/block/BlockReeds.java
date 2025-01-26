@@ -186,4 +186,9 @@ public class BlockReeds extends BlockFlowable {
         }
         return false;
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }
