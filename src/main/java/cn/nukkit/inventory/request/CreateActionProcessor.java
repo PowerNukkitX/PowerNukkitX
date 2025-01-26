@@ -1,12 +1,16 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
+import cn.nukkit.network.protocol.types.itemstack.request.action.CraftRecipeAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.CreateAction;
+import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.recipe.Recipe;
+import cn.nukkit.registry.Registries;
 import lombok.extern.slf4j.Slf4j;
 
-import static cn.nukkit.inventory.request.CraftRecipeActionProcessor.RECIPE_DATA_KEY;
+import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Allay Project 2023/12/2
@@ -22,11 +26,12 @@ public class CreateActionProcessor implements ItemStackRequestActionProcessor<Cr
 
     @Override
     public ActionResponse handle(CreateAction action, Player player, ItemStackRequestContext context) {
-        Recipe recipe = context.get(RECIPE_DATA_KEY);
-        if (recipe == null) {
-            log.warn("Recipe not found in ItemStackRequest Context!");
+        Optional<ItemStackRequestAction> itemStackRequestAction = Arrays.stream(context.getItemStackRequest().getActions()).filter(action1 -> action1 instanceof CraftRecipeAction).findFirst();
+        if (itemStackRequestAction.isEmpty()) {
+            log.warn("Recipe not found in ItemStackRequest Context! Context: " + context);
             return context.error();
         }
+        Recipe recipe = Registries.RECIPE.getRecipeByNetworkId(((CraftRecipeAction) itemStackRequestAction.get()).getRecipeNetworkId());
         var output = recipe.getResults().get(action.getSlot());
         var createdOutput = player.getCreativeOutputInventory();
         createdOutput.setItem(0, output, false);
