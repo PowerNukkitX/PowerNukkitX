@@ -69,7 +69,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
             ItemStackResponse itemStackResponse = new ItemStackResponse(ItemStackResponseStatus.OK, request.getRequestId(), new ArrayList<>());
             Map<ContainerSlotType, ItemStackResponseContainer> responseContainerMap = new LinkedHashMap<>();
             for (int index = 0; index < actions.length; index++) {
-                var action = actions[index];
+                ItemStackRequestAction action = actions[index];
                 context.setCurrentActionIndex(index);
                 ItemStackRequestActionProcessor<ItemStackRequestAction> processor = (ItemStackRequestActionProcessor<ItemStackRequestAction>) PROCESSORS.get(action.getType());
                 if (processor == null) {
