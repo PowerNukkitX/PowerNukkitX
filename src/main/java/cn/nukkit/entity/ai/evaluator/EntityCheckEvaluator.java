@@ -20,7 +20,7 @@ public class EntityCheckEvaluator implements IBehaviorEvaluator {
         } else {
             Entity e = entity.getMemoryStorage().get(memoryType);
             if (e instanceof Player player) {
-                return (player.locallyInitialized && (player.isSurvival() || player.isAdventure()));
+                return (player.locallyInitialized && (player.isSurvival() || player.isAdventure()) && player.isAlive());
             }
             return !e.isClosed();
         }
