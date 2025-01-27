@@ -279,6 +279,10 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         /**
          * Damage caused by mace attack
          */
-        MACE_SMASH
+        MACE_SMASH,
+        /**
+         * Damage caused by ageing
+         */
+        AGE
     }
 }

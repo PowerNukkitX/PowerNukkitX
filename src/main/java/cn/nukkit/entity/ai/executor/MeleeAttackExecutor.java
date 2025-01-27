@@ -6,6 +6,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -33,6 +34,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     protected int maxSenseRangeSquared;
     protected boolean clearDataWhenLose;
     protected int coolDown;
+    protected float attackRange;
 
     protected int attackTick;
 
@@ -60,7 +62,11 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     protected Effect[] effects;
 
     public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
-        this(memory, speed, maxSenseRange, clearDataWhenLose, coolDown, new Effect[]{});
+        this(memory, speed, maxSenseRange, clearDataWhenLose, coolDown,2.5f);
+    }
+
+    public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown, Effect... effects) {
+        this(memory, speed, maxSenseRange, clearDataWhenLose, coolDown, 2.5f, effects);
     }
 
     /**
@@ -73,12 +79,13 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
      * @param coolDown          攻击冷却时间(单位tick)<br>Attack cooldown (in tick)
      * @param effects           给予目标药水效果<br>Give the target potion effect
      */
-    public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown, Effect... effects) {
+    public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown, float attackRange, Effect... effects) {
         this.memory = memory;
         this.speed = speed;
         this.maxSenseRangeSquared = maxSenseRange * maxSenseRange;
         this.clearDataWhenLose = clearDataWhenLose;
         this.coolDown = coolDown;
+        this.attackRange = attackRange;
         this.effects = effects;
     }
 
@@ -125,7 +132,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         oldTarget = floor;
 
         //attack logic
-        if (entity.distanceSquared(target) <= 2.5 && attackTick > coolDown) {
+        if (entity.distanceSquared(target) <= attackRange && attackTick > coolDown) {
             Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.AIR;
 
             float defaultDamage = 0;
@@ -164,6 +171,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
                 }
 
                 playAttackAnimation(entity);
+                entity.getMemoryStorage().put(CoreMemoryTypes.LAST_ATTACK_TIME, entity.getLevel().getTick());
                 attackTick = 0;
             }
 

@@ -83,6 +83,9 @@ public interface CoreMemoryTypes {
      * 实体上一次被攻击的tick
      */
     MemoryType<Integer> LAST_BE_ATTACKED_TIME = new MemoryType<>("minecraft:last_be_attacked_time", -65536);
+
+    MemoryType<Integer> LAST_ATTACK_TIME = new MemoryType<>("minecraft:last_attack_time", 0);
+
     /**
      * 实体的仇恨目标
      */
