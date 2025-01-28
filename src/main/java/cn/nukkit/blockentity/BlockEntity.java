@@ -17,7 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author MagicDroidX
+ * Abstract class representing a block entity.
+ * Provides methods for creating and managing block entities.
+ * 
+ * @autor MagicDroidX
  */
 @Slf4j
 public abstract class BlockEntity extends Position implements BlockEntityID {
@@ -30,15 +33,40 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     public CompoundTag namedTag;
     protected Server server;
 
+    /**
+     * Creates a block entity with default compound tag.
+     * 
+     * @param type The type of block entity.
+     * @param position The position of the block entity.
+     * @param args Additional arguments.
+     * @return The created block entity.
+     */
     public static BlockEntity createBlockEntity(String type, Position position, Object... args) {
         return createBlockEntity(type, position, BlockEntity.getDefaultCompound(position, type), args);
     }
 
-
+    /**
+     * Creates a block entity with specified compound tag.
+     * 
+     * @param type The type of block entity.
+     * @param pos The position of the block entity.
+     * @param nbt The compound tag.
+     * @param args Additional arguments.
+     * @return The created block entity.
+     */
     public static BlockEntity createBlockEntity(String type, Position pos, CompoundTag nbt, Object... args) {
         return createBlockEntity(type, pos.getLevel().getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt, args);
     }
 
+    /**
+     * Creates a block entity with specified chunk and compound tag.
+     * 
+     * @param type The type of block entity.
+     * @param chunk The chunk of the block entity.
+     * @param nbt The compound tag.
+     * @param args Additional arguments.
+     * @return The created block entity.
+     */
     public static BlockEntity createBlockEntity(String type, IChunk chunk, CompoundTag nbt, Object... args) {
         BlockEntity blockEntity = null;
 
@@ -88,10 +116,15 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
             log.debug("Block entity type {} is unknown", type);
         }
 
-
         return blockEntity;
     }
 
+    /**
+     * Constructor for BlockEntity.
+     * 
+     * @param chunk The chunk of the block entity.
+     * @param nbt The compound tag.
+     */
     public BlockEntity(IChunk chunk, CompoundTag nbt) {
         if (chunk == null || chunk.getProvider() == null || chunk.getProvider().getLevel() == null) {
             throw new ChunkException("Invalid garbage Chunk given to Block Entity");
@@ -124,18 +157,21 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         this.getLevel().addBlockEntity(this);
     }
 
+    /**
+     * Initializes the block entity.
+     */
     protected void initBlockEntity() {
         loadNBT();
     }
 
     /**
-     * 从方块实体的namedtag中读取数据
+     * Reads data from the block entity's named tag.
      */
     public void loadNBT() {
     }
 
     /**
-     * 存储方块实体数据到namedtag
+     * Stores block entity data to the named tag.
      */
     public void saveNBT() {
         this.namedTag.putString("id", this.getSaveId());
@@ -145,14 +181,29 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         this.namedTag.putBoolean("isMovable", this.movable);
     }
 
+    /**
+     * Returns the save ID of the block entity.
+     * 
+     * @return The save ID.
+     */
     public final String getSaveId() {
         return Registries.BLOCKENTITY.getSaveId(getClass());
     }
 
+    /**
+     * Returns the ID of the block entity.
+     * 
+     * @return The ID.
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * Returns a cleaned version of the named tag.
+     * 
+     * @return The cleaned named tag.
+     */
     public CompoundTag getCleanedNBT() {
         this.saveNBT();
         CompoundTag tag = this.namedTag.copy();
@@ -164,20 +215,41 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         }
     }
 
+    /**
+     * Returns the block associated with this block entity.
+     * 
+     * @return The block.
+     */
     public Block getBlock() {
         return this.getLevelBlock();
     }
 
+    /**
+     * Checks if the block entity is valid.
+     * 
+     * @return True if valid, false otherwise.
+     */
     public abstract boolean isBlockEntityValid();
 
+    /**
+     * Called on update.
+     * 
+     * @return True if updated, false otherwise.
+     */
     public boolean onUpdate() {
         return false;
     }
 
+    /**
+     * Schedules an update for the block entity.
+     */
     public final void scheduleUpdate() {
         this.level.scheduleBlockEntityUpdate(this);
     }
 
+    /**
+     * Closes the block entity.
+     */
     public void close() {
         if (!this.closed) {
             this.closed = true;
@@ -191,9 +263,17 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         }
     }
 
+    /**
+     * Called when the block is broken.
+     * 
+     * @param isSilkTouch True if broken with silk touch, false otherwise.
+     */
     public void onBreak(boolean isSilkTouch) {
     }
 
+    /**
+     * Marks the block entity as dirty.
+     */
     public void setDirty() {
         chunk.setChanged();
 
@@ -210,20 +290,39 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     }
 
     /**
-     * Indicates if an observer blocks that are looking at this block should blink when {@link #setDirty()} is called.
+     * Indicates if observer blocks that are looking at this block should blink when {@link #setDirty()} is called.
+     * 
+     * @return True if observable, false otherwise.
      */
     public boolean isObservable() {
         return true;
     }
 
+    /**
+     * Returns the name of the block entity.
+     * 
+     * @return The name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns if the block entity is movable.
+     * 
+     * @return True if movable, false otherwise.
+     */
     public boolean isMovable() {
         return movable;
     }
 
+    /**
+     * Returns the default compound tag for the block entity.
+     * 
+     * @param pos The position of the block entity.
+     * @param id The ID of the block entity.
+     * @return The default compound tag.
+     */
     public static CompoundTag getDefaultCompound(Vector3 pos, String id) {
         return new CompoundTag()
                 .putString("id", id)
@@ -232,6 +331,11 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
                 .putInt("z", pos.getFloorZ());
     }
 
+    /**
+     * Returns the block entity at the level.
+     * 
+     * @return The block entity.
+     */
     @Nullable
     @Override
     public final BlockEntity getLevelBlockEntity() {
