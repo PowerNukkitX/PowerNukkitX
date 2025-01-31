@@ -9,12 +9,12 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * 描述一个不在线的玩家的类。<br>
- * Describes an offline player.
+ * Represents an offline player in the game.
+ * This class implements the {@link IPlayer} interface.
+ * An offline player is a player who is not currently connected to the server.
+ * OfflinePlayer objects can be used to retrieve information about the player,
+ * such as their name, UUID, and various player-related properties.
  *
- * @author MagicDroidX(code) @ Nukkit Project
- * @author 粉鞋大妈(javadoc) @ Nukkit Project
- * @see cn.nukkit.Player
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 public class OfflinePlayer implements IPlayer {
@@ -22,23 +22,33 @@ public class OfflinePlayer implements IPlayer {
     private final CompoundTag namedTag;
 
     /**
-     * 初始化这个{@code OfflinePlayer}对象。<br>
      * Initializes the object {@code OfflinePlayer}.
      *
-     * @param server 这个玩家所在服务器的{@code Server}对象。<br>
-     *               The server this player is in, as a {@code Server} object.
-     * @param uuid   这个玩家的UUID。<br>
-     *               UUID of this player.
+     * @param server {@code Server}
+     * @param uuid   UUID of this player.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     public OfflinePlayer(Server server, UUID uuid) {
         this(server, uuid, null);
     }
 
+    /**
+     * Initializes the object {@code OfflinePlayer} with a player name.
+     *
+     * @param server {@code Server}
+     * @param name   Name of this player.
+     */
     public OfflinePlayer(Server server, String name) {
         this(server, null, name);
     }
 
+    /**
+     * Initializes the object {@code OfflinePlayer} with a player UUID and name.
+     *
+     * @param server {@code Server}
+     * @param uuid   UUID of this player.
+     * @param name   Name of this player.
+     */
     public OfflinePlayer(Server server, UUID uuid, String name) {
         this.server = server;
 
@@ -189,5 +199,4 @@ public class OfflinePlayer implements IPlayer {
     public void removeMetadata(String metadataKey, Plugin owningPlugin) {
         this.server.getPlayerMetadata().removeMetadata(this, metadataKey, owningPlugin);
     }
-
 }
