@@ -1243,10 +1243,8 @@ public class HandleByteBuf extends ByteBuf {
         ByteBuf userDataBuf = ByteBufAllocator.DEFAULT.ioBuffer();
         try (LittleEndianByteBufOutputStream stream = new LittleEndianByteBufOutputStream(userDataBuf)) {
 
-            Block block = item.getBlockUnsafe();
             int data = item.getDamage();
-
-            if ((item instanceof ItemDurable && data != 0) || block != null) {
+            if (item instanceof ItemDurable && data != 0) {
                 byte[] nbt = item.getCompoundTag();
                 CompoundTag tag;
                 if (nbt == null || nbt.length == 0) {

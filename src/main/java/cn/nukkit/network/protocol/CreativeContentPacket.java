@@ -26,7 +26,6 @@ public class CreativeContentPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUnsignedVarInt(entries.length);
         for (int i = 0; i < entries.length; i++) {
             byteBuf.writeUnsignedVarInt(i + 1);//netId
