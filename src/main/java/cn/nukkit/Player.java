@@ -840,6 +840,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     protected void checkNearEntities() {
         for (Entity entity : this.level.getNearbyEntities(this.boundingBox.grow(1, 0.5, 1), this)) {
+            if(entity == null) continue;
             entity.scheduleUpdate();
 
             if (!entity.isAlive() || !this.isAlive()) {
