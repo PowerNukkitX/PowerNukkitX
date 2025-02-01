@@ -10,6 +10,7 @@ import cn.nukkit.entity.ai.memory.codec.StringMemoryCodec;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.item.EntityItem;
+import cn.nukkit.entity.mob.EntityEvocationIllager;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
@@ -85,6 +86,9 @@ public interface CoreMemoryTypes {
     MemoryType<Integer> LAST_BE_ATTACKED_TIME = new MemoryType<>("minecraft:last_be_attacked_time", -65536);
 
     MemoryType<Integer> LAST_ATTACK_TIME = new MemoryType<>("minecraft:last_attack_time", 0);
+
+    MemoryType<EntityEvocationIllager.SPELL> LAST_MAGIC = new MemoryType<>("minecraft:last_spell", EntityEvocationIllager.SPELL.NONE);
+
 
     /**
      * 实体的仇恨目标
@@ -182,6 +186,12 @@ public interface CoreMemoryTypes {
     MemoryType<Block> NEAREST_BLOCK = new MemoryType<>("minecraft:nearest_block");
 
     MemoryType<EntityItem> NEAREST_ITEM = new MemoryType<>("minecraft:nearest_item");
+
+    MemoryType<Integer> LAST_ATTACK_CAST = new MemoryType<>("minecraft:last_attack_cast", 0);
+
+    MemoryType<Integer> LAST_ATTACK_SUMMON = new MemoryType<>("minecraft:last_attack_summon", 0);
+
+    MemoryType<Integer> LAST_CONVERSION = new MemoryType<>("minecraft:last_conversion", 0);
 
     /**
      * 实体的主人
