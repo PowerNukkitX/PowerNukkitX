@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author PikyCZ
  */
-public class EntityVindicator extends EntityMob implements EntityWalkable {
+public class EntityVindicator extends EntityIllager implements EntityWalkable {
 
     @Override
     @NotNull public String getIdentifier() {
