@@ -17,6 +17,11 @@ public class PassByTimeEvaluator implements IBehaviorEvaluator {
     protected int minPassByTimeRange;
     protected int maxPassByTimeRange;
 
+
+    public PassByTimeEvaluator(MemoryType<Integer> timedMemory, int minPassByTimeRange) {
+        this(timedMemory, minPassByTimeRange, Integer.MAX_VALUE);
+    }
+
     /**
      * 用于判断一个时间类型的记忆是否在指定范围内的评估器
      * <p>
