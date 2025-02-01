@@ -138,7 +138,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
 //        registerInternal(new EntityDefinition(COMMAND_BLOCK_MINECART, "", 100, false, true), EntityCommandBlockMinecart.class);
         registerInternal(new EntityDefinition(LINGERING_POTION, "", 101, false, false), EntityLingeringPotion.class);
         registerInternal(new EntityDefinition(LLAMA_SPIT, "", 102, false, false), EntityLlamaSpit.class);
-//        registerInternal(new EntityDefinition(EVOCATION_FANG, "", 103, false, true), EntityEvocationFang.class);
+        registerInternal(new EntityDefinition(EVOCATION_FANG, "", 103, false, true), EntityEvocationFang.class);
         registerInternal(new EntityDefinition(EVOCATION_ILLAGER, "", 104, true, true), EntityEvocationIllager.class);
         registerInternal(new EntityDefinition(VEX, "", 105, true, true), EntityVex.class);
 //        registerInternal(new EntityDefinition(ICE_BOMB, "", 106, false, false), EntityIceBomb.class);
