@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-public class EntityPillager extends EntityMob implements EntityWalkable {
+public class EntityPillager extends EntityIllager implements EntityWalkable {
     @Override
     @NotNull public String getIdentifier() {
         return PILLAGER;
