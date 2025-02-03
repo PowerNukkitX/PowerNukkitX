@@ -2,10 +2,11 @@ package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.item.Item;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.protocol.AvailableEntityIdentifiersPacket;
 import cn.nukkit.network.protocol.BiomeDefinitionListPacket;
-import cn.nukkit.network.protocol.ItemComponentPacket;
+import cn.nukkit.network.protocol.ItemRegistryPacket;
 import cn.nukkit.network.protocol.RequestChunkRadiusPacket;
 import cn.nukkit.network.protocol.SetLocalPlayerAsInitializedPacket;
 import cn.nukkit.network.protocol.StartGamePacket;
@@ -29,21 +30,24 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         // 写入自定义物品数据
         // Write custom item data
         log.debug("Sending component items");
-        var itemComponentPacket = new ItemComponentPacket();
+
+        ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
         if (!Registries.ITEM.getCustomItemDefinition().isEmpty()) {
-            var entries = new Int2ObjectOpenHashMap<ItemComponentPacket.Entry>();
+            var entries = new Int2ObjectOpenHashMap<ItemRegistryPacket.Entry>();
             var i = 0;
             for (var entry : Registries.ITEM.getCustomItemDefinition().entrySet()) {
                 try {
-                    entries.put(i, new ItemComponentPacket.Entry(entry.getKey(), entry.getValue().nbt()));
+                    entries.put(i, new ItemRegistryPacket.Entry(entry.getKey(), entry.getValue().getRuntimeId(), entry.getValue().nbt()));
                     i++;
                 } catch (Exception e) {
                     log.error("ItemComponentPacket encoding error", e);
                 }
             }
-            itemComponentPacket.setEntries(entries.values().toArray(ItemComponentPacket.Entry.EMPTY_ARRAY));
+
+            itemRegistryPacket.setEntries(entries.values().toArray(ItemRegistryPacket.Entry.EMPTY_ARRAY));
         }
-        player.dataPacket(itemComponentPacket);
+        player.dataPacket(itemRegistryPacket);
+
 
         log.debug("Sending actor identifiers");
         player.dataPacket(new AvailableEntityIdentifiersPacket());

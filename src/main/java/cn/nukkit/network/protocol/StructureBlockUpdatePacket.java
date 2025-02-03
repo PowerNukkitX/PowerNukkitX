@@ -45,13 +45,14 @@ public class StructureBlockUpdatePacket extends DataPacket {
 
     private StructureEditorData readEditorData(HandleByteBuf byteBuf) {
         var name = byteBuf.readString();
+        var filteredName = byteBuf.readString();
         var dataField = byteBuf.readString();
         var isIncludingPlayers = byteBuf.readBoolean();
         var isBoundingBoxVisible = byteBuf.readBoolean();
         var type = byteBuf.readVarInt();
         var structureSettings = readStructureSettings(byteBuf);
         var redstoneSaveMode = byteBuf.readVarInt();
-        return new StructureEditorData(name, dataField, isIncludingPlayers, isBoundingBoxVisible, StructureBlockType.from(type), structureSettings,
+        return new StructureEditorData(name, filteredName, dataField, isIncludingPlayers, isBoundingBoxVisible, StructureBlockType.from(type), structureSettings,
                 StructureRedstoneSaveMode.from(redstoneSaveMode));
     }
 
@@ -78,6 +79,7 @@ public class StructureBlockUpdatePacket extends DataPacket {
 
     private void writeEditorData(HandleByteBuf byteBuf, StructureEditorData editorData) {
         byteBuf.writeString(editorData.getName());
+        byteBuf.writeString(editorData.getFilteredName());
         byteBuf.writeString(editorData.getDataField());
         byteBuf.writeBoolean(editorData.isIncludingPlayers());
         byteBuf.writeBoolean(editorData.isBoundingBoxVisible());

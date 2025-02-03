@@ -890,7 +890,12 @@ public abstract class Item implements Cloneable, ItemID {
         return i;
     }
 
-    public final int getFullId() {
+    public final int getNetworkId() {
+        return getRuntimeId() - (this.isBlock() ? 0 : 0x16); //For some reason, a shift of 22 is needed here.
+    }
+
+
+        public final int getFullId() {
         return (((short) getRuntimeId()) << 16) | ((meta & 0x7fff) << 1);
     }
 

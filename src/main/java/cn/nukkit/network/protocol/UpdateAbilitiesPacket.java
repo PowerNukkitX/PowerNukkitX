@@ -72,6 +72,7 @@ public class UpdateAbilitiesPacket extends DataPacket {
         byteBuf.writeIntLE(getAbilitiesNumber(abilityLayer.getAbilitiesSet()));
         byteBuf.writeIntLE(getAbilitiesNumber(abilityLayer.getAbilityValues()));
         byteBuf.writeFloatLE(abilityLayer.getFlySpeed());
+        byteBuf.writeFloatLE(abilityLayer.getVerticalFlySpeed());
         byteBuf.writeFloatLE(abilityLayer.getWalkSpeed());
     }
 

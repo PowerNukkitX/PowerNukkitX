@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
@@ -17,10 +18,10 @@ import java.nio.ByteOrder;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemComponentPacket extends DataPacket {
+public class ItemRegistryPacket extends DataPacket {
 
 
-    public static final int NETWORK_ID = ProtocolInfo.ITEM_COMPONENT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.ITEM_REGISTRY_PACKET;
     
 
     private Entry[] entries = Entry.EMPTY_ARRAY;
@@ -51,6 +52,9 @@ public class ItemComponentPacket extends DataPacket {
         try {
             for (Entry entry : this.entries) {
                 byteBuf.writeString(entry.getName());
+                byteBuf.writeShortLE(entry.runtimeId);
+                byteBuf.writeBoolean(entry.data != null);
+                byteBuf.writeVarInt(0);
                 byteBuf.writeBytes(NBTIO.write(entry.getData(), ByteOrder.LITTLE_ENDIAN, true));
             }
         } catch (IOException e) {
@@ -65,16 +69,22 @@ public class ItemComponentPacket extends DataPacket {
         public static final Entry[] EMPTY_ARRAY = new Entry[0];
         
         private final String name;
+        private final Integer runtimeId;
         private final CompoundTag data;
 
 
-        public Entry(String name, CompoundTag data) {
+        public Entry(String name, Integer runtimeId, CompoundTag data) {
             this.name = name;
+            this.runtimeId = runtimeId;
             this.data = data;
         }
 
         public String getName() {
             return name;
+        }
+
+        public Integer getRuntimeId() {
+            return runtimeId;
         }
 
         public CompoundTag getData() {

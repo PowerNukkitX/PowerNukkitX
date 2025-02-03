@@ -29,7 +29,6 @@ public class UpdateEquipmentPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeByte((byte) this.windowId);
         byteBuf.writeByte((byte) this.windowType);
         byteBuf.writeVarInt(0);//size

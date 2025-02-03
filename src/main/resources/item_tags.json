@@ -693,7 +693,7 @@
     "minecraft:netherite_ingot",
     "minecraft:quartz",
     "minecraft:redstone",
-    "minecraft:resin_clump"
+    "minecraft:resin_brick"
   ],
   "minecraft:trim_templates": [
     "minecraft:bolt_armor_trim_smithing_template",

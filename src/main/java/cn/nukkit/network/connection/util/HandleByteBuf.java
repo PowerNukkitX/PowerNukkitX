@@ -5,6 +5,7 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
@@ -1225,7 +1226,7 @@ public class HandleByteBuf extends ByteBuf {
             return;
         }
 
-        int networkId = item.getRuntimeId();
+        int networkId = item.getNetworkId();
         writeVarInt(networkId);//write item runtimeId
         writeShortLE(item.getCount());//write item count
         writeUnsignedVarInt(item.getDamage());//write damage value
@@ -1234,7 +1235,7 @@ public class HandleByteBuf extends ByteBuf {
         if (!instanceItem) {
             writeBoolean(item.isUsingNetId()); // isUsingNetId
             if (item.isUsingNetId()) {
-                writeVarInt(item.getNetId()); // netId
+                writeVarInt(item.getNetworkId()); // netId
             }
         }
 

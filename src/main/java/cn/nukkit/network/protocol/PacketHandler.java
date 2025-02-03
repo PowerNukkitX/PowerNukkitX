@@ -208,7 +208,7 @@ public interface PacketHandler {
     default void handle(InventoryTransactionPacket pk) {
     }
 
-    default void handle(ItemComponentPacket pk) {
+    default void handle(ItemRegistryPacket pk) {
     }
 
     default void handle(ItemFrameDropItemPacket pk) {
@@ -566,5 +566,9 @@ public interface PacketHandler {
     default void handle(ServerboundLoadingScreenPacket pk) {
     }
 
+    default void handle(ClientCameraAimAssistPacket pk) {
+    }
 
+    default void handle(ClientMovementPredictionSyncPacket pk) {
+    }
 }

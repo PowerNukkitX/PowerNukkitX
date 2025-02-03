@@ -19,7 +19,7 @@
       <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.51%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
-      <img alt="Minecraft" src="https://img.shields.io/badge/protocol-766-blue" />
+      <img alt="Minecraft" src="https://img.shields.io/badge/protocol-776-blue" />
    </a>
    <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
       <img alt="Action" src="https://github.com/PowerNukkitX/PowerNukkitX/actions/workflows/pnx.yml/badge.svg?branch=master" />
