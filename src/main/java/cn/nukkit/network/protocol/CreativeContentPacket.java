@@ -37,14 +37,12 @@ public class CreativeContentPacket extends DataPacket {
         byteBuf.writeIntLE(group.getCategory().ordinal());
         byteBuf.writeString(group.getName());
         byteBuf.writeSlot(group.getIcon(), true);
-        System.out.println(group);
     }
 
     private void writeItem(HandleByteBuf byteBuf, CreativeItemData data) {
         byteBuf.writeUnsignedVarInt(data.getItem().getNetId());
         byteBuf.writeSlot(data.getItem(), true);
         byteBuf.writeUnsignedVarInt(data.getGroupId());
-        System.out.println(data);
     }
 
     public void handle(PacketHandler handler) {
