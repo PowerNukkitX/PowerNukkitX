@@ -6,7 +6,6 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.Registries;
 
 import java.util.HashMap;
