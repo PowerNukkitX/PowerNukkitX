@@ -22,6 +22,7 @@ import java.util.Set;
 
 import static cn.nukkit.block.property.CommonBlockProperties.DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.IN_WALL_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.OPEN_BIT;
 
 /**
@@ -29,7 +30,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.OPEN_BIT;
  * @since 2015/11/23
  */
 public class BlockFenceGate extends BlockTransparent implements RedstoneComponent, Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(FENCE_GATE, DIRECTION, IN_WALL_BIT, OPEN_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FENCE_GATE, IN_WALL_BIT, MINECRAFT_CARDINAL_DIRECTION, OPEN_BIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
