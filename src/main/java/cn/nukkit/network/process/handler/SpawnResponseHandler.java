@@ -17,7 +17,6 @@ import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.ItemRuntimeIdRegistry;
 import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,12 +35,9 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
         var entries = new ObjectOpenHashSet<ItemRegistryPacket.Entry>();
 
-        for(Int2ObjectMap.Entry<String> entry : ItemRuntimeIdRegistry.getID2NAME().int2ObjectEntrySet()) {
-            String id = entry.getValue();
-            int netId = entry.getIntKey();
-            CompoundTag tag = ItemRegistry.getItemComponents().containsCompound(id) ?  ItemRegistry.getItemComponents().getCompound(id).getCompound("components") : new CompoundTag();
-            entries.add(new ItemRegistryPacket.Entry(id, netId, 2,true, tag));
-
+        for(ItemRuntimeIdRegistry.ItemData data : ItemRuntimeIdRegistry.getITEMDATA()) {
+            CompoundTag tag = ItemRegistry.getItemComponents().containsCompound(data.identifier()) ?  new CompoundTag().put("components", ItemRegistry.getItemComponents().getCompound(data.identifier()).getCompound("components")) : new CompoundTag();
+            entries.add(new ItemRegistryPacket.Entry(data.identifier(), data.runtimeId(), data.version(), data.componentBased(), tag));
         }
 
         itemRegistryPacket.setEntries(entries.toArray(ItemRegistryPacket.Entry.EMPTY_ARRAY));
