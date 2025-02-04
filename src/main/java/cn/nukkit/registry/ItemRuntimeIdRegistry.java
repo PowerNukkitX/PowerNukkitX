@@ -1,18 +1,15 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.Server;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.Config;
-import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,15 +21,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer> {
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+
     private static final Object2IntOpenHashMap<String> REGISTRY = new Object2IntOpenHashMap<>();
-    static final Object2ObjectOpenHashMap<String, RuntimeEntry> CUSTOM_REGISTRY = new Object2ObjectOpenHashMap<>();
+    private static final Object2ObjectOpenHashMap<String, RuntimeEntry> CUSTOM_REGISTRY = new Object2ObjectOpenHashMap<>();
 
     static {
         REGISTRY.defaultReturnValue(Integer.MAX_VALUE);
     }
 
-    static final Int2ObjectOpenHashMap<String> ID2NAME = new Int2ObjectOpenHashMap<>();
+    @Getter
+    private static final Int2ObjectOpenHashMap<String> ID2NAME = new Int2ObjectOpenHashMap<>();
     private static byte[] itemPalette;
+
 
     public byte[] getItemPalette() {
         return itemPalette;
@@ -72,7 +72,6 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
 
         try (InputStream stream = ItemRegistry.class.getClassLoader().getResourceAsStream("runtime_item_states.json")){
             assert stream != null;
-
             data.load(stream);
 
             @SuppressWarnings("unchecked")
