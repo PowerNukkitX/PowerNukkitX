@@ -53,18 +53,17 @@ public class ItemRegistryPacket extends DataPacket {
             for (Entry entry : this.entries) {
                 byteBuf.writeString(entry.getName());
                 byteBuf.writeShortLE(entry.runtimeId);
-                byteBuf.writeBoolean(entry.data != null);
-                byteBuf.writeVarInt(0);
+                byteBuf.writeBoolean(false);
+                byteBuf.writeVarInt(2);
                 byteBuf.writeBytes(NBTIO.write(entry.getData(), ByteOrder.LITTLE_ENDIAN, true));
             }
         } catch (IOException e) {
-            MainLogger.getLogger().error("Error while encoding NBT data of ItemComponentPacket", e);
+            MainLogger.getLogger().error("Error while encoding NBT data of ItemRegistryPacket", e);
         }
     }
     
     @ToString
     public static class Entry {
-
 
         public static final Entry[] EMPTY_ARRAY = new Entry[0];
         

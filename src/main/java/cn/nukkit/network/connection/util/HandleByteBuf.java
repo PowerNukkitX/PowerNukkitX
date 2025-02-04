@@ -5,7 +5,6 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
@@ -47,7 +46,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.SneakyThrows;
 import lombok.val;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -60,15 +58,7 @@ import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -1226,7 +1216,7 @@ public class HandleByteBuf extends ByteBuf {
             return;
         }
 
-        int networkId = item.getNetworkId();
+        int networkId = item.getRuntimeId();
         writeVarInt(networkId);//write item runtimeId
         writeShortLE(item.getCount());//write item count
         writeUnsignedVarInt(item.getDamage());//write damage value
@@ -1235,7 +1225,7 @@ public class HandleByteBuf extends ByteBuf {
         if (!instanceItem) {
             writeBoolean(item.isUsingNetId()); // isUsingNetId
             if (item.isUsingNetId()) {
-                writeVarInt(item.getNetworkId()); // netId
+                writeVarInt(item.getNetId()); // netId
             }
         }
 

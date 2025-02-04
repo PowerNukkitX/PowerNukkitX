@@ -2,7 +2,7 @@ package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.data.property.EntityProperty;
-import cn.nukkit.item.Item;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.protocol.AvailableEntityIdentifiersPacket;
 import cn.nukkit.network.protocol.BiomeDefinitionListPacket;
@@ -13,7 +13,9 @@ import cn.nukkit.network.protocol.StartGamePacket;
 import cn.nukkit.network.protocol.SyncEntityPropertyPacket;
 import cn.nukkit.network.protocol.TrimDataPacket;
 import cn.nukkit.network.protocol.types.TrimData;
+import cn.nukkit.registry.ItemRuntimeIdRegistry;
 import cn.nukkit.registry.Registries;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,27 +29,19 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
 
         this.startGame();
 
-        // 写入自定义物品数据
-        // Write custom item data
         log.debug("Sending component items");
 
         ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
-        if (!Registries.ITEM.getCustomItemDefinition().isEmpty()) {
-            var entries = new Int2ObjectOpenHashMap<ItemRegistryPacket.Entry>();
-            var i = 0;
-            for (var entry : Registries.ITEM.getCustomItemDefinition().entrySet()) {
-                try {
-                    entries.put(i, new ItemRegistryPacket.Entry(entry.getKey(), entry.getValue().getRuntimeId(), entry.getValue().nbt()));
-                    i++;
-                } catch (Exception e) {
-                    log.error("ItemComponentPacket encoding error", e);
-                }
-            }
+        var entries = new Int2ObjectOpenHashMap<ItemRegistryPacket.Entry>();
 
-            itemRegistryPacket.setEntries(entries.values().toArray(ItemRegistryPacket.Entry.EMPTY_ARRAY));
+        for(Int2ObjectMap.Entry<String> entry : ItemRuntimeIdRegistry.getID2NAME().int2ObjectEntrySet()) {
+            String id = entry.getValue();
+            int netId = entry.getIntKey();
+            entries.put(netId, new ItemRegistryPacket.Entry(id, netId, new CompoundTag()));
         }
-        player.dataPacket(itemRegistryPacket);
 
+        itemRegistryPacket.setEntries(entries.values().toArray(ItemRegistryPacket.Entry.EMPTY_ARRAY));
+        player.dataPacket(itemRegistryPacket);
 
         log.debug("Sending actor identifiers");
         player.dataPacket(new AvailableEntityIdentifiersPacket());
