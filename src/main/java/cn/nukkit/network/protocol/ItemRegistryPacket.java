@@ -53,8 +53,8 @@ public class ItemRegistryPacket extends DataPacket {
             for (Entry entry : this.entries) {
                 byteBuf.writeString(entry.getName());
                 byteBuf.writeShortLE(entry.runtimeId);
-                byteBuf.writeBoolean(false);
-                byteBuf.writeVarInt(2);
+                byteBuf.writeBoolean(entry.componentBased);
+                byteBuf.writeVarInt(entry.version);
                 byteBuf.writeBytes(NBTIO.write(entry.getData(), ByteOrder.LITTLE_ENDIAN, true));
             }
         } catch (IOException e) {
@@ -69,12 +69,16 @@ public class ItemRegistryPacket extends DataPacket {
         
         private final String name;
         private final Integer runtimeId;
+        private final Integer version;
+        private final boolean componentBased;
         private final CompoundTag data;
 
 
-        public Entry(String name, Integer runtimeId, CompoundTag data) {
+        public Entry(String name, Integer runtimeId, Integer version, boolean componentBased, CompoundTag data) {
             this.name = name;
             this.runtimeId = runtimeId;
+            this.version = version;
+            this.componentBased = componentBased;
             this.data = data;
         }
 

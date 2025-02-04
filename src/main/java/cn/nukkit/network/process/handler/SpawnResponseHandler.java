@@ -13,10 +13,12 @@ import cn.nukkit.network.protocol.StartGamePacket;
 import cn.nukkit.network.protocol.SyncEntityPropertyPacket;
 import cn.nukkit.network.protocol.TrimDataPacket;
 import cn.nukkit.network.protocol.types.TrimData;
+import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.ItemRuntimeIdRegistry;
 import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
@@ -32,15 +34,17 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         log.debug("Sending component items");
 
         ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
-        var entries = new Int2ObjectOpenHashMap<ItemRegistryPacket.Entry>();
+        var entries = new ObjectOpenHashSet<ItemRegistryPacket.Entry>();
 
         for(Int2ObjectMap.Entry<String> entry : ItemRuntimeIdRegistry.getID2NAME().int2ObjectEntrySet()) {
             String id = entry.getValue();
             int netId = entry.getIntKey();
-            entries.put(netId, new ItemRegistryPacket.Entry(id, netId, new CompoundTag()));
+            CompoundTag tag = ItemRegistry.getItemComponents().containsCompound(id) ?  ItemRegistry.getItemComponents().getCompound(id).getCompound("components") : new CompoundTag();
+            entries.add(new ItemRegistryPacket.Entry(id, netId, 2,true, tag));
+
         }
 
-        itemRegistryPacket.setEntries(entries.values().toArray(ItemRegistryPacket.Entry.EMPTY_ARRAY));
+        itemRegistryPacket.setEntries(entries.toArray(ItemRegistryPacket.Entry.EMPTY_ARRAY));
         player.dataPacket(itemRegistryPacket);
 
         log.debug("Sending actor identifiers");

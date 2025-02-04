@@ -40,7 +40,7 @@ public class CreativeContentPacket extends DataPacket {
     }
 
     private void writeItem(HandleByteBuf byteBuf, CreativeItemData data) {
-        byteBuf.writeUnsignedVarInt(data.getItem().getNetId());
+        byteBuf.writeUnsignedVarInt(Registries.CREATIVE.getCreativeItemIndex(data.getItem()));
         byteBuf.writeSlot(data.getItem(), true);
         byteBuf.writeUnsignedVarInt(data.getGroupId());
     }

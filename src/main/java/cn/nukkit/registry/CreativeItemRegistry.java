@@ -22,11 +22,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteOrder;
 import java.util.Base64;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,12 +41,13 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
     static final ObjectLinkedOpenHashSet<CreativeItemGroup> GROUPS = new ObjectLinkedOpenHashSet<>();
-    static final ObjectOpenHashSet<CreativeItemData> ITEM_DATA = new ObjectOpenHashSet<>();
+    static final ObjectLinkedOpenHashSet<CreativeItemData> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
 
     @Override
     public void init() {
         if (isLoad.getAndSet(true))
             return;
+
         try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.json")) {
             Map data = new Gson().fromJson(new InputStreamReader(input), Map.class);
             List<Map<String, Object>> groups = (List<Map<String, Object>>) data.get("groups");
@@ -70,6 +69,9 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 String name = tag.get("id").toString();
                 Item item = Item.get(name, damage, 1, nbt, false);
                 item.setCompoundTag(nbt);
+                if(ItemRegistry.getItemComponents().containsCompound(name)) {
+                    item.setNamedTag(ItemRegistry.getItemComponents().getCompound(name).getCompound("components"));
+                }
                 if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
                     item = Item.AIR;
                     log.warn("load creative item {} damage {} is null", name, damage);
@@ -178,7 +180,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         return GROUPS;
     }
 
-    public ObjectOpenHashSet<CreativeItemData> getCreativeItemData() {
+    public ObjectLinkedOpenHashSet<CreativeItemData> getCreativeItemData() {
         return ITEM_DATA;
     }
     /**
