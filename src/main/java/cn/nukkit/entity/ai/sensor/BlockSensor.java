@@ -3,14 +3,16 @@ package cn.nukkit.entity.ai.sensor;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.level.Location;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 //存储最近的玩家的Memory
 
 
 @Getter
-public class NearestBlockSensor implements ISensor {
+public class BlockSensor implements ISensor {
 
     protected int range;
 
@@ -18,11 +20,19 @@ public class NearestBlockSensor implements ISensor {
 
     protected int period;
 
-    public NearestBlockSensor(int range, int lookY) {
-        this(range, lookY, 1);
+    @NotNull
+    protected Class<? extends Block> blockClass;
+
+    @NotNull
+    protected MemoryType<Block> memory;
+
+    public BlockSensor(Class<? extends Block> blockClass, MemoryType<Block> memory, int range, int lookY) {
+        this(blockClass, memory, range, lookY, 1);
     }
 
-    public NearestBlockSensor(int range, int lookY, int period) {
+    public BlockSensor(@NotNull Class<? extends Block> blockClass, @NotNull MemoryType<Block> memory, int range, int lookY, int period) {
+        this.blockClass = blockClass;
+        this.memory = memory;
         this.range = range;
         this.lookY = lookY;
         this.period = period;
@@ -30,15 +40,12 @@ public class NearestBlockSensor implements ISensor {
 
     @Override
     public void sense(EntityIntelligent entity) {
-        Class<? extends Block> blockClass = entity.getMemoryStorage().get(CoreMemoryTypes.LOOKING_BLOCK);
-        if(blockClass == null) return;
         Block block = null;
         for(int x = -range; x<=range; x++) {
             for(int z = -range; z<=range; z++) {
                 for(int y = -lookY; y<=lookY; y++) {
                     Location lookLocation = entity.add(x, y, z);
                     Block lookBlock = lookLocation.getLevelBlock();
-                    if(lookBlock.getId().equals(Block.DIRT) || lookBlock.getId().equals(Block.GRASS_BLOCK) || lookBlock.isAir() || lookBlock.getId().equals(Block.BEDROCK)) continue;
                     if(blockClass.isAssignableFrom(lookBlock.getClass())) {
                         block = lookBlock;
                         break;
@@ -46,7 +53,11 @@ public class NearestBlockSensor implements ISensor {
                 }
             }
         }
-        entity.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, block);
+        if(block == null) {
+            if(entity.getMemoryStorage().notEmpty(memory) && entity.getMemoryStorage().get(memory).getClass().isAssignableFrom(blockClass)) {
+                entity.getMemoryStorage().clear(memory);
+            } // We don't want to clear data from different sensors
+        } else entity.getMemoryStorage().put(memory, block);
     }
 
     @Override

@@ -55,7 +55,11 @@ public class NearestEntitySensor implements ISensor {
                 }
             }
         }
-        entity.getMemoryStorage().put(memoryType, ent);
+        if(ent == null) {
+            if(entity.getMemoryStorage().notEmpty(memoryType) && entity.getMemoryStorage().get(memoryType).getClass().isAssignableFrom(entityClass)) {
+                entity.getMemoryStorage().clear(memoryType);
+            } // We don't want to clear data from different sensors
+        } else entity.getMemoryStorage().put(memoryType, ent);
     }
 
     @Override
