@@ -14,6 +14,7 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
+import cn.nukkit.entity.ai.evaluator.MemoryCheckEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
@@ -21,6 +22,7 @@ import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
 import cn.nukkit.entity.ai.executor.PiglinTradeExecutor;
+import cn.nukkit.entity.ai.executor.PiglinTransformExecutor;
 import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
@@ -28,6 +30,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
+import cn.nukkit.entity.ai.sensor.NearestPlayerAngryPiglinSensor;
+import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
@@ -39,18 +43,23 @@ import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemGoldIngot;
 import cn.nukkit.item.ItemPorkchop;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.AnimateEntityPacket;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
+import org.apache.logging.log4j.core.Core;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class EntityPiglin extends EntityMob implements EntityWalkable {
     @Override
@@ -68,6 +77,11 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                 this.tickSpread,
                 Set.of(),
                 Set.of(
+                        new Behavior(new PiglinTransformExecutor(), all(
+                                entity -> entity.getLevel().getDimension() != Level.DIMENSION_NETHER,
+                                entity -> !isImmobile(),
+                                entity -> !entity.namedTag.getBoolean("IsImmuneToZombification")
+                        ), 13, 1),
                         new Behavior(new PiglinTradeExecutor(), all(
                                 entity -> !getItemInOffhand().isNull(),
                                 entity -> !isAngry(),
@@ -81,24 +95,46 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                         new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_JEALOUS, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> getViewers().values().stream().noneMatch(p -> p.distance(entity) < 8 && likesItem(p.getInventory().getItemInHand()) && p.level.raycastBlocks(p, entity).isEmpty())), 11, 1),
                         new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_ANGRY, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> isAngry()), 10, 1),
                         new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_AMBIENT, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> !isAngry()), 9, 1),
-                        new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), all(
+                        new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.5f, 40, true, 30), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET)
+                        ), 6, 1),
+                        new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 40, false, 30), all(
+                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) instanceof Player player && player.getInventory() != null && !Arrays.stream(player.getInventory().getArmorContents()).anyMatch(item -> !item.isNull() && item instanceof ItemArmor armor && armor.getTier() == ItemArmor.TIER_GOLD)
                         ), 5, 1),
-                        new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 40, false, 30), all(
+                        new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, 40, true, 30), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
-                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) instanceof Player player && player.getInventory() != null && !Arrays.stream(player.getInventory().getArmorContents()).anyMatch(item -> !item.isNull() && item instanceof ItemArmor armor && armor.getTier() == ItemArmor.TIER_GOLD)
-                        ), 4, 1),
+                                any(
+                                        entity -> getMemoryStorage().get(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME) == 0,
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME, 6000)
+                                )
+                        ), 5, 1),
                         new Behavior(new PiglinFleeFromTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK),
                                 entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK) instanceof BlockSoulFire
                         ), 2, 1),
-                        new Behavior(new PiglinFleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY), 3, 1),
+                        new Behavior(new PiglinFleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY), all(
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
+                                entity -> {
+                                    if(isBaby()) {
+                                        return true;
+                                    } else {
+                                        Entity entity1 = getMemoryStorage().get(CoreMemoryTypes.NEAREST_SHARED_ENTITY);
+                                        if(entity1 instanceof EntityWither || entity1 instanceof EntityWitherSkeleton) return false;
+                                        return true;
+                                    }
+                                }
+                        ), 3, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
-                Set.of(new NearestTargetEntitySensor<>(0, 16, 20,
+                Set.of(new NearestPlayerSensor(40, 0, 20),
+                        new NearestTargetEntitySensor<>(0, 16, 20,
                         List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
+                        new NearestPlayerAngryPiglinSensor(),
                         new NearestEntitySensor(EntityZombiePigman.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 8 , 0),
                         new NearestEntitySensor(EntityZoglin.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 8 , 0),
+                        new NearestEntitySensor(EntityWither.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 8 , 0),
+                        new NearestEntitySensor(EntityWitherSkeleton.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 8 , 0),
                         new BlockSensor(BlockDoor.class, CoreMemoryTypes.NEAREST_BLOCK, 2, 2, 20),
                         new BlockSensor(BlockSoulFire.class, CoreMemoryTypes.NEAREST_BLOCK, 8, 2, 20)
                 ),
@@ -124,6 +160,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
         this.setMaxHealth(16);
         this.diffHandDamage = new float[]{3f, 5f, 7f};
         super.initEntity();
+        setItemInHand(Item.get(Item.GOLDEN_SWORD));
     }
 
     @Override
@@ -177,14 +214,20 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                 if(entity instanceof EntityHoglin hoglin) {
                     if(!hoglin.isBaby()) {
                         if(hoglin.getHealth() - getDiffHandDamage(getServer().getDifficulty()) <= 0) {
-                            entity.level.addSound(entity, Sound.MOB_PIGLIN_CELEBRATE);
+                            List<Entity> entities =  Arrays.stream(getLevel().getEntities()).filter(entity1 -> entity1 instanceof EntityPiglin piglin && piglin.distance(this) < 16).toList();
+                            AnimateEntityPacket.Animation.AnimationBuilder builder = AnimateEntityPacket.Animation.builder();
+                            builder.animation("animation.piglin.celebrate_hunt_special");
+                            builder.nextState("r");
+                            builder.blendOutTime(1);
+                            Entity.playAnimationOnEntities(builder.build(), entities);
+                            entities.forEach(entity1 -> entity1.level.addSound(entity1, Sound.MOB_PIGLIN_CELEBRATE));
                         }
                         yield true;
                     }
                 }
                 yield false;
             }
-            default -> super.attackTarget(entity);
+            default -> false;
         };
     }
 
@@ -221,6 +264,11 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    public Integer getExperienceDrops() {
+        return Math.toIntExact(isBaby() ? 1 : 5 + (getArmorInventory().getContents().values().stream().filter(Item::isArmor).count() * ThreadLocalRandom.current().nextInt(1, 4)));
+    }
+
+    @Override
     public boolean equip(Item item) {
          if((item.getTier() > getItemInHand().getTier() && getItemInHand().getTier() != ItemArmor.TIER_GOLD) || item.getTier() == ItemArmor.TIER_GOLD) {
             this.getEquipmentInventory().addItem(getItemInHand());
@@ -254,9 +302,12 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
         @Override
         public void onStart(EntityIntelligent entity) {
             super.onStart(entity);
-            System.out.println(entity.getMemoryStorage().get(memory).getId());
             entity.setDataProperty(EntityDataTypes.TARGET_EID, entity.getMemoryStorage().get(memory).getId());
             entity.setDataFlag(EntityFlag.ANGRY);
+            Arrays.stream(entity.level.getEntities()).filter(entity1 -> entity1 instanceof EntityPiglin && entity1.distance(entity) < 16 && ((EntityPiglin) entity1).getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)).forEach(entity1 -> ((EntityPiglin) entity1).getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET)));
+            if(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof EntityHoglin) {
+                entity.getMemoryStorage().put(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME, entity.getLevel().getTick());
+            }
         }
 
         @Override
