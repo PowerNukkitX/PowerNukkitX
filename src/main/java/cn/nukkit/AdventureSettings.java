@@ -173,6 +173,7 @@ public class AdventureSettings implements Cloneable {
         packet.playerPermission = playerPermission;
 
         AbilityLayer layer = new AbilityLayer();
+        layer.setVerticalFlySpeed(1f);
         layer.setLayerType(AbilityLayer.Type.BASE);
         layer.getAbilitiesSet().addAll(PlayerAbility.VALUES);
 
@@ -256,7 +257,7 @@ public class AdventureSettings implements Cloneable {
         TELEPORT(PlayerAbility.TELEPORT, false),
         BUILD(PlayerAbility.BUILD, true),
         PRIVILEGED_BUILDER(PlayerAbility.PRIVILEGED_BUILDER, false),
-        VERTICAL_FLY_SPEED(PlayerAbility.VERTICAL_FLY_SPEED, false);
+        VERTICAL_FLY_SPEED(PlayerAbility.VERTICAL_FLY_SPEED, true);
 
         private final PlayerAbility ability;
         private final boolean defaultValue;
