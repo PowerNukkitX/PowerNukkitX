@@ -228,6 +228,8 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     public void register(Integer key, Item value) throws RegisterException {
         if (MAP.putIfAbsent(key, value) != null) {
             throw new RegisterException("This creative item has already been registered with the identifier: " + key);
+        } else {
+            ITEM_DATA.add(new CreativeItemData(value, -1));
         }
     }
 }
