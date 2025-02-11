@@ -35,8 +35,8 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
         var entries = new ObjectOpenHashSet<ItemRegistryPacket.Entry>();
 
-        for(ItemRuntimeIdRegistry.ItemData data : ItemRuntimeIdRegistry.getITEMDATA()) {
-            CompoundTag tag = ItemRegistry.getItemComponents().containsCompound(data.identifier()) ?  new CompoundTag().put("components", ItemRegistry.getItemComponents().getCompound(data.identifier()).getCompound("components")) : new CompoundTag();
+        for(ItemRuntimeIdRegistry.ItemData data : Registries.ITEM_RUNTIMEID.getITEMDATA()) {
+            CompoundTag tag = Registries.ITEM.getItemComponents().containsCompound(data.identifier()) ?  new CompoundTag().put("components", Registries.ITEM.getItemComponents().getCompound(data.identifier()).getCompound("components")) : Registries.ITEM.getCustomItemDefinition().containsKey(data.identifier()) ? Registries.ITEM.getCustomItemDefinition().get(data.identifier()).nbt() : new CompoundTag();
             entries.add(new ItemRegistryPacket.Entry(data.identifier(), data.runtimeId(), data.version(), data.componentBased(), tag));
         }
 
