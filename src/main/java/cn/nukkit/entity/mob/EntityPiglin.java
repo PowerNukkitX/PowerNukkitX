@@ -43,12 +43,14 @@ import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemGoldIngot;
 import cn.nukkit.item.ItemPorkchop;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AnimateEntityPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import org.apache.logging.log4j.core.Core;
 import org.jetbrains.annotations.NotNull;
@@ -104,6 +106,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                         ), 5, 1),
                         new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, 40, true, 30), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
+                                entity -> !entity.namedTag.getBoolean("CannotHunt"),
                                 any(
                                         entity -> getMemoryStorage().get(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME) == 0,
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME, 6000)
@@ -160,13 +163,15 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
         this.setMaxHealth(16);
         this.diffHandDamage = new float[]{3f, 5f, 7f};
         super.initEntity();
-        setItemInHand(Item.get(Item.GOLDEN_SWORD));
+        if(!isBaby()) setItemInHand(Item.get(Item.GOLDEN_SWORD));
     }
 
     @Override
     public boolean onUpdate(int currentTick) {
         if(currentTick%20 == 0) {
-            pickupItems(this);
+            if(getLevel().getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
+                pickupItems(this);
+            }
         }
         return super.onUpdate(currentTick);
     }
@@ -304,6 +309,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
             super.onStart(entity);
             entity.setDataProperty(EntityDataTypes.TARGET_EID, entity.getMemoryStorage().get(memory).getId());
             entity.setDataFlag(EntityFlag.ANGRY);
+            entity.level.addLevelSoundEvent(entity, LevelSoundEventPacket.SOUND_ANGRY, -1, Entity.PIGLIN, false, false);
             Arrays.stream(entity.level.getEntities()).filter(entity1 -> entity1 instanceof EntityPiglin && entity1.distance(entity) < 16 && ((EntityPiglin) entity1).getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)).forEach(entity1 -> ((EntityPiglin) entity1).getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET)));
             if(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof EntityHoglin) {
                 entity.getMemoryStorage().put(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME, entity.getLevel().getTick());
