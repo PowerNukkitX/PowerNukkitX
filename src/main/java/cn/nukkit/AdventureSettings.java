@@ -255,7 +255,8 @@ public class AdventureSettings implements Cloneable {
         OPERATOR(PlayerAbility.OPERATOR_COMMANDS, false),
         TELEPORT(PlayerAbility.TELEPORT, false),
         BUILD(PlayerAbility.BUILD, true),
-        PRIVILEGED_BUILDER(PlayerAbility.PRIVILEGED_BUILDER, false);
+        PRIVILEGED_BUILDER(PlayerAbility.PRIVILEGED_BUILDER, false),
+        VERTICAL_FLY_SPEED(PlayerAbility.VERTICAL_FLY_SPEED, false);
 
         private final PlayerAbility ability;
         private final boolean defaultValue;

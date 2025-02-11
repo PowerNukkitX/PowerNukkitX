@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.Player;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.AbilityLayer;
 import cn.nukkit.network.protocol.types.CommandPermission;
@@ -38,7 +39,8 @@ public class UpdateAbilitiesPacket extends DataPacket {
             PlayerAbility.MUTED,
             PlayerAbility.WORLD_BUILDER,
             PlayerAbility.NO_CLIP,
-            PlayerAbility.PRIVILEGED_BUILDER
+            PlayerAbility.PRIVILEGED_BUILDER,
+            PlayerAbility.VERTICAL_FLY_SPEED
     };
     public static final EnumMap<PlayerAbility, Integer> FLAGS_TO_BITS = new EnumMap<>(PlayerAbility.class);
 
