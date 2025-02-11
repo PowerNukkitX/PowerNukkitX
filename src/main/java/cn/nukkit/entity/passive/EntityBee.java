@@ -21,7 +21,7 @@ import cn.nukkit.entity.ai.executor.SpaceRandomRoamExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.NearestBlockSensor;
+import cn.nukkit.entity.ai.sensor.MemorizedBlockSensor;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -66,7 +66,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                         new Behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
                 Set.of(
-                        new NearestBlockSensor(20, 5, 20)
+                        new MemorizedBlockSensor(20, 5, 20)
                 ),
                 Set.of(new SpaceMoveController(), new LookController(true, true), new LiftController()),
                 new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this),

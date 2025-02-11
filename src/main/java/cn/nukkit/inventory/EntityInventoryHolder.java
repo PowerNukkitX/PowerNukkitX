@@ -69,29 +69,34 @@ public interface EntityInventoryHolder extends InventoryHolder {
     default boolean setItemInOffhand(Item item, boolean send) {
         return this.getEquipmentInventory().setItemInOffhand(item, send);
     }
-    
+
     default boolean equip(Item item) {
         if(item.isHelmet()) {
-            if(this.getHelmet().isNull()) {
+            if(item.getTier() > getHelmet().getTier()) {
+                this.getInventory().addItem(getHelmet());
                 this.setHelmet(item);
                 return true;
             }
         } else if(item.isChestplate()) {
-            if(this.getHelmet().isNull()) {
-                this.setHelmet(item);
+            if(item.getTier() > getChestplate().getTier()) {
+                this.getInventory().addItem(getChestplate());
+                this.setChestplate(item);
                 return true;
             }
         } else if(item.isLeggings()) {
-            if(this.getLeggings().isNull()) {
+            if(item.getTier() > getLeggings().getTier()) {
+                this.getInventory().addItem(getLeggings());
                 this.setLeggings(item);
                 return true;
             }
         } else if(item.isBoots()) {
-            if(this.getBoots().isNull()) {
+            if(item.getTier() > getBoots().getTier()) {
+                this.getInventory().addItem(getBoots());
                 this.setBoots(item);
                 return true;
             }
-        } else if(this.getItemInHand().isNull()) {
+        } else if(item.getTier() > getItemInHand().getTier()) {
+            this.getInventory().addItem(getItemInHand());
             this.setItemInHand(item);
             return true;
         }

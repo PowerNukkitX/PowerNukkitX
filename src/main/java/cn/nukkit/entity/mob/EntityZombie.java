@@ -23,7 +23,7 @@ import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.NearestBlockSensor;
+import cn.nukkit.entity.ai.sensor.MemorizedBlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.item.EntityItem;
@@ -76,7 +76,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
                 Set.of(
                         new NearestPlayerSensor(40, 0, 0),
                         new NearestEntitySensor(EntityGolem.class, CoreMemoryTypes.NEAREST_GOLEM, 42, 0),
-                        new NearestBlockSensor(11, 5, 20)
+                        new MemorizedBlockSensor(11, 5, 20)
                 ),
                 Set.of(new WalkController(), new LookController(true, true)),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
@@ -162,7 +162,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
 
     public static void pickupItems(Entity entity) {
         if(entity instanceof EntityInventoryHolder holder) {
-            for(Entity i : entity.level.getCollidingEntities(entity.getBoundingBox())) {
+            for(Entity i : entity.level.getNearbyEntities(entity.getBoundingBox().grow(1, 0.5, 1))) {
                 if(i instanceof EntityItem entityItem) {
                     Item item = entityItem.getItem();
                     if(item.isArmor() || item.isTool()) {

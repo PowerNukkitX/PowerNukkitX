@@ -4345,6 +4345,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void refreshBlockEntity(int delay) {
         getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             for (var b : this.level.getBlockEntities().values()) {
+                if(b == null) continue;
                 if (b instanceof BlockEntitySpawnable blockEntitySpawnable) {
                     UpdateBlockPacket setAir = new UpdateBlockPacket();
                     setAir.blockRuntimeId = BlockAir.STATE.blockStateHash();

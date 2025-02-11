@@ -250,6 +250,11 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     }
 
     @Override
+    public Item[] getDrops() {
+        return getInventory().getContents().values().stream().filter(item -> !item.hasEnchantment(Enchantment.ID_VANISHING_CURSE)).toArray(Item[]::new);
+    }
+
+    @Override
     public Integer getExperienceDrops() {
         return 5;
     }
