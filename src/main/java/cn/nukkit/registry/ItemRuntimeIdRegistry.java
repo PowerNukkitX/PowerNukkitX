@@ -140,6 +140,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
     public void registerCustomRuntimeItem(RuntimeEntry entry) throws RegisterException {
         if (CUSTOM_REGISTRY.putIfAbsent(entry.identifier, entry) == null) {
             ID2NAME.put(entry.runtimeId(), entry.identifier);
+            ITEMDATA.add(new ItemData(entry.identifier, entry.runtimeId, 1, entry.isComponent));
         } else {
             throw new RegisterException("The item: " + entry.identifier + " runtime id has been registered!");
         }
