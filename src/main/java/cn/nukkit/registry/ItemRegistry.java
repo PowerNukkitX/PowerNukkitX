@@ -4,15 +4,18 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.*;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import me.sunlan.fastreflection.FastConstructor;
 import me.sunlan.fastreflection.FastMemberLoader;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +29,9 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Item>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final Map<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+
+    @Getter
+    private static CompoundTag itemComponents = new CompoundTag();
 
     @UnmodifiableView
     public Map<String, CustomItemDefinition> getCustomItemDefinition() {
@@ -549,6 +555,15 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(ZOMBIE_VILLAGER_SPAWN_EGG, ItemZombieVillagerSpawnEgg.class);
             registerBlockItem();
         } catch (RegisterException e) {
+            throw new RuntimeException(e);
+        }
+        loadItemComponents();
+    }
+
+    private void loadItemComponents() {
+        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("item_components.nbt")) {
+            itemComponents = NBTIO.readCompressed(stream);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

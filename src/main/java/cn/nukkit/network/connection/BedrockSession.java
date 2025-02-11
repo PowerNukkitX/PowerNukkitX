@@ -517,7 +517,7 @@ public class BedrockSession {
 
     public void syncCreativeContent() {
         var pk = new CreativeContentPacket();
-        pk.entries = Registries.CREATIVE.getCreativeItems();
+
         this.sendPacket(pk);
     }
 

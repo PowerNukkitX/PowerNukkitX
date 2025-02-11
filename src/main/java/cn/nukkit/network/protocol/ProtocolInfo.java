@@ -11,11 +11,11 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(766);
+    int CURRENT_PROTOCOL = dynamic(776);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.21.50");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.21.60");
 
-    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 21, 5, 0, 0);
+    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 21, 6, 0, 0);
 
     int BLOCK_STATE_VERSION_NO_REVISION = (MINECRAFT_SEMVERSION.major() << 24) | //major
             (MINECRAFT_SEMVERSION.minor() << 16) | //minor
@@ -201,7 +201,7 @@ public interface ProtocolInfo {
 
     int CORRECT_PLAYER_MOVE_PREDICTION_PACKET = 0xa1;
 
-    int ITEM_COMPONENT_PACKET = 0xa2;
+    int ITEM_REGISTRY_PACKET = 0xa2;
 
     int FILTER_TEXT_PACKET = 0xa3;
 
@@ -306,4 +306,8 @@ public interface ProtocolInfo {
     int MOVEMENT_EFFECT_PACKET = 318;
 
     int CAMERA_AIM_ASSIST_PRESETS_PACKET = 320;
+
+    int CLIENT_CAMERA_AIM_ASSIST_PACKET = 321;
+
+    int CLIENT_MOVEMENT_PREDICTION_SYNC_PACKET = 322;
 }

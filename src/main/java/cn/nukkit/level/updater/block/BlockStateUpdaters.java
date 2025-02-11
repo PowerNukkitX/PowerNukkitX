@@ -46,6 +46,7 @@ public class BlockStateUpdaters {
         updaters.add(BlockStateUpdater_1_21_20.INSTANCE);
         updaters.add(BlockStateUpdater_1_21_30.INSTANCE);
         updaters.add(BlockStateUpdater_1_21_40.INSTANCE);
+        updaters.add(BlockStateUpdater_1_21_60.INSTANCE);
 
         CompoundTagUpdaterContext context = new CompoundTagUpdaterContext();
         updaters.forEach(updater -> updater.registerUpdaters(context));

@@ -5,6 +5,7 @@ import cn.nukkit.network.protocol.types.camera.aimassist.CameraAimAssistCategori
 import cn.nukkit.network.protocol.types.camera.aimassist.CameraAimAssistCategory;
 import cn.nukkit.network.protocol.types.camera.aimassist.CameraAimAssistCategoryPriorities;
 import cn.nukkit.network.protocol.types.camera.aimassist.CameraAimAssistPreset;
+import cn.nukkit.network.protocol.types.camera.aimassist.CameraAimAssistPresetsPacketOperation;
 import cn.nukkit.utils.OptionalValue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -20,16 +21,20 @@ public class CameraAimAssistPresetsPacket extends DataPacket {
     private final List<CameraAimAssistCategories> categories = new ObjectArrayList<>();
     private final List<CameraAimAssistPreset> presets = new ObjectArrayList<>();
 
+    private CameraAimAssistPresetsPacketOperation cameraAimAssistPresetsPacketOperation;
+
     @Override
     public void decode(HandleByteBuf byteBuf) {
         this.categories.addAll(List.of(byteBuf.readArray(CameraAimAssistCategories.class, this::readCategories)));
         this.presets.addAll(List.of(byteBuf.readArray(CameraAimAssistPreset.class, this::readPreset)));
+        this.cameraAimAssistPresetsPacketOperation = CameraAimAssistPresetsPacketOperation.VALUES[byteBuf.readByte()];
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeArray(categories, this::writeCategories);
         byteBuf.writeArray(presets, this::writeCameraAimAssist);
+        byteBuf.writeByte(cameraAimAssistPresetsPacketOperation.ordinal());
     }
 
     @Override

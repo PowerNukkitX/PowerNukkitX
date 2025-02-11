@@ -1,21 +1,27 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockPlayerHead;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
+import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
+import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemGroup;
 import com.google.gson.Gson;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteOrder;
 import java.util.Base64;
@@ -34,20 +40,38 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     static final Int2ObjectOpenHashMap<Item> INTERNAL_DIFF_ITEM = new Int2ObjectOpenHashMap<>();
     static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
+    static final ObjectLinkedOpenHashSet<CreativeItemGroup> GROUPS = new ObjectLinkedOpenHashSet<>();
+    static final ObjectLinkedOpenHashSet<CreativeItemData> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
+
     @Override
     public void init() {
         if (isLoad.getAndSet(true))
             return;
+
         try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.json")) {
             Map data = new Gson().fromJson(new InputStreamReader(input), Map.class);
+            List<Map<String, Object>> groups = (List<Map<String, Object>>) data.get("groups");
+            for (int i = 0; i < groups.size(); i++) {
+                Map<String, Object> tag = groups.get(i);
+                int creativeCategory = ((Number) tag.getOrDefault("creative_category", 0)).intValue();
+                String name = (String) tag.get("name");
+                Map iconMap = (Map) tag.get("icon");
+                Item icon = Item.get((String) iconMap.get("id"));
+                GROUPS.add(new CreativeItemGroup(CreativeItemCategory.VALUES[creativeCategory], name, icon));
+            }
+
             List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
             for (int i = 0; i < items.size(); i++) {
                 Map<String, Object> tag = items.get(i);
                 int damage = ((Number) tag.getOrDefault("damage", 0)).intValue();
-                var nbt = tag.containsKey("nbt_b64") ? Base64.getDecoder().decode(tag.get("nbt_b64").toString()) : EmptyArrays.EMPTY_BYTES;
+                int groupIndex = ((Number) tag.getOrDefault("group_index", -1)).intValue();
+                byte[] nbt = tag.containsKey("nbt_b64") ? Base64.getDecoder().decode(tag.get("nbt_b64").toString()) : EmptyArrays.EMPTY_BYTES;
                 String name = tag.get("id").toString();
                 Item item = Item.get(name, damage, 1, nbt, false);
                 item.setCompoundTag(nbt);
+                if(ItemRegistry.getItemComponents().containsCompound(name)) {
+                    item.setNamedTag(ItemRegistry.getItemComponents().getCompound(name).getCompound("components"));
+                }
                 if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
                     item = Item.AIR;
                     log.warn("load creative item {} damage {} is null", name, damage);
@@ -72,6 +96,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                     INTERNAL_DIFF_ITEM.put(i, item.clone());
                     item.setBlockUnsafe(null);
                 }
+                ITEM_DATA.add(new CreativeItemData(item, groupIndex));
                 register(i, item);
             }
         } catch (IOException | RegisterException e) {
@@ -151,6 +176,13 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         }
     }
 
+    public ObjectLinkedOpenHashSet<CreativeItemGroup> getCreativeGroups() {
+        return GROUPS;
+    }
+
+    public ObjectLinkedOpenHashSet<CreativeItemData> getCreativeItemData() {
+        return ITEM_DATA;
+    }
     /**
      * 检测这个物品是否存在于创造背包
      * <p>

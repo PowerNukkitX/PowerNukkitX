@@ -253,7 +253,6 @@ public class StartGamePacket extends DataPacket {
             log.error("Error while encoding NBT data of BlockPropertyData", e);
         }
 
-        byteBuf.writeBytes(Registries.ITEM_RUNTIMEID.getItemPalette());
         byteBuf.writeString(this.multiplayerCorrelationId);
         byteBuf.writeBoolean(this.isInventoryServerAuthoritative);
         byteBuf.writeString(vanillaVersion); // Server Engine

@@ -1,18 +1,21 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.item.Item;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
+import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
+import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemGroup;
+import cn.nukkit.registry.Registries;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.NoArgsConstructor;import lombok.*;
+
+import java.util.List;
 
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 public class CreativeContentPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.CREATIVE_CONTENT_PACKET;
 
-
-    public Item[] entries = Item.EMPTY_ARRAY;
+    private final List<CreativeItemGroup> groups = new ObjectArrayList<>();
+    private final List<CreativeItemData> contents = new ObjectArrayList<>();
 
     @Override
     public int pid() {
@@ -26,11 +29,20 @@ public class CreativeContentPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeUnsignedVarInt(entries.length);
-        for (int i = 0; i < entries.length; i++) {
-            byteBuf.writeUnsignedVarInt(i + 1);//netId
-            byteBuf.writeSlot(entries[i], true);
-        }
+        byteBuf.writeArray(Registries.CREATIVE.getCreativeGroups(), this::writeGroup);
+        byteBuf.writeArray(Registries.CREATIVE.getCreativeItemData(), this::writeItem);
+    }
+
+    private void writeGroup(HandleByteBuf byteBuf, CreativeItemGroup group) {
+        byteBuf.writeIntLE(group.getCategory().ordinal());
+        byteBuf.writeString(group.getName());
+        byteBuf.writeSlot(group.getIcon(), true);
+    }
+
+    private void writeItem(HandleByteBuf byteBuf, CreativeItemData data) {
+        byteBuf.writeUnsignedVarInt(Registries.CREATIVE.getCreativeItemIndex(data.getItem()));
+        byteBuf.writeSlot(data.getItem(), true);
+        byteBuf.writeUnsignedVarInt(data.getGroupId());
     }
 
     public void handle(PacketHandler handler) {

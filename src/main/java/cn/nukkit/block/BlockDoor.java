@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
@@ -386,12 +387,12 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
 
     @Override
     public BlockFace getBlockFace() {
-        return DOOR_DIRECTION.inverse().get(getPropertyValue(CommonBlockProperties.DIRECTION));
+        return DOOR_DIRECTION.inverse().get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION).ordinal());
     }
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(CommonBlockProperties.DIRECTION, DOOR_DIRECTION.get(face));
+        setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, MinecraftCardinalDirection.values()[DOOR_DIRECTION.get(face)]);
     }
 
     @Override

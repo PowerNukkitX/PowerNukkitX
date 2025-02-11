@@ -202,7 +202,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.UPDATE_PLAYER_GAME_TYPE_PACKET, UpdatePlayerGameTypePacket.class);
         this.register0(ProtocolInfo.FILTER_TEXT_PACKET, FilterTextPacket.class);
         this.register0(ProtocolInfo.TOAST_REQUEST_PACKET, ToastRequestPacket.class);
-        this.register0(ProtocolInfo.ITEM_COMPONENT_PACKET, ItemComponentPacket.class);
+        this.register0(ProtocolInfo.ITEM_REGISTRY_PACKET, ItemRegistryPacket.class);
         this.register0(ProtocolInfo.ADD_VOLUME_ENTITY_PACKET, AddVolumeEntityPacket.class);
         this.register0(ProtocolInfo.REMOVE_VOLUME_ENTITY_PACKET, RemoveVolumeEntityPacket.class);
         this.register0(ProtocolInfo.SYNC_ENTITY_PROPERTY_PACKET, SyncEntityPropertyPacket.class);
@@ -258,6 +258,8 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.SERVERBOUND_LOADING_SCREEN_PACKET, ServerboundLoadingScreenPacket.class);
         this.register0(ProtocolInfo.SERVERBOUND_DIAGNOSTICS_PACKET, ServerboundDiagnosticsPacket.class);
         this.register0(ProtocolInfo.CAMERA_AIM_ASSIST_PRESETS_PACKET, CameraAimAssistPresetsPacket.class);
+        this.register0(ProtocolInfo.CLIENT_CAMERA_AIM_ASSIST_PACKET, ClientCameraAimAssistPacket.class);
+
         this.PACKET_POOL.trim();
     }
 }

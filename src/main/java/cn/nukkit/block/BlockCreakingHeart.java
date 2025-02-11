@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.CreakingHeartState;
 import cn.nukkit.blockentity.BlockEntityCreakingHeart;
 import cn.nukkit.blockentity.BlockEntityID;
 import cn.nukkit.entity.mob.EntityCreaking;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent, BlockEntityHolder<BlockEntityCreakingHeart> {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(CREAKING_HEART, CommonBlockProperties.PILLAR_AXIS, CommonBlockProperties.ACTIVE, CommonBlockProperties.NATURAL);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CREAKING_HEART, CommonBlockProperties.NATURAL, CommonBlockProperties.CREAKING_HEART_STATE, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -62,25 +63,29 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
 
     protected void testAxis() {
         if(getBlockEntity().getLinkedCreaking() == null) {
-            boolean active = true;
+            CreakingHeartState state = CreakingHeartState.DORMANT;
             for (BlockFace face : BlockFace.values()) {
                 if (getPillarAxis().test(face)) {
                     Block block = getSide(face);
                     if (block instanceof BlockPaleOakLog log) {
-                        if (log.getPillarAxis() != getPillarAxis()) active = false;
-                    } else active = false;
+                        if (log.getPillarAxis() != getPillarAxis()) state = CreakingHeartState.UPROOTED;
+                    } else state = CreakingHeartState.UPROOTED;
                 }
             }
-            boolean property = isActive();
-            if (property != active) {
-                setPropertyValue(CommonBlockProperties.ACTIVE, active);
+
+            if (state != getState()) {
+                setPropertyValue(CommonBlockProperties.CREAKING_HEART_STATE, state);
                 getLevel().setBlock(this, this);
             }
         }
     }
 
+    public CreakingHeartState getState() {
+        return getPropertyValue(CommonBlockProperties.CREAKING_HEART_STATE);
+    }
+
     public boolean isActive() {
-        return getPropertyValue(CommonBlockProperties.ACTIVE);
+        return getPropertyValue(CommonBlockProperties.CREAKING_HEART_STATE) != CreakingHeartState.UPROOTED;
     }
 
     public BlockFace.Axis getPillarAxis() {
@@ -93,7 +98,7 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
 
     @Override
     public int getLightLevel() {
-        return getBlockState().getPropertyValue(CommonBlockProperties.ACTIVE) ? 15 : 0;
+        return isActive() ? 15 : 0;
     }
 
     @Override

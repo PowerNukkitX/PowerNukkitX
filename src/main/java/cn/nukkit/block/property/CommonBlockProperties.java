@@ -92,6 +92,8 @@ public interface CommonBlockProperties {
 
     BooleanPropertyType CRAFTING = BooleanPropertyType.of("crafting", false);
 
+    EnumPropertyType<CreakingHeartState> CREAKING_HEART_STATE = EnumPropertyType.of("creaking_heart_state", CreakingHeartState.class, CreakingHeartState.values()[0]);
+
     EnumPropertyType<Damage> DAMAGE = EnumPropertyType.of("damage", Damage.class, Damage.values()[0]);
 
     BooleanPropertyType DEAD_BIT = BooleanPropertyType.of("dead_bit", false);

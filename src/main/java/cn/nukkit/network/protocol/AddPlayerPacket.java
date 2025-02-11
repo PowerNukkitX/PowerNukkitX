@@ -65,7 +65,7 @@ public class AddPlayerPacket extends DataPacket {
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeVector3f(this.speedX, this.speedY, this.speedZ);
         byteBuf.writeFloatLE(this.pitch);
-        byteBuf.writeFloatLE(this.yaw); //TODO headrot
+        byteBuf.writeFloatLE(this.yaw);
         byteBuf.writeFloatLE(this.yaw);
         byteBuf.writeSlot(this.item);
         byteBuf.writeVarInt(this.gameType);
@@ -94,6 +94,7 @@ public class AddPlayerPacket extends DataPacket {
         byteBuf.writeIntLE(262143); // abilitiesSet - all abilities
         byteBuf.writeIntLE(63); // abilityValues - survival abilities
         byteBuf.writeFloatLE(0.1f); // flySpeed
+        byteBuf.writeFloatLE(0.1f); // vertical fly speed
         byteBuf.writeFloatLE(0.05f); // walkSpeed
         byteBuf.writeUnsignedVarInt(0); //TODO: Entity links
         byteBuf.writeString(deviceId);

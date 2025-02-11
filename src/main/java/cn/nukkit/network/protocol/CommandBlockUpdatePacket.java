@@ -22,6 +22,7 @@ public class CommandBlockUpdatePacket extends DataPacket {
     public String command;
     public String lastOutput;
     public String name;
+    private String filteredName;
     public boolean shouldTrackOutput;
 
 
@@ -52,6 +53,7 @@ public class CommandBlockUpdatePacket extends DataPacket {
         this.command = byteBuf.readString();
         this.lastOutput = byteBuf.readString();
         this.name = byteBuf.readString();
+        this.filteredName = byteBuf.readString();
         this.shouldTrackOutput = byteBuf.readBoolean();
         this.tickDelay = byteBuf.readIntLE();
         this.executingOnFirstTick = byteBuf.readBoolean();
@@ -72,6 +74,7 @@ public class CommandBlockUpdatePacket extends DataPacket {
         byteBuf.writeString(this.command);
         byteBuf.writeString(this.lastOutput);
         byteBuf.writeString(this.name);
+        byteBuf.writeString(this.filteredName);
         byteBuf.writeBoolean(this.shouldTrackOutput);
         byteBuf.writeIntLE(this.tickDelay);
         byteBuf.writeBoolean(this.executingOnFirstTick);

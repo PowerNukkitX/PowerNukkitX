@@ -22,13 +22,13 @@ public class CraftCreativeActionProcessor implements ItemStackRequestActionProce
 
     @Override
     public ActionResponse handle(CraftCreativeAction action, Player player, ItemStackRequestContext context) {
-        var item = Registries.CREATIVE.get(action.getCreativeItemNetworkId() - 1);
+        var item = Registries.CREATIVE.get(action.getCreativeItemNetworkId());
         if (!player.isCreative()) {
             log.warn("This player {} is get createitems in non-creative mode, which may be a hacker!",player.getName());
             return context.error();
         }
         if (item == null) {
-            log.warn("Unknown creative item network id: {}", action.getCreativeItemNetworkId() - 1);
+            log.warn("Unknown creative item network id: {}", action.getCreativeItemNetworkId());
             return context.error();
         }
         item = item.clone().autoAssignStackNetworkId();

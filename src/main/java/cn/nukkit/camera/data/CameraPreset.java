@@ -107,6 +107,10 @@ public final class CameraPreset {
     @Nullable
     private final Float radius;
     @Nullable
+    private final Float yawLimitMin;
+    @Nullable
+    private final Float yawLimitMax;
+    @Nullable
     private final CameraAudioListener listener;
     @NotNull
     private final OptionalValue<Boolean> playEffect;
@@ -135,6 +139,8 @@ public final class CameraPreset {
                 null,
                 null,
                 null,
+                null,
+                null,
                 listener,
                 playEffect == null ? null : playEffect.orElseGet(null),
                 null,
@@ -157,6 +163,8 @@ public final class CameraPreset {
             @Nullable Vector2f viewOffset,
             @Nullable Vector3f entityOffset,
             @Nullable Float radius,
+            @Nullable Float yawLimitMin,
+            @Nullable Float yawLimitMax,
             @Nullable CameraAudioListener listener,
             @Nullable Boolean playEffect,
             @Nullable Vector2f horizontalRotationLimit,
@@ -176,6 +184,8 @@ public final class CameraPreset {
         this.viewOffset = viewOffset;
         this.entityOffset = entityOffset;
         this.radius = radius;
+        this.yawLimitMin = yawLimitMin;
+        this.yawLimitMax = yawLimitMax;
         this.listener = listener;
         this.playEffect = OptionalValue.ofNullable(playEffect);
         this.horizontalRotationLimit = horizontalRotationLimit;

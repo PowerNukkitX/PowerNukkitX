@@ -1,21 +1,22 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.Server;
-import cn.nukkit.block.BlockID;
+import cn.nukkit.item.Item;
 import cn.nukkit.utils.BinaryStream;
-import cn.nukkit.utils.Config;
-import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -24,15 +25,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer> {
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+
     private static final Object2IntOpenHashMap<String> REGISTRY = new Object2IntOpenHashMap<>();
-    static final Object2ObjectOpenHashMap<String, RuntimeEntry> CUSTOM_REGISTRY = new Object2ObjectOpenHashMap<>();
+    private static final Object2ObjectOpenHashMap<String, RuntimeEntry> CUSTOM_REGISTRY = new Object2ObjectOpenHashMap<>();
 
     static {
         REGISTRY.defaultReturnValue(Integer.MAX_VALUE);
     }
 
-    static final Int2ObjectOpenHashMap<String> ID2NAME = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectOpenHashMap<String> ID2NAME = new Int2ObjectOpenHashMap<>();
+    @Getter
+    private static final ObjectOpenHashSet<ItemData> ITEMDATA = new ObjectOpenHashSet<>();
+
     private static byte[] itemPalette;
+
 
     public byte[] getItemPalette() {
         return itemPalette;
@@ -68,18 +74,13 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
         if (isLoad.getAndSet(true))
             return;
 
-        Config data = new Config(Config.JSON);
-
+        // We use ProxyPass data since protocol 776 since we need item version and componentBased now.
         try (InputStream stream = ItemRegistry.class.getClassLoader().getResourceAsStream("runtime_item_states.json")){
-            assert stream != null;
+            JsonArray items = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonArray();
 
-            data.load(stream);
-
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> items = (List<Map<String, Object>>) data.getList("items");
-
-            for (var item : items) {
-                register0(item.get("name").toString(), ((Number) item.get("id")).intValue());
+            for (JsonElement element : items) {
+                JsonObject item = element.getAsJsonObject();
+                register1(new ItemData(item.get("name").getAsString(), item.get("id").getAsInt(), item.get("version").getAsInt(), item.get("componentBased").getAsBoolean()));
             }
             trim();
 
@@ -150,6 +151,16 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
         }
     }
 
+    public void register1(ItemData entry) {
+        if(!ITEMDATA.contains(entry)) {
+            ITEMDATA.add(entry);
+            register0(entry.identifier, entry.runtimeId);
+        }
+    }
+
     public record RuntimeEntry(String identifier, int runtimeId, boolean isComponent) {
+    }
+
+    public record ItemData(String identifier, int runtimeId, int version, boolean componentBased) {
     }
 }
