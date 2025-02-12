@@ -83,10 +83,10 @@ public class GamemodeCommand extends VanillaCommand {
         for (Player target : players) {
             target.setGamemode(gameMode);
             if (target.equals(sender.asPlayer())) {
-                log.addSuccess("commands.gamemode.success.self", Server.getGamemodeString(gameMode));
+                log.addSuccess("commands.gamemode.success.self", Server.getGamemodeString(gameMode, true));
             } else {
-                log.outputObjectWhisper(target, "gameMode.changed", Server.getGamemodeString(gameMode));
-                log.addSuccess("commands.gamemode.success.other", Server.getGamemodeString(gameMode), target.getName());
+                log.outputObjectWhisper(target, "gameMode.changed", Server.getGamemodeString(gameMode, true));
+                log.addSuccess("commands.gamemode.success.other", Server.getGamemodeString(gameMode, true), target.getName());
             }
         }
         log.successCount(players.size()).output(true);

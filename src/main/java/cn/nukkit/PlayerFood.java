@@ -8,22 +8,37 @@ import cn.nukkit.event.player.PlayerFoodLevelChangeEvent;
 import cn.nukkit.item.ItemFood;
 
 /**
- * @author funcraft
+ * This class manages the player's food level, saturation, and exhaustion.
+ * It handles food consumption, exhaustion, and the effects of hunger on the player.
+ *
  * @since 2015/11/11
  */
 public class PlayerFood {
 
     private final Player player;
 
+    // Current food level of the player
     private int food;
+    // Maximum food level the player can have
     private final int maxFood;
+    // Current saturation level of the player
     private float saturation;
+    // Current exhaustion level of the player
     private double exhaustion;
 
+    // Timer for food-related ticks
     private int foodTickTimer;
 
+    // Indicates whether the food system is enabled
     private boolean enabled = true;
 
+    /**
+     * Constructs a PlayerFood instance for the specified player with initial food and saturation levels.
+     *
+     * @param player The player associated with this food manager.
+     * @param food Initial food level.
+     * @param saturation Initial saturation level.
+     */
     public PlayerFood(Player player, int food, float saturation) {
         this.player = player;
         this.food = food;
@@ -39,6 +54,12 @@ public class PlayerFood {
         return food;
     }
 
+    /**
+     * Sets the player's food and saturation levels.
+     *
+     * @param food The new food level.
+     * @param saturation The new saturation level.
+     */
     public void setFood(int food, float saturation) {
         food = Math.max(0, Math.min(food, 20));
 
@@ -68,6 +89,11 @@ public class PlayerFood {
         return saturation;
     }
 
+    /**
+     * Sets the player's saturation level.
+     *
+     * @param saturation The new saturation level.
+     */
     public void setSaturation(float saturation) {
         saturation = Math.max(0, Math.min(saturation, food));
 
@@ -79,6 +105,11 @@ public class PlayerFood {
         }
     }
 
+    /**
+     * Adds food and saturation to the player's current levels.
+     *
+     * @param food The food item to be consumed.
+     */
     public void addFood(ItemFood food) {
         this.addFood(food.getFoodRestore(), food.getSaturationRestore());
     }
@@ -87,14 +118,28 @@ public class PlayerFood {
         this.setFood(food, -1);
     }
 
+    /**
+     * Adds the specified amount of food and saturation to the player's current levels.
+     *
+     * @param food The amount of food to add.
+     * @param saturation The amount of saturation to add.
+     */
     public void addFood(int food, float saturation) {
         this.setFood(this.food + food, this.saturation + saturation);
     }
 
+    /**
+     * Sends the current food level to the player.
+     */
     public void sendFood() {
         this.sendFood(this.food);
     }
 
+    /**
+     * Sends the specified food level to the player.
+     *
+     * @param food The food level to send.
+     */
     public void sendFood(int food) {
         if (this.player.spawned) {
             Attribute attribute = player.getAttributes().computeIfAbsent(Attribute.FOOD, Attribute::getAttribute);
@@ -113,6 +158,11 @@ public class PlayerFood {
         return exhaustion;
     }
 
+    /**
+     * Sets the player's exhaustion level.
+     *
+     * @param exhaustion The new exhaustion level.
+     */
     public void setExhaustion(float exhaustion) {
         while (exhaustion >= 4.0f) {
             exhaustion -= 4.0f;
@@ -131,6 +181,11 @@ public class PlayerFood {
         this.exhaustion = exhaustion;
     }
 
+    /**
+     * Increases the player's exhaustion by the specified amount.
+     *
+     * @param amount The amount of exhaustion to add.
+     */
     public void exhaust(double amount) {
         if (!this.isEnabled() || Server.getInstance().getDifficulty() == 0 || player.hasEffect(EffectType.SATURATION)) {
             return;
@@ -161,6 +216,9 @@ public class PlayerFood {
         return foodTickTimer;
     }
 
+    /**
+     * Resets the player's food, saturation, and exhaustion levels to their defaults.
+     */
     public void reset() {
         this.food = 20;
         this.saturation = 20;
@@ -169,6 +227,11 @@ public class PlayerFood {
         this.sendFood();
     }
 
+    /**
+     * Updates the player's food and health based on the current tick difference.
+     *
+     * @param tickDiff The difference in ticks since the last update.
+     */
     public void tick(int tickDiff) {
         if (!player.isAlive() || !this.isEnabled()) {
             return;

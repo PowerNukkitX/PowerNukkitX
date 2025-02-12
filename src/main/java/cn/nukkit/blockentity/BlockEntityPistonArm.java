@@ -25,9 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author CreeperFace
+ * Represents a piston arm block entity.
+ * Handles the movement and state of the piston arm.
+ * 
+ * @autor CreeperFace
  */
-
 public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     public static final float MOVE_STEP = Utils.dynamic(0.25f);
@@ -45,13 +47,21 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     public float progress;
     public float lastProgress = 1;
 
-
     public boolean finished = true;
 
+    /**
+     * Constructor for BlockEntityPistonArm.
+     * 
+     * @param chunk The chunk of the block entity.
+     * @param nbt The compound tag.
+     */
     public BlockEntityPistonArm(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
+    /**
+     * Moves entities that collide with the piston arm.
+     */
     protected void moveCollidedEntities() {
         if (this.closed || this.level == null) {
             return;
@@ -67,18 +77,21 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 this.x + (pushDirection.getXOffset() * progress),
                 this.y + (pushDirection.getYOffset() * progress),
                 this.z + (pushDirection.getZOffset() * progress)
-                //带动站在移动方块上的实体
         ).addCoord(0, pushDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);
         for (var entity : this.level.getCollidingEntities(bb))
             moveEntity(entity, pushDirection);
     }
 
+    /**
+     * Moves an entity in the specified direction.
+     * 
+     * @param entity The entity to move.
+     * @param moveDirection The direction to move the entity.
+     */
     void moveEntity(Entity entity, BlockFace moveDirection) {
-        //不需要给予向下的力
         if (moveDirection == BlockFace.DOWN)
             return;
         var diff = Math.abs(this.progress - this.lastProgress);
-        //玩家客户端会自动处理移动
         if (diff == 0 || !entity.canBePushed() || entity instanceof Player)
             return;
         EntityMoveByPistonEvent event = new EntityMoveByPistonEvent(entity, entity.getPosition());
@@ -88,7 +101,6 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         entity.onPushByPiston(this);
         if (entity.closed)
             return;
-        //需要抵消重力
         entity.move(
                 diff * moveDirection.getXOffset(),
                 diff * moveDirection.getYOffset() * (moveDirection == BlockFace.UP ? 2 : 1),
@@ -101,28 +113,28 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
      * This method initializes the state prior to movement, including setting whether the structure is extending or contracting,
      * progress, state, and updates relevant moving data.
      *
-     * @param extending      A boolean indicating whether is extending
+     * @param extending A boolean indicating whether is extending.
      * @param attachedBlocks A list of BlockVector3 representing the blocks attached to the moving block.
      */
     public void preMove(boolean extending, List<BlockVector3> attachedBlocks) {
-        this.finished = false; // Initialize movement as unfinished
-        this.extending = extending; // Set the extending status
-        this.lastProgress = this.progress = extending ? 0 : 1; // Set progress: 0 for extending, 1 for contracting
-        this.state = this.newState = (byte) (extending ? 1 : 3); // Set current and new states: 1 for extending, 3 for contracting
-        this.attachedBlocks = attachedBlocks; // Set the attached blocks list
-        this.movable = false; // Set the structure as immovable
-        // Update moving data immediately to ensure timeliness
+        this.finished = false;
+        this.extending = extending;
+        this.lastProgress = this.progress = extending ? 0 : 1;
+        this.state = this.newState = (byte) (extending ? 1 : 3);
+        this.attachedBlocks = attachedBlocks;
+        this.movable = false;
         updateMovingData(true);
     }
 
-
-    //需要先调用preMove
+    /**
+     * Moves the piston arm.
+     * This method should be called after preMove.
+     */
     public void move() {
         if (this.closed || this.level == null) {
             return;
         }
 
-        //开始推动
         this.lastProgress = this.extending ? 0 : 1;
         this.moveCollidedEntities();
         this.scheduleUpdate();
@@ -130,12 +142,12 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     /**
      * The piston extension process lasts 2gt.
+     * 
+     * @return True if updated, false otherwise.
      */
     @Override
     public boolean onUpdate() {
-        //此bool标记下一gt是否需要继续更新
         var hasUpdate = true;
-        //推动过程
         if (this.extending) {
             this.progress = Math.min(1, this.progress + MOVE_STEP);
             this.lastProgress = Math.min(1, this.lastProgress + MOVE_STEP);
@@ -145,7 +157,6 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         }
         moveCollidedEntities();
         if (this.progress == this.lastProgress) {
-            //结束推动
             this.state = this.newState = (byte) (extending ? 2 : 0);
             var pushDirection = this.extending ? facing : facing.getOpposite();
             var redstoneUpdateList = new ArrayList<BlockVector3>();
@@ -158,7 +169,6 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                     var moved = movingBlockBlockEntity.getMovingBlock();
                     moved.position(movingBlock);
                     this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
-                    //普通方块更新
                     this.level.setBlock(movingBlock, moved, true, true);
                     var movedBlockEntity = movingBlockBlockEntity.getMovingBlockEntityCompound();
                     if (movedBlockEntity != null) {
@@ -167,27 +177,21 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                         movedBlockEntity.putInt("z", movingBlock.getFloorZ());
                         BlockEntity.createBlockEntity(movedBlockEntity.getString("id"), this.level.getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()), movedBlockEntity);
                     }
-                    //活塞更新
                     moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
                 }
             }
             for (var update : redstoneUpdateList) {
-                //红石更新
                 RedstoneComponent.updateAllAroundRedstone(new Position(update.x, update.y, update.z, this.level));
             }
             var pos = getSide(facing);
             if (!extending) {
-                //未伸出的活塞可以被推动
                 this.movable = true;
                 if (this.level.getBlock(pos) instanceof BlockPistonArmCollision) {
                     this.level.setBlock(pos, 1, Block.get(Block.AIR), true, false);
-                    //方块更新
                     this.level.setBlock(pos, Block.get(Block.AIR), true);
                 }
             }
-            //对和活塞直接接触的观察者进行更新
             this.level.updateAroundObserver(this);
-            //下一计划刻再自检一遍，防止出错
             this.level.scheduleUpdate(this.getLevelBlock(), 1);
             this.attachedBlocks.clear();
             this.finished = true;
@@ -197,6 +201,9 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         return super.onUpdate() || hasUpdate;
     }
 
+    /**
+     * Loads the NBT data for the block entity.
+     */
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -233,6 +240,9 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         } else namedTag.putList("AttachedBlocks", new ListTag<>());
     }
 
+    /**
+     * Saves the NBT data for the block entity.
+     */
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putByte("State", this.state);
@@ -246,12 +256,22 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.namedTag.putBoolean("Extending", this.extending);
     }
 
+    /**
+     * Checks if the block entity is valid.
+     * 
+     * @return True if valid, false otherwise.
+     */
     @Override
     public boolean isBlockEntityValid() {
         var blockId = getBlock().getId();
         return blockId.equals(BlockID.PISTON) || blockId.equals(BlockID.STICKY_PISTON);
     }
 
+    /**
+     * Returns the spawn compound tag for the block entity.
+     * 
+     * @return The spawn compound tag.
+     */
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
                 .putBoolean("isMovable", this.movable)
@@ -264,6 +284,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 .putByte("NewState", this.newState);
     }
 
+    /**
+     * Returns the list of attached blocks.
+     * 
+     * @return The list of attached blocks.
+     */
     protected ListTag<IntTag> getAttachedBlocks() {
         var attachedBlocks = new ListTag<IntTag>();
         for (var block : this.attachedBlocks) {
@@ -274,6 +299,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         return attachedBlocks;
     }
 
+    /**
+     * Updates the moving data for the block entity.
+     * 
+     * @param immediately True if the update should be immediate, false otherwise.
+     */
     public void updateMovingData(boolean immediately) {
         if (this.closed || this.level == null) {
             return;

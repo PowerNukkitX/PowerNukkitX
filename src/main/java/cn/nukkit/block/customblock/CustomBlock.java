@@ -8,66 +8,48 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 /**
- * 继承这个类实现自定义方块,重写{@link Block}中的方法控制方块属性
- * <p>
  * Inherit this class to implement a custom block, override the methods in the {@link Block} to control the feature of the block.
  */
-
-
 public interface CustomBlock {
     /**
-     * 覆写该方法设置自定义方块的摩擦因数。
-     * <p>
      * {@code @Override} this method to set the friction factor of the custom block.
      */
     double getFrictionFactor();
 
     /**
-     * 覆写该方法设置自定义方块的爆炸抗性
-     * <p>
-     * {@code @Override} this method to set the Explosive resistance of the custom block
+     * {@code @Override} this method to set the Explosive resistance of the custom block.
      */
     double getResistance();
 
     /**
-     * 覆写该方法设置自定义方块的吸收光的等级
-     * <p>
-     * {@code @Override} this method to set the level of light absorption of the custom block
+     * {@code @Override} this method to set the level of light absorption of the custom block.
      */
     int getLightFilter();
 
     /**
-     * 覆写该方法设置自定义方块的发出光的等级
-     * <p>
-     * {@code @Override} this method to set the level of light emitted by the custom block
+     * {@code @Override} this method to set the level of light emitted by the custom block.
      */
     int getLightLevel();
 
     /**
-     * 覆写该方法设置自定义方块的硬度，这有助于自定义方块在服务端侧计算挖掘时间(硬度越大服务端侧挖掘时间越长)
-     * <p>
-     * {@code @Override} this method to set the hardness of the custom block, which helps to calculate the break time of the custom block on the server-side (the higher the hardness the longer the break time on the server-side)
+     * {@code @Override} this method to set the hardness of the custom block, which helps to calculate the break time of the custom block on the server-side (the higher the hardness the longer the break time on the server-side).
      */
     double getHardness();
 
     String getId();
 
     /**
-     * 一般不需要被覆写,继承父类会提供
-     * <p>
-     * Generally, it does not need to be {@code @Override}, extend from the parent class will provide
+     * Generally, it does not need to be {@code @Override}, extend from the parent class will provide.
      */
     Item toItem();
 
     /**
-     * 该方法设置自定义方块的定义
-     * <p>
-     * This method sets the definition of custom block
+     * This method sets the definition of custom block.
      */
     CustomBlockDefinition getDefinition();
 
     /**
-     * Plugins do not need {@code @Override}
+     * Plugins do not need {@code @Override}.
      *
      * @return the block
      */
@@ -76,7 +58,7 @@ public interface CustomBlock {
     }
 
     /**
-     * 获取自定义方块的挖掘时间，它是服务端侧和客户端侧挖掘时间的最小值。
+     * Gets the break time of the custom block, which is the minimum of the server-side and client-side break times.
      *
      * @param item   the item
      * @param player the player
@@ -98,11 +80,11 @@ public interface CustomBlock {
         return breakTime;
     }
 
-     /**
-     * 定义这个方块是否需要被注册到创造栏中
-     * 当你对这个方块有其他的物品想作为其展示时推荐关闭
+    /**
+     * Defines whether this block should be registered in the creative inventory.
+     * It is recommended to disable this if you have other items to represent this block.
      */
-     default boolean shouldBeRegisteredInCreative() {
+    default boolean shouldBeRegisteredInCreative() {
         return true;
     }
 }
