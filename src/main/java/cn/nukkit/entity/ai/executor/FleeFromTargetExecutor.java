@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.Server;
-import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
