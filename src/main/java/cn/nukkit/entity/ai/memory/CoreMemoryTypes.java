@@ -87,6 +87,8 @@ public interface CoreMemoryTypes {
 
     MemoryType<Integer> LAST_ATTACK_TIME = new MemoryType<>("minecraft:last_attack_time", 0);
 
+    MemoryType<Entity> LAST_ATTACK_ENTITY = new MemoryType<>("minecraft:last_attack_entity");
+
     MemoryType<Integer> LAST_HOGLIN_ATTACK_TIME = new MemoryType<>("minecraft:last_hoglin_attack_time", 0);
 
 

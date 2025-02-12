@@ -1,17 +1,18 @@
 package cn.nukkit.entity.ai.executor;
 
+import cn.nukkit.Server;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
-import cn.nukkit.level.Position;
+import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 
 @Getter
-public class FleeFromTargetExecutor implements EntityControl, IBehaviorExecutor {
+public class CircleAboveTargetExecutor implements EntityControl, IBehaviorExecutor {
 
     //指示执行器应该从哪个Memory获取目标位置
     protected MemoryType<? extends Vector3> memory;
@@ -19,26 +20,23 @@ public class FleeFromTargetExecutor implements EntityControl, IBehaviorExecutor 
     protected Vector3 oldTarget;
     protected boolean updateRouteImmediatelyWhenTargetChange;
     protected boolean enableRangeTest = false;
-    protected float minDistance;
     protected boolean clearDataWhenLose;
 
-    public FleeFromTargetExecutor(MemoryType<? extends Vector3> memory, float speed) {
+    private int circleLoc = 0;
+
+
+    public CircleAboveTargetExecutor(MemoryType<? extends Vector3> memory, float speed) {
         this(memory, speed, false);
     }
 
-    public FleeFromTargetExecutor(MemoryType<? extends Vector3> memory, float speed, boolean updateRouteImmediatelyWhenTargetChange) {
-        this(memory, speed, updateRouteImmediatelyWhenTargetChange, -1);
+    public CircleAboveTargetExecutor(MemoryType<? extends Vector3> memory, float speed, boolean updateRouteImmediatelyWhenTargetChange) {
+        this(memory, speed, updateRouteImmediatelyWhenTargetChange, false);
     }
 
-    public FleeFromTargetExecutor(MemoryType<? extends Vector3> memory, float speed, boolean updateRouteImmediatelyWhenTargetChange, float minDistance) {
-        this(memory, speed, updateRouteImmediatelyWhenTargetChange, minDistance, false);
-    }
-
-    public FleeFromTargetExecutor(MemoryType<? extends Vector3> memory, float speed, boolean updateRouteImmediatelyWhenTargetChange, float minDistance, boolean clearDataWhenLose) {
+    public CircleAboveTargetExecutor(MemoryType<? extends Vector3> memory, float speed, boolean updateRouteImmediatelyWhenTargetChange,boolean clearDataWhenLose) {
         this.memory = memory;
         this.speed = speed;
         this.updateRouteImmediatelyWhenTargetChange = updateRouteImmediatelyWhenTargetChange;
-        this.minDistance = minDistance;
         this.clearDataWhenLose = clearDataWhenLose;
     }
 
@@ -48,24 +46,19 @@ public class FleeFromTargetExecutor implements EntityControl, IBehaviorExecutor 
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) {
             return false;
         }
-
         Vector3 target = entity.getBehaviorGroup().getMemoryStorage().get(memory).clone();
-        Vector3 moveTarget = target.add(new Vector3(entity.x-target.x, entity.y-target.y, entity.z-target.z).normalize().multiply(minDistance));
-
-        if (moveTarget instanceof Position position && !position.level.getName().equals(entity.level.getName()))
-            return false;
-
-        if (target.distance(entity) > minDistance) {
-            setLookTarget(entity, target);
-            return false;
+        Location origin = entity.getBehaviorGroup().getMemoryStorage().get(CoreMemoryTypes.LAST_ATTACK_ENTITY).add(0, 24, 0);
+        double angleIncrement = 360.0 / 8;
+        double angle = Math.toRadians((circleLoc * angleIncrement));
+        double particleX = origin.getX() + Math.cos(angle) * 20;
+        double particleZ = origin.getZ() + Math.sin(angle) * 20;
+        Location loc = new Location(particleX, origin.y, particleZ, angle, 0, origin.level);
+        if(entity.distance(loc) < 3) {
+            circleLoc++;
+            circleLoc%=8;
         }
-
-        setRouteTarget(entity, moveTarget);
-        setLookTarget(entity, moveTarget);
-
-        //This gives the Evoker enough time to turn around before attacking.
-        entity.getMemoryStorage().put(CoreMemoryTypes.LAST_ATTACK_TIME, entity.getLevel().getTick());
-
+        setRouteTarget(entity, loc);
+        setLookTarget(entity, loc);
         if (updateRouteImmediatelyWhenTargetChange) {
             var floor = target.floor();
 
@@ -82,22 +75,29 @@ public class FleeFromTargetExecutor implements EntityControl, IBehaviorExecutor 
     }
 
     @Override
+    public void onStart(EntityIntelligent entity) {
+        entity.getMemoryStorage().put(CoreMemoryTypes.ENABLE_PITCH, false);
+    }
+
+    @Override
     public void onInterrupt(EntityIntelligent entity) {
-        removeRouteTarget(entity);
-        removeLookTarget(entity);
         entity.setMovementSpeed(EntityIntelligent.DEFAULT_SPEED);
+        entity.getMemoryStorage().put(CoreMemoryTypes.ENABLE_PITCH, true);
         entity.setEnablePitch(false);
         if (clearDataWhenLose)
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
+        circleLoc++;
+        circleLoc%=8;
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        removeRouteTarget(entity);
-        removeLookTarget(entity);
         entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.getMemoryStorage().put(CoreMemoryTypes.ENABLE_PITCH, true);
         entity.setEnablePitch(false);
         if (clearDataWhenLose)
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
+        circleLoc++;
+        circleLoc%=8;
     }
 }
