@@ -113,6 +113,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             }
         }
 
+
         //update target and look target
         if (!this.target.getPosition().equals(newTarget.getPosition())) {
             target = newTarget;
@@ -165,7 +166,6 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             ev.setBreakShield(item.canBreakShield());
 
             target.attack(ev);
-
             if (!ev.isCancelled()) {
                 for (var e : effects) {
                     target.addEffect(e);
@@ -173,6 +173,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
                 playAttackAnimation(entity);
                 entity.getMemoryStorage().put(CoreMemoryTypes.LAST_ATTACK_TIME, entity.getLevel().getTick());
+                entity.getMemoryStorage().put(CoreMemoryTypes.LAST_ATTACK_ENTITY, target);
                 attackTick = 0;
             }
 
