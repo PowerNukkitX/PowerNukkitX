@@ -5,12 +5,13 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityAnimal;
+import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 
-public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehaviorExecutor {
+public class EntityBreedingExecutor<T extends EntityIntelligent> implements IBehaviorExecutor {
 
     protected Class<T> entityClass;
     protected int findingRangeSquared;
@@ -148,11 +149,11 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
     }
 
     protected void bear(T entity) {
-        var rand = ThreadLocalRandom.current();
         T baby = (T) Entity.createEntity(entity.getNetworkId(), entity.getPosition());
         baby.setBaby(true);
         //防止小屁孩去生baby
         baby.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, entity.level.getTick());
+        baby.getMemoryStorage().put(CoreMemoryTypes.PARENT, entity);
         baby.spawnToAll();
     }
 }
