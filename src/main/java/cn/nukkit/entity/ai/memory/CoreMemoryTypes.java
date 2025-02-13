@@ -196,7 +196,13 @@ public interface CoreMemoryTypes {
 
     MemoryType<Integer> LAST_ATTACK_SUMMON = new MemoryType<>("minecraft:last_attack_summon", 0);
 
+    MemoryType<Integer> LAST_ATTACK_DASH = new MemoryType<>("minecraft:last_attack_dash", 0);
+
+
     MemoryType<Integer> LAST_CONVERSION = new MemoryType<>("minecraft:last_conversion", 0);
+
+    MemoryType<Integer> INVULNERABLE_TICKS = new MemoryType<>("minecraft:invulnerable_ticks", 0);
+
 
     /**
      * 实体的主人

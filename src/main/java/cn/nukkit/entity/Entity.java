@@ -27,6 +27,7 @@ import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.entity.item.EntityItem;
+import cn.nukkit.entity.mob.EntityBoss;
 import cn.nukkit.entity.mob.EntityEnderDragon;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.Event;
@@ -2959,7 +2960,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
 
     public boolean isBoss() {
-        return false;
+        return this instanceof EntityBoss;
     }
 
 
