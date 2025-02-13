@@ -14,6 +14,7 @@ import cn.nukkit.entity.mob.EntityEvocationIllager;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
+import it.unimi.dsi.fastutil.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -123,6 +124,9 @@ public interface CoreMemoryTypes {
      * 上一次繁殖的时间tick
      */
     MemoryType<Integer> LAST_IN_LOVE_TIME = new MemoryType<>("minecraft:last_in_love_time", -65536);
+
+    MemoryType<Entity> PARENT = new MemoryType<>("minecraft:parent");
+
     /**
      * 上一次下蛋的时间
      * <p>
