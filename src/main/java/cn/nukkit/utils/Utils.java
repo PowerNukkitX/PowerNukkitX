@@ -377,6 +377,13 @@ public class Utils {
         return random.nextInt(max + 1 - min) + min;
     }
 
+    public static float rand(float min, float max) {
+        if (min == max) {
+            return max;
+        }
+        return min + random.nextFloat() * (max - min);
+    }
+
     public static double rand(double min, double max) {
         if (min == max) {
             return max;
