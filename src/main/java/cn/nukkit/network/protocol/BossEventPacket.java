@@ -107,6 +107,7 @@ public class BossEventPacket extends DataPacket {
                 break;
             case TYPE_TITLE:
                 byteBuf.writeString(this.title);
+                byteBuf.writeString(this.filteredName);
                 break;
         }
     }
