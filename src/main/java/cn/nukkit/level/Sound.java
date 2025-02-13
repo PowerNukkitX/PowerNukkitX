@@ -712,6 +712,7 @@ public enum Sound {
     MOB_HOGLIN_HURT("mob.hoglin.hurt"),
     MOB_HOGLIN_RETREAT("mob.hoglin.retreat"),
     MOB_HOGLIN_STEP("mob.hoglin.step"),
+    MOB_HOGLIN_CONVERTED_TO_ZOMBIFIED("mob.hoglin.converted_to_zombified"),
     MOB_HORSE_ANGRY("mob.horse.angry"),
     MOB_HORSE_ARMOR("mob.horse.armor"),
     MOB_HORSE_BREATHE("mob.horse.breathe"),
