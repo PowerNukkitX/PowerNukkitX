@@ -13,10 +13,8 @@ import cn.nukkit.network.protocol.StartGamePacket;
 import cn.nukkit.network.protocol.SyncEntityPropertyPacket;
 import cn.nukkit.network.protocol.TrimDataPacket;
 import cn.nukkit.network.protocol.types.TrimData;
-import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.ItemRuntimeIdRegistry;
 import cn.nukkit.registry.Registries;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 
@@ -85,9 +83,6 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         log.debug("Sending creative content");
         this.session.syncCreativeContent();
 
-        log.debug("Sending crafting data");
-        this.session.syncCraftingData();
-
         TrimDataPacket trimDataPacket = new TrimDataPacket();
         trimDataPacket.materials.addAll(TrimData.trimMaterials);
         trimDataPacket.patterns.addAll(TrimData.trimPatterns);
@@ -98,6 +93,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         player.setCanClimb(true);
         player.sendMovementSpeed(player.getMovementSpeed());
         log.debug("Sending player list");
+
         server.addOnlinePlayer(player);
         server.onPlayerCompleteLoginSequence(player);
 
