@@ -68,7 +68,6 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
     public EntityPiglin(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
@@ -128,7 +127,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                 ),
                 Set.of(new NearestPlayerSensor(40, 0, 20),
                         new NearestTargetEntitySensor<>(0, 16, 20,
-                        List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
+                                List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
                         new NearestPlayerAngryPiglinSensor(),
                         new NearestEntitySensor(EntityZombiePigman.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 8 , 0),
                         new NearestEntitySensor(EntityZoglin.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 8 , 0),
@@ -142,6 +141,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                 this
         );
     }
+
 
     @Override
     public double getFloatingForceFactor() {

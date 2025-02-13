@@ -1,26 +1,12 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
-import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.entity.mob.EntityZombiePigman;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.InventorySlice;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemGoldIngot;
-import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
-import cn.nukkit.math.Vector3;
-
-import java.util.concurrent.ThreadLocalRandom;
-
-import static cn.nukkit.inventory.EntityEquipmentInventory.OFFHAND;
-
 
 public class PiglinTransformExecutor implements EntityControl, IBehaviorExecutor {
 
