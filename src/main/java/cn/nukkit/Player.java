@@ -635,6 +635,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void doFirstSpawn() {
         this.spawned = true;
 
+        this.getSession().syncCraftingData();
         this.getSession().syncInventory();
         this.resetInventory();
 
