@@ -25,6 +25,7 @@ import cn.nukkit.entity.ai.sensor.MemorizedBlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -75,6 +76,10 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
         );
     }
 
+    @Override
+    public double getFloatingForceFactor() {
+        return 0;
+    }
 
     @Override
     protected void initEntity() {
@@ -121,5 +126,13 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
     @Override
     public Integer getExperienceDrops() {
         return isBaby() ? 7 : 5;
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if(source.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
+            return false;
+        }
+        return super.attack(source);
     }
 }
