@@ -6,15 +6,7 @@ import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.mob.*;
 import cn.nukkit.entity.passive.*;
-import cn.nukkit.entity.projectile.EntityArrow;
-import cn.nukkit.entity.projectile.EntityBreezeWindCharge;
-import cn.nukkit.entity.projectile.EntityEgg;
-import cn.nukkit.entity.projectile.EntityEnderPearl;
-import cn.nukkit.entity.projectile.EntityFireball;
-import cn.nukkit.entity.projectile.EntitySmallFireball;
-import cn.nukkit.entity.projectile.EntitySnowball;
-import cn.nukkit.entity.projectile.EntityThrownTrident;
-import cn.nukkit.entity.projectile.EntityWindCharge;
+import cn.nukkit.entity.projectile.*;
 import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -126,9 +118,9 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(SPLASH_POTION, "", 86, false, true), EntitySplashPotion.class);
         registerInternal(new EntityDefinition(ENDER_PEARL, "", 87, false, false), EntityEnderPearl.class);
 //        registerInternal(new EntityDefinition(LEASH_KNOT, "", 88, false, true), EntityLeashKnot.class);
-//        registerInternal(new EntityDefinition(WITHER_SKULL, "", 89, false, false), EntityWitherSkull.class);//This is the skull fired by Wither
+        registerInternal(new EntityDefinition(WITHER_SKULL, "", 89, false, false), EntityWitherSkull.class);
         registerInternal(new EntityDefinition(BOAT, "", 90, false, true), EntityBoat.class);
-//        registerInternal(new EntityDefinition(WITHER_SKULL_DANGEROUS, "", 91, false, false), EntityWitherSkullDangerous.class);
+        registerInternal(new EntityDefinition(WITHER_SKULL_DANGEROUS, "", 91, false, false), EntityWitherSkullDangerous.class);
         registerInternal(new EntityDefinition(LIGHTNING_BOLT, "", 93, false, true), EntityLightningBolt.class);
         registerInternal(new EntityDefinition(SMALL_FIREBALL, "", 94, false, false), EntitySmallFireball.class);
         registerInternal(new EntityDefinition(AREA_EFFECT_CLOUD, "", 95, false, false), EntityAreaEffectCloud.class);

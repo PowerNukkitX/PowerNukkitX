@@ -334,10 +334,12 @@ public class Explosion {
             send.add(new Vector3(block.x - source.x, block.y - source.y, block.z - source.z));
         }
 
-        for (Vector3 remainingPos : fireIgnitions) {
-            Block toIgnite = level.getBlock(remainingPos);
-            if (toIgnite.isAir() && toIgnite.down().isSolid(BlockFace.UP)) {
-                level.setBlock(toIgnite, Block.get(BlockID.FIRE));
+        if(fireIgnitions != null) {
+            for (Vector3 remainingPos : fireIgnitions) {
+                Block toIgnite = level.getBlock(remainingPos);
+                if (toIgnite.isAir() && toIgnite.down().isSolid(BlockFace.UP)) {
+                    level.setBlock(toIgnite, Block.get(BlockID.FIRE));
+                }
             }
         }
 

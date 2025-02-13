@@ -2373,6 +2373,14 @@ public class Level implements Metadatable {
         return true;
     }
 
+    public void breakBlock(Block block) {
+        if(block.isValid() && block.level == this) {
+            this.setBlock(block, Block.get(Block.AIR));
+            Position position = block.add(0.5, 0.5, 0.5);
+            this.addParticle(new DestroyBlockParticle(position, block));
+            this.getVibrationManager().callVibrationEvent(new VibrationEvent(null, position, VibrationType.BLOCK_DESTROY));
+        }
+    }
 
     private void addBlockChange(int x, int y, int z) {
         long index = Level.chunkHash(x >> 4, z >> 4);
