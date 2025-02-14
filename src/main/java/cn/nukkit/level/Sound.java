@@ -837,7 +837,6 @@ public enum Sound {
     MOB_SHULKER_AMBIENT("mob.shulker.ambient"),
     MOB_SHULKER_BULLET_HIT("mob.shulker.bullet.hit"),
     MOB_SHULKER_CLOSE("mob.shulker.close"),
-    MOB_SHULKER_CLOSE_HURT("mob.shulker.close.hurt"),
     MOB_SHULKER_DEATH("mob.shulker.death"),
     MOB_SHULKER_HURT("mob.shulker.hurt"),
     MOB_SHULKER_OPEN("mob.shulker.open"),

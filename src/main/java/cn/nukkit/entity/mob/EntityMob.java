@@ -113,6 +113,10 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
         }
     }
 
+    public int getAdditionalArmor() {
+        return 0;
+    }
+
     @Override
     public boolean attack(EntityDamageEvent source) {
         if (this.isClosed() || !this.isAlive()) {
@@ -125,7 +129,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
         }
 
         if (source.getCause() != EntityDamageEvent.DamageCause.VOID && source.getCause() != EntityDamageEvent.DamageCause.CUSTOM && source.getCause() != EntityDamageEvent.DamageCause.MAGIC && source.getCause() != EntityDamageEvent.DamageCause.HUNGER) {
-            int armorPoints = 0;
+            int armorPoints = getAdditionalArmor();
             int epf = 0;
 //            int toughness = 0;
 

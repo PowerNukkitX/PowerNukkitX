@@ -63,6 +63,7 @@ public class PlayerTeleportEvent extends PlayerEvent implements Cancellable {
         CHORUS_FRUIT,  // Teleport by chorus fruit
         UNKNOWN,       // Unknown cause
         END_PORTAL,    // Teleport using End Portal
+        SHULKER,
         END_GATEWAY,    // Teleport using End Gateway
         PLAYER_SPAWN    // Teleport when players are spawn
 
