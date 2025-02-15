@@ -265,7 +265,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 if (spamBug && player.getInventory().getItemInHand().getBlock().isAir()) {//Normal blocks are not detected, as they can be placed continuously
                     return;
                 }
-                player.setDataFlag(EntityFlag.USING_ITEM, false);
+                if(!useItemData.itemInHand.canBeActivated()) player.setDataFlag(EntityFlag.USING_ITEM, false);
                 if (player.canInteract(blockVector.add(0.5, 0.5, 0.5), player.isCreative() ? 13 : 7)) {
                     if (player.isCreative()) {
                         Item i = player.getInventory().getItemInHand();
