@@ -11,6 +11,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.item.EntityAreaEffectCloud;
 import cn.nukkit.entity.item.EntityFireworksRocket;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityPainting;
@@ -2829,7 +2830,7 @@ public class Level implements Metadatable {
             int realCount = 0;
             Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
             for (Entity e : entities) {
-                if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXpOrb ||
+                if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXpOrb || e instanceof EntityAreaEffectCloud ||
                         e instanceof EntityFireworksRocket || e instanceof EntityPainting || e == player ||
                         (e instanceof Player p && p.isSpectator())) {
                     continue;
@@ -3294,6 +3295,10 @@ public class Level implements Metadatable {
                 }
             }
         }
+    }
+
+    public int getHighestBlockAt(Vector2 vector) {
+        return getHighestBlockAt(vector.getFloorX(), vector.getFloorY());
     }
 
     public int getHighestBlockAt(int x, int z) {

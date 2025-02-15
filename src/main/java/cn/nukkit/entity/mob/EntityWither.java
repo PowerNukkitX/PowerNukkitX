@@ -154,7 +154,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     public void kill() {
         if(deathTicks == -1) {
             deathTicks = 190;
-            getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_DEATH_MIN_VOLUME, -1, Entity.WITHER, false, false);
+            getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_DEATH, -1, Entity.WITHER, false, false);
             EntityEventPacket packet = new EntityEventPacket();
             packet.event = EntityEventPacket.DEATH_ANIMATION;
             packet.eid = getId();
@@ -278,8 +278,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     }
 
     @Override
-    public void spawnTo(Player player) {
-        super.spawnTo(player);
+    public void addBossbar(Player player) {
         BossEventPacket pkBoss = new BossEventPacket();
         pkBoss.bossEid = this.id;
         pkBoss.type = BossEventPacket.TYPE_SHOW;

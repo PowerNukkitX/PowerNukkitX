@@ -2,6 +2,8 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.data.EntityDataType;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntityEnderDragon;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -103,6 +105,19 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
                 explode.explodeB();
             } else {
                 explode.explodeB();
+            }
+        }
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        for (Entity entity : this.getLevel().getEntities()) {
+            if (entity instanceof EntityEnderDragon dragon) {
+                if (entity.distance(this) <= 28) {
+                    entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.MAGIC, 10));
+                }
+                dragon.getMemoryStorage().put(CoreMemoryTypes.LAST_ENDER_CRYSTAL_DESTROY, this.asBlockVector3());
             }
         }
     }

@@ -9,10 +9,12 @@ import cn.nukkit.entity.ai.memory.codec.NumberMemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.StringMemoryCodec;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.item.EntityEnderCrystal;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityEvocationIllager;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.Pair;
 
@@ -40,6 +42,11 @@ public interface CoreMemoryTypes {
      * Entity moving target memory
      */
     MemoryType<Vector3> MOVE_TARGET = new MemoryType<>("minecraft:move_target");
+
+    MemoryType<Boolean> FORCE_PERCHING = new MemoryType<>("minecraft:force_perching", false);
+
+    MemoryType<Vector3> STAY_NEARBY = new MemoryType<>("minecraft:stay_nearby");
+
     /**
      * 实体移动起点记忆
      * <p>
@@ -165,6 +172,9 @@ public interface CoreMemoryTypes {
      * 上一次喂养的玩家
      */
     MemoryType<Player> LAST_FEED_PLAYER = new MemoryType<>("minecraft:last_feeding_player");
+
+    MemoryType<BlockVector3> LAST_ENDER_CRYSTAL_DESTROY = new MemoryType<>("minecraft:last_ender_crystal_destroy");
+
     /**
      * 目前仅在warden中使用
      */

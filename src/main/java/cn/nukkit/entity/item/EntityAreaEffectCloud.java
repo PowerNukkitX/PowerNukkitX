@@ -34,9 +34,10 @@ public class EntityAreaEffectCloud extends Entity {
 
     protected float radiusOnUse;
 
+    protected float height;
+
     protected int nextApply;
     private int lastAge;
-
 
     public EntityAreaEffectCloud(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -189,6 +190,11 @@ public class EntityAreaEffectCloud extends Entity {
         this.setDataProperty(AREA_EFFECT_CLOUD_RADIUS, radius, send);
     }
 
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+
     public int getParticleId() {
         return this.getDataProperty(AREA_EFFECT_CLOUD_PARTICLE);
     }
@@ -207,7 +213,6 @@ public class EntityAreaEffectCloud extends Entity {
         this.invulnerable = true;
         this.setDataFlag(EntityFlag.FIRE_IMMUNE, true);
         this.setDataFlag(EntityFlag.NO_AI, true);
-        this.setParticleId(32, false);
         this.setSpawnTime(this.level.getCurrentTick(), false);
         this.setPickupCount(0, false);
 
@@ -220,9 +225,14 @@ public class EntityAreaEffectCloud extends Entity {
                     .setDuration(effectTag.getInt("Duration"));
             cloudEffects.add(effect);
         }
-        int displayedPotionId = namedTag.getShort("PotionId");
-        setPotionId(displayedPotionId, false);
-        recalculatePotionColor();
+        if(namedTag.contains("PotionId")) {
+            this.setParticleId(32, false);
+            int displayedPotionId = namedTag.getShort("PotionId");
+            setPotionId(displayedPotionId, false);
+            recalculatePotionColor();
+        } else {
+            setDragonBreath();
+        }
 
         if (namedTag.contains("Duration")) {
             setDuration(namedTag.getInt("Duration"), false);
@@ -269,6 +279,11 @@ public class EntityAreaEffectCloud extends Entity {
         } else {
             setWaitTime(10, false);
         }
+        if (namedTag.contains("Height")) {
+            setHeight(namedTag.getFloat("Height"));
+        } else {
+            setHeight(0.3F + (getRadius() / 2F));
+        }
 
         setMaxHealth(1);
         setHealth(1);
@@ -291,10 +306,8 @@ public class EntityAreaEffectCloud extends Entity {
                     .putInt("Duration", effect.getDuration())
             );
         }
-        //TODO Do we really need to save the entity data to nbt or is it already saved somewhere?
         namedTag.putList("mobEffects", effectsTag);
         namedTag.putInt("ParticleColor", getPotionColor());
-        namedTag.putShort("PotionId", getPotionId());
         namedTag.putInt("Duration", getDuration());
         namedTag.putInt("DurationOnUse", durationOnUse);
         namedTag.putInt("ReapplicationDelay", reapplicationDelay);
@@ -304,6 +317,7 @@ public class EntityAreaEffectCloud extends Entity {
         namedTag.putFloat("RadiusPerTick", getRadiusPerTick());
         namedTag.putInt("WaitTime", getWaitTime());
         namedTag.putFloat("InitialRadius", initialRadius);
+        namedTag.putInt("PotionId", getPotionId());
     }
 
     @Override
@@ -371,7 +385,7 @@ public class EntityAreaEffectCloud extends Entity {
 
     @Override
     public float getHeight() {
-        return 0.3F + (getRadius() / 2F);
+        return height;
     }
 
     @Override
@@ -398,4 +412,14 @@ public class EntityAreaEffectCloud extends Entity {
     public String getOriginalName() {
         return "Area Effect Cloud";
     }
+
+    public void setDragonBreath() {
+        setParticleId(49, false);
+        setPotionColor(-5675670, false);
+    }
+
+    public boolean isDragonBreath() {
+        return getParticleId() == 49;
+    }
+
 }

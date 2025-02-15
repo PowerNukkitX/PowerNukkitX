@@ -1,5 +1,6 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockBedrock;
@@ -7,8 +8,11 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityEnderPearl;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.Vector2;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -55,6 +59,17 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
             this.exitPortal = new BlockVector3(exitPortalList.get(0).data, exitPortalList.get(1).data, exitPortalList.get(2).data);
         } else {
             this.exitPortal = defaultExitPortal.clone();
+            if(this.toHorizontal().distance(Vector2.ZERO) < 100) {
+                shift:
+                for(int shift : new int[] {0, -5, 5, -10, 10}) { //Reduces the probability of a no hit
+                    for(int i = 0; i < 16; i++) {
+                        if(exitPortal.getY() <= 16 || exitPortal.getY() > 128) {
+                            this.exitPortal = new Vector3(this.x+shift, 0, this.z+shift).normalize().multiply(0x500 + (i*0xF)).asBlockVector3();
+                            this.exitPortal = getSafeExitPortal();
+                        } else break shift;
+                    }
+                }
+            }
         }
 
         this.teleportCooldown = 0;
@@ -110,37 +125,51 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
         if (exitPortal != null) {
             if (entity instanceof EntityEnderPearl enderPearl) {
                 if (enderPearl.shootingEntity != null) {
-                    enderPearl.shootingEntity.teleport(getSafeExitPortal().asVector3().add(0.5, 0, 0.5), TeleportCause.END_GATEWAY);
+                    enderPearl.shootingEntity.teleport(checkTeleport(getSafeExitPortal().asVector3().asBlockVector3()).add(0.5, 0, 0.5), TeleportCause.END_GATEWAY);
                     enderPearl.close();
                 } else {
-                    entity.teleport(getSafeExitPortal().asVector3().add(0.5, 0, 0.5), TeleportCause.END_GATEWAY);
+                    entity.teleport(checkTeleport(getSafeExitPortal().asVector3().asBlockVector3()).add(0.5, 0, 0.5), TeleportCause.END_GATEWAY);
                 }
             } else {
-                entity.teleport(getSafeExitPortal().asVector3().add(0.5, 0, 0.5), TeleportCause.END_GATEWAY);
+                entity.teleport(checkTeleport(getSafeExitPortal().asVector3().asBlockVector3()).add(0.5, 0, 0.5), TeleportCause.END_GATEWAY);
             }
         }
-
         setTeleportCooldown();
     }
 
+    protected BlockVector3 checkTeleport(BlockVector3 vector3) {
+        Server.getInstance().broadcastMessage(vector3.toString());
+        if(vector3.getY() <= 16 || vector3.getY() > 128) {
+            // Place a little platform in case no safe spawn was found
+            vector3.setY(65);
+            for(int i = -2; i <= 2; i++) {
+                for(int j = -1; j <= 1; j++) {
+                    getLevel().setBlock(new Vector3(vector3.x+j, 64, vector3.z+j), Block.get(Block.END_STONE));
+                    getLevel().setBlock(new Vector3(vector3.x+j, 64, vector3.z+i), Block.get(Block.END_STONE));
+                }
+            }
+        }
+        return vector3;
+    }
+
+
     public BlockVector3 getSafeExitPortal() {
-        // TODO: Find better way
         for (int x = -1; x <= 1; x++) {
             for (int z = -1; z <= 1; z++) {
                 int chunkX = (exitPortal.getX() >> 4) + x;
                 int chunkZ = (exitPortal.getZ() >> 4) + z;
-                IChunk chunk = this.getLevel().getChunk(chunkX, chunkZ, false);
+                IChunk chunk = getLevel().getChunk(chunkX, chunkZ, false);
                 if (chunk == null || !(chunk.isGenerated() || chunk.isPopulated())) {
-                    this.getLevel().generateChunk(chunkX, chunkZ);
+                    getLevel().syncGenerateChunk(chunkX, chunkZ);
                 }
             }
         }
 
         for (int x = exitPortal.getX() - 5; x <= exitPortal.getX() + 5; x++) {
             for (int z = exitPortal.getZ() - 5; z <= exitPortal.getZ() + 5; z++) {
-                for (int y = 255; y > Math.max(0, exitPortal.getY() + 2); y--) {
-                    if (!this.getLevel().getBlockStateAt(x, y, z).equals(BlockAir.STATE)) {
-                        if (this.getLevel().getBlockStateAt(x, y, z) != STATE_BEDROCK) {
+                for (int y = 192; y > Math.max(0, exitPortal.getY() + 2); y--) {
+                    if (!getLevel().getBlockStateAt(x, y, z).equals(BlockAir.STATE)) {
+                        if (getLevel().getBlockStateAt(x, y, z) != STATE_BEDROCK) {
                             return new BlockVector3(x, y + 1, z);
                         }
                     }
@@ -148,7 +177,7 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
             }
         }
 
-        return this.exitPortal.up(2);
+        return exitPortal.up(2);
     }
 
     public int getAge() {
