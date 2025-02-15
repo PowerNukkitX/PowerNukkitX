@@ -1,6 +1,7 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -11,13 +12,17 @@ import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.JumpExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
+import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
@@ -27,6 +32,7 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.entity.effect.Effect;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,15 +57,20 @@ public class EntityHusk extends EntityZombie {
                 this.tickSpread,
                 Set.of(),
                 Set.of(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_HUSK_AMBIENT, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1), new RandomSoundEvaluator(), 5, 1),
+                        new Behavior(new PlaySoundExecutor(Sound.MOB_HUSK_AMBIENT, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1), new RandomSoundEvaluator(), 7, 1),
+                        new Behavior(new JumpExecutor(), all(entity -> !getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK), entity -> entity.getCollisionBlocks().stream().anyMatch(block -> block instanceof BlockTurtleEgg)), 6, 1, 10),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.3f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK), 5, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 10, Effect.get(EffectType.HUNGER).setDuration(140)),new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_GOLEM, 0.3f, 40, true, 30, Effect.get(EffectType.HUNGER).setDuration(140)), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_GOLEM), 3, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 10, Effect.get(EffectType.HUNGER).setDuration(140)), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
+                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 10, Effect.get(EffectType.HUNGER).setDuration(140)), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 3, 1),
+                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 40, true, 30, Effect.get(EffectType.HUNGER).setDuration(140)), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
                 Set.of(
                         new NearestPlayerSensor(40, 0, 20),
-                        new NearestEntitySensor(EntityGolem.class, CoreMemoryTypes.NEAREST_GOLEM, 42, 0)
+                        new NearestTargetEntitySensor<>(0, 16, 20,
+                                List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
+                        new BlockSensor(BlockTurtleEgg.class, CoreMemoryTypes.NEAREST_BLOCK, 11, 15, 10)
+
                 ),
                 Set.of(new WalkController(), new LookController(true, true)),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
@@ -106,10 +117,17 @@ public class EntityHusk extends EntityZombie {
     }
 
     @Override
-    public boolean onUpdate(int currentTick) {
-        if(currentTick%20 == 0) {
-            EntityZombie.pickupItems(this);
-        }
-        return super.onUpdate(currentTick);
+    public double getFloatingForceFactor() {
+        return 0;
+    }
+
+    @Override
+    protected void transform() {
+        this.close();
+        EntityZombie drowned = new EntityZombie(this.getChunk(), this.namedTag);
+        drowned.setPosition(this);
+        drowned.setRotation(this.yaw, this.pitch);
+        drowned.spawnToAll();
+        drowned.level.addSound(drowned, Sound.MOB_HUSK_CONVERT_TO_ZOMBIE);
     }
 }
