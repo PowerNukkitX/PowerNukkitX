@@ -272,6 +272,10 @@ public class Vector3 implements Cloneable {
         return this.maxPlainDistance(x.x, x.z);
     }
 
+    public Vector2 toHorizontal() {
+        return new Vector2(this.x, this.z);
+    }
+
     /**
      * Calculates the Length of this Vector
      *

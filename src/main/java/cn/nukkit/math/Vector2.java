@@ -7,6 +7,9 @@ public class Vector2 {
     public final double x;
     public final double y;
 
+    public static final Vector2 ZERO = new Vector2(0, 0);
+
+
     public Vector2() {
         this(0, 0);
     }

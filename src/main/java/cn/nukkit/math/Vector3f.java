@@ -210,6 +210,10 @@ public class Vector3f implements Cloneable {
         return this.maxPlainDistance(vector.x, vector.y);
     }
 
+    public Vector2f toHorizontal() {
+        return new Vector2f(this.x, this.z);
+    }
+
     public float maxPlainDistance(Vector3f x) {
         return this.maxPlainDistance(x.x, x.z);
     }
