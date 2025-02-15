@@ -1,6 +1,5 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.Server;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
@@ -21,6 +20,8 @@ public class CircleAboveTargetExecutor implements EntityControl, IBehaviorExecut
     protected boolean updateRouteImmediatelyWhenTargetChange;
     protected boolean enableRangeTest = false;
     protected boolean clearDataWhenLose;
+
+    int sections = 8;
 
     private int circleLoc = 0;
 
@@ -48,7 +49,7 @@ public class CircleAboveTargetExecutor implements EntityControl, IBehaviorExecut
         }
         Vector3 target = entity.getBehaviorGroup().getMemoryStorage().get(memory).clone();
         Location origin = entity.getBehaviorGroup().getMemoryStorage().get(CoreMemoryTypes.LAST_ATTACK_ENTITY).add(0, 24, 0);
-        double angleIncrement = 360.0 / 8;
+        double angleIncrement = 360.0 / sections;
         double angle = Math.toRadians((circleLoc * angleIncrement));
         double particleX = origin.getX() + Math.cos(angle) * 20;
         double particleZ = origin.getZ() + Math.sin(angle) * 20;
