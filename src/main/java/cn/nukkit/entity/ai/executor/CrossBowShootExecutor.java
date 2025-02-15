@@ -105,9 +105,11 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
             if (entity.distanceSquared(target) <= maxShootDistanceSquared) {
                 this.tick1 = 0;
                 this.tick2++;
-                playBowAnimation(entity);
+                playBowAnimation(entity, 0);
             }
-        } else if (tick2 != 0) {
+        }
+        if (tick2 != 0) {
+            playBowAnimation(entity, tick2);
             tick2++;
             if (tick2 > pullBowTick) {
                 Item tool = item.get();
@@ -151,7 +153,6 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     protected void bowShoot(ItemCrossbow bow, EntityLiving entity) {
-        playBowAnimation(entity);
         double damage = 2;
         Enchantment bowDamage = bow.getEnchantment(Enchantment.ID_BOW_POWER);
         if (bowDamage != null && bowDamage.getLevel() > 0) {
@@ -179,10 +180,10 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
         double f = Math.min((p * p + p * 2) / 3, 1) * 3;
 
         EntityArrow arrow = (EntityArrow) Entity.createEntity(Entity.ARROW, entity.chunk, nbt, entity, f == 2);
-
         if (arrow == null) {
             return;
         }
+        arrow.setPickupMode(EntityProjectile.PICKUP_NONE);
 
         EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(entity, bow, arrow, f);
         Server.getInstance().getPluginManager().callEvent(entityShootBowEvent);
@@ -190,13 +191,6 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
             entityShootBowEvent.getProjectile().kill();
         } else {
             entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
-            Enchantment infinityEnchant = bow.getEnchantment(Enchantment.ID_BOW_INFINITY);
-            boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0;
-            EntityProjectile projectile;
-            if (infinity && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
-                ((EntityArrow) projectile).setPickupMode(EntityProjectile.PICKUP_CREATIVE);
-            }
-
             if (entityShootBowEvent.getProjectile() != null) {
                 ProjectileLaunchEvent projectev = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile(), entity);
                 Server.getInstance().getPluginManager().callEvent(projectev);
@@ -210,13 +204,23 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
         }
     }
 
-    private void playBowAnimation(Entity entity) {
-        entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
-        entity.setDataFlag(EntityFlag.FACING_TARGET_TO_RANGE_ATTACK);
+    private void playBowAnimation(Entity entity, int chargeAmount) {
+        if(chargeAmount == 0) {
+            entity.level.addSound(entity, Sound.CROSSBOW_LOADING_START);
+            entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
+            entity.setDataFlag(EntityFlag.USING_ITEM);
+        } else entity.setDataProperty(EntityDataTypes.CHARGE_AMOUNT, chargeAmount*2);
+        if(chargeAmount == 30) entity.level.addSound(entity, Sound.CROSSBOW_LOADING_MIDDLE);
+        if(chargeAmount == 60) {
+            entity.setDataFlag(EntityFlag.CHARGED);
+            entity.level.addSound(entity, Sound.CROSSBOW_LOADING_END);
+        }
     }
 
     private void stopBowAnimation(Entity entity) {
         entity.setDataProperty(EntityDataTypes.TARGET_EID, 0L);
-        entity.setDataFlag(EntityFlag.FACING_TARGET_TO_RANGE_ATTACK, false);
+        entity.setDataProperty(EntityDataTypes.CHARGE_AMOUNT, 0);
+        entity.setDataFlag(EntityFlag.USING_ITEM, false);
+        entity.setDataFlag(EntityFlag.CHARGED, false);
     }
 }
