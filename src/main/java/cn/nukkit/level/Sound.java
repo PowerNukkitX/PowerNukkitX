@@ -740,6 +740,7 @@ public enum Sound {
     MOB_HUSK_DEATH("mob.husk.death"),
     MOB_HUSK_HURT("mob.husk.hurt"),
     MOB_HUSK_STEP("mob.husk.step"),
+    MOB_HUSK_CONVERT_TO_ZOMBIE("mob.husk.convert_to_zombie"),
     MOB_IRONGOLEM_CRACK("mob.irongolem.crack"),
     MOB_IRONGOLEM_DEATH("mob.irongolem.death"),
     MOB_IRONGOLEM_HIT("mob.irongolem.hit"),
