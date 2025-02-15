@@ -138,8 +138,7 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     }
 
     protected BlockVector3 checkTeleport(BlockVector3 vector3) {
-        Server.getInstance().broadcastMessage(vector3.toString());
-        if(vector3.getY() <= 16 || vector3.getY() > 128) {
++        if(vector3.getY() <= 16 || vector3.getY() > 128) {
             // Place a little platform in case no safe spawn was found
             vector3.setY(65);
             for(int i = -2; i <= 2; i++) {
