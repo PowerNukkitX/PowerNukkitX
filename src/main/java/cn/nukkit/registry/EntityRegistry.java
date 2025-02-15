@@ -108,7 +108,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(CAT, "", 75, true, true), EntityCat.class);
         registerInternal(new EntityDefinition(SHULKER_BULLET, "", 76, false, false), EntityShulkerBullet.class);
         registerInternal(new EntityDefinition(FISHING_HOOK, "", 77, false, false), EntityFishingHook.class);
-//        registerInternal(new EntityDefinition(DRAGON_FIREBALL, "", 79, false, false), EntityDragonFireball.class);
+        registerInternal(new EntityDefinition(DRAGON_FIREBALL, "", 79, false, false), EntityDragonFireball.class);
         registerInternal(new EntityDefinition(ARROW, "", 80, false, true), EntityArrow.class);
         registerInternal(new EntityDefinition(SNOWBALL, "", 81, false, true), EntitySnowball.class);
         registerInternal(new EntityDefinition(EGG, "", 82, false, true), EntityEgg.class);
