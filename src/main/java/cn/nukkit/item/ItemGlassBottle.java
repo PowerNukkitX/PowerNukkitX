@@ -5,11 +5,14 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBeehive;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.entity.item.EntityAreaEffectCloud;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
+
+import java.util.Arrays;
 
 public class ItemGlassBottle extends Item {
 
@@ -33,7 +36,13 @@ public class ItemGlassBottle extends Item {
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         Item filled = null;
-        if (target.getId().equals(BlockID.FLOWING_WATER) || target.getId().equals(BlockID.WATER)) {
+        Arrays.stream(level.getCollidingEntities(player.getBoundingBox())).forEach(e -> {
+            System.out.println(e.getName());
+        });
+        if(player != null && Arrays.stream(level.getCollidingEntities(player.getBoundingBox().grow(1.1, 1.1, 1.1))).anyMatch(entity -> entity instanceof EntityAreaEffectCloud cloud && cloud.isDragonBreath())) {
+            filled = new ItemDragonBreath();
+            Arrays.stream(level.getCollidingEntities(player.getBoundingBox().grow(1.1, 1.1, 1.1))).filter(entity -> entity instanceof EntityAreaEffectCloud cloud && cloud.isDragonBreath()).findAny().ifPresent(entity -> ((EntityAreaEffectCloud) entity).setRadius(((EntityAreaEffectCloud) entity).getRadius()-1, true));
+        } else if (target.getId().equals(BlockID.FLOWING_WATER) || target.getId().equals(BlockID.WATER)) {
             filled = new ItemPotion();
         } else if (target instanceof BlockBeehive && ((BlockBeehive) target).isFull()) {
             filled = Item.get(HONEY_BOTTLE);
