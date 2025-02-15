@@ -36,9 +36,6 @@ public class ItemGlassBottle extends Item {
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         Item filled = null;
-        Arrays.stream(level.getCollidingEntities(player.getBoundingBox())).forEach(e -> {
-            System.out.println(e.getName());
-        });
         if(player != null && Arrays.stream(level.getCollidingEntities(player.getBoundingBox().grow(1.1, 1.1, 1.1))).anyMatch(entity -> entity instanceof EntityAreaEffectCloud cloud && cloud.isDragonBreath())) {
             filled = new ItemDragonBreath();
             Arrays.stream(level.getCollidingEntities(player.getBoundingBox().grow(1.1, 1.1, 1.1))).filter(entity -> entity instanceof EntityAreaEffectCloud cloud && cloud.isDragonBreath()).findAny().ifPresent(entity -> ((EntityAreaEffectCloud) entity).setRadius(((EntityAreaEffectCloud) entity).getRadius()-1, true));
