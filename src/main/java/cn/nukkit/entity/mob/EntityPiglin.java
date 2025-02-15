@@ -17,6 +17,7 @@ import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
+import cn.nukkit.entity.ai.executor.CrossBowShootExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
@@ -39,6 +40,7 @@ import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.inventory.InventorySlice;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
+import cn.nukkit.item.ItemCrossbow;
 import cn.nukkit.item.ItemGoldIngot;
 import cn.nukkit.item.ItemPorkchop;
 import cn.nukkit.item.ItemTool;
@@ -51,6 +53,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AnimateEntityPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -89,9 +92,27 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                                         )
                                 )
                         ), 12, 1),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_JEALOUS, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> getViewers().values().stream().noneMatch(p -> p.distance(entity) < 8 && likesItem(p.getInventory().getItemInHand()) && p.level.raycastBlocks(p, entity).isEmpty())), 11, 1),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_ANGRY, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> isAngry()), 10, 1),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_AMBIENT, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> !isAngry()), 9, 1),
+                        new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_JEALOUS, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> getViewers().values().stream().noneMatch(p -> p.distance(entity) < 8 && likesItem(p.getInventory().getItemInHand()) && p.level.raycastBlocks(p, entity).isEmpty())), 12, 1),
+                        new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_ANGRY, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> isAngry()), 11, 1),
+                        new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_AMBIENT, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> !isAngry()), 10, 1),
+                        new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 80), all(
+                                new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
+                                entity -> getItemInHand() instanceof ItemCrossbow
+                        ), 9, 1),
+                        new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 80), all(
+                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) instanceof Player player && player.getInventory() != null && !Arrays.stream(player.getInventory().getArmorContents()).anyMatch(item -> !item.isNull() && item instanceof ItemArmor armor && armor.getTier() == ItemArmor.TIER_GOLD),
+                                entity -> getItemInHand() instanceof ItemCrossbow
+                        ), 8, 1),
+                        new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 15, true, 30, 80), all(
+                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
+                                entity -> !entity.namedTag.getBoolean("CannotHunt"),
+                                entity -> getItemInHand() instanceof ItemCrossbow,
+                                any(
+                                        entity -> getMemoryStorage().get(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME) == 0,
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME, 6000)
+                                )
+                        ), 7, 1),
                         new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.5f, 40, true, 30), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET)
                         ), 6, 1),
@@ -164,7 +185,11 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
         this.setMaxHealth(16);
         this.diffHandDamage = new float[]{3f, 5f, 7f};
         super.initEntity();
-        if(!isBaby()) setItemInHand(Item.get(Item.GOLDEN_SWORD));
+        if(!isBaby()) setItemInHand(Item.get(Utils.rand() ? Item.GOLDEN_SWORD : Item.CROSSBOW));
+        if(Utils.rand(0,10) == 0) setHelmet(Item.get(Item.GOLDEN_HELMET));
+        if(Utils.rand(0,10) == 0) setChestplate(Item.get(Item.GOLDEN_CHESTPLATE));
+        if(Utils.rand(0,10) == 0) setLeggings(Item.get(Item.GOLDEN_LEGGINGS));
+        if(Utils.rand(0,10) == 0) setBoots(Item.get(Item.GOLDEN_BOOTS));
     }
 
     @Override

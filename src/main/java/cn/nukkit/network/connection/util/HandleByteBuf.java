@@ -1182,6 +1182,9 @@ public class HandleByteBuf extends ByteBuf {
                 blockingTicks = stream.readLong();//blockingTicks
             }
             if (compoundTag != null) {
+                if(compoundTag.contains("__DamageConflict__")) {
+                    compoundTag.put("Damage", compoundTag.removeAndGet("__DamageConflict__"));
+                }
                 item.setCompoundTag(compoundTag);
             }
             Block[] canPlaces = new Block[canPlace.length];

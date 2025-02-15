@@ -3,6 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
@@ -335,14 +336,11 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 Item item;
                 Item useItemDataItem = useItemData.itemInHand;
                 Vector3 directionVector = player.getDirectionVector();
-                //Removing the only clientsided NBT Tag
-                if(useItemDataItem.hasCompoundTag() && Objects.requireNonNull(useItemDataItem.getNamedTag()).containsInt("Damage")) {
-                    useItemDataItem.getNamedTag().remove("Damage");
-                }
                 ////
                 if (player.isCreative()) {
                     item = player.getInventory().getItemInHand();
                 } else if (!player.getInventory().getItemInHand().equals(useItemDataItem)) {
+                    player.getServer().getLogger().warning("Item received did not match item in hand.");
                     player.getInventory().sendHeldItem(player);
                     return;
                 } else {

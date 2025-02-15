@@ -1,8 +1,6 @@
 package cn.nukkit.entity.mob;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.BlockDoor;
-import cn.nukkit.block.BlockSoulFire;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -12,11 +10,8 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
-import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
-import cn.nukkit.entity.ai.executor.PiglinTradeExecutor;
 import cn.nukkit.entity.ai.executor.PiglinTransformExecutor;
 import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
@@ -28,15 +23,12 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerAngryPiglinSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemArmor;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AnimateEntityPacket;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
