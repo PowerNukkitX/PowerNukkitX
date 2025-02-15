@@ -15,8 +15,8 @@
 
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://feedback.minecraft.net/hc/en-us/articles/32611282671245-Minecraft-1-21-51-Bedrock">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.51%20(Bedrock)-56383E" />
+   <a href="https://www.minecraft.net/en-us/article/minecraft-1-21-60-bedrock-changelog">
+      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.60%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
       <img alt="Minecraft" src="https://img.shields.io/badge/protocol-776-blue" />
@@ -53,8 +53,8 @@
 <br>
 
 **Feature-rich, highly customizable third-party server software for Minecraft: Bedrock Edition.**
-- 🪄 **Custom Item,Block,Entity**
-- 🤖 **Built-in AI framework**
+- 🪄 **Custom Item, Block and Entity support**
+- 🤖 **Vanilla-like Mob AI**
 - 🪴 **Terra Generator**
 - ✏️ **Full Vanilla Command Support**
 - 🗃️ **Full Item, Block and Container Support**
