@@ -5,11 +5,14 @@ import cn.nukkit.block.BlockCarpet;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityPhysical;
+import cn.nukkit.entity.EntityVariant;
+import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntitySlime;
 import cn.nukkit.entity.passive.EntityRabbit;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.SetEntityDataPacket;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
@@ -58,6 +61,7 @@ public class HoppingController extends WalkController {
                 dy += entity.getJumpingMotion(diffY);
                 Sound jumpSound = entity instanceof EntityRabbit ? Sound.MOB_RABBIT_HOP : entity instanceof EntitySlime ? Sound.JUMP_SLIME : null;
                 if(jumpSound != null) entity.getLevel().addSound(entity, jumpSound);
+                entity.setDataProperty(EntityDataTypes.CLIENT_EVENT, 2);
                 currentJumpCoolDown = 0;
             }
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
@@ -72,5 +76,6 @@ public class HoppingController extends WalkController {
             return false;
         }
     }
+
 
 }

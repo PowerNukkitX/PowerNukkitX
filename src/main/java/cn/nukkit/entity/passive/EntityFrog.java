@@ -1,5 +1,6 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -27,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-public class EntityFrog extends EntityAnimal implements EntityWalkable {
+public class EntityFrog extends EntityAnimal implements EntityWalkable, EntityVariant {
     @Override
     @NotNull public String getIdentifier() {
         return FROG;
@@ -80,6 +81,9 @@ public class EntityFrog extends EntityAnimal implements EntityWalkable {
     protected void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
+        if (!hasVariant()) {
+            this.setVariant(randomVariant());
+        }
     }
 
     @Override
@@ -90,5 +94,10 @@ public class EntityFrog extends EntityAnimal implements EntityWalkable {
     @Override
     public boolean isBreedingItem(Item item) {
         return item.getId().equals(Item.SLIME_BALL);
+    }
+
+    @Override
+    public int[] getAllVariant() {
+        return new int[] {0,1,2};
     }
 }
