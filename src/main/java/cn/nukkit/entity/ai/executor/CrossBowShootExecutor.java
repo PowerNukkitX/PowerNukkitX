@@ -15,8 +15,6 @@ import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemCrossbow;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.item.enchantment.bow.EnchantmentBow;
-import cn.nukkit.item.enchantment.crossbow.EnchantmentCrossbow;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
