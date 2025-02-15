@@ -531,6 +531,8 @@ public class Server {
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
 
+
+        EntityProperty.init();
         EntityProperty.buildPacketData();
         EntityProperty.buildPlayerProperty();
 
