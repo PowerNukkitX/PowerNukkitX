@@ -10,5 +10,7 @@ public enum MinecraftCardinalDirection {
     SOUTH,
     WEST,
     NORTH,
-    EAST
+    EAST;
+
+    public final static MinecraftCardinalDirection[] VALUES = values();
 }
