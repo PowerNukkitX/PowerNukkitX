@@ -10,14 +10,20 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.FluctuateController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
+import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.executor.EntityExplosionExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.passive.EntityAxolotl;
+import cn.nukkit.entity.passive.EntityCat;
+import cn.nukkit.entity.passive.EntityOcelot;
 import cn.nukkit.entity.weather.EntityLightningStrike;
 import cn.nukkit.event.entity.CreeperPowerEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -51,7 +57,9 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(),
-                Set.of(new Behavior(
+                Set.of(
+                        new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.3f, true, 4), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY), 5, 1),
+                        new Behavior(
                                 new EntityExplosionExecutor(30, 3, CoreMemoryTypes.SHOULD_EXPLODE),
                                 all(
                                         entity -> entity.getMemoryStorage().compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true),
@@ -75,7 +83,10 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
                         ), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
-                Set.of(new NearestPlayerSensor(16, 0, 20), entity -> {
+                Set.of(new NearestPlayerSensor(16, 0, 20),
+                        new NearestEntitySensor(EntityCat.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0),
+                        new NearestEntitySensor(EntityOcelot.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0),
+                        entity -> {
                     var memoryStorage = entity.getMemoryStorage();
                     Entity attacker = memoryStorage.get(CoreMemoryTypes.ATTACK_TARGET);
                     if (attacker == null)
