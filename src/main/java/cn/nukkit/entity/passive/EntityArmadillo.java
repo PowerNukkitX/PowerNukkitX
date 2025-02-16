@@ -1,6 +1,8 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -23,6 +25,7 @@ import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.armadillo.PeekExecutor;
 import cn.nukkit.entity.ai.executor.armadillo.RelaxingExecutor;
 import cn.nukkit.entity.ai.executor.armadillo.RollUpExecutor;
+import cn.nukkit.entity.ai.executor.armadillo.ShedExecutor;
 import cn.nukkit.entity.ai.executor.armadillo.UnrollingExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -33,9 +36,14 @@ import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.ItemBrush;
+import cn.nukkit.item.ItemDurable;
+import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -84,6 +92,10 @@ public class EntityArmadillo extends EntityAnimal {
                         ), 7, 1),
                         new Behavior(new RollUpExecutor(), new RollupEvaluator(), 6, 1),
                         new Behavior(new RelaxingExecutor(), new ProbabilityEvaluator(1,0xFFFF), 5, 1),
+                        new Behavior(new ShedExecutor(), all(
+                                entity -> getRollState() == RollState.UNROLLED,
+                                new PassByTimeEvaluator(CoreMemoryTypes.NEXT_SHED, 0)
+                        ), 5, 1),
                         new Behavior(new EntityBreedingExecutor<>(EntityArmadillo.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 7, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.4f, true), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER),
@@ -93,7 +105,7 @@ public class EntityArmadillo extends EntityAnimal {
                                 new ProbabilityEvaluator(4, 10),
                                 entity -> getRollState() == RollState.UNROLLED
                         ), 1, 1, 100),
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 20, false, -1, true, 10), entity -> getRollState() == RollState.UNROLLED, 1, 1)
+                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 20, false, -1, true, 40), entity -> getRollState() == RollState.UNROLLED, 1, 1)
                 ),
                 Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
                 Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
@@ -104,7 +116,15 @@ public class EntityArmadillo extends EntityAnimal {
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        player.sendMessage(getRollState().getState());
+        if(player.getInventory().getUnclonedItem(player.getInventory().getHeldItemIndex()) instanceof ItemBrush brush) {
+            getLevel().dropItem(this, Item.get(Item.ARMADILLO_SCUTE));
+            getLevel().addSound(player, Sound.MOB_ARMADILLO_BRUSH);
+            brush.incDamage(16);
+            if(brush.getDamage() >= brush.getMaxDurability()) {
+                player.getLevel().addSound(player, Sound.RANDOM_BREAK);
+                player.getInventory().clear(player.getInventory().getHeldItemIndex());
+            }
+        }
         return super.onInteract(player, item, clickedPos);
     }
 
@@ -114,6 +134,7 @@ public class EntityArmadillo extends EntityAnimal {
         super.initEntity();
         setMovementSpeed(0.5f);
         setRollState(RollState.UNROLLED);
+        getMemoryStorage().put(CoreMemoryTypes.NEXT_SHED, getLevel().getTick() + Utils.rand(6_000, 10_800));
     }
 
     @Override
