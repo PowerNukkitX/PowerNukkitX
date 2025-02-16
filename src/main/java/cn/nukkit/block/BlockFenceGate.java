@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
+import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
@@ -21,6 +22,7 @@ import javax.annotation.Nullable;
 import java.util.Set;
 
 import static cn.nukkit.block.property.CommonBlockProperties.DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.IN_WALL_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.OPEN_BIT;
@@ -308,12 +310,12 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(getPropertyValue(DIRECTION));
+        return BlockFace.fromHorizontalIndex(getPropertyValue(MINECRAFT_CARDINAL_DIRECTION).ordinal());
     }
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(DIRECTION,face.getHorizontalIndex());
+        setPropertyValue(MINECRAFT_CARDINAL_DIRECTION, MinecraftCardinalDirection.VALUES[face.getHorizontalIndex()]);
     }
 
     @Override
