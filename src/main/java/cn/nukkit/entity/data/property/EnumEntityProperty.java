@@ -12,7 +12,7 @@ public class EnumEntityProperty extends EntityProperty {
     private final String[] enums;
     private final String defaultValue;
 
-    public EnumEntityProperty(String identifier,String[] enums, String defaultValue) {
+    public EnumEntityProperty(String identifier, String[] enums, String defaultValue) {
         super(identifier);
 
         boolean found = false;

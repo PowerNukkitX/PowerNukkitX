@@ -99,6 +99,7 @@ public interface CoreMemoryTypes {
 
     MemoryType<Integer> LAST_HOGLIN_ATTACK_TIME = new MemoryType<>("minecraft:last_hoglin_attack_time", 0);
 
+    MemoryType<Integer> NEXT_SHED = new MemoryType<>("minecraft:next_shed", 0);
 
     MemoryType<EntityEvocationIllager.SPELL> LAST_MAGIC = new MemoryType<>("minecraft:last_spell", EntityEvocationIllager.SPELL.NONE);
 

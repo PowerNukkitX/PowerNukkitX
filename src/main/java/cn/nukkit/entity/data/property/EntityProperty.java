@@ -1,9 +1,12 @@
 package cn.nukkit.entity.data.property;
 
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.SyncEntityPropertyPacket;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -22,6 +25,34 @@ public abstract class EntityProperty {
     public EntityProperty(String identifier) {
         this.identifier = identifier;
     }
+    public static void init() {
+        try (var stream = EntityProperty.class.getClassLoader().getResourceAsStream("entity_properties.nbt")) {
+            CompoundTag root = NBTIO.readCompressed(stream);
+            root.getTags().values().forEach(uncast -> {
+                if(uncast instanceof CompoundTag tag) {
+                    ListTag<CompoundTag> properties = tag.getList("properties", CompoundTag.class);
+                    for(CompoundTag property : properties.getAll()) {
+                        String name = property.getString("name");
+                        int type = property.getInt("type");
+                        EntityProperty data = switch (type) {
+                            case 0 -> new IntEntityProperty(name, property.getInt("min"), property.getInt("max"), property.getInt("min"));
+                            case 1 -> new FloatEntityProperty(name, property.getInt("min"), property.getInt("max"), property.getInt("min"));
+                            case 2 -> new BooleanEntityProperty(name, false);
+                            case 3 -> {
+                                List<String> enums = new ArrayList<>();
+                                for(StringTag entry : property.getList("enum", StringTag.class).getAll()) enums.add(entry.data);
+                                yield new EnumEntityProperty(name, enums.toArray(String[]::new), enums.getFirst());
+                            }
+                            default -> throw new IllegalArgumentException("Unknown EntityProperty type " + type);
+                        };
+                        register(tag.getString("type"), data);
+                    }
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static boolean register(String entityIdentifier, EntityProperty property) {
         List<EntityProperty> entityProperties = entityPropertyMap.getOrDefault(entityIdentifier, new ArrayList<>());
@@ -36,7 +67,8 @@ public abstract class EntityProperty {
     public static void buildPacketData() {
         for (Map.Entry<String, List<EntityProperty>> entry : entityPropertyMap.entrySet()) {
             ListTag<CompoundTag> listProperty = buildPropertyList(entry.getValue());
-            nbtCache.add(new CompoundTag().putList(PROPERTIES_KEY, listProperty).putString("type", entry.getKey()));
+            CompoundTag tag = new CompoundTag().putList(PROPERTIES_KEY, listProperty).putString("type", entry.getKey());
+            nbtCache.add(tag);
         }
     }
 
