@@ -11,7 +11,6 @@ import cn.nukkit.entity.ai.memory.MemoryStorage;
 import cn.nukkit.entity.ai.route.RouteFindingManager;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.finder.IRouteFinder;
-import cn.nukkit.entity.ai.route.finder.SimpleRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
@@ -356,7 +355,7 @@ public class BehaviorGroup implements IBehaviorGroup {
                 .map(vector3 -> {
                     final DimensionData dimensionData = level.getDimensionData();
                     final int chunkX = vector3.getChunkX();
-                    final int y = Math.min(dimensionData.getMaxHeight(), Math.max(dimensionData.getMinHeight(), vector3.getFloorY() - level.getMinHeight()));
+                    final int y = Math.min(dimensionData.getMaxHeight(), Math.max(dimensionData.getMinHeight(), vector3.getFloorY() - dimensionData.getMinHeight()));
                     final int chunkZ = vector3.getChunkZ();
                     return new ChunkSectionVector(chunkX, y >> 4, chunkZ);
                 })
