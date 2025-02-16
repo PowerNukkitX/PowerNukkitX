@@ -10,6 +10,7 @@ import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.BlockPowderSnow;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.event.player.PlayerBucketEmptyEvent;
 import cn.nukkit.event.player.PlayerBucketFillEvent;
 import cn.nukkit.level.Level;
@@ -376,6 +377,13 @@ public class ItemBucket extends Item {
         if (fishEntityId != null) {
             var fishEntity = Entity.createEntity(fishEntityId, spawnPos);
             if (fishEntity != null)
+                if(fishEntity instanceof EntityVariant variant) {
+                    if(getNamedTag() != null) {
+                        if(getNamedTag().containsInt("Variant")) {
+                            variant.setVariant(getNamedTag().getInt("Variant"));
+                        }
+                    }
+                }
                 fishEntity.spawnToAll();
         }
     }

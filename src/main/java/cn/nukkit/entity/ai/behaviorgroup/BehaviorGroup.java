@@ -10,7 +10,7 @@ import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.entity.ai.memory.MemoryStorage;
 import cn.nukkit.entity.ai.route.RouteFindingManager;
 import cn.nukkit.entity.ai.route.data.Node;
-import cn.nukkit.entity.ai.route.finder.SimpleRouteFinder;
+import cn.nukkit.entity.ai.route.finder.IRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
@@ -89,7 +89,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 寻路器(非异步，因为没必要，生物AI本身就是并行的)
      */
-    protected final SimpleRouteFinder routeFinder;
+    protected final IRouteFinder routeFinder;
     /**
      * 此行为组所属实体
      */
@@ -114,7 +114,7 @@ public class BehaviorGroup implements IBehaviorGroup {
                          Set<IBehavior> behaviors,
                          Set<ISensor> sensors,
                          Set<IController> controllers,
-                         SimpleRouteFinder routeFinder,
+                         IRouteFinder routeFinder,
                          EntityIntelligent entity) {
         //此参数用于错开各个实体路径更新的时间，避免在1gt内提交过多路径更新任务
         this.currentRouteUpdateTick = startRouteUpdateTick;
@@ -355,7 +355,7 @@ public class BehaviorGroup implements IBehaviorGroup {
                 .map(vector3 -> {
                     final DimensionData dimensionData = level.getDimensionData();
                     final int chunkX = vector3.getChunkX();
-                    final int y = Math.min(dimensionData.getMaxHeight(), Math.max(dimensionData.getMinHeight(), vector3.getFloorY() - level.getMinHeight()));
+                    final int y = Math.min(dimensionData.getMaxHeight(), Math.max(dimensionData.getMinHeight(), vector3.getFloorY() - dimensionData.getMinHeight()));
                     final int chunkZ = vector3.getChunkZ();
                     return new ChunkSectionVector(chunkX, y >> 4, chunkZ);
                 })
