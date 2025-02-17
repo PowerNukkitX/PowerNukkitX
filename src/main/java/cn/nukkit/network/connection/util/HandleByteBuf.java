@@ -910,10 +910,13 @@ public class HandleByteBuf extends ByteBuf {
     public void writeAttributeList(Attribute[] attributes) {
         this.writeUnsignedVarInt(attributes.length);
         for (Attribute attribute : attributes) {
-            this.writeString(attribute.getName());
             this.writeFloatLE(attribute.getMinValue());
-            this.writeFloatLE(attribute.getValue());
             this.writeFloatLE(attribute.getMaxValue());
+            this.writeFloatLE(attribute.getValue());
+            this.writeFloatLE(attribute.getDefaultMinimum());
+            this.writeFloatLE(attribute.getDefaultMaximum());
+            this.writeFloatLE(attribute.getDefaultValue());
+            this.writeString(attribute.getName());
         }
     }
 
@@ -1482,6 +1485,7 @@ public class HandleByteBuf extends ByteBuf {
         writeByte(link.type);
         writeBoolean(link.immediate);
         writeBoolean(link.riderInitiated);
+        writeFloatLE(0f);
     }
 
     public EntityLink readEntityLink() {
