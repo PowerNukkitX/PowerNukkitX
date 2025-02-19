@@ -24,6 +24,7 @@ public final class BlockTags {
     public static final String DARK_OAK = "dark_oak";
     public static final String DIAMOND_PICK_DIGGABLE = "diamond_pick_diggable";
     public static final String DIRT = "dirt";
+    public static final String COARSE_DIRT = "coarse_dirt";
     public static final String FERTILIZE_AREA = "fertilize_area";
     public static final String GOLD_PICK_DIGGABLE = "gold_pick_diggable";
     public static final String GRASS = "grass";
