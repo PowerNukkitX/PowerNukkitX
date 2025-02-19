@@ -1333,7 +1333,16 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     public final boolean isBlockChangeAllowed(@Nullable Player player) {
         if (isBlockChangeAllowed()) {
-            return true;
+            int height = (int) (this.getY()-1);
+            for(int i = height; i >= getLevel().getMinHeight(); i--) {
+                Block block = this.down(height-i);
+                if(block instanceof BlockAllow) {
+                    return true;
+                } else if(block instanceof BlockDeny) {
+                    return player == null || player.isCreative();
+                }
+            }
+            return player == null || !player.isAdventure();
         }
         return player != null && player.isCreative() && player.isOp();
     }

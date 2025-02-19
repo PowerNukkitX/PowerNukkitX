@@ -483,11 +483,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        if (!block.isBlockChangeAllowed(this)) {
+        boolean canChangeBlock = target.isBlockChangeAllowed(this);
+        if (!canChangeBlock) {
             return;
         }
 
-        if (this.isSurvival()) {
+        if (this.isSurvival() || (this.isAdventure() && canChangeBlock)) {
             this.breakingBlockTime = currentBreak;
             double miningTimeRequired;
             if (target instanceof CustomBlock customBlock) {
