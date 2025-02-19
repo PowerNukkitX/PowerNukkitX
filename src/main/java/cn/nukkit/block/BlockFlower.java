@@ -20,7 +20,7 @@ public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPo
 
     public static boolean isSupportValid(Block block) {
         return switch (block.getId()) {
-            case GRASS_BLOCK, DIRT, FARMLAND, PODZOL, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
+            case GRASS_BLOCK, DIRT, COARSE_DIRT, FARMLAND, PODZOL, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
             default -> false;
         };
     }
