@@ -4427,7 +4427,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         String actionJson = dialog.getButtonJSONData();
 
         if (book && dialogWindows.getIfPresent(dialog.getSceneName()) != null) dialog.updateSceneName();
-        dialog.getBindEntity().setDataProperty(HAS_NPC, 1);
+        dialog.getBindEntity().setDataProperty(HAS_NPC, true);
         dialog.getBindEntity().setDataProperty(NPC_DATA, dialog.getSkinData());
         dialog.getBindEntity().setDataProperty(ACTIONS, actionJson);
         dialog.getBindEntity().setDataProperty(INTERACT_TEXT, dialog.getContent());
