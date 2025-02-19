@@ -58,10 +58,7 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
     private boolean isSupportValid() {
         Block down = down();
         if(down instanceof BlockHardenedClay)  return true;
-        return switch (down.getId()) {
-            case SAND, DIRT, PODZOL, GRASS_BLOCK, MOSS_BLOCK, MYCELIUM -> true;
-            default -> false;
-        };
+        return down.is("dirt") || down.is("sand");
     }
 
     @Override

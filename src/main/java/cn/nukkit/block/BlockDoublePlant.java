@@ -89,10 +89,7 @@ public abstract class BlockDoublePlant extends BlockFlowable {
         if(support instanceof BlockDoublePlant plant) {
             return !plant.isTopHalf();
         }
-        return switch (support.getId()) {
-            case GRASS_BLOCK, DIRT, PODZOL, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
-            default -> false;
-        };
+        return support.is("dirt");
     }
 
     @Override

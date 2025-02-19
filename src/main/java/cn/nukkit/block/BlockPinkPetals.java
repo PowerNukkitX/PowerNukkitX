@@ -55,10 +55,7 @@ public class BlockPinkPetals extends BlockFlowable {
     }
 
     private static boolean isSupportValid(Block block) {
-        return switch (block.getId()) {
-            case GRASS_BLOCK, DIRT, FARMLAND, PODZOL, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
-            default -> false;
-        };
+        return block.is("dirt");
     }
 
     @Override
