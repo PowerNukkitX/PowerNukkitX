@@ -141,7 +141,7 @@ public class BlockMossBlock extends BlockSolid implements Natural {
 
     public boolean canGrowPlant(Position pos) {
         return switch (pos.add(0, -1, 0).getLevelBlock().getId()) {
-            case GRASS_BLOCK, DIRT, PODZOL, FARMLAND, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK, PALE_MOSS_BLOCK -> true;
+            case GRASS_BLOCK, DIRT, COARSE_DIRT, PODZOL, FARMLAND, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK, PALE_MOSS_BLOCK -> true;
             default -> false;
         };
     }
