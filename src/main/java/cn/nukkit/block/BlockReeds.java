@@ -8,6 +8,7 @@ import cn.nukkit.item.ItemSugarCane;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -173,7 +174,7 @@ public class BlockReeds extends BlockFlowable {
         if (downId.equals(REEDS)) {
             return true;
         }
-        if (!downId.equals(GRASS_BLOCK) && !downId.equals(DIRT) && !downId.equals(SAND) && !downId.equals(PODZOL) && !downId.equals(MOSS_BLOCK)) {
+        if (!down.is(BlockTags.DIRT) || !down.is(BlockTags.SAND)) {
             return false;
         }
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
