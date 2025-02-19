@@ -20,7 +20,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InventoryTransactionPacket extends DataPacket {
-    //InventoryTransactionType 0-5
     public static final int TYPE_NORMAL = 0;
     public static final int TYPE_MISMATCH = 1;
     public static final int TYPE_USE_ITEM = 2;
@@ -50,9 +49,7 @@ public class InventoryTransactionPacket extends DataPacket {
     public final List<LegacySetItemSlotData> legacySlots = new ObjectArrayList<>();
 
     public int legacyRequestId;
-
     private UseItemData.TriggerType triggerType;
-
     private UseItemData.PredictedResult clientInteractPrediction;
 
     /**
@@ -71,7 +68,6 @@ public class InventoryTransactionPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeVarInt(this.legacyRequestId);
         byteBuf.writeUnsignedVarInt(this.transactionType);
 

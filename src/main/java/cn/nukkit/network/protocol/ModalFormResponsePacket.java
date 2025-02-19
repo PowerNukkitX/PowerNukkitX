@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ModalFormResponsePacket extends DataPacket {
-
     public int formId;
     public String data = "null";
     public int cancelReason;

@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestNetworkSettingsPacket extends DataPacket {
-
     public int protocolVersion;
 
     @Override

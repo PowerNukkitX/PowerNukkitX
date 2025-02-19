@@ -13,7 +13,6 @@ import java.util.Set;
 @Getter
 @Setter
 public class ClientMovementPredictionSyncPacket extends DataPacket {
-
     private final Set<EntityFlag> flags = new ObjectOpenHashSet<>();
     private Vector3f actorBoundingBox;
     private MovementAttributesComponent movementAttributesComponent;

@@ -18,25 +18,10 @@ import java.nio.ByteOrder;
 public class AvailableEntityIdentifiersPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.AVAILABLE_ENTITY_IDENTIFIERS_PACKET;
 
-    private static final byte[] TAG;
+    private static byte[] TAG;
 
     static {
-        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("entity_identifiers.nbt")) {
-            if (inputStream == null) {
-                throw new AssertionError("Could not find entity_identifiers.nbt");
-            }
-
-            BufferedInputStream bis = new BufferedInputStream(inputStream);
-            CompoundTag nbt = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
-            ListTag<CompoundTag> list = nbt.getList("idlist", CompoundTag.class);
-            for (var customEntityDefinition : Registries.ENTITY.getCustomEntityDefinitions()) {
-                list.add(customEntityDefinition.toNBT());
-            }
-            nbt.putList("idlist", list);
-            TAG = NBTIO.write(nbt, ByteOrder.BIG_ENDIAN, true);
-        } catch (Exception e) {
-            throw new AssertionError("Error whilst loading entity_identifiers.dat", e);
-        }
+        reloadTag();
     }
 
     public byte[] tag = TAG;
@@ -57,5 +42,24 @@ public class AvailableEntityIdentifiersPacket extends DataPacket {
 
     public void handle(PacketHandler handler) {
         handler.handle(this);
+    }
+
+    public static void reloadTag() {
+        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("entity_identifiers.nbt")) {
+            if (inputStream == null) {
+                throw new AssertionError("Could not find entity_identifiers.nbt");
+            }
+
+            BufferedInputStream bis = new BufferedInputStream(inputStream);
+            CompoundTag nbt = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
+            ListTag<CompoundTag> list = nbt.getList("idlist", CompoundTag.class);
+            for (var customEntityDefinition : Registries.ENTITY.getCustomEntityDefinitions()) {
+                list.add(customEntityDefinition.toNBT());
+            }
+            nbt.putList("idlist", list);
+            TAG = NBTIO.write(nbt, ByteOrder.BIG_ENDIAN, true);
+        } catch (Exception e) {
+            throw new AssertionError("Error whilst loading entity_identifiers.dat", e);
+        }
     }
 }

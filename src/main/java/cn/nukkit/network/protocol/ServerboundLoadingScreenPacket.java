@@ -10,7 +10,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServerboundLoadingScreenPacket extends DataPacket {
-
     private ServerboundLoadingScreenPacketType type;
     /**
      * Optional int, not present if null

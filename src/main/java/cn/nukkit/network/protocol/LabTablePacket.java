@@ -28,7 +28,6 @@ public class LabTablePacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeByte((byte) actionType.ordinal());
         byteBuf.writeBlockVector3(blockPosition);
         byteBuf.writeByte((byte) reactionType.ordinal());

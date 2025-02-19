@@ -31,16 +31,17 @@ public class ContainerOpenPacket extends DataPacket {
     public void decode(HandleByteBuf byteBuf) {
         this.windowId = byteBuf.readByte();
         this.type = byteBuf.readByte();
+
         BlockVector3 v = byteBuf.readBlockVector3();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
+
         this.entityId = byteBuf.readEntityUniqueId();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeByte((byte) this.windowId);
         byteBuf.writeByte((byte) this.type);
         byteBuf.writeBlockVector3(this.x, this.y, this.z);

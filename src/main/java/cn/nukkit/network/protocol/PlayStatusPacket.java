@@ -12,7 +12,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayStatusPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.PLAY_STATUS_PACKET;
 
     @Override
@@ -40,7 +39,6 @@ public class PlayStatusPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeInt(this.status);
     }
 

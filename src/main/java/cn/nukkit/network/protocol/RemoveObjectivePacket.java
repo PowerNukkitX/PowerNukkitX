@@ -10,7 +10,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RemoveObjectivePacket extends DataPacket {
-
     public String objectiveName;
 
     @Override
@@ -20,12 +19,11 @@ public class RemoveObjectivePacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        //only server -> client
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeString(this.objectiveName);
     }
 

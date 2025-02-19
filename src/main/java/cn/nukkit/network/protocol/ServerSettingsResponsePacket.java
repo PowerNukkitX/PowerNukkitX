@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServerSettingsResponsePacket extends DataPacket {
-
     public int formId;
     public String data;
 
@@ -23,7 +22,6 @@ public class ServerSettingsResponsePacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeVarInt(this.formId);
         byteBuf.writeString(this.data);
     }

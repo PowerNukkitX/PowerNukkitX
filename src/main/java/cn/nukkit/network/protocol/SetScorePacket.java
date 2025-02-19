@@ -23,12 +23,11 @@ public class SetScorePacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        //only server -> client
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeByte((byte) this.action.ordinal());
         byteBuf.writeUnsignedVarInt(this.infos.size());
 

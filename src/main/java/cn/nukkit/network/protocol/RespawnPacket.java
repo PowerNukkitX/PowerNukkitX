@@ -11,7 +11,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RespawnPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.RESPAWN_PACKET;
 
     public static final int STATE_SEARCHING_FOR_SPAWN = 0;
@@ -36,7 +35,6 @@ public class RespawnPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeByte((byte) respawnState);
         byteBuf.writeEntityRuntimeId(runtimeEntityId);

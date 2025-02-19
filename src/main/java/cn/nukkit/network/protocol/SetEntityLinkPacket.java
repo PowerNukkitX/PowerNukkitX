@@ -13,7 +13,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetEntityLinkPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.SET_ENTITY_LINK_PACKET;
 
     public long vehicleUniqueId; //from
@@ -30,7 +29,6 @@ public class SetEntityLinkPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeEntityUniqueId(this.vehicleUniqueId);
         byteBuf.writeEntityUniqueId(this.riderUniqueId);
         byteBuf.writeByte((byte) this.type.ordinal());

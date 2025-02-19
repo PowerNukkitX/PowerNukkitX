@@ -6,6 +6,7 @@ import cn.nukkit.network.protocol.types.CodeBuilderOperationType;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;import lombok.*;
 
+//EDU exclusive
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor

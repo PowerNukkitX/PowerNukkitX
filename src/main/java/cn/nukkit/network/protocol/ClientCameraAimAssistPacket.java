@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ClientCameraAimAssistPacket extends DataPacket {
-
     private String cameraPresetId;
     private ClientCameraAimAssistPacketAction action;
     private boolean allowAimAssist;

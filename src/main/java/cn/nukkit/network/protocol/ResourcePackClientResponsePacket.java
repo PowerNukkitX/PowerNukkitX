@@ -12,7 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResourcePackClientResponsePacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET;
 
     public static final byte STATUS_REFUSED = 1;
@@ -40,7 +39,6 @@ public class ResourcePackClientResponsePacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeByte(this.responseStatus);
         byteBuf.writeShortLE(this.packEntries.length);
         for (Entry entry : this.packEntries) {

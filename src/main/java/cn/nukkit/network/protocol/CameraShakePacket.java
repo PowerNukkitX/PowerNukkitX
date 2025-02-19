@@ -29,7 +29,6 @@ public class CameraShakePacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeFloatLE(this.intensity);
         byteBuf.writeFloatLE(this.duration);
         byteBuf.writeByte((byte) this.shakeType.ordinal());

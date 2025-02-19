@@ -147,7 +147,6 @@ public interface ProtocolInfo {
     int LEVEL_SOUND_EVENT_PACKET = 0x7b;
     int LEVEL_EVENT_GENERIC_PACKET = 0x7c;
     int LECTERN_UPDATE_PACKET = 0x7d;
-    int VIDEO_STREAM_CONNECT_PACKET = 0x7e;
     //int ADD_ENTITY_PACKET = 0x7f;
     //int REMOVE_ENTITY_PACKET = 0x80;
     int CLIENT_CACHE_STATUS_PACKET = 0x81;

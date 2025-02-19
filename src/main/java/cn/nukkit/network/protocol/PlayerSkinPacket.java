@@ -13,7 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerSkinPacket extends DataPacket {
-
     public UUID uuid;
     public Skin skin;
     public String newSkinName;

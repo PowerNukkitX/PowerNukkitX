@@ -9,7 +9,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookEditPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.BOOK_EDIT_PACKET;
 
     public Action action;

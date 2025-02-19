@@ -13,7 +13,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BossEventPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.BOSS_EVENT_PACKET;
 
     /* S2C: Shows the bossbar to the player. */

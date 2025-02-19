@@ -7,9 +7,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 public class ClientboundCloseFormPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.CHANGE_DIMENSION_PACKET;
-
 
     @Override
     public int pid() {

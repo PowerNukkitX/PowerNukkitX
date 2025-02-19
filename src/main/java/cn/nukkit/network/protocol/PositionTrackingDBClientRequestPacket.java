@@ -40,8 +40,6 @@ public class PositionTrackingDBClientRequestPacket extends DataPacket {
     }
 
     public enum Action {
-
-
         QUERY
     }
 

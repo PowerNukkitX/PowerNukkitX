@@ -9,8 +9,8 @@ import lombok.*;
 public class TransferPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.TRANSFER_PACKET;
 
-    public String address; // Server address
-    public int port = 19132; // Server port
+    public String address;
+    public int port = 19132;
     private boolean reloadWorld;
 
     @Override

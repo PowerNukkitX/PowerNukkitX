@@ -10,7 +10,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MovementEffectPacket extends DataPacket {
-
     public long targetRuntimeID;
     public MovementEffectType effectType;
     public int effectDuration;
@@ -23,7 +22,7 @@ public class MovementEffectPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        //packet is client bounded
+
     }
 
     @Override

@@ -19,13 +19,9 @@ import java.nio.ByteOrder;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemRegistryPacket extends DataPacket {
-
-
     public static final int NETWORK_ID = ProtocolInfo.ITEM_REGISTRY_PACKET;
-    
 
     private Entry[] entries = Entry.EMPTY_ARRAY;
-
 
     public void setEntries(Entry[] entries) {
         this.entries = entries == null? null : entries.length == 0? Entry.EMPTY_ARRAY : entries.clone();
@@ -47,7 +43,6 @@ public class ItemRegistryPacket extends DataPacket {
     
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUnsignedVarInt(this.entries.length);
         try {
             for (Entry entry : this.entries) {
@@ -64,7 +59,6 @@ public class ItemRegistryPacket extends DataPacket {
     
     @ToString
     public static class Entry {
-
         public static final Entry[] EMPTY_ARRAY = new Entry[0];
         
         private final String name;
@@ -72,7 +66,6 @@ public class ItemRegistryPacket extends DataPacket {
         private final Integer version;
         private final boolean componentBased;
         private final CompoundTag data;
-
 
         public Entry(String name, Integer runtimeId, Integer version, boolean componentBased, CompoundTag data) {
             this.name = name;

@@ -39,7 +39,6 @@ public class MobArmorEquipmentPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeEntityRuntimeId(this.eid);
         byteBuf.writeSlot(this.slots[0]);
         byteBuf.writeSlot(this.slots[1]);

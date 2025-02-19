@@ -140,14 +140,8 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
     }
 
     public enum Action {
-
-
         UPDATE,
-
-
         DESTROY,
-
-
         NOT_FOUND
     }
 

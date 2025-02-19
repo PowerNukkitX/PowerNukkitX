@@ -13,7 +13,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TextPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.TEXT_PACKET;
 
     @Override

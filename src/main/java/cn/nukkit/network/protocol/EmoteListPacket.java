@@ -9,12 +9,12 @@ import lombok.ToString;
 import java.util.List;
 import java.util.UUID;
 
-
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmoteListPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.EMOTE_LIST_PACKET;
+
     public long runtimeId;
     public final List<UUID> pieceIds = new ObjectArrayList<>();
 
@@ -35,7 +35,6 @@ public class EmoteListPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeEntityRuntimeId(runtimeId);
         byteBuf.writeUnsignedVarInt(pieceIds.size());
         for (UUID id : pieceIds) {

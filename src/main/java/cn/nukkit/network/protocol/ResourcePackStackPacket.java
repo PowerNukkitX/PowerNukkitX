@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResourcePackStackPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_STACK_PACKET;
 
     public boolean mustAccept = false;
@@ -31,7 +30,6 @@ public class ResourcePackStackPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeBoolean(this.mustAccept);
 
         byteBuf.writeUnsignedVarInt(this.behaviourPackStack.length);

@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetCommandsEnabledPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.SET_COMMANDS_ENABLED_PACKET;
 
     public boolean enabled;
@@ -24,7 +23,6 @@ public class SetCommandsEnabledPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeBoolean(this.enabled);
     }
 

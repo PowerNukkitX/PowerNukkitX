@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetHealthPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.SET_HEALTH_PACKET;
 
     public int health;
@@ -24,7 +23,6 @@ public class SetHealthPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUnsignedVarInt(this.health);
     }
 

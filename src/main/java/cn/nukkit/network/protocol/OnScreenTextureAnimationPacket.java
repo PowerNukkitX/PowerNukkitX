@@ -9,7 +9,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OnScreenTextureAnimationPacket extends DataPacket {
-
     public int effectId;
 
     @Override
@@ -24,7 +23,6 @@ public class OnScreenTextureAnimationPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeIntLE(this.effectId);
     }
 

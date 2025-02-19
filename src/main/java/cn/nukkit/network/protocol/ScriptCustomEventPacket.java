@@ -12,7 +12,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ScriptCustomEventPacket extends DataPacket {
-
     public String eventName;
     public byte[] eventData;
 

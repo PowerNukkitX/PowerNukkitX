@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlaySoundPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.PLAY_SOUND_PACKET;
 
     public String name;
@@ -29,7 +28,6 @@ public class PlaySoundPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeString(this.name);
         byteBuf.writeBlockVector3(this.x * 8, this.y * 8, this.z * 8);
         byteBuf.writeFloatLE(this.volume);

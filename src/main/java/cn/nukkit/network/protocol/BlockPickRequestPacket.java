@@ -10,7 +10,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BlockPickRequestPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.BLOCK_PICK_REQUEST_PACKET;
 
     public int x;

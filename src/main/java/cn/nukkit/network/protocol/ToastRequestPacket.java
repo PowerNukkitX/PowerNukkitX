@@ -9,7 +9,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ToastRequestPacket extends DataPacket{
-
     public String title = "";
     public String content = "";
 
@@ -26,7 +25,6 @@ public class ToastRequestPacket extends DataPacket{
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeString(this.title);
         byteBuf.writeString(this.content);
     }

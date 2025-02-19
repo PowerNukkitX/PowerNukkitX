@@ -25,7 +25,6 @@ public class SetTimePacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeVarInt(this.time);
     }
 

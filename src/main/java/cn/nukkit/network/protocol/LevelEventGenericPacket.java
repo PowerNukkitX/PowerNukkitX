@@ -27,11 +27,11 @@ public class LevelEventGenericPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeVarInt(eventId);
         try {
             byteBuf.writeBytes(NBTIO.writeValue(tag, ByteOrder.LITTLE_ENDIAN, true));

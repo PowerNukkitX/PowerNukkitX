@@ -19,13 +19,8 @@ import java.util.UUID;
 public class CraftingEventPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.CRAFTING_EVENT_PACKET;
 
-
     public static final int TYPE_INVENTORY = 0;
-
-
     public static final int TYPE_CRAFTING = 1;
-
-
     public static final int TYPE_WORKBENCH = 2;
 
     public int windowId;

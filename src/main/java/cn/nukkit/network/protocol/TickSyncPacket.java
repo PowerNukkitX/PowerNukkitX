@@ -14,12 +14,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TickSyncPacket extends DataPacket {
-
-
     public static final int NETWORK_ID = ProtocolInfo.TICK_SYNC_PACKET;
     
     private long requestTimestamp;
-    
     private long responseTimestamp;
     
     @Override
@@ -35,7 +32,6 @@ public class TickSyncPacket extends DataPacket {
     
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeLongLE(this.requestTimestamp);
         byteBuf.writeLongLE(this.responseTimestamp);
     }

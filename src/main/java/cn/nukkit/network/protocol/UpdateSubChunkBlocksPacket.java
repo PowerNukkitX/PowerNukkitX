@@ -6,7 +6,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.List;
 
-
 public class UpdateSubChunkBlocksPacket extends DataPacket {
     public final int chunkX;
     public final int chunkY;

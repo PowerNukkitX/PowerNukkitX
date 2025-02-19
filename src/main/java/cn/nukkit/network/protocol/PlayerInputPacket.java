@@ -12,7 +12,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerInputPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.PLAYER_INPUT_PACKET;
 
     public float motionX;

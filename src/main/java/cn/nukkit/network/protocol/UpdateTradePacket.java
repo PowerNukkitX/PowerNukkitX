@@ -16,7 +16,6 @@ import java.nio.ByteOrder;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateTradePacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.UPDATE_TRADE_PACKET;
 
     public byte containerId;
@@ -29,7 +28,6 @@ public class UpdateTradePacket extends DataPacket {
     public CompoundTag offers;//交易配方
     public boolean newTradingUi;//是否启用新版交易ui
     public boolean usingEconomyTrade;//未知
-
 
     @Override
     public int pid() {

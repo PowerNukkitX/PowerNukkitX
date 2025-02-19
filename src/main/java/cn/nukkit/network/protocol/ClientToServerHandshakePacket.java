@@ -15,7 +15,7 @@ public class ClientToServerHandshakePacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        //no content
+
     }
 
     @Override

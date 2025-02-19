@@ -11,9 +11,7 @@ import java.util.UUID;
 @ToString(exclude = "sha256")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResourcePackDataInfoPacket
- extends AbstractResourcePackDataPacket {
-
+public class ResourcePackDataInfoPacket extends AbstractResourcePackDataPacket {
     public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_DATA_INFO_PACKET;
 
     public static final int TYPE_INVALID = 0;
@@ -49,7 +47,6 @@ public class ResourcePackDataInfoPacket
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         encodePackInfo(byteBuf);
         byteBuf.writeIntLE(this.maxChunkSize);
         byteBuf.writeIntLE(this.chunkCount);

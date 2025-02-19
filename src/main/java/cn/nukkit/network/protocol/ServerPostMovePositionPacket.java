@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServerPostMovePositionPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.SERVER_POST_MOVE_POSITION;
 
     public Vector3f position;
@@ -25,7 +24,6 @@ public class ServerPostMovePositionPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeVector3f(this.position);
     }
 

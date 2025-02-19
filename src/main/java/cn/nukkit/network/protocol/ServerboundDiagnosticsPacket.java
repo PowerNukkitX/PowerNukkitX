@@ -3,7 +3,6 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 
 public class ServerboundDiagnosticsPacket extends DataPacket {
-
     public float avgFps;
     public float avgServerSimTickTimeMS;
     public float avgClientSimTickTimeMS;
@@ -34,7 +33,7 @@ public class ServerboundDiagnosticsPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        // server bound
+
     }
 
     @Override

@@ -437,9 +437,7 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_GOAT_BASS_7 = dynamic(420);
     public static final int SOUND_GOAT_BASS_8 = dynamic(421);
     public static final int SOUND_GOAT_BASS_9 = dynamic(422);
-    // 423 is unused
-    // 424 is unused
-    // 425 is unused
+    // 423-425 are unused
     public static final int SOUND_IMITATE_WARDEN = dynamic(426);
     public static final int SOUND_LISTENING_ANGRY = dynamic(427);
     public static final int SOUND_ITEM_GIVEN = dynamic(428);
@@ -572,7 +570,6 @@ public class LevelSoundEventPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUnsignedVarInt(this.sound);
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeVarInt(this.extraData);

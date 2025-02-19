@@ -25,7 +25,6 @@ public class DebugInfoPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeLong(this.entityId);
         byteBuf.writeString(this.data);
     }

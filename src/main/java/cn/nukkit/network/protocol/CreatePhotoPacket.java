@@ -13,7 +13,6 @@ public class CreatePhotoPacket extends DataPacket {
     public String photoName;
     public String photoItemName;
 
-
     @Override
     public int pid() {
         return NETWORK_ID;
@@ -26,7 +25,6 @@ public class CreatePhotoPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeLongLE(id);
         byteBuf.writeString(photoName);
         byteBuf.writeString(photoItemName);

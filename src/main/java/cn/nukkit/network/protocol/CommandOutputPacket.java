@@ -23,7 +23,6 @@ public class CommandOutputPacket extends DataPacket {
     public int successCount;
     public String data;
 
-
     @Override
     public int pid() {
         return NETWORK_ID;
@@ -31,12 +30,11 @@ public class CommandOutputPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        //non
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUnsignedVarInt(this.commandOriginData.type.ordinal());
         byteBuf.writeUUID(this.commandOriginData.uuid);
         byteBuf.writeString(this.commandOriginData.requestId);// unknown

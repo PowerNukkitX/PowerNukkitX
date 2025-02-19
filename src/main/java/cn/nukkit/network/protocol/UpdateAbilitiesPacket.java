@@ -62,7 +62,6 @@ public class UpdateAbilitiesPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeLongLE(this.entityId);
         byteBuf.writeUnsignedVarInt(this.playerPermission.ordinal());
         byteBuf.writeUnsignedVarInt(this.commandPermission.ordinal());

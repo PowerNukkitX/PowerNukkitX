@@ -12,7 +12,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetPlayerInventoryOptionsPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.SET_PLAYER_INVENTORY_OPTIONS_PACKET;
 
     public InventoryTabLeft leftTab;
@@ -37,7 +36,6 @@ public class SetPlayerInventoryOptionsPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeVarInt(this.leftTab.ordinal());
         byteBuf.writeVarInt(this.rightTab.ordinal());
         byteBuf.writeBoolean(this.filtering);

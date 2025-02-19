@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
 @ToString
@@ -66,21 +65,8 @@ public class AddEntityPacket extends DataPacket {
         byteBuf.writeFloatLE(this.bodyYaw != -1 ? this.bodyYaw : this.yaw);
         byteBuf.writeAttributeList(this.attributes);
         byteBuf.writeBytes(Binary.writeEntityData(this.entityData));
-        //syncedProperties
-        byteBuf.writeUnsignedVarInt(this.syncedProperties.intProperties().length);
-        for (int i = 0, len = this.syncedProperties.intProperties().length; i < len; ++i) {
-            byteBuf.writeUnsignedVarInt(i);
-            byteBuf.writeVarInt(this.syncedProperties.intProperties()[i]);
-        }
-        byteBuf.writeUnsignedVarInt(this.syncedProperties.floatProperties().length);
-        for (int i = 0, len = this.syncedProperties.floatProperties().length; i < len; ++i) {
-            byteBuf.writeUnsignedVarInt(i);
-            byteBuf.writeFloatLE(this.syncedProperties.floatProperties()[i]);
-        }
-        byteBuf.writeUnsignedVarInt(this.links.length);
-        for (EntityLink link : links) {
-            byteBuf.writeEntityLink(link);
-        }
+        byteBuf.writePropertySyncData(syncedProperties);
+        byteBuf.writeEntityLinks(links);
     }
 
     public void handle(PacketHandler handler) {

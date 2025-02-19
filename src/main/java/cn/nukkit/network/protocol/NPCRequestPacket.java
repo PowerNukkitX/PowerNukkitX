@@ -7,8 +7,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NPCRequestPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.NPC_REQUEST_PACKET;
+
     public long entityRuntimeId;
     public RequestType requestType = RequestType.SET_SKIN;
     public String data = "";

@@ -23,7 +23,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientboundMapItemDataPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.CLIENTBOUND_MAP_ITEM_DATA_PACKET;
     public static final long[] EMPTY_LONGS = new long[0];
 
@@ -46,7 +45,6 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     public int[] colors = EmptyArrays.EMPTY_INTS;
     public BufferedImage image = null;
 
-    //update
     public static final int TEXTURE_UPDATE = 0x02;
     public static final int DECORATIONS_UPDATE = 0x04;
     public static final int ENTITIES_UPDATE = 0x08;
@@ -142,8 +140,6 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     }
 
     public static class MapDecorator {
-
-
         public static final MapDecorator[] EMPTY_ARRAY = new MapDecorator[0];
 
         public byte rotation;

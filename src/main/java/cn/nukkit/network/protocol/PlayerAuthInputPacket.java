@@ -129,7 +129,7 @@ public class PlayerAuthInputPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        // Noop
+
     }
 
     public void handle(PacketHandler handler) {

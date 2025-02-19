@@ -7,7 +7,6 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 public class EntityPickRequestPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.ENTITY_PICK_REQUEST_PACKET;
 
     @Override
@@ -22,7 +21,7 @@ public class EntityPickRequestPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        //TODO
+        //TODO: Implement
     }
 
     public void handle(PacketHandler handler) {

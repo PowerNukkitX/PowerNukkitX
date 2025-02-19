@@ -11,14 +11,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetDisplayObjectivePacket extends DataPacket {
-
     public DisplaySlot displaySlot;
-
     public String
             objectiveName,
             displayName,
             criteriaName;
-
     public SortOrder sortOrder;
 
     @Override
@@ -28,12 +25,11 @@ public class SetDisplayObjectivePacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        //only server -> client
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeString(this.displaySlot.getSlotName());
         byteBuf.writeString(this.objectiveName);
         byteBuf.writeString(this.displayName);

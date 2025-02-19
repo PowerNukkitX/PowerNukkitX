@@ -12,15 +12,10 @@ public class EmotePacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.EMOTE_PACKET;
 
     public long runtimeId;
-
     public String xuid = "";
-
     public String platformId = "";
-
     public String emoteID;
-
     public byte flags;
-
     public int emoteDuration;
 
     @Override

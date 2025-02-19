@@ -6,7 +6,6 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 public class ServerSettingsRequestPacket extends DataPacket {
-
     @Override
     public int pid() {
         return ProtocolInfo.SERVER_SETTINGS_REQUEST_PACKET;

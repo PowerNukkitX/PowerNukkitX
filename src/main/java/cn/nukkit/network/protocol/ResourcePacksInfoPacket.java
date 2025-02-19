@@ -15,7 +15,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResourcePacksInfoPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACKS_INFO_PACKET;
 
     public boolean mustAccept;
@@ -32,12 +31,6 @@ public class ResourcePacksInfoPacket extends DataPacket {
     public String worldTemplateVersion;
 
     public ResourcePack[] resourcePackEntries = ResourcePack.EMPTY_ARRAY;
-
-//    /**
-//     * @since v618
-//     */
-//    private List<CDNEntry> CDNEntries = new ObjectArrayList<>();
-
 
     @Override
     public void decode(HandleByteBuf byteBuf) {

@@ -14,7 +14,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetHudPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.SET_HUD;
 
     public final Set<HudElement> elements = new ObjectOpenHashSet<>();

@@ -12,7 +12,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdventureSettingsPacket  extends DataPacket {
+public class AdventureSettingsPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.ADVENTURE_SETTINGS_PACKET;
 

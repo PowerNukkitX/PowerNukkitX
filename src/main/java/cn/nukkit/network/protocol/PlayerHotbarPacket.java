@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerHotbarPacket extends DataPacket {
-
     public int selectedHotbarSlot;
     public int windowId = SpecialWindowId.PLAYER.getId();
 
@@ -28,7 +27,6 @@ public class PlayerHotbarPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUnsignedVarInt(this.selectedHotbarSlot);
         byteBuf.writeByte((byte) this.windowId);
         byteBuf.writeBoolean(this.selectHotbarSlot);

@@ -26,7 +26,6 @@ public class CameraPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeEntityUniqueId(this.cameraUniqueId);
         byteBuf.writeEntityUniqueId(this.playerUniqueId);
     }

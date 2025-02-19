@@ -28,7 +28,6 @@ public class MoveEntityDeltaPacket extends DataPacket {
     public float yaw = 0;
     public float headYaw = 0;
 
-
     @Override
     public int pid() {
         return NETWORK_ID;
@@ -60,7 +59,6 @@ public class MoveEntityDeltaPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeEntityRuntimeId(this.runtimeEntityId);
         byteBuf.writeShortLE(this.flags);
         if ((this.flags & FLAG_HAS_X) != 0) {

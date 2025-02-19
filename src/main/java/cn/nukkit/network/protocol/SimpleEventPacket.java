@@ -7,8 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SimpleEventPacket extends DataPacket {
-
-    public short unknown;
+    public short type;
 
     @Override
     public int pid() {
@@ -22,8 +21,7 @@ public class SimpleEventPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
-        byteBuf.writeShort(this.unknown);
+        byteBuf.writeShort(this.type);
     }
 
     public void handle(PacketHandler handler) {

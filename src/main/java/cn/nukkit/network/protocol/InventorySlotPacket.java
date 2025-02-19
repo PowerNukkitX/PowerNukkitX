@@ -23,7 +23,6 @@ public class InventorySlotPacket extends DataPacket {
     public Item storageItem = Item.AIR; // is air if the item is not a bundle
     public Item item;
 
-
     @Override
     public int pid() {
         return NETWORK_ID;

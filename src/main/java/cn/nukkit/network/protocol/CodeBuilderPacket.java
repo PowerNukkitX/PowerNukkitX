@@ -4,6 +4,7 @@ import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;import lombok.*;
 
+//EDU exclusive
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,7 +26,6 @@ public class CodeBuilderPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeString(url);
         byteBuf.writeBoolean(isOpening);
     }

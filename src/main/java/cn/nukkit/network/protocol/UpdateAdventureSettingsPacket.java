@@ -19,7 +19,6 @@ public class UpdateAdventureSettingsPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeBoolean(noPvM);
         byteBuf.writeBoolean(noMvP);
         byteBuf.writeBoolean(immutableWorld);

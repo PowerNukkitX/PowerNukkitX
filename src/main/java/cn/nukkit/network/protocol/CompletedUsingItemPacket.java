@@ -9,7 +9,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompletedUsingItemPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.COMPLETED_USING_ITEM_PACKET;
 
     public static final int ACTION_UNKNOWN = -1;
@@ -28,13 +27,10 @@ public class CompletedUsingItemPacket extends DataPacket {
     public static final int ACTION_RETRIEVE = 12;
     public static final int ACTION_DYED = 13;
     public static final int ACTION_TRADED = 14;
-
-
     public static final int ACTION_BRUSHING_COMPLETED = 15;
 
     public int itemId;
     public int action;
-
 
     @Override
     public int pid() {
@@ -43,11 +39,11 @@ public class CompletedUsingItemPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeShortLE(itemId);
         byteBuf.writeIntLE(action);
     }

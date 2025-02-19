@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServerToClientHandshakePacket extends DataPacket {
-
     @Override
     public int pid() {
         return ProtocolInfo.SERVER_TO_CLIENT_HANDSHAKE_PACKET;
@@ -21,8 +20,6 @@ public class ServerToClientHandshakePacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
-
         byteBuf.writeString(this.jwt);
     }
 

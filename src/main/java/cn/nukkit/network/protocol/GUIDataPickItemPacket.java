@@ -9,7 +9,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GUIDataPickItemPacket extends DataPacket {
-
     public int hotbarSlot;
 
     @Override
@@ -19,7 +18,6 @@ public class GUIDataPickItemPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeIntLE(this.hotbarSlot);
     }
 

@@ -36,7 +36,6 @@ public class LevelSoundEventPacketV2 extends LevelSoundEventPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeByte((byte) this.sound);
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeVarInt(this.extraData);

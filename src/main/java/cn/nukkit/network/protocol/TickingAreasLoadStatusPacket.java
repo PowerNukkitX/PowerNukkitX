@@ -16,6 +16,7 @@ public class TickingAreasLoadStatusPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
+
     }
 
     @Override

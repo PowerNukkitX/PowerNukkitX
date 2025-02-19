@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NetworkChunkPublisherUpdatePacket extends DataPacket {
-
     public BlockVector3 position;
     public int radius;
 

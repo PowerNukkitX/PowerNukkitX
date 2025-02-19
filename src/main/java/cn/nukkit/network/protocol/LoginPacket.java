@@ -62,6 +62,7 @@ public class LoginPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
+
     }
 
     public int getProtocol() {
@@ -104,9 +105,10 @@ public class LoginPacket extends DataPacket {
         }
 
         if (skinToken.has("SkinId")) {
-            //这边获取到的"SkinId"是FullId
+            //The "SkinId" obtained here is FullId
             //FullId = SkinId + CapeId
-            //而Skin对象中的skinId不是FullId,我们需要减掉CapeId
+            //The skinId in the Skin object is not FullId, we need to subtract the CapeId
+
             var fullSkinId = skinToken.get("SkinId").getAsString();
             skin.setFullSkinId(fullSkinId);
             if (skin.getCapeId() != null)

@@ -8,7 +8,6 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @ToString
 @NoArgsConstructor
 public class ItemStackRequestPacket extends DataPacket {
@@ -26,7 +25,7 @@ public class ItemStackRequestPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        //non server bound
+
     }
 
     public void handle(PacketHandler handler) {

@@ -12,7 +12,6 @@ public class EduUriResourcePacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.EDU_URI_RESOURCE_PACKET;
     public EduSharedUriResource eduSharedUriResource;
 
-
     @Override
     public int pid() {
         return NETWORK_ID;
@@ -27,7 +26,6 @@ public class EduUriResourcePacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeString(eduSharedUriResource.buttonName());
         byteBuf.writeString(eduSharedUriResource.linkUri());
     }

@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpawnExperienceOrbPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.SPAWN_EXPERIENCE_ORB_PACKET;
 
     public float x;
@@ -22,7 +21,6 @@ public class SpawnExperienceOrbPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeUnsignedVarInt(this.amount);
     }

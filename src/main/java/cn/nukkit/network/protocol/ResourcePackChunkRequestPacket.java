@@ -11,9 +11,7 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResourcePackChunkRequestPacket
- extends AbstractResourcePackDataPacket {
-
+public class ResourcePackChunkRequestPacket extends AbstractResourcePackDataPacket {
     public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_CHUNK_REQUEST_PACKET;
 
     public UUID packId;
@@ -28,7 +26,6 @@ public class ResourcePackChunkRequestPacket
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         encodePackInfo(byteBuf);
         byteBuf.writeIntLE(this.chunkIndex);
     }

@@ -141,7 +141,6 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_PARTICLE_SMASH_ATTACK_GROUND_DUST = dynamic(9815);
     public static final int EVENT_PARTICLE_CREAKING_HEART_TRIAL = dynamic(9816);
 
-
     public static final int EVENT_ADD_PARTICLE_MASK = dynamic(0x4000);
 
     public int evid;
@@ -167,7 +166,6 @@ public class LevelEventPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeVarInt(this.evid);
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeVarInt(this.data);

@@ -13,7 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerListPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.PLAYER_LIST_PACKET;
 
     public static final byte TYPE_ADD = 0;
@@ -29,7 +28,6 @@ public class PlayerListPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeByte(this.type);
         byteBuf.writeUnsignedVarInt(this.entries.length);
 

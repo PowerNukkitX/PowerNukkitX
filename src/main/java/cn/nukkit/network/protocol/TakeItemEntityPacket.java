@@ -12,7 +12,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TakeItemEntityPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.TAKE_ITEM_ENTITY_PACKET;
 
     public long entityId;
@@ -26,7 +25,6 @@ public class TakeItemEntityPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeEntityRuntimeId(this.target);
         byteBuf.writeEntityRuntimeId(this.entityId);
     }

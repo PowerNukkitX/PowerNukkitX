@@ -14,9 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AnimatePacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.ANIMATE_PACKET;
-
 
     public long eid;
     public Action action;
@@ -33,7 +31,6 @@ public class AnimatePacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeVarInt(this.action.getId());
         byteBuf.writeEntityRuntimeId(this.eid);
         if (this.action == Action.ROW_RIGHT || this.action == Action.ROW_LEFT) {

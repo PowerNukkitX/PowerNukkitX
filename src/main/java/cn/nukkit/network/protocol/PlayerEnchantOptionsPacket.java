@@ -31,12 +31,11 @@ public class PlayerEnchantOptionsPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        //client bound
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUnsignedVarInt(this.options.size());
         for (EnchantOptionData option : this.options) {
             byteBuf.writeVarInt(option.minLevel());

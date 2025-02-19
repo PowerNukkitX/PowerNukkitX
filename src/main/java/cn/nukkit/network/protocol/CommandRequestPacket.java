@@ -15,7 +15,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommandRequestPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.COMMAND_REQUEST_PACKET;
 
     public static final int TYPE_PLAYER = 0;
@@ -59,6 +58,7 @@ public class CommandRequestPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
+
     }
 
     public void handle(PacketHandler handler) {

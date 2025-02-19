@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NetworkStackLatencyPacket extends DataPacket {
-
     public long timestamp;
     public boolean unknownBool;
 
@@ -23,7 +22,6 @@ public class NetworkStackLatencyPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeLongLE(timestamp);
         byteBuf.writeBoolean(unknownBool);
     }

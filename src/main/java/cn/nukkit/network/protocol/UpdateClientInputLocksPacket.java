@@ -15,7 +15,6 @@ public class UpdateClientInputLocksPacket extends DataPacket {
     public int lockComponentData;
     public Vector3f serverPosition;
 
-
     @Override
     public int pid() {
         return ProtocolInfo.UPDATE_CLIENT_INPUT_LOCKS;

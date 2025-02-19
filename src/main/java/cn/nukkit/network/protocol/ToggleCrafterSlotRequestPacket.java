@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ToggleCrafterSlotRequestPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.TOGGLE_CRAFTER_SLOT_REQUEST;
 
     public Vector3f blockPosition;
@@ -29,7 +28,6 @@ public class ToggleCrafterSlotRequestPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeVector3f(this.blockPosition);
         byteBuf.writeByte(this.slot);
         byteBuf.writeBoolean(this.disabled);

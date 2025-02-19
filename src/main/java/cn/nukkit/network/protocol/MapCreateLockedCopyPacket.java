@@ -9,7 +9,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MapCreateLockedCopyPacket extends DataPacket {
-
     public long originalMapId;
     public long newMapId;
 
@@ -26,7 +25,6 @@ public class MapCreateLockedCopyPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeVarLong(this.originalMapId);
         byteBuf.writeVarLong(this.newMapId);
     }

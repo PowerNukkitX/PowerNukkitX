@@ -9,9 +9,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class NetworkSettingsPacket
-        extends DataPacket {
-
+public class NetworkSettingsPacket extends DataPacket {
     public int compressionThreshold;
     public PacketCompressionAlgorithm compressionAlgorithm;
     public boolean clientThrottleEnabled;
@@ -25,7 +23,6 @@ public class NetworkSettingsPacket
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeShortLE(this.compressionThreshold);
         byteBuf.writeShortLE(this.compressionAlgorithm.ordinal());
         byteBuf.writeBoolean(this.clientThrottleEnabled);

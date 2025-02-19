@@ -36,6 +36,7 @@ public class ItemStackResponsePacket extends DataPacket {
             });
         });
     }
+
     @Override
     public void decode(HandleByteBuf byteBuf) {
         throw new UnsupportedOperationException();//client bound

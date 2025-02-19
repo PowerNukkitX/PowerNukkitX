@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeathInfoPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.DEATH_INFO_PACKET;
 
     public TranslationContainer translation;
@@ -21,7 +20,7 @@ public class DeathInfoPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        //empty
+
     }
 
     @Override

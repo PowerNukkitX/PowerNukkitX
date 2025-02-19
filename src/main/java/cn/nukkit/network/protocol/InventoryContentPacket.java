@@ -12,7 +12,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InventoryContentPacket extends DataPacket {
-
     public int inventoryId;
     public Item[] slots = Item.EMPTY_ARRAY;
     public FullContainerName fullContainerName = new FullContainerName(ContainerSlotType.ANVIL_INPUT, null);

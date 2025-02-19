@@ -7,12 +7,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RiderJumpPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.RIDER_JUMP_PACKET;
 
     /**
      * This is jumpStrength.
-     * 对应跳跃进度条0-100
+     * Corresponding to jump progress bar 0-100
      * <p>
      * Corresponds to jump progress bars 0-100
      */
@@ -30,7 +29,6 @@ public class RiderJumpPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeVarInt(this.unknown);
     }
 

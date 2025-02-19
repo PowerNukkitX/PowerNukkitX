@@ -11,7 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateSoftEnumPacket extends DataPacket {
-
     public List<String> values = List.of();
     public String name = "";
     public Type type = Type.SET;
@@ -23,11 +22,11 @@ public class UpdateSoftEnumPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeString(name);
         byteBuf.writeUnsignedVarInt(values.size());
 

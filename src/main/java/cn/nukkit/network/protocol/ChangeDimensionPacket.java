@@ -14,7 +14,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChangeDimensionPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.CHANGE_DIMENSION_PACKET;
 
     public int dimension;
@@ -34,7 +33,6 @@ public class ChangeDimensionPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeVarInt(this.dimension);
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeBoolean(this.respawn);

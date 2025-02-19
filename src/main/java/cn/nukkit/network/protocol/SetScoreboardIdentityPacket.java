@@ -13,7 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetScoreboardIdentityPacket extends DataPacket {
-
     public final List<Entry> entries = new ObjectArrayList<>();
     public Action action;
 
@@ -24,12 +23,11 @@ public class SetScoreboardIdentityPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        //only server -> client
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeByte((byte) this.action.ordinal());
 
         for (Entry entry : this.entries) {

@@ -9,7 +9,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetSpawnPositionPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.SET_SPAWN_POSITION_PACKET;
 
     public static final int TYPE_PLAYER_SPAWN = 0;
@@ -20,7 +19,6 @@ public class SetSpawnPositionPacket extends DataPacket {
     public int z;
     public int x;
 
-
     public int dimension = 0;
     
     @Override
@@ -30,7 +28,6 @@ public class SetSpawnPositionPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeVarInt(this.spawnType);
         byteBuf.writeBlockVector3(this.x, this.y, this.z);
         byteBuf.writeVarInt(dimension);

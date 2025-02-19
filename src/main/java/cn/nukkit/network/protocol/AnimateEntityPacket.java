@@ -41,7 +41,6 @@ public class AnimateEntityPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeString(this.animation);
         byteBuf.writeString(this.nextState);
         byteBuf.writeString(this.stopExpression);

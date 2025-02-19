@@ -12,7 +12,6 @@ public class PhotoInfoRequestPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.PHOTO_INFO_REQUEST_PACKET;
     public long photoId;
 
-
     @Override
     public int pid() {
         return NETWORK_ID;
@@ -25,7 +24,6 @@ public class PhotoInfoRequestPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeEntityUniqueId(photoId);
     }
 

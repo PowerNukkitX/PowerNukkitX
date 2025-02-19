@@ -34,7 +34,6 @@ public class UnlockedRecipesPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeBoolean(this.unlockedNotification);
         byteBuf.writeUnsignedVarInt(this.unlockedRecipes.size());
         for (String recipe : this.unlockedRecipes) {

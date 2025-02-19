@@ -3,7 +3,6 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 
 public class StopSoundPacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.STOP_SOUND_PACKET;
 
     public String name;

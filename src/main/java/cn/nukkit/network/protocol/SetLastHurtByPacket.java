@@ -19,7 +19,7 @@ public class SetLastHurtByPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        //TODO
+        //TODO: Implement
     }
 
     public void handle(PacketHandler handler) {
