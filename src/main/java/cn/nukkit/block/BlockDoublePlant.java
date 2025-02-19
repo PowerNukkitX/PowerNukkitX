@@ -90,7 +90,7 @@ public abstract class BlockDoublePlant extends BlockFlowable {
             return !plant.isTopHalf();
         }
         return switch (support.getId()) {
-            case GRASS_BLOCK, DIRT, COARSE_DIRT, PODZOL, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
+            case GRASS_BLOCK, DIRT, COARSE_DIRT, PODZOL, FARMLAND, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK, PALE_MOSS_BLOCK -> true;
             default -> false;
         };
     }
