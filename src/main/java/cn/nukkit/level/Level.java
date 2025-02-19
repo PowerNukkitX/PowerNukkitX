@@ -1638,23 +1638,6 @@ public class Level implements Metadatable {
         return this.updateQueue.isBlockTickPending(pos, block);
     }
 
-    public List<Block> raycastBlocks(Vector3 start, Vector3 end) {
-        return raycastBlocks(start, end, true, false);
-    }
-
-    public List<Block> raycastBlocks(Vector3 start, Vector3 end, boolean ignoreAir, boolean load) {
-        List<Block> result = new ArrayList<>();
-        Vector3 direction = end.subtract(start).normalize();
-        Vector3 currentPos = start.clone();
-
-        for (double i = 0; i < start.distance(end); i += 1) {
-            Block block = this.getBlock(currentPos.floor(), load);
-            currentPos = currentPos.add(direction);
-            if(!block.isAir() || !ignoreAir) result.add(block);
-        }
-        return Collections.unmodifiableList(result);
-    }
-
     public Set<BlockUpdateEntry> getPendingBlockUpdates(IChunk chunk) {
         int minX = (chunk.getX() << 4) - 2;
         int maxX = minX + 16 + 2;
@@ -1679,6 +1662,23 @@ public class Level implements Metadatable {
                 .map(this::getChunk).filter(Objects::nonNull)
                 .flatMap(chunk -> chunk.scanBlocks(min, max, condition))
                 .collect(Collectors.toList());
+    }
+
+    public List<Block> raycastBlocks(Vector3 start, Vector3 end) {
+        return raycastBlocks(start, end, true, false);
+    }
+
+    public List<Block> raycastBlocks(Vector3 start, Vector3 end, boolean ignoreAir, boolean load) {
+        List<Block> result = new ArrayList<>();
+        Vector3 direction = end.subtract(start).normalize();
+        Vector3 currentPos = start.clone();
+
+        for (double i = 0; i < start.distance(end); i += 1) {
+            Block block = this.getBlock(currentPos.floor(), load);
+            currentPos = currentPos.add(direction);
+            if(!block.isAir() || !ignoreAir) result.add(block);
+        }
+        return Collections.unmodifiableList(result);
     }
 
     public Block[] getCollisionBlocks(AxisAlignedBB bb) {
@@ -2528,7 +2528,8 @@ public class Level implements Metadatable {
 
         Block target = this.getBlock(vector, layer);
 
-        if (player != null && !target.isBlockChangeAllowed(player)) {
+        boolean canChangeBlock = target.isBlockChangeAllowed(player);
+        if (player != null && !canChangeBlock) {
             return null;
         }
 
@@ -2547,9 +2548,9 @@ public class Level implements Metadatable {
                 (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null && item.applyEnchantments());
 
         if (player != null) {
-            if (player.getGamemode() == 2) {
+            if (player.isAdventure()) {
                 Tag tag = item.getNamedTagEntry("CanDestroy");
-                boolean canBreak = false;
+                boolean canBreak = canChangeBlock;
                 if (tag instanceof ListTag) {
                     for (Tag v : ((ListTag<? extends Tag>) tag).getAll()) {
                         if (!(v instanceof StringTag stringTag)) {
@@ -2851,13 +2852,14 @@ public class Level implements Metadatable {
         }
 
         if (player != null) {
-            if (!player.getAdventureSettings().get(PlayerAbility.BUILD) || !block.isBlockChangeAllowed(player))
+            boolean canChangeBlock = block.isBlockChangeAllowed(player);
+            if ((!player.getAdventureSettings().get(PlayerAbility.BUILD) && !canChangeBlock) || !canChangeBlock)
                 return null;
 
             BlockPlaceEvent event = new BlockPlaceEvent(player, hand, block, target, item);
-            if (player.getGamemode() == Player.ADVENTURE) {
+            if (player.isAdventure()) {
                 Tag tag = item.getNamedTagEntry("CanPlaceOn");
-                boolean canPlace = false;
+                boolean canPlace = canChangeBlock;
                 if (tag instanceof ListTag) {
                     for (Tag v : ((ListTag<Tag>) tag).getAll()) {
                         if (!(v instanceof StringTag stringTag)) {
