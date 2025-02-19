@@ -5,6 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemStick;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
@@ -58,7 +59,7 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
     private boolean isSupportValid() {
         Block down = down();
         if(down instanceof BlockHardenedClay)  return true;
-        return down.is("dirt") || down.is("sand");
+        return down.is(BlockTags.DIRT) || down.is(BlockTags.SAND);
     }
 
     @Override

@@ -9,6 +9,7 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -89,7 +90,7 @@ public abstract class BlockDoublePlant extends BlockFlowable {
         if(support instanceof BlockDoublePlant plant) {
             return !plant.isTopHalf();
         }
-        return support.is("dirt");
+        return support.is(BlockTags.DIRT);
     }
 
     @Override

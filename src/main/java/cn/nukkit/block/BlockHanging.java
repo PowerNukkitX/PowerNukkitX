@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class BlockHanging extends BlockFlowable {
@@ -27,7 +28,7 @@ public abstract class BlockHanging extends BlockFlowable {
     }
 
     protected boolean isSupportValid() {
-        return down().is("dirt") || switch (down().getId()) {
+        return down().is(BlockTags.DIRT) || switch (down().getId()) {
             case WARPED_NYLIUM, CRIMSON_NYLIUM, SOUL_SOIL -> true;
             default -> false;
         };

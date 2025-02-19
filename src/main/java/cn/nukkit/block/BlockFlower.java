@@ -6,6 +6,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -19,7 +20,7 @@ public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPo
     }
 
     public static boolean isSupportValid(Block block) {
-        return block.is("dirt");
+        return block.is(BlockTags.DIRT);
     }
 
     public boolean canPlantOn(Block block) {

@@ -6,6 +6,7 @@ import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,7 +56,7 @@ public class BlockPinkPetals extends BlockFlowable {
     }
 
     private static boolean isSupportValid(Block block) {
-        return block.is("dirt");
+        return block.is(BlockTags.DIRT);
     }
 
     @Override

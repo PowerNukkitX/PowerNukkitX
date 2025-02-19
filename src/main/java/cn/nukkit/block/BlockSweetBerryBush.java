@@ -17,6 +17,7 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.MathHelper;
+import cn.nukkit.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -154,7 +155,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     public static boolean isSupportValid(Block block) {
-        return block.is("dirt");
+        return block.is(BlockTags.DIRT);
     }
 
     @Override
