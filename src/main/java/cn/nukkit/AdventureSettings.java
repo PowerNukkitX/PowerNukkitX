@@ -49,21 +49,42 @@ public class AdventureSettings implements Cloneable {
 
     private Player player;
 
+    /**
+     * Constructor for AdventureSettings.
+     *
+     * @param player The player associated with these settings.
+     */
     public AdventureSettings(Player player) {
         this.player = player;
         init(null);
     }
 
+    /**
+     * Constructor for AdventureSettings with NBT data.
+     *
+     * @param player The player associated with these settings.
+     * @param nbt    The NBT data to initialize settings.
+     */
     public AdventureSettings(Player player, CompoundTag nbt) {
         this.player = player;
         init(nbt);
     }
 
+    /**
+     * Sets the player permission.
+     *
+     * @param playerPermission The player permission to set.
+     */
     public void setPlayerPermission(PlayerPermission playerPermission) {
         this.playerPermission = playerPermission;
         this.player.setOp(playerPermission == PlayerPermission.OPERATOR);
     }
 
+    /**
+     * Initializes the settings with optional NBT data.
+     *
+     * @param nbt The NBT data to initialize settings, or null for default settings.
+     */
     public void init(@Nullable CompoundTag nbt) {
         if (nbt == null || !nbt.contains(KEY_ABILITIES)) {
             set(Type.WORLD_IMMUTABLE, player.isAdventure() || player.isSpectator());
@@ -81,11 +102,11 @@ public class AdventureSettings implements Cloneable {
             readNBT(nbt);
         }
 
-        //Offline deop
+        // Handle offline deop
         if (playerPermission == PlayerPermission.OPERATOR && !player.isOp()) {
             onOpChange(false);
         }
-        //Offline by op
+        // Handle offline op
         if (playerPermission != PlayerPermission.OPERATOR && player.isOp()) {
             onOpChange(true);
         }
@@ -105,6 +126,13 @@ public class AdventureSettings implements Cloneable {
         }
     }
 
+    /**
+     * Sets a player ability.
+     *
+     * @param ability The player ability to set.
+     * @param value   The value to set for the ability.
+     * @return The current AdventureSettings instance.
+     */
     public AdventureSettings set(PlayerAbility ability, boolean value) {
         Type type = ability2TypeMap.get(ability);
         if (type != null) {
@@ -113,11 +141,24 @@ public class AdventureSettings implements Cloneable {
         return this;
     }
 
+    /**
+     * Sets a type value.
+     *
+     * @param type  The type to set.
+     * @param value The value to set for the type.
+     * @return The current AdventureSettings instance.
+     */
     public AdventureSettings set(Type type, boolean value) {
         this.values.put(type, value);
         return this;
     }
 
+    /**
+     * Gets the value of a player ability.
+     *
+     * @param ability The player ability to get.
+     * @return The value of the player ability.
+     */
     public boolean get(PlayerAbility ability) {
         Type type = ability2TypeMap.get(ability);
         if (type == null) {
@@ -126,24 +167,33 @@ public class AdventureSettings implements Cloneable {
         return this.values.getOrDefault(type, type.getDefaultValue());
     }
 
+    /**
+     * Gets the value of a type.
+     *
+     * @param type The type to get.
+     * @return The value of the type.
+     */
     public boolean get(Type type) {
         return this.values.getOrDefault(type, type.getDefaultValue());
     }
 
+    /**
+     * Updates the adventure settings and sends them to all players.
+     */
     public void update() {
-        //Permission to send to all players so they can see each other
-        //Make sure it will be sent to yourself (eg: there is no such player among the online players when the player enters the server)
+        // Permission to send to all players so they can see each other
+        // Make sure it will be sent to yourself (e.g., there is no such player among the online players when the player enters the server)
         Collection<Player> players = new HashSet<>(player.getServer().getOnlinePlayers().values());
         players.add(this.player);
         sendAbilities(players);
         updateAdventureSettings();
     }
 
-
     /**
      * This method will be called when the player's OP status changes.
-     * Note that this method does not send a packet to the client to refresh the privilege information, you need to manually call the update() method to do so
-     * @param op is OP or not
+     * Note that this method does not send a packet to the client to refresh the privilege information, you need to manually call the update() method to do so.
+     *
+     * @param op Whether the player is OP or not.
      */
     public void onOpChange(boolean op) {
         if (op) {
@@ -151,13 +201,13 @@ public class AdventureSettings implements Cloneable {
                 set(controllableAbility, true);
             }
         }
-        //Set op-specific attributes
+        // Set op-specific attributes
         set(Type.OPERATOR, op);
         set(Type.TELEPORT, op);
 
         commandPermission = op ? CommandPermission.OPERATOR : CommandPermission.NORMAL;
 
-        //Don't override customization/guest status
+        // Don't override customization/guest status
         if (op && playerPermission != PlayerPermission.OPERATOR) {
             playerPermission = PlayerPermission.OPERATOR;
         }
@@ -166,6 +216,11 @@ public class AdventureSettings implements Cloneable {
         }
     }
 
+    /**
+     * Sends abilities to a collection of players.
+     *
+     * @param players The collection of players to send abilities to.
+     */
     public void sendAbilities(Collection<Player> players) {
         UpdateAbilitiesPacket packet = new UpdateAbilitiesPacket();
         packet.entityId = player.getId();
@@ -199,7 +254,7 @@ public class AdventureSettings implements Cloneable {
     }
 
     /**
-     * Save permissions to nbt
+     * Saves permissions to NBT.
      */
     public void saveNBT() {
         CompoundTag nbt = player.namedTag;
@@ -213,7 +268,9 @@ public class AdventureSettings implements Cloneable {
     }
 
     /**
-     * Read permission data from nbt
+     * Reads permission data from NBT.
+     *
+     * @param nbt The NBT data to read from.
      */
     public void readNBT(CompoundTag nbt) {
         CompoundTag abilityTag = nbt.getCompound(KEY_ABILITIES);
@@ -226,6 +283,9 @@ public class AdventureSettings implements Cloneable {
         commandPermission = CommandPermission.valueOf(nbt.getString(KEY_COMMAND_PERMISSION));
     }
 
+    /**
+     * Updates the adventure settings packet and sends it to the player.
+     */
     public void updateAdventureSettings() {
         UpdateAdventureSettingsPacket adventurePacket = new UpdateAdventureSettingsPacket();
         adventurePacket.autoJump = get(Type.AUTO_JUMP);
@@ -237,6 +297,9 @@ public class AdventureSettings implements Cloneable {
         player.resetInAirTicks();
     }
 
+    /**
+     * Enum representing different types of settings.
+     */
     public enum Type {
         WORLD_IMMUTABLE(false),
         NO_PVM(false),
