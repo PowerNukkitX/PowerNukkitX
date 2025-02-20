@@ -2,10 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -13,19 +10,15 @@ import java.util.UUID;
  * @author Nukkit Project Team
  */
 @EqualsAndHashCode(callSuper = false)
+@Builder
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class CraftingEventPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.CRAFTING_EVENT_PACKET;
-
-
     public static final int TYPE_INVENTORY = 0;
-
-
     public static final int TYPE_CRAFTING = 1;
-
-
     public static final int TYPE_WORKBENCH = 2;
 
     public int windowId;
@@ -57,7 +50,7 @@ public class CraftingEventPacket extends DataPacket {
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.CRAFTING_EVENT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

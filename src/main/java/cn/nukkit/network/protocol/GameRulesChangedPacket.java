@@ -9,17 +9,12 @@ import lombok.ToString;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class GameRulesChangedPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.GAME_RULES_CHANGED_PACKET;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     public GameRules gameRules;
 
     @Override
@@ -29,6 +24,11 @@ public class GameRulesChangedPacket extends DataPacket {
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeGameRules(gameRules);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.GAME_RULES_CHANGED_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -2,20 +2,18 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @since 15-10-14
  */
+
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class MovePlayerPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.MOVE_PLAYER_PACKET;
-
     public static final int MODE_NORMAL = 0;
     public static final int MODE_RESET = 1;//MODE_RESPAWN
     public static final int MODE_TELEPORT = 2;
@@ -31,8 +29,8 @@ public class MovePlayerPacket extends DataPacket {
     public int mode = MODE_NORMAL;
     public boolean onGround;
     public long ridingEid;
-    public int int1 = 0;//teleportationCause
-    public int int2 = 0;//entityType
+    public int teleportationCause = 0;
+    public int entityType = 0;
 
     public long frame;//tick
 
@@ -50,15 +48,14 @@ public class MovePlayerPacket extends DataPacket {
         this.onGround = byteBuf.readBoolean();
         this.ridingEid = byteBuf.readEntityRuntimeId();
         if (this.mode == MODE_TELEPORT) {
-            this.int1 = byteBuf.readIntLE();
-            this.int2 = byteBuf.readIntLE();
+            this.teleportationCause = byteBuf.readIntLE();
+            this.entityType = byteBuf.readIntLE();
         }
         this.frame = byteBuf.readUnsignedVarLong();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeEntityRuntimeId(this.eid);
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeFloatLE(this.pitch);
@@ -68,15 +65,15 @@ public class MovePlayerPacket extends DataPacket {
         byteBuf.writeBoolean(this.onGround);
         byteBuf.writeEntityRuntimeId(this.ridingEid);
         if (this.mode == MODE_TELEPORT) {
-            byteBuf.writeIntLE(this.int1);
-            byteBuf.writeIntLE(this.int2);
+            byteBuf.writeIntLE(this.teleportationCause);
+            byteBuf.writeIntLE(this.entityType);
         }
         byteBuf.writeUnsignedVarLong(this.frame);
     }
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.MOVE_PLAYER_PACKET;
     }
 
     public void handle(PacketHandler handler) {

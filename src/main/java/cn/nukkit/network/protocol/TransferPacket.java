@@ -3,14 +3,14 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransferPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.TRANSFER_PACKET;
-
-    public String address; // Server address
-    public int port = 19132; // Server port
+    public String address;
+    public int port = 19132;
     private boolean reloadWorld;
 
     @Override

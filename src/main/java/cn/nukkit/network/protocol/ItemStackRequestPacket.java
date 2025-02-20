@@ -2,22 +2,17 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 public class ItemStackRequestPacket extends DataPacket {
     public final List<ItemStackRequest> requests = new ArrayList<>();
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.ITEM_STACK_REQUEST_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -26,7 +21,12 @@ public class ItemStackRequestPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        //non server bound
+
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.ITEM_STACK_REQUEST_PACKET;
     }
 
     public void handle(PacketHandler handler) {

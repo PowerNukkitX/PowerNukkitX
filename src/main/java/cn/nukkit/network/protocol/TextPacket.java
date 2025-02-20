@@ -2,25 +2,18 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import io.netty.util.internal.EmptyArrays;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @since 15-10-13
  */
+
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class TextPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.TEXT_PACKET;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     public static final byte TYPE_RAW = 0;
     public static final byte TYPE_CHAT = 1;
     public static final byte TYPE_TRANSLATION = 2;
@@ -44,7 +37,6 @@ public class TextPacket extends DataPacket {
      * @since v685
      */
     public String filteredMessage = "";
-    
     @Override
     public void decode(HandleByteBuf byteBuf) {
         this.type = byteBuf.readByte();
@@ -102,6 +94,11 @@ public class TextPacket extends DataPacket {
         byteBuf.writeString(this.xboxUserId);
         byteBuf.writeString(this.platformChatId);
         byteBuf.writeString(this.filteredMessage);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.TEXT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

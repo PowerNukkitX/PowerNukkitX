@@ -1,10 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,12 +9,13 @@ import java.util.List;
 /**
  * @author IWareQ
  */
+
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class AnimateEntityPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ANIMATE_ENTITY_PACKET;
-
     public String animation;
     public String nextState;
     public String stopExpression;
@@ -41,7 +39,6 @@ public class AnimateEntityPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeString(this.animation);
         byteBuf.writeString(this.nextState);
         byteBuf.writeString(this.stopExpression);
@@ -52,11 +49,6 @@ public class AnimateEntityPacket extends DataPacket {
         for (long entityRuntimeId : this.entityRuntimeIds) {
             byteBuf.writeEntityRuntimeId(entityRuntimeId);
         }
-    }
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
     }
 
     /**
@@ -94,6 +86,11 @@ public class AnimateEntityPacket extends DataPacket {
         private String controller = DEFAULT_CONTROLLER;
         @Builder.Default
         private int stopExpressionVersion = DEFAULT_STOP_EXPRESSION_VERSION;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.ANIMATE_ENTITY_PACKET;
     }
 
     public void handle(PacketHandler handler) {

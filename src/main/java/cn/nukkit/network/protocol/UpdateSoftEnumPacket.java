@@ -1,33 +1,27 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateSoftEnumPacket extends DataPacket {
-
     public List<String> values = List.of();
     public String name = "";
     public Type type = Type.SET;
 
     @Override
-    public int pid() {
-        return ProtocolInfo.UPDATE_SOFT_ENUM_PACKET;
-    }
-
-    @Override
     public void decode(HandleByteBuf byteBuf) {
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeString(name);
         byteBuf.writeUnsignedVarInt(values.size());
 
@@ -41,6 +35,11 @@ public class UpdateSoftEnumPacket extends DataPacket {
         ADD,
         REMOVE,
         SET
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.UPDATE_SOFT_ENUM_PACKET;
     }
 
     public void handle(PacketHandler handler) {

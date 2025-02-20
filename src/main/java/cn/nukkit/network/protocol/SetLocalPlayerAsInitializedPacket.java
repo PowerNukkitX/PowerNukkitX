@@ -3,18 +3,13 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetLocalPlayerAsInitializedPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET;
-
     public long eid;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -24,6 +19,11 @@ public class SetLocalPlayerAsInitializedPacket extends DataPacket {
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarLong(eid);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -1,6 +1,7 @@
 package cn.nukkit.network.process.processor;
 
 import cn.nukkit.PlayerHandle;
+import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.RequestPermissionsPacket;
@@ -11,7 +12,12 @@ public class RequestPermissionsProcessor extends DataPacketProcessor<RequestPerm
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RequestPermissionsPacket pk) {
         if (!playerHandle.player.isOp()) {
-            playerHandle.player.kick("Illegal permission operation", true);
+            PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(playerHandle.player, PlayerHackDetectedEvent.HackType.PERMISSION_REQUEST);
+            playerHandle.player.getServer().getPluginManager().callEvent(event);
+
+            if(event.isKick())
+                playerHandle.player.kick("Illegal permission operation", true);
+
             return;
         }
         var player = pk.getTargetPlayer();

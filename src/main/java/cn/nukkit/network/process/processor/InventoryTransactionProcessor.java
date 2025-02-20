@@ -15,10 +15,7 @@ import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.event.player.PlayerDropItemEvent;
-import cn.nukkit.event.player.PlayerInteractEntityEvent;
-import cn.nukkit.event.player.PlayerInteractEvent;
-import cn.nukkit.event.player.PlayerKickEvent;
+import cn.nukkit.event.player.*;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -170,6 +167,9 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     } else {
                         logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInHand());
                     }
+                } else {
+                    //Otherwise nametag still gets consumed on client side
+                    player.getInventory().sendContents(player);
                 }
             }
             case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_ATTACK -> {
@@ -177,7 +177,12 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         || !(target instanceof Player) && !player.getAdventureSettings().get(AdventureSettings.Type.ATTACK_MOBS))
                     return;
                 if (target.getId() == player.getId()) {
-                    player.kick(PlayerKickEvent.Reason.INVALID_PVP, "Attempting to attack yourself");
+                    PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(player, PlayerHackDetectedEvent.HackType.INVALID_PVP);
+                    player.getServer().getPluginManager().callEvent(event);
+
+                    if(event.isKick())
+                        player.kick(PlayerKickEvent.Reason.INVALID_PVP, "Attempting to attack yourself");
+
                     log.warn(player.getName() + " tried to attack oneself");
                     return;
                 }

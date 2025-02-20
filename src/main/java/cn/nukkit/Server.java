@@ -476,7 +476,6 @@ public class Server {
         this.pluginManager = new PluginManager(this, this.commandMap);
         this.pluginManager.subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this.consoleSender);
         this.pluginManager.registerInterface(JavaPluginLoader.class);
-        //this.pluginManager.registerInterface(JSPluginLoader.class);
         this.console.setExecutingCommands(true);
 
         try {
@@ -637,7 +636,6 @@ public class Server {
 //        JSIInitiator.reset();
 //        JSFeatures.clearFeatures();
 //        JSFeatures.initInternalFeatures();
-//        this.pluginManager.registerInterface(JSPluginLoader.class);
         this.scoreboardManager.read();
 
         log.info("Reloading Registries...");

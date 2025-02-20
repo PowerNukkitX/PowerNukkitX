@@ -11,13 +11,12 @@ import java.util.UUID;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommandRequestPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.COMMAND_REQUEST_PACKET;
-
     public static final int TYPE_PLAYER = 0;
     public static final int TYPE_COMMAND_BLOCK = 1;
     public static final int TYPE_MINECART_COMMAND_BLOCK = 2;
@@ -39,11 +38,6 @@ public class CommandRequestPacket extends DataPacket {
     public int version;
 
     @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
-    @Override
     public void decode(HandleByteBuf byteBuf) {
         this.command = byteBuf.readString();
 
@@ -59,6 +53,12 @@ public class CommandRequestPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
+
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.COMMAND_REQUEST_PACKET;
     }
 
     public void handle(PacketHandler handler) {

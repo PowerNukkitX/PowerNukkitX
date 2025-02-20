@@ -6,20 +6,17 @@ import cn.nukkit.network.protocol.types.LabTableReactionType;
 import cn.nukkit.network.protocol.types.LabTableType;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;import lombok.*;
+import org.apache.logging.log4j.core.net.Protocol;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class LabTablePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.LAB_TABLE_PACKET;
     public LabTableType actionType;
     public BlockVector3 blockPosition;
     public LabTableReactionType reactionType;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -28,10 +25,14 @@ public class LabTablePacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeByte((byte) actionType.ordinal());
         byteBuf.writeBlockVector3(blockPosition);
         byteBuf.writeByte((byte) reactionType.ordinal());
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.LAB_TABLE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -1,20 +1,16 @@
 package cn.nukkit.network.protocol;
 
-
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class ScriptMessagePacket extends DataPacket {
     private String channel;
     private String message;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.SCRIPT_MESSAGE_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -42,6 +38,11 @@ public class ScriptMessagePacket extends DataPacket {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.SCRIPT_MESSAGE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

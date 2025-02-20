@@ -3,19 +3,16 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.UUID;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerListPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.PLAYER_LIST_PACKET;
-
     public static final byte TYPE_ADD = 0;
     public static final byte TYPE_REMOVE = 1;
 
@@ -29,7 +26,6 @@ public class PlayerListPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeByte(this.type);
         byteBuf.writeUnsignedVarInt(this.entries.length);
 
@@ -58,16 +54,11 @@ public class PlayerListPacket extends DataPacket {
         }
     }
 
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     @ToString
     public static class Entry {
         public static final Entry[] EMPTY_ARRAY = new Entry[0];
-
         public final UUID uuid;
+
         public long entityId = 0;
         public String name = "";
         public String xboxUserId = ""; //TODO
@@ -77,7 +68,6 @@ public class PlayerListPacket extends DataPacket {
         public boolean isTeacher;
         public boolean isHost;
         private boolean subClient;
-
         public boolean trustedSkin;
 
         public Entry(UUID uuid) {
@@ -96,6 +86,11 @@ public class PlayerListPacket extends DataPacket {
             this.trustedSkin = skin.isTrusted();
             this.xboxUserId = xboxUserId == null ? "" : xboxUserId;
         }
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.PLAYER_LIST_PACKET;
     }
 
     public void handle(PacketHandler handler) {

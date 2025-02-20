@@ -1,16 +1,14 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class EntityFallPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ENTITY_FALL_PACKET;
-
     public long eid;
     public float fallDistance;
     public boolean unknown;
@@ -29,7 +27,7 @@ public class EntityFallPacket extends DataPacket {
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.ENTITY_FALL_PACKET;
     }
 
     public void handle(PacketHandler handler) {

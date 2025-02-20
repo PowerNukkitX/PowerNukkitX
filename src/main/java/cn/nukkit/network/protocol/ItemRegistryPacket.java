@@ -5,9 +5,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.MainLogger;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -15,39 +13,22 @@ import java.nio.ByteOrder;
 /**
  * @author GoodLucky777
  */
+
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemRegistryPacket extends DataPacket {
-
-
-    public static final int NETWORK_ID = ProtocolInfo.ITEM_REGISTRY_PACKET;
-    
-
     private Entry[] entries = Entry.EMPTY_ARRAY;
 
-
-    public void setEntries(Entry[] entries) {
-        this.entries = entries == null? null : entries.length == 0? Entry.EMPTY_ARRAY : entries.clone();
-    }
-
-    public Entry[] getEntries() {
-        return entries == null? null : entries.length == 0? Entry.EMPTY_ARRAY : entries.clone();
-    }
-    
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-    
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        
+
     }
-    
+
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUnsignedVarInt(this.entries.length);
         try {
             for (Entry entry : this.entries) {
@@ -61,19 +42,25 @@ public class ItemRegistryPacket extends DataPacket {
             MainLogger.getLogger().error("Error while encoding NBT data of ItemRegistryPacket", e);
         }
     }
-    
+
+    public void setEntries(Entry[] entries) {
+        this.entries = entries == null? null : entries.length == 0? Entry.EMPTY_ARRAY : entries.clone();
+    }
+
+    public Entry[] getEntries() {
+        return entries == null? null : entries.length == 0? Entry.EMPTY_ARRAY : entries.clone();
+    }
+
     @ToString
     public static class Entry {
 
         public static final Entry[] EMPTY_ARRAY = new Entry[0];
-        
         private final String name;
+
         private final Integer runtimeId;
         private final Integer version;
         private final boolean componentBased;
         private final CompoundTag data;
-
-
         public Entry(String name, Integer runtimeId, Integer version, boolean componentBased, CompoundTag data) {
             this.name = name;
             this.runtimeId = runtimeId;
@@ -93,6 +80,12 @@ public class ItemRegistryPacket extends DataPacket {
         public CompoundTag getData() {
             return data;
         }
+
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.ITEM_REGISTRY_PACKET;
     }
 
     public void handle(PacketHandler handler) {

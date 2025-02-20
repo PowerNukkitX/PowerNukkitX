@@ -20,7 +20,7 @@ public class ServerProperties {
     private ConfigSection getDefaultValues() {
         ConfigSection defaults = new ConfigSection();
         defaults.put(ServerPropertiesKeys.MOTD.toString(), "PowerNukkitX Server");
-        defaults.put(ServerPropertiesKeys.SUB_MOTD.toString(), "v2.powernukkitx.com");
+        defaults.put(ServerPropertiesKeys.SUB_MOTD.toString(), "powernukkitx.org");
         defaults.put(ServerPropertiesKeys.SERVER_IP.toString(), "0.0.0.0");
         defaults.put(ServerPropertiesKeys.SERVER_PORT.toString(), 19132);
         defaults.put(ServerPropertiesKeys.VIEW_DISTANCE.toString(), 8);

@@ -4,18 +4,14 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class NetworkChunkPublisherUpdatePacket extends DataPacket {
-
     public BlockVector3 position;
     public int radius;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -28,6 +24,11 @@ public class NetworkChunkPublisherUpdatePacket extends DataPacket {
         byteBuf.writeSignedBlockPosition(position);
         byteBuf.writeUnsignedVarInt(radius);
         byteBuf.writeInt(0); // Saved chunks
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

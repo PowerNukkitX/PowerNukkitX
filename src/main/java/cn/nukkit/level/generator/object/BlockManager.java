@@ -7,6 +7,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
 import cn.nukkit.network.protocol.UpdateSubChunkBlocksPacket;
 import cn.nukkit.network.protocol.types.BlockChangeEntry;
@@ -132,9 +133,9 @@ public class BlockManager {
             chunk.add(b);
             UpdateSubChunkBlocksPacket batch = batchs.computeIfAbsent(new SubChunkEntry(b.getChunkX() << 4, (b.getFloorY() >> 4) << 4, b.getChunkZ() << 4), s -> new UpdateSubChunkBlocksPacket(s.x, s.y, s.z));
             if (b.layer == 1) {
-                batch.extraBlocks.add(new BlockChangeEntry(b.asBlockVector3(), b.getBlockState().unsignedBlockStateHash(), UpdateBlockPacket.NETWORK_ID, -1, BlockChangeEntry.MessageType.NONE));
+                batch.extraBlocks.add(new BlockChangeEntry(b.asBlockVector3(), b.getBlockState().unsignedBlockStateHash(), ProtocolInfo.UPDATE_BLOCK_PACKET, -1, BlockChangeEntry.MessageType.NONE));
             } else {
-                batch.standardBlocks.add(new BlockChangeEntry(b.asBlockVector3(), b.getBlockState().unsignedBlockStateHash(), UpdateBlockPacket.NETWORK_ID, -1, BlockChangeEntry.MessageType.NONE));
+                batch.standardBlocks.add(new BlockChangeEntry(b.asBlockVector3(), b.getBlockState().unsignedBlockStateHash(), ProtocolInfo.UPDATE_BLOCK_PACKET, -1, BlockChangeEntry.MessageType.NONE));
             }
         }
         chunks.entrySet().parallelStream().forEach(entry -> {

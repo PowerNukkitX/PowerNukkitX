@@ -1,27 +1,19 @@
 package cn.nukkit.network.protocol;
 
-
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class RemoveVolumeEntityPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.REMOVE_VOLUME_ENTITY_PACKET;
-
     public long id;
     /**
      * @since v503
      */
     public int dimension;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -31,6 +23,11 @@ public class RemoveVolumeEntityPacket extends DataPacket {
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarInt((int) id);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.REMOVE_VOLUME_ENTITY_PACKET;
     }
 
     public void handle(PacketHandler handler) {

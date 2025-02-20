@@ -3,20 +3,16 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.resourcepacks.ResourcePack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.Value;
+import lombok.*;
 
 import java.util.List;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResourcePackStackPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_STACK_PACKET;
-
     public boolean mustAccept = false;
     public ResourcePack[] behaviourPackStack = ResourcePack.EMPTY_ARRAY;
     public ResourcePack[] resourcePackStack = ResourcePack.EMPTY_ARRAY;
@@ -31,7 +27,6 @@ public class ResourcePackStackPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeBoolean(this.mustAccept);
 
         byteBuf.writeUnsignedVarInt(this.behaviourPackStack.length);
@@ -58,15 +53,15 @@ public class ResourcePackStackPacket extends DataPacket {
         byteBuf.writeBoolean(isHasEditorPacks);
     }
 
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     @Value
     public static class ExperimentData {
         String name;
         boolean enabled;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.RESOURCE_PACK_STACK_PACKET;
     }
 
     public void handle(PacketHandler handler) {

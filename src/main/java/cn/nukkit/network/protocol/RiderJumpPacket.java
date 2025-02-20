@@ -3,35 +3,30 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class RiderJumpPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.RIDER_JUMP_PACKET;
-
     /**
-     * This is jumpStrength.
-     * 对应跳跃进度条0-100
-     * <p>
      * Corresponds to jump progress bars 0-100
      */
-    public int unknown;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
+    public int jumpStrength;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        this.unknown = byteBuf.readVarInt();
+        this.jumpStrength = byteBuf.readVarInt();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
-        byteBuf.writeVarInt(this.unknown);
+        byteBuf.writeVarInt(this.jumpStrength);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.RIDER_JUMP_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -1,15 +1,16 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * Server-bound packet to change the properties of a mob.
  *
  * @since v503
  */
+
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,11 +21,6 @@ public class ChangeMobPropertyPacket extends DataPacket {
     public String stringValue;
     public int intValue;
     public float floatValue;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.CHANGE_MOB_PROPERTY_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -44,6 +40,11 @@ public class ChangeMobPropertyPacket extends DataPacket {
         byteBuf.writeString(this.stringValue);
         byteBuf.writeVarInt(this.intValue);
         byteBuf.writeFloatLE(this.floatValue);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.CHANGE_MOB_PROPERTY_PACKET;
     }
 
     public void handle(PacketHandler handler) {

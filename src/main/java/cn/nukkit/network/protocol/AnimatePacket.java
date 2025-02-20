@@ -10,14 +10,12 @@ import lombok.ToString;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class AnimatePacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.ANIMATE_PACKET;
-
-
     public long eid;
     public Action action;
     public float rowingTime;
@@ -33,17 +31,11 @@ public class AnimatePacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeVarInt(this.action.getId());
         byteBuf.writeEntityRuntimeId(this.eid);
         if (this.action == Action.ROW_RIGHT || this.action == Action.ROW_LEFT) {
             byteBuf.writeFloatLE(this.rowingTime);
         }
-    }
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
     }
 
     public enum Action {
@@ -78,7 +70,13 @@ public class AnimatePacket extends DataPacket {
         }
     }
 
+    @Override
+    public int pid() {
+        return ProtocolInfo.ANIMATE_PACKET;
+    }
+
     public void handle(PacketHandler handler) {
         handler.handle(this);
     }
+
 }

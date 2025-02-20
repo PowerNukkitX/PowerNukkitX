@@ -19,27 +19,22 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author joserobjr
  * @since 2021-02-14
  */
 
+@Builder
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class FilterTextPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.FILTER_TEXT_PACKET;
     public String text;
     public boolean fromServer;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
@@ -67,6 +62,11 @@ public class FilterTextPacket extends DataPacket {
 
     public void setFromServer(boolean fromServer) {
         this.fromServer = fromServer;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.FILTER_TEXT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

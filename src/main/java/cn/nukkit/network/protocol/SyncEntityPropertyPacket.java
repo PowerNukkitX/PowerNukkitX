@@ -4,27 +4,21 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import io.netty.buffer.ByteBufInputStream;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteOrder;
 
 
+@Slf4j
+@Builder
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Slf4j
 public class SyncEntityPropertyPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.SYNC_ENTITY_PROPERTY_PACKET;
-
     public CompoundTag data;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -42,6 +36,11 @@ public class SyncEntityPropertyPacket extends DataPacket {
         } catch (Exception e) {
             log.error("", e);
         }
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.SYNC_ENTITY_PROPERTY_PACKET;
     }
 
     public void handle(PacketHandler handler) {

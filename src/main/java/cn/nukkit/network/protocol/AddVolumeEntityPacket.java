@@ -2,17 +2,16 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.ToString;
 import lombok.ToString;
-import lombok.ToString;
+
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddVolumeEntityPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ADD_VOLUME_ENTITY_PACKET;
-
     public int id;
     public CompoundTag data;
     /**
@@ -27,11 +26,6 @@ public class AddVolumeEntityPacket extends DataPacket {
      * @since v485
      */
     public String instanceName;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -49,6 +43,11 @@ public class AddVolumeEntityPacket extends DataPacket {
         byteBuf.writeString(engineVersion);
         byteBuf.writeString(identifier);
         byteBuf.writeString(instanceName);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.ADD_VOLUME_ENTITY_PACKET;
     }
 
     public void handle(PacketHandler handler) {

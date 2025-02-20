@@ -2,21 +2,17 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.camera.aimassist.ClientCameraAimAssistPacketAction;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClientCameraAimAssistPacket extends DataPacket {
-
     private String cameraPresetId;
     private ClientCameraAimAssistPacketAction action;
     private boolean allowAimAssist;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.CLIENT_CAMERA_AIM_ASSIST_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -30,6 +26,11 @@ public class ClientCameraAimAssistPacket extends DataPacket {
         byteBuf.writeString(cameraPresetId);
         byteBuf.writeByte(action.ordinal());
         byteBuf.writeBoolean(allowAimAssist);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.CLIENT_CAMERA_AIM_ASSIST_PACKET;
     }
 
     public void handle(PacketHandler handler) {

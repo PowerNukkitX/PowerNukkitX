@@ -1,31 +1,24 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmotePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.EMOTE_PACKET;
-
     public long runtimeId;
-
     public String xuid = "";
-
     public String platformId = "";
-
     public String emoteID;
-
     public byte flags;
-
     public int emoteDuration;
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.EMOTE_PACKET;
     }
 
     @Override

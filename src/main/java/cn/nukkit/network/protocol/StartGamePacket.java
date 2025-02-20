@@ -6,9 +6,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.registry.Registries;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -22,17 +20,12 @@ import java.util.UUID;
  * @since 15-10-13
  */
 @Slf4j
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class StartGamePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.START_GAME_PACKET;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-    
     public static final int GAME_PUBLISH_SETTING_NO_MULTI_PLAY = 0;
     public static final int GAME_PUBLISH_SETTING_INVITE_ONLY = 1;
     public static final int GAME_PUBLISH_SETTING_FRIENDS_ONLY = 2;
@@ -137,83 +130,6 @@ public class StartGamePacket extends DataPacket {
      * @since v685
      */
     private String scenarioId = "";
-
-    private void writeLevelSettings(HandleByteBuf byteBuf) {
-        /* Level settings start */
-        byteBuf.writeLongLE(this.seed);
-        byteBuf.writeShortLE(0x00); // SpawnBiomeType - Default
-        byteBuf.writeString("plains"); // UserDefinedBiomeName
-        byteBuf.writeVarInt(this.dimension);
-        byteBuf.writeVarInt(this.generator);
-        byteBuf.writeVarInt(this.worldGamemode);
-        byteBuf.writeBoolean(this.isHardcore);
-        byteBuf.writeVarInt(this.difficulty);
-        byteBuf.writeBlockVector3(this.spawnX, this.spawnY, this.spawnZ);
-        byteBuf.writeBoolean(this.hasAchievementsDisabled);
-        byteBuf.writeBoolean(this.worldEditor);
-        byteBuf.writeBoolean(this.createdInEditor);
-        byteBuf.writeBoolean(this.exportedFromEditor);
-        byteBuf.writeVarInt(this.dayCycleStopTime);
-        byteBuf.writeVarInt(this.eduEditionOffer);
-        byteBuf.writeBoolean(this.hasEduFeaturesEnabled);
-        byteBuf.writeString(""); // Education Edition Product ID
-        byteBuf.writeFloatLE(this.rainLevel);
-        byteBuf.writeFloatLE(this.lightningLevel);
-        byteBuf.writeBoolean(this.hasConfirmedPlatformLockedContent);
-        byteBuf.writeBoolean(this.multiplayerGame);
-        byteBuf.writeBoolean(this.broadcastToLAN);
-        byteBuf.writeVarInt(this.xblBroadcastIntent);
-        byteBuf.writeVarInt(this.platformBroadcastIntent);
-        byteBuf.writeBoolean(this.commandsEnabled);
-        byteBuf.writeBoolean(this.isTexturePacksRequired);
-        byteBuf.writeGameRules(this.gameRules);
-
-        byteBuf.writeIntLE(6); // Experiment count
-        {
-            byteBuf.writeString("data_driven_items");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("data_driven_biomes");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("upcoming_creator_features");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("gametest");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("experimental_molang_features");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("cameras");
-            byteBuf.writeBoolean(true);
-        }
-        byteBuf.writeBoolean(true); // Were experiments previously toggled
-        
-        byteBuf.writeBoolean(this.bonusChest);
-        byteBuf.writeBoolean(this.hasStartWithMapEnabled);
-        byteBuf.writeVarInt(this.permissionLevel);
-        byteBuf.writeIntLE(this.serverChunkTickRange);
-        byteBuf.writeBoolean(this.hasLockedBehaviorPack);
-        byteBuf.writeBoolean(this.hasLockedResourcePack);
-        byteBuf.writeBoolean(this.isFromLockedWorldTemplate);
-        byteBuf.writeBoolean(this.isUsingMsaGamertagsOnly);
-        byteBuf.writeBoolean(this.isFromWorldTemplate);
-        byteBuf.writeBoolean(this.isWorldTemplateOptionLocked);
-        byteBuf.writeBoolean(this.isOnlySpawningV1Villagers);
-        byteBuf.writeBoolean(this.isDisablingPersonas);
-        byteBuf.writeBoolean(this.isDisablingCustomSkins);
-        byteBuf.writeBoolean(this.emoteChatMuted);
-        byteBuf.writeString("*"); // vanillaVersion
-        byteBuf.writeIntLE(16); // Limited world width
-        byteBuf.writeIntLE(16); // Limited world height
-        byteBuf.writeBoolean(false); // Nether type
-        byteBuf.writeString(""); // EduSharedUriResource buttonName
-        byteBuf.writeString(""); // EduSharedUriResource linkUri
-        byteBuf.writeBoolean(false); // force Experimental Gameplay (exclusive to debug clients)
-        byteBuf.writeByte(this.chatRestrictionLevel);
-        byteBuf.writeBoolean(this.disablePlayerInteractions);
-        byteBuf.writeString(serverId);
-        byteBuf.writeString(worldId);
-        byteBuf.writeString(scenarioId);
-        /* Level settings end */
-    }
-
     @Override
     public void decode(HandleByteBuf byteBuf) {
 
@@ -266,6 +182,87 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(this.clientSideGenerationEnabled);
         byteBuf.writeBoolean(this.blockNetworkIdsHashed); // blockIdsAreHashed
         byteBuf.writeBoolean(this.isSoundsServerAuthoritative); // serverAuthSounds
+    }
+
+    private void writeLevelSettings(HandleByteBuf byteBuf) {
+        /* Level settings start */
+        byteBuf.writeLongLE(this.seed);
+        byteBuf.writeShortLE(0x00); // SpawnBiomeType - Default
+        byteBuf.writeString("plains"); // UserDefinedBiomeName
+        byteBuf.writeVarInt(this.dimension);
+        byteBuf.writeVarInt(this.generator);
+        byteBuf.writeVarInt(this.worldGamemode);
+        byteBuf.writeBoolean(this.isHardcore);
+        byteBuf.writeVarInt(this.difficulty);
+        byteBuf.writeBlockVector3(this.spawnX, this.spawnY, this.spawnZ);
+        byteBuf.writeBoolean(this.hasAchievementsDisabled);
+        byteBuf.writeBoolean(this.worldEditor);
+        byteBuf.writeBoolean(this.createdInEditor);
+        byteBuf.writeBoolean(this.exportedFromEditor);
+        byteBuf.writeVarInt(this.dayCycleStopTime);
+        byteBuf.writeVarInt(this.eduEditionOffer);
+        byteBuf.writeBoolean(this.hasEduFeaturesEnabled);
+        byteBuf.writeString(""); // Education Edition Product ID
+        byteBuf.writeFloatLE(this.rainLevel);
+        byteBuf.writeFloatLE(this.lightningLevel);
+        byteBuf.writeBoolean(this.hasConfirmedPlatformLockedContent);
+        byteBuf.writeBoolean(this.multiplayerGame);
+        byteBuf.writeBoolean(this.broadcastToLAN);
+        byteBuf.writeVarInt(this.xblBroadcastIntent);
+        byteBuf.writeVarInt(this.platformBroadcastIntent);
+        byteBuf.writeBoolean(this.commandsEnabled);
+        byteBuf.writeBoolean(this.isTexturePacksRequired);
+        byteBuf.writeGameRules(this.gameRules);
+
+        byteBuf.writeIntLE(6); // Experiment count
+        {
+            byteBuf.writeString("data_driven_items");
+            byteBuf.writeBoolean(true);
+            byteBuf.writeString("data_driven_biomes");
+            byteBuf.writeBoolean(true);
+            byteBuf.writeString("upcoming_creator_features");
+            byteBuf.writeBoolean(true);
+            byteBuf.writeString("gametest");
+            byteBuf.writeBoolean(true);
+            byteBuf.writeString("experimental_molang_features");
+            byteBuf.writeBoolean(true);
+            byteBuf.writeString("cameras");
+            byteBuf.writeBoolean(true);
+        }
+        byteBuf.writeBoolean(true); // Were experiments previously toggled
+
+        byteBuf.writeBoolean(this.bonusChest);
+        byteBuf.writeBoolean(this.hasStartWithMapEnabled);
+        byteBuf.writeVarInt(this.permissionLevel);
+        byteBuf.writeIntLE(this.serverChunkTickRange);
+        byteBuf.writeBoolean(this.hasLockedBehaviorPack);
+        byteBuf.writeBoolean(this.hasLockedResourcePack);
+        byteBuf.writeBoolean(this.isFromLockedWorldTemplate);
+        byteBuf.writeBoolean(this.isUsingMsaGamertagsOnly);
+        byteBuf.writeBoolean(this.isFromWorldTemplate);
+        byteBuf.writeBoolean(this.isWorldTemplateOptionLocked);
+        byteBuf.writeBoolean(this.isOnlySpawningV1Villagers);
+        byteBuf.writeBoolean(this.isDisablingPersonas);
+        byteBuf.writeBoolean(this.isDisablingCustomSkins);
+        byteBuf.writeBoolean(this.emoteChatMuted);
+        byteBuf.writeString("*"); // vanillaVersion
+        byteBuf.writeIntLE(16); // Limited world width
+        byteBuf.writeIntLE(16); // Limited world height
+        byteBuf.writeBoolean(false); // Nether type
+        byteBuf.writeString(""); // EduSharedUriResource buttonName
+        byteBuf.writeString(""); // EduSharedUriResource linkUri
+        byteBuf.writeBoolean(false); // force Experimental Gameplay (exclusive to debug clients)
+        byteBuf.writeByte(this.chatRestrictionLevel);
+        byteBuf.writeBoolean(this.disablePlayerInteractions);
+        byteBuf.writeString(serverId);
+        byteBuf.writeString(worldId);
+        byteBuf.writeString(scenarioId);
+        /* Level settings end */
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.START_GAME_PACKET;
     }
 
     public void handle(PacketHandler handler) {

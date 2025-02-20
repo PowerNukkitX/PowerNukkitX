@@ -1,25 +1,20 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
+
+@Getter
+@Setter
 @ToString(exclude = "data")
 @NoArgsConstructor
 @AllArgsConstructor
 public class LevelChunkPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.FULL_CHUNK_DATA_PACKET;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     public int chunkX;
+
     public int chunkZ;
     public int subChunkCount;
     public boolean cacheEnabled;
@@ -31,7 +26,6 @@ public class LevelChunkPacket extends DataPacket {
      * @since v649
      */
     public int dimension;
-
     @Override
     public void decode(HandleByteBuf byteBuf) {
 
@@ -59,6 +53,11 @@ public class LevelChunkPacket extends DataPacket {
             }
         }
         byteBuf.writeByteArray(this.data);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.FULL_CHUNK_DATA_PACKET;
     }
 
     public void handle(PacketHandler handler) {
