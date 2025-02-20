@@ -8,16 +8,14 @@ import lombok.ToString;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerInputPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.PLAYER_INPUT_PACKET;
-
     public float motionX;
     public float motionY;
-
     public boolean jumping;
     public boolean sneaking;
 
@@ -36,7 +34,7 @@ public class PlayerInputPacket extends DataPacket {
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.PLAYER_INPUT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

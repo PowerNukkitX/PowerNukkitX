@@ -1,17 +1,15 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetTitlePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.SET_TITLE_PACKET;
-
     private static final TitleAction[] TITLE_ACTIONS = TitleAction.values();
 
     public static final int TYPE_CLEAR = 0;
@@ -32,11 +30,6 @@ public class SetTitlePacket extends DataPacket {
     public String xuid = "";
     public String platformOnlineId = "";
     private String filteredTitleText = "";
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -134,6 +127,11 @@ public class SetTitlePacket extends DataPacket {
         SET_TITLE_JSON,
         SET_SUBTITLE_JSON,
         SET_ACTIONBAR_JSON,
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.SET_TITLE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

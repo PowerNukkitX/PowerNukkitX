@@ -2,22 +2,19 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerEnchantOptionsPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.PLAYER_ENCHANT_OPTIONS_PACKET;
-
     public List<EnchantOptionData> options = new ArrayList<>();
 
     public static final int ENCH_RECIPEID = 100000;
@@ -25,18 +22,12 @@ public class PlayerEnchantOptionsPacket extends DataPacket {
     private static final AtomicInteger ENCH_RECIPE_NETID = new AtomicInteger(ENCH_RECIPEID);
 
     @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
-    @Override
     public void decode(HandleByteBuf byteBuf) {
-        //client bound
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUnsignedVarInt(this.options.size());
         for (EnchantOptionData option : this.options) {
             byteBuf.writeVarInt(option.minLevel());
@@ -58,6 +49,12 @@ public class PlayerEnchantOptionsPacket extends DataPacket {
     public record EnchantOptionData(
             int minLevel, String enchantName, List<Enchantment> enchantments
     ) {
+
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.PLAYER_ENCHANT_OPTIONS_PACKET;
     }
 
     public void handle(PacketHandler handler) {

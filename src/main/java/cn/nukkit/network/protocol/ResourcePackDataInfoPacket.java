@@ -2,20 +2,16 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.version.Version;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.UUID;
 
+@Getter
+@Setter
 @ToString(exclude = "sha256")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResourcePackDataInfoPacket
- extends AbstractResourcePackDataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_DATA_INFO_PACKET;
-
+public class ResourcePackDataInfoPacket extends AbstractResourcePackDataPacket {
     public static final int TYPE_INVALID = 0;
     public static final int TYPE_ADDON = 1;
     public static final int TYPE_CACHED = 2;
@@ -49,7 +45,6 @@ public class ResourcePackDataInfoPacket
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         encodePackInfo(byteBuf);
         byteBuf.writeIntLE(this.maxChunkSize);
         byteBuf.writeIntLE(this.chunkCount);
@@ -57,11 +52,6 @@ public class ResourcePackDataInfoPacket
         byteBuf.writeByteArray(this.sha256);
         byteBuf.writeBoolean(this.premium);
         byteBuf.writeByte((byte) this.type);
-    }
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
     }
 
     @Override
@@ -82,6 +72,11 @@ public class ResourcePackDataInfoPacket
     @Override
     public void setPackId(UUID packId) {
         this.packId = packId;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.RESOURCE_PACK_DATA_INFO_PACKET;
     }
 
     public void handle(PacketHandler handler) {

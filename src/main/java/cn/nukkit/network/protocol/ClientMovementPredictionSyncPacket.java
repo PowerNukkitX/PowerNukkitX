@@ -4,25 +4,21 @@ import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigInteger;
 import java.util.Set;
 
 @Getter
 @Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClientMovementPredictionSyncPacket extends DataPacket {
-
     private final Set<EntityFlag> flags = new ObjectOpenHashSet<>();
     private Vector3f actorBoundingBox;
     private MovementAttributesComponent movementAttributesComponent;
     private long actorRuntimeId;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.CLIENT_MOVEMENT_PREDICTION_SYNC_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -49,11 +45,6 @@ public class ClientMovementPredictionSyncPacket extends DataPacket {
         byteBuf.writeEntityRuntimeId(actorRuntimeId);
     }
 
-    @Override
-    public void handle(PacketHandler handler) {
-        handler.handle(this);
-    }
-
     public void writeMovementAttributesComponent(HandleByteBuf byteBuf) {
         byteBuf.writeFloatLE(getMovementAttributesComponent().movementSpeed);
         byteBuf.writeFloatLE(getMovementAttributesComponent().underwaterMovementSpeed);
@@ -70,4 +61,12 @@ public class ClientMovementPredictionSyncPacket extends DataPacket {
     public record MovementAttributesComponent(float movementSpeed, float underwaterMovementSpeed, float lavaMovementSpeed, float jumpStrength, float health, float hunger) {
     }
 
+    @Override
+    public int pid() {
+        return ProtocolInfo.CLIENT_MOVEMENT_PREDICTION_SYNC_PACKET;
+    }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

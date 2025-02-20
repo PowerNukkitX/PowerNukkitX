@@ -5,20 +5,16 @@ import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class AnvilDamagePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ANVIL_DAMAGE_PACKET;
     public int damage;
     public int x;
     public int y;
     public int z;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.ANVIL_DAMAGE_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -32,6 +28,11 @@ public class AnvilDamagePacket extends DataPacket {
     @Override
     public void encode(HandleByteBuf byteBuf) {
 
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.ANVIL_DAMAGE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

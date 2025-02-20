@@ -3,20 +3,16 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class PacketViolationWarningPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.PACKET_VIOLATION_WARNING_PACKET;
     public PacketViolationType type;
     public PacketViolationSeverity severity;
     public int packetId;
     public String context;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -36,14 +32,19 @@ public class PacketViolationWarningPacket extends DataPacket {
 
     public enum PacketViolationType {
         UNKNOWN,
-        MALFORMED_PACKET
+        MALFORMED_PACKET;
     }
 
     public enum PacketViolationSeverity {
         UNKNOWN,
         WARNING,
         FINAL_WARNING,
-        TERMINATING_CONNECTION
+        TERMINATING_CONNECTION;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.PACKET_VIOLATION_WARNING_PACKET;
     }
 
     public void handle(PacketHandler handler) {

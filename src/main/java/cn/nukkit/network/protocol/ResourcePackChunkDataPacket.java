@@ -2,20 +2,16 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.version.Version;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.UUID;
 
+@Getter
+@Setter
 @ToString(exclude = "data")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResourcePackChunkDataPacket
- extends AbstractResourcePackDataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_CHUNK_DATA_PACKET;
-
+public class ResourcePackChunkDataPacket extends AbstractResourcePackDataPacket {
     public UUID packId;
     private Version packVersion;
     public int chunkIndex;
@@ -60,7 +56,7 @@ public class ResourcePackChunkDataPacket
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.RESOURCE_PACK_CHUNK_DATA_PACKET;
     }
 
     public void handle(PacketHandler handler) {

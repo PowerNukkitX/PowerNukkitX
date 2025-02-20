@@ -22,7 +22,6 @@ import com.google.common.collect.Sets;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,9 +40,8 @@ public class EntityPainting extends EntityHanging {
 
 
     private static boolean checkPlacePaint(int x, int z, Level level, BlockFace face, Block block, Block target) {
-        if (target.getSide(face.rotateYCCW(), x).isAir() ||
-                target.getSide(face.rotateYCCW(), x).up(z).isAir() ||
-                target.up(z).isAir()) {
+        if (target.getSide(face.rotateYCCW(), x).up(z).isTransparent() ||
+                    block.getSide(face.rotateYCCW(), x).up(z).isSolid()) {
             return true;
         } else {
             Block side = block.getSide(face.rotateYCCW(), x);

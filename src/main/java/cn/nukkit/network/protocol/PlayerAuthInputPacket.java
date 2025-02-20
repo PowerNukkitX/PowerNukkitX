@@ -12,9 +12,7 @@ import cn.nukkit.network.protocol.types.PlayerActionType;
 import cn.nukkit.network.protocol.types.PlayerBlockActionData;
 import cn.nukkit.network.protocol.types.PlayerInputTick;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigInteger;
 import java.util.EnumMap;
@@ -22,12 +20,12 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerAuthInputPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.PLAYER_AUTH_INPUT_PACKET;
-
     public float yaw;
     public float pitch;
     public float headYaw;
@@ -62,11 +60,6 @@ public class PlayerAuthInputPacket extends DataPacket {
      * @since 766
      */
     public Vector2f rawMoveVector;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -129,7 +122,12 @@ public class PlayerAuthInputPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        // Noop
+
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.PLAYER_AUTH_INPUT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

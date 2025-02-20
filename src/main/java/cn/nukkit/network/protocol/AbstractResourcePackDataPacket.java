@@ -5,7 +5,6 @@ import cn.nukkit.utils.version.Version;
 
 import java.util.UUID;
 
-
 public abstract class AbstractResourcePackDataPacket extends DataPacket {
     public abstract Version getPackVersion();
 

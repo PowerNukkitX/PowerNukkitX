@@ -59,8 +59,8 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
             pk.x = (int) this.getHolder().getX();
             pk.y = (int) this.getHolder().getY();
             pk.z = (int) this.getHolder().getZ();
-            pk.case1 = 1;
-            pk.case2 = 2;
+            pk.type = 1;
+            pk.value = 2;
 
             Level level = this.getHolder().getLevel();
             if (level != null) {
@@ -87,8 +87,8 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
             pk.x = (int) this.getHolder().getX();
             pk.y = (int) this.getHolder().getY();
             pk.z = (int) this.getHolder().getZ();
-            pk.case1 = 1;
-            pk.case2 = 0;
+            pk.type = 1;
+            pk.value = 0;
 
             Level level = this.getHolder().getLevel();
             if (level != null) {

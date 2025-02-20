@@ -9,18 +9,13 @@ import lombok.NoArgsConstructor;import lombok.*;
 
 import java.util.List;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 public class CreativeContentPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.CREATIVE_CONTENT_PACKET;
-
     private final List<CreativeItemGroup> groups = new ObjectArrayList<>();
     private final List<CreativeItemData> contents = new ObjectArrayList<>();
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -43,6 +38,11 @@ public class CreativeContentPacket extends DataPacket {
         byteBuf.writeUnsignedVarInt(Registries.CREATIVE.getCreativeItemIndex(data.getItem()));
         byteBuf.writeSlot(data.getItem(), true);
         byteBuf.writeUnsignedVarInt(data.getGroupId());
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.CREATIVE_CONTENT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -9,11 +9,12 @@ import lombok.ToString;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class MoveEntityAbsolutePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET;
     public static final byte FLAG_GROUND = 0x01;
     public static final byte FLAG_TELEPORT = 0x02;
     public static final byte FLAG_FORCE_MOVE_LOCAL_ENTITY = 0x04;
@@ -28,11 +29,6 @@ public class MoveEntityAbsolutePacket extends DataPacket {
     public boolean onGround;
     public boolean teleport;
     public boolean forceMoveLocalEntity;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -52,7 +48,7 @@ public class MoveEntityAbsolutePacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
+
         byteBuf.writeEntityRuntimeId(this.eid);
         byte flags = 0;
         if (onGround) {
@@ -69,6 +65,11 @@ public class MoveEntityAbsolutePacket extends DataPacket {
         byteBuf.writeByte((byte) (this.pitch / (360d / 256d)));
         byteBuf.writeByte((byte) (this.headYaw / (360d / 256d)));
         byteBuf.writeByte((byte) (this.yaw / (360d / 256d)));
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -11,17 +11,12 @@ import lombok.ToString;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddItemEntityPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ADD_ITEM_ENTITY_PACKET;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     public long entityUniqueId;
     public long entityRuntimeId;
     public Item item;
@@ -41,7 +36,6 @@ public class AddItemEntityPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeEntityUniqueId(this.entityUniqueId);
         byteBuf.writeEntityRuntimeId(this.entityRuntimeId);
         byteBuf.writeSlot(this.item);
@@ -49,6 +43,11 @@ public class AddItemEntityPacket extends DataPacket {
         byteBuf.writeVector3f(this.speedX, this.speedY, this.speedZ);
         byteBuf.writeBytes(Binary.writeEntityData(entityData));
         byteBuf.writeBoolean(this.isFromFishing);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.ADD_ITEM_ENTITY_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -2,16 +2,14 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class LevelSoundEventPacketV2 extends LevelSoundEventPacket {
-    public static final int NETWORK_ID = ProtocolInfo.LEVEL_SOUND_EVENT_PACKET_V2;
-
     public int sound;
     public float x;
     public float y;
@@ -36,7 +34,6 @@ public class LevelSoundEventPacketV2 extends LevelSoundEventPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeByte((byte) this.sound);
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeVarInt(this.extraData);
@@ -47,7 +44,7 @@ public class LevelSoundEventPacketV2 extends LevelSoundEventPacket {
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.LEVEL_SOUND_EVENT_PACKET_V2;
     }
 
     public void handle(PacketHandler handler) {

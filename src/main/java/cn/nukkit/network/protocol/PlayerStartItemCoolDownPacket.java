@@ -2,21 +2,16 @@ package cn.nukkit.network.protocol;
 
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerStartItemCoolDownPacket extends DataPacket {
     private String itemCategory;
     private int coolDownDuration;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.PLAYER_START_ITEM_COOL_DOWN_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -44,6 +39,11 @@ public class PlayerStartItemCoolDownPacket extends DataPacket {
 
     public void setCoolDownDuration(int coolDownDuration) {
         this.coolDownDuration = coolDownDuration;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.PLAYER_START_ITEM_COOL_DOWN_PACKET;
     }
 
     public void handle(PacketHandler handler) {

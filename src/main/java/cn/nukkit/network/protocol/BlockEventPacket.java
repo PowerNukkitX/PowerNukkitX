@@ -6,22 +6,17 @@ import lombok.ToString;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class BlockEventPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.BLOCK_EVENT_PACKET;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     public int x;
     public int y;
     public int z;
-    public int case1;
-    public int case2;
+    public int type;
+    public int value;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -31,8 +26,13 @@ public class BlockEventPacket extends DataPacket {
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeBlockVector3(this.x, this.y, this.z);
-        byteBuf.writeVarInt(this.case1);
-        byteBuf.writeVarInt(this.case2);
+        byteBuf.writeVarInt(this.type);
+        byteBuf.writeVarInt(this.value);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.BLOCK_EVENT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

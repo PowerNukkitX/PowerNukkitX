@@ -19,33 +19,22 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author joserobjr
  * @since 2021-07-06
  */
 
-
+@Getter
+@Setter
 @ToString
+@NoArgsConstructor
 @AllArgsConstructor
 public class SimulationTypePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
-
     private static final SimulationType[] TYPES = SimulationType.values();
 
-    public SimulationType type;
-
-
-    public SimulationTypePacket() {
-        type = SimulationType.GAME;
-    }
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
+    public SimulationType type = SimulationType.GAME;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -61,6 +50,11 @@ public class SimulationTypePacket extends DataPacket {
         GAME,
         EDITOR,
         TEST
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.SIMULATION_TYPE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

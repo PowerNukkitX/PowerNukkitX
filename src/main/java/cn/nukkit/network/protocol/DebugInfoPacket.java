@@ -4,18 +4,14 @@ import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class DebugInfoPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.DEBUG_INFO_PACKET;
     public long entityId;
     public String data;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -25,9 +21,13 @@ public class DebugInfoPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeLong(this.entityId);
         byteBuf.writeString(this.data);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.DEBUG_INFO_PACKET;
     }
 
     public void handle(PacketHandler handler) {

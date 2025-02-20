@@ -2,12 +2,14 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector2f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.checkerframework.framework.qual.Unused;
 
 @Getter
 @Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class CameraAimAssistPacket extends DataPacket {
     private String presetId;
     private Vector2f viewAngle;

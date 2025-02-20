@@ -1,16 +1,14 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
-
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class EntityEventPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ENTITY_EVENT_PACKET;
     public static final int NONE = 0;
     public static final int JUMP = 1;
     public static final int HURT_ANIMATION = 2;
@@ -35,7 +33,6 @@ public class EntityEventPacket extends DataPacket {
     public static final int LOVE_PARTICLES = 21;
     public static final int VILLAGER_ANGRY = 22;
     public static final int VILLAGER_HAPPY = 23;
-
     public static final int WITCH_SPELL_PARTICLES = 24;
     public static final int FIREWORK_EXPLOSION = 25;
     public static final int IN_LOVE_HEARTS = 26;
@@ -52,50 +49,26 @@ public class EntityEventPacket extends DataPacket {
     public static final int ENDER_DRAGON_DEATH = 37;
     public static final int DUST_PARTICLES = 38;
     public static final int ARROW_SHAKE = 39;
-
     public static final int EATING_ITEM = 57;
-
     public static final int BABY_ANIMAL_FEED = 60;
     public static final int DEATH_SMOKE_CLOUD = 61;
     public static final int COMPLETE_TRADE = 62;
     public static final int REMOVE_LEASH = 63;
-
-
     public static final int CARAVAN = 64;
     public static final int CONSUME_TOTEM = 65;
     public static final int PLAYER_CHECK_TREASURE_HUNTER_ACHIEVEMENT = 66;
     public static final int ENTITY_SPAWN = 67;
     public static final int DRAGON_PUKE = 68;
     public static final int MERGE_ITEMS = 69;
-
-
     public static final int START_SWIMMING = 70;
-
-
     public static final int BALLOON_POP = 71;
-
-
     public static final int TREASURE_HUNT = 72;
-
-
     public static final int SUMMON_AGENT = 73;
-
-
     public static final int FINISHED_CHARGING_CROSSBOW = 74;
-
-
     public static final int LANDED_ON_GROUND = 75;
-
-
     public static final int ENTITY_GROW_UP = 76;
     public static final int VIBRATION_DETECTED = 77;
-
     public static final int DRINK_MILK = 78;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     public long eid;
     public int event;
@@ -110,10 +83,14 @@ public class EntityEventPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeEntityRuntimeId(this.eid);
         byteBuf.writeByte((byte) this.event);
         byteBuf.writeVarInt(this.data);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.ENTITY_EVENT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

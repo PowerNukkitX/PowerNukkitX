@@ -8,13 +8,12 @@ import lombok.ToString;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddPaintingPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.ADD_PAINTING_PACKET;
-
     public long entityUniqueId;
     public long entityRuntimeId;
     public float x;
@@ -30,7 +29,6 @@ public class AddPaintingPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeEntityUniqueId(this.entityUniqueId);
         byteBuf.writeEntityRuntimeId(this.entityRuntimeId);
 
@@ -41,7 +39,7 @@ public class AddPaintingPacket extends DataPacket {
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.ADD_PAINTING_PACKET;
     }
 
     public void handle(PacketHandler handler) {

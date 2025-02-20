@@ -1,21 +1,19 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author CreeperFace
  * @since 30. 10. 2016
  */
+
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class BossEventPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.BOSS_EVENT_PACKET;
-
     /* S2C: Shows the bossbar to the player. */
     public static final int TYPE_SHOW = 0;
     /* C2S: Registers a player to a boss fight. */
@@ -48,11 +46,6 @@ public class BossEventPacket extends DataPacket {
     public int overlay;
     
     @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
-    @Override
     public void decode(HandleByteBuf byteBuf) {
         this.bossEid = byteBuf.readEntityUniqueId();
         this.type = (int) byteBuf.readUnsignedVarInt();
@@ -83,7 +76,7 @@ public class BossEventPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
+
         byteBuf.writeEntityUniqueId(this.bossEid);
         byteBuf.writeUnsignedVarInt(this.type);
         switch (this.type) {
@@ -110,6 +103,11 @@ public class BossEventPacket extends DataPacket {
                 byteBuf.writeString(this.filteredName);
                 break;
         }
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.BOSS_EVENT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

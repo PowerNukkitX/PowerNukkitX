@@ -392,9 +392,6 @@ public interface PacketHandler {
     default void handle(RiderJumpPacket pk) {
     }
 
-    default void handle(ScriptCustomEventPacket pk) {
-    }
-
     default void handle(ScriptMessagePacket pk) {
     }
 
@@ -555,9 +552,6 @@ public interface PacketHandler {
     }
 
     default void handle(UpdateTradePacket pk) {
-    }
-
-    default void handle(VideoStreamConnectPacket pk) {
     }
 
     default void handle(SettingsCommandPacket pk) {
