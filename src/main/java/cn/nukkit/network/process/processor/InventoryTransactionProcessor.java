@@ -342,7 +342,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 Item serverItemInHand = player.getInventory().getItemInHand();
                 Vector3 directionVector = player.getDirectionVector();
                 // Removes Damage Tag that the client adds, but we do not store.
-                if(!serverItemInHand.hasCompoundTag() || !serverItemInHand.getNamedTag().containsInt("Damage")) {
+                if(useItemDataItem.hasCompoundTag() && (!serverItemInHand.hasCompoundTag() || !serverItemInHand.getNamedTag().containsInt("Damage"))) {
                     if(useItemDataItem.getNamedTag().containsInt("Damage")) {
                         useItemDataItem.getNamedTag().remove("Damage");
                     }
