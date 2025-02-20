@@ -32,7 +32,7 @@ public class WalkController implements IController {
     public boolean control(EntityIntelligent entity) {
         currentJumpCoolDown++;
 
-        if(currentJumpCoolDown > JUMP_COOL_DOWN &&!entity.isOnGround()) return false;
+        if(currentJumpCoolDown > JUMP_COOL_DOWN && !entity.isOnGround()) return false;
 
         if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection()) {
             //clone防止异步导致的NPE
