@@ -1,16 +1,14 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class EntityEventPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ENTITY_EVENT_PACKET;
-
     public static final int NONE = 0;
     public static final int JUMP = 1;
     public static final int HURT_ANIMATION = 2;
@@ -72,11 +70,6 @@ public class EntityEventPacket extends DataPacket {
     public static final int VIBRATION_DETECTED = 77;
     public static final int DRINK_MILK = 78;
 
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     public long eid;
     public int event;
     public int data;
@@ -93,6 +86,11 @@ public class EntityEventPacket extends DataPacket {
         byteBuf.writeEntityRuntimeId(this.eid);
         byteBuf.writeByte((byte) this.event);
         byteBuf.writeVarInt(this.data);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.ENTITY_EVENT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

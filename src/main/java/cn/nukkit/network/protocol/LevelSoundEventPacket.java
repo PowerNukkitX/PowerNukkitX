@@ -2,18 +2,16 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class LevelSoundEventPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
-
     public static final int SOUND_ITEM_USE_ON = dynamic(0);
     public static final int SOUND_HIT = dynamic(1);
     public static final int SOUND_STEP = dynamic(2);
@@ -580,7 +578,7 @@ public class LevelSoundEventPacket extends DataPacket {
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

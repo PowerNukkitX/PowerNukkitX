@@ -5,13 +5,13 @@ import cn.nukkit.Server;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.PlayerPermission;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,11 +32,6 @@ public class RequestPermissionsPacket extends DataPacket {
     //Serialized capability list
     //It is an 8-bit binary number, each bit corresponds to an ability
     public int customPermissions;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.REQUEST_PERMISSIONS_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -65,6 +60,11 @@ public class RequestPermissionsPacket extends DataPacket {
                 return player;
         }
         return null;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.REQUEST_PERMISSIONS_PACKET;
     }
 
     public void handle(PacketHandler handler) {

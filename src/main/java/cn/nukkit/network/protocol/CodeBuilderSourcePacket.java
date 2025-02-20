@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;import lombok.*;
 
 //EDU exclusive
+@Builder
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,11 +17,6 @@ public class CodeBuilderSourcePacket extends DataPacket {
     public CodeBuilderOperationType operation;
     public CodeBuilderCategoryType category;
     public String value;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.CODE_BUILDER_SOURCE_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -32,6 +30,11 @@ public class CodeBuilderSourcePacket extends DataPacket {
         byteBuf.writeByte((byte) operation.ordinal());
         byteBuf.writeByte((byte) category.ordinal());
         byteBuf.writeString(value);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.CODE_BUILDER_SOURCE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

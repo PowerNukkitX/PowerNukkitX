@@ -1,7 +1,6 @@
 package cn.nukkit;
 
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
-import cn.nukkit.plugin.js.JSIInitiator;
 import com.google.common.base.Preconditions;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.internal.logging.InternalLoggerFactory;
@@ -166,9 +165,6 @@ public class Nukkit {
         }
         log.info("Stopping other threads");
 
-        if (Server.getInstance().getPluginManager().getFileAssociations().containsKey("cn.nukkit.plugin.JSPluginLoader")) {
-            JSIInitiator.jsTimer.cancel();
-        }
         PGZIPOutputStream.getSharedThreadPool().shutdownNow();
         for (Thread thread : java.lang.Thread.getAllStackTraces().keySet()) {
             if (!(thread instanceof InterruptibleThread)) {

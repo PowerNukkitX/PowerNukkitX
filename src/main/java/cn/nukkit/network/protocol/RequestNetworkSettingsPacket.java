@@ -3,6 +3,8 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -10,8 +12,8 @@ public class RequestNetworkSettingsPacket extends DataPacket {
     public int protocolVersion;
 
     @Override
-    public int pid() {
-        return ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET;
+    public void decode(HandleByteBuf byteBuf) {
+        this.protocolVersion = byteBuf.readInt();
     }
 
     @Override
@@ -20,8 +22,8 @@ public class RequestNetworkSettingsPacket extends DataPacket {
     }
 
     @Override
-    public void decode(HandleByteBuf byteBuf) {
-        this.protocolVersion = byteBuf.readInt();
+    public int pid() {
+        return ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET;
     }
 
     public void handle(PacketHandler handler) {

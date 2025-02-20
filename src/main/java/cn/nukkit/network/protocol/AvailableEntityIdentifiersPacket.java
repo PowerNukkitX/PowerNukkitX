@@ -6,42 +6,31 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.registry.Registries;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 
-@ToString(exclude = {"tag"})
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 public class AvailableEntityIdentifiersPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.AVAILABLE_ENTITY_IDENTIFIERS_PACKET;
-
     private static byte[] TAG;
 
     static {
         reloadTag();
     }
 
-    public byte[] tag = TAG;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     @Override
     public void decode(HandleByteBuf byteBuf) {
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeBytes(this.tag);
-    }
-
-    public void handle(PacketHandler handler) {
-        handler.handle(this);
+        byteBuf.writeBytes(TAG);
     }
 
     public static void reloadTag() {
@@ -62,4 +51,15 @@ public class AvailableEntityIdentifiersPacket extends DataPacket {
             throw new AssertionError("Error whilst loading entity_identifiers.dat", e);
         }
     }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.AVAILABLE_ENTITY_IDENTIFIERS_PACKET;
+    }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }
+
+

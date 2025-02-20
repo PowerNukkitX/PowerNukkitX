@@ -2,26 +2,18 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
-
 @Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class UnlockedRecipesPacket extends DataPacket {
     public boolean unlockedNotification;
     public final List<String> unlockedRecipes = new ObjectArrayList<>();
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.UNLOCKED_RECIPES_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -39,6 +31,11 @@ public class UnlockedRecipesPacket extends DataPacket {
         for (String recipe : this.unlockedRecipes) {
             byteBuf.writeString(recipe);
         }
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.UNLOCKED_RECIPES_PACKET;
     }
 
     public void handle(PacketHandler handler) {

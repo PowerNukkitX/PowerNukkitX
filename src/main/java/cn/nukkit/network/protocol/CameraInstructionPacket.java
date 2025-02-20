@@ -10,15 +10,14 @@ import cn.nukkit.camera.instruction.impl.TargetInstruction;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.OptionalBoolean;
 import cn.nukkit.utils.OptionalValue;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 import java.util.Optional;
 
-
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,11 +27,6 @@ public class CameraInstructionPacket extends DataPacket {
     public ClearInstruction clearInstruction;
     private TargetInstruction targetInstruction;
     private OptionalBoolean removeTarget = OptionalBoolean.empty();
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.CAMERA_INSTRUCTION_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -98,6 +92,11 @@ public class CameraInstructionPacket extends DataPacket {
         byteBuf.writeFloatLE(color.getRed() / 255F);
         byteBuf.writeFloatLE(color.getGreen() / 255F);
         byteBuf.writeFloatLE(color.getBlue() / 255F);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.CAMERA_INSTRUCTION_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -15,17 +15,12 @@ import java.util.UUID;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddPlayerPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ADD_PLAYER_PACKET;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     public UUID uuid;
     public String username;
     public long entityUniqueId;
@@ -53,7 +48,6 @@ public class AddPlayerPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUUID(this.uuid);
         byteBuf.writeString(this.username);
         byteBuf.writeEntityRuntimeId(this.entityRuntimeId);
@@ -85,6 +79,11 @@ public class AddPlayerPacket extends DataPacket {
         byteBuf.writeUnsignedVarInt(0); //TODO: Entity links
         byteBuf.writeString(deviceId);
         byteBuf.writeIntLE(buildPlatform);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.ADD_PLAYER_PACKET;
     }
 
     public void handle(PacketHandler handler) {

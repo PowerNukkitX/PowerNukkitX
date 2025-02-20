@@ -7,15 +7,14 @@ import cn.nukkit.network.protocol.types.CommandPermission;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.PlayerPermission;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Set;
 
-
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor

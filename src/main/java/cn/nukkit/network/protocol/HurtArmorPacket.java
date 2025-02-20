@@ -8,12 +8,12 @@ import lombok.ToString;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class HurtArmorPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.HURT_ARMOR_PACKET;
-
     public int cause;
     public int damage;
     public long armorSlots;
@@ -34,7 +34,7 @@ public class HurtArmorPacket extends DataPacket {
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.HURT_ARMOR_PACKET;
     }
 
     public void handle(PacketHandler handler) {

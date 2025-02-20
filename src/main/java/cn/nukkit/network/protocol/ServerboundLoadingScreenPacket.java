@@ -2,10 +2,10 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.ServerboundLoadingScreenPacketType;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,11 +15,6 @@ public class ServerboundLoadingScreenPacket extends DataPacket {
      * Optional int, not present if null
      */
     private Integer loadingScreenId = null;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.SERVERBOUND_LOADING_SCREEN_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -32,6 +27,11 @@ public class ServerboundLoadingScreenPacket extends DataPacket {
     @Override
     public void encode(HandleByteBuf byteBuf) {
 
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.SERVERBOUND_LOADING_SCREEN_PACKET;
     }
 
     @Override

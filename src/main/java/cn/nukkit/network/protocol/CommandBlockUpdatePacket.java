@@ -2,10 +2,10 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,11 +25,6 @@ public class CommandBlockUpdatePacket extends DataPacket {
     public boolean shouldTrackOutput;
     public int tickDelay;
     public boolean executingOnFirstTick;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.COMMAND_BLOCK_UPDATE_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -72,6 +67,11 @@ public class CommandBlockUpdatePacket extends DataPacket {
         byteBuf.writeBoolean(this.shouldTrackOutput);
         byteBuf.writeIntLE(this.tickDelay);
         byteBuf.writeBoolean(this.executingOnFirstTick);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.COMMAND_BLOCK_UPDATE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

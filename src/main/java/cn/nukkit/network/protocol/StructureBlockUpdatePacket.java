@@ -9,10 +9,10 @@ import cn.nukkit.network.protocol.types.StructureMirror;
 import cn.nukkit.network.protocol.types.StructureRedstoneSaveMode;
 import cn.nukkit.network.protocol.types.StructureRotation;
 import cn.nukkit.network.protocol.types.StructureSettings;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,11 +21,6 @@ public class StructureBlockUpdatePacket extends DataPacket {
     public StructureEditorData editorData;
     public boolean powered;
     public boolean waterlogged;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -103,6 +98,11 @@ public class StructureBlockUpdatePacket extends DataPacket {
         byteBuf.writeFloatLE(settings.getIntegrityValue());
         byteBuf.writeIntLE(settings.getIntegritySeed());
         byteBuf.writeVector3f(settings.getPivot());
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

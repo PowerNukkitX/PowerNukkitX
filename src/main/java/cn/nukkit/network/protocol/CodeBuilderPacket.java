@@ -5,18 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;import lombok.*;
 
 //EDU exclusive
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class CodeBuilderPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.CODE_BUILDER_PACKET;
     public boolean isOpening;
     public String url = "";
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -28,6 +24,11 @@ public class CodeBuilderPacket extends DataPacket {
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeString(url);
         byteBuf.writeBoolean(isOpening);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.CODE_BUILDER_PACKET;
     }
 
     public void handle(PacketHandler handler) {

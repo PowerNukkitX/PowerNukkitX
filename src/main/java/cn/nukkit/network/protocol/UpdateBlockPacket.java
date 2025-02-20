@@ -7,11 +7,12 @@ import lombok.ToString;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateBlockPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.UPDATE_BLOCK_PACKET;
     public static final int FLAG_NONE = 0b0000;
     public static final int FLAG_NEIGHBORS = 0b0001;
     public static final int FLAG_NETWORK = 0b0010;
@@ -26,11 +27,6 @@ public class UpdateBlockPacket extends DataPacket {
     public int blockRuntimeId;
     public int flags;
     public int dataLayer = 0;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -61,6 +57,11 @@ public class UpdateBlockPacket extends DataPacket {
             this.blockData = blockData;
             this.flags = flags;
         }
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.UPDATE_BLOCK_PACKET;
     }
 
     public void handle(PacketHandler handler) {

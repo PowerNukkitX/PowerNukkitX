@@ -2,18 +2,16 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class LevelEventPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.LEVEL_EVENT_PACKET;
-
     public static final int EVENT_UNDEFINED = dynamic(0);
     public static final int EVENT_SOUND_CLICK = dynamic(1000);
     public static final int EVENT_SOUND_CLICK_FAIL = dynamic(1001);
@@ -150,11 +148,6 @@ public class LevelEventPacket extends DataPacket {
     public int data = 0;
 
     @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
-    @Override
     public void decode(HandleByteBuf byteBuf) {
         this.evid = byteBuf.readVarInt();
         Vector3f v = byteBuf.readVector3f();
@@ -169,6 +162,11 @@ public class LevelEventPacket extends DataPacket {
         byteBuf.writeVarInt(this.evid);
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeVarInt(this.data);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.LEVEL_EVENT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

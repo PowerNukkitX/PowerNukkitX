@@ -2,18 +2,16 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.UUIDValidator;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.UUID;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResourcePackClientResponsePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET;
-
     public static final byte STATUS_REFUSED = 1;
     public static final byte STATUS_SEND_PACKS = 2;
     public static final byte STATUS_HAVE_ALL_PACKS = 3;
@@ -46,11 +44,6 @@ public class ResourcePackClientResponsePacket extends DataPacket {
         }
     }
 
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     @ToString
     public static class Entry {
         public final UUID uuid;
@@ -60,6 +53,11 @@ public class ResourcePackClientResponsePacket extends DataPacket {
             this.uuid = uuid;
             this.version = version;
         }
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

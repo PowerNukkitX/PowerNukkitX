@@ -13,9 +13,7 @@ import cn.nukkit.utils.SequencedHashSet;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.*;
 import java.util.function.ObjIntConsumer;
@@ -28,12 +26,12 @@ import static com.google.common.base.Preconditions.checkArgument;
  * @author MagicDroidX (Nukkit Project)
  */
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class AvailableCommandsPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.AVAILABLE_COMMANDS_PACKET;
-
     private static final ObjIntConsumer<HandleByteBuf> WRITE_BYTE = (s, v) -> s.writeByte((byte) v);
     private static final ObjIntConsumer<HandleByteBuf> WRITE_SHORT = HandleByteBuf::writeShortLE;
     private static final ObjIntConsumer<HandleByteBuf> WRITE_INT = HandleByteBuf::writeIntLE;
@@ -69,11 +67,6 @@ public class AvailableCommandsPacket extends DataPacket {
 
     public Map<String, CommandDataVersions> commands;
     public final List<CommandEnumConstraintData> constraints = new ObjectArrayList<>();
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -299,6 +292,11 @@ public class AvailableCommandsPacket extends DataPacket {
         for (String value : values) {
             byteBuf.writeString(value);
         }
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.AVAILABLE_COMMANDS_PACKET;
     }
 
     public void handle(PacketHandler handler) {

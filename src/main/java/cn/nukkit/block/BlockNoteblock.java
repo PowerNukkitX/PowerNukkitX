@@ -193,8 +193,8 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
         pk.x = this.getFloorX();
         pk.y = this.getFloorY();
         pk.z = this.getFloorZ();
-        pk.case1 = instrument.ordinal();
-        pk.case2 = this.getStrength();
+        pk.type = instrument.ordinal();
+        pk.value = this.getStrength();
         this.getLevel().addChunkPacket(this.getFloorX() >> 4, this.getFloorZ() >> 4, pk);
     }
 

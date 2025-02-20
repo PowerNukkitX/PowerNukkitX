@@ -12,9 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -27,12 +25,12 @@ import java.util.UUID;
 /**
  * @since on 15-10-13
  */
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.LOGIN_PACKET;
-
     public String username;
     public String titleId;
     public int protocol;
@@ -42,11 +40,6 @@ public class LoginPacket extends DataPacket {
     public long issueUnixTime = -1;
 
     private BinaryStream buffer;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -221,6 +214,11 @@ public class LoginPacket extends DataPacket {
 
     public BinaryStream getBuffer() {
         return buffer;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.LOGIN_PACKET;
     }
 
     public void handle(PacketHandler handler) {

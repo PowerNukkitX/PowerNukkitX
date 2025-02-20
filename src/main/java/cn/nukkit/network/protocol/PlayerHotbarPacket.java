@@ -10,13 +10,7 @@ import lombok.*;
 public class PlayerHotbarPacket extends DataPacket {
     public int selectedHotbarSlot;
     public int windowId = SpecialWindowId.PLAYER.getId();
-
     public boolean selectHotbarSlot = true;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.PLAYER_HOTBAR_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -30,6 +24,11 @@ public class PlayerHotbarPacket extends DataPacket {
         byteBuf.writeUnsignedVarInt(this.selectedHotbarSlot);
         byteBuf.writeByte((byte) this.windowId);
         byteBuf.writeBoolean(this.selectHotbarSlot);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.PLAYER_HOTBAR_PACKET;
     }
 
     public void handle(PacketHandler handler) {

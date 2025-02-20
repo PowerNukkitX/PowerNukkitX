@@ -7,25 +7,21 @@ import cn.nukkit.network.protocol.types.camera.aimassist.CameraAimAssistPreset;
 import cn.nukkit.network.protocol.types.camera.aimassist.CameraPresetAimAssist;
 import cn.nukkit.utils.OptionalValue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-
+@Getter
+@Setter
 @ToString
-@NoArgsConstructor
+@AllArgsConstructor
 public class CameraPresetsPacket extends DataPacket {
     public final List<CameraPreset> presets = new ObjectArrayList<>();
 
     @Override
-    public int pid() {
-        return ProtocolInfo.CAMERA_PRESETS_PACKET;
-    }
-
-    @Override
     public void decode(HandleByteBuf byteBuf) {
+
     }
 
     @Override
@@ -61,10 +57,6 @@ public class CameraPresetsPacket extends DataPacket {
         writeCameraPresetAimAssist(byteBuf, preset.getAimAssist());
     }
 
-    public void handle(PacketHandler handler) {
-        handler.handle(this);
-    }
-
     public void writeCameraPresetAimAssist(HandleByteBuf byteBuf, OptionalValue<CameraPresetAimAssist> data) {
         boolean present = data.isPresent();
         byteBuf.writeBoolean(present);
@@ -85,4 +77,12 @@ public class CameraPresetsPacket extends DataPacket {
         }
     }
 
+    @Override
+    public int pid() {
+        return ProtocolInfo.CAMERA_PRESETS_PACKET;
+    }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

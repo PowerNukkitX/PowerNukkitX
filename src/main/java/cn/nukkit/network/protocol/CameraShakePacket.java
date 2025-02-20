@@ -1,10 +1,10 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,11 +13,6 @@ public class CameraShakePacket extends DataPacket {
     public float duration;
     public CameraShakeType shakeType;
     public CameraShakeAction shakeAction;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.CAMERA_SHAKE_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -37,12 +32,17 @@ public class CameraShakePacket extends DataPacket {
 
     public enum CameraShakeAction {
         ADD,
-        STOP
+        STOP;
     }
 
     public enum CameraShakeType {
         POSITIONAL,
-        ROTATIONAL
+        ROTATIONAL;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.CAMERA_SHAKE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

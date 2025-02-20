@@ -114,7 +114,7 @@ public class NbtTest {
     @Test
     @SneakyThrows
     void testReadNbt() {
-        try (var stream = NbtTest.class.getClassLoader().getResourceAsStream("block_palette.nbt")) {
+        try (var stream = NbtTest.class.getClassLoader().getResourceAsStream("OUT/block_palette.nbt")) {
             CompoundTag nbt = NBTIO.readCompressed(stream);
             ListTag<CompoundTag> blocks = nbt.getList("blocks", CompoundTag.class);
             Assertions.assertTrue(() -> {

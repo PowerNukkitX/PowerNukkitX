@@ -1,35 +1,27 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author GoodLucky777
  */
 
-
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class TickSyncPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.TICK_SYNC_PACKET;
-    
     private long requestTimestamp;
     private long responseTimestamp;
-    
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
     
     @Override
     public void decode(HandleByteBuf byteBuf) {
         this.requestTimestamp = byteBuf.readLongLE();
         this.responseTimestamp = byteBuf.readLongLE();
     }
-    
+
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeLongLE(this.requestTimestamp);
@@ -50,6 +42,11 @@ public class TickSyncPacket extends DataPacket {
 
     public void setResponseTimestamp(long responseTimestamp) {
         this.responseTimestamp = responseTimestamp;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.TICK_SYNC_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -55,6 +55,7 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.Network;
+import cn.nukkit.network.protocol.AvailableEntityIdentifiersPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PlayerListPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -476,7 +477,6 @@ public class Server {
         this.pluginManager = new PluginManager(this, this.commandMap);
         this.pluginManager.subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this.consoleSender);
         this.pluginManager.registerInterface(JavaPluginLoader.class);
-        //this.pluginManager.registerInterface(JSPluginLoader.class);
         this.console.setExecutingCommands(true);
 
         try {
@@ -637,7 +637,6 @@ public class Server {
 //        JSIInitiator.reset();
 //        JSFeatures.clearFeatures();
 //        JSFeatures.initInternalFeatures();
-//        this.pluginManager.registerInterface(JSPluginLoader.class);
         this.scoreboardManager.read();
 
         log.info("Reloading Registries...");
@@ -684,6 +683,9 @@ public class Server {
             Registries.RECIPE.trim();
         }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
+
+        AvailableEntityIdentifiersPacket.reloadTag();
+
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
         getPluginManager().callEvent(serverStartedEvent);
     }

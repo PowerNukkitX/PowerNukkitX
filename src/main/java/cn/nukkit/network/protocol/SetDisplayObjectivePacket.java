@@ -3,10 +3,10 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,11 +17,6 @@ public class SetDisplayObjectivePacket extends DataPacket {
             displayName,
             criteriaName;
     public SortOrder sortOrder;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.SET_DISPLAY_OBJECTIVE_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -35,6 +30,11 @@ public class SetDisplayObjectivePacket extends DataPacket {
         byteBuf.writeString(this.displayName);
         byteBuf.writeString(this.criteriaName);
         byteBuf.writeVarInt(this.sortOrder.ordinal());
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.SET_DISPLAY_OBJECTIVE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -8,23 +8,17 @@ import lombok.ToString;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class MobEffectPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.MOB_EFFECT_PACKET;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     public static final byte EVENT_ADD = 1;
     public static final byte EVENT_MODIFY = 2;
     public static final byte EVENT_REMOVE = 3;
-
     public long eid;
+
     public int eventId;
     public int effectId;
     public int amplifier = 0;
@@ -49,6 +43,11 @@ public class MobEffectPacket extends DataPacket {
         byteBuf.writeBoolean(this.particles);
         byteBuf.writeVarInt(this.duration);
         byteBuf.writeUnsignedVarLong(this.tick);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.MOB_EFFECT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

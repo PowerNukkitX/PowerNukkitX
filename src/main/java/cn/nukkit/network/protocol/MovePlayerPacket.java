@@ -2,19 +2,18 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @since 15-10-14
  */
+
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class MovePlayerPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.MOVE_PLAYER_PACKET;
-
     public static final int MODE_NORMAL = 0;
     public static final int MODE_RESET = 1;//MODE_RESPAWN
     public static final int MODE_TELEPORT = 2;
@@ -57,7 +56,6 @@ public class MovePlayerPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeEntityRuntimeId(this.eid);
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeFloatLE(this.pitch);
@@ -75,7 +73,7 @@ public class MovePlayerPacket extends DataPacket {
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.MOVE_PLAYER_PACKET;
     }
 
     public void handle(PacketHandler handler) {

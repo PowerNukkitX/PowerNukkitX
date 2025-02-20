@@ -6,12 +6,12 @@ import lombok.ToString;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetDifficultyPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.SET_DIFFICULTY_PACKET;
-
     public int difficulty;
 
     @Override
@@ -26,7 +26,7 @@ public class SetDifficultyPacket extends DataPacket {
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.SET_DIFFICULTY_PACKET;
     }
 
     public void handle(PacketHandler handler) {

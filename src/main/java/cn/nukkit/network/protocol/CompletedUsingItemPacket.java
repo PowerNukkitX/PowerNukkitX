@@ -1,16 +1,14 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompletedUsingItemPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.COMPLETED_USING_ITEM_PACKET;
-
     public static final int ACTION_UNKNOWN = -1;
     public static final int ACTION_EQUIP_ARMOR = 0;
     public static final int ACTION_EAT = 1;
@@ -33,11 +31,6 @@ public class CompletedUsingItemPacket extends DataPacket {
     public int action;
 
     @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
-    @Override
     public void decode(HandleByteBuf byteBuf) {
 
     }
@@ -46,6 +39,11 @@ public class CompletedUsingItemPacket extends DataPacket {
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeShortLE(itemId);
         byteBuf.writeIntLE(action);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.COMPLETED_USING_ITEM_PACKET;
     }
 
     public void handle(PacketHandler handler) {

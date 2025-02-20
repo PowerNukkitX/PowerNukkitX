@@ -3,20 +3,17 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.resourcepacks.ResourcePack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.Value;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResourcePacksInfoPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACKS_INFO_PACKET;
-
     public boolean mustAccept;
     public boolean hasAddonPacks;
     public boolean scripting;
@@ -65,11 +62,6 @@ public class ResourcePacksInfoPacket extends DataPacket {
         }
     }
 
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     public boolean isForcedToAccept() {
         return mustAccept;
     }
@@ -92,6 +84,11 @@ public class ResourcePacksInfoPacket extends DataPacket {
 
     public void setResourcePackEntries(ResourcePack[] resourcePackEntries) {
         this.resourcePackEntries = resourcePackEntries;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.RESOURCE_PACKS_INFO_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -11,20 +11,15 @@ import lombok.*;
 
 import java.util.stream.Stream;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class MobArmorEquipmentPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.MOB_ARMOR_EQUIPMENT_PACKET;
-
     public long eid;
     public Item[] slots = new Item[4];
     public Item body = Item.AIR;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -45,6 +40,11 @@ public class MobArmorEquipmentPacket extends DataPacket {
         byteBuf.writeSlot(this.slots[2]);
         byteBuf.writeSlot(this.slots[3]);
         byteBuf.writeSlot(this.body);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.MOB_ARMOR_EQUIPMENT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

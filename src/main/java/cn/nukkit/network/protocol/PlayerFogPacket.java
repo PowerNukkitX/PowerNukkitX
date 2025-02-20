@@ -2,25 +2,19 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.Identifier;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerFogPacket extends DataPacket {
     //Fog stack containing fog effects from the /fog command
     public List<Fog> fogStack = new ArrayList<>();
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.PLAYER_FOG_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -38,6 +32,11 @@ public class PlayerFogPacket extends DataPacket {
      */
     public record Fog(Identifier identifier, String userProvidedId){
 
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.PLAYER_FOG_PACKET;
     }
 
     public void handle(PacketHandler handler) {

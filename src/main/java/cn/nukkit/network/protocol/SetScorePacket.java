@@ -2,24 +2,19 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.scoreboard.data.ScorerType;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetScorePacket extends DataPacket {
     public Action action;
     public List<ScoreInfo> infos = new ArrayList<>();
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.SET_SCORE_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -91,6 +86,11 @@ public class SetScorePacket extends DataPacket {
             this.entityId = entityId;
             this.name = null;
         }
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.SET_SCORE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

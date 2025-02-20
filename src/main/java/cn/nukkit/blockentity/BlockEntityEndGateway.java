@@ -227,8 +227,8 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
         pk.x = this.getFloorX();
         pk.y = this.getFloorY();
         pk.z = this.getFloorZ();
-        pk.case1 = 1;
-        pk.case2 = eventData;
+        pk.type = 1;
+        pk.value = eventData;
         this.getLevel().addChunkPacket(this.getChunkX(), this.getChunkZ(), pk);
     }
 }

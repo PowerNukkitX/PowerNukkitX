@@ -1,10 +1,10 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString(exclude = "namedtag")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,11 +14,6 @@ public class UpdateEquipmentPacket extends DataPacket {
     public int size = 0;
     public long eid;
     public byte[] namedtag;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.UPDATE_EQUIPMENT_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -32,6 +27,11 @@ public class UpdateEquipmentPacket extends DataPacket {
         byteBuf.writeVarInt(size);
         byteBuf.writeEntityUniqueId(this.eid);
         byteBuf.writeBytes(this.namedtag);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.UPDATE_EQUIPMENT_PACKET;
     }
 
     public void handle(PacketHandler handler) {
