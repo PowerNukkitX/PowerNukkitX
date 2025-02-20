@@ -684,8 +684,6 @@ public class Server {
         }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
 
-        AvailableEntityIdentifiersPacket.reloadTag();
-
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
         getPluginManager().callEvent(serverStartedEvent);
     }
