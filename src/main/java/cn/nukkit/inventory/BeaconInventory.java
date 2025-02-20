@@ -23,6 +23,7 @@ public class BeaconInventory extends BaseInventory implements BlockEntityInvento
     public void init() {
         Map<Integer, ContainerSlotType> map = super.slotTypeMap();
         map.put(0, ContainerSlotType.BEACON_PAYMENT);
+        map.put(27, ContainerSlotType.BEACON_PAYMENT);
 
         BiMap<Integer, Integer> networkSlotMap = super.networkSlotMap();
         networkSlotMap.put(0, 27);
