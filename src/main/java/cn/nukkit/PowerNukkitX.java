@@ -34,24 +34,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static cn.nukkit.utils.Utils.dynamic;
 
 /*
- * `_   _       _    _    _ _
- * | \ | |     | |  | |  (_) |
- * |  \| |_   _| | _| | ___| |_
- * | . ` | | | | |/ / |/ / | __|
- * | |\  | |_| |   <|   <| | |_
- * |_| \_|\__,_|_|\_\_|\_\_|\__|
+  ____                        _   _       _    _    _ _  __  __
+ |  _ \ _____      _____ _ __| \ | |_   _| | _| | _(_) |_\ \/ /
+ | |_) / _ \ \ /\ / / _ \ '__|  \| | | | | |/ / |/ / | __|\  /
+ |  __/ (_) \ V  V /  __/ |  | |\  | |_| |   <|   <| | |_ /  \
+ |_|   \___/ \_/\_/ \___|_|  |_| \_|\__,_|_|\_\_|\_\_|\__/_/\_\
  */
 
 /**
- * Nukkit启动类，包含{@code main}函数。<br>
- * The launcher class of Nukkit, including the {@code main} function.
+ * Nukkit launcher class, including the {@code main} function.<br>
+ * Originally from Nukkit, now maintained by PowerNukkitX.
  *
- * @author MagicDroidX(code) @ Nukkit Project
- * @author 粉鞋大妈(javadoc) @ Nukkit Project
- * @since Nukkit 1.0 | Nukkit API 1.0.0
+ * @since Nukkit 1.0
  */
 @Slf4j
-public class Nukkit {
+public class PowerNukkitX {
     public final static Properties GIT_INFO = getGitInfo();
     public final static String VERSION = getVersion();
     public final static String CODENAME = dynamic("PowerNukkitX");
@@ -89,7 +86,7 @@ public class Nukkit {
             }
         }
 
-        // Force IPv4 since Nukkit is not compatible with IPv6
+        // Force IPv4 stack as default
         System.setProperty("java.net.preferIPv4Stack", "true");
         System.setProperty("log4j.skipJansi", "false");
         System.getProperties().putIfAbsent("io.netty.allocator.type", "unpooled"); // Disable memory pooling unless specified
@@ -196,7 +193,7 @@ public class Nukkit {
     private static Properties getGitInfo() {
         InputStream gitFileStream = null;
         try {
-            gitFileStream = Nukkit.class.getModule().getResourceAsStream("git.properties");
+            gitFileStream = PowerNukkitX.class.getModule().getResourceAsStream("git.properties");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -215,7 +212,7 @@ public class Nukkit {
     private static String getVersion() {
         InputStream resourceAsStream = null;
         try {
-            resourceAsStream = Nukkit.class.getModule().getResourceAsStream("git.properties");
+            resourceAsStream = PowerNukkitX.class.getModule().getResourceAsStream("git.properties");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,6 +1,6 @@
 package cn.nukkit.plugin.js;
 
-import cn.nukkit.Nukkit;
+import cn.nukkit.PowerNukkitX;
 import cn.nukkit.Server;
 import cn.nukkit.plugin.CommonJSPlugin;
 import cn.nukkit.plugin.JavaPluginLoader;
@@ -201,7 +201,7 @@ public final class ESMFileSystem implements FileSystem {
                 if (innerModuleCache.containsKey(moduleName)) {
                     contents = innerModuleCache.get(moduleName);
                 } else {
-                    try (var ins = Nukkit.class.getModule().getResourceAsStream("inner-module/" + moduleName + ".js")) {
+                    try (var ins = PowerNukkitX.class.getModule().getResourceAsStream("inner-module/" + moduleName + ".js")) {
                         if (ins != null)
                             contents = ins.readAllBytes();
                     }
@@ -242,7 +242,7 @@ public final class ESMFileSystem implements FileSystem {
                 if (innerModuleCache.containsKey(moduleName)) {
                     contents = new String(innerModuleCache.get(moduleName));
                 } else {
-                    try (var ins = Nukkit.class.getModule().getResourceAsStream("inner-module/" + moduleName + ".js")) {
+                    try (var ins = PowerNukkitX.class.getModule().getResourceAsStream("inner-module/" + moduleName + ".js")) {
                         if (ins != null)
                             return new InputStreamReader(ins);
                     }

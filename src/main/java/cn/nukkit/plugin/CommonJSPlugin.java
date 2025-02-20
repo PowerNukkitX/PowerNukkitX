@@ -1,6 +1,6 @@
 package cn.nukkit.plugin;
 
-import cn.nukkit.Nukkit;
+import cn.nukkit.PowerNukkitX;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
@@ -84,8 +84,8 @@ public class CommonJSPlugin implements Plugin, Listener {
                 .option("js.foreign-object-prototype", "true")
                 .option("js.nashorn-compat", "true")
                 .option("js.ecmascript-version", "13");
-        if (Nukkit.CHROME_DEBUG_PORT != -1 && Nukkit.JS_DEBUG_LIST.contains(description.getName())) {
-            cbd.option("inspect", String.valueOf(Nukkit.CHROME_DEBUG_PORT))
+        if (PowerNukkitX.CHROME_DEBUG_PORT != -1 && PowerNukkitX.JS_DEBUG_LIST.contains(description.getName())) {
+            cbd.option("inspect", String.valueOf(PowerNukkitX.CHROME_DEBUG_PORT))
                     .option("inspect.Path", description.getName())
                     .option("inspect.Suspend", "true")
                     .option("inspect.Internal", "true")

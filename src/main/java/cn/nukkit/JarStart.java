@@ -17,7 +17,7 @@ public final class JarStart {
             return;
         }
         usingJavaJar = true;
-        Nukkit.main(args);
+        PowerNukkitX.main(args);
     }
 
     public static boolean isUsingJavaJar() {

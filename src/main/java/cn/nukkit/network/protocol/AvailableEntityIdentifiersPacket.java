@@ -1,6 +1,6 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.Nukkit;
+import cn.nukkit.PowerNukkitX;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -21,7 +21,7 @@ public class AvailableEntityIdentifiersPacket extends DataPacket {
     private static final byte[] TAG;
 
     static {
-        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("entity_identifiers.nbt")) {
+        try (InputStream inputStream = PowerNukkitX.class.getModule().getResourceAsStream("entity_identifiers.nbt")) {
             if (inputStream == null) {
                 throw new AssertionError("Could not find entity_identifiers.nbt");
             }

@@ -1,6 +1,6 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.Nukkit;
+import cn.nukkit.PowerNukkitX;
 
 import java.io.File;
 
@@ -17,7 +17,7 @@ public final class StartArgUtils {
     }
 
     public static boolean isShaded() {
-        var path = Nukkit.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        var path = PowerNukkitX.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         var jarFile = new File(path);
         if (jarFile.getName().contains("shaded")) {
             return true;
