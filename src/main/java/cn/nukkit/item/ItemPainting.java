@@ -62,6 +62,8 @@ public class ItemPainting extends Item {
                 validMotives.add(motive);
             }
         }
+        if(validMotives.isEmpty()) return false;
+
         int direction = DIRECTION[face.getIndex() - 2];
         EntityPainting.Motive motive = validMotives.get(ThreadLocalRandom.current().nextInt(validMotives.size()));
 
