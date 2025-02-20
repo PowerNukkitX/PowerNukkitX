@@ -1,9 +1,14 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.event.player.PlayerNametagUseEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemNameTag;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 /**
  * An entity which can be named by name tags.
@@ -25,8 +30,12 @@ public interface EntityNameable {
     void setPersistent(boolean persistent);
 
     default boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if (item.getId() == Item.NAME_TAG) {
-            if (!player.isSpectator()) {
+        if (Objects.equals(item.getId(), Item.NAME_TAG)) {
+            if (!player.isSpectator() && !(this instanceof Player)) {
+                PlayerNametagUseEvent event = new PlayerNametagUseEvent(player, (ItemNameTag) item);
+                Server.getInstance().getPluginManager().callEvent(event);
+
+                if(event.isCancelled()) return false;
                 return playerApplyNameTag(player, item);
             }
         }

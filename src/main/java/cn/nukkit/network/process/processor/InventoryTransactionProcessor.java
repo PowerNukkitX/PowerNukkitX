@@ -170,6 +170,9 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     } else {
                         logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInHand());
                     }
+                } else {
+                    //Otherwise nametag still gets consumed on client side
+                    player.getInventory().sendContents(player);
                 }
             }
             case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_ATTACK -> {
