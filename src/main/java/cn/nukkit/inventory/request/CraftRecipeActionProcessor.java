@@ -2,7 +2,10 @@ package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
+import cn.nukkit.Server;
 import cn.nukkit.event.inventory.CraftItemEvent;
+import cn.nukkit.event.inventory.EnchantItemEvent;
+import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.inventory.InputInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.SmithingInventory;
@@ -77,15 +80,20 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 return context.error();
             }
             Item item = first.clone().autoAssignStackNetworkId();
+            if(item.getId().equals(Item.BOOK)) item = Item.get(Item.ENCHANTED_BOOK);
             List<Enchantment> enchantments = enchantOptionData.enchantments();
             item.addEnchantment(enchantments.toArray(Enchantment.EMPTY_ARRAY));
-            if((player.getGamemode() & 0x01) == 0) {
-                player.setExperience(player.getExperience(), player.getExperienceLevel() - enchantOptionData.minLevel());
+            EnchantItemEvent event = new EnchantItemEvent((EnchantInventory) inventory, first.clone().autoAssignStackNetworkId(), item, enchantOptionData.minLevel(), player);
+            Server.getInstance().getPluginManager().callEvent(event);
+            if(!event.isCancelled()) {
+                if ((player.getGamemode() & 0x01) == 0) {
+                    player.setExperience(player.getExperience(), player.getExperienceLevel() - enchantOptionData.minLevel());
+                }
+                player.getCreativeOutputInventory().setItem(item);
+                PlayerEnchantOptionsPacket.RECIPE_MAP.remove(action.getRecipeNetworkId());
+                player.regenerateEnchantmentSeed();
+                context.put(ENCH_RECIPE_KEY, true);
             }
-            player.getCreativeOutputInventory().setItem(item);
-            PlayerEnchantOptionsPacket.RECIPE_MAP.remove(action.getRecipeNetworkId());
-            player.regenerateEnchantmentSeed();
-            context.put(ENCH_RECIPE_KEY, true);
             return null;
         } else if (action.getRecipeNetworkId() >= TradeRecipeBuildUtils.TRADE_RECIPEID) {//handle village trade recipe
             CompoundTag tradeRecipe = TradeRecipeBuildUtils.RECIPE_MAP.get(action.getRecipeNetworkId());

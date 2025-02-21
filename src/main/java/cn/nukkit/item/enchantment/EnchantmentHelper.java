@@ -31,8 +31,8 @@ public final class EnchantmentHelper {
 
         return List.of(
                 createEnchantOption(random, input, (int) Math.floor(Math.max((baseRequiredLevel / 3D) / 2, 1))),
-                createEnchantOption(random, input, (int) Math.floor(baseRequiredLevel * 2D / 3 + 1) / 2),
-                createEnchantOption(random, input, Math.max(baseRequiredLevel, bookshelfCount * 2) / 2)
+                createEnchantOption(random, input, Math.max(1, (int) Math.floor(baseRequiredLevel * 2D / 3 + 1) / 2)),
+                createEnchantOption(random, input, Math.max(1, Math.max(baseRequiredLevel, bookshelfCount * 2) / 2))
         );
     }
 
