@@ -3897,6 +3897,13 @@ public class Level implements Metadatable {
      * Set the elapsed time for this level
      */
     public void setTime(int time) {
+        if(isRaining()) {
+            if(getTime()%TIME_FULL != time%TIME_FULL) {
+                //Day changed
+                setRaining(false);
+                setThundering(false);
+            }
+        }
         this.time = time;
         this.sendTime();
     }
