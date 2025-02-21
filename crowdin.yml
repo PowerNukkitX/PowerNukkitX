@@ -1,3 +1,3 @@
 files:
-  - source: eng/lang.json
-    translation: lang.json
+  - source: src/main/resources/language/eng/lang.json
+    translation: src/main/resources/language/%three_letters_code%/lang.json
