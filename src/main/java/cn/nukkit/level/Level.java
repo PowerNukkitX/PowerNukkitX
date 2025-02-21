@@ -1180,6 +1180,11 @@ public class Level implements Metadatable {
             }
             // Tick Weather
             if (this.getDimension() != DIMENSION_NETHER && this.getDimension() != DIMENSION_THE_END) {
+                if(getDayTime() == tickRate) {
+                    setRaining(false);
+                    setThundering(false);
+                }
+
                 this.rainTime--;
                 if (this.rainTime <= 0) {
                     if (!this.setRaining(!this.raining)) {//if raining,set false
