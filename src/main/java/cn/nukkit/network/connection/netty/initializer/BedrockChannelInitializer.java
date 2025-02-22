@@ -77,7 +77,7 @@ public abstract class BedrockChannelInitializer<T extends BedrockSession> extend
             case PacketCompressionAlgorithm.ZLIB -> ZLIB_RAW_STRATEGY;
             case PacketCompressionAlgorithm.SNAPPY -> SNAPPY_STRATEGY;
             case PacketCompressionAlgorithm.NONE -> NOOP_STRATEGY;
-            case null, default ->
+            default ->
                     throw new UnsupportedOperationException("Unsupported compression algorithm: " + algorithm);
         };
     }
