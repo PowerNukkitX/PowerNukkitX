@@ -4147,15 +4147,6 @@ public class Level implements Metadatable {
     }
 
     public void addEntityMovement(Entity entity, double x, double y, double z, double yaw, double pitch, double headYaw) {
-//        MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
-//        pk.eid = entity.getId();
-//        pk.x = (float) x;
-//        pk.y = (float) y;
-//        pk.z = (float) z;
-//        pk.yaw = (float) yaw;
-//        pk.headYaw = (float) headYaw;
-//        pk.pitch = (float) pitch;
-//        pk.onGround = entity.onGround;
         MoveEntityDeltaPacket pk = new MoveEntityDeltaPacket();
         pk.runtimeEntityId = entity.getId();
         if (entity.lastX != x) {

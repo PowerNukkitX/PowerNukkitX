@@ -23,9 +23,7 @@ public class ItemRegistryPacket extends DataPacket {
     private Entry[] entries = Entry.EMPTY_ARRAY;
 
     @Override
-    public void decode(HandleByteBuf byteBuf) {
-
-    }
+    public void decode(HandleByteBuf byteBuf) {}
 
     @Override
     public void encode(HandleByteBuf byteBuf) {

@@ -76,6 +76,10 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
 
         // We use ProxyPass data since protocol 776 since we need item version and componentBased now.
         try (InputStream stream = ItemRegistry.class.getClassLoader().getResourceAsStream("runtime_item_states.json")){
+            if (stream == null) {
+                throw new RuntimeException("Failed to load runtime_item_states.json");
+            }
+
             JsonArray items = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonArray();
 
             for (JsonElement element : items) {
@@ -83,7 +87,6 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
                 register1(new ItemData(item.get("name").getAsString(), item.get("id").getAsInt(), item.get("version").getAsInt(), item.get("componentBased").getAsBoolean()));
             }
             trim();
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
