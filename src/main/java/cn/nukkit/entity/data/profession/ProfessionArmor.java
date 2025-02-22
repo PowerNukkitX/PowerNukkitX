@@ -26,7 +26,7 @@ public class ProfessionArmor extends Profession {
         diamondLeggingsEnchantment.setLevel(1 + random.nextInt(diamondLeggingsEnchantment.getMaxLevel()));
         diamondLeggings.addEnchantment(diamondLeggingsEnchantment);
 
-        Item diamondChestplate= Item.get(Item.DIAMOND_CHESTPLATE);
+        Item diamondChestplate = Item.get(Item.DIAMOND_CHESTPLATE);
         Enchantment diamondChestplateEnchantment = Enchantment.getEnchantment(enchantments[random.nextInt(enchantments.length)]);
         diamondChestplateEnchantment.setLevel(1 + random.nextInt(diamondChestplateEnchantment.getMaxLevel()));
         diamondChestplate.addEnchantment(diamondChestplateEnchantment);
