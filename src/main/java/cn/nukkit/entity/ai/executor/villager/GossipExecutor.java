@@ -1,5 +1,6 @@
 package cn.nukkit.entity.ai.executor.villager;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.executor.EntityControl;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
@@ -28,6 +29,7 @@ public class GossipExecutor implements EntityControl, IBehaviorExecutor {
                     for(int i = 0; i < villager.getInventory().getSize(); i++) {
                         Item item = villager.getInventory().getUnclonedItem(i);
                         item.setCount(item.getCount()/2);
+                        if(item.getId() == Block.WHEAT) item = Item.get(Block.WHEAT, 0, item.getCount()/3);
                         villager.getLevel().dropItem(villager.getPosition().add(0, villager.getEyeHeight(), 0), item, new Vector3(entity1.x - entity.x, entity1.y - entity.y, entity1.z - entity.z).normalize().divide(2));
                     }
                 }
