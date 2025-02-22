@@ -1,7 +1,11 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockBed;
+import cn.nukkit.block.BlockDoor;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -9,22 +13,48 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.FluctuateController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
+import cn.nukkit.entity.ai.evaluator.DistanceEvaluator;
+import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
+import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
+import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
+import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
+import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;
+import cn.nukkit.entity.ai.executor.InLoveExecutor;
+import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
+import cn.nukkit.entity.ai.executor.villager.DoorExecutor;
+import cn.nukkit.entity.ai.executor.villager.SleepExecutor;
+import cn.nukkit.entity.ai.executor.villager.VillagerBreedingExecutor;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import cn.nukkit.entity.ai.sensor.BlockSensor;
+import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.profession.Profession;
+import cn.nukkit.entity.item.EntityItem;
+import cn.nukkit.entity.mob.EntityZombie;
+import cn.nukkit.inventory.EntityEquipmentInventory;
 import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.inventory.InventorySlice;
 import cn.nukkit.inventory.TradeInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemFood;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 import cn.nukkit.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,12 +75,14 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     public ListTag<CompoundTag> getRecipes() {
-        return new ListTag<>(TradeRecipeBuildUtils.RECIPE_MAP.entrySet().stream().filter(t -> getTradeNetIds().contains(t.getKey())).toList().stream().map(Map.Entry::getValue).toList());
+        return new ListTag<>(Tag.TAG_Compound, TradeRecipeBuildUtils.RECIPE_MAP.entrySet().stream().filter(t -> getTradeNetIds().contains(t.getKey())).toList().stream().map(Map.Entry::getValue).toList());
     }
 
     public int[] tierExpRequirement;
 
-    protected TradeInventory inventory;
+    protected TradeInventory tradeInventory;
+
+    private EntityEquipmentInventory inventory;
 
     protected Boolean canTrade;
 
@@ -89,37 +121,156 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     public EntityVillagerV2(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        applyProfession();
     }
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
                 this.tickSpread,
-                Set.of(),
                 Set.of(
+                        new Behavior(new DoorExecutor(), all(
+                                entity -> {
+                                    Block block = getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK_2);
+                                    if(block == null || getMoveDirectionEnd() == null) return false;
+                                    return getLevel().raycastBlocks(this, getMoveDirectionEnd(), true, false, 0.5d).contains(block);
+                                }
+                        ), 10, 1),
+                        new Behavior(
+                                new VillagerInLoveExecutor(400),
+                                all(
+                                        entity -> getFoodPoints() >= 12,
+                                        entity -> !isBaby(),
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
+                                ),
+                                1, 1, 1, false
+                        ),
+                        //生长
+                        new Behavior(
+                                new AnimalGrowExecutor(),
+                                all(
+                                        new PassByTimeEvaluator(CoreMemoryTypes.ENTITY_SPAWN_TIME, 20 * 60 * 20, Integer.MAX_VALUE),
+                                        entity -> entity instanceof EntityAnimal animal && animal.isBaby()
+                                )
+                                , 1, 1, 1200
+                        )
+                ),
+                Set.of(
+                        new Behavior(new VillagerBreedingExecutor(EntityVillagerV2.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 8, 1),
+                        new Behavior(new SleepExecutor(), all(
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED),
+                                new DistanceEvaluator(CoreMemoryTypes.OCCUPIED_BED, 2),
+                                entity -> getLevel().isNight()
+                        ), 7, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.OCCUPIED_BED, 0.3f, true), all(
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED),
+                                entity -> getLevel().isNight()
+                        ), 6, 1),
+                        new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_ZOMBIE, 0.5f, true, 8), all(
+                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_ZOMBIE)
+                        ), 5, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_ITEM, 0.3f, true), all(
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_ITEM)
+                        ), 4, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_ITEM, 0.3f, true), all(
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_ITEM)
+                        ), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
-                Set.of(),
+                Set.of(
+                        entity -> {
+                            if(getMemoryStorage().isEmpty(CoreMemoryTypes.OCCUPIED_BED)) {
+                                int range = 48;
+                                int lookY = 5;
+                                BlockBed block = null;
+                                for (int x = -range; x <= range; x++) {
+                                    for (int z = -range; z <= range; z++) {
+                                        for (int y = -lookY; y <= lookY; y++) {
+                                            Location lookLocation = entity.add(x, y, z);
+                                            Block lookBlock = lookLocation.getLevelBlock();
+                                            if (lookBlock instanceof BlockBed bed) {
+                                                if (!bed.isHeadPiece() && Arrays.stream(getLevel().getEntities()).noneMatch(entity1 -> entity1 instanceof EntityVillagerV2 v && v.getMemoryStorage().notEmpty(CoreMemoryTypes.OCCUPIED_BED) && v.getBed().equals(bed))) {
+                                                    block = bed.getFootPart();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if(block != null && !block.isOccupied()) setBed(block);
+                            } else if(!getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).isBedValid()) {
+                                this.namedTag.remove("bed");
+                                getMemoryStorage().clear(CoreMemoryTypes.OCCUPIED_BED);
+                            }
+                        },
+                        entity -> {
+                            Arrays.stream(entity.getLevel().getCollidingEntities(entity.getBoundingBox().grow(16, 3, 16))).filter(entity1 -> entity1 instanceof EntityItem item && item.onGround && item.getItem().getId().equals(Item.BREAD)).findFirst().ifPresentOrElse(e -> getMemoryStorage().put(CoreMemoryTypes.NEAREST_ITEM, (EntityItem) e), () -> getMemoryStorage().clear(CoreMemoryTypes.NEAREST_ITEM));
+                        },
+                        new BlockSensor(BlockDoor.class, CoreMemoryTypes.NEAREST_BLOCK_2, 1, 0, 10),
+                        new NearestEntitySensor(EntityZombie.class, CoreMemoryTypes.NEAREST_ZOMBIE, 8, 0)
+                ),
                 Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
         );
     }
 
+    public int getFoodPoints() {
+        int points = 0;
+        for(Item item : getInventory().getContents().values()) {
+            points += switch (item.getId()) {
+                case Item.BREAD -> 4;
+                case Item.CARROT,
+                     Item.POTATO,
+                     Block.BEETROOT -> 1;
+                default -> 0;
+            } * item.getCount();
+        }
+        return points;
+    }
+
+    public void setBed(BlockBed bed) {
+        if(bed.isBedValid()) {
+            getMemoryStorage().put(CoreMemoryTypes.OCCUPIED_BED, bed);
+        }
+    }
+
+    public BlockBed getBed() {
+        return getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED);
+    }
+
+    @Override
+    public float getHeight() {
+        if(isSleeping()) return getWidthR();
+        return getHeightR();
+    }
+
     @Override
     public float getWidth() {
+        return getWidthR();
+    }
+
+    @Override
+    public float getLength() {
+        if(isSleeping()) return getHeightR();
+        return super.getLength();
+    }
+
+    private float getWidthR() {
         if (this.isBaby()) {
             return 0.3f;
         }
         return 0.6f;
     }
 
-    @Override
-    public float getHeight() {
+    private float getHeightR() {
         if (this.isBaby()) {
             return 0.95f;
         }
         return 1.9f;
+    }
+
+    public boolean isSleeping() {
+        return getDataFlag(EntityFlag.SLEEPING);
     }
 
     @Override
@@ -132,12 +283,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         this.setMaxHealth(20);
         super.initEntity();
         setTradingPlayer(0L);
-        if (!this.namedTag.contains("profession")) {
-            this.setProfession(0);
-        } else {
-            var profession = this.namedTag.getInt("profession");
-            this.profession = profession;
-            this.setDataProperty(VARIANT, profession);
+        if (this.namedTag.containsInt("profession")) {
+            setProfession(this.namedTag.getInt("profession"), false);
         }
         if (!this.namedTag.contains("tradeSeed")) {
             this.setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE - 1));
@@ -173,23 +320,49 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             this.tradeExp = tradeExp;
             this.setDataProperty(TRADE_EXPERIENCE, tradeExp);
         }
-        Profession profession = Profession.getProfession(this.profession);
-        if (profession != null) applyProfession(profession);
+        if(this.namedTag.containsCompound("bed")) {
+            CompoundTag compound = this.namedTag.getCompound("bed");
+            Vector3 vector = new Vector3(compound.getInt("x"), compound.getInt("y"), compound.getInt("z"));
+            if(getLevel().getBlock(vector) instanceof BlockBed bed) {
+                setBed(bed);
+            }
+        }
+        this.inventory = new EntityEquipmentInventory(this);
+        if (this.namedTag.contains("Inventory") && this.namedTag.get("Inventory") instanceof ListTag) {
+            var inventory = this.getInventory();
+            ListTag<CompoundTag> inventoryList = this.namedTag.getList("Inventory", CompoundTag.class);
+            for (CompoundTag item : inventoryList.getAll()) {
+                int slot = item.getByte("Slot");
+                inventory.setItem(slot, NBTIO.getItemHelper(item));//inventory 0-39
+            }
+        }
         if (canTrade) {
-            inventory = new TradeInventory(this);
+            tradeInventory = new TradeInventory(this);
         }
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putByte("profession", this.getProfession());
-        this.namedTag.putBoolean("isTrade", this.getCanTrade());
+        this.namedTag.putInt("profession", this.getProfession());
+        this.namedTag.putBoolean("isTrade", this.canTrade());
         this.namedTag.putString("displayName", this.getDisplayName());
         this.namedTag.putInt("tradeTier", this.getTradeTier());
         this.namedTag.putInt("maxTradeTier", this.getMaxTradeTier());
         this.namedTag.putInt("tradeExp", this.getTradeExp());
         this.namedTag.putInt("tradeSeed", this.getTradeSeed());
+        if(getMemoryStorage().notEmpty(CoreMemoryTypes.OCCUPIED_BED)) {
+            BlockBed bed = getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED);
+            this.namedTag.putCompound("bed", new CompoundTag().putInt("x", bed.getFloorX()).putInt("y", bed.getFloorY()).putInt("z", bed.getFloorZ()));
+        }
+        ListTag<CompoundTag> inventoryTag = null;
+        if (this.getInventory() != null) {
+            inventoryTag = new ListTag<>();
+            this.namedTag.putList("Inventory", inventoryTag);
+            for (var entry : getInventory().getContents().entrySet()) {
+                inventoryTag.add(NBTIO.putItemHelper(entry.getValue(), entry.getKey()));
+            }
+        }
     }
 
     /**
@@ -226,10 +399,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      *
      * @param profession 请查看{@link EntityVillagerV2#profession}
      */
-    public void setProfession(int profession) {
+    public void setProfession(int profession, boolean apply) {
         this.profession = profession;
         this.setDataProperty(VARIANT, profession);
-        this.namedTag.putInt("profession", this.profession);
+        if(apply) applyProfession();
     }
 
     /**
@@ -242,7 +415,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @return 该村民是否可以交易
      */
-    public boolean getCanTrade() {
+    public boolean canTrade() {
         return canTrade;
     }
 
@@ -326,14 +499,18 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if (this.getCanTrade()) {
-            player.addWindow(inventory);
+        if (this.canTrade()) {
+            player.addWindow(getTradeInventory());
             return true;
         } else return false;
     }
 
+    public TradeInventory getTradeInventory() {
+        return tradeInventory;
+    }
+
     @Override
-    public TradeInventory getInventory() {
+    public EntityEquipmentInventory getInventory() {
         return inventory;
     }
 
@@ -359,8 +536,26 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public boolean onUpdate(int tick) {
+        if(tick % 20 == 0) {
+            for(Entity i : getLevel().getNearbyEntities(getBoundingBox().grow(1, 0.5, 1))) {
+                if(i instanceof EntityItem entityItem) {
+                    Item item = entityItem.getItem();
+                    if(item instanceof ItemFood) {
+                        InventorySlice slice = new InventorySlice(getInventory(), 1, getInventory().getSize());
+                        if(slice.canAddItem(item)) {
+                            TakeItemEntityPacket pk = new TakeItemEntityPacket();
+                            pk.entityId = this.getId();
+                            pk.target = i.getId();
+                            Server.broadcastPacket(getViewers().values(), pk);
+                            slice.addItem(item);
+                            i.close();
+                        }
+                    }
+                }
+            }
+        }
         if (tick % 100 == 0) {
-            if (tradeExp == 0 && !this.namedTag.contains("traded")) {
+            if (tradeExp == 0 && !this.namedTag.contains("traded") && getProfession() == 0) {
                 boolean professionFound = false;
                 for (int x = -1; x <= 1; x++) {
                     for (int z = -1; z <= 1; z++) {
@@ -371,8 +566,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                 professionFound = true;
                                 if (this.profession != profession.getIndex()) {
                                     this.setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE - 1));
-                                    this.setProfession(profession.getIndex());
-                                    this.applyProfession(profession);
+                                    this.setProfession(profession.getIndex(), true);
 
                                     this.namedTag.putInt("blockX", block.getFloorX());
                                     this.namedTag.putInt("blockY", block.getFloorY());
@@ -388,7 +582,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                     int y = this.namedTag.getInt("blockY");
                     int z = this.namedTag.getInt("blockZ");
                     if (!Objects.equals(level.getBlockIdAt(x, y, z), Profession.getProfession(this.profession).getBlockID())) {
-                        setProfession(0);
+                        setProfession(0, true);
                         setCanTrade(false);
                     }
                 }
@@ -397,14 +591,19 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         return super.onUpdate(tick);
     }
 
-    public void applyProfession(Profession profession) {
-        setDisplayName(profession.getName());
-        for(CompoundTag trade : profession.buildTrades(getTradeSeed()).getAll()) {
-            this.getTradeNetIds().add(trade.getInt("netId"));
-        }
-        this.setCanTrade(true);
-        if (inventory == null) {
-            inventory = new TradeInventory(this);
+    public void applyProfession() {
+        if(this.profession == 0) {
+            this.setCanTrade(false);
+        } else {
+            Profession profession = Profession.getProfession(this.profession);
+            setDisplayName(profession.getName());
+            for(CompoundTag trade : profession.buildTrades(getTradeSeed()).getAll()) {
+                this.getTradeNetIds().add(trade.getInt("netId"));
+            }
+            this.setCanTrade(true);
+            if (tradeInventory == null) {
+                tradeInventory = new TradeInventory(this);
+            }
         }
     }
 
@@ -413,4 +612,23 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         return 0;
     }
 
+    private class VillagerInLoveExecutor extends InLoveExecutor {
+
+        public VillagerInLoveExecutor(int duration) {
+            super(duration);
+        }
+
+        @Override
+        public boolean execute(EntityIntelligent entity) {
+            if(super.execute(entity)) {
+                for(int j = 0; j < getInventory().getSize(); j++) {
+                    if(getInventory().getItem(j) instanceof ItemFood) {
+                        getInventory().clear(j);
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+    }
 }
