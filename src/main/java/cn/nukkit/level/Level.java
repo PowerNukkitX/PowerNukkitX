@@ -1670,15 +1670,15 @@ public class Level implements Metadatable {
     }
 
     public List<Block> raycastBlocks(Vector3 start, Vector3 end) {
-        return raycastBlocks(start, end, true, false);
+        return raycastBlocks(start, end, true, false, 1);
     }
 
-    public List<Block> raycastBlocks(Vector3 start, Vector3 end, boolean ignoreAir, boolean load) {
+    public List<Block> raycastBlocks(Vector3 start, Vector3 end, boolean ignoreAir, boolean load, double space) {
         List<Block> result = new ArrayList<>();
         Vector3 direction = end.subtract(start).normalize();
         Vector3 currentPos = start.clone();
 
-        for (double i = 0; i < start.distance(end); i += 1) {
+        for (double i = 0; i < start.distance(end); i += space) {
             Block block = this.getBlock(currentPos.floor(), load);
             currentPos = currentPos.add(direction);
             if(!block.isAir() || !ignoreAir) result.add(block);
