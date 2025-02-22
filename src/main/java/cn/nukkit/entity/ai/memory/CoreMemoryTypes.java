@@ -3,6 +3,8 @@ package cn.nukkit.entity.ai.memory;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockBed;
+import cn.nukkit.block.BlockWoodenDoor;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.memory.codec.BooleanMemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.NumberMemoryCodec;
@@ -193,6 +195,8 @@ public interface CoreMemoryTypes {
      */
     MemoryType<Entity> NEAREST_SKELETON = new MemoryType<>("minecraft:nearest_skeleton");
 
+    MemoryType<Entity> NEAREST_ZOMBIE = new MemoryType<>("minecraft:nearest_zombie");
+
     MemoryType<Entity> NEAREST_ENDERMITE = new MemoryType<>("minecraft:nearest_endermite");
 
     MemoryType<Entity> NEAREST_GOLEM = new MemoryType<>("minecraft:nearest_golem");
@@ -204,6 +208,10 @@ public interface CoreMemoryTypes {
     MemoryType<Class<? extends Item>> LOOKING_ITEM = new MemoryType<>("minecraft:looking_item");
 
     MemoryType<Block> NEAREST_BLOCK = new MemoryType<>("minecraft:nearest_block");
+
+    MemoryType<Block> NEAREST_BLOCK_2 = new MemoryType<>("minecraft:nearest_block_2");
+
+    MemoryType<BlockWoodenDoor> NEAREST_DOOR = new MemoryType<>("minecraft:nearest_door");
 
     MemoryType<EntityItem> NEAREST_ITEM = new MemoryType<>("minecraft:nearest_item");
 
