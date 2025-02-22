@@ -24,9 +24,11 @@ import cn.nukkit.utils.TradeRecipeBuildUtils;
 import cn.nukkit.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityVillagerV2 extends EntityIntelligent implements InventoryHolder, IEntityNPC {
     @Override
@@ -35,62 +37,49 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         return VILLAGER_V2;
     }
 
-    public ListTag<CompoundTag> getRecipes() {
-        return recipes;
+    private final List<Integer> tradeNetId = new ArrayList<>();
+
+    public List<Integer> getTradeNetIds() {
+        if(tradeNetId == null) return new ArrayList<>();
+        return tradeNetId;
     }
 
-    /**
-     * 代表交易配方
-     */
-    protected ListTag<CompoundTag> recipes;
-    /**
-     * 用于控制村民的等级成长所需要的经验
-     * 例如[0,10,20,30,40] 村民达到1级所需经验0,2级为10,这里的经验是{@link EntityVillagerV2#tradeExp}.
-     */
+    public ListTag<CompoundTag> getRecipes() {
+        return new ListTag<>(TradeRecipeBuildUtils.RECIPE_MAP.entrySet().stream().filter(t -> getTradeNetIds().contains(t.getKey())).toList().stream().map(Map.Entry::getValue).toList());
+    }
+
     public int[] tierExpRequirement;
 
-
     protected TradeInventory inventory;
-    /**
-     * 用于控制该村民是否可以交易
-     */
+
     protected Boolean canTrade;
-    /**
-     * 代表交易UI上方所显示的名称,在原版为村民的职业名
-     */
+
     protected String displayName;
-    /**
-     * 代表村民当前的交易等级
-     */
+
     protected int tradeTier;
-    /**
-     * 代表村民所允许的最大交易等级
-     */
+
     protected int maxTradeTier;
-    /**
-     * 代表当前村民的经验,不允许为负数
-     */
+
     protected int tradeExp;
 
     protected int tradeSeed;
 
     /**
-     * 代表村民的职业<br>
-     * 0 generic 普通<br>
-     * 1 farmer 农民<br>
-     * 2 fisherman 渔民<br>
-     * 3 shepherd 牧羊人<br>
-     * 4 fletcher 制箭师<br>
-     * 5 librarian 图书管理员<br>
-     * 6 cartographer 制图师<br>
-     * 7 cleric 牧师<br>
-     * 8 armor 盔甲匠<br>
-     * 9 weapon 武器匠<br>
-     * 10 tool 工具匠<br>
-     * 11 butcher 屠夫<br>
-     * 12 butcher 皮匠<br>
-     * 13 mason 石匠<br>
-     * 14 nitwit 傻子<br>
+     * 0 generic
+     * 1 farmer
+     * 2 fisherman
+     * 3 shepherd
+     * 4 fletcher
+     * 5 librarian
+     * 6 cartographer
+     * 7 cleric
+     * 8 armor
+     * 9 weapon
+     * 10 tool
+     * 11 butcher
+     * 12 butcher
+     * 13 mason
+     * 14 nitwit
      */
     protected int profession;
 
@@ -117,7 +106,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         );
     }
 
-    //todo 实现不同群系的村民
     @Override
     public float getWidth() {
         if (this.isBaby()) {
@@ -195,7 +183,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putByte("Profession", this.getProfession());
+        this.namedTag.putByte("profession", this.getProfession());
         this.namedTag.putBoolean("isTrade", this.getCanTrade());
         this.namedTag.putString("displayName", this.getDisplayName());
         this.namedTag.putInt("tradeTier", this.getTradeTier());
@@ -316,12 +304,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public void close() {
-        if(recipes != null) {
-            for (var r : recipes.getAll()) {
-                int netId = r.getInt("netId");
-                TradeRecipeBuildUtils.RECIPE_MAP.remove(netId);
-            }
-        }
+        this.getTradeNetIds().forEach(TradeRecipeBuildUtils.RECIPE_MAP::remove);
         super.close();
     }
 
@@ -377,9 +360,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     @Override
     public boolean onUpdate(int tick) {
         if (tick % 100 == 0) {
-            if (profession != 0) {
-                if (recipes.getAll().isEmpty()) applyProfession(Profession.getProfession(this.profession));
-            }
             if (tradeExp == 0 && !this.namedTag.contains("traded")) {
                 boolean professionFound = false;
                 for (int x = -1; x <= 1; x++) {
@@ -418,9 +398,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     public void applyProfession(Profession profession) {
-        if (recipes == null) recipes = new ListTag<>();
         setDisplayName(profession.getName());
-        recipes = profession.buildTrades(getTradeSeed());
+        for(CompoundTag trade : profession.buildTrades(getTradeSeed()).getAll()) {
+            this.getTradeNetIds().add(trade.getInt("netId"));
+        }
         this.setCanTrade(true);
         if (inventory == null) {
             inventory = new TradeInventory(this);
