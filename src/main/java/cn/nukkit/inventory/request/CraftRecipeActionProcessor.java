@@ -3,6 +3,7 @@ package cn.nukkit.inventory.request;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
+import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.event.inventory.CraftItemEvent;
 import cn.nukkit.event.inventory.EnchantItemEvent;
 import cn.nukkit.inventory.EnchantInventory;
@@ -103,12 +104,15 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             }
             Item first = inventory.getItem(0);
             Item second = inventory.getItem(1);
+            Item output = NBTIO.getItemHelper(tradeRecipe.getCompound("sell"));
+            output.setCount(output.getCount() * action.getNumberOfRequestedCrafts());
             if (first.isNull() && second.isNull()) {
                 log.error("Can't find trade input!");
                 return context.error();
             }
             boolean ca = tradeRecipe.contains("buyA");
             boolean cb = tradeRecipe.contains("buyB");
+
             if (ca && cb) {
                 if ((first.isNull() || second.isNull())) {
                     log.error("Can't find trade input!");
@@ -116,7 +120,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 } else {
                     if (checkTrade(tradeRecipe.getCompound("buyA"), first)) return context.error();
                     if (checkTrade(tradeRecipe.getCompound("buyB"), second)) return context.error();
-                    player.getCreativeOutputInventory().setItem(NBTIO.getItemHelper(tradeRecipe.getCompound("sell")));
+                    player.getCreativeOutputInventory().setItem(output);
                 }
             } else if (ca) {
                 if (first.isNull()) {
@@ -124,8 +128,17 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                     return context.error();
                 } else {
                     if (checkTrade(tradeRecipe.getCompound("buyA"), first)) return context.error();
-                    player.getCreativeOutputInventory().setItem(NBTIO.getItemHelper(tradeRecipe.getCompound("sell")));
+                    player.getCreativeOutputInventory().setItem(output);
                 }
+            }
+            if(ca) {
+                int traderExp = tradeRecipe.contains("traderExp") ? tradeRecipe.getInt("traderExp") : 0;
+                int rewardExp = tradeRecipe.contains("rewardExp") ? tradeRecipe.getInt("rewardExp") : 0;
+                player.addExperience(rewardExp*action.getNumberOfRequestedCrafts());
+                if(inventory.getHolder() instanceof EntityVillagerV2 villager) {
+                    villager.addExperience(traderExp*action.getNumberOfRequestedCrafts());
+                }
+                tradeRecipe.putInt("uses", tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts());
             }
             return null;
         }
