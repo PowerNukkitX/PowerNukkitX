@@ -27,12 +27,12 @@ public class SleepExecutor implements EntityControl, IBehaviorExecutor {
     public void onStart(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        if(entity.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_BLOCK)) {
-            if(entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK) instanceof BlockBed bed) {
+        if(entity.getMemoryStorage().notEmpty(CoreMemoryTypes.OCCUPIED_BED)) {
+            if(entity.getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED) instanceof BlockBed bed) {
+
                 BlockBed head = bed.getHeadPart();
                 BlockBed foot = bed.getFootPart();
-                head.setOccupied(true);
-                foot.setOccupied(true);
+
                 Location sleepingLocation = foot.getLocation().add(switch (head.getBlockFace()) {
                     case NORTH -> new Vector3(0.5f, 0.5625f, 0);
                     case SOUTH -> new Vector3(0.5f, 0.5625f, 1);
@@ -53,14 +53,6 @@ public class SleepExecutor implements EntityControl, IBehaviorExecutor {
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        if(entity.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_BLOCK)) {
-            if(entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK) instanceof BlockBed bed) {
-                BlockBed head = bed.getHeadPart();
-                BlockBed foot = bed.getFootPart();
-                head.setOccupied(false);
-                foot.setOccupied(false);
-            }
-        }
         entity.setDataFlag(EntityFlag.SLEEPING, false);
         entity.setDataFlag(EntityFlag.BODY_ROTATION_BLOCKED, false);
         entity.setDataProperty(EntityDataTypes.BED_POSITION, new BlockVector3(0, 0 ,0));
