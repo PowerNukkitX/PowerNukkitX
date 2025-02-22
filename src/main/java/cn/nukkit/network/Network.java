@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
@@ -96,7 +97,7 @@ public class Network {
                 .subMotd(server.getSubMotd())
                 .playerCount(server.getOnlinePlayers().size())
                 .maximumPlayerCount(server.getMaxPlayers())
-                .serverId(1)
+                .serverId(UUID.randomUUID().getMostSignificantBits())
                 .gameType(Server.getGamemodeString(server.getDefaultGamemode(), true))
                 .nintendoLimited(false)
                 .protocolVersion(ProtocolInfo.CURRENT_PROTOCOL)
@@ -107,6 +108,7 @@ public class Network {
                 .channelFactory(RakChannelFactory.server(oclass))
                 .option(RakChannelOption.RAK_ADVERTISEMENT, pong.toByteBuf())
                 .option(RakChannelOption.RAK_PACKET_LIMIT, server.getSettings().networkSettings().packetLimit())
+                .option(RakChannelOption.RAK_SEND_COOKIE, true)
                 .group(eventloopgroup)
                 .childHandler(new BedrockServerInitializer() {
                     @Override
@@ -136,11 +138,10 @@ public class Network {
                     }
 
                     @Override
-                    protected void initSession(BedrockSession session) {
-                    }
+                    protected void initSession(BedrockSession session) {}
                 })
                 .bind(bindAddress)
-                .syncUninterruptibly()
+                .awaitUninterruptibly()
                 .channel();
         this.pong.channel(channel);
     }
