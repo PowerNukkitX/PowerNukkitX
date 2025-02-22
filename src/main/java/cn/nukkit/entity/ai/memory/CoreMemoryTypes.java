@@ -207,6 +207,8 @@ public interface CoreMemoryTypes {
 
     MemoryType<Class<? extends Item>> LOOKING_ITEM = new MemoryType<>("minecraft:looking_item");
 
+    MemoryType<BlockBed> OCCUPIED_BED = new MemoryType<>("minecraft:occupied_bed");
+
     MemoryType<Block> NEAREST_BLOCK = new MemoryType<>("minecraft:nearest_block");
 
     MemoryType<Block> NEAREST_BLOCK_2 = new MemoryType<>("minecraft:nearest_block_2");
