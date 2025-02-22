@@ -11,14 +11,14 @@ import cn.nukkit.entity.ai.memory.codec.NumberMemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.StringMemoryCodec;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.entity.item.EntityEnderCrystal;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityEvocationIllager;
+import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -104,6 +104,10 @@ public interface CoreMemoryTypes {
     MemoryType<Integer> NEXT_SHED = new MemoryType<>("minecraft:next_shed", 0);
 
     MemoryType<EntityEvocationIllager.SPELL> LAST_MAGIC = new MemoryType<>("minecraft:last_spell", EntityEvocationIllager.SPELL.NONE);
+
+    MemoryType<Integer> LAST_GOSSIP = new MemoryType<>("minecraft:last_gossip", -65536);
+
+    MemoryType<Object2IntArrayMap<String>> GOSSIP = new MemoryType<>("minecraft:gossip", new Object2IntArrayMap<>());
 
 
     /**
@@ -216,6 +220,8 @@ public interface CoreMemoryTypes {
     MemoryType<BlockWoodenDoor> NEAREST_DOOR = new MemoryType<>("minecraft:nearest_door");
 
     MemoryType<EntityItem> NEAREST_ITEM = new MemoryType<>("minecraft:nearest_item");
+
+    MemoryType<EntityVillagerV2> NEAREST_HUNGRY_VILLAGER = new MemoryType<>("minecraft:nearest_hungry_villager");
 
     MemoryType<Integer> LAST_ATTACK_CAST = new MemoryType<>("minecraft:last_attack_cast", 0);
 

@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBed;
 import cn.nukkit.block.BlockDoor;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -18,12 +19,12 @@ import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
-import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;
 import cn.nukkit.entity.ai.executor.InLoveExecutor;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.villager.DoorExecutor;
+import cn.nukkit.entity.ai.executor.villager.GossipExecutor;
 import cn.nukkit.entity.ai.executor.villager.SleepExecutor;
 import cn.nukkit.entity.ai.executor.villager.VillagerBreedingExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
@@ -51,6 +52,7 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 import cn.nukkit.utils.random.NukkitRandom;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -156,25 +158,25 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                         )
                 ),
                 Set.of(
-                        new Behavior(new VillagerBreedingExecutor(EntityVillagerV2.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 8, 1),
+                        new Behavior(new VillagerBreedingExecutor(EntityVillagerV2.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 7, 1),
                         new Behavior(new SleepExecutor(), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED),
                                 new DistanceEvaluator(CoreMemoryTypes.OCCUPIED_BED, 2),
                                 entity -> getLevel().isNight()
-                        ), 7, 1),
+                        ), 8, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.OCCUPIED_BED, 0.3f, true), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED),
                                 entity -> getLevel().isNight()
-                        ), 6, 1),
+                        ), 7, 1),
                         new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_ZOMBIE, 0.5f, true, 8), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_ZOMBIE)
                         ), 5, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_ITEM, 0.3f, true), all(
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_ITEM)
+                        new Behavior(new GossipExecutor(CoreMemoryTypes.NEAREST_HUNGRY_VILLAGER), all(
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_HUNGRY_VILLAGER),
+                                new DistanceEvaluator(CoreMemoryTypes.NEAREST_HUNGRY_VILLAGER, 2.1f)
                         ), 4, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_ITEM, 0.3f, true), all(
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_ITEM)
-                        ), 2, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_HUNGRY_VILLAGER, 0.3f, true, 32, 2), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_HUNGRY_VILLAGER), 4, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_HUNGRY_VILLAGER, 0.3f, true, 32, 2), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_HUNGRY_VILLAGER), 4, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
                 Set.of(
@@ -203,7 +205,9 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                             }
                         },
                         entity -> {
-                            Arrays.stream(entity.getLevel().getCollidingEntities(entity.getBoundingBox().grow(16, 3, 16))).filter(entity1 -> entity1 instanceof EntityItem item && item.onGround && item.getItem().getId().equals(Item.BREAD)).findFirst().ifPresentOrElse(e -> getMemoryStorage().put(CoreMemoryTypes.NEAREST_ITEM, (EntityItem) e), () -> getMemoryStorage().clear(CoreMemoryTypes.NEAREST_ITEM));
+                            if(shouldShareFood()) {
+                                Arrays.stream(entity.getLevel().getCollidingEntities(entity.getBoundingBox().grow(16, 3, 16))).filter(entity1 -> entity1 instanceof EntityVillagerV2 villagerV2 && villagerV2.isHungry()).findAny().ifPresentOrElse(entity1 -> getMemoryStorage().put(CoreMemoryTypes.NEAREST_HUNGRY_VILLAGER, (EntityVillagerV2) entity1), () -> getMemoryStorage().clear(CoreMemoryTypes.NEAREST_HUNGRY_VILLAGER));
+                            }
                         },
                         new BlockSensor(BlockDoor.class, CoreMemoryTypes.NEAREST_BLOCK_2, 1, 0, 10),
                         new NearestEntitySensor(EntityZombie.class, CoreMemoryTypes.NEAREST_ZOMBIE, 8, 0)
@@ -212,6 +216,19 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
         );
+    }
+
+    public boolean isHungry() {
+        return getFoodPoints() < 12;
+    }
+
+    public boolean shouldShareFood() {
+        for(Item item : getInventory().getContents().values()) {
+            if((item.getId().equals(Item.BREAD) && item.getCount() >= 6)
+            || ((item.getId().equals(Item.CARROT) || item.getId().equals(Block.BEETROOT)) && item.getCount() >= 24)
+            || (item.getId().equals(Block.WHEAT) && item.getCount() >= 18 && getProfession() == 1)) return true;
+        }
+        return false;
     }
 
     public int getFoodPoints() {
@@ -327,6 +344,12 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                 setBed(bed);
             }
         }
+        if(this.namedTag.containsList("gossip")) {
+            Object2IntArrayMap<String> gossip = getMemoryStorage().get(CoreMemoryTypes.GOSSIP);
+            for(CompoundTag tag : this.namedTag.getList("gossip", CompoundTag.class).getAll()) {
+                gossip.put(tag.getString("k"), tag.getInt("v"));
+            }
+        }
         this.inventory = new EntityEquipmentInventory(this);
         if (this.namedTag.contains("Inventory") && this.namedTag.get("Inventory") instanceof ListTag) {
             var inventory = this.getInventory();
@@ -351,6 +374,14 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         this.namedTag.putInt("maxTradeTier", this.getMaxTradeTier());
         this.namedTag.putInt("tradeExp", this.getTradeExp());
         this.namedTag.putInt("tradeSeed", this.getTradeSeed());
+        ListTag<CompoundTag> gossipTag = new ListTag<>();
+        for(var v : getMemoryStorage().get(CoreMemoryTypes.GOSSIP).object2IntEntrySet()) {
+            CompoundTag gossip = new CompoundTag();
+            gossip.putString("k" ,v.getKey());
+            gossip.putInt("v", v.getIntValue());
+            gossipTag.add(gossip);
+        }
+        this.namedTag.putList("gossip", gossipTag);
         if(getMemoryStorage().notEmpty(CoreMemoryTypes.OCCUPIED_BED)) {
             BlockBed bed = getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED);
             this.namedTag.putCompound("bed", new CompoundTag().putInt("x", bed.getFloorX()).putInt("y", bed.getFloorY()).putInt("z", bed.getFloorZ()));
@@ -540,7 +571,19 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             for(Entity i : getLevel().getNearbyEntities(getBoundingBox().grow(1, 0.5, 1))) {
                 if(i instanceof EntityItem entityItem) {
                     Item item = entityItem.getItem();
-                    if(item instanceof ItemFood) {
+                    if(switch (item.getId()) {
+                        case Item.BREAD,
+                             Item.CARROT,
+                             Item.POTATO,
+                             BlockID.WHEAT,
+                             Item.WHEAT_SEEDS,
+                             Item.BEETROOT_SEEDS,
+                             BlockID.BEETROOT,
+                             Item.TORCHFLOWER_SEEDS,
+                             Item.PITCHER_POD,
+                             Item.BONE_MEAL -> true;
+                             default -> false;
+                    }) {
                         InventorySlice slice = new InventorySlice(getInventory(), 1, getInventory().getSize());
                         if(slice.canAddItem(item)) {
                             TakeItemEntityPacket pk = new TakeItemEntityPacket();
@@ -621,9 +664,14 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         @Override
         public boolean execute(EntityIntelligent entity) {
             if(super.execute(entity)) {
+                int food = getFoodPoints();
                 for(int j = 0; j < getInventory().getSize(); j++) {
-                    if(getInventory().getItem(j) instanceof ItemFood) {
-                        getInventory().clear(j);
+                    Item item = getInventory().getUnclonedItem(j);
+                    if(item instanceof ItemFood) {
+                        for(int i = 0; i < item.count; i++) {
+                            item.decrement(1);
+                            if(food-getFoodPoints() <= 12) return true;
+                        }
                     }
                 }
                 return true;
