@@ -37,6 +37,8 @@ import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityZombie;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.EntityEquipmentInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.InventorySlice;
@@ -49,6 +51,7 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
@@ -57,11 +60,14 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.random.NukkitRandom;
-import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import org.apache.logging.log4j.core.Core;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -389,11 +395,23 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                 setBed(bed);
             }
         }
-        if(this.namedTag.containsList("gossip")) {
-            Object2IntArrayMap<String> gossip = getMemoryStorage().get(CoreMemoryTypes.GOSSIP);
-            for(CompoundTag tag : this.namedTag.getList("gossip", CompoundTag.class).getAll()) {
-                gossip.put(tag.getString("k"), tag.getInt("v"));
+        getMemoryStorage().put(CoreMemoryTypes.GOSSIP, new Object2ObjectArrayMap<>());
+        if(this.namedTag.containsCompound("gossip")) {
+            var gossipMap = getMemoryStorage().get(CoreMemoryTypes.GOSSIP);
+            CompoundTag gossipTag = this.namedTag.getCompound("gossip");
+            for(String key : gossipTag.getTags().keySet()){
+                ListTag<IntTag> gossipValues = gossipTag.getList(key, IntTag.class);
+                IntArrayList valueMap = new IntArrayList();
+                for(int i = 0; i < gossipValues.size(); i++) {
+                    valueMap.add(i, gossipValues.get(i).getData());
+                }
+                gossipMap.put(key, valueMap);
             }
+        }
+        if(this.namedTag.containsString("purifyPlayer")) {
+            String xuid = this.namedTag.removeAndGet("purifyPlayer").parseValue();
+            this.addGossip(xuid, Gossip.MAJOR_POSITIVE, 20);
+            this.addGossip(xuid, Gossip.MINOR_POSITIVE, 25);
         }
         this.inventory = new EntityEquipmentInventory(this);
         if (this.namedTag.contains("Inventory") && this.namedTag.get("Inventory") instanceof ListTag) {
@@ -410,6 +428,55 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     @Override
+    public boolean attack(EntityDamageEvent source) {
+        if(super.attack(source)) {
+            if(source instanceof EntityDamageByEntityEvent event) {
+                if(event.getDamager() instanceof Player player) {
+                    addGossip(player.getLoginChainData().getXUID(), Gossip.MINOR_NEGATIVE, 25);
+                }
+            }
+            return true;
+        } else return false;
+    }
+
+    @Override
+    public void kill() {
+        if(getLastDamageCause() instanceof EntityDamageByEntityEvent event) {
+            if(event.getEntity() instanceof Player player) {
+                Arrays.stream(this.getLevel().getCollidingEntities(this.getBoundingBox().grow(16, 16, 16))).filter(entity -> entity instanceof EntityVillagerV2).forEach(entity -> ((EntityVillagerV2) entity).addGossip(player.getLoginChainData().getXUID(), Gossip.MAJOR_NEGATIVE, 25));
+            }
+        }
+        super.kill();
+    }
+
+    public void addGossip(String xuid, Gossip gossip, int value) {
+        var gossipMap = getMemoryStorage().get(CoreMemoryTypes.GOSSIP);
+        if(!gossipMap.containsKey(xuid)) gossipMap.put(xuid, new IntArrayList(Collections.nCopies(Gossip.VALUES.length, 0)));
+        IntArrayList values = gossipMap.get(xuid);
+        int ordinal = gossip.ordinal();
+        values.set(ordinal, Math.min(gossip.max, values.getInt(ordinal) + value));
+    }
+
+    public int getGossip(String xuid, Gossip gossip) {
+        var gossipMap = getMemoryStorage().get(CoreMemoryTypes.GOSSIP);
+        if(!gossipMap.containsKey(xuid)) gossipMap.put(xuid, new IntArrayList(Collections.nCopies(Gossip.VALUES.length, 0)));
+        IntArrayList values = gossipMap.get(xuid);
+        int ordinal = gossip.ordinal();
+        return values.getInt(ordinal) * gossip.multiplier;
+    }
+
+    public int getReputation(Player player) {
+        int reputation = 0;
+        IntArrayList values = getMemoryStorage().get(CoreMemoryTypes.GOSSIP).get(player.getLoginChainData().getXUID());
+        if(values != null) {
+            for(Gossip gossip : Gossip.VALUES) {
+                reputation += (values.getInt(gossip.ordinal()) * gossip.multiplier);
+            }
+        }
+        return reputation;
+    }
+
+    @Override
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putInt("profession", this.getProfession());
@@ -420,14 +487,15 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         this.namedTag.putInt("tradeExp", this.getTradeExp());
         this.namedTag.putInt("tradeSeed", this.getTradeSeed());
         this.namedTag.putInt("clothing", this.getDataProperty(EntityDataTypes.MARK_VARIANT));
-        ListTag<CompoundTag> gossipTag = new ListTag<>();
-        for(var v : getMemoryStorage().get(CoreMemoryTypes.GOSSIP).object2IntEntrySet()) {
-            CompoundTag gossip = new CompoundTag();
-            gossip.putString("k" ,v.getKey());
-            gossip.putInt("v", v.getIntValue());
-            gossipTag.add(gossip);
+        CompoundTag gossipTag = new CompoundTag();
+        for(var v : getMemoryStorage().get(CoreMemoryTypes.GOSSIP).object2ObjectEntrySet()) {
+            ListTag<IntTag> gossipValues = new ListTag<>();
+            for(int v2 : v.getValue()) {
+                gossipValues.add(new IntTag(v2));
+            }
+            gossipTag.putList(v.getKey(), gossipValues);
         }
-        this.namedTag.putList("gossip", gossipTag);
+        this.namedTag.putCompound("gossip", gossipTag);
         if(getMemoryStorage().notEmpty(CoreMemoryTypes.OCCUPIED_BED)) {
             BlockBed bed = getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED);
             this.namedTag.putCompound("bed", new CompoundTag().putInt("x", bed.getFloorX()).putInt("y", bed.getFloorY()).putInt("z", bed.getFloorZ()));
@@ -613,6 +681,16 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public boolean onUpdate(int tick) {
+
+        if(ticksLived % 24000 == 23999) {
+            for(var v : getMemoryStorage().get(CoreMemoryTypes.GOSSIP).object2ObjectEntrySet()) {
+                IntArrayList values = v.getValue();
+                for(Gossip gossip : Gossip.VALUES) {
+                    values.set(gossip.ordinal(), Math.max(0, values.getInt(gossip.ordinal()) - gossip.decay));
+                }
+            }
+        }
+
         if(tick % 20 == 0) {
             for(Entity i : getLevel().getNearbyEntities(getBoundingBox().grow(1, 0.5, 1))) {
                 if(i instanceof EntityItem entityItem) {
@@ -720,6 +798,30 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             if(tags.contains("swamp")) return SWAMP;
             if(tags.contains("taiga") || tags.contains("extreme_hills")) return TAIGA;
             return PLAINS;
+        }
+    }
+
+    public enum Gossip {
+        MAJOR_POSITIVE(20, 0, 100, 20, 5),
+        MINOR_POSITIVE(25, 1, 5, 200, 1),
+        MINOR_NEGATIVE(25, 20, 20, 200, -1),
+        MAJOR_NEGATIVE(25, 10, 10, 100, -5),
+        TRADING(2, 2, 20, 25, 1);
+
+        public static final Gossip[] VALUES = values();
+
+        final int gain;
+        final int decay;
+        final int penalty;
+        final int max;
+        final int multiplier;
+
+        Gossip(int gain, int decay, int penalty, int max, int multiplier) {
+            this.gain = gain;
+            this.decay = decay;
+            this.penalty = penalty;
+            this.max = max;
+            this.multiplier = multiplier;
         }
     }
 }

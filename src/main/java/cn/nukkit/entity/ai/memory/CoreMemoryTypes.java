@@ -18,7 +18,10 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -107,7 +110,7 @@ public interface CoreMemoryTypes {
 
     MemoryType<Integer> LAST_GOSSIP = new MemoryType<>("minecraft:last_gossip", -65536);
 
-    MemoryType<Object2IntArrayMap<String>> GOSSIP = new MemoryType<>("minecraft:gossip", new Object2IntArrayMap<>());
+    MemoryType<Object2ObjectArrayMap<String, IntArrayList>> GOSSIP = new MemoryType<>("minecraft:gossip");
 
 
     /**
