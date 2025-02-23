@@ -457,6 +457,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         IntArrayList values = gossipMap.get(xuid);
         int ordinal = gossip.ordinal();
         values.set(ordinal, Math.min(gossip.max, values.getInt(ordinal) + value));
+        getLevel().getPlayers().values().stream().filter(player -> player.getLoginChainData().getXUID().equals(xuid)).findFirst().ifPresent(this::updateTrades);
     }
 
     public int getGossip(String xuid, Gossip gossip) {
@@ -604,7 +605,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public void setTradeTier(int tradeTier) {
         this.tradeTier = --tradeTier;
         this.namedTag.putInt("tradeTier", this.tradeTier);
-        getTradeInventory().getViewers().forEach(this::updateTrades);
     }
 
     public void updateTrades(Player player) {
