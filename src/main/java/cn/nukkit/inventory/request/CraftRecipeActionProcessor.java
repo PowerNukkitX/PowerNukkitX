@@ -47,12 +47,13 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     public static final String RECIPE_DATA_KEY = "recipe";
     public static final String ENCH_RECIPE_KEY = "ench_recipe";
 
-    public boolean checkTrade(CompoundTag recipeInput, Item input) {
+    public boolean checkTrade(CompoundTag recipeInput, Item input, int subtract) {
         String id = input.getId();
         int damage = input.getDamage();
         int count = input.getCount();
-        if (recipeInput.getByte("Count") > count || recipeInput.getShort("Damage") != damage || !recipeInput.getString("Name").equals(id)) {
-            log.error("The trade recipe does not match, expect {} actual {}", recipeInput, input);
+        int required = Math.max(recipeInput.getByte("Count") - subtract, 1);
+        if (required > count || recipeInput.getShort("Damage") != damage || !recipeInput.getString("Name").equals(id)) {
+            log.error("The trade recipe does not match, expect {} actual {}, count {}", recipeInput, input, required);
             return true;
         }
         if (recipeInput.contains("tag")) {
@@ -102,9 +103,13 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 log.error("Can't find trade recipe from netId {}", action.getRecipeNetworkId());
                 return context.error();
             }
-            Item first = inventory.getItem(0);
-            Item second = inventory.getItem(1);
+            Item first = inventory.getUnclonedItem(0);
+            Item second = inventory.getUnclonedItem(1);
             Item output = NBTIO.getItemHelper(tradeRecipe.getCompound("sell"));
+            int reputation = 0;
+            if(inventory.getHolder() instanceof EntityVillagerV2 villager) {
+                reputation = villager.getReputation(player);
+            }
             output.setCount(output.getCount() * action.getNumberOfRequestedCrafts());
             if (first.isNull() && second.isNull()) {
                 log.error("Can't find trade input!");
@@ -113,13 +118,16 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             boolean ca = tradeRecipe.contains("buyA");
             boolean cb = tradeRecipe.contains("buyB");
 
+            int reductionA = (int) (reputation * (tradeRecipe.containsFloat("priceMultiplierA") ? tradeRecipe.getFloat("priceMultiplierA") : 0));
+            int reductionB = (int) (reputation * (tradeRecipe.containsFloat("priceMultiplierB") ? tradeRecipe.getFloat("priceMultiplierB") : 0));
+
             if (ca && cb) {
                 if ((first.isNull() || second.isNull())) {
                     log.error("Can't find trade input!");
                     return context.error();
                 } else {
-                    if (checkTrade(tradeRecipe.getCompound("buyA"), first)) return context.error();
-                    if (checkTrade(tradeRecipe.getCompound("buyB"), second)) return context.error();
+                    if (checkTrade(tradeRecipe.getCompound("buyA"), first, reductionA)) return context.error();
+                    if (checkTrade(tradeRecipe.getCompound("buyB"), second, reductionB)) return context.error();
                     player.getCreativeOutputInventory().setItem(output);
                 }
             } else if (ca) {
@@ -127,7 +135,8 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                     log.error("Can't find trade input!");
                     return context.error();
                 } else {
-                    if (checkTrade(tradeRecipe.getCompound("buyA"), first)) return context.error();
+                    if (checkTrade(tradeRecipe.getCompound("buyA"), first, reductionA)) return context.error();
+                    inventory.sendContents(player);
                     player.getCreativeOutputInventory().setItem(output);
                 }
             }
@@ -137,6 +146,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 player.addExperience(rewardExp*action.getNumberOfRequestedCrafts());
                 if(inventory.getHolder() instanceof EntityVillagerV2 villager) {
                     villager.addExperience(traderExp*action.getNumberOfRequestedCrafts());
+                    villager.addGossip(player.getLoginChainData().getXUID(), EntityVillagerV2.Gossip.TRADING, 2);
                 }
                 tradeRecipe.putInt("uses", tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts());
             }

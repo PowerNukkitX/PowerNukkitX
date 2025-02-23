@@ -40,22 +40,7 @@ public class TradeInventory extends BaseInventory {
         super.onOpen(who);
         var villager = this.getHolder();
         villager.setTradingPlayer(who.getId());
-        var pk1 = new UpdateTradePacket();
-        pk1.containerId = (byte) who.getWindowId(this);
-        pk1.tradeTier = villager.getTradeTier();
-        pk1.traderUniqueEntityId = villager.getId();
-        pk1.playerUniqueEntityId = who.getId();
-        pk1.displayName = villager.getDisplayName();
-        var tierExpRequirements = new ListTag<CompoundTag>();
-        for (int i = 0, len = villager.tierExpRequirement.length; i < len; ++i) {
-            tierExpRequirements.add(i, new CompoundTag().putInt(String.valueOf(i), villager.tierExpRequirement[i]));
-        }
-        pk1.offers = new CompoundTag()
-                .putList("Recipes", villager.getRecipes())
-                .putList("TierExpRequirements", tierExpRequirements);
-        pk1.newTradingUi = true;
-        pk1.usingEconomyTrade = true;
-        who.dataPacket(pk1);
+        villager.updateTrades(who);
     }
 
     @Override

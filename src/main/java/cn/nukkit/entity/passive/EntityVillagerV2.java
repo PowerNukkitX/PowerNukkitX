@@ -55,6 +55,8 @@ import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
+import cn.nukkit.network.protocol.UnlockedRecipesPacket;
+import cn.nukkit.network.protocol.UpdateTradePacket;
 import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -602,6 +604,42 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public void setTradeTier(int tradeTier) {
         this.tradeTier = --tradeTier;
         this.namedTag.putInt("tradeTier", this.tradeTier);
+        getTradeInventory().getViewers().forEach(this::updateTrades);
+    }
+
+    public void updateTrades(Player player) {
+        var pk1 = new UpdateTradePacket();
+        pk1.containerId = (byte) player.getWindowId(getTradeInventory());
+        pk1.tradeTier = getTradeTier();
+        pk1.traderUniqueEntityId = getId();
+        pk1.playerUniqueEntityId = player.getId();
+        pk1.displayName = getDisplayName();
+        var tierExpRequirements = new ListTag<CompoundTag>();
+        for (int i = 0, len = tierExpRequirement.length; i < len; ++i) {
+            tierExpRequirements.add(i, new CompoundTag().putInt(String.valueOf(i), tierExpRequirement[i]));
+        }
+        ListTag<CompoundTag> recipes = (ListTag<CompoundTag>) getRecipes().copy();
+        int reputation = getReputation(player);
+        for(CompoundTag tag : recipes.getAll()) {
+            if(tag.containsCompound("buyA")) {
+                CompoundTag buyA = tag.getCompound("buyA");
+                float multiplier = 0;
+                if(tag.containsFloat("priceMultiplierA")) multiplier = tag.getFloat("priceMultiplierA");
+                buyA.putByte("Count", Math.max(buyA.getByte("Count") - (int) (reputation * multiplier), 1));
+            }
+            if(tag.containsCompound("buyB")) {
+                CompoundTag buyB = tag.getCompound("buyB");
+                float multiplier = 0;
+                if(tag.containsFloat("priceMultiplierB")) multiplier = tag.getFloat("priceMultiplierB");
+                buyB.putByte("Count", Math.max(buyB.getByte("Count") - (int) (reputation * multiplier), 1));
+            }
+        }
+        pk1.offers = new CompoundTag()
+                .putList("Recipes", recipes)
+                .putList("TierExpRequirements", tierExpRequirements);
+        pk1.newTradingUi = true;
+        pk1.usingEconomyTrade = true;
+        player.dataPacket(pk1);
     }
 
     /**
