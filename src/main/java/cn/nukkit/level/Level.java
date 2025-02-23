@@ -2533,8 +2533,7 @@ public class Level implements Metadatable {
 
         Block target = this.getBlock(vector, layer);
 
-        boolean canChangeBlock = target.isBlockChangeAllowed(player);
-        if (player != null && !canChangeBlock) {
+        if (player != null && !target.isBlockChangeAllowed(player)) {
             return null;
         }
 
@@ -2553,27 +2552,6 @@ public class Level implements Metadatable {
                 (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null && item.applyEnchantments());
 
         if (player != null) {
-            if (player.isAdventure()) {
-                Tag tag = item.getNamedTagEntry("CanDestroy");
-                boolean canBreak = canChangeBlock;
-                if (tag instanceof ListTag) {
-                    for (Tag v : ((ListTag<? extends Tag>) tag).getAll()) {
-                        if (!(v instanceof StringTag stringTag)) {
-                            continue;
-                        }
-                        Item entry = Item.get(stringTag.data);
-                        if (!entry.isNull() &&
-                                entry.getBlock().getId().equals(target.getId())) {
-                            canBreak = true;
-                            break;
-                        }
-                    }
-                }
-                if (!canBreak) {
-                    return null;
-                }
-            }
-
             Item[] eventDrops;
             if (immediateDestroy || player.isCreative()) {
                 eventDrops = Item.EMPTY_ARRAY;

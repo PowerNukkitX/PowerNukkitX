@@ -21,6 +21,9 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BlockTags;
@@ -1342,7 +1345,32 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                     return player == null || player.isCreative();
                 }
             }
-            return player == null || !player.isAdventure();
+            if(player == null) return true;
+
+            if(player.isAdventure()) {
+                Item itemInHand = player.getInventory().getItemInHand();
+                if(itemInHand.isNull()) return false;
+
+                Tag tag = itemInHand.getNamedTagEntry("CanDestroy");
+                boolean canBreak = false;
+                if (tag instanceof ListTag) {
+                    for (Tag v : ((ListTag<? extends Tag>) tag).getAll()) {
+                        if (!(v instanceof StringTag stringTag)) {
+                            continue;
+                        }
+                        Item entry = Item.get(stringTag.data);
+                        if (!entry.isNull() &&
+                                entry.getBlock().getId().equals(this.getId())) {
+                            canBreak = true;
+                            break;
+                        }
+                    }
+                }
+
+                return canBreak;
+            }else{
+                return true;
+            }
         }
         return player != null && player.isCreative() && player.isOp();
     }
