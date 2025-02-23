@@ -139,6 +139,8 @@ public interface CoreMemoryTypes {
      */
     MemoryType<Integer> LAST_IN_LOVE_TIME = new MemoryType<>("minecraft:last_in_love_time", -65536);
 
+    MemoryType<Boolean> WILLING = new MemoryType<>("minecraft:willing", false);
+
     MemoryType<Entity> PARENT = new MemoryType<>("minecraft:parent");
 
     /**

@@ -21,17 +21,18 @@ import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;
-import cn.nukkit.entity.ai.executor.InLoveExecutor;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.villager.DoorExecutor;
 import cn.nukkit.entity.ai.executor.villager.GossipExecutor;
 import cn.nukkit.entity.ai.executor.villager.SleepExecutor;
 import cn.nukkit.entity.ai.executor.villager.VillagerBreedingExecutor;
+import cn.nukkit.entity.ai.executor.villager.WillingnessExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
+import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.entity.item.EntityItem;
@@ -41,16 +42,20 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.InventorySlice;
 import cn.nukkit.inventory.TradeInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemFood;
 import cn.nukkit.level.Location;
+import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
+import cn.nukkit.registry.BiomeRegistry;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
+import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.random.NukkitRandom;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import org.jetbrains.annotations.NotNull;
@@ -139,7 +144,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                 }
                         ), 10, 1),
                         new Behavior(
-                                new VillagerInLoveExecutor(400),
+                                new WillingnessExecutor(),
                                 all(
                                         entity -> getFoodPoints() >= 12,
                                         entity -> !isBaby(),
@@ -158,10 +163,11 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                         )
                 ),
                 Set.of(
-                        new Behavior(new VillagerBreedingExecutor(EntityVillagerV2.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 7, 1),
+                        new Behavior(new VillagerBreedingExecutor(EntityVillagerV2.class, 16, 100, 0.5f), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ENTITY_SPOUSE), 7, 1),
                         new Behavior(new SleepExecutor(), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED),
                                 new DistanceEvaluator(CoreMemoryTypes.OCCUPIED_BED, 2),
+                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 100),
                                 entity -> getLevel().isNight()
                         ), 8, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.OCCUPIED_BED, 0.3f, true), all(
@@ -181,32 +187,58 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                 ),
                 Set.of(
                         entity -> {
-                            if(getMemoryStorage().isEmpty(CoreMemoryTypes.OCCUPIED_BED)) {
-                                int range = 48;
-                                int lookY = 5;
-                                BlockBed block = null;
-                                for (int x = -range; x <= range; x++) {
-                                    for (int z = -range; z <= range; z++) {
-                                        for (int y = -lookY; y <= lookY; y++) {
-                                            Location lookLocation = entity.add(x, y, z);
-                                            Block lookBlock = lookLocation.getLevelBlock();
-                                            if (lookBlock instanceof BlockBed bed) {
-                                                if (!bed.isHeadPiece() && Arrays.stream(getLevel().getEntities()).noneMatch(entity1 -> entity1 instanceof EntityVillagerV2 v && v.getMemoryStorage().notEmpty(CoreMemoryTypes.OCCUPIED_BED) && v.getBed().equals(bed))) {
-                                                    block = bed.getFootPart();
+                            if(getLevel().getTick()%120==0) {
+                                if(getMemoryStorage().isEmpty(CoreMemoryTypes.OCCUPIED_BED)) {
+                                    int range = 48;
+                                    int lookY = 5;
+                                    BlockBed block = null;
+                                    for (int x = -range; x <= range; x++) {
+                                        for (int z = -range; z <= range; z++) {
+                                            for (int y = -lookY; y <= lookY; y++) {
+                                                Location lookLocation = entity.add(x, y, z);
+                                                Block lookBlock = lookLocation.getLevelBlock();
+                                                if (lookBlock instanceof BlockBed bed) {
+                                                    if (!bed.isHeadPiece() && Arrays.stream(getLevel().getEntities()).noneMatch(entity1 -> entity1 instanceof EntityVillagerV2 v && v.getMemoryStorage().notEmpty(CoreMemoryTypes.OCCUPIED_BED) && v.getBed().equals(bed))) {
+                                                        block = bed.getFootPart();
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+                                    if(block != null && !block.isOccupied()) setBed(block);
+                                } else if(!getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).isBedValid()) {
+                                    this.namedTag.remove("bed");
+                                    getMemoryStorage().clear(CoreMemoryTypes.OCCUPIED_BED);
                                 }
-                                if(block != null && !block.isOccupied()) setBed(block);
-                            } else if(!getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).isBedValid()) {
-                                this.namedTag.remove("bed");
-                                getMemoryStorage().clear(CoreMemoryTypes.OCCUPIED_BED);
                             }
                         },
                         entity -> {
-                            if(shouldShareFood()) {
-                                Arrays.stream(entity.getLevel().getCollidingEntities(entity.getBoundingBox().grow(16, 3, 16))).filter(entity1 -> entity1 instanceof EntityVillagerV2 villagerV2 && villagerV2.isHungry()).findAny().ifPresentOrElse(entity1 -> getMemoryStorage().put(CoreMemoryTypes.NEAREST_HUNGRY_VILLAGER, (EntityVillagerV2) entity1), () -> getMemoryStorage().clear(CoreMemoryTypes.NEAREST_HUNGRY_VILLAGER));
+                            if(getLevel().getTick()%60 == 0) {
+                                if(shouldShareFood()) {
+                                    Arrays.stream(entity.getLevel().getCollidingEntities(entity.getBoundingBox().grow(16, 3, 16))).filter(entity1 -> entity1 instanceof EntityVillagerV2 villagerV2 && villagerV2.isHungry()).findAny().ifPresentOrElse(entity1 -> getMemoryStorage().put(CoreMemoryTypes.NEAREST_HUNGRY_VILLAGER, (EntityVillagerV2) entity1), () -> getMemoryStorage().clear(CoreMemoryTypes.NEAREST_HUNGRY_VILLAGER));
+                                }
+                            }
+                        },
+                        entity -> {
+                            if(getLevel().getTick() % 100 == 0) {
+                                if(getMemoryStorage().get(CoreMemoryTypes.WILLING)) {
+                                    var entities = entity.level.getEntities();
+                                    var maxDistanceSquared = -1d;
+                                    EntityVillagerV2 nearestInLove = null;
+                                    for (Entity e : entities) {
+                                        double newDistance = e.distanceSquared(entity);
+                                        if (e instanceof EntityVillagerV2 another && e != entity) {
+                                            if (!another.isBaby() && another.getMemoryStorage().get(CoreMemoryTypes.WILLING) && another.getMemoryStorage().isEmpty(CoreMemoryTypes.ENTITY_SPOUSE) && (maxDistanceSquared == -1 || newDistance < maxDistanceSquared)) {
+                                                maxDistanceSquared = newDistance;
+                                                nearestInLove = another;
+                                            }
+                                        }
+                                    }
+                                    if(nearestInLove != null) {
+                                        nearestInLove.getMemoryStorage().put(CoreMemoryTypes.ENTITY_SPOUSE, this);
+                                        getMemoryStorage().put(CoreMemoryTypes.ENTITY_SPOUSE, nearestInLove);
+                                    }
+                                }
                             }
                         },
                         new BlockSensor(BlockDoor.class, CoreMemoryTypes.NEAREST_BLOCK_2, 1, 0, 10),
@@ -248,6 +280,13 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public void setBed(BlockBed bed) {
         if(bed.isBedValid()) {
             getMemoryStorage().put(CoreMemoryTypes.OCCUPIED_BED, bed);
+            for(int i = 0; i < 5; i++) {
+                float randX = Utils.rand(0f, 0.5f);
+                float randY = Utils.rand(0f, 0.3f);
+                float randZ = Utils.rand(0f, 0.5f);
+                this.getLevel().addParticleEffect(this.add(randX, this.getEyeHeight() + randY, randZ), ParticleEffect.VILLAGER_HAPPY);
+                this.getLevel().addParticleEffect(bed.add(randX, 0.5625f + randY, randZ), ParticleEffect.VILLAGER_HAPPY);
+            }
         }
     }
 
@@ -337,6 +376,12 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             this.tradeExp = tradeExp;
             this.setDataProperty(TRADE_EXPERIENCE, tradeExp);
         }
+        if(this.namedTag.containsInt("clothing")) {
+            this.setDataProperty(EntityDataTypes.MARK_VARIANT, this.namedTag.getInt("clothing"));
+        } else {
+            BlockVector3 bv = asBlockVector3();
+            this.setDataProperty(EntityDataTypes.MARK_VARIANT, Clothing.getClothing(getLevel().getBiomeId(bv.x, bv.y, bv.z)).ordinal());
+        }
         if(this.namedTag.containsCompound("bed")) {
             CompoundTag compound = this.namedTag.getCompound("bed");
             Vector3 vector = new Vector3(compound.getInt("x"), compound.getInt("y"), compound.getInt("z"));
@@ -374,6 +419,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         this.namedTag.putInt("maxTradeTier", this.getMaxTradeTier());
         this.namedTag.putInt("tradeExp", this.getTradeExp());
         this.namedTag.putInt("tradeSeed", this.getTradeSeed());
+        this.namedTag.putInt("clothing", this.getDataProperty(EntityDataTypes.MARK_VARIANT));
         ListTag<CompoundTag> gossipTag = new ListTag<>();
         for(var v : getMemoryStorage().get(CoreMemoryTypes.GOSSIP).object2IntEntrySet()) {
             CompoundTag gossip = new CompoundTag();
@@ -655,28 +701,25 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         return 0;
     }
 
-    private class VillagerInLoveExecutor extends InLoveExecutor {
+    public enum Clothing {
+        PLAINS,
+        DESERT,
+        JUNGLE,
+        SAVANNA,
+        SNOW,
+        SWAMP,
+        TAIGA;
 
-        public VillagerInLoveExecutor(int duration) {
-            super(duration);
-        }
-
-        @Override
-        public boolean execute(EntityIntelligent entity) {
-            if(super.execute(entity)) {
-                int food = getFoodPoints();
-                for(int j = 0; j < getInventory().getSize(); j++) {
-                    Item item = getInventory().getUnclonedItem(j);
-                    if(item instanceof ItemFood) {
-                        for(int i = 0; i < item.count; i++) {
-                            item.decrement(1);
-                            if(food-getFoodPoints() <= 12) return true;
-                        }
-                    }
-                }
-                return true;
-            }
-            return false;
+        public static Clothing getClothing(int biomeId) {
+            BiomeRegistry.BiomeDefinition definition = Registries.BIOME.get(biomeId);
+            Set<String> tags = definition.tags();
+            if(tags.contains("desert") || tags.contains("mesa")) return DESERT;
+            if(tags.contains("jungle")) return JUNGLE;
+            if(tags.contains("savanna")) return SAVANNA;
+            if(tags.contains("frozen")) return SNOW;
+            if(tags.contains("swamp")) return SWAMP;
+            if(tags.contains("taiga") || tags.contains("extreme_hills")) return TAIGA;
+            return PLAINS;
         }
     }
 }

@@ -20,6 +20,27 @@ public class VillagerBreedingExecutor extends EntityBreedingExecutor {
     }
 
     @Override
+    public void onStart(EntityIntelligent entity) {
+        super.onStart(entity);
+        finded = true;
+        another = (EntityIntelligent) entity.getMemoryStorage().get(CoreMemoryTypes.ENTITY_SPOUSE);
+    }
+
+    @Override
+    public void onStop(EntityIntelligent entity) {
+        clearData(entity);
+        if(another != null) {
+            clearData(another);
+        }
+    }
+
+    @Override
+    public boolean execute(EntityIntelligent uncasted) {
+        if(another == null) return false;
+        return super.execute(uncasted);
+    }
+
+    @Override
     protected void bear(EntityIntelligent entity) {
 
         int range = 48;
@@ -40,7 +61,11 @@ public class VillagerBreedingExecutor extends EntityBreedingExecutor {
         }
         if(block == null) {
             sendAngryParticles(entity);
+            sendAngryParticles(another);
             return;
+        } else {
+            sendInLoveParticles(entity);
+            sendInLoveParticles(another);
         }
 
         EntityVillagerV2 baby = (EntityVillagerV2) Entity.createEntity(entity.getNetworkId(), entity.getPosition());
@@ -51,6 +76,26 @@ public class VillagerBreedingExecutor extends EntityBreedingExecutor {
         baby.spawnToAll();
     }
 
+    @Override
+    protected void clearData(EntityIntelligent entity) {
+        entity.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_SPOUSE);
+        //clear move target
+        entity.setMoveTarget(null);
+        //clear look target
+        entity.setLookTarget(null);
+        //reset move speed
+        entity.setMovementSpeed(0.1f);
+        //interrupt in love status
+        entity.getMemoryStorage().put(CoreMemoryTypes.WILLING, false);
+        entity.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, entity.getLevel().getTick());
+    }
+
+    protected void sendInLoveParticles(EntityIntelligent entity) {
+        EntityEventPacket pk = new EntityEventPacket();
+        pk.eid = entity.getId();
+        pk.event = EntityEventPacket.LOVE_PARTICLES;
+        Server.broadcastPacket(entity.getViewers().values(), pk);
+    }
 
     protected void sendAngryParticles(EntityIntelligent entity) {
         EntityEventPacket pk = new EntityEventPacket();
