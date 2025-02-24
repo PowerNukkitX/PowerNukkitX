@@ -136,6 +136,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                     return context.error();
                 } else {
                     if (checkTrade(tradeRecipe.getCompound("buyA"), first, reductionA)) return context.error();
+                    if(tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts() > tradeRecipe.getInt("maxUses")) return context.error();
                     inventory.sendContents(player);
                     player.getCreativeOutputInventory().setItem(output);
                 }
@@ -144,11 +145,11 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 int traderExp = tradeRecipe.contains("traderExp") ? tradeRecipe.getInt("traderExp") : 0;
                 int rewardExp = tradeRecipe.contains("rewardExp") ? tradeRecipe.getInt("rewardExp") : 0;
                 player.addExperience(rewardExp*action.getNumberOfRequestedCrafts());
+                tradeRecipe.putInt("uses", tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts());
                 if(inventory.getHolder() instanceof EntityVillagerV2 villager) {
                     villager.addExperience(traderExp*action.getNumberOfRequestedCrafts());
                     villager.addGossip(player.getLoginChainData().getXUID(), EntityVillagerV2.Gossip.TRADING, 2);
                 }
-                tradeRecipe.putInt("uses", tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts());
             }
             return null;
         }
