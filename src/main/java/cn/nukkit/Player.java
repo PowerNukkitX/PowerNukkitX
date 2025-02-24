@@ -4432,6 +4432,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 });
     }
 
+    public void checkClosedForms() {
+        this.formWindows.entrySet().removeIf(entry -> !entry.getValue().isViewer(this));
+    }
+
+    public Map<Integer, Form<?>> getFormWindows() {
+        return formWindows;
+    }
+
     /**
      * book=true
      *

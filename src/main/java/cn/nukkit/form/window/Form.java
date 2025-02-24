@@ -45,6 +45,7 @@ public abstract class Form<T extends Response> {
      * @param player The player who closed the form
      */
     public void supplyClosed(Player player) {
+        player.checkClosedForms();
         this.viewers.remove(player);
         if (this.closed != null)
             this.closed.accept(player);
