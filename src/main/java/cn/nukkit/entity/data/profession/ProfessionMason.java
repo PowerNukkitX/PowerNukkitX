@@ -2,6 +2,7 @@ package cn.nukkit.entity.data.profession;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
@@ -12,7 +13,7 @@ import java.util.Random;
 public class ProfessionMason extends Profession {
 
     public ProfessionMason() {
-        super(13, BlockID.STONECUTTER_BLOCK, "entity.villager.mason");
+        super(13, BlockID.STONECUTTER_BLOCK, "entity.villager.mason", Sound.BLOCK_STONECUTTER_USE);
     }
 
     @Override

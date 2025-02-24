@@ -6,6 +6,7 @@ import cn.nukkit.block.BlockCrops;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.executor.NearbyFlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector2;
@@ -32,6 +33,7 @@ public class WorkExecutor extends NearbyFlatRandomRoamExecutor {
                 if(site.distance(villager) < 1.5f) {
                     setLookTarget(villager, site);
                     stayTick++;
+                    if(stayTick == 40 || stayTick == 90) villager.getLevel().addSound(villager, Profession.getProfession(villager.getProfession()).getWorkSound());
                 }
                 if(stayTick == 99) removeRouteTarget(villager);
             } else {
@@ -65,7 +67,7 @@ public class WorkExecutor extends NearbyFlatRandomRoamExecutor {
                                     }
                                 }
                                 break;
-                            }
+                            } else super.execute(villager);
                         } else break;
                     }
                     default: super.execute(villager);

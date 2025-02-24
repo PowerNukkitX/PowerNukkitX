@@ -3,6 +3,7 @@ package cn.nukkit.entity.data.profession;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
@@ -13,7 +14,7 @@ import java.util.Random;
 public class ProfessionShepherd extends Profession {
 
     public ProfessionShepherd() {
-        super(3, BlockID.LOOM, "entity.villager.shepherd");
+        super(3, BlockID.LOOM, "entity.villager.shepherd", Sound.BLOCK_LOOM_USE);
     }
 
     @Override

@@ -3,6 +3,7 @@ package cn.nukkit.entity.data.profession;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -12,7 +13,7 @@ import java.util.Random;
 public class ProfessionWeapon extends Profession {
 
     public ProfessionWeapon() {
-        super(9, BlockID.GRINDSTONE, "entity.villager.weapon");
+        super(9, BlockID.GRINDSTONE, "entity.villager.weapon", Sound.BLOCK_GRINDSTONE_USE);
     }
 
     @Override

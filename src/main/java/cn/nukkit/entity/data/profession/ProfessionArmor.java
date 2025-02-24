@@ -3,6 +3,7 @@ package cn.nukkit.entity.data.profession;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -12,7 +13,7 @@ import java.util.Random;
 public class ProfessionArmor extends Profession {
 
     public ProfessionArmor() {
-        super(8, BlockID.BLAST_FURNACE, "entity.villager.armor");
+        super(8, BlockID.BLAST_FURNACE, "entity.villager.armor", Sound.BLOCK_BLASTFURNACE_FIRE_CRACKLE);
     }
 
     @Override

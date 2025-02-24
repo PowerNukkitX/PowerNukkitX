@@ -1,5 +1,6 @@
 package cn.nukkit.entity.data.profession;
 
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 
@@ -25,11 +26,13 @@ public abstract class Profession {
     private final int index;
     private final String blockId;
     private final String name;
+    private final Sound workSound;
 
-    public Profession(int index, String blockId, String name) {
+    public Profession(int index, String blockId, String name, Sound workSound) {
         this.index = index;
         this.blockId = blockId;
         this.name = name;
+        this.workSound = workSound;
     }
 
     public ListTag<CompoundTag> buildTrades(int seed) {
@@ -63,5 +66,9 @@ public abstract class Profession {
 
     public String getName() {
         return this.name;
+    }
+
+    public Sound getWorkSound() {
+        return this.workSound;
     }
 }

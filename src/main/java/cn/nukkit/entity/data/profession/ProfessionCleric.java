@@ -2,6 +2,7 @@ package cn.nukkit.entity.data.profession;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -11,7 +12,7 @@ import java.util.Random;
 public class ProfessionCleric extends Profession {
 
     public ProfessionCleric() {
-        super(7, BlockID.BREWING_STAND, "entity.villager.cleric");
+        super(7, BlockID.BREWING_STAND, "entity.villager.cleric", Sound.RANDOM_POTION_BREWED);
     }
 
     @Override

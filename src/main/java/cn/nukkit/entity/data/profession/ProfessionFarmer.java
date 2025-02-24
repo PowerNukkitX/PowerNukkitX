@@ -2,6 +2,7 @@ package cn.nukkit.entity.data.profession;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -11,7 +12,7 @@ import java.util.Random;
 public class ProfessionFarmer extends Profession {
 
     public ProfessionFarmer() {
-        super(1, BlockID.COMPOSTER, "entity.villager.farmer");
+        super(1, BlockID.COMPOSTER, "entity.villager.farmer", Sound.BLOCK_COMPOSTER_FILL);
     }
 
     @Override
