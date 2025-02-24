@@ -83,6 +83,7 @@ public class EntityZombieVillager extends EntityZombie implements EntityWalkable
                 if(!getDataFlag(EntityFlag.SHAKING)) {
                     setDataFlag(EntityFlag.SHAKING);
                     if(!player.isCreative()) {
+                        this.namedTag.putString("purifyPlayer", player.getLoginChainData().getXUID());
                         player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                     }
                     getLevel().addSound(this, Sound.MOB_ZOMBIE_REMEDY);

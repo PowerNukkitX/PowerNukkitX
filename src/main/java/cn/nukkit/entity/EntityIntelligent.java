@@ -92,7 +92,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
             behaviorGroup.tickRunningBehaviors(this);
             behaviorGroup.updateRoute(this);
             behaviorGroup.applyController(this);
-            if (EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) behaviorGroup.debugTick(this);
+            if (EntityAI.hasDebugOptions()) behaviorGroup.debugTick(this);
         }
         super.asyncPrepare(currentTick);
     }
@@ -151,15 +151,16 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
      */
     public double getJumpingMotion(double jumpY) {
         if (this.isTouchingWater()) {
-            if (jumpY > 0 && jumpY < 0.2) {
-                return 0.25;
-            } else if (jumpY < 0.51) {
-                return 0.45;
-            } else if (jumpY < 1.01) {
-                return 0.6;
-            } else {
-                return 0.7;
-            }
+//            if (jumpY > 0 && jumpY < 0.2) {
+//                return 0.1;
+//            } else if (jumpY < 0.51) {
+//                return 0.1;
+//            } else if (jumpY < 1.01) {
+//                return 0.1;
+//            } else {
+//                return 0.1;
+//            }
+            return 0.1d;
         } else {
             if (jumpY > 0 && jumpY < 0.2) {
                 return 0.15;

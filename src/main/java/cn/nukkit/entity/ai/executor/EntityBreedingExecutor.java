@@ -1,15 +1,9 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.passive.EntityAnimal;
-import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.concurrent.ThreadLocalRandom;
-
 
 public class EntityBreedingExecutor<T extends EntityIntelligent> implements IBehaviorExecutor {
 

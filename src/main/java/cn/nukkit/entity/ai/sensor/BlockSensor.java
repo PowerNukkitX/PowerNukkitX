@@ -54,7 +54,7 @@ public class BlockSensor implements ISensor {
             }
         }
         if(block == null) {
-            if(entity.getMemoryStorage().notEmpty(memory) && entity.getMemoryStorage().get(memory).getClass().isAssignableFrom(blockClass)) {
+            if(entity.getMemoryStorage().notEmpty(memory) && (blockClass.isAssignableFrom(entity.getMemoryStorage().get(memory).getClass()) || entity.getMemoryStorage().get(memory).isAir())) {
                 entity.getMemoryStorage().clear(memory);
             } // We don't want to clear data from different sensors
         } else entity.getMemoryStorage().put(memory, block);

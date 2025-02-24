@@ -3,9 +3,9 @@ package cn.nukkit.entity.data.profession;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 
 import java.util.Random;
@@ -13,7 +13,7 @@ import java.util.Random;
 public class ProfessionTool extends Profession {
 
     public ProfessionTool() {
-        super(10, BlockID.SMITHING_TABLE, "entity.villager.tool");
+        super(10, BlockID.SMITHING_TABLE, "entity.villager.tool", Sound.SMITHING_TABLE_USE);
     }
 
     @Override
@@ -21,7 +21,7 @@ public class ProfessionTool extends Profession {
         ListTag<CompoundTag> recipes = new ListTag<>();
         Random random = new Random(seed);
 
-        int[] ench = new int[] {Enchantment.ID_DURABILITY, Enchantment.ID_EFFICIENCY, Enchantment.ID_FORTUNE_DIGGING, Enchantment.ID_SILK_TOUCH};
+        int[] ench = new int[]{Enchantment.ID_DURABILITY, Enchantment.ID_EFFICIENCY, Enchantment.ID_FORTUNE_DIGGING, Enchantment.ID_SILK_TOUCH};
 
         Item iaxe = Item.get(Item.IRON_AXE);
         Enchantment iaxee = Enchantment.getEnchantment(ench[random.nextInt(ench.length)]);
@@ -49,103 +49,140 @@ public class ProfessionTool extends Profession {
         dpickaxee.setLevel(1 + random.nextInt(dpickaxee.getMaxLevel()));
         dpickaxe.addEnchantment(dpickaxee);
 
-            recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.COAL, 0 , 15), Item.get(Item.EMERALD))
-                        .setMaxUses(16)
-                        .setRewardExp((byte) 1)
-                        .setTier(1)
-                        .setTraderExp(2)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0 , 1), Item.get(Item.STONE_AXE))
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.COAL, 0, 15), Item.get(Item.EMERALD))
+                .setMaxUses(16)
+                .setRewardExp((byte) 1)
+                .setTier(1)
+                .setTraderExp(2)
+                .setPriceMultiplierA(0.05f)
+                .build());
+        switch (random.nextInt(4)) {
+            case 0:
+                recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 1), Item.get(Item.STONE_AXE))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(1)
                         .setTraderExp(1)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0 , 1), Item.get(Item.STONE_SHOVEL))
-                        .setMaxUses(99)
+                        .setPriceMultiplierA(0.2f)
+                        .build());
+                break;
+            case 1:
+                recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 1), Item.get(Item.STONE_SHOVEL))
+                        .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(1)
-                        .setTraderExp(0)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0 , 1), Item.get(Item.STONE_PICKAXE))
-                        .setMaxUses(99)
+                        .setTraderExp(1)
+                        .setPriceMultiplierA(0.2f)
+                        .build());
+                break;
+            case 2:
+                recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 1), Item.get(Item.STONE_PICKAXE))
+                        .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(1)
-                        .setTraderExp(0)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0 , 1), Item.get(Item.STONE_HOE))
-                        .setMaxUses(99)
+                        .setTraderExp(1)
+                        .setPriceMultiplierA(0.2f)
+                        .build());
+                break;
+            case 3:
+                recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 1), Item.get(Item.STONE_HOE))
+                        .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(1)
-                        .setTraderExp(0)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.IRON_INGOT, 0 , 4), Item.get(Item.EMERALD))
+                        .setTraderExp(1)
+                        .setPriceMultiplierA(0.2f)
+                        .build());
+        }
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.IRON_INGOT, 0, 4), Item.get(Item.EMERALD))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(2)
                         .setTraderExp(10)
+                        .setPriceMultiplierA(0.05f)
                         .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0 , 36), Item.get(BlockID.BELL))
+                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 36), Item.get(BlockID.BELL))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(2)
                         .setTraderExp(5)
+                        .setPriceMultiplierA(0.2f)
                         .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.FLINT, 0 , 24), Item.get(Item.EMERALD))
+                .add(TradeRecipeBuildUtils.of(Item.get(Item.FLINT, 0, 24), Item.get(Item.EMERALD))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(3)
                         .setTraderExp(20)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0 , 6 + random.nextInt(21-6)), iaxe)
-                        .setMaxUses(12)
+                        .setPriceMultiplierA(0.05f)
+                        .build());
+        switch (random.nextInt(4)) {
+            case 0:
+                recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 6 + random.nextInt(21 - 6)), iaxe)
+                        .setMaxUses(3)
                         .setRewardExp((byte) 1)
                         .setTier(3)
                         .setTraderExp(10)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0 , 7 + random.nextInt(22-7)), ishovel)
-                        .setMaxUses(99)
-                        .setRewardExp((byte) 1)
-                        .setTier(3)
-                        .setTraderExp(0)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0 , 8 + random.nextInt(23-8)), ipickaxe)
-                        .setMaxUses(99)
-                        .setRewardExp((byte) 1)
-                        .setTier(3)
-                        .setTraderExp(0)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0 , 4), Item.get(Item.DIAMOND_HOE))
-                        .setMaxUses(99)
-                        .setRewardExp((byte) 1)
-                        .setTier(3)
-                        .setTraderExp(0)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.DIAMOND, 0 , 1), Item.get(Item.EMERALD))
-                        .setMaxUses(12)
-                        .setRewardExp((byte) 1)
-                        .setTier(4)
-                        .setTraderExp(30)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0 , 17 + random.nextInt(32-17)), daxe)
-                        .setMaxUses(3)
-                        .setRewardExp((byte) 1)
-                        .setTier(4)
-                        .setTraderExp(15)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0 , 10 + random.nextInt(25-10)), dshovel)
-                        .setMaxUses(99)
-                        .setRewardExp((byte) 1)
-                        .setTier(4)
-                        .setTraderExp(0)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0 , 18 + random.nextInt(33-18)), dpickaxe)
-                        .setMaxUses(3)
-                        .setRewardExp((byte) 1)
-                        .setTier(5)
-                        .setTraderExp(0)
+                        .setPriceMultiplierA(0.2f)
                         .build());
-            return recipes;
+                break;
+            case 1:
+                recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 7 + random.nextInt(22 - 7)), ishovel)
+                        .setMaxUses(3)
+                        .setRewardExp((byte) 1)
+                        .setTier(3)
+                        .setTraderExp(10)
+                        .setPriceMultiplierA(0.2f)
+                        .build());
+                break;
+            case 2:
+                recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 8 + random.nextInt(23 - 8)), ipickaxe)
+                        .setMaxUses(3)
+                        .setRewardExp((byte) 1)
+                        .setTier(3)
+                        .setTraderExp(10)
+                        .setPriceMultiplierA(0.2f)
+                        .build());
+                break;
+            case 3:
+                recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 4), Item.get(Item.DIAMOND_HOE))
+                        .setMaxUses(3)
+                        .setRewardExp((byte) 1)
+                        .setTier(3)
+                        .setTraderExp(10)
+                        .setPriceMultiplierA(0.2f)
+                        .build());
+        }
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.DIAMOND, 0, 1), Item.get(Item.EMERALD))
+                .setMaxUses(12)
+                .setRewardExp((byte) 1)
+                .setTier(4)
+                .setTraderExp(30)
+                .setPriceMultiplierA(0.05f)
+                .build());
+        if (random.nextBoolean()) {
+            recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 17 + random.nextInt(32 - 17)), daxe)
+                    .setMaxUses(3)
+                    .setRewardExp((byte) 1)
+                    .setTier(4)
+                    .setTraderExp(15)
+                    .setPriceMultiplierA(0.2f)
+                    .build());
+        } else {
+            recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 10 + random.nextInt(25 - 10)), dshovel)
+                    .setMaxUses(3)
+                    .setRewardExp((byte) 1)
+                    .setTier(4)
+                    .setTraderExp(15)
+                    .setPriceMultiplierA(0.2f)
+                    .build());
+        }
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 18 + random.nextInt(33 - 18)), dpickaxe)
+                .setMaxUses(3)
+                .setRewardExp((byte) 1)
+                .setTier(5)
+                .setTraderExp(30)
+                .setPriceMultiplierA(0.2f)
+                .build());
+        return recipes;
     }
 
 }

@@ -3,20 +3,23 @@ package cn.nukkit.entity.ai.memory;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockBed;
+import cn.nukkit.block.BlockWoodenDoor;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.memory.codec.BooleanMemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.NumberMemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.StringMemoryCodec;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.entity.item.EntityEnderCrystal;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityEvocationIllager;
+import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -103,6 +106,11 @@ public interface CoreMemoryTypes {
 
     MemoryType<EntityEvocationIllager.SPELL> LAST_MAGIC = new MemoryType<>("minecraft:last_spell", EntityEvocationIllager.SPELL.NONE);
 
+    MemoryType<Integer> LAST_GOSSIP = new MemoryType<>("minecraft:last_gossip", -65536);
+
+    MemoryType<Object2ObjectArrayMap<String, IntArrayList>> GOSSIP = new MemoryType<>("minecraft:gossip");
+
+    MemoryType<Integer> LAST_REFILL_SHIFT = new MemoryType<>("minecraft:last_refill_shift", -1);
 
     /**
      * 实体的仇恨目标
@@ -132,6 +140,8 @@ public interface CoreMemoryTypes {
      * 上一次繁殖的时间tick
      */
     MemoryType<Integer> LAST_IN_LOVE_TIME = new MemoryType<>("minecraft:last_in_love_time", -65536);
+
+    MemoryType<Boolean> WILLING = new MemoryType<>("minecraft:willing", false);
 
     MemoryType<Entity> PARENT = new MemoryType<>("minecraft:parent");
 
@@ -193,6 +203,8 @@ public interface CoreMemoryTypes {
      */
     MemoryType<Entity> NEAREST_SKELETON = new MemoryType<>("minecraft:nearest_skeleton");
 
+    MemoryType<Entity> NEAREST_ZOMBIE = new MemoryType<>("minecraft:nearest_zombie");
+
     MemoryType<Entity> NEAREST_ENDERMITE = new MemoryType<>("minecraft:nearest_endermite");
 
     MemoryType<Entity> NEAREST_GOLEM = new MemoryType<>("minecraft:nearest_golem");
@@ -203,9 +215,19 @@ public interface CoreMemoryTypes {
 
     MemoryType<Class<? extends Item>> LOOKING_ITEM = new MemoryType<>("minecraft:looking_item");
 
+    MemoryType<BlockBed> OCCUPIED_BED = new MemoryType<>("minecraft:occupied_bed");
+
     MemoryType<Block> NEAREST_BLOCK = new MemoryType<>("minecraft:nearest_block");
 
+    MemoryType<Block> NEAREST_BLOCK_2 = new MemoryType<>("minecraft:nearest_block_2");
+
+    MemoryType<Block> SITE_BLOCK = new MemoryType<>("minecraft:site_block");
+
+    MemoryType<BlockWoodenDoor> NEAREST_DOOR = new MemoryType<>("minecraft:nearest_door");
+
     MemoryType<EntityItem> NEAREST_ITEM = new MemoryType<>("minecraft:nearest_item");
+
+    MemoryType<EntityVillagerV2> GOSSIP_TARGET = new MemoryType<>("minecraft:gossip_target");
 
     MemoryType<Integer> LAST_ATTACK_CAST = new MemoryType<>("minecraft:last_attack_cast", 0);
 
