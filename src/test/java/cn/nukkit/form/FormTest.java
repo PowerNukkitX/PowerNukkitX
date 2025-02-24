@@ -121,7 +121,7 @@ public class FormTest {
                         Assertions.assertEquals("test_FormWindowSimple", test.title());
                         Assertions.assertEquals("button1", buttons[0].text());
                         Assertions.assertEquals("button3", buttons[2].text());
-                        Assertions.assertEquals("textures/items/compass", buttons[0].image().path());
+                        Assertions.assertEquals("textures/items/compass", buttons[0].image().data());
                     }
                 }
         ));
