@@ -18,9 +18,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 import java.util.HashMap;
@@ -112,6 +110,7 @@ public interface CoreMemoryTypes {
 
     MemoryType<Object2ObjectArrayMap<String, IntArrayList>> GOSSIP = new MemoryType<>("minecraft:gossip");
 
+    MemoryType<Integer> LAST_REFILL_SHIFT = new MemoryType<>("minecraft:last_refill_shift", -1);
 
     /**
      * 实体的仇恨目标
@@ -222,11 +221,13 @@ public interface CoreMemoryTypes {
 
     MemoryType<Block> NEAREST_BLOCK_2 = new MemoryType<>("minecraft:nearest_block_2");
 
+    MemoryType<Block> SITE_BLOCK = new MemoryType<>("minecraft:site_block");
+
     MemoryType<BlockWoodenDoor> NEAREST_DOOR = new MemoryType<>("minecraft:nearest_door");
 
     MemoryType<EntityItem> NEAREST_ITEM = new MemoryType<>("minecraft:nearest_item");
 
-    MemoryType<EntityVillagerV2> NEAREST_HUNGRY_VILLAGER = new MemoryType<>("minecraft:nearest_hungry_villager");
+    MemoryType<EntityVillagerV2> GOSSIP_TARGET = new MemoryType<>("minecraft:gossip_target");
 
     MemoryType<Integer> LAST_ATTACK_CAST = new MemoryType<>("minecraft:last_attack_cast", 0);
 
