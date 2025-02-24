@@ -210,10 +210,13 @@ public class Palette<V> {
                                    NBTInputStream input) throws IOException {
         Pair<Integer, SemVersion> p = PaletteUtils.fastReadBlockHash(input, byteBuf);//depend on LinkCompoundTag
 
-        if (p == null)
-            return;
-
         final V unknownState = (V) BlockUnknown.PROPERTIES.getDefaultState();
+
+        if (p == null) {
+            this.palette.add(unknownState);
+            return;
+        }
+
         V resultingBlockState = unknownState;
         SemVersion semVersion = p.right();
 
