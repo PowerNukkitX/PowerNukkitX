@@ -54,7 +54,7 @@ import cn.nukkit.event.player.*;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketSendEvent;
-import cn.nukkit.form.window.FormWindow;
+import cn.nukkit.form.window.Form;
 import cn.nukkit.inventory.CraftTypeInventory;
 import cn.nukkit.inventory.CraftingGridInventory;
 import cn.nukkit.inventory.CreativeOutputInventory;
@@ -254,8 +254,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected PlayerFood foodData = null;
     protected boolean enableClientCommand = true;
     protected int formWindowCount = 0;
-    protected Map<Integer, FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
-    protected Map<Integer, FormWindow> serverSettings = new Int2ObjectOpenHashMap<>();
+    protected Map<Integer, Form<?>> formWindows = new Int2ObjectOpenHashMap<>();
+    protected Map<Integer, Form<?>> serverSettings = new Int2ObjectOpenHashMap<>();
     /**
      * 我们使用google的cache来存储NPC对话框发送信息
      * 原因是发送过去的对话框客户端有几率不响应，在特定情况下我们无法清除这些对话框，这会导致内存泄漏
@@ -4377,39 +4377,60 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Automatic id assignment
      *
-     * @see #showFormWindow(FormWindow, int)
+     * Sends a form to a player and assigns the next ID to it
+     * To open a form safely, please use {@link Form#send(Player)}
+     *
+     * @param form The form to open
+     * @return The id assigned to the form
      */
-    public int showFormWindow(FormWindow window) {
-        return showFormWindow(window, this.formWindowCount++);
+    public int sendForm(Form<?> form) {
+        return this.sendForm(form, this.formWindowCount++);
     }
 
     /**
-     * 向玩家显示一个新的FormWindow。
-     * 你可以通过监听PlayerFormRespondedEvent来了解FormWindow的结果。
-     * <p>
-     * Shows a new FormWindow to the player
-     * You can find out FormWindow result by listening to PlayerFormRespondedEvent
      *
-     * @param window to show
-     * @param id     form id
-     * @return form id to use in {@link PlayerFormRespondedEvent}
+     * Sends a form to a player and assigns a given ID to it
+     * To open a form safely, please use {@link Form#send(Player)}
+     *
+     * @param form The form to open
+     * @param id The ID to assign the form to
+     * @return The id assigned to the form
      */
-    public int showFormWindow(FormWindow window, int id) {
-        if (this.formWindows.size() > 100) {
-            this.kick("Possible DoS vulnerability: More Than 10 FormWindow sent to client already.");
+    public int sendForm(Form<?> form, int id) {
+        if (this.formWindows.size() > 10) {
+            this.kick("Possible DoS vulnerability: More than 10 forms sent to client already.");
             return id;
         }
+
         ModalFormRequestPacket packet = new ModalFormRequestPacket();
         packet.formId = id;
-        packet.data = window.getJSONData();
-        this.formWindows.put(packet.formId, window);
+        packet.data = form.toJson();
+
+        this.formWindows.put(packet.formId, form);
 
         this.dataPacket(packet);
         return id;
     }
 
+    public void updateForm(Form<?> form) {
+        if (!form.isViewer(this)) {
+            return;
+        }
+
+        this.formWindows.entrySet()
+                .stream()
+                .filter(f -> f.getValue().equals(form))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .ifPresent(id -> {
+                    ServerSettingsResponsePacket packet = new ServerSettingsResponsePacket(); // Exploiting some (probably unintended) protocol features here
+                    packet.formId = id;
+                    packet.data = form.toJson();
+
+                    this.dataPacket(packet);
+                });
+    }
 
     /**
      * book=true
@@ -4458,7 +4479,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param window to show on settings page
      * @return form id to use in {@link PlayerFormRespondedEvent}
      */
-    public int addServerSettings(FormWindow window) {
+    public int addServerSettings(Form<?> window) {
         int id = this.formWindowCount++;
 
         this.serverSettings.put(id, window);

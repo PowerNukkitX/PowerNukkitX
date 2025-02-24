@@ -20,7 +20,7 @@ public class ServerSettingsRequestProcessor extends DataPacketProcessor<ServerSe
             settingsRequestEvent.getSettings().forEach((id, window) -> {
                 ServerSettingsResponsePacket re = new ServerSettingsResponsePacket();
                 re.formId = id;
-                re.data = window.getJSONData();
+                re.data = window.toJson();
                 playerHandle.player.dataPacket(re);
             });
         }
