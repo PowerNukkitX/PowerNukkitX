@@ -1208,12 +1208,10 @@ public class Server {
             throw new ServerException("CommandSender is not valid");
         }
 
-        if (commandLine.isEmpty() || commandLine.length() == 0) {
+        var cmd = commandLine.stripLeading();
+        if (cmd.isEmpty()) {
             return 0;
         }
-
-        //pre
-        var cmd = commandLine.stripLeading();
         cmd = cmd.charAt(0) == '/' ? cmd.substring(1) : cmd;
 
         return this.commandMap.executeCommand(sender, cmd);
