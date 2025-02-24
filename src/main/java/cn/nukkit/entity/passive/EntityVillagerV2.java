@@ -63,6 +63,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.network.protocol.UpdateTradePacket;
 import cn.nukkit.registry.BiomeRegistry;
@@ -178,14 +179,19 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                         new Behavior(new PlaySoundExecutor(Sound.MOB_VILLAGER_IDLE, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1), new RandomSoundEvaluator(), 1, 1)
                         ),
                 Set.of(
-                        new Behavior(entity -> {setMoveTarget(null); setLookTarget(getTradeInventory().getViewers().stream().findFirst().get()); return true;}, entity -> getTradeInventory() != null && !getTradeInventory().getViewers().isEmpty(), 8, 1),
-                        new Behavior(new VillagerBreedingExecutor(EntityVillagerV2.class, 16, 100, 0.5f), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ENTITY_SPOUSE), 7, 1),
+                        new Behavior(entity -> {setMoveTarget(null); setLookTarget(getTradeInventory().getViewers().stream().findFirst().get()); return true;}, entity -> getTradeInventory() != null && !getTradeInventory().getViewers().isEmpty(), 9, 1),
+                        new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_ZOMBIE, 0.5f, true, 8), all(
+                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_ZOMBIE),
+                                new DistanceEvaluator(CoreMemoryTypes.NEAREST_ZOMBIE, 8),
+                                entity -> getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_ZOMBIE) && getMemoryStorage().get(CoreMemoryTypes.NEAREST_ZOMBIE) instanceof EntityIntelligent i && i.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && i.getMemoryStorage().get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) == this,
+                                entity -> getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_ZOMBIE) && getLevel().raycastBlocks(this, getMemoryStorage().get(CoreMemoryTypes.NEAREST_ZOMBIE)).isEmpty()
+                        ), 8, 1),
                         new Behavior(new SleepExecutor(), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED),
                                 new DistanceEvaluator(CoreMemoryTypes.OCCUPIED_BED, 2),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 100),
                                 entity -> getLevel().getDayTime() >= 12000 && entity.getLevel().getDayTime() < Level.TIME_FULL
-                        ), 8, 1),
+                        ), 7, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.OCCUPIED_BED, 0.3f, true), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED),
                                 any(
@@ -195,25 +201,23 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                                 not(new DistanceEvaluator(CoreMemoryTypes.OCCUPIED_BED, 5))
                                         )
                                 )
-                        ), 7, 1),
+                        ), 6, 1),
                         new Behavior(new NearbyFlatRandomRoamExecutor(CoreMemoryTypes.OCCUPIED_BED ,0.2f, 5, 100, false, -1, true, 10), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED),
                                 entity -> getLevel().getDayTime() >= 11000 && entity.getLevel().getDayTime() < 12000
-                        ), 6, 1),
+                        ), 5, 1),
                         new Behavior(new WorkExecutor(), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.SITE_BLOCK),
                                 any(
                                         entity -> getLevel().getDayTime() >= 0 && entity.getLevel().getDayTime() < 8000,
                                         entity -> getLevel().getDayTime() >= 10000 && entity.getLevel().getDayTime() < 11000
                                 )
-                        ), 6, 1, 1),
-                        new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_ZOMBIE, 0.5f, true, 8), all(
-                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_ZOMBIE)
-                        ), 5, 1),
+                        ), 4, 1, 1),
                         new Behavior(new GossipExecutor(CoreMemoryTypes.GOSSIP_TARGET), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.GOSSIP_TARGET),
                                 entity -> !isBaby()
-                        ), 4, 1),
+                        ), 3, 1),
+                        new Behavior(new VillagerBreedingExecutor(EntityVillagerV2.class, 16, 100, 0.5f), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ENTITY_SPOUSE), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
                 Set.of(
@@ -510,6 +514,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             if(source instanceof EntityDamageByEntityEvent event) {
                 if(event.getDamager() instanceof Player player) {
                     addGossip(player.getLoginChainData().getXUID(), Gossip.MINOR_NEGATIVE, 25);
+                    EntityEventPacket pk = new EntityEventPacket();
+                    pk.eid = getId();
+                    pk.event = EntityEventPacket.VILLAGER_ANGRY;
+                    Server.broadcastPacket(getViewers().values(), pk);
                 }
             }
             return true;
@@ -873,6 +881,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         if(this.profession == 0) {
             this.setCanTrade(false);
         } else {
+            this.getTradeNetIds().forEach(TradeRecipeBuildUtils.RECIPE_MAP::remove);
             Profession profession = Profession.getProfession(this.profession);
             setDisplayName(profession.getName());
             for(CompoundTag trade : profession.buildTrades(getTradeSeed()).getAll()) {
