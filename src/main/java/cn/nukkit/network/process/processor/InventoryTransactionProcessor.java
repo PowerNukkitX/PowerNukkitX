@@ -266,7 +266,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 boolean spamBug = (playerHandle.getLastRightClickPos() != null && System.currentTimeMillis() - playerHandle.getLastRightClickTime() < 100.0 && blockVector.distanceSquared(playerHandle.getLastRightClickPos()) < 0.00001);
                 playerHandle.setLastRightClickPos(blockVector.asVector3());
                 playerHandle.setLastRightClickTime(System.currentTimeMillis());
-                if (spamBug && player.getInventory().getItemInHand().getBlock().isAir()) {//Normal blocks are not detected, as they can be placed continuously
+                if (spamBug || player.getInventory().getItemInHand().getBlock().isAir()) {//Normal blocks are not detected, as they can be placed continuously
                     return;
                 }
                 if(!useItemData.itemInHand.canBeActivated()) player.setDataFlag(EntityFlag.USING_ITEM, false);
