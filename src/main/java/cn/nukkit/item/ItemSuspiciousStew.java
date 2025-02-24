@@ -46,7 +46,7 @@ public class ItemSuspiciousStew extends ItemFood {
             case 2 -> Effect.get(EffectType.WEAKNESS).setDuration(7 * 20);
             case 3 -> Effect.get(EffectType.BLINDNESS).setDuration(6 * 20);
             case 4 -> Effect.get(EffectType.POISON).setDuration(10 * 20);
-            case 5 -> Effect.get(EffectType.SATURATION).setDuration(6);
+            case 5 -> Effect.get(EffectType.SATURATION).setDuration(6 * 20);
             case 6 -> Effect.get(EffectType.FIRE_RESISTANCE).setDuration(2 * 20);
             case 7 -> Effect.get(EffectType.REGENERATION).setDuration(6 * 20);
             case 8 -> Effect.get(EffectType.WITHER).setDuration(6 * 20);

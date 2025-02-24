@@ -20,6 +20,10 @@ public final class EntityAI {
         else debugOptions.remove(option);
     }
 
+    public static boolean hasDebugOptions() {
+        return !debugOptions.isEmpty();
+    }
+
     public static boolean checkDebugOption(DebugOption option) {
         return debugOptions.contains(option);
     }

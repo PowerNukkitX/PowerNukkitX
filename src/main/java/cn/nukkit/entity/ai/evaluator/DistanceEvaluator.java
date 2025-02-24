@@ -12,7 +12,7 @@ public class DistanceEvaluator implements IBehaviorEvaluator {
 
 
     public DistanceEvaluator(MemoryType<? extends Vector3> type, double maxDistance) {
-        this(type, maxDistance, 0);
+        this(type, maxDistance, -1);
     }
 
     public DistanceEvaluator(MemoryType<? extends Vector3> type, double maxDistance, double minDistance) {
@@ -27,6 +27,7 @@ public class DistanceEvaluator implements IBehaviorEvaluator {
             return false;
         } else {
             Vector3 location = entity.getMemoryStorage().get(type);
+            if(location == null) return false;
             double distance = entity.distance(location);
             return distance <= maxDistance && distance >= minDistance;
         }

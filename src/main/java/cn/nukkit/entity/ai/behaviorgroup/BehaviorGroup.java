@@ -2,12 +2,14 @@ package cn.nukkit.entity.ai.behaviorgroup;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behavior.BehaviorState;
 import cn.nukkit.entity.ai.behavior.IBehavior;
 import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.entity.ai.memory.MemoryStorage;
+import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.entity.ai.route.RouteFindingManager;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.finder.IRouteFinder;
@@ -150,7 +152,12 @@ public class BehaviorGroup implements IBehaviorGroup {
         while (iterator.hasNext()) {
             IBehavior coreBehavior = iterator.next();
             if(coreBehavior instanceof Behavior behavior) {
-                if(behavior.isReevaluate() && !behavior.evaluate(entity)) continue;
+                if(behavior.isReevaluate() && !behavior.evaluate(entity)) {
+                    coreBehavior.onInterrupt(entity);
+                    coreBehavior.setBehaviorState(BehaviorState.STOP);
+                    iterator.remove();
+                    continue;
+                }
             }
             if (!coreBehavior.execute(entity)) {
                 coreBehavior.onStop(entity);
@@ -364,15 +371,46 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     @Override
     public void debugTick(EntityIntelligent entity) {
-        var sortedBehaviors = new ArrayList<>(behaviors);
-        sortedBehaviors.sort(Comparator.comparing(IBehavior::getPriority, Integer::compareTo));
-        Collections.reverse(sortedBehaviors);
 
         var strBuilder = new StringBuilder();
-        for (var behavior : sortedBehaviors) {
-            strBuilder.append(behavior.getBehaviorState() == BehaviorState.ACTIVE ? "§b" : "§7");
-            strBuilder.append(behavior);
-            strBuilder.append("\n");
+
+        if(EntityAI.checkDebugOption(EntityAI.DebugOption.MEMORY)) {
+            var sortedMemory = new ArrayList<>(getMemoryStorage().getAll().entrySet());
+            sortedMemory.sort(Comparator.comparing(s -> s.getKey().getIdentifier().getPath(), String::compareTo));
+            Collections.reverse(sortedMemory);
+
+            for (var memory : sortedMemory) {
+                strBuilder.append("§e" + memory.getKey().getIdentifier().getPath());
+                strBuilder.append("=");
+                strBuilder.append("§7" + memory.getValue().toString());
+                strBuilder.append("\n");
+            }
+            strBuilder.append("\n\n");
+        }
+
+        if(EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) {
+            if(!coreBehaviors.isEmpty()) {
+                var sortedCoreBehaviors = new ArrayList<>(coreBehaviors);
+                sortedCoreBehaviors.sort(Comparator.comparing(IBehavior::getPriority, Integer::compareTo));
+                Collections.reverse(sortedCoreBehaviors);
+
+                for (var behavior : sortedCoreBehaviors) {
+                    strBuilder.append(behavior.getBehaviorState() == BehaviorState.ACTIVE ? "§b" : "§7");
+                    strBuilder.append(behavior);
+                    strBuilder.append("\n");
+                }
+                strBuilder.append("\n\n");
+            }
+
+            var sortedBehaviors = new ArrayList<>(behaviors);
+            sortedBehaviors.sort(Comparator.comparing(IBehavior::getPriority, Integer::compareTo));
+            Collections.reverse(sortedBehaviors);
+
+            for (var behavior : sortedBehaviors) {
+                strBuilder.append(behavior.getBehaviorState() == BehaviorState.ACTIVE ? "§b" : "§7");
+                strBuilder.append(behavior);
+                strBuilder.append("\n");
+            }
         }
 
         entity.setNameTag(strBuilder.toString());
