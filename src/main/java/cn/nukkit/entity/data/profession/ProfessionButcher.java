@@ -2,6 +2,7 @@ package cn.nukkit.entity.data.profession;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -13,7 +14,7 @@ import static cn.nukkit.item.ItemID.SWEET_BERRIES;
 public class ProfessionButcher extends Profession {
 
     public ProfessionButcher() {
-        super(11, BlockID.SMOKER, "entity.villager.butcher");
+        super(11, BlockID.SMOKER, "entity.villager.butcher", Sound.BLOCK_SMOKER_SMOKE);
     }
 
     @Override

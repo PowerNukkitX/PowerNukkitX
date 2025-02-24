@@ -4,6 +4,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -13,7 +14,7 @@ import java.util.Random;
 public class ProfessionFisherman extends Profession {
 
     public ProfessionFisherman() {
-        super(2, BlockID.BARREL, "entity.villager.fisherman");
+        super(2, BlockID.BARREL, "entity.villager.fisherman", Sound.BLOCK_BARREL_OPEN);
     }
 
     @Override

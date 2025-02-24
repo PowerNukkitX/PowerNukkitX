@@ -3,6 +3,7 @@ package cn.nukkit.entity.data.profession;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -12,7 +13,7 @@ import java.util.Random;
 public class ProfessionTool extends Profession {
 
     public ProfessionTool() {
-        super(10, BlockID.SMITHING_TABLE, "entity.villager.tool");
+        super(10, BlockID.SMITHING_TABLE, "entity.villager.tool", Sound.SMITHING_TABLE_USE);
     }
 
     @Override

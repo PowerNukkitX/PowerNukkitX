@@ -6,6 +6,7 @@ import cn.nukkit.item.ItemLeatherBoots;
 import cn.nukkit.item.ItemLeatherChestplate;
 import cn.nukkit.item.ItemLeatherHelmet;
 import cn.nukkit.item.ItemLeatherLeggings;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
@@ -16,7 +17,7 @@ import java.util.Random;
 public class ProfessionLeather extends Profession {
 
     public ProfessionLeather() {
-        super(12, BlockID.CAULDRON, "entity.villager.leather");
+        super(12, BlockID.CAULDRON, "entity.villager.leather", Sound.BUCKET_FILL_WATER);
     }
 
     @Override

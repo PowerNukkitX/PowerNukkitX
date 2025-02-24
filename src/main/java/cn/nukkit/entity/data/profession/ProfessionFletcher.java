@@ -3,6 +3,7 @@ package cn.nukkit.entity.data.profession;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -13,7 +14,7 @@ import java.util.Random;
 public class ProfessionFletcher extends Profession {
 
     public ProfessionFletcher() {
-        super(4, BlockID.FLETCHING_TABLE, "entity.villager.fletcher");
+        super(4, BlockID.FLETCHING_TABLE, "entity.villager.fletcher", Sound.DIG_WOOD);
     }
 
     @Override

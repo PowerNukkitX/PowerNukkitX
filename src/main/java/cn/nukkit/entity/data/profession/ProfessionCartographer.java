@@ -2,6 +2,7 @@ package cn.nukkit.entity.data.profession;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -11,7 +12,7 @@ import java.util.Random;
 public class ProfessionCartographer extends Profession {
 
     public ProfessionCartographer() {
-        super(6, BlockID.CARTOGRAPHY_TABLE, "entity.villager.cartographer");
+        super(6, BlockID.CARTOGRAPHY_TABLE, "entity.villager.cartographer", Sound.BLOCK_CARTOGRAPHY_TABLE_USE);
     }
 
     @Override
