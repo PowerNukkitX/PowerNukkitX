@@ -1,6 +1,6 @@
 package cn.nukkit.item;
 
-public class ItemChainmailLeggings extends Item {
+public class ItemChainmailLeggings extends ItemArmor {
     public ItemChainmailLeggings() {
         super(CHAINMAIL_LEGGINGS);
     }
