@@ -1603,7 +1603,7 @@ public class HandleByteBuf extends ByteBuf {
 
     protected ItemStackRequestAction readRequestActionData(ItemStackRequestActionType type) {
         return switch (type) {
-            case CRAFT_REPAIR_AND_DISENCHANT -> new CraftGrindstoneAction(readUnsignedVarInt(), readByte(), readInt());
+            case CRAFT_REPAIR_AND_DISENCHANT -> new CraftGrindstoneAction(readUnsignedVarInt(), readByte(), readVarInt());
             case CRAFT_LOOM -> new CraftLoomAction(readString());
             case CRAFT_RECIPE_AUTO -> {
                 int recipeId = readUnsignedVarInt();
