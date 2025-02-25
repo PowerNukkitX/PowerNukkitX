@@ -121,7 +121,8 @@ public class ModalForm extends Form<ModalResponse> {
     public ModalResponse respond(Player player, String formData) {
         boolean yes;
         if (!super.handle(player, formData)) {
-            yes = false;
+            this.supplyClosed(player);
+            return null;
         } else yes = formData.trim().equals("true");
 
         if (yes) this.supplyYes(player);
