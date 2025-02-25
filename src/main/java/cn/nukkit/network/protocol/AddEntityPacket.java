@@ -57,7 +57,7 @@ public class AddEntityPacket extends DataPacket {
         byteBuf.writeAttributeList(this.attributes);
         byteBuf.writeBytes(Binary.writeEntityData(this.entityData));
         byteBuf.writePropertySyncData(syncedProperties);
-        byteBuf.writeEntityLinks(links);
+        byteBuf.writeArray(links, byteBuf::writeEntityLink);
     }
 
     @Override
