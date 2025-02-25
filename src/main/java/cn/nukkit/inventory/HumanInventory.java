@@ -8,6 +8,7 @@ import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.player.PlayerItemHeldEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
+import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.network.protocol.ContainerClosePacket;
@@ -98,6 +99,9 @@ public class HumanInventory extends BaseInventory {
             if (ev.isCancelled()) {
                 this.sendContents(this.getViewers());
                 return false;
+            }
+            if(this.getItem(slot) instanceof ItemFilledMap map) {
+                map.sendImage(player, 1);
             }
 
             if (player.fishing != null) {
