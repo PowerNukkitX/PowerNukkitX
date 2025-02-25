@@ -41,7 +41,7 @@ public class ModalForm extends Form<ModalResponse> {
         return (ModalForm) super.title(title);
     }
 
-    public ModalForm setText(String yes, String no) {
+    public ModalForm text(String yes, String no) {
         this.yesText = yes;
         this.noText = no;
         return this;
