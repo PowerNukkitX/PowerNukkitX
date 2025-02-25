@@ -227,6 +227,11 @@ public interface Inventory {
 
     void onOpen(Player who);
 
+    @ApiStatus.Internal
+    /**
+     * @apiNote Used for internal calls. This won't open the window for the player.
+     * @see player.addWindow
+     */
     boolean open(Player who);
 
     void onClose(Player who);
