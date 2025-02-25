@@ -30,7 +30,7 @@ public class PlayerEnchantOptionsPacket extends DataPacket {
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarInt(this.options.size());
         for (EnchantOptionData option : this.options) {
-            byteBuf.writeVarInt(option.minLevel());
+            byteBuf.writeUnsignedVarInt(option.minLevel());
             byteBuf.writeInt(0);
             byteBuf.writeUnsignedVarInt(option.enchantments.size());
             for (Enchantment data : option.enchantments) {
@@ -47,7 +47,7 @@ public class PlayerEnchantOptionsPacket extends DataPacket {
     }
 
     public record EnchantOptionData(
-            int minLevel, String enchantName, List<Enchantment> enchantments
+            int minLevel, String enchantName, List<Enchantment> enchantments, int entry
     ) {
 
     }

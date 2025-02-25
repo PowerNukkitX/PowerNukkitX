@@ -5,6 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.PlayerEnchantOptionsPacket;
+import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.ArrayList;
@@ -30,9 +31,9 @@ public final class EnchantmentHelper {
         int baseRequiredLevel = random.nextRange(1, 8) + (bookshelfCount >> 1) + random.nextRange(0, bookshelfCount);
 
         return List.of(
-                createEnchantOption(random, input, (int) Math.floor(Math.max((baseRequiredLevel / 3D) / 2, 1))),
-                createEnchantOption(random, input, Math.max(1, (int) Math.floor(baseRequiredLevel * 2D / 3 + 1) / 2)),
-                createEnchantOption(random, input, Math.max(1, Math.max(baseRequiredLevel, bookshelfCount * 2) / 2))
+                createEnchantOption(random, input, (int) Math.floor(Math.max((baseRequiredLevel / 3d), 1)), 0),
+                createEnchantOption(random, input, Math.max(1, (int) Math.floor((baseRequiredLevel * 2D) / 3d + 1)), 1),
+                createEnchantOption(random, input, Math.max(1, Math.max(baseRequiredLevel, bookshelfCount * 2)), 2)
         );
     }
 
@@ -73,11 +74,10 @@ public final class EnchantmentHelper {
         return bookshelfCount;
     }
 
-    private static PlayerEnchantOptionsPacket.EnchantOptionData createEnchantOption(NukkitRandom random, Item inputItem, int requiredXpLevel) {
+    private static PlayerEnchantOptionsPacket.EnchantOptionData createEnchantOption(NukkitRandom random, Item inputItem, int requiredXpLevel, int entry) {
         int enchantingPower = requiredXpLevel;
-
         int enchantability = inputItem.getEnchantAbility();
-        enchantingPower = enchantingPower + random.nextInt(enchantability / 4) + random.nextInt(enchantability / 2) + 1;
+        enchantingPower += random.nextInt(enchantability >> 2) + random.nextInt(enchantability >> 2) + 1;
 
         // Random bonus for enchanting power between 0.85 and 1.15
         double bonus = 1 + (random.nextFloat() + random.nextFloat() - 1) * 0.15;
@@ -109,7 +109,12 @@ public final class EnchantmentHelper {
                 enchantingPower /= 2;
             }
         }
-        return new PlayerEnchantOptionsPacket.EnchantOptionData(requiredXpLevel, getRandomOptionName(random), resultEnchantments);
+        if(inputItem.getId().equals(Item.BOOK)) {
+            if(resultEnchantments.size() > 1) {
+                resultEnchantments.remove(random.nextInt(resultEnchantments.size()-1));
+            }
+        }
+        return new PlayerEnchantOptionsPacket.EnchantOptionData(requiredXpLevel, getRandomOptionName(random), resultEnchantments, entry);
     }
 
     private static List<Enchantment> getAvailableEnchantments(int enchantingPower, Item item) {
@@ -121,7 +126,7 @@ public final class EnchantmentHelper {
 
             for (int lvl = enchantment.getMaxLevel(); lvl > 0; lvl--) {
                 if (enchantingPower >= enchantment.getMinEnchantAbility(lvl) && enchantingPower <= enchantment.getMaxEnchantAbility(lvl)) {
-                    list.add(enchantment.setLevel(lvl));
+                    list.add(enchantment.clone().setLevel(lvl));
                     break;
                 }
             }
@@ -140,7 +145,7 @@ public final class EnchantmentHelper {
         }
 
         Enchantment result = null;
-        int randomWeight = random.nextRange(1, totalWeight);
+        int randomWeight = random.nextInt(totalWeight);
 
         for (Enchantment enchantment : enchantments) {
             randomWeight -= enchantment.getRarity().getWeight();
