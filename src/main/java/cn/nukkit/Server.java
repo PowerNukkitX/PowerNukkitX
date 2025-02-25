@@ -1207,8 +1207,11 @@ public class Server {
         if (sender == null) {
             throw new ServerException("CommandSender is not valid");
         }
-        //pre
+
         var cmd = commandLine.stripLeading();
+        if (cmd.isEmpty()) {
+            return 0;
+        }
         cmd = cmd.charAt(0) == '/' ? cmd.substring(1) : cmd;
 
         return this.commandMap.executeCommand(sender, cmd);
