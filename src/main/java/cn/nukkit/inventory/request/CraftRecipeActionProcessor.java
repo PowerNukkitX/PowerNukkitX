@@ -89,7 +89,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             Server.getInstance().getPluginManager().callEvent(event);
             if(!event.isCancelled()) {
                 if ((player.getGamemode() & 0x01) == 0) {
-                    player.setExperience(player.getExperience(), player.getExperienceLevel() - enchantOptionData.minLevel());
+                    player.setExperience(player.getExperience(), player.getExperienceLevel() - (enchantOptionData.entry()+1));
                 }
                 player.getCreativeOutputInventory().setItem(item);
                 PlayerEnchantOptionsPacket.RECIPE_MAP.remove(action.getRecipeNetworkId());
