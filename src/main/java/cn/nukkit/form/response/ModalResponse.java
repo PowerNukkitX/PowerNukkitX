@@ -22,4 +22,5 @@ public class ModalResponse implements Response {
      * 1 if rejected
      */
     protected int buttonId = -1;
+    protected boolean yes = false;
 }

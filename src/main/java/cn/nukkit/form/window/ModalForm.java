@@ -128,7 +128,7 @@ public class ModalForm extends Form<ModalResponse> {
         if (yes) this.supplyYes(player);
         else this.supplyNo(player);
 
-        ModalResponse response = new ModalResponse(yes ? 0 : 1);
+        ModalResponse response = new ModalResponse(yes ? 0 : 1, yes);
         this.supplySubmitted(player, response);
         return response;
     }
