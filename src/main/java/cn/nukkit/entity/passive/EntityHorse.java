@@ -464,7 +464,6 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     @Override
     public void spawnTo(Player player) {
         super.spawnTo(player);
-        //确保第一次生成时血量更新，单纯在AddEntityPacket中发送属性似乎还不够，还需要UpdateAttributesPacket
         Attribute attr = this.attributeMap.get("minecraft:health")
                 .setDefaultValue(this.getMaxHealth())
                 .setMaxValue(this.getMaxHealth())
