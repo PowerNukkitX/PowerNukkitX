@@ -164,4 +164,9 @@ public class SimpleForm extends Form<SimpleResponse> {
         this.supplySubmitted(player, response);
         return response;
     }
+
+    @Override
+    public <M> SimpleForm putMeta(String key, M object) {
+        return (SimpleForm) super.putMeta(key, object);
+    }
 }

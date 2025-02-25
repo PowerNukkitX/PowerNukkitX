@@ -131,4 +131,9 @@ public class CustomForm extends Form<CustomResponse> {
         this.supplySubmitted(player, response);
         return response;
     }
+
+    @Override
+    public <M> CustomForm putMeta(String key, M object) {
+        return (CustomForm) super.putMeta(key, object);
+    }
 }

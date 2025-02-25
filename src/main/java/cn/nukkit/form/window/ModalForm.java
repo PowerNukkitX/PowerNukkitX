@@ -132,4 +132,9 @@ public class ModalForm extends Form<ModalResponse> {
         this.supplySubmitted(player, response);
         return response;
     }
+
+    @Override
+    public <M> ModalForm putMeta(String key, M object) {
+        return (ModalForm) super.putMeta(key, object);
+    }
 }

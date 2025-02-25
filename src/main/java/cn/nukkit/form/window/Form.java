@@ -173,8 +173,9 @@ public abstract class Form<T extends Response> {
      * @param object The value
      * @param <M> Any
      */
-    public <M> void putMeta(String key, M object) {
+    public <M> Form<?> putMeta(String key, M object) {
         this.meta.put(key, object);
+        return this;
     }
 
     public abstract String windowType();
