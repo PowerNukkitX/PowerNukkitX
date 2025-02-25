@@ -419,9 +419,9 @@ public class Server {
             Registries.ENTITY.init();
             Registries.BLOCKENTITY.init();
             Registries.BLOCKSTATE_ITEMMETA.init();
-            Registries.BLOCKSTATE.init();
             Registries.ITEM_RUNTIMEID.init();
             Registries.BLOCK.init();
+            Registries.BLOCKSTATE.init();
             Registries.ITEM.init();
             Registries.CREATIVE.init();
             Registries.BIOME.init();

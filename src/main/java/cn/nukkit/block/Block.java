@@ -28,17 +28,12 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.BlockColor;
-import com.google.gson.JsonParser;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -50,7 +45,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public static final Block[] EMPTY_ARRAY = new Block[0];
     public static final double DEFAULT_FRICTION_FACTOR = 0.6;
     public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
-    protected static final Long2ObjectOpenHashMap<BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
+    public static final Long2ObjectOpenHashMap<BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
     protected BlockState blockstate;
     protected BlockColor color;
     public int layer;
@@ -174,21 +169,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         Block block = get(id);
         block.setPropertyValues(blockState.getBlockPropertyValues());
         return block;
-    }
-
-    static {
-        try (var reader = new InputStreamReader(new BufferedInputStream(Objects.requireNonNull(Block.class.getClassLoader().getResourceAsStream("block_color.json"))))) {
-            var parser = JsonParser.parseReader(reader);
-            for (var entry : parser.getAsJsonObject().entrySet()) {
-                var r = entry.getValue().getAsJsonObject().get("r").getAsInt();
-                var g = entry.getValue().getAsJsonObject().get("g").getAsInt();
-                var b = entry.getValue().getAsJsonObject().get("b").getAsInt();
-                var a = entry.getValue().getAsJsonObject().get("a").getAsInt();
-                VANILLA_BLOCK_COLOR_MAP.put(Long.parseLong(entry.getKey()), new BlockColor(r, g, b, a));
-            }
-        } catch (IOException e) {
-            log.error("Failed to load block color map", e);
-        }
     }
 
     public Block(@Nullable BlockState blockState) {
