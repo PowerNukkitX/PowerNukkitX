@@ -19,8 +19,8 @@ public class ChangeDimensionPacket extends DataPacket {
     public float x;
     public float y;
     public float z;
-    public boolean respawn;
-    private Integer loadingScreenId = null;
+    public boolean respawn = false;
+    public Integer loadingScreenId = null;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
