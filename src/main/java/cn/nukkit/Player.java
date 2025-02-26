@@ -4932,7 +4932,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (near) {
             Inventory inventory = this.inventory;
             if (entity instanceof EntityArrow entityArrow && entityArrow.hadCollision) {
-                ItemArrow item = new ItemArrow();
+                ItemArrow item = entityArrow.getArrowItem() != null ? entityArrow.getArrowItem() : new ItemArrow();
                 if (!this.isCreative()) {
                     // Should only collect to the offhand slot if the item matches what is already there
                     if (Objects.equals(this.offhandInventory.getItem(0).getId(), item.getId()) && this.offhandInventory.canAddItem(item)) {
