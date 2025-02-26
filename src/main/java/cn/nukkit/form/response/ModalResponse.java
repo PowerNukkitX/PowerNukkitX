@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class ModalResponse implements Response {
+public class ModalResponse extends Response {
     /**
      * The ordinal of the selected option:
      * -1 if invalid

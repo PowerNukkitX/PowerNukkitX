@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(chain = true)
 @AllArgsConstructor
-public class CustomResponse implements Response {
+public class CustomResponse extends Response {
     protected final Int2ObjectOpenHashMap<Object> responses = new Int2ObjectOpenHashMap<>();
 
     /**

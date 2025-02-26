@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class SimpleResponse implements Response {
+public class SimpleResponse extends Response {
     /**
      * The ordinal of the selected button
      * -1 if invalid
