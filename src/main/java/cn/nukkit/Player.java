@@ -4399,7 +4399,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public int sendForm(Form<?> form, int id) {
         if (this.formWindows.size() > 10) {
-            this.kick("Possible DoS vulnerability: More than 10 forms sent to client already.");
+            this.kick("Server sent to many forms. Please ");
             return id;
         }
 
@@ -4661,14 +4661,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
         return cnt;
-    }
-
-    public void showFormWindow(Form form) {
-        form.send(this);
-    }
-
-    public void showFormWindow(Form form, int id) {
-        form.send(this, id);
     }
 
     public Optional<Inventory> getTopWindow() {
