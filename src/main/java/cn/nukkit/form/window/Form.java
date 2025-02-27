@@ -36,6 +36,9 @@ public abstract class Form<T extends Response> {
     @Setter(AccessLevel.NONE)
     protected BiConsumer<Player, T> submitted = (player, response) -> {};
 
+    @Getter
+    protected T response;
+
     public Form(String title) {
         this.title = title;
     }
@@ -58,6 +61,7 @@ public abstract class Form<T extends Response> {
      */
     public void supplySubmitted(Player player, T data) {
         this.viewers.remove(player);
+        this.response = data;
         if (this.submitted != null)
             this.submitted.accept(player, data);
     }
