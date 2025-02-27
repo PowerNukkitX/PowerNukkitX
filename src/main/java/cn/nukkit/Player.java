@@ -4403,6 +4403,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return id;
         }
 
+        if(!form.isViewer(this)) {
+            form.viewers().add(this);
+        }
+
         ModalFormRequestPacket packet = new ModalFormRequestPacket();
         packet.formId = id;
         packet.data = form.toJson();
