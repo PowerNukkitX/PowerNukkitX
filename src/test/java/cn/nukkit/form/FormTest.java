@@ -133,8 +133,7 @@ public class FormTest {
     @Test
     void test_FormWindowModal(TestPlayer player, TestPluginManager testPluginManager) {
         testPluginManager.resetAll();
-        ModalForm test = new ModalForm("test_FormWindowModal");
-
+        ModalForm test = new ModalForm("test_FormWindowModal").content("1028346237");
         test.send(player, 1);
 
         DataPacketManager dataPacketManager = player.getSession().getDataPacketManager();
