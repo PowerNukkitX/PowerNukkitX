@@ -281,6 +281,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private int exp = 0;
     private int expLevel = 0;
     private int enchSeed;
+    private int loadingScreenId = 0;
     private final int loaderId;
     private BlockVector3 lastBreakPosition = new BlockVector3();
     private boolean hasSeenCredits;
@@ -587,6 +588,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.x = (float) this.x;
         pk.y = (float) this.y;
         pk.z = (float) this.z;
+        pk.respawn = false;
+        pk.loadingScreenId = this.loadingScreenId++;
+
         this.dataPacket(pk);
 
         this.needDimensionChangeACK = true;
@@ -4841,9 +4845,25 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             gameRulesChanged.gameRules = level.getGameRules();
             this.dataPacket(gameRulesChanged);
 
-            if (oldLevel.getDimension() != level.getDimension()) {
-                this.setDimension(level.getDimension());
+            if (level.getDimension() == this.level.getDimension()) {
+                ChangeDimensionPacket packet = new ChangeDimensionPacket();
+                packet.x = 0.0f;
+                packet.y = 0.0f;
+                packet.z = 0.0f;
+                packet.respawn = false;
+                packet.loadingScreenId = this.loadingScreenId++;
+
+                if (this.level.getDimension() == Level.DIMENSION_NETHER) {
+                    packet.dimension = Level.DIMENSION_OVERWORLD;
+                } else {
+                    packet.dimension = Level.DIMENSION_NETHER;
+                }
+
+                this.dataPacket(packet);
             }
+
+            this.setDimension(level.getDimension());
+
             updateTrackingPositions(true);
             return true;
         }
