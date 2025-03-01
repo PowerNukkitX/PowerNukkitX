@@ -3512,6 +3512,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 int chunkX = Level.getHashX(l);
                 int chunkZ = Level.getHashZ(l);
                 if (level.unregisterChunkLoader(this, chunkX, chunkZ, false)) {
+                    LevelChunkPacket pk = new LevelChunkPacket();
+                    pk.chunkX = chunkX;
+                    pk.chunkZ = chunkZ;
+                    pk.dimension = this.level.getDimension();
+                    pk.subChunkCount = 0;
+                    pk.data = new byte[0];
+                    this.sendChunk(chunkX, chunkZ, pk);
                     for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
                         if (entity != this) {
                             entity.despawnFrom(this);
