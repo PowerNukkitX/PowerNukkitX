@@ -190,7 +190,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
 
     @Override
     public Vector3 getListenerVector() {
-        return this.clone();
+        return this.getVector3();
     }
 
     @Override
