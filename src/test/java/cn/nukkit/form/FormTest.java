@@ -24,6 +24,7 @@ import cn.nukkit.form.window.ModalForm;
 import cn.nukkit.form.window.SimpleForm;
 import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.protocol.ModalFormResponsePacket;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -69,12 +70,20 @@ public class FormTest {
                         Assertions.assertEquals("2", dropdownResponse.elementText());
                         String inputResponse = response.getInputResponse(1);
                         Assertions.assertEquals("input", inputResponse);
+                        String labelResponse = response.getLabelResponse(2);
+                        Assertions.assertEquals("", labelResponse);
                         float sliderResponse = response.getSliderResponse(3);
                         Assertions.assertEquals(6, sliderResponse);
                         ElementResponse stepSliderResponse = response.getStepSliderResponse(4);
                         Assertions.assertEquals("step1", stepSliderResponse.elementText());
                         boolean toggleResponse = response.getToggleResponse(5);
                         Assertions.assertFalse(toggleResponse);
+
+                        ElementResponse genericDropdownResponse = response.getResponse(0);
+                        Assertions.assertEquals(dropdownResponse.elementId(), genericDropdownResponse.elementId());
+
+                        Int2ObjectOpenHashMap<Object> responses = response.getResponses();
+                        Assertions.assertEquals(6, responses.size());
 
                         Assertions.assertEquals("test", test.title());
                         Assertions.assertEquals(test1, test.elements().toArray(Element[]::new)[0]);
@@ -95,8 +104,8 @@ public class FormTest {
         );
 
         test.addButton(new ElementButton("button1", ButtonImage.Type.PATH.of("textures/items/compass")))
-                .addButton(new ElementButton("button2", ButtonImage.Type.URL.of("https://static.wikia.nocookie.net/minecraft_gamepedia/images/9/94/Oak_Button_%28S%29_JE4.png")))
-                .addButton(new ElementButton("button3"));
+                .addButton("button2", ButtonImage.Type.URL.of("https://static.wikia.nocookie.net/minecraft_gamepedia/images/9/94/Oak_Button_%28S%29_JE4.png"))
+                .addButton("button3");
 
         test.send(player, 1);
 
@@ -115,6 +124,8 @@ public class FormTest {
                         SimpleResponse response = ((SimpleResponse) event.getResponse());
                         ElementButton clickedButton = response.button();
                         Assertions.assertEquals("button2", clickedButton.text());
+                        int buttonId = response.buttonId();
+                        Assertions.assertEquals(1, buttonId);
 
                         ElementButton[] buttons = test.buttons().keySet().toArray(ElementButton.EMPTY_LIST);
 
@@ -151,6 +162,8 @@ public class FormTest {
                         ModalResponse response = (ModalResponse) event.getResponse();
                         int clickedButtonId = response.buttonId();
                         Assertions.assertEquals(1, clickedButtonId);
+                        boolean yes = response.yes();
+                        Assertions.assertFalse(yes);
 
                         Assertions.assertEquals("test_FormWindowModal", test.title());
                         Assertions.assertEquals("1028346237", test.content());
