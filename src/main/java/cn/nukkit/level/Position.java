@@ -45,6 +45,11 @@ public class Position extends NamedPosition {
         this.level = level;
     }
 
+    @NotNull
+    public Position getPosition() {
+        return new Position(this.x, this.y, this.z, this.level);
+    }
+
     public static Position fromObject(Vector3 pos) {
         return fromObject(pos, null);
     }
@@ -105,7 +110,7 @@ public class Position extends NamedPosition {
     }
 
     @Override
-    public Position setComponents(Vector3 pos) {
+    public @NotNull Position setComponents(@NotNull Vector3 pos) {
         super.setComponents(pos);
         return this;
     }

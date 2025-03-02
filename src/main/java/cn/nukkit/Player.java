@@ -854,6 +854,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    @Override
+    public Player clone() {
+        throw new RuntimeException("Should not be cloning Player!");
+    }
+
     protected void handleMovement(Location clientPos) {
         if (this.firstMove) this.firstMove = false;
         boolean invalidMotion = false;
@@ -942,11 +947,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 } else {
                     if (this.getGamemode() != Player.SPECTATOR && (last.x != now.x || last.y != now.y || last.z != now.z)) {
                         if (this.isOnGround() && this.isGliding()) {
-                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.ELYTRA_GLIDE));
+                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.ELYTRA_GLIDE));
                         } else if (this.isOnGround() && !(this.getSide(BlockFace.DOWN).getLevelBlock() instanceof BlockWool) && !this.isSneaking()) {
-                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.STEP));
+                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.STEP));
                         } else if (this.isTouchingWater()) {
-                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
+                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getLocation().clone(), VibrationType.SWIM));
                         }
                     }
                     this.broadcastMovement(false);
@@ -4965,7 +4970,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (near) {
             Inventory inventory = this.inventory;
             if (entity instanceof EntityArrow entityArrow && entityArrow.hadCollision) {
-                ItemArrow item = new ItemArrow();
+                ItemArrow item = entityArrow.getArrowItem() != null ? entityArrow.getArrowItem() : new ItemArrow();
                 if (!this.isCreative()) {
                     // Should only collect to the offhand slot if the item matches what is already there
                     if (Objects.equals(this.offhandInventory.getItem(0).getId(), item.getId()) && this.offhandInventory.canAddItem(item)) {

@@ -1183,7 +1183,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         setHealth(newHealth);
 
         if (!(this instanceof EntityArmorStand)) {
-            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(attacker, this.clone(), VibrationType.ENTITY_DAMAGE));
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(attacker, this.getVector3(), VibrationType.ENTITY_DAMAGE));
         }
 
         return true;
@@ -1520,9 +1520,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (diffPosition > 0.0001 || diffRotation > 1.0) { //0.2 ** 2, 1.5 ** 2
             if (diffPosition > 0.0001) {
                 if (this.isOnGround()) {
-                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this instanceof EntityProjectile projectile ? projectile.shootingEntity : this, this.clone(), VibrationType.STEP));
+                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this instanceof EntityProjectile projectile ? projectile.shootingEntity : this, this.getVector3(), VibrationType.STEP));
                 } else if (this.isTouchingWater()) {
-                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this instanceof EntityProjectile projectile ? projectile.shootingEntity : this, this.clone(), VibrationType.SWIM));
+                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this instanceof EntityProjectile projectile ? projectile.shootingEntity : this, this.getVector3(), VibrationType.SWIM));
                 }
             }
 
@@ -1875,7 +1875,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 if (!this.isSneaking()) {
                     if (!(this instanceof EntityItem item) ||
                             !ItemTags.getTagSet(item.getIdentifier()).contains(ItemTags.WOOL)) {
-                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.HIT_GROUND));
+                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.HIT_GROUND));
                     }
                 }
                 this.attack(new EntityDamageEvent(this, DamageCause.FALL, damage));
@@ -2026,11 +2026,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.blocksAround = null;
         this.collisionBlocks = null;
         return true;
-    }
-
-    @NotNull
-    public Position getPosition() {
-        return new Position(this.x, this.y, this.z, this.level);
     }
 
     @Override

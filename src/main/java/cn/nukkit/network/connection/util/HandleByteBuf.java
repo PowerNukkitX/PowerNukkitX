@@ -911,13 +911,10 @@ public class HandleByteBuf extends ByteBuf {
     public void writeAttributeList(Attribute[] attributes) {
         this.writeUnsignedVarInt(attributes.length);
         for (Attribute attribute : attributes) {
-            this.writeFloatLE(attribute.getMinValue());
-            this.writeFloatLE(attribute.getMaxValue());
-            this.writeFloatLE(attribute.getValue());
-            this.writeFloatLE(attribute.getDefaultMinimum());
-            this.writeFloatLE(attribute.getDefaultMaximum());
-            this.writeFloatLE(attribute.getDefaultValue());
             this.writeString(attribute.getName());
+            this.writeFloatLE(attribute.getMinValue());
+            this.writeFloatLE(attribute.getValue());
+            this.writeFloatLE(attribute.getMaxValue());
         }
     }
 
@@ -1480,13 +1477,6 @@ public class HandleByteBuf extends ByteBuf {
         this.writeVarInt(face.getIndex());
     }
 
-    public void writeEntityLinks(EntityLink[] links) {
-        writeUnsignedVarInt(links.length);
-        for (EntityLink link : links) {
-            writeEntityLink(link);
-        }
-    }
-
     public void writeEntityLink(EntityLink link) {
         writeEntityUniqueId(link.fromEntityUniqueId);
         writeEntityUniqueId(link.toEntityUniqueId);
@@ -1603,7 +1593,7 @@ public class HandleByteBuf extends ByteBuf {
 
     protected ItemStackRequestAction readRequestActionData(ItemStackRequestActionType type) {
         return switch (type) {
-            case CRAFT_REPAIR_AND_DISENCHANT -> new CraftGrindstoneAction(readUnsignedVarInt(), readByte(), readInt());
+            case CRAFT_REPAIR_AND_DISENCHANT -> new CraftGrindstoneAction(readUnsignedVarInt(), readByte(), readVarInt());
             case CRAFT_LOOM -> new CraftLoomAction(readString());
             case CRAFT_RECIPE_AUTO -> {
                 int recipeId = readUnsignedVarInt();

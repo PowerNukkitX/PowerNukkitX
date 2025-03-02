@@ -36,6 +36,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
 
     public static final Set<String> skipBlockSet = Set.of(
             "minecraft:camera",
+            "minecraft:chalkboard",
             "minecraft:chemical_heat",
             "minecraft:compound_creator",
             "minecraft:element_constructor",
@@ -45,6 +46,9 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             "minecraft:colored_torch_blue",
             "minecraft:colored_torch_red",
             "minecraft:colored_torch_green",
+            "minecraft:deprecated_anvil",
+            "minecraft:deprecated_purpur_block_1",
+            "minecraft:deprecated_purpur_block_2",
             "minecraft:element_0",
             "minecraft:element_1",
             "minecraft:element_10",
@@ -790,7 +794,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(MELON_BLOCK, BlockMelonBlock.class);
             register(MELON_STEM, BlockMelonStem.class);
             register(MOB_SPAWNER, BlockMobSpawner.class);
-            register(MONSTER_EGG, BlockMonsterEgg.class);
+            //register(MONSTER_EGG, BlockMonsterEgg.class);
             register(MOSS_BLOCK, BlockMossBlock.class);
             register(MOSS_CARPET, BlockMossCarpet.class);
             register(MOSSY_COBBLESTONE, BlockMossyCobblestone.class);
