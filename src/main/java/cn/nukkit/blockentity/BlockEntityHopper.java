@@ -579,9 +579,4 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
 
         return c;
     }
-
-    @Override
-    public Position getPosition() {
-        return this.getBlock();
-    }
 }
