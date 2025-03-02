@@ -821,7 +821,7 @@ public class Server {
 
     private void checkTickUpdates(int currentTick) {
         if (getSettings().levelSettings().alwaysTickPlayers()) {
-            for (Player p : new ArrayList<>(this.players.values())) {
+            for (Player p : this.players.values()) {
                 p.onUpdate(currentTick);
             }
         }
