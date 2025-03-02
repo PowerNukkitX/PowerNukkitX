@@ -72,7 +72,7 @@ public class EntitySmallFireball extends EntityProjectile {
         ProjectileHitEvent projectileHitEvent = new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity));
         this.server.getPluginManager().callEvent(projectileHitEvent);
         if (projectileHitEvent.isCancelled()) return;
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.PROJECTILE_LAND));
         var damage = this.getResultDamage(entity);
         EntityDamageEvent ev = new EntityDamageByEntityEvent(this, entity, EntityDamageEvent.DamageCause.PROJECTILE, damage);
         if (entity.attack(ev)) {
@@ -89,7 +89,7 @@ public class EntitySmallFireball extends EntityProjectile {
 
     @Override
     protected void onCollideWithBlock(Position position, Vector3 motion) {
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.PROJECTILE_LAND));
         var affect = false;
         for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1)))
             affect = onCollideWithBlock(position, motion, collisionBlock);

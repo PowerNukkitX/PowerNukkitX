@@ -58,7 +58,7 @@ public class EntityFireball extends EntitySmallFireball implements EntityExplosi
 
     @Override
     protected void onCollideWithBlock(Position position, Vector3 motion) {
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.PROJECTILE_LAND));
         boolean affect = false;
         for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1)))
             affect = onCollideWithBlock(position, motion, collisionBlock);
