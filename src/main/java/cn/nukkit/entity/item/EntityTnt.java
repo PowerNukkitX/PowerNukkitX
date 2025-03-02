@@ -173,7 +173,7 @@ public class EntityTnt extends Entity implements EntityExplosive {
             explosion.explodeA();
         }
         explosion.explodeB();
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.EXPLODE));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.EXPLODE));
     }
 
     public Entity getSource() {
