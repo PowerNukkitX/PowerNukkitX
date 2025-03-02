@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.AxisAlignedBB;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockHeavyCore extends BlockFlowable {
@@ -18,6 +19,11 @@ public class BlockHeavyCore extends BlockFlowable {
 
     public BlockHeavyCore(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return this;
     }
 
     @Override
@@ -43,6 +49,11 @@ public class BlockHeavyCore extends BlockFlowable {
     @Override
     public double getMaxZ() {
         return this.z + 0.75;
+    }
+
+    @Override
+    public boolean canPassThrough() {
+        return false;
     }
 
     @Override
