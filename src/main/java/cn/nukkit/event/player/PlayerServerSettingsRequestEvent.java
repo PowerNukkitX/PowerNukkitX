@@ -3,7 +3,7 @@ package cn.nukkit.event.player;
 import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.form.window.FormWindow;
+import cn.nukkit.form.window.Form;
 
 import java.util.Map;
 
@@ -18,22 +18,22 @@ public class PlayerServerSettingsRequestEvent extends PlayerEvent implements Can
         return handlers;
     }
 
-    private Map<Integer, FormWindow> settings;
+    private Map<Integer, Form<?>> settings;
 
-    public PlayerServerSettingsRequestEvent(Player player, Map<Integer, FormWindow> settings) {
+    public PlayerServerSettingsRequestEvent(Player player, Map<Integer, Form<?>> settings) {
         this.player = player;
         this.settings = settings;
     }
 
-    public Map<Integer, FormWindow> getSettings() {
+    public Map<Integer, Form<?>> getSettings() {
         return settings;
     }
 
-    public void setSettings(Map<Integer, FormWindow> settings) {
+    public void setSettings(Map<Integer, Form<?>> settings) {
         this.settings = settings;
     }
 
-    public void setSettings(int id, FormWindow window) {
+    public void setSettings(int id, Form<?> window) {
         this.settings.put(id, window);
     }
 }
