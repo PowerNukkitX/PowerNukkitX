@@ -14,7 +14,5 @@ public interface InventoryHolder {
 
     double getZ();
 
-    default Vector3 getVector3() {
-        return (Vector3) this;
-    }
+    Vector3 getVector3();
 }

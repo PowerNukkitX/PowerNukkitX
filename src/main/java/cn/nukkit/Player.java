@@ -951,7 +951,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         } else if (this.isOnGround() && !(this.getSide(BlockFace.DOWN).getLevelBlock() instanceof BlockWool) && !this.isSneaking()) {
                             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3().clone(), VibrationType.STEP));
                         } else if (this.isTouchingWater()) {
-                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3().clone(), VibrationType.SWIM));
+                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getLocation().clone(), VibrationType.SWIM));
                         }
                     }
                     this.broadcastMovement(false);
