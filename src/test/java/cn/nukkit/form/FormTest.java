@@ -71,7 +71,7 @@ public class FormTest {
                         String inputResponse = response.getInputResponse(1);
                         Assertions.assertEquals("input", inputResponse);
                         String labelResponse = response.getLabelResponse(2);
-                        Assertions.assertEquals("", labelResponse);
+                        Assertions.assertEquals("test123", labelResponse);
                         float sliderResponse = response.getSliderResponse(3);
                         Assertions.assertEquals(6, sliderResponse);
                         ElementResponse stepSliderResponse = response.getStepSliderResponse(4);
