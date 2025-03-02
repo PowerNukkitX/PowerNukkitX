@@ -121,7 +121,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
             cow.setPosition(this);
             cow.setRotation(this.yaw, this.pitch);
             cow.spawnToAll();
-            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), this.getPosition(), VibrationType.SHEAR));
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.SHEAR));
             return true;
         } else if (item.getId() == Item.BUCKET && item.getDamage() == 0) {
             item.count--;
