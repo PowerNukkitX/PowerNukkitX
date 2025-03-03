@@ -37,19 +37,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @ExtendWith(GameMockExtension.class)
 public class FormTest {
     @Test
-    void test_FormWindowCustom(TestPlayer player, TestPluginManager testPluginManager) {
+    void test_CustomForm(TestPlayer player, TestPluginManager testPluginManager) {
         testPluginManager.resetAll();
 
         ElementDropdown test1 = new ElementDropdown()
                 .text("text1")
-                .options(new ArrayList<>(List.of("1", "2", "3")))
-                .defaultOption(1);
+                .options(new ArrayList<>(List.of("1")))
+                .defaultOption(0);
         Assertions.assertEquals("text1", test1.text());
-        Assertions.assertEquals(3, test1.options().size());
+        Assertions.assertSame(test1, test1
+                .addOption("2", true)
+                .addOption("3"));
         Assertions.assertEquals(1, test1.defaultOption());
-        Assertions.assertSame(test1, test1.addOption("4"));
+        Assertions.assertEquals(3, test1.options().size());
 
-        ElementInput test2 = new ElementInput("test2", "placeholder", "defaultText")
+        ElementInput test2 = new ElementInput()
                 .text("text2")
                 .placeholder("placeholder")
                 .defaultText("defaultText");
@@ -58,7 +60,7 @@ public class FormTest {
         Assertions.assertEquals("defaultText", test2.defaultText());
 
         ElementLabel test3 = new ElementLabel()
-                .text("test3");
+                .text("text3");
         Assertions.assertEquals("text3", test3.text());
 
         ElementSlider test4 = new ElementSlider()
@@ -75,12 +77,14 @@ public class FormTest {
 
         ElementStepSlider test5 = new ElementStepSlider()
                 .text("text5")
-                .steps(new ArrayList<>(List.of("step1", "step2")))
-                .defaultStep(1);
+                .steps(new ArrayList<>(List.of("step1")))
+                .defaultStep(0);
         Assertions.assertEquals("text5", test5.text());
-        Assertions.assertEquals(2, test5.steps().size());
+        Assertions.assertSame(test5, test5
+                .addStep("step2", true)
+                .addStep("step3"));
         Assertions.assertEquals(1, test5.defaultStep());
-        Assertions.assertSame(test5, test5.addStep("step3"));
+        Assertions.assertEquals(3, test5.steps().size());
 
         ElementToggle test6 = new ElementToggle()
                 .text("text6")
@@ -118,6 +122,8 @@ public class FormTest {
                 new TestEventHandler<PlayerFormRespondedEvent>() {
                     @Override
                     public void handle(PlayerFormRespondedEvent event) {
+                        Assertions.assertNotNull(event.getResponse());
+
                         CustomResponse response = (CustomResponse) event.getResponse();
 
                         ElementResponse dropdownResponse = response.getDropdownResponse(0);
@@ -170,12 +176,16 @@ public class FormTest {
 
         Assertions.assertTrue(test.getMeta("test", false), "CustomForm: Meta should contain variable 'test'");
 
+        // HINT: Do not use this inside a plugin - used here to test the closed supplier.
+        Assertions.assertNull(test.respond(player, "null"));
+        Assertions.assertTrue(closeCalled.get(), "CustomForm: Close consumer should be supplied");
+
         testPluginManager.resetAll();
     }
 
 
     @Test
-    void test_FormWindowSimple(TestPlayer player, TestPluginManager testPluginManager) {
+    void test_SimpleForm(TestPlayer player, TestPluginManager testPluginManager) {
         testPluginManager.resetAll();
 
         SimpleForm constructorTest = new SimpleForm("test_SimpleForm");
@@ -193,27 +203,29 @@ public class FormTest {
                 .image(ButtonImage.Type.PATH.of("textures/items/compass"));
 
         ElementButton test2 = new ElementButton()
-                .text("button2");
+                .text("button3");
 
-        Assertions.assertEquals("button2", test2.text());
+        Assertions.assertEquals("button3", test2.text());
 
         AtomicBoolean button2Clicked = new AtomicBoolean(false);
 
         test.addButton(test1)
                 .addButton(test2, pl -> button2Clicked.set(true))
                 .addButton("button3", ButtonImage.Type.URL.of("https://static.wikia.nocookie.net/minecraft_gamepedia/images/9/94/Oak_Button_%28S%29_JE4.png"))
-                .addButton("button5")
+                .addButton("button5", pl -> {})
                 .addButton("button5");
 
         SimpleForm result1 = test.send(player, 1);
         SimpleForm result2 = test.send(player); // Won't send - player is already viewer
 
-        ElementButton button4 = test.updateElement(3, new ElementButton("button4"));
-        Assertions.assertNotNull(button4);
+        test.updateElement(3, test2.text("button2"), pl -> button2Clicked.set(true));
 
         int currentButtonSize = test.buttons().size();
         test.removeElement(4);
         Assertions.assertEquals(currentButtonSize - 1, test.buttons().size());
+
+        ElementButton nullButton = test.updateElement(4, new ElementButton());
+        Assertions.assertNull(nullButton);
 
         SimpleForm result3 = test.sendUpdate(player);
 
@@ -229,6 +241,8 @@ public class FormTest {
                 new TestEventHandler<PlayerFormRespondedEvent>() {
                     @Override
                     public void handle(PlayerFormRespondedEvent event) {
+                        Assertions.assertNotNull(event.getResponse());
+
                         SimpleResponse response = ((SimpleResponse) event.getResponse());
 
                         ElementButton clickedButton = response.button();
@@ -268,11 +282,15 @@ public class FormTest {
 
         Assertions.assertTrue(test.getMeta("test", false), "SimpleForm: Meta should contain variable 'test'");
 
+        // HINT: Do not use this inside a plugin - used here to test the closed supplier.
+        Assertions.assertNull(test.respond(player, "null"));
+        Assertions.assertTrue(closeCalled.get(), "SimpleForm: Close consumer should be supplied");
+
         testPluginManager.resetAll();
     }
 
     @Test
-    void test_FormWindowModal(TestPlayer player, TestPluginManager testPluginManager) {
+    void test_ModalForm(TestPlayer player, TestPluginManager testPluginManager) {
         testPluginManager.resetAll();
 
         ModalForm constructorTest = new ModalForm("test_ModalForm");
@@ -289,14 +307,14 @@ public class FormTest {
         AtomicBoolean yesCalled = new AtomicBoolean(false);
         AtomicBoolean noCalled = new AtomicBoolean(false);
 
-        test.yes("yes", pl -> noCalled.set(true));
-        test.no("no", pl -> noCalled.set(true));
+        test.yes("yes", pl -> {})
+                .no("no", pl -> {});
 
         ModalForm result1 = test.send(player, 1);
         ModalForm result2 = test.send(player); // Won't send - player is already viewer
 
         ModalForm result3 = test.text("Yes!", "No!");
-        ModalForm result4 = test.onNo(pl -> {})
+        ModalForm result4 = test.onNo(pl -> noCalled.set(true))
                 .onYes(pl -> yesCalled.set(true));
 
         ModalForm result5 = test.sendUpdate(player);
@@ -313,6 +331,8 @@ public class FormTest {
                 new TestEventHandler<PlayerFormRespondedEvent>() {
                     @Override
                     public void handle(PlayerFormRespondedEvent event) {
+                        Assertions.assertNotNull(event.getResponse());
+
                         ModalResponse response = (ModalResponse) event.getResponse();
                         int clickedButtonId = response.buttonId();
                         Assertions.assertEquals(1, clickedButtonId);
@@ -344,10 +364,17 @@ public class FormTest {
 
         Assertions.assertTrue(submitCalled.get(), "ModalForm: Submit consumer should be supplied");
         Assertions.assertFalse(closeCalled.get(), "ModalForm: Close consumer shouldn't be supplied");
-        Assertions.assertFalse(yesCalled.get(), "ModalForm: Yes consumer shouldn't be supplied");
-        Assertions.assertTrue(noCalled.get(), "ModalForm: No consumer should be supplied");
+        Assertions.assertFalse(yesCalled.get(), "ModalForm: 'Yes' consumer shouldn't be supplied");
+        Assertions.assertTrue(noCalled.get(), "ModalForm: 'No' consumer should be supplied");
+
+        test.supplyYes(player);
+        Assertions.assertTrue(yesCalled.get(), "ModalForm: 'Yes' consumer should be supplied");
 
         Assertions.assertTrue(test.getMeta("test", false), "ModalForm: Meta should contain variable 'test'");
+
+        // HINT: Do not use this inside a plugin - used here to test the closed supplier.
+        Assertions.assertNull(test.respond(player, "null"));
+        Assertions.assertTrue(closeCalled.get(), "ModalForm: Close consumer should be supplied");
 
         testPluginManager.resetAll();
     }
