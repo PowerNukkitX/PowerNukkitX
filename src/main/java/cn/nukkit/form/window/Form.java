@@ -48,9 +48,6 @@ public abstract class Form<T extends Response> {
      * @param player The player who closed the form
      */
     public void supplyClosed(Player player) {
-        this.viewers.remove(player);
-        player.checkClosedForms();
-
         if (this.closed != null)
             this.closed.accept(player);
     }
@@ -61,9 +58,6 @@ public abstract class Form<T extends Response> {
      * @param data The data submitted by the player
      */
     public void supplySubmitted(Player player, T data) {
-        this.viewers.remove(player);
-        player.checkClosedForms();
-
         this.response = data;
         if (this.submitted != null)
             this.submitted.accept(player, data);
@@ -138,6 +132,9 @@ public abstract class Form<T extends Response> {
     }
 
     public boolean handle(Player player, String formData) {
+        this.viewers.remove(player);
+        player.checkClosedForms();
+
         return formData != null && !formData.equals("null");
     }
 
