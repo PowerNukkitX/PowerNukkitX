@@ -10,7 +10,7 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.form.window.FormWindowSimple;
+import cn.nukkit.form.window.SimpleForm;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.IChunk;
@@ -132,8 +132,8 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
                     strBuilder.append("§f\n");
                 });
 
-                var form = new FormWindowSimple("§f" + getOriginalName(), strBuilder.toString());
-                player.showFormWindow(form);
+                var form = new SimpleForm("§f" + getOriginalName(), strBuilder.toString());
+                form.send(player);
                 return true;
             } else return super.onInteract(player, item, clickedPos);
         }

@@ -2,8 +2,8 @@ package cn.nukkit.event.player;
 
 import cn.nukkit.Player;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.form.response.FormResponse;
-import cn.nukkit.form.window.FormWindow;
+import cn.nukkit.form.response.Response;
+import cn.nukkit.form.window.Form;
 
 public class PlayerFormRespondedEvent extends PlayerEvent {
 
@@ -13,21 +13,22 @@ public class PlayerFormRespondedEvent extends PlayerEvent {
         return handlers;
     }
 
-    protected FormWindow window;
     protected int formID;
-    protected boolean closed = false;
+    protected Form<?> window;
+    protected Response response;
 
-    public PlayerFormRespondedEvent(Player player, int formID, FormWindow window) {
+    public PlayerFormRespondedEvent(Player player, int formID, Form<?> window, Response response) {
         this.player = player;
         this.formID = formID;
         this.window = window;
+        this.response = response;
     }
 
     public int getFormID() {
         return this.formID;
     }
 
-    public FormWindow getWindow() {
+    public Form<?> getWindow() {
         return window;
     }
 
@@ -36,17 +37,7 @@ public class PlayerFormRespondedEvent extends PlayerEvent {
      *
      * @return response
      */
-    public FormResponse getResponse() {
-        return window.getResponse();
+    public Response getResponse() {
+        return response;
     }
-
-    /**
-     * Defines if player closed the window or submitted it
-     *
-     * @return form closed
-     */
-    public boolean wasClosed() {
-        return window.wasClosed();
-    }
-
 }

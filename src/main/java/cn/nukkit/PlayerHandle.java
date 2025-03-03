@@ -4,7 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.form.window.FormWindow;
+import cn.nukkit.form.window.Form;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
@@ -185,7 +185,7 @@ public final class PlayerHandle {
         player.formWindowCount = formWindowCount;
     }
 
-    public Map<Integer, FormWindow> getFormWindows() {
+    public Map<Integer, Form<?>> getFormWindows() {
         return player.formWindows;
     }
 
@@ -205,15 +205,15 @@ public final class PlayerHandle {
         player.closingWindowId = closingWindowId;
     }
 
-    public void setFormWindows(Map<Integer, FormWindow> formWindows) {
+    public void setFormWindows(Map<Integer, Form<?>> formWindows) {
         player.formWindows = formWindows;
     }
 
-    public Map<Integer, FormWindow> getServerSettings() {
+    public Map<Integer, Form<?>> getServerSettings() {
         return player.serverSettings;
     }
 
-    public void setServerSettings(Map<Integer, FormWindow> serverSettings) {
+    public void setServerSettings(Map<Integer, Form<?>> serverSettings) {
         player.serverSettings = serverSettings;
     }
 

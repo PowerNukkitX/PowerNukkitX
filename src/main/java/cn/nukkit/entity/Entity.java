@@ -2028,11 +2028,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return true;
     }
 
-    @NotNull
-    public Position getPosition() {
-        return new Position(this.x, this.y, this.z, this.level);
-    }
-
     @Override
     @NotNull
     public Location getLocation() {
