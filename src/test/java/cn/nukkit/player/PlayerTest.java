@@ -1,7 +1,11 @@
 package cn.nukkit.player;
 
 import cn.nukkit.GameMockExtension;
+import cn.nukkit.PlayerFood;
 import cn.nukkit.TestPlayer;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemFood;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.MovePlayerPacket;
@@ -137,4 +141,43 @@ public class PlayerTest {
         resetPlayerStatus(player);
     }
 
+    @Test
+    @Order(4)
+    void test_player_food(TestPlayer player) {
+        PlayerFood food = player.getFoodData();
+
+        Assertions.assertSame(player, food.getPlayer());
+        Assertions.assertEquals(20, food.getFood());
+        Assertions.assertEquals(20, food.getMaxFood());
+        Assertions.assertEquals(20, food.getSaturation());
+
+        player.setSprinting(true);
+        food.setFood(6);
+        Assertions.assertFalse(player.isSprinting(), "Player should not sprint with food <= 6"); // Player should not sprint with food <= 6
+        Assertions.assertTrue(food.isHungry());
+
+        food.setSaturation(10);
+        Assertions.assertEquals(6, food.getSaturation(), "Saturation should not exceed food level.");
+
+        ItemFood apple = (ItemFood) Item.get(ItemID.APPLE);
+        food.addFood(apple);
+
+        Assertions.assertEquals(10, food.getFood(), "6 + 4 = 10");
+        Assertions.assertEquals(8.4, Math.round(food.getSaturation() * 10) / 10.0F, 0.0001D, "6 + 2.4 = 8.4");
+
+        food.setEnabled(false);
+        Assertions.assertFalse(food.isEnabled(), "Food should be disabled.");
+
+        double exhaustion = food.getExhaustion();
+        food.exhaust(100);
+        Assertions.assertEquals(exhaustion, food.getExhaustion(), "Food is disabled: Exhaustion should not change.");
+
+        food.reset();
+        Assertions.assertEquals(20, food.getFood());
+        Assertions.assertEquals(20, food.getMaxFood());
+        Assertions.assertEquals(20, food.getSaturation());
+        Assertions.assertEquals(0, food.getFoodTickTimer());
+
+        resetPlayerStatus(player);
+    }
 }
