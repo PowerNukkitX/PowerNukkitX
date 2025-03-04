@@ -30,6 +30,11 @@ public class ItemTurtleHelmet extends Item {
     }
 
     @Override
+    public int getMaxStackSize() {
+        return 1;
+    }
+
+    @Override
     public int getMaxDurability() {
         return 276;
     }
