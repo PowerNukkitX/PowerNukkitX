@@ -1,6 +1,6 @@
 package cn.nukkit.item;
 
-public class ItemTurtleHelmet extends Item {
+public class ItemTurtleHelmet extends ItemArmor {
 
     public ItemTurtleHelmet() {
         this(0, 1);
@@ -27,11 +27,6 @@ public class ItemTurtleHelmet extends Item {
     @Override
     public int getArmorPoints() {
         return 2;
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
     }
 
     @Override

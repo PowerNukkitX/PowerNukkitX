@@ -9,5 +9,10 @@ public class ItemBundle extends Item {
     public ItemBundle(String id) {
         super(id);
     }
+
+    @Override
+    public int getMaxStackSize() {
+        return 1;
+    }
 }
 
