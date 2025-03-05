@@ -1,6 +1,6 @@
 package cn.nukkit.item;
 
-public class ItemTurtleHelmet extends Item {
+public class ItemTurtleHelmet extends ItemArmor {
 
     public ItemTurtleHelmet() {
         this(0, 1);
