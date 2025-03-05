@@ -11,7 +11,6 @@ import cn.nukkit.event.Listener;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.permission.Permissible;
 import cn.nukkit.permission.Permission;
-import cn.nukkit.plugin.js.JSFeatures;
 import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.Utils;
 import io.netty.util.internal.EmptyArrays;
@@ -176,8 +175,6 @@ public class PluginManager {
             } else {
                 loaders = this.fileAssociations;
             }
-
-            JSFeatures.initInternalFeatures();
 
             for (final PluginLoader loader : loaders.values()) {
                 for (File file : Objects.requireNonNull(dictionary.listFiles((dir, name) -> {

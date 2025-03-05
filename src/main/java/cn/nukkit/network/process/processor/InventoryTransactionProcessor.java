@@ -15,10 +15,7 @@ import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.event.player.PlayerDropItemEvent;
-import cn.nukkit.event.player.PlayerInteractEntityEvent;
-import cn.nukkit.event.player.PlayerInteractEvent;
-import cn.nukkit.event.player.PlayerKickEvent;
+import cn.nukkit.event.player.*;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -170,6 +167,9 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     } else {
                         logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInHand());
                     }
+                } else {
+                    //Otherwise nametag still gets consumed on client side
+                    player.getInventory().sendContents(player);
                 }
             }
             case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_ATTACK -> {
@@ -177,7 +177,12 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         || !(target instanceof Player) && !player.getAdventureSettings().get(AdventureSettings.Type.ATTACK_MOBS))
                     return;
                 if (target.getId() == player.getId()) {
-                    player.kick(PlayerKickEvent.Reason.INVALID_PVP, "Attempting to attack yourself");
+                    PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(player, PlayerHackDetectedEvent.HackType.INVALID_PVP);
+                    player.getServer().getPluginManager().callEvent(event);
+
+                    if(event.isKick())
+                        player.kick(PlayerKickEvent.Reason.INVALID_PVP, "Attempting to attack yourself");
+
                     log.warn(player.getName() + " tried to attack oneself");
                     return;
                 }
@@ -261,7 +266,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 boolean spamBug = (playerHandle.getLastRightClickPos() != null && System.currentTimeMillis() - playerHandle.getLastRightClickTime() < 100.0 && blockVector.distanceSquared(playerHandle.getLastRightClickPos()) < 0.00001);
                 playerHandle.setLastRightClickPos(blockVector.asVector3());
                 playerHandle.setLastRightClickTime(System.currentTimeMillis());
-                if (spamBug && player.getInventory().getItemInHand().getBlock().isAir()) {//Normal blocks are not detected, as they can be placed continuously
+                if (spamBug) {
                     return;
                 }
                 if(!useItemData.itemInHand.canBeActivated()) player.setDataFlag(EntityFlag.USING_ITEM, false);
@@ -334,16 +339,23 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
             case InventoryTransactionPacket.USE_ITEM_ACTION_CLICK_AIR -> {
                 Item item;
                 Item useItemDataItem = useItemData.itemInHand;
+                Item serverItemInHand = player.getInventory().getItemInHand();
                 Vector3 directionVector = player.getDirectionVector();
+                // Removes Damage Tag that the client adds, but we do not store.
+                if(useItemDataItem.hasCompoundTag() && (!serverItemInHand.hasCompoundTag() || !serverItemInHand.getNamedTag().containsInt("Damage"))) {
+                    if(useItemDataItem.getNamedTag().containsInt("Damage")) {
+                        useItemDataItem.getNamedTag().remove("Damage");
+                    }
+                }
                 ////
                 if (player.isCreative()) {
-                    item = player.getInventory().getItemInHand();
+                    item = serverItemInHand;
                 } else if (!player.getInventory().getItemInHand().equals(useItemDataItem)) {
                     player.getServer().getLogger().warning("Item received did not match item in hand.");
                     player.getInventory().sendHeldItem(player);
                     return;
                 } else {
-                    item = player.getInventory().getItemInHand();
+                    item = serverItemInHand;
                 }
                 PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, item, directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
                 player.getServer().getPluginManager().callEvent(interactEvent);

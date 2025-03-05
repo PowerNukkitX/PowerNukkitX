@@ -3,6 +3,7 @@ package cn.nukkit.item.enchantment;
 import cn.nukkit.block.BlockCarvedPumpkin;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
+import cn.nukkit.item.ItemBook;
 import cn.nukkit.item.ItemBow;
 import cn.nukkit.item.ItemCrossbow;
 import cn.nukkit.item.ItemFishingRod;
@@ -33,9 +34,8 @@ public enum EnchantmentType {
 
 
     public boolean canEnchantItem(@NotNull Item item) {
-        if (this == ALL) {
+        if (this == ALL || item instanceof ItemBook) {
             return true;
-
         }
         if (this == BREAKABLE && item.getMaxDurability() >= 0) {
             return true;

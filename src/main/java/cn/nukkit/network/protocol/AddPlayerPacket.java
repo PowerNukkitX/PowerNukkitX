@@ -15,17 +15,12 @@ import java.util.UUID;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddPlayerPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ADD_PLAYER_PACKET;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     public UUID uuid;
     public String username;
     public long entityUniqueId;
@@ -42,10 +37,7 @@ public class AddPlayerPacket extends DataPacket {
     public Item item;
     public int gameType = Server.getInstance().getGamemode();
     public EntityDataMap entityData = new EntityDataMap();
-
-
     public PropertySyncData syncedProperties = new PropertySyncData(new int[]{}, new float[]{});
-    //public EntityLink links = new EntityLink[0];
     public String deviceId = "";
     public int buildPlatform = -1;
 
@@ -56,10 +48,8 @@ public class AddPlayerPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUUID(this.uuid);
         byteBuf.writeString(this.username);
-//        byteBuf.writeEntityUniqueId(this.entityUniqueId);
         byteBuf.writeEntityRuntimeId(this.entityRuntimeId);
         byteBuf.writeString(this.platformChatId);
         byteBuf.writeVector3f(this.x, this.y, this.z);
@@ -70,17 +60,7 @@ public class AddPlayerPacket extends DataPacket {
         byteBuf.writeSlot(this.item);
         byteBuf.writeVarInt(this.gameType);
         byteBuf.writeBytes(Binary.writeEntityData(this.entityData));
-        //syncedProperties
-        byteBuf.writeUnsignedVarInt(this.syncedProperties.intProperties().length);
-        for (int i = 0, len = this.syncedProperties.intProperties().length; i < len; ++i) {
-            byteBuf.writeUnsignedVarInt(i);
-            byteBuf.writeVarInt(this.syncedProperties.intProperties()[i]);
-        }
-        byteBuf.writeUnsignedVarInt(this.syncedProperties.floatProperties().length);
-        for (int i = 0, len = this.syncedProperties.floatProperties().length; i < len; ++i) {
-            byteBuf.writeUnsignedVarInt(i);
-            byteBuf.writeFloatLE(this.syncedProperties.floatProperties()[i]);
-        }
+        byteBuf.writePropertySyncData(syncedProperties);
 //        byteBuf.writeUnsignedVarInt(0); //TODO: Adventure settings
 //        byteBuf.writeUnsignedVarInt(0);
 //        byteBuf.writeUnsignedVarInt(0);
@@ -99,6 +79,11 @@ public class AddPlayerPacket extends DataPacket {
         byteBuf.writeUnsignedVarInt(0); //TODO: Entity links
         byteBuf.writeString(deviceId);
         byteBuf.writeIntLE(buildPlatform);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.ADD_PLAYER_PACKET;
     }
 
     public void handle(PacketHandler handler) {

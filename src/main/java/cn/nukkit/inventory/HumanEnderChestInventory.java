@@ -70,8 +70,8 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
         blockEventPacket.x = (int) enderChest.getX();
         blockEventPacket.y = (int) enderChest.getY();
         blockEventPacket.z = (int) enderChest.getZ();
-        blockEventPacket.case1 = 1;
-        blockEventPacket.case2 = 2;
+        blockEventPacket.type = 1;
+        blockEventPacket.value = 2;
 
         Level level = this.getHolder().getLevel();
         if (level != null) {
@@ -106,8 +106,8 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
         blockEventPacket.x = (int) enderChest.getX();
         blockEventPacket.y = (int) enderChest.getY();
         blockEventPacket.z = (int) enderChest.getZ();
-        blockEventPacket.case1 = 1;
-        blockEventPacket.case2 = 0;
+        blockEventPacket.type = 1;
+        blockEventPacket.value = 0;
 
         Level level = this.getHolder().getLevel();
         if (level != null) {

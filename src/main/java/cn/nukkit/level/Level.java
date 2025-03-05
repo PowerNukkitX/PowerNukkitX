@@ -1180,6 +1180,11 @@ public class Level implements Metadatable {
             }
             // Tick Weather
             if (this.getDimension() != DIMENSION_NETHER && this.getDimension() != DIMENSION_THE_END) {
+                if(getDayTime() == tickRate) {
+                    setRaining(false);
+                    setThundering(false);
+                }
+
                 this.rainTime--;
                 if (this.rainTime <= 0) {
                     if (!this.setRaining(!this.raining)) {//if raining,set false
@@ -1665,15 +1670,15 @@ public class Level implements Metadatable {
     }
 
     public List<Block> raycastBlocks(Vector3 start, Vector3 end) {
-        return raycastBlocks(start, end, true, false);
+        return raycastBlocks(start, end, true, false, 1);
     }
 
-    public List<Block> raycastBlocks(Vector3 start, Vector3 end, boolean ignoreAir, boolean load) {
+    public List<Block> raycastBlocks(Vector3 start, Vector3 end, boolean ignoreAir, boolean load, double space) {
         List<Block> result = new ArrayList<>();
         Vector3 direction = end.subtract(start).normalize();
         Vector3 currentPos = start.clone();
 
-        for (double i = 0; i < start.distance(end); i += 1) {
+        for (double i = 0; i < start.distance(end); i += space) {
             Block block = this.getBlock(currentPos.floor(), load);
             currentPos = currentPos.add(direction);
             if(!block.isAir() || !ignoreAir) result.add(block);
@@ -2528,8 +2533,7 @@ public class Level implements Metadatable {
 
         Block target = this.getBlock(vector, layer);
 
-        boolean canChangeBlock = target.isBlockChangeAllowed(player);
-        if (player != null && !canChangeBlock) {
+        if (player != null && !target.isBlockChangeAllowed(player)) {
             return null;
         }
 
@@ -2548,27 +2552,6 @@ public class Level implements Metadatable {
                 (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null && item.applyEnchantments());
 
         if (player != null) {
-            if (player.isAdventure()) {
-                Tag tag = item.getNamedTagEntry("CanDestroy");
-                boolean canBreak = canChangeBlock;
-                if (tag instanceof ListTag) {
-                    for (Tag v : ((ListTag<? extends Tag>) tag).getAll()) {
-                        if (!(v instanceof StringTag stringTag)) {
-                            continue;
-                        }
-                        Item entry = Item.get(stringTag.data);
-                        if (!entry.isNull() &&
-                                entry.getBlock().getId().equals(target.getId())) {
-                            canBreak = true;
-                            break;
-                        }
-                    }
-                }
-                if (!canBreak) {
-                    return null;
-                }
-            }
-
             Item[] eventDrops;
             if (immediateDestroy || player.isCreative()) {
                 eventDrops = Item.EMPTY_ARRAY;
@@ -3892,6 +3875,13 @@ public class Level implements Metadatable {
      * Set the elapsed time for this level
      */
     public void setTime(int time) {
+        if(isRaining()) {
+            if(getTime()%TIME_FULL != time%TIME_FULL) {
+                //Day changed
+                setRaining(false);
+                setThundering(false);
+            }
+        }
         this.time = time;
         this.sendTime();
     }
@@ -4135,15 +4125,6 @@ public class Level implements Metadatable {
     }
 
     public void addEntityMovement(Entity entity, double x, double y, double z, double yaw, double pitch, double headYaw) {
-//        MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
-//        pk.eid = entity.getId();
-//        pk.x = (float) x;
-//        pk.y = (float) y;
-//        pk.z = (float) z;
-//        pk.yaw = (float) yaw;
-//        pk.headYaw = (float) headYaw;
-//        pk.pitch = (float) pitch;
-//        pk.onGround = entity.onGround;
         MoveEntityDeltaPacket pk = new MoveEntityDeltaPacket();
         pk.runtimeEntityId = entity.getId();
         if (entity.lastX != x) {

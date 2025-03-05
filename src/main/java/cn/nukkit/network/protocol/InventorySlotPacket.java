@@ -10,24 +10,19 @@ import lombok.ToString;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
+import org.apache.logging.log4j.core.net.Protocol;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class InventorySlotPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.INVENTORY_SLOT_PACKET;
-
     public int inventoryId;
     public int slot;
     public FullContainerName fullContainerName = new FullContainerName(ContainerSlotType.ANVIL_INPUT, null);
     public Item storageItem = Item.AIR; // is air if the item is not a bundle
     public Item item;
-
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -45,6 +40,11 @@ public class InventorySlotPacket extends DataPacket {
         byteBuf.writeFullContainerName(this.fullContainerName);
         byteBuf.writeSlot(this.storageItem);
         byteBuf.writeSlot(this.item);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.INVENTORY_SLOT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

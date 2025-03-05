@@ -88,7 +88,7 @@ public abstract class EntityProjectile extends Entity {
             return;
         }
 
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.PROJECTILE_LAND));
 
         float damage = this.getResultDamage(entity);
 
@@ -273,7 +273,7 @@ public abstract class EntityProjectile extends Entity {
     }
 
     protected void onCollideWithBlock(Position position, Vector3 motion) {
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.PROJECTILE_LAND));
         for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
             onCollideWithBlock(position, motion, collisionBlock);
         }
@@ -299,6 +299,6 @@ public abstract class EntityProjectile extends Entity {
     public void spawnToAll() {
         super.spawnToAll();
         //vibration: minecraft:projectile_shoot
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.shootingEntity, this.clone(), VibrationType.PROJECTILE_SHOOT));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.shootingEntity, this.getVector3(), VibrationType.PROJECTILE_SHOOT));
     }
 }

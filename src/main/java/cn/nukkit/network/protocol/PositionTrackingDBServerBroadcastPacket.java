@@ -9,9 +9,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.EncoderException;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -20,17 +18,39 @@ import java.io.IOException;
  * @author joserobjr
  */
 
-
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.POS_TRACKING_SERVER_BROADCAST_PACKET;
     private static final Action[] ACTIONS = Action.values();
 
     private Action action;
     private int trackingId;
     private CompoundTag tag;
+
+    @Override
+    public void decode(HandleByteBuf byteBuf) {
+        action = ACTIONS[byteBuf.readByte()];
+        trackingId = byteBuf.readVarInt();
+        try (ByteBufInputStream inputStream = new ByteBufInputStream(byteBuf)) {
+            tag = NBTIO.readNetworkCompressed(inputStream);
+        } catch (IOException e) {
+            throw new EncoderException(e);
+        }
+    }
+
+    @Override
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeByte((byte) action.ordinal());
+        byteBuf.writeVarInt(trackingId);
+        try {
+            byteBuf.writeBytes(NBTIO.writeNetwork(tag != null ? tag : new CompoundTag()));
+        } catch (IOException e) {
+            throw new EncoderException(e);
+        }
+    }
 
     private CompoundTag requireTag() {
         if (tag == null) {
@@ -112,43 +132,15 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
         requireTag().putInt("dim", dimension);
     }
 
-    @Override
-    public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeByte((byte) action.ordinal());
-        byteBuf.writeVarInt(trackingId);
-        try {
-            byteBuf.writeBytes(NBTIO.writeNetwork(tag != null ? tag : new CompoundTag()));
-        } catch (IOException e) {
-            throw new EncoderException(e);
-        }
-    }
-
-    @Override
-    public void decode(HandleByteBuf byteBuf) {
-        action = ACTIONS[byteBuf.readByte()];
-        trackingId = byteBuf.readVarInt();
-        try (ByteBufInputStream inputStream = new ByteBufInputStream(byteBuf)) {
-            tag = NBTIO.readNetworkCompressed(inputStream);
-        } catch (IOException e) {
-            throw new EncoderException(e);
-        }
+    public enum Action {
+        UPDATE,
+        DESTROY,
+        NOT_FOUND
     }
 
     @Override
     public int pid() {
-        return NETWORK_ID;
-    }
-
-    public enum Action {
-
-
-        UPDATE,
-
-
-        DESTROY,
-
-
-        NOT_FOUND
+        return ProtocolInfo.POS_TRACKING_SERVER_BROADCAST_PACKET;
     }
 
     public void handle(PacketHandler handler) {

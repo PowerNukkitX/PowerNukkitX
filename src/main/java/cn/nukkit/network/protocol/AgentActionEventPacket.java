@@ -2,13 +2,14 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.AgentActionType;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @since v503
  */
+
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,11 +20,6 @@ public class AgentActionEventPacket extends DataPacket {
      * @see AgentActionType for type specific JSON
      */
     public String responseJson;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.AGENT_ACTION_EVENT_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -37,6 +33,11 @@ public class AgentActionEventPacket extends DataPacket {
         byteBuf.writeString(this.requestId);
         byteBuf.writeByte((byte) actionType.ordinal());
         byteBuf.writeString(responseJson);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.AGENT_ACTION_EVENT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

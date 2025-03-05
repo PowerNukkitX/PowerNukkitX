@@ -10,6 +10,7 @@ import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXpOrb;
 import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.entity.projectile.EntityArrow;
+import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerMouseOverEntityEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
@@ -38,7 +39,13 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
             if (targetEntity instanceof CustomEntity) {
                 return;
             }
-            player.kick(PlayerKickEvent.Reason.INVALID_PVE, "Attempting to interact with an invalid entity");
+
+            PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(player, PlayerHackDetectedEvent.HackType.INVALID_PVE);
+            player.getServer().getPluginManager().callEvent(event);
+
+            if(event.isKick())
+                player.kick(PlayerKickEvent.Reason.INVALID_PVE, "Attempting to interact with an invalid entity");
+
             log.warn(player.getServer().getLanguage().tr("nukkit.player.invalidEntity", player.getName()));
             return;
         }

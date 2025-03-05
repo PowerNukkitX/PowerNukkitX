@@ -13,16 +13,11 @@ import cn.nukkit.utils.SequencedHashSet;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.ObjIntConsumer;
+import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.dynamic;
 import static com.google.common.base.Preconditions.checkArgument;
@@ -31,13 +26,12 @@ import static com.google.common.base.Preconditions.checkArgument;
  * @author MagicDroidX (Nukkit Project)
  */
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class AvailableCommandsPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.AVAILABLE_COMMANDS_PACKET;
-
     private static final ObjIntConsumer<HandleByteBuf> WRITE_BYTE = (s, v) -> s.writeByte((byte) v);
     private static final ObjIntConsumer<HandleByteBuf> WRITE_SHORT = HandleByteBuf::writeShortLE;
     private static final ObjIntConsumer<HandleByteBuf> WRITE_INT = HandleByteBuf::writeIntLE;
@@ -75,18 +69,12 @@ public class AvailableCommandsPacket extends DataPacket {
     public final List<CommandEnumConstraintData> constraints = new ObjectArrayList<>();
 
     @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
-    @Override
     public void decode(HandleByteBuf byteBuf) {
-        //non
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         Set<String> enumValuesSet = new ObjectOpenHashSet<>();
         SequencedHashSet<String> subCommandValues = new SequencedHashSet<>();
         Set<String> postfixSet = new ObjectOpenHashSet<>();
@@ -141,13 +129,14 @@ public class AvailableCommandsPacket extends DataPacket {
 
         // Add Constraint Enums
         // Not need it for now
-        /*for(CommandEnumData enumData : packet.getConstraints().stream().map(CommandEnumConstraintData::getEnumData).collect(Collectors.toList())) {
+        /*
+        for(CommandEnum enumData : constraints.stream().map(CommandEnumConstraintData::getEnumData).collect(Collectors.toList())) {
             if (enumData.isSoft()) {
                 softEnumsSet.add(enumData);
             } else {
                 enumsSet.add(enumData);
             }
-            enumValuesSet.addAll(Arrays.asList(enumData.getValues()));
+            enumValuesSet.addAll(Arrays.asList(String.valueOf(enumData.getValues())));
         }*/
 
         List<String> enumValues = new ObjectArrayList<>(enumValuesSet);
@@ -303,6 +292,11 @@ public class AvailableCommandsPacket extends DataPacket {
         for (String value : values) {
             byteBuf.writeString(value);
         }
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.AVAILABLE_COMMANDS_PACKET;
     }
 
     public void handle(PacketHandler handler) {

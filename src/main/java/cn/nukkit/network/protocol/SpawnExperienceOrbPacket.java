@@ -3,13 +3,12 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpawnExperienceOrbPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.SPAWN_EXPERIENCE_ORB_PACKET;
-
     public float x;
     public float y;
     public float z;
@@ -22,14 +21,13 @@ public class SpawnExperienceOrbPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeUnsignedVarInt(this.amount);
     }
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.SPAWN_EXPERIENCE_ORB_PACKET;
     }
 
     public void handle(PacketHandler handler) {

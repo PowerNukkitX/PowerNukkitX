@@ -2,21 +2,14 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContainerClosePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.CONTAINER_CLOSE_PACKET;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     public int windowId;
     public boolean wasServerInitiated = true;
     /**
@@ -36,6 +29,11 @@ public class ContainerClosePacket extends DataPacket {
         byteBuf.writeByte((byte) this.windowId);
         byteBuf.writeByte((byte) this.type.getNetworkType());
         byteBuf.writeBoolean(this.wasServerInitiated);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.CONTAINER_CLOSE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -4,21 +4,15 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class ToggleCrafterSlotRequestPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.TOGGLE_CRAFTER_SLOT_REQUEST;
-
     public Vector3f blockPosition;
     public byte slot;
     public boolean disabled;
-
-    @Override
-    public int pid() {
-        return (byte) NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -29,10 +23,14 @@ public class ToggleCrafterSlotRequestPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeVector3f(this.blockPosition);
         byteBuf.writeByte(this.slot);
         byteBuf.writeBoolean(this.disabled);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.TOGGLE_CRAFTER_SLOT_REQUEST;
     }
 
     public void handle(PacketHandler handler) {

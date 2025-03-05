@@ -19,22 +19,18 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author joserobjr
  * @since 2021-07-06
  */
-
-
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class NPCDialoguePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
-    
     private static final NPCDialogAction[] ACTIONS = NPCDialogAction.values();
     
     public long runtimeEntityId;
@@ -43,11 +39,6 @@ public class NPCDialoguePacket extends DataPacket {
     public String sceneName = "";
     public String npcName = "";
     public String actionJson = "";
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -69,9 +60,16 @@ public class NPCDialoguePacket extends DataPacket {
         byteBuf.writeString(actionJson);
     }
 
+
+
     public enum NPCDialogAction {
         OPEN,
-        CLOSE
+        CLOSE;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.NPC_DIALOGUE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

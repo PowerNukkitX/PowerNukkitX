@@ -1,9 +1,14 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.*;
 
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ServerboundDiagnosticsPacket extends DataPacket {
-
     public float avgFps;
     public float avgServerSimTickTimeMS;
     public float avgClientSimTickTimeMS;
@@ -13,11 +18,6 @@ public class ServerboundDiagnosticsPacket extends DataPacket {
     public float avgEndFrameTimeMS;
     public float avgRemainderTimePercent;
     public float avgUnaccountedTimePercent;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.SERVERBOUND_DIAGNOSTICS_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -34,7 +34,12 @@ public class ServerboundDiagnosticsPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        // server bound
+
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.SERVERBOUND_DIAGNOSTICS_PACKET;
     }
 
     @Override

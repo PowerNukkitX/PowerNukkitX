@@ -4,19 +4,13 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServerPostMovePositionPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.SERVER_POST_MOVE_POSITION;
-
     public Vector3f position;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -25,8 +19,12 @@ public class ServerPostMovePositionPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeVector3f(this.position);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.SERVER_POST_MOVE_POSITION;
     }
 
     public void handle(PacketHandler handler) {

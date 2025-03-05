@@ -8,18 +8,13 @@ import lombok.ToString;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class RemoveEntityPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.REMOVE_ENTITY_PACKET;
-
     public long eid;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -28,8 +23,12 @@ public class RemoveEntityPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeEntityUniqueId(this.eid);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.REMOVE_ENTITY_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -5,38 +5,29 @@ import cn.nukkit.network.protocol.types.CommandOriginData;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
 import cn.nukkit.network.protocol.types.CommandOutputType;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommandOutputPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.COMMAND_OUTPUT_PACKET;
-
     public final List<CommandOutputMessage> messages = new ObjectArrayList<>();
     public CommandOriginData commandOriginData;
     public CommandOutputType type;
     public int successCount;
     public String data;
 
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        //non
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUnsignedVarInt(this.commandOriginData.type.ordinal());
         byteBuf.writeUUID(this.commandOriginData.uuid);
         byteBuf.writeString(this.commandOriginData.requestId);// unknown
@@ -59,6 +50,11 @@ public class CommandOutputPacket extends DataPacket {
         if (this.type == CommandOutputType.DATA_SET) {
             byteBuf.writeString(this.data);// unknown
         }
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.COMMAND_OUTPUT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

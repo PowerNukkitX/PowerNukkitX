@@ -53,7 +53,7 @@ public abstract class BedrockChannelInitializer<T extends BedrockSession> extend
         this.postInitChannel(channel);
     }
 
-    protected void preInitChannel(Channel channel) throws Exception {
+    protected void preInitChannel(Channel channel) {
         channel.pipeline().addLast(FrameIdCodec.NAME, RAKNET_FRAME_CODEC);
 
         int rakVersion = channel.config().getOption(RakChannelOption.RAK_PROTOCOL_VERSION);
@@ -73,15 +73,13 @@ public abstract class BedrockChannelInitializer<T extends BedrockSession> extend
     }
 
     private static CompressionStrategy getCompression(CompressionAlgorithm algorithm) {
-        if (algorithm == PacketCompressionAlgorithm.ZLIB) {
-            return ZLIB_RAW_STRATEGY;
-        } else if (algorithm == PacketCompressionAlgorithm.SNAPPY) {
-            return SNAPPY_STRATEGY;
-        } else if (algorithm == PacketCompressionAlgorithm.NONE) {
-            return NOOP_STRATEGY;
-        } else {
-            throw new UnsupportedOperationException("Unsupported compression algorithm: " + algorithm);
-        }
+        return switch (algorithm) {
+            case PacketCompressionAlgorithm.ZLIB -> ZLIB_RAW_STRATEGY;
+            case PacketCompressionAlgorithm.SNAPPY -> SNAPPY_STRATEGY;
+            case PacketCompressionAlgorithm.NONE -> NOOP_STRATEGY;
+            default ->
+                    throw new UnsupportedOperationException("Unsupported compression algorithm: " + algorithm);
+        };
     }
 
     protected void postInitChannel(Channel channel) throws Exception {

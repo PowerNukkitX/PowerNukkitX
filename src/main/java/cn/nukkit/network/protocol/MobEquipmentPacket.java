@@ -9,17 +9,12 @@ import lombok.ToString;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class MobEquipmentPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.MOB_EQUIPMENT_PACKET;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
     public long eid;
     public Item item;
     public int inventorySlot;
@@ -42,6 +37,11 @@ public class MobEquipmentPacket extends DataPacket {
         byteBuf.writeByte((byte) this.inventorySlot);
         byteBuf.writeByte((byte) this.hotbarSlot);
         byteBuf.writeByte((byte) this.windowId);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.MOB_EQUIPMENT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

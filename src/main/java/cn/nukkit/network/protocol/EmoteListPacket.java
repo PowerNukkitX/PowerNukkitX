@@ -2,26 +2,19 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
 
-
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmoteListPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.EMOTE_LIST_PACKET;
     public long runtimeId;
     public final List<UUID> pieceIds = new ObjectArrayList<>();
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -35,12 +28,16 @@ public class EmoteListPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeEntityRuntimeId(runtimeId);
         byteBuf.writeUnsignedVarInt(pieceIds.size());
         for (UUID id : pieceIds) {
             byteBuf.writeUUID(id);
         }
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.EMOTE_LIST_PACKET;
     }
 
     public void handle(PacketHandler handler) {

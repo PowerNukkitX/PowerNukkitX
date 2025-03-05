@@ -5,29 +5,28 @@ import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeathInfoPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.DEATH_INFO_PACKET;
-
     public TranslationContainer translation;
 
     @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
-
-    @Override
     public void decode(HandleByteBuf byteBuf) {
-        //empty
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeString(translation.getText());
         byteBuf.writeArray(translation.getParameters(), byteBuf::writeString);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.DEATH_INFO_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -8,19 +8,19 @@ import cn.nukkit.network.protocol.types.camera.aimassist.CameraAimAssistPreset;
 import cn.nukkit.network.protocol.types.camera.aimassist.CameraAimAssistPresetsPacketOperation;
 import cn.nukkit.utils.OptionalValue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.*;
 
 import java.util.List;
 import java.util.Map;
 
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class CameraAimAssistPresetsPacket extends DataPacket {
-    @Override
-    public int pid() {
-        return ProtocolInfo.CAMERA_AIM_ASSIST_PRESETS_PACKET;
-    }
-
     private final List<CameraAimAssistCategories> categories = new ObjectArrayList<>();
     private final List<CameraAimAssistPreset> presets = new ObjectArrayList<>();
-
     private CameraAimAssistPresetsPacketOperation cameraAimAssistPresetsPacketOperation;
 
     @Override
@@ -35,11 +35,6 @@ public class CameraAimAssistPresetsPacket extends DataPacket {
         byteBuf.writeArray(categories, this::writeCategories);
         byteBuf.writeArray(presets, this::writeCameraAimAssist);
         byteBuf.writeByte(cameraAimAssistPresetsPacketOperation.ordinal());
-    }
-
-    @Override
-    public void handle(PacketHandler handler) {
-        handler.handle(this);
     }
 
     private void writeCategories(HandleByteBuf byteBuf, CameraAimAssistCategories categories) {
@@ -129,7 +124,18 @@ public class CameraAimAssistPresetsPacket extends DataPacket {
         preset.setHandSettings(OptionalValue.of(byteBuf.readOptional(null, byteBuf::readString)));
         return preset;
     }
+
     private Map.Entry<String, String> readItemSetting(HandleByteBuf byteBuf) {
         return Map.entry(byteBuf.readString(), byteBuf.readString());
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.CAMERA_AIM_ASSIST_PRESETS_PACKET;
+    }
+
+    @Override
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
     }
 }

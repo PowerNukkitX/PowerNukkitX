@@ -20,6 +20,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.PlayerInputTick;
+import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
@@ -910,13 +911,10 @@ public class HandleByteBuf extends ByteBuf {
     public void writeAttributeList(Attribute[] attributes) {
         this.writeUnsignedVarInt(attributes.length);
         for (Attribute attribute : attributes) {
-            this.writeFloatLE(attribute.getMinValue());
-            this.writeFloatLE(attribute.getMaxValue());
-            this.writeFloatLE(attribute.getValue());
-            this.writeFloatLE(attribute.getDefaultMinimum());
-            this.writeFloatLE(attribute.getDefaultMaximum());
-            this.writeFloatLE(attribute.getDefaultValue());
             this.writeString(attribute.getName());
+            this.writeFloatLE(attribute.getMinValue());
+            this.writeFloatLE(attribute.getValue());
+            this.writeFloatLE(attribute.getMaxValue());
         }
     }
 
@@ -1533,6 +1531,19 @@ public class HandleByteBuf extends ByteBuf {
         }
     }
 
+    public void writePropertySyncData(PropertySyncData data) {
+        writeUnsignedVarInt(data.intProperties().length);
+        for (int i = 0, len = data.intProperties().length; i < len; ++i) {
+            writeUnsignedVarInt(i);
+            writeVarInt(data.intProperties()[i]);
+        }
+        writeUnsignedVarInt(data.floatProperties().length);
+        for (int i = 0, len = data.floatProperties().length; i < len; ++i) {
+            writeUnsignedVarInt(i);
+            writeFloatLE(data.floatProperties()[i]);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T[] readArray(Class<T> clazz, Function<HandleByteBuf, T> function) {
         ArrayDeque<T> deque = new ArrayDeque<>();
@@ -1582,7 +1593,7 @@ public class HandleByteBuf extends ByteBuf {
 
     protected ItemStackRequestAction readRequestActionData(ItemStackRequestActionType type) {
         return switch (type) {
-            case CRAFT_REPAIR_AND_DISENCHANT -> new CraftGrindstoneAction(readUnsignedVarInt(), readByte(), readInt());
+            case CRAFT_REPAIR_AND_DISENCHANT -> new CraftGrindstoneAction(readUnsignedVarInt(), readByte(), readVarInt());
             case CRAFT_LOOM -> new CraftLoomAction(readString());
             case CRAFT_RECIPE_AUTO -> {
                 int recipeId = readUnsignedVarInt();

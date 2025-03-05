@@ -3,28 +3,22 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.BlockChangeEntry;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.*;
 
 import java.util.List;
 
-
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateSubChunkBlocksPacket extends DataPacket {
-    public final int chunkX;
-    public final int chunkY;
-    public final int chunkZ;
+    public int chunkX;
+    public int chunkY;
+    public int chunkZ;
 
     public final List<BlockChangeEntry> standardBlocks = new ObjectArrayList<>();
     public final List<BlockChangeEntry> extraBlocks = new ObjectArrayList<>();
-
-    public UpdateSubChunkBlocksPacket(int chunkX, int chunkY, int chunkZ) {
-        this.chunkX = chunkX;
-        this.chunkY = chunkY;
-        this.chunkZ = chunkZ;
-    }
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.UPDATE_SUB_CHUNK_BLOCKS_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -92,8 +86,9 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
         return result;
     }
 
-    public String toString() {
-        return "UpdateSubChunkBlocksPacket(chunkX=" + this.chunkX + ", chunkY=" + this.chunkY + ", chunkZ=" + this.chunkZ + ", standardBlocks=" + this.standardBlocks + ", extraBlocks=" + this.extraBlocks + ")";
+    @Override
+    public int pid() {
+        return ProtocolInfo.UPDATE_SUB_CHUNK_BLOCKS_PACKET;
     }
 
     public void handle(PacketHandler handler) {

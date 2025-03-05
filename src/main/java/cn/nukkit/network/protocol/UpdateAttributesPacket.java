@@ -7,21 +7,15 @@ import lombok.ToString;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateAttributesPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.UPDATE_ATTRIBUTES_PACKET;
-
     public Attribute[] entries;
     public long entityId;
     public long frame;//tick
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -48,6 +42,11 @@ public class UpdateAttributesPacket extends DataPacket {
             }
         }
         byteBuf.writeUnsignedVarInt((int) this.frame);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.UPDATE_ATTRIBUTES_PACKET;
     }
 
     public void handle(PacketHandler handler) {

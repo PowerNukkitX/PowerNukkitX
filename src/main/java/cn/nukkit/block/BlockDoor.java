@@ -355,7 +355,7 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
 
         playOpenCloseSound();
 
-        var source = this.clone().add(0.5, 0.5, 0.5);
+        var source = this.getVector3().add(0.5, 0.5, 0.5);
         VibrationEvent vibrationEvent = open ? new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_OPEN) : new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_CLOSE);
         this.level.getVibrationManager().callVibrationEvent(vibrationEvent);
         return true;

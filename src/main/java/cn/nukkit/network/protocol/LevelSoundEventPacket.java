@@ -2,18 +2,16 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class LevelSoundEventPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
-
     public static final int SOUND_ITEM_USE_ON = dynamic(0);
     public static final int SOUND_HIT = dynamic(1);
     public static final int SOUND_STEP = dynamic(2);
@@ -437,9 +435,7 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_GOAT_BASS_7 = dynamic(420);
     public static final int SOUND_GOAT_BASS_8 = dynamic(421);
     public static final int SOUND_GOAT_BASS_9 = dynamic(422);
-    // 423 is unused
-    // 424 is unused
-    // 425 is unused
+    // 423-425 are unused
     public static final int SOUND_IMITATE_WARDEN = dynamic(426);
     public static final int SOUND_LISTENING_ANGRY = dynamic(427);
     public static final int SOUND_ITEM_GIVEN = dynamic(428);
@@ -572,7 +568,6 @@ public class LevelSoundEventPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUnsignedVarInt(this.sound);
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeVarInt(this.extraData);
@@ -583,7 +578,7 @@ public class LevelSoundEventPacket extends DataPacket {
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -13,11 +13,13 @@ import cn.nukkit.network.protocol.StartGamePacket;
 import cn.nukkit.network.protocol.SyncEntityPropertyPacket;
 import cn.nukkit.network.protocol.TrimDataPacket;
 import cn.nukkit.network.protocol.types.TrimData;
+import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.ItemRuntimeIdRegistry;
 import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Slf4j
@@ -33,8 +35,17 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
         var entries = new ObjectOpenHashSet<ItemRegistryPacket.Entry>();
 
-        for(ItemRuntimeIdRegistry.ItemData data : Registries.ITEM_RUNTIMEID.getITEMDATA()) {
-            CompoundTag tag = Registries.ITEM.getItemComponents().containsCompound(data.identifier()) ?  new CompoundTag().put("components", Registries.ITEM.getItemComponents().getCompound(data.identifier()).getCompound("components")) : Registries.ITEM.getCustomItemDefinition().containsKey(data.identifier()) ? Registries.ITEM.getCustomItemDefinition().get(data.identifier()).nbt() : new CompoundTag();
+        for(ItemRuntimeIdRegistry.ItemData data : ItemRuntimeIdRegistry.getITEMDATA()) {
+            CompoundTag tag = new CompoundTag();
+
+            if (ItemRegistry.getItemComponents().containsCompound(data.identifier())) {
+                CompoundTag item_tag = ItemRegistry.getItemComponents().getCompound(data.identifier());
+                tag.putCompound("components", item_tag.getCompound("components"));
+            }
+            else if (Registries.ITEM.getCustomItemDefinition().containsKey(data.identifier())) {
+                tag = Registries.ITEM.getCustomItemDefinition().get(data.identifier()).nbt();
+            }
+
             entries.add(new ItemRegistryPacket.Entry(data.identifier(), data.runtimeId(), data.version(), data.componentBased(), tag));
         }
 

@@ -419,9 +419,9 @@ public class Server {
             Registries.ENTITY.init();
             Registries.BLOCKENTITY.init();
             Registries.BLOCKSTATE_ITEMMETA.init();
-            Registries.BLOCKSTATE.init();
             Registries.ITEM_RUNTIMEID.init();
             Registries.BLOCK.init();
+            Registries.BLOCKSTATE.init();
             Registries.ITEM.init();
             Registries.CREATIVE.init();
             Registries.BIOME.init();
@@ -476,7 +476,6 @@ public class Server {
         this.pluginManager = new PluginManager(this, this.commandMap);
         this.pluginManager.subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this.consoleSender);
         this.pluginManager.registerInterface(JavaPluginLoader.class);
-        //this.pluginManager.registerInterface(JSPluginLoader.class);
         this.console.setExecutingCommands(true);
 
         try {
@@ -637,7 +636,6 @@ public class Server {
 //        JSIInitiator.reset();
 //        JSFeatures.clearFeatures();
 //        JSFeatures.initInternalFeatures();
-//        this.pluginManager.registerInterface(JSPluginLoader.class);
         this.scoreboardManager.read();
 
         log.info("Reloading Registries...");
@@ -823,7 +821,7 @@ public class Server {
 
     private void checkTickUpdates(int currentTick) {
         if (getSettings().levelSettings().alwaysTickPlayers()) {
-            for (Player p : new ArrayList<>(this.players.values())) {
+            for (Player p : this.players.values()) {
                 p.onUpdate(currentTick);
             }
         }
@@ -1209,8 +1207,11 @@ public class Server {
         if (sender == null) {
             throw new ServerException("CommandSender is not valid");
         }
-        //pre
+
         var cmd = commandLine.stripLeading();
+        if (cmd.isEmpty()) {
+            return 0;
+        }
         cmd = cmd.charAt(0) == '/' ? cmd.substring(1) : cmd;
 
         return this.commandMap.executeCommand(sender, cmd);

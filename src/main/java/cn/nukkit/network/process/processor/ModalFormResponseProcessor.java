@@ -4,9 +4,17 @@ import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.event.player.PlayerFormRespondedEvent;
 import cn.nukkit.event.player.PlayerSettingsRespondedEvent;
-import cn.nukkit.form.handler.FormResponseHandler;
-import cn.nukkit.form.window.FormWindow;
-import cn.nukkit.form.window.FormWindowCustom;
+import cn.nukkit.form.element.Element;
+import cn.nukkit.form.element.custom.ElementDropdown;
+import cn.nukkit.form.element.custom.ElementInput;
+import cn.nukkit.form.element.custom.ElementSlider;
+import cn.nukkit.form.element.custom.ElementStepSlider;
+import cn.nukkit.form.element.custom.ElementToggle;
+import cn.nukkit.form.response.CustomResponse;
+import cn.nukkit.form.response.ElementResponse;
+import cn.nukkit.form.response.Response;
+import cn.nukkit.form.window.CustomForm;
+import cn.nukkit.form.window.Form;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ModalFormResponsePacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -28,29 +36,34 @@ public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormRes
         }
         
         if (playerHandle.getFormWindows().containsKey(pk.formId)) {
-            FormWindow window = playerHandle.getFormWindows().remove(pk.formId);
-            window.setResponse(pk.data.trim());
+            Form<?> window = playerHandle.getFormWindows().remove(pk.formId);
 
-            for (FormResponseHandler handler : window.getHandlers()) {
-                handler.handle(player, pk.formId);
-            }
+            Response response = window.respond(player, pk.data.trim());
 
-            PlayerFormRespondedEvent event = new PlayerFormRespondedEvent(player, pk.formId, window);
+            PlayerFormRespondedEvent event = new PlayerFormRespondedEvent(player, pk.formId, window, response);
             player.getServer().getPluginManager().callEvent(event);
         } else if (playerHandle.getServerSettings().containsKey(pk.formId)) {
-            FormWindow window = playerHandle.getServerSettings().get(pk.formId);
-            window.setResponse(pk.data.trim());
+            Form<?> window = playerHandle.getServerSettings().get(pk.formId);
 
-            for (FormResponseHandler handler : window.getHandlers()) {
-                handler.handle(player, pk.formId);
-            }
+            Response response = window.respond(player, pk.data.trim());
 
-            PlayerSettingsRespondedEvent event = new PlayerSettingsRespondedEvent(player, pk.formId, window);
+            PlayerSettingsRespondedEvent event = new PlayerSettingsRespondedEvent(player, pk.formId, window, response);
             player.getServer().getPluginManager().callEvent(event);
 
-            //Set back new settings if not been cancelled
-            if (!event.isCancelled() && window instanceof FormWindowCustom formWindowCustom)
-                formWindowCustom.setElementsFromResponse();
+            // Apply responses as default settings
+            if (!event.isCancelled() && window instanceof CustomForm customForm && response != null) {
+                ((CustomResponse) response).getResponses().forEach((i, res) -> {
+                    Element e = customForm.elements().get(i);
+                    switch (e) {
+                        case ElementDropdown dropdown -> dropdown.defaultOption(((ElementResponse) res).elementId());
+                        case ElementInput input -> input.defaultText(String.valueOf(res));
+                        case ElementSlider slider -> slider.defaultValue((Float) res);
+                        case ElementToggle toggle -> toggle.defaultValue((Boolean) res);
+                        case ElementStepSlider stepSlider -> stepSlider.defaultStep(((ElementResponse) res).elementId());
+                        default -> log.warn("Illegal element {} within ServerSettings", e);
+                    }
+                });
+            }
         } else log.warn("{} sent unknown form id {}", player.getName(), pk.formId);
 
     }

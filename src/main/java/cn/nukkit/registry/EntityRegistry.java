@@ -1,5 +1,6 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.Nukkit;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.custom.CustomEntity;
@@ -9,7 +10,9 @@ import cn.nukkit.entity.passive.*;
 import cn.nukkit.entity.projectile.*;
 import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -23,6 +26,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +45,8 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     private static final Object2ObjectOpenHashMap<String, EntityRegistry.EntityDefinition> DEFINITIONS = new Object2ObjectOpenHashMap<>();
     private static final List<EntityRegistry.EntityDefinition> CUSTOM_ENTITY_DEFINITIONS = new ArrayList<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static byte[] TAG;
+
 
     @Override
     public void init() {
@@ -170,6 +178,8 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(WIND_CHARGE_PROJECTILE, "", 143, false, false), EntityWindCharge.class);
         registerInternal(new EntityDefinition(BOGGED, "", 144, true, true), EntityBogged.class);
         registerInternal(new EntityDefinition(CREAKING, "", 146, true, true), EntityCreaking.class);
+
+        this.rebuildTag();
     }
 
     public Class<? extends Entity> getEntityClass(String id) {
@@ -407,6 +417,29 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
                     .putString("id", id)
                     .putInt("rid", rid)
                     .putBoolean("summonable", summonable);
+        }
+    }
+
+    public byte[] getTag() {
+        return TAG.clone();
+    }
+
+    public void rebuildTag() {
+        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("entity_identifiers.nbt")) {
+            if (inputStream == null) {
+                throw new AssertionError("Could not find entity_identifiers.nbt");
+            }
+
+            BufferedInputStream bis = new BufferedInputStream(inputStream);
+            CompoundTag nbt = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
+            ListTag<CompoundTag> list = nbt.getList("idlist", CompoundTag.class);
+            for (var customEntityDefinition : Registries.ENTITY.getCustomEntityDefinitions()) {
+                list.add(customEntityDefinition.toNBT());
+            }
+            nbt.putList("idlist", list);
+            TAG = NBTIO.write(nbt, ByteOrder.BIG_ENDIAN, true);
+        } catch (Exception e) {
+            throw new AssertionError("Error whilst loading entity_identifiers.dat", e);
         }
     }
 }

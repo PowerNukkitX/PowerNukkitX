@@ -1,17 +1,14 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookEditPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.BOOK_EDIT_PACKET;
-
     public Action action;
     public int inventorySlot;
     public int pageNumber;
@@ -23,11 +20,6 @@ public class BookEditPacket extends DataPacket {
     public String title;
     public String author;
     public String xuid;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -66,7 +58,12 @@ public class BookEditPacket extends DataPacket {
         ADD_PAGE,
         DELETE_PAGE,
         SWAP_PAGES,
-        SIGN_BOOK
+        SIGN_BOOK;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.BOOK_EDIT_PACKET;
     }
 
     public void handle(PacketHandler handler) {

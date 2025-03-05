@@ -6,19 +6,18 @@ import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.*;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class CraftingDataPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.CRAFTING_DATA_PACKET;
     public static final String CRAFTING_TAG_CRAFTING_TABLE = "crafting_table";
     public static final String CRAFTING_TAG_CARTOGRAPHY_TABLE = "cartography_table";
     public static final String CRAFTING_TAG_STONECUTTER = "stonecutter";
@@ -33,34 +32,6 @@ public class CraftingDataPacket extends DataPacket {
     private final List<BrewingRecipe> brewingEntries = new ArrayList<>();
     private final List<ContainerRecipe> containerEntries = new ArrayList<>();
     public boolean cleanRecipes;
-
-    public void addNetworkIdRecipe(List<Recipe> recipes) {
-        entries.addAll(recipes);
-    }
-
-    public void addFurnaceRecipe(FurnaceRecipe... recipe) {
-        Collections.addAll(entries, recipe);
-    }
-
-    public void addSmokerRecipe(SmokerRecipe... recipe) {
-        Collections.addAll(entries, recipe);
-    }
-
-    public void addBlastFurnaceRecipe(BlastFurnaceRecipe... recipe) {
-        Collections.addAll(entries, recipe);
-    }
-
-    public void addCampfireRecipeRecipe(CampfireRecipe... recipe) {
-        Collections.addAll(entries, recipe);
-    }
-
-    public void addBrewingRecipe(BrewingRecipe... recipe) {
-        Collections.addAll(brewingEntries, recipe);
-    }
-
-    public void addContainerRecipe(ContainerRecipe... recipe) {
-        Collections.addAll(containerEntries, recipe);
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -193,6 +164,34 @@ public class CraftingDataPacket extends DataPacket {
         byteBuf.writeBoolean(cleanRecipes);
     }
 
+    public void addNetworkIdRecipe(List<Recipe> recipes) {
+        entries.addAll(recipes);
+    }
+
+    public void addFurnaceRecipe(FurnaceRecipe... recipe) {
+        Collections.addAll(entries, recipe);
+    }
+
+    public void addSmokerRecipe(SmokerRecipe... recipe) {
+        Collections.addAll(entries, recipe);
+    }
+
+    public void addBlastFurnaceRecipe(BlastFurnaceRecipe... recipe) {
+        Collections.addAll(entries, recipe);
+    }
+
+    public void addCampfireRecipeRecipe(CampfireRecipe... recipe) {
+        Collections.addAll(entries, recipe);
+    }
+
+    public void addBrewingRecipe(BrewingRecipe... recipe) {
+        Collections.addAll(brewingEntries, recipe);
+    }
+
+    public void addContainerRecipe(ContainerRecipe... recipe) {
+        Collections.addAll(containerEntries, recipe);
+    }
+
     protected void writeRequirement(HandleByteBuf buffer, RecipeUnlockingRequirement requirement) {
         buffer.writeByte(requirement.getContext().ordinal());
         if (requirement.getContext().equals(RecipeUnlockingRequirement.UnlockingContext.NONE)) {
@@ -205,7 +204,7 @@ public class CraftingDataPacket extends DataPacket {
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.CRAFTING_DATA_PACKET;
     }
 
     public void handle(PacketHandler handler) {

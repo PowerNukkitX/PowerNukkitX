@@ -3,18 +3,22 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponse;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseStatus;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 @ToString
-@NoArgsConstructor
+@AllArgsConstructor
 public class ItemStackResponsePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ITEM_STACK_RESPONSE_PACKET;
-
     public final List<ItemStackResponse> entries = new ArrayList<>();
+
+    @Override
+    public void decode(HandleByteBuf byteBuf) {
+
+    }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
@@ -36,14 +40,10 @@ public class ItemStackResponsePacket extends DataPacket {
             });
         });
     }
-    @Override
-    public void decode(HandleByteBuf byteBuf) {
-        throw new UnsupportedOperationException();//client bound
-    }
 
     @Override
     public int pid() {
-        return NETWORK_ID;
+        return ProtocolInfo.ITEM_STACK_RESPONSE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

@@ -1,24 +1,18 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.EnumSet;
 import java.util.Set;
 
-
+@Getter
+@Setter
 @ToString
-@NoArgsConstructor
+@AllArgsConstructor
 public class PlayerArmorDamagePacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.PLAYER_ARMOR_DAMAGE_PACKET;
     public final Set<PlayerArmorDamageFlag> flags = EnumSet.noneOf(PlayerArmorDamageFlag.class);
     public final int[] damage = new int[5];
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -49,7 +43,12 @@ public class PlayerArmorDamagePacket extends DataPacket {
         CHESTPLATE,
         LEGGINGS,
         BOOTS,
-        BODY
+        BODY;
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.PLAYER_ARMOR_DAMAGE_PACKET;
     }
 
     public void handle(PacketHandler handler) {

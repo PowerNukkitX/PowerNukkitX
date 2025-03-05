@@ -3,26 +3,20 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.UUID;
 
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerSkinPacket extends DataPacket {
-
     public UUID uuid;
     public Skin skin;
     public String newSkinName;
     public String oldSkinName;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.PLAYER_SKIN_PACKET;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -42,6 +36,11 @@ public class PlayerSkinPacket extends DataPacket {
         byteBuf.writeString(newSkinName);
         byteBuf.writeString(oldSkinName);
         byteBuf.writeBoolean(skin.isTrusted() || Server.getInstance().getSettings().playerSettings().forceSkinTrusted());
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.PLAYER_SKIN_PACKET;
     }
 
     public void handle(PacketHandler handler) {

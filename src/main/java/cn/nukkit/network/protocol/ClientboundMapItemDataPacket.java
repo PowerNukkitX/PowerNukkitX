@@ -6,10 +6,7 @@ import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.Utils;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -19,12 +16,13 @@ import java.util.List;
  * @author CreeperFace
  * @since 5.3.2017
  */
+
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientboundMapItemDataPacket extends DataPacket {
-
-    public static final int NETWORK_ID = ProtocolInfo.CLIENTBOUND_MAP_ITEM_DATA_PACKET;
     public static final long[] EMPTY_LONGS = new long[0];
 
     public long[] eids = EMPTY_LONGS;
@@ -46,15 +44,9 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     public int[] colors = EmptyArrays.EMPTY_INTS;
     public BufferedImage image = null;
 
-    //update
     public static final int TEXTURE_UPDATE = 0x02;
     public static final int DECORATIONS_UPDATE = 0x04;
     public static final int ENTITIES_UPDATE = 0x08;
-
-    @Override
-    public int pid() {
-        return NETWORK_ID;
-    }
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -142,10 +134,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     }
 
     public static class MapDecorator {
-
-
         public static final MapDecorator[] EMPTY_ARRAY = new MapDecorator[0];
-
         public byte rotation;
         public byte icon;
         public byte offsetX;
@@ -153,13 +142,11 @@ public class ClientboundMapItemDataPacket extends DataPacket {
         public String label;
         public Color color;
     }
-
     @Getter
     public static class MapTrackedObject {
         private final Type type;
         private long entityId;
         private Vector3 position;
-
         public MapTrackedObject(long entityId) {
             this.type = Type.ENTITY;
             this.entityId = entityId;
@@ -172,8 +159,13 @@ public class ClientboundMapItemDataPacket extends DataPacket {
 
         public enum Type {
             ENTITY,
-            BLOCK
+            BLOCK;
         }
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.CLIENTBOUND_MAP_ITEM_DATA_PACKET;
     }
 
     public void handle(PacketHandler handler) {

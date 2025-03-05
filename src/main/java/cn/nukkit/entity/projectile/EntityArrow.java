@@ -2,7 +2,9 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.item.ItemArrow;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -23,6 +25,8 @@ public class EntityArrow extends SlenderProjectile {
     }
 
     protected int pickupMode;
+
+    protected ItemArrow item;
 
     public EntityArrow(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
@@ -139,6 +143,11 @@ public class EntityArrow extends SlenderProjectile {
     @Override
     protected void afterCollisionWithEntity(Entity entity) {
         if (hadCollision) {
+            if(getArrowItem() != null) {
+                if(getArrowItem().getTippedArrowPotion() != null) {
+                    getArrowItem().getTippedArrowPotion().getEffects(false).forEach(entity::addEffect);
+                }
+            }
             close();
         } else {
             setMotion(getMotion().divide(-4));
@@ -169,6 +178,17 @@ public class EntityArrow extends SlenderProjectile {
 
     public void setPickupMode(int pickupMode) {
         this.pickupMode = pickupMode;
+    }
+
+    public void setItem(ItemArrow arrow) {
+        this.item = arrow;
+        if(arrow.getTippedArrowPotion() != null) {
+            this.setDataProperty(EntityDataTypes.CUSTOM_DISPLAY, arrow.getTippedArrowPotion().id() + 1);
+        }
+    }
+
+    public ItemArrow getArrowItem() {
+        return this.item;
     }
 
     @Override

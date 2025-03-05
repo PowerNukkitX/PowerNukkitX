@@ -370,7 +370,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         level.addSound(this, Sound.MOB_ARMOR_STAND_BREAK);
 
         //todo: initiator should be a entity who kill it but not itself
-        level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.getLastDamageCause() instanceof EntityDamageByEntityEvent byEntity ? byEntity.getDamager() : this, this.clone(), VibrationType.ENTITY_DIE));
+        level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.getLastDamageCause() instanceof EntityDamageByEntityEvent byEntity ? byEntity.getDamager() : this, this.getVector3(), VibrationType.ENTITY_DIE));
     }
 
     @Override
