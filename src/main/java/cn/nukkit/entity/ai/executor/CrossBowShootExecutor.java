@@ -88,7 +88,7 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
         }
 
         if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
-        Location clone = this.target.clone();
+        Location clone = this.target.getLocation();
 
         if (entity.distanceSquared(target) > maxShootDistanceSquared) {
             //更新寻路target

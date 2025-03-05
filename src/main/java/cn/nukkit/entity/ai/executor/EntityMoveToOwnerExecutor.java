@@ -7,6 +7,7 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityOwnable;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,7 +50,7 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
             if (player == null) return false;
 
             //获取目的地位置（这个clone很重要）
-            Player target = (Player) player.clone();
+            Location target = player.getLocation();
             if (target.distanceSquared(entity) <= minFollowRangeSquared) return false;
 
             //不允许跨世界

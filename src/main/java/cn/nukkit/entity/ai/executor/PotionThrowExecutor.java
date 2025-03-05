@@ -81,7 +81,7 @@ public class PotionThrowExecutor implements EntityControl, IBehaviorExecutor {
         }
 
         if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
-        Location clone = this.target.clone();
+        Location clone = this.target.getLocation();
 
         if (entity.distanceSquared(target) > maxShootDistanceSquared) {
             setRouteTarget(entity, clone);
