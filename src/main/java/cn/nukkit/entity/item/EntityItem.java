@@ -54,6 +54,7 @@ public class EntityItem extends Entity {
 
     @Override
     public float getGravity() {
+        if(!getDataFlag(EntityFlag.HAS_GRAVITY)) return 0f;
         return 0.04f;
     }
 
