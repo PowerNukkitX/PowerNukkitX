@@ -730,7 +730,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.onGround || movX != 0 || movY != 0 || movZ != 0) {
             boolean onGround = false;
 
-            AxisAlignedBB realBB = this.boundingBox.clone();
+            double shrinkFaktor = 0.01d;
+
+            AxisAlignedBB realBB = this.boundingBox.shrink(shrinkFaktor, shrinkFaktor, shrinkFaktor).clone();
             realBB.setMaxY(realBB.getMinY());
             realBB.setMinY(realBB.getMinY() - 0.5);
 
