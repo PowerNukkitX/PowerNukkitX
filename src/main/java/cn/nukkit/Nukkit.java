@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -66,6 +67,7 @@ public class Nukkit {
     public static int DEBUG = 1;
     public static int CHROME_DEBUG_PORT = -1;
     public static List<String> JS_DEBUG_LIST = new LinkedList<>();
+    public static String LANGUAGE = null;
 
     public static void main(String[] args) {
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
@@ -78,10 +80,12 @@ public class Nukkit {
             Properties properties = new Properties();
             try (FileReader reader = new FileReader(propertiesPath.toFile())) {
                 properties.load(reader);
+
                 String value = properties.getProperty("disable-auto-bug-report", "false");
                 if (value.equalsIgnoreCase("on") || value.equals("1")) {
                     value = "true";
                 }
+
                 disableSentry.set(Boolean.parseBoolean(value.toLowerCase(Locale.ENGLISH)));
             } catch (IOException e) {
                 log.error("Failed to load server.properties to check disable-auto-bug-report.", e);
@@ -91,7 +95,9 @@ public class Nukkit {
         // Force IPv4 since Nukkit is not compatible with IPv6
         System.setProperty("java.net.preferIPv4Stack", "true");
         System.setProperty("log4j.skipJansi", "false");
-        System.getProperties().putIfAbsent("io.netty.allocator.type", "unpooled"); // Disable memory pooling unless specified
+
+        // Disable memory pooling unless specified
+        System.getProperties().putIfAbsent("io.netty.allocator.type", "unpooled");
 
         // Force Mapped ByteBuffers for LevelDB till fixed.
         System.setProperty("leveldb.mmap", "true");
@@ -100,16 +106,45 @@ public class Nukkit {
         InternalLoggerFactory.setDefaultFactory(Log4J2LoggerFactory.INSTANCE);
 
         // Define args
+        if (!loadOptions(args)) {
+            return;
+        }
+
+        try {
+            if (TITLE) {
+                System.out.print((char) 0x1b + "]0;PowerNukkitX is starting up..." + (char) 0x07);
+            }
+            new Server(PATH, DATA_PATH, PLUGIN_PATH, LANGUAGE);
+        } catch (Throwable t) {
+            log.error("", t);
+        }
+
+        Nukkit.onShutdown();
+    }
+
+    private static boolean loadOptions(String[] args) {
         OptionParser parser = new OptionParser();
         parser.allowsUnrecognizedOptions();
-        OptionSpec<Void> helpSpec = parser.accepts("help", "Shows this page").forHelp();
+
+        OptionSpec<Void> helpSpec = parser.accepts("help", "Shows this page")
+                .forHelp();
         OptionSpec<Void> ansiSpec = parser.accepts("disable-ansi", "Disables console coloring");
         OptionSpec<Void> titleSpec = parser.accepts("enable-title", "Enables title at the top of the window");
-        OptionSpec<String> vSpec = parser.accepts("v", "Set verbosity of logging").withRequiredArg().ofType(String.class);
-        OptionSpec<String> verbositySpec = parser.accepts("verbosity", "Set verbosity of logging").withRequiredArg().ofType(String.class);
-        OptionSpec<String> languageSpec = parser.accepts("language", "Set a predefined language").withOptionalArg().ofType(String.class);
-        OptionSpec<Integer> chromeDebugPortSpec = parser.accepts("chrome-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(Integer.class);
-        OptionSpec<String> jsDebugPortSpec = parser.accepts("js-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(String.class);
+        OptionSpec<String> vSpec = parser.accepts("v", "Set verbosity of logging")
+                .withRequiredArg()
+                .ofType(String.class);
+        OptionSpec<String> verbositySpec = parser.accepts("verbosity", "Set verbosity of logging")
+                .withRequiredArg()
+                .ofType(String.class);
+        OptionSpec<String> languageSpec = parser.accepts("language", "Set a predefined language")
+                .withOptionalArg()
+                .ofType(String.class);
+        OptionSpec<Integer> chromeDebugPortSpec = parser.accepts("chrome-debug", "Debug javascript using chrome dev tool with specific port.")
+                .withRequiredArg()
+                .ofType(Integer.class);
+        OptionSpec<String> jsDebugPortSpec = parser.accepts("js-debug", "Debug javascript using chrome dev tool with specific port.")
+                .withRequiredArg()
+                .ofType(String.class);
 
         // Parse arguments
         OptionSet options = parser.parse(args);
@@ -121,48 +156,42 @@ public class Nukkit {
             } catch (IOException e) {
                 // ignore
             }
-            return;
+            return false;
         }
 
         ANSI = !options.has(ansiSpec);
         TITLE = options.has(titleSpec);
 
-        String verbosity = options.valueOf(vSpec);
-        if (verbosity == null) {
-            verbosity = options.valueOf(verbositySpec);
-        }
-        if (verbosity != null) {
+        String verbosity = Optional.ofNullable(options.valueOf(vSpec))
+                .orElse(options.valueOf(verbositySpec));
 
+        if (verbosity != null) {
             try {
                 Level level = Level.valueOf(verbosity);
-                setLogLevel(level);
+                Nukkit.setLogLevel(level);
             } catch (Exception e) {
                 // ignore
             }
         }
 
-        String language = options.valueOf(languageSpec);
+        LANGUAGE = options.valueOf(languageSpec);
 
         if (options.has(chromeDebugPortSpec)) {
             CHROME_DEBUG_PORT = options.valueOf(chromeDebugPortSpec);
         }
 
         if (options.has(jsDebugPortSpec)) {
-            JS_DEBUG_LIST = Arrays.stream(options.valueOf(jsDebugPortSpec).split(",")).toList();
+            JS_DEBUG_LIST = Arrays.stream(options.valueOf(jsDebugPortSpec).split(","))
+                    .toList();
         }
+        return true;
+    }
 
-        try {
-            if (TITLE) {
-                System.out.print((char) 0x1b + "]0;PowerNukkitX is starting up..." + (char) 0x07);
-            }
-            new Server(PATH, DATA_PATH, PLUGIN_PATH, language);
-        } catch (Throwable t) {
-            log.error("", t);
-        }
-
+    private static void onShutdown() {
         if (TITLE) {
             System.out.print((char) 0x1b + "]0;Stopping Server..." + (char) 0x07);
         }
+
         log.info("Stopping other threads");
 
         PGZIPOutputStream.getSharedThreadPool().shutdownNow();
@@ -190,36 +219,22 @@ public class Nukkit {
     }
 
     private static Properties getGitInfo() {
-        InputStream gitFileStream = null;
-        try {
-            gitFileStream = Nukkit.class.getModule().getResourceAsStream("git.properties");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (gitFileStream == null) {
-            return null;
-        }
-        Properties properties = new Properties();
-        try {
-            properties.load(gitFileStream);
+        try (InputStream gitFileStream = Nukkit.class.getModule().getResourceAsStream("git.properties")){
+            Properties properties = new Properties();
+            try {
+                properties.load(gitFileStream);
+                return properties;
+            } catch (IOException e) {
+                return null;
+            }
         } catch (IOException e) {
             return null;
         }
-        return properties;
     }
 
     private static String getVersion() {
-        InputStream resourceAsStream = null;
-        try {
-            resourceAsStream = Nukkit.class.getModule().getResourceAsStream("git.properties");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (resourceAsStream == null) {
-            return "Unknown-PNX-SNAPSHOT";
-        }
         Properties properties = new Properties();
-        try (InputStream is = resourceAsStream;
+        try (InputStream is = Nukkit.class.getModule().getResourceAsStream("git.properties");
              InputStreamReader reader = new InputStreamReader(is);
              BufferedReader buffered = new BufferedReader(reader)) {
             properties.load(buffered);
