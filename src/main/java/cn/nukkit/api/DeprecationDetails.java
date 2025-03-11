@@ -1,15 +1,20 @@
 package cn.nukkit.api;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Describe the deprecation with more details. This is persisted to the class file, so it can be read without javadocs.
+ * Describe the deprecation with more details.
+ * This is persisted to the class file, so it can be read without javadocs.
  */
 
-@Retention(RetentionPolicy.CLASS)
-@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,
-        ElementType.FIELD, ElementType.PACKAGE})
 @Documented
+@Retention(RetentionPolicy.CLASS)
+@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE,
+        ElementType.TYPE, ElementType.FIELD, ElementType.PACKAGE})
 public @interface DeprecationDetails {
     /**
      * The version which marked this element as deprecated.
@@ -27,7 +32,8 @@ public @interface DeprecationDetails {
     String replaceWith() default "";
 
     /**
-     * The maintainer party that has added this depreciation. For example: PowerNukkit, Cloudburst Nukkit, and Nukkit
+     * The maintainer party that has added this depreciation.
+     * For example: PowerNukkit, Cloudburst Nukkit, and Nukkit
      */
     String by() default "";
 }
