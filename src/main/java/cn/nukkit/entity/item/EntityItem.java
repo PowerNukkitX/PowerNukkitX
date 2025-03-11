@@ -17,6 +17,8 @@ import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 /**
  * @author MagicDroidX
  */
@@ -31,11 +33,11 @@ public class EntityItem extends Entity {
     protected String thrower;
     protected Item item;
     protected int pickupDelay;
+    private boolean mergeItems;
 
     public EntityItem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
 
     @Override
     public float getWidth() {
@@ -101,6 +103,10 @@ public class EntityItem extends Entity {
             return;
         }
 
+        if(this.namedTag.contains("Mergeable")) {
+            this.mergeItems = this.namedTag.getBoolean("Mergeable");
+        } else mergeItems = true;
+
         this.item = NBTIO.getItemHelper(this.namedTag.getCompound("Item"));
         this.setDataFlag(EntityFlag.HAS_GRAVITY, true);
 
@@ -127,7 +133,7 @@ public class EntityItem extends Entity {
                 (source.getCause() == DamageCause.ENTITY_EXPLOSION ||
                         source.getCause() == DamageCause.BLOCK_EXPLOSION) &&
                         !this.isInsideOfWater() && (this.item == null ||
-                        this.item.getId() != Item.NETHER_STAR)) && super.attack(source);
+                        !Objects.equals(this.item.getId(), Item.NETHER_STAR))) && super.attack(source);
     }
 
     @Override
@@ -144,13 +150,14 @@ public class EntityItem extends Entity {
 
         this.lastUpdate = currentTick;
 
-        if (this.age % 60 == 0 && this.onGround && this.getItem() != null && this.isAlive()) {
+        if (this.mergeItems && this.age % 60 == 0 && this.onGround && this.getItem() != null && this.isAlive()) {
             if (this.getItem().getCount() < this.getItem().getMaxStackSize()) {
                 for (Entity entity : this.getLevel().getNearbyEntities(getBoundingBox().grow(1, 1, 1), this, false)) {
                     if (entity instanceof EntityItem) {
                         if (!entity.isAlive()) {
                             continue;
                         }
+                        if(!((EntityItem) entity).mergeItems) continue;
                         Item closeItem = ((EntityItem) entity).getItem();
                         if (!closeItem.equals(getItem(), true, true)) {
                             continue;
@@ -199,17 +206,17 @@ public class EntityItem extends Entity {
             }*/
 
             String bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0);
-            if (bid == BlockID.FLOWING_WATER || bid == BlockID.WATER
-                    || (bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1)) == BlockID.FLOWING_WATER
-                    || bid == BlockID.WATER
+            if (Objects.equals(bid, BlockID.FLOWING_WATER) || Objects.equals(bid, BlockID.WATER)
+                    || Objects.equals(bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.FLOWING_WATER)
+                    || Objects.equals(bid, BlockID.WATER)
             ) {
                 //item is fully in water or in still water
                 this.motionY -= this.getGravity() * -0.015;
             } else if (lavaResistant && (
-                    this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0) == BlockID.FLOWING_LAVA
-                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0) == BlockID.LAVA
-                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1) == BlockID.FLOWING_LAVA
-                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1) == BlockID.LAVA
+                    Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0), BlockID.FLOWING_LAVA)
+                            || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0), BlockID.LAVA)
+                            || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.FLOWING_LAVA)
+                            || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.LAVA)
             )) {
                 //item is fully in lava or in still lava
                 this.motionY -= this.getGravity() * -0.015;
@@ -280,6 +287,8 @@ public class EntityItem extends Entity {
             if (this.thrower != null) {
                 this.namedTag.putString("Thrower", this.thrower);
             }
+
+            this.namedTag.putBoolean("Mergeable", this.mergeItems);
         }
     }
 
