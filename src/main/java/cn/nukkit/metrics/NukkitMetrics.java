@@ -99,6 +99,8 @@ public class NukkitMetrics {
             return pnxCliVersion = "No PNX-CLI";
         }
         try {
+            // Safe usage: CLI path is a system-controlled variable, not user input
+            // nosemgrep: java.lang.security.command-injection-process-builder
             var process = new ProcessBuilder(cliPath, "-V").start();
             process.waitFor(10, TimeUnit.MICROSECONDS);
             var content = new String(process.getInputStream().readAllBytes()).replace("\n", "");
