@@ -183,7 +183,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
     public void emitSound(@Nullable Player player) {
 
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, this.add(0.5, 0.5, 0.5).clone(), VibrationType.BLOCK_CHANGE));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player.getLocation() : this, this.add(0.5, 0.5, 0.5).clone(), VibrationType.BLOCK_CHANGE));
 
         Instrument instrument = this.getInstrument();
 

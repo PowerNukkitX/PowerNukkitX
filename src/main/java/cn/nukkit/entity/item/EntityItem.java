@@ -54,6 +54,7 @@ public class EntityItem extends Entity {
 
     @Override
     public float getGravity() {
+        if(!getDataFlag(EntityFlag.HAS_GRAVITY)) return 0f;
         return 0.04f;
     }
 
@@ -245,6 +246,7 @@ public class EntityItem extends Entity {
                 this.server.getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     this.age = 0;
+                    respawnToAll(); //HACK: Client also despawns Item after 5 mins, so we have to respawn for client
                 } else {
                     this.kill();
                     hasUpdate = true;

@@ -101,7 +101,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             this.target = newTarget;
         }
         if (this.lookTarget == null) {
-            this.lookTarget = target.clone();
+            this.lookTarget = target.getLocation();
         }
 
         //some check
@@ -126,8 +126,8 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
         if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
         //set target and look target
-        setRouteTarget(entity, this.target.clone());
-        setLookTarget(entity, this.lookTarget.clone());
+        setRouteTarget(entity, this.target.getLocation());
+        setLookTarget(entity, this.lookTarget);
 
         var floor = target.floor();
         if (oldTarget == null || !oldTarget.equals(floor)) entity.getBehaviorGroup().setForceUpdateRoute(true);

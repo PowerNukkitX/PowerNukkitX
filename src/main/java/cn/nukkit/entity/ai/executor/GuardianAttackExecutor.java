@@ -71,7 +71,7 @@ public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor 
         }
 
         if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
-        Location clone = this.target.clone();
+        Location clone = this.target.getLocation();
 
         setLookTarget(entity, clone);
 

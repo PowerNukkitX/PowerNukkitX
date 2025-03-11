@@ -94,7 +94,7 @@ public class ItemPotion extends Item {
         }
         PotionType potion = PotionType.get(this.getDamage());
 
-        player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.clone(), VibrationType.DRINKING));
+        player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.getLocation(), VibrationType.DRINKING));
 
         if (player.isAdventure() || player.isSurvival()) {
             --this.count;

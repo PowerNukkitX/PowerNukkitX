@@ -249,6 +249,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected int inAirTicks = 0;
     protected int startAirTicks = 5;
+    protected float horizontalFlySpeed = DEFAULT_FLY_SPEED;
+    protected float verticalFlySpeed = 1F;
     protected AdventureSettings adventureSettings;
     protected boolean checkMovement = true;
     protected PlayerFood foodData = null;
@@ -728,7 +730,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.onGround || movX != 0 || movY != 0 || movZ != 0) {
             boolean onGround = false;
 
-            AxisAlignedBB realBB = this.boundingBox.clone();
+            double shrinkFaktor = 0.01d;
+
+            AxisAlignedBB realBB = this.boundingBox.shrink(shrinkFaktor, shrinkFaktor, shrinkFaktor).clone();
             realBB.setMaxY(realBB.getMinY());
             realBB.setMinY(realBB.getMinY() - 0.5);
 
@@ -855,8 +859,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
-    public Player clone() {
-        throw new RuntimeException("Should not be cloning Player!");
+    public Location clone() {
+        return getLocation();
     }
 
     protected void handleMovement(Location clientPos) {
@@ -1638,6 +1642,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.getAdventureSettings().get(Type.ALLOW_FLIGHT);
     }
 
+    public void setHorizontalFlySpeed(float speed) {
+        this.horizontalFlySpeed = speed;
+    }
+
+    public float getHorizontalFlySpeed() {
+        return horizontalFlySpeed;
+    }
+
+    public void setVerticalFlySpeed(float speed) {
+        this.verticalFlySpeed = speed;
+    }
+
+    public float getVerticalFlySpeed() {
+        return verticalFlySpeed;
+    }
 
     /**
      * 设置允许修改世界(未知原因设置完成之后，玩家不允许挖掘方块，但是可以放置方块)
