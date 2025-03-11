@@ -31,6 +31,7 @@ public class EntityItem extends Entity {
     protected String thrower;
     protected Item item;
     protected int pickupDelay;
+    protected boolean autoDespawn = true;
 
     public EntityItem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -94,6 +95,10 @@ public class EntityItem extends Entity {
 
         if (this.namedTag.contains("Thrower")) {
             this.thrower = this.namedTag.getString("Thrower");
+        }
+
+        if(this.namedTag.contains("AutoDespawn")) {
+            this.autoDespawn = this.namedTag.getBoolean("AutoDespawn");
         }
 
         if (!this.namedTag.contains("Item")) {
@@ -241,11 +246,12 @@ public class EntityItem extends Entity {
 
             this.updateMovement();
 
-            if (this.age > 6000) {
+            if (autoDespawn && this.age > 6000) {
                 ItemDespawnEvent ev = new ItemDespawnEvent(this);
                 this.server.getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     this.age = 0;
+                    respawnToAll(); //HACK: Client also despawns Item after 5 mins, so we have to respawn for client
                 } else {
                     this.kill();
                     hasUpdate = true;
