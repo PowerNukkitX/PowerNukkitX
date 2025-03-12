@@ -12,9 +12,5 @@ public enum CreakingHeartState {
     DORMANT("dormant"),
     AWAKE("awake");
 
-    private final String name;
-
-    CreakingHeartState(String name) {
-        this.name = name;
-    }
+    CreakingHeartState(String name) {}
 }
