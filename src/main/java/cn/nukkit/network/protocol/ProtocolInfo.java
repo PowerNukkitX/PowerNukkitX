@@ -11,11 +11,11 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(776);
+    int CURRENT_PROTOCOL = dynamic(786);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.21.60");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.21.70");
 
-    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 21, 6, 0, 0);
+    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 21, 7, 0, 0);
 
     int BLOCK_STATE_VERSION_NO_REVISION = (MINECRAFT_SEMVERSION.major() << 24) | //major
             (MINECRAFT_SEMVERSION.minor() << 16) | //minor
@@ -46,7 +46,7 @@ public interface ProtocolInfo {
     int UPDATE_BLOCK_PACKET = 0x15;
     int ADD_PAINTING_PACKET = 0x16;
     int TICK_SYNC_PACKET = 0x17;
-    int LEVEL_SOUND_EVENT_PACKET_V1 = 0x18;
+    int LEVEL_SOUND_EVENT_PACKET_V1_DEPRECATED = 0x18;
     int LEVEL_EVENT_PACKET = 0x19;
     int BLOCK_EVENT_PACKET = 0x1a;
     int ENTITY_EVENT_PACKET = 0x1b;
@@ -141,7 +141,7 @@ public interface ProtocolInfo {
     int SCRIPT_CUSTOM_EVENT_PACKET = 0x75;
     int SPAWN_PARTICLE_EFFECT_PACKET = 0x76;
     int AVAILABLE_ENTITY_IDENTIFIERS_PACKET = 0x77;
-    int LEVEL_SOUND_EVENT_PACKET_V2 = 0x78;
+    int LEVEL_SOUND_EVENT_PACKET_V2_DEPRECATED = 0x78;
     int NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET = 0x79;
     int BIOME_DEFINITION_LIST_PACKET = 0x7a;
     int LEVEL_SOUND_EVENT_PACKET = 0x7b;
@@ -238,4 +238,7 @@ public interface ProtocolInfo {
     int CAMERA_AIM_ASSIST_PRESETS_PACKET = 320;
     int CLIENT_CAMERA_AIM_ASSIST_PACKET = 321;
     int CLIENT_MOVEMENT_PREDICTION_SYNC_PACKET = 322;
+    int UPDATE_CLIENT_OPTIONS_PACKET = 323;
+    int PLAYER_VIDEO_CAPTURE_PACKET = 324;
+    int PLAYER_UPDATE_ENTITY_OVERRIDES_PACKET = 325;
 }

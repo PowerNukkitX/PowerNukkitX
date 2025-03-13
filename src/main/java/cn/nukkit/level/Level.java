@@ -735,7 +735,7 @@ public class Level implements Metadatable {
      * @param isGlobal   the is global,default false
      */
     public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, boolean isGlobal) {
-        LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
+        LevelSoundEventPacket pk = new LevelSoundEventPacket();
         pk.sound = type;
         pk.extraData = data;
         pk.entityIdentifier = identifier;

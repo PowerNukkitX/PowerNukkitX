@@ -3994,7 +3994,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.lastPlayerdLevelUpSoundTime = this.age;
             this.level.addLevelSoundEvent(
                     this,
-                    LevelSoundEventPacketV2.SOUND_LEVELUP,
+                    LevelSoundEventPacket.SOUND_LEVELUP,
                     Math.min(7, level / 5) << 28,
                     "",
                     false, false
