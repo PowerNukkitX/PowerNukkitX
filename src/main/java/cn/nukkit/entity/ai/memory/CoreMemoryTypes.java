@@ -227,6 +227,8 @@ public interface CoreMemoryTypes {
 
     MemoryType<EntityItem> NEAREST_ITEM = new MemoryType<>("minecraft:nearest_item");
 
+    MemoryType<Entity> NEAREST_FOOD = new MemoryType<>("minecraft:nearest_food");
+
     MemoryType<EntityVillagerV2> GOSSIP_TARGET = new MemoryType<>("minecraft:gossip_target");
 
     MemoryType<Integer> LAST_ATTACK_CAST = new MemoryType<>("minecraft:last_attack_cast", 0);
@@ -239,6 +241,9 @@ public interface CoreMemoryTypes {
     MemoryType<Integer> LAST_CONVERSION = new MemoryType<>("minecraft:last_conversion", 0);
 
     MemoryType<Integer> INVULNERABLE_TICKS = new MemoryType<>("minecraft:invulnerable_ticks", 0);
+
+    MemoryType<Integer> LAST_SITTING_CHECK = new MemoryType<>("minecraft:last_sitting_check", 0);
+
 
 
     /**
