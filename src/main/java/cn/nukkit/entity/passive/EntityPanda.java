@@ -127,38 +127,38 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
                         new Behavior(new PandaAttackEecutor(), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 new DistanceEvaluator(CoreMemoryTypes.ATTACK_TARGET, 16)
-                        ), 13, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 12, 1),
-                        new Behavior(new EntityBreedingExecutor<>(EntityPanda.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 11, 1),
-                        new Behavior(new EatingExecutor(), entity -> !getInventory().isEmpty(), 10, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FOOD, 0.4f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FOOD), 9, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.4f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 8, 1),
-                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 7, 1, 100),
+                        ), 14, 1),
+                        new Behavior(new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 13, 1),
+                        new Behavior(new EntityBreedingExecutor<>(EntityPanda.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 12, 1),
+                        new Behavior(new EatingExecutor(), entity -> !getInventory().isEmpty(), 11, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FOOD, 0.4f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FOOD), 10, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.4f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 9, 1),
                         new Behavior(new RollExecutor(), all(
                                 any(
                                         entity -> getVariant() == PLAYFUL,
                                         EntityAgeable::isBaby
                                 ),
                                 new ProbabilityEvaluator(1, getVariant() == PLAYFUL ? 1300 : 16000)
-                        ), 6, 1),
+                        ), 8, 1),
                         new Behavior(new ShakeExecutor(), all(
                                 entity -> getVariant() == WORRIED,
                                 entity -> getLevel().isThundering()
-                        ), 5, 1),
+                        ), 7, 1),
                         new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.4f, true, 2), all(
                                 entity -> getVariant() == WORRIED,
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 2.1)
-                        ), 4,1,  1),
+                        ), 6,1,  1),
                         new Behavior(new SneezingExecutor(), all(
                                 EntityAgeable::isBaby,
                                 new ProbabilityEvaluator(1, getVariant() == WEAK ? 500 : 6000)
-                        ), 3, 1, 1),
+                        ), 5, 1, 1),
                         new Behavior(new LayingExecutor(10), all(
                                 entity -> getVariant() == LAZY,
                                 new PandaSittingEvaluator(30)
-                        ), 5,2,  1),
-                        new Behavior(new SittingExecutor(10), new PandaSittingEvaluator(30), 5,2,  1),
+                        ), 4,2,  1),
+                        new Behavior(new SittingExecutor(10), new PandaSittingEvaluator(30), 3,2,  1),
+                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(2, 10), 7, 1, 100),
                         new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
                 Set.of(new NearestFeedingPlayerSensor(16, 0), new NearestPlayerSensor(16, 0, 20), new NearestTargetEntitySensor<>(0, 16, 20,
