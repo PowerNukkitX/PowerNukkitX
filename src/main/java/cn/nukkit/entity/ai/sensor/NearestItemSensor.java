@@ -1,12 +1,10 @@
 package cn.nukkit.entity.ai.sensor;
 
-import cn.nukkit.Player;
-import cn.nukkit.block.Block;
+
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.item.Item;
 import lombok.Getter;
 

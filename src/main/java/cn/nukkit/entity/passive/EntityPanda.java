@@ -41,6 +41,7 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
+import cn.nukkit.entity.ai.sensor.NearestItemSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.data.EntityDataTypes;
@@ -131,7 +132,7 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
                         new Behavior(new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 13, 1),
                         new Behavior(new EntityBreedingExecutor<>(EntityPanda.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 12, 1),
                         new Behavior(new EatingExecutor(), entity -> !getInventory().isEmpty(), 11, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FOOD, 0.4f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FOOD), 10, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_ITEM, 0.4f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_ITEM), 10, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.4f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 9, 1),
                         new Behavior(new RollExecutor(), all(
                                 any(
@@ -163,7 +164,7 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
                 ),
                 Set.of(new NearestFeedingPlayerSensor(16, 0), new NearestPlayerSensor(16, 0, 20), new NearestTargetEntitySensor<>(0, 16, 20,
                         List.of(CoreMemoryTypes.NEAREST_SHARED_ENTITY), entity -> (entity instanceof EntityMob mob && !(mob instanceof EntitySlime) && !(mob instanceof EntityMagmaCube) && !(mob instanceof EntityGhast) && !(mob instanceof EntityShulker) && !(mob instanceof EntityPhantom) && !(mob instanceof EntityEnderDragon)) || entity instanceof Player),
-                        new NearestTargetEntitySensor<>(16, 0, 20, List.of(CoreMemoryTypes.NEAREST_FOOD), entity -> entity instanceof EntityItem item && item.getItem().getId().equals(Block.BAMBOO))),
+                        new NearestItemSensor(16,0)),
                 Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
@@ -273,6 +274,13 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
         return inventory;
     }
 
+    @Override
+    public Item[] getDrops() {
+        return new Item[] {
+          Item.get(Block.BAMBOO, 0, Utils.rand(0, 3))
+        };
+    }
+
     private class PandaAttackEecutor extends MeleeAttackExecutor {
 
         public PandaAttackEecutor() {
@@ -331,6 +339,38 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
                     entity1 -> getDataFlag(EntityFlag.SITTING)
             ).evaluate(entity);
             return evaluate;
+        }
+    }
+
+    private class NearestItemSensor extends cn.nukkit.entity.ai.sensor.NearestItemSensor {
+
+        public NearestItemSensor(double range, double minRange) {
+            super(range, minRange);
+        }
+
+        @Override
+        public void sense(EntityIntelligent entity) {
+
+            EntityItem item = null;
+            double rangeSquared = this.range * this.range;
+            double minRangeSquared = this.minRange * this.minRange;
+            //寻找范围内最近的玩家
+            for (Entity e : entity.getLevel().getEntities()) {
+                if(e instanceof EntityItem entityItem) {
+                    if(entityItem.getItem().getId().equals(Block.BAMBOO)) {
+                        if (entity.distanceSquared(e) <= rangeSquared && entity.distanceSquared(e) >= minRangeSquared) {
+                            if (item == null) {
+                                item = entityItem;
+                            } else {
+                                if (entity.distanceSquared(entityItem) < entity.distanceSquared(item)) {
+                                    item = entityItem;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            entity.getMemoryStorage().put(CoreMemoryTypes.NEAREST_ITEM, item);
         }
     }
 
