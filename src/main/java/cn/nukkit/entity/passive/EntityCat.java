@@ -83,7 +83,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE),
                                         (entity) -> this.hasOwner()
                                 ),
-                                1, 1
+                                1, 1, 1, false
                         ),
                         //"流浪猫会寻找并攻击15格内的鸡[仅Java版]、兔子和幼年海龟" --- 来自Wiki https://minecraft.wiki/w/Cat#Bedrock_Edition
                         new Behavior(
