@@ -33,32 +33,36 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static cn.nukkit.utils.Utils.dynamic;
 
 /*
- * `_   _       _    _    _ _
- * | \ | |     | |  | |  (_) |
- * |  \| |_   _| | _| | ___| |_
- * | . ` | | | | |/ / |/ / | __|
- * | |\  | |_| |   <|   <| | |_
- * |_| \_|\__,_|_|\_\_|\_\_|\__|
- */
+ *   _____                       _   _       _    _    _ _  __   __
+ *  |  __ \                     | \ | |     | |  | |  (_) | \ \ / /
+ *  | |__) |____      _____ _ __|  \| |_   _| | _| | ___| |_ \ V /
+ *  |  ___/ _ \ \ /\ / / _ \ '__| . ` | | | | |/ / |/ / | __| > <
+ *  | |  | (_) \ V  V /  __/ |  | |\  | |_| |   <|   <| | |_ / . \
+ *  |_|   \___/ \_/\_/ \___|_|  |_| \_|\__,_|_|\_\_|\_\_|\__/_/ \_\
+ *
+ * PowerNukkitX is a fork of PowerNukkit, which is a Minecraft: Bedrock Edition server software written in Java.
+ * PowerNukkitX is open-source software and can be modified under the terms of its license.
+ *
+ * @authors PowerNukkitX Team
+ * @link https://powernukkit.org | docs: https://docs.powernukkit.org
+ * @license GNU Lesser General Public License v3.0
+*/
+
 
 /**
- * Nukkit启动类，包含{@code main}函数。<br>
- * The launcher class of Nukkit, including the {@code main} function.
- *
- * @author MagicDroidX(code) @ Nukkit Project
- * @author 粉鞋大妈(javadoc) @ Nukkit Project
+ * PowerNukkitX launcher class, including the {@code main nukkit} function.
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 @Slf4j
-public class Nukkit {
-    public final static Properties GIT_INFO = getGitInfo();
-    public final static String VERSION = getVersion();
-    public final static String CODENAME = dynamic("PowerNukkitX");
-    public final static String GIT_COMMIT = getGitCommit();
-    public final static String API_VERSION = dynamic("2.0.0");
-    public final static String PATH = System.getProperty("user.dir") + "/";
-    public final static String DATA_PATH = System.getProperty("user.dir") + "/";
-    public final static String PLUGIN_PATH = DATA_PATH + "plugins";
+public class PowerNukkitX {
+    public static final Properties GIT_INFO = getGitInfo();
+    public static final String VERSION = getVersion();
+    public static final String CODENAME = dynamic("PowerNukkitX");
+    public static final String GIT_COMMIT = getGitCommit();
+    public static final String API_VERSION = dynamic("2.0.0");
+    public static final String PATH = System.getProperty("user.dir") + "/";
+    public static final String DATA_PATH = System.getProperty("user.dir") + "/";
+    public static final String PLUGIN_PATH = DATA_PATH + "plugins";
     public static final long START_TIME = System.currentTimeMillis();
     public static boolean ANSI = true;
     public static boolean TITLE = false;
@@ -67,6 +71,11 @@ public class Nukkit {
     public static int CHROME_DEBUG_PORT = -1;
     public static List<String> JS_DEBUG_LIST = new LinkedList<>();
 
+    /**
+     * Main method to launch the PowerNukkitX server.
+     *
+     * @param args Command line arguments
+     */
     public static void main(String[] args) {
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
 
@@ -88,18 +97,12 @@ public class Nukkit {
             }
         }
 
-        // Force IPv4 since Nukkit is not compatible with IPv6
         System.setProperty("java.net.preferIPv4Stack", "true");
         System.setProperty("log4j.skipJansi", "false");
-        System.getProperties().putIfAbsent("io.netty.allocator.type", "unpooled"); // Disable memory pooling unless specified
-
-        // Force Mapped ByteBuffers for LevelDB till fixed.
+        System.getProperties().putIfAbsent("io.netty.allocator.type", "unpooled");
         System.setProperty("leveldb.mmap", "true");
-
-        // Netty logger for debug info
         InternalLoggerFactory.setDefaultFactory(Log4J2LoggerFactory.INSTANCE);
 
-        // Define args
         OptionParser parser = new OptionParser();
         parser.allowsUnrecognizedOptions();
         OptionSpec<Void> helpSpec = parser.accepts("help", "Shows this page").forHelp();
@@ -111,12 +114,10 @@ public class Nukkit {
         OptionSpec<Integer> chromeDebugPortSpec = parser.accepts("chrome-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(Integer.class);
         OptionSpec<String> jsDebugPortSpec = parser.accepts("js-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(String.class);
 
-        // Parse arguments
         OptionSet options = parser.parse(args);
 
         if (options.has(helpSpec)) {
             try {
-                // Display help page
                 parser.printHelpOn(System.out);
             } catch (IOException e) {
                 // ignore
@@ -132,7 +133,6 @@ public class Nukkit {
             verbosity = options.valueOf(verbositySpec);
         }
         if (verbosity != null) {
-
             try {
                 Level level = Level.valueOf(verbosity);
                 setLogLevel(level);
@@ -167,12 +167,11 @@ public class Nukkit {
 
         PGZIPOutputStream.getSharedThreadPool().shutdownNow();
         for (Thread thread : java.lang.Thread.getAllStackTraces().keySet()) {
-            if (!(thread instanceof InterruptibleThread)) {
-                continue;
-            }
-            log.debug("Stopping {} thread", thread.getClass().getSimpleName());
-            if (thread.isAlive()) {
-                thread.interrupt();
+            if (thread instanceof InterruptibleThread) {
+                log.debug("Stopping {} thread", thread.getClass().getSimpleName());
+                if (thread.isAlive()) {
+                    thread.interrupt();
+                }
             }
         }
 
@@ -180,83 +179,92 @@ public class Nukkit {
             System.out.print((char) 0x1b + "]0;Server Stopped" + (char) 0x07);
         }
         LogManager.shutdown();
-        Runtime.getRuntime().halt(0); // force exit
+        Runtime.getRuntime().halt(0);
     }
 
+    /**
+     * Checks if a short title is required based on the operating system.
+     *
+     * @return true if a short title is required, false otherwise
+     */
     private static boolean requiresShortTitle() {
-        //Shorter title for windows 8/2012
         String osName = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
         return osName.contains("windows") && (osName.contains("windows 8") || osName.contains("2012"));
     }
 
+    /**
+     * Retrieves Git information from the `git.properties` file.
+     *
+     * @return Properties object containing Git information
+     */
     private static Properties getGitInfo() {
-        InputStream gitFileStream = null;
-        try {
-            gitFileStream = Nukkit.class.getModule().getResourceAsStream("git.properties");
+        try (InputStream gitFileStream = PowerNukkitX.class.getModule().getResourceAsStream("git.properties")) {
+            if (gitFileStream == null) {
+                return null;
+            }
+            Properties properties = new Properties();
+            properties.load(gitFileStream);
+            return properties;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if (gitFileStream == null) {
-            return null;
-        }
-        Properties properties = new Properties();
-        try {
-            properties.load(gitFileStream);
-        } catch (IOException e) {
-            return null;
-        }
-        return properties;
     }
 
+    /**
+     * Retrieves the version from the `git.properties` file.
+     *
+     * @return Version string
+     */
     private static String getVersion() {
-        InputStream resourceAsStream = null;
-        try {
-            resourceAsStream = Nukkit.class.getModule().getResourceAsStream("git.properties");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (resourceAsStream == null) {
-            return "Unknown-PNX-SNAPSHOT";
-        }
-        Properties properties = new Properties();
-        try (InputStream is = resourceAsStream;
-             InputStreamReader reader = new InputStreamReader(is);
+        try (InputStream resourceAsStream = PowerNukkitX.class.getModule().getResourceAsStream("git.properties");
+             InputStreamReader reader = new InputStreamReader(resourceAsStream);
              BufferedReader buffered = new BufferedReader(reader)) {
+            if (resourceAsStream == null) {
+                return "Unknown-PNX-SNAPSHOT";
+            }
+            Properties properties = new Properties();
             properties.load(buffered);
             String line = properties.getProperty("git.build.version");
-            if ("${project.version}".equalsIgnoreCase(line)) {
-                return "Unknown-PNX-SNAPSHOT";
-            } else {
-                return line;
-            }
+            return "${project.version}".equalsIgnoreCase(line) ? "Unknown-PNX-SNAPSHOT" : line;
         } catch (IOException e) {
             return "Unknown-PNX-SNAPSHOT";
         }
     }
 
+    /**
+     * Retrieves the Git commit ID from the `git.properties` file.
+     *
+     * @return Git commit ID string
+     */
     private static String getGitCommit() {
-        StringBuilder version = new StringBuilder();
-        version.append("git-");
-        String commitId;
-        if (GIT_INFO == null || (commitId = GIT_INFO.getProperty("git.commit.id.abbrev")) == null) {
-            return version.append("null").toString();
-        }
-        return version.append(commitId).toString();
+        StringBuilder version = new StringBuilder("git-");
+        String commitId = GIT_INFO == null ? null : GIT_INFO.getProperty("git.commit.id.abbrev");
+        return version.append(commitId == null ? "null" : commitId).toString();
     }
 
+    /**
+     * Sets the log level for the application.
+     *
+     * @param level Log level to set
+     */
     public static void setLogLevel(Level level) {
         Preconditions.checkNotNull(level, "level");
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration log4jConfig = ctx.getConfiguration();
-        LoggerConfig loggerConfig = log4jConfig.getLoggerConfig(org.apache.logging.log4j.LogManager.ROOT_LOGGER_NAME);
+        LoggerConfig loggerConfig = log4jConfig.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
         loggerConfig.setLevel(level);
         ctx.updateLoggers();
     }
 
+    /**
+     * Retrieves the current log level for the application.
+     *
+     * @return Current log level
+     */
     public static Level getLogLevel() {
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration log4jConfig = ctx.getConfiguration();
-        LoggerConfig loggerConfig = log4jConfig.getLoggerConfig(org.apache.logging.log4j.LogManager.ROOT_LOGGER_NAME);
+        LoggerConfig loggerConfig = log4jConfig.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
         return loggerConfig.getLevel();
     }
 }
