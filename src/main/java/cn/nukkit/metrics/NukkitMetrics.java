@@ -99,7 +99,12 @@ public class NukkitMetrics {
             return pnxCliVersion = "No PNX-CLI";
         }
         try {
-            var process = new ProcessBuilder(cliPath, "-V").start();
+            // Ensure cliPath is a valid and safe path
+            File cliFile = new File(cliPath);
+            if (!cliFile.exists() || !cliFile.isFile()) {
+                return pnxCliVersion = "Invalid CLI path";
+            }
+            var process = new ProcessBuilder(cliFile.getAbsolutePath(), "-V").start();
             process.waitFor(10, TimeUnit.MICROSECONDS);
             var content = new String(process.getInputStream().readAllBytes()).replace("\n", "");
             if (content.isBlank() || !content.contains(".")) {
