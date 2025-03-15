@@ -140,7 +140,8 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
     }
 
     private static String checkManufacturerAndModel(HardwareAbstractionLayer hardware) {
-        if ("Microsoft Corporation".equals(hardware.getComputerSystem().getManufacturer()) && "Virtual Machine".equals(hardware.getComputerSystem().getModel())) {
+        if ("Microsoft Corporation".equals(hardware.getComputerSystem().getManufacturer()) &&
+                "Virtual Machine".equals(hardware.getComputerSystem().getModel())) {
             return "Microsoft Hyper-V";
         }
         return null;
@@ -308,11 +309,12 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
         usage = (double) usedPhysicalMemory / allPhysicalMemory * 100;
         usageColor = usage > 85 ? TextFormat.GOLD : TextFormat.GREEN;
         sender.sendMessage(TextFormat.GOLD + "OS memory: ");
-        sender.sendMessage(TextFormat.GOLD + "  Physical memory: " + usageColor + formatMB(usedPhysicalMemory) + " / " + formatMB(allPhysicalMemory) + ". (" + NukkitMath.round(usage, 2) + "%)");
+        sender.sendMessage(TextFormat.GOLD + "  Physical memory: " + usageColor + formatMB(usedPhysicalMemory) + " / " +
+                formatMB(allPhysicalMemory) + ". (" + NukkitMath.round(usage, 2) + "%)");
         usage = (double) usedVirtualMemory / allVirtualMemory * 100;
         usageColor = usage > 85 ? TextFormat.GOLD : TextFormat.GREEN;
-        sender.sendMessage(TextFormat.GOLD + "  Virtual memory: " + usageColor + formatMB(usedVirtualMemory) + " / " + formatMB(allVirtualMemory) + ". (" + NukkitMath.round(usage, 2) + "%)");
-
+        sender.sendMessage(TextFormat.GOLD + "  Virtual memory: " + usageColor + formatMB(usedVirtualMemory) + " / " +
+                formatMB(allVirtualMemory) + ". (" + NukkitMath.round(usage, 2) + "%)");
         if (!physicalMemories.isEmpty()) {
             sender.sendMessage(TextFormat.GOLD + "  Hardware list: ");
             for (var each : physicalMemories) {
