@@ -69,9 +69,9 @@ public class QueryPacketHandler extends SimpleChannelInboundHandler<DirectAddres
     private byte[] getToken(InetSocketAddress socketAddress) {
         MessageDigest digest;
         try {
-            digest = MessageDigest.getInstance("MD5");
+            digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException var3) {
-            throw new InternalError("MD5 not supported", var3);
+            throw new InternalError("SHA-256 not supported", var3);
         }
         digest.update(socketAddress.toString().getBytes());
         byte[] digested = digest.digest(token);
