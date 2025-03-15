@@ -13,7 +13,7 @@ plugins {
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
 }
 
-group = "cn.powernukkitx"
+group = "org"
 version = "2.0.0-SNAPSHOT"
 description = "powernukkitx"
 java.sourceCompatibility = JavaVersion.VERSION_17
@@ -21,7 +21,6 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 repositories {
     mavenLocal()
     mavenCentral()
-    maven("https://repo.maven.apache.org/maven2/")
     maven("https://jitpack.io")
     maven("https://repo.opencollab.dev/maven-releases/")
     maven("https://repo.opencollab.dev/maven-snapshots/")
@@ -72,7 +71,6 @@ java {
     withJavadocJar()
 }
 
-//Automatically download dependencies source code
 idea {
     module {
         isDownloadSources = true
@@ -147,7 +145,7 @@ tasks.test {
     useJUnitPlatform()
     jvmArgs(listOf("--add-opens", "java.base/java.lang=ALL-UNNAMED"))
     jvmArgs(listOf("--add-opens", "java.base/java.io=ALL-UNNAMED"))
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.jacocoTestReport {
@@ -156,7 +154,7 @@ tasks.jacocoTestReport {
         xml.required = true
         html.required = false
     }
-    dependsOn(tasks.test) // tests are required to run before generating the report
+    dependsOn(tasks.test)
 }
 
 tasks.withType<AbstractCopyTask>() {
@@ -169,7 +167,7 @@ tasks.named<AbstractArchiveTask>("sourcesJar") {
 
 tasks.jar {
     destinationDirectory = layout.buildDirectory
-    doLast {//execution phase
+    doLast {
         val f: RegularFile = archiveFile.get()
         val tf: RegularFile = layout.buildDirectory.file("${project.description}.jar").get()
         Files.copy(Path.of(f.asFile.absolutePath), Path.of(tf.asFile.absolutePath), StandardCopyOption.REPLACE_EXISTING)
@@ -184,7 +182,7 @@ tasks.shadowJar {
         )
     }
 
-    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer::class.java) //required to fix shadowJar log4j2 issue
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer::class.java)
 
     destinationDirectory = layout.buildDirectory
 }
@@ -201,11 +199,7 @@ tasks.javadoc {
     options.encoding = StandardCharsets.UTF_8.name()
     includes.add("**/**.java")
     val javadocOptions = options as CoreJavadocOptions
-    javadocOptions.addStringOption(
-        "source",
-        java.sourceCompatibility.toString()
-    )
-    // Suppress some meaningless warnings
+    javadocOptions.addStringOption("source", java.sourceCompatibility.toString())
     javadocOptions.addStringOption("Xdoclint:none", "-quiet")
 }
 
@@ -220,6 +214,14 @@ publishing {
                 maven("https://jitpack.io")
                 maven("https://repo.opencollab.dev/maven-releases/")
                 maven("https://repo.opencollab.dev/maven-snapshots/")
+                maven {
+                    name = "GitHubPackages"
+                    url = uri("https://maven.pkg.github.com/PowerNukkitX/PowerNukkitX")
+                    credentials {
+                        username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                        password = project.findProperty("gpr.token") as String? ?: System.getenv("TOKEN")
+                    }
+                }
             }
         }
     }
