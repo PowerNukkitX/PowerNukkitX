@@ -1,6 +1,7 @@
 package cn.nukkit;
 
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
+import cn.nukkit.utils.exception.GitInfoException;
 import com.google.common.base.Preconditions;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.internal.logging.InternalLoggerFactory;
@@ -206,7 +207,7 @@ public class PowerNukkitX {
             properties.load(gitFileStream);
             return properties;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GitInfoException("Failed to load git.properties", e);
         }
     }
 

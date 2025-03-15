@@ -97,33 +97,63 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
 
     private static String detectVM(HardwareAbstractionLayer hardware) {
         String vendor = hardware.getProcessor().getProcessorIdentifier().getVendor().trim();
-        if (VM_VENDOR.containsKey(vendor)) {
-            return VM_VENDOR.get(vendor);
-        }
+        String vm = checkVendor(vendor);
+        if (vm != null) return vm;
 
-        for (NetworkIF nif : hardware.getNetworkIFs()) {
+        vm = checkNetworkInterfaces(hardware.getNetworkIFs());
+        if (vm != null) return vm;
+
+        vm = checkModel(hardware.getComputerSystem().getModel());
+        if (vm != null) return vm;
+
+        vm = checkManufacturerAndModel(hardware);
+        if (vm != null) return vm;
+
+        vm = checkMemoryManufacturer(hardware.getMemory().getPhysicalMemory().get(0).getManufacturer());
+        if (vm != null) return vm;
+
+        return checkOSAndDocker();
+    }
+
+    private static String checkVendor(String vendor) {
+        return VM_VENDOR.get(vendor);
+    }
+
+    private static String checkNetworkInterfaces(List<NetworkIF> networkIFs) {
+        for (NetworkIF nif : networkIFs) {
             String mac = nif.getMacaddr().toUpperCase(Locale.ENGLISH);
             String oui = mac.length() > 7 ? mac.substring(0, 8) : mac;
             if (VM_MAC.containsKey(oui)) {
                 return VM_MAC.get(oui);
             }
         }
+        return null;
+    }
 
-        String model = hardware.getComputerSystem().getModel();
+    private static String checkModel(String model) {
         for (String vm : VM_MODELS) {
             if (model.contains(vm)) {
                 return vm;
             }
         }
+        return null;
+    }
 
-        if ("Microsoft Corporation".equals(hardware.getComputerSystem().getManufacturer()) && "Virtual Machine".equals(model)) {
+    private static String checkManufacturerAndModel(HardwareAbstractionLayer hardware) {
+        if ("Microsoft Corporation".equals(hardware.getComputerSystem().getManufacturer()) && "Virtual Machine".equals(hardware.getComputerSystem().getModel())) {
             return "Microsoft Hyper-V";
         }
+        return null;
+    }
 
-        if (hardware.getMemory().getPhysicalMemory().get(0).getManufacturer().equals("QEMU")) {
+    private static String checkMemoryManufacturer(String manufacturer) {
+        if ("QEMU".equals(manufacturer)) {
             return "QEMU";
         }
+        return null;
+    }
 
+    private static String checkOSAndDocker() {
         if (System.getProperty("os.name").toUpperCase(Locale.ENGLISH).contains("WINDOWS")) {
             return "Hyper-V";
         } else {
@@ -131,7 +161,6 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 return "Docker Container";
             }
         }
-
         return null;
     }
 
