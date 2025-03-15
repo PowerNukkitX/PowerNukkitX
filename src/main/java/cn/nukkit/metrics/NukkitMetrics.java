@@ -104,7 +104,8 @@ public class NukkitMetrics {
             if (!cliFile.exists() || !cliFile.isFile()) {
                 return pnxCliVersion = "Invalid CLI path";
             }
-            var process = new ProcessBuilder(cliFile.getAbsolutePath(), "-V").start();
+            // Use the absolute path to avoid any potential issues with relative paths
+            var process = new ProcessBuilder(cliFile.getCanonicalPath(), "-V").start();
             process.waitFor(10, TimeUnit.MICROSECONDS);
             var content = new String(process.getInputStream().readAllBytes()).replace("\n", "");
             if (content.isBlank() || !content.contains(".")) {
