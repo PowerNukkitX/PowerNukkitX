@@ -131,7 +131,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents a server object, global singleton.
- * <p>is instantiated in {@link Nukkit} and later the instance object is obtained via {@link cn.nukkit.Server#getInstance}.
+ * <p>is instantiated in {@link PowerNukkitX} and later the instance object is obtained via {@link cn.nukkit.Server#getInstance}.
  * The constructor method of {@link cn.nukkit.Server} performs a number of operations, including but not limited to initializing configuration files, creating threads, thread pools, start plugins, registering recipes, blocks, entities, items, etc.
  *
  * @author MagicDroidX
@@ -333,9 +333,9 @@ public class Server {
         levelArray = Level.EMPTY_ARRAY;
 
         org.apache.logging.log4j.Level targetLevel = org.apache.logging.log4j.Level.getLevel(this.settings.debugSettings().level());
-        org.apache.logging.log4j.Level currentLevel = Nukkit.getLogLevel();
+        org.apache.logging.log4j.Level currentLevel = PowerNukkitX.getLogLevel();
         if (targetLevel != null && targetLevel.intLevel() > currentLevel.intLevel()) {
-            Nukkit.setLogLevel(targetLevel);
+            PowerNukkitX.setLogLevel(targetLevel);
         }
 
         log.info("Loading {}...", TextFormat.GREEN + "server.properties" + TextFormat.RESET);
@@ -469,7 +469,7 @@ public class Server {
             System.exit(1);
         }
         this.resourcePackManager = new ResourcePackManager(
-                new ZippedResourcePackLoader(new File(Nukkit.DATA_PATH, "resource_packs")),
+                new ZippedResourcePackLoader(new File(PowerNukkitX.DATA_PATH, "resource_packs")),
                 new JarPluginResourcePackLoader(new File(this.pluginPath))
         );
         this.commandMap = new SimpleCommandMap(this);
@@ -480,7 +480,7 @@ public class Server {
 
         try {
             log.debug("Loading position tracking service");
-            this.positionTrackingService = new PositionTrackingService(new File(Nukkit.DATA_PATH, "services/position_tracking_db"));
+            this.positionTrackingService = new PositionTrackingService(new File(PowerNukkitX.DATA_PATH, "services/position_tracking_db"));
         } catch (IOException e) {
             log.error("Failed to start the Position Tracking DB service!", e);
         }
@@ -778,7 +778,7 @@ public class Server {
 
         log.info(this.getLanguage().tr("nukkit.server.defaultGameMode", getGamemodeString(this.getGamemode())));
         log.info(this.getLanguage().tr("nukkit.server.networkStart", TextFormat.YELLOW + (this.getIp().isEmpty() ? "*" : this.getIp()), TextFormat.YELLOW + String.valueOf(this.getPort())));
-        log.info(this.getLanguage().tr("nukkit.server.startFinished", String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
+        log.info(this.getLanguage().tr("nukkit.server.startFinished", String.valueOf((double) (System.currentTimeMillis() - PowerNukkitX.START_TIME) / 1000)));
 
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
         getPluginManager().callEvent(serverStartedEvent);
@@ -1016,7 +1016,7 @@ public class Server {
 
     // TODO: Fix title tick
     public void titleTick() {
-        if (!Nukkit.ANSI || !Nukkit.TITLE) {
+        if (!PowerNukkitX.ANSI || !PowerNukkitX.TITLE) {
             return;
         }
 
@@ -1029,7 +1029,7 @@ public class Server {
                 + " | " + this.getGitCommit()
                 + " | Online " + this.players.size() + "/" + this.getMaxPlayers()
                 + " | Memory " + usage;
-        if (!Nukkit.shortTitle) {
+        if (!PowerNukkitX.shortTitle) {
             title += " | U " + NukkitMath.round((this.network.getUpload() / 1024 * 1000), 2)
                     + " D " + NukkitMath.round((this.network.getDownload() / 1024 * 1000), 2) + " kB/s";
         }
@@ -1904,19 +1904,19 @@ public class Server {
     }
 
     public String getNukkitVersion() {
-        return Nukkit.VERSION;
+        return PowerNukkitX.VERSION;
     }
 
     public String getBStatsNukkitVersion() {
-        return Nukkit.VERSION;
+        return PowerNukkitX.VERSION;
     }
 
     public String getGitCommit() {
-        return Nukkit.GIT_COMMIT;
+        return PowerNukkitX.GIT_COMMIT;
     }
 
     public String getCodename() {
-        return Nukkit.CODENAME;
+        return PowerNukkitX.CODENAME;
     }
 
     public String getVersion() {
@@ -1924,7 +1924,7 @@ public class Server {
     }
 
     public String getApiVersion() {
-        return Nukkit.API_VERSION;
+        return PowerNukkitX.API_VERSION;
     }
 
     // endregion
