@@ -1,6 +1,6 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.Nukkit;
+import cn.nukkit.PowerNukkitX;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.custom.CustomEntity;
@@ -425,7 +425,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     }
 
     public void rebuildTag() {
-        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("entity_identifiers.nbt")) {
+        try (InputStream inputStream = PowerNukkitX.class.getModule().getResourceAsStream("entity_identifiers.nbt")) {
             if (inputStream == null) {
                 throw new AssertionError("Could not find entity_identifiers.nbt");
             }
