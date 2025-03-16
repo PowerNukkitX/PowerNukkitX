@@ -242,6 +242,7 @@ public interface CoreMemoryTypes {
 
     MemoryType<Integer> LAST_SITTING_CHECK = new MemoryType<>("minecraft:last_sitting_check", 0);
 
+    MemoryType<Integer> PIG_BOOST = new MemoryType<>("minecraft:pig_boost", 0);
 
 
     /**
