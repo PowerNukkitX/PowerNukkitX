@@ -7,6 +7,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
+import cn.nukkit.item.AliasItem;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.network.protocol.InventoryContentPacket;
@@ -441,6 +442,11 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
+
+        if(this.getUnclonedItem(index) instanceof AliasItem aliasItem) {
+            this.setItem(index, aliasItem.getItem());
+        }
+
         if (send) {
             this.sendSlot(index, this.getViewers());
         }
