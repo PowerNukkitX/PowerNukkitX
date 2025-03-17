@@ -90,7 +90,9 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     pk.actions[0].getInventorySource().getFlag().equals(InventorySource.Flag.DROP_ITEM) &&
                     pk.actions[1].getInventorySource().getType().equals(InventorySource.Type.CONTAINER)
                     && pk.actions[1].getInventorySource().getFlag().equals(InventorySource.Flag.NONE)) {//handle throw hotbar item for player
-                dropHotBarItemForPlayer(pk.actions[1].inventorySlot, pk.actions[0].newItem.count, player);
+                int slot = pk.actions[1].inventorySlot;
+                int count = Math.min(pk.actions[0].newItem.count, player.getInventory().getItem(slot).count); //Make sure that we won't drop more items than the player has.
+                dropHotBarItemForPlayer(slot, count, player);
             }
         }
     }
@@ -100,6 +102,13 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         Item item = inventory.getItem(hotbarSlot);
         if (item.isNull()) return;
 
+        int c = item.getCount() - dropCount;
+        if(c < 0) {
+            player.getInventory().sendContents(player);
+            log.warn("cannot drop more items than the current amount!");
+            return;
+        }
+
         PlayerDropItemEvent ev;
         player.getServer().getPluginManager().callEvent(ev = new PlayerDropItemEvent(player, item));
         if (ev.isCancelled()) {
@@ -107,8 +116,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
             return;
         }
 
-        int c = item.getCount() - dropCount;
-        if (c <= 0) {
+        if (c == 0) {
             inventory.clear(hotbarSlot);
         } else {
             item.setCount(c);
