@@ -124,7 +124,7 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
 
         for (int blockX = x - 2; blockX <= x + 2; blockX++) {
             for (int blockZ = z - 2; blockZ <= z + 2; blockZ++) {
-                level.setBlockStateAt(blockX, y - 1, blockZ, PROPERTIES.getDefaultState());
+                level.setBlockStateAt(blockX, y - 1, blockZ, BlockObsidian.PROPERTIES.getDefaultState());
                 for (int blockY = y; blockY <= y + 3; blockY++) {
                     level.setBlockStateAt(blockX, blockY, blockZ, BlockAir.PROPERTIES.getDefaultState());
                 }

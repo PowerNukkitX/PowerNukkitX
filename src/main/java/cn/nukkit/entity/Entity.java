@@ -47,6 +47,7 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
+import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ExplodeParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -82,6 +83,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -1478,25 +1480,22 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             getServer().getPluginManager().callEvent(ev);//call event
 
             if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_NETHER)) {
+
                 Position newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
+                IChunk destChunk = newPos.getChunk();
+                if(!destChunk.isGenerated()) {
+                    newPos.getLevel().syncGenerateChunk(destChunk.getX(), destChunk.getZ());
+                    newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
+                }
                 if (newPos != null) {
                     Position nearestPortal = PortalHelper.getNearestValidPortal(newPos);
                     if (nearestPortal != null) {
                         teleport(nearestPortal.add(0.5, 0, 0.5), PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
                     } else {
                         final Position finalPos = newPos.add(1.5, 1, 1.5);
-                        if (teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)) {
-                            level.getScheduler().scheduleDelayedTask(new Task() {
-                                @Override
-                                public void onRun(int currentTick) {
-                                    // dirty hack to make sure chunks are loaded and generated before spawning
-                                    // player
-                                    inPortalTicks = 81;
-                                    teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
-                                    PortalHelper.spawnPortal(newPos);
-                                }
-                            }, 5);
-                        }
+                        inPortalTicks = 81;
+                        PortalHelper.spawnPortal(newPos);
+                        teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
                     }
                 }
             }
@@ -2399,7 +2398,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                     getServer().getPluginManager().callEvent(ev);
 
                     if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_THE_END)) {
-                        final Position newPos = PortalHelper.moveToTheEnd(this);
+                        final Position newPos = PortalHelper.convertPosBetweenEndAndOverworld(this);
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
                                 if (teleport(newPos.add(0.5, 1, 0.5), PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
