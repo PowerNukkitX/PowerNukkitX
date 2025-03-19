@@ -242,8 +242,6 @@ public class Server {
 
     ///default levels
     private Level defaultLevel = null;
-    private Level defaultNether = null;
-    private Level defaultEnd = null;
     private boolean allowNether;
     private boolean allowTheEnd;
     ///
@@ -2028,38 +2026,6 @@ public class Server {
     public void setDefaultLevel(Level defaultLevel) {
         if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultLevel)) {
             this.defaultLevel = defaultLevel;
-        }
-    }
-
-    /**
-     * @return Get the default nether
-     */
-    public Level getDefaultNetherLevel() {
-        return defaultNether;
-    }
-
-    /**
-     * Set default nether
-     */
-    public void setDefaultNetherLevel(Level defaultLevel) {
-        if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultNether)) {
-            this.defaultNether = defaultLevel;
-        }
-    }
-
-    /**
-     * @return Get the default the_end level
-     */
-    public Level getDefaultEndLevel() {
-        return defaultLevel;
-    }
-
-    /**
-     * Set default the_end level
-     */
-    public void setDefaultEndLevel(Level defaultLevel) {
-        if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultEnd)) {
-            this.defaultEnd = defaultLevel;
         }
     }
 
