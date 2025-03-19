@@ -75,11 +75,14 @@ public class LoginHandler extends BedrockSessionPacketHandler {
             Server.getInstance().getNetwork().replaceSessionAddress(oldAddress, session.getAddress(), session);
         }
 
-        //Verify if the titleId match with DeviceOs
-        int predictedDeviceOS = getPredictedDeviceOS(chainData);
-        if(predictedDeviceOS != chainData.getDeviceOS()) {
-            session.close("§cPacket handling error");
-            return;
+        //The client won't send this data when it isn't logged in.
+        if(server.getProperties().get(ServerPropertiesKeys.XBOX_AUTH, true)) {
+            //Verify if the titleId match with DeviceOs
+            int predictedDeviceOS = getPredictedDeviceOS(chainData);
+            if(predictedDeviceOS != chainData.getDeviceOS()) {
+                session.close("§cPacket handling error");
+                return;
+            }
         }
 
         //Verify if the language is valid
@@ -184,6 +187,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
 
     private int getPredictedDeviceOS(ClientChainData chainData) {
         String titleId = chainData.getTitleId();
+        if(titleId == null) return Platform.UNKNOWN.getId();
         return switch (titleId) {
             case "896928775":
                 yield Platform.WINDOWS_10.getId();
