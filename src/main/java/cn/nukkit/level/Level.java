@@ -359,8 +359,7 @@ public class Level implements Metadatable {
         }
         LevelProvider levelProvider = requireProvider();
         //to be changed later as the Dim0 will be deleted to be put in a config.json file of the world
-        String levelNameDim = levelProvider.getName().replace(" Dim0", "");
-        log.info(this.server.getLanguage().tr("nukkit.level.preparing", TextFormat.GREEN + levelNameDim + TextFormat.RESET));
+        log.info(this.server.getLanguage().tr("nukkit.level.preparing", TextFormat.GREEN + levelProvider.getName() + TextFormat.RESET));
         levelProvider.updateLevelName(name);
 
         if (generatorConfig.enableAntiXray()) {
@@ -557,7 +556,7 @@ public class Level implements Metadatable {
         if(getServer().getSettings().levelSettings().levelThread()) {
             this.baseTickThread.start();
         }
-        log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getFolderName() + TextFormat.RESET));
+        log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getName() + TextFormat.RESET));
     }
 
     public Generator getGenerator() {

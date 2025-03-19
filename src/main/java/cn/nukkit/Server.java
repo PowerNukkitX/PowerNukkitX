@@ -580,12 +580,12 @@ public class Server {
                 } catch (NumberFormatException e) {
                     seed = seedString.hashCode();
                 }
-                //todo nether the_end overworld
+
                 generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
                 LevelConfig levelConfig = new LevelConfig("leveldb", true, generatorConfig);
                 this.generateLevel(levelFolder, levelConfig);
             }
-            this.setDefaultLevel(this.getLevelByName(levelFolder + " Dim0"));
+            this.setDefaultLevel(this.getLevelByName(levelFolder));
         }
     }
 
@@ -2029,23 +2029,12 @@ public class Server {
         }
     }
 
-    public static final String levelDimPattern = "^.*Dim[0-9]$";
-
     /**
      * @param name 世界名字
      * @return 世界是否已经加载<br>Is the world already loaded
      */
     public boolean isLevelLoaded(String name) {
-        if (!name.matches(levelDimPattern)) {
-            for (int i = 0; i < 3; i++) {
-                if (this.getLevelByName(name + " Dim" + i) != null) {
-                    return true;
-                }
-            }
-            return false;
-        } else {
-            return this.getLevelByName(name) != null;
-        }
+        return this.getLevelByName(name) != null;
     }
 
     /**
@@ -2072,11 +2061,8 @@ public class Server {
      * @return level实例<br>level instance
      */
     public Level getLevelByName(String name) {
-        if (!name.matches(levelDimPattern)) {
-            name = name + " Dim0";
-        }
         for (Level level : this.levelArray) {
-            if (level.getName().equalsIgnoreCase(name)) {
+            if (level.getName().equals(name)) {
                 return level;
             }
         }
@@ -2158,9 +2144,6 @@ public class Server {
      * @return whether load success
      */
     public boolean loadLevel(String levelFolderName) {
-        if (levelFolderName.matches(levelDimPattern)) {
-            levelFolderName = levelFolderName.replaceFirst("\\sDim\\d$", "");
-        }
         LevelConfig levelConfig = getLevelConfig(levelFolderName);
         if (levelConfig == null) return false;
 
@@ -2175,7 +2158,7 @@ public class Server {
 
         Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
         for (var entry : generators.entrySet()) {
-            String levelName = levelFolderName + " Dim" + entry.getKey();
+            String levelName = levelFolderName + (generators.size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
             if (this.isLevelLoaded(levelName)) {
                 return true;
             }
@@ -2242,7 +2225,7 @@ public class Server {
             Level level;
             try {
                 provider.getMethod("generate", String.class, String.class, LevelConfig.GeneratorConfig.class).invoke(null, path, name, generatorConfig);
-                String levelName = name + " Dim" + entry.getKey();
+                String levelName = name + (levelConfig.generators().size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
                 if (this.isLevelLoaded(levelName)) {
                     log.warn("level {} has already been loaded!", levelName);
                     continue;
