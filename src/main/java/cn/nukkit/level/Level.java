@@ -1224,6 +1224,19 @@ public class Level implements Metadatable {
         }
     }
 
+    public Level getDimensionDestinationLevel(int dimension) {
+        if(dimensionCount > 1) {
+            for(Level level : getServer().getLevels().values()) {
+                if(level.getFolderPath().equals(this.getFolderPath())) {
+                    if(level.getDimension() == dimension) {
+                        return level;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Spawn lightning when thunder
      */
