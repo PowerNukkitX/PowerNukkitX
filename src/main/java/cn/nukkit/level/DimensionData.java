@@ -47,6 +47,14 @@ public class DimensionData {
         return this.dimensionName;
     }
 
+    public String getSuffix() {
+        return switch (dimensionId) {
+            case 1 -> "_the_nether";
+            case 2 -> "_the_end";
+            default -> "";
+        };
+    }
+
     public int getDimensionId() {
         return this.dimensionId;
     }
