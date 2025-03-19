@@ -2399,7 +2399,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                     getServer().getPluginManager().callEvent(ev);
 
                     if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_THE_END)) {
-                        final Position newPos = PortalHelper.moveToTheEnd(this);
+                        final Position newPos = PortalHelper.convertPosBetweenEndAndOverworld(this);
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
                                 if (teleport(newPos.add(0.5, 1, 0.5), PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
