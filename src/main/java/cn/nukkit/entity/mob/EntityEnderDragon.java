@@ -3,6 +3,7 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockBedrock;
 import cn.nukkit.block.BlockEndGateway;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
@@ -179,14 +180,21 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
             if(!isRevived()) {
                 getLevel().setBlock(new Vector3(0, getLevel().getHighestBlockAt(Vector2.ZERO)+1, 0), Block.get(Block.DRAGON_EGG));
             }
-            for(int i = -2; i <= 2; i++) {
-                for(int j = -1; j <= 1; j++) {
-                    if(!(i == 0 && j == 0)) {
-                        getLevel().setBlock(new Vector3(i, 63, j), Block.get(Block.END_PORTAL));
-                        getLevel().setBlock(new Vector3(j, 63, i), Block.get(Block.END_PORTAL));
+
+            for(int y = getLevel().getMinHeight(); y < getLevel().getHighestBlockAt(0, 0); y++) {
+                if(getLevel().getBlock(0, y, 0) instanceof BlockBedrock) {
+                    for(int i = -2; i <= 2; i++) {
+                        for(int j = -1; j <= 1; j++) {
+                            if(!(i == 0 && j == 0)) {
+                                getLevel().setBlock(new Vector3(i, y+1, j), Block.get(Block.END_PORTAL));
+                                getLevel().setBlock(new Vector3(j, y+1, i), Block.get(Block.END_PORTAL));
+                            }
+                        }
                     }
+                    break;
                 }
             }
+
             for(int i = 0; i < 20; i++) {
                 Vector3 origin = Vector3.ZERO;
                 double angleIncrement = 360.0 / 20;
