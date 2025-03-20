@@ -385,7 +385,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return 0;
     }
 
-
     public float getCurrentHeight() {
         if (isSwimming()) {
             return getSwimmingHeight();
@@ -700,6 +699,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public float getSwimmingHeight() {
+        return getHeight();
+    }
+
+    public float getSneakingHeight() {
         return getHeight();
     }
 
