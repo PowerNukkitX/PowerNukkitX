@@ -272,13 +272,6 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         }
         switch (type) {
             case InventoryTransactionPacket.USE_ITEM_ACTION_CLICK_BLOCK -> {
-                // Remove if client bug is ever fixed
-                boolean spamBug = (playerHandle.getLastRightClickPos() != null && System.currentTimeMillis() - playerHandle.getLastRightClickTime() < 100.0 && blockVector.distanceSquared(playerHandle.getLastRightClickPos()) < 0.00001);
-                playerHandle.setLastRightClickPos(blockVector.asVector3());
-                playerHandle.setLastRightClickTime(System.currentTimeMillis());
-                if (spamBug) {
-                    return;
-                }
                 if(!useItemData.itemInHand.canBeActivated()) player.setDataFlag(EntityFlag.USING_ITEM, false);
                 if (player.canInteract(blockVector.add(0.5, 0.5, 0.5), player.isCreative() ? 13 : 7)) {
                     if (player.isCreative()) {
