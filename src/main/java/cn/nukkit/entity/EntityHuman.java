@@ -56,6 +56,11 @@ public class EntityHuman extends EntityHumanType {
     }
 
     @Override
+    public float getSneakingHeight() {
+        return 1.5f;
+    }
+
+    @Override
     public float getEyeHeight() {
         return (float) (boundingBox.getMaxY() - boundingBox.getMinY() - 0.18);
     }

@@ -389,6 +389,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public float getCurrentHeight() {
         if (isSwimming()) {
             return getSwimmingHeight();
+        } else if(isSneaking()) {
+            return getSneakingHeight();
         } else if (isCrawling()) {
             return getCrawlingHeight();
         } else {
