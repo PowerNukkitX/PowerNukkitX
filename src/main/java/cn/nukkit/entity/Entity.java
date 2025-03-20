@@ -389,6 +389,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public float getCurrentHeight() {
         if (isSwimming()) {
             return getSwimmingHeight();
+        } else if (isCrawling()) {
+            return getCrawlingHeight();
         } else {
             return getHeight();
         }
@@ -645,6 +647,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.setDataFlag(EntityFlag.SPRINTING, value);
     }
 
+    public boolean isCrawling() {
+        return this.getDataFlag(EntityFlag.CRAWLING);
+    }
+
+    public void setCrawling(boolean value) {
+        this.setDataFlag(EntityFlag.CRAWLING, value);
+    }
+
     public boolean isGliding() {
         return this.getDataFlag(EntityFlag.GLIDING);
     }
@@ -688,6 +698,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public float getSwimmingHeight() {
+        return getHeight();
+    }
+
+    public float getCrawlingHeight() {
         return getHeight();
     }
 
