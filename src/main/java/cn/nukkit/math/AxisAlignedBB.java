@@ -3,6 +3,7 @@ package cn.nukkit.math;
 import cn.nukkit.level.MovingObjectPosition;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AxisAlignedBB extends Cloneable {
 
@@ -212,6 +213,14 @@ public interface AxisAlignedBB extends Cloneable {
 
     default double getEdgeLengthZ() {
         return this.getMaxZ() - this.getMinZ();
+    }
+
+    default double getShortestSide() {
+        return Math.min(getEdgeLengthX(), Math.min(getEdgeLengthY(), getEdgeLengthZ()));
+    }
+
+    default double getLongestSide() {
+        return Math.max(getEdgeLengthX(), Math.max(getEdgeLengthY(), getEdgeLengthZ()));
     }
 
     default double getAverageEdgeLength() {
