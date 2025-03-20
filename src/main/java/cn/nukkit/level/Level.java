@@ -2836,8 +2836,10 @@ public class Level implements Metadatable {
             if (player != null) {
                 var diff = player.getNextPosition().subtract(player.getPosition());
                 var aabb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
-                if (aabb.intersectsWith(hand.getBoundingBox().shrink(0.02, 0.02, 0.02))) {
-                    ++realCount;
+                if (aabb.intersectsWith(hand.getBoundingBox())) {
+                    if(aabb.intersection(hand.getBoundingBox()).getVolume() > 0.05) {
+                        ++realCount;
+                    }
                 }
             }
             if (realCount > 0) {
