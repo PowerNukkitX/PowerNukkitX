@@ -161,7 +161,7 @@ public class GameMockExtension extends MockitoExtension {
             when(server.getCommandMap()).thenReturn(simpleCommandMap);
             when(server.getScoreboardManager()).thenReturn(null);
             try {
-                final PositionTrackingService positionTrackingService = new PositionTrackingService(new File(Nukkit.DATA_PATH, "services/position_tracking_db"));
+                final PositionTrackingService positionTrackingService = new PositionTrackingService(new File(PowerNukkitX.DATA_PATH, "services/position_tracking_db"));
                 when(server.getPositionTrackingService()).thenReturn(positionTrackingService);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
