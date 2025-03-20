@@ -1,6 +1,7 @@
 package cn.nukkit.level;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.api.NonComputationAtomic;
 import cn.nukkit.block.*;
@@ -2754,6 +2755,7 @@ public class Level implements Metadatable {
             }
 
             this.server.getPluginManager().callEvent(ev);
+            new PlayerHandle(player).setInteract();
             if (!ev.isCancelled()) {
                 target.onTouch(vector, item, face, fx, fy, fz, player, ev.getAction());
                 if (ev.getAction() == Action.RIGHT_CLICK_BLOCK && target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {

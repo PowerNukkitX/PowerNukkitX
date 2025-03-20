@@ -270,7 +270,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected Cache<String, FormWindowDialog> dialogWindows = Caffeine.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
     protected int lastInAirTick = 0;
-    protected int previousInteractTick = Integer.MIN_VALUE;
+    protected int previousInteractTick = 0;
     private static final float ROTATION_UPDATE_THRESHOLD = 1;
     private static final float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
     private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
@@ -453,6 +453,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this, this.inventory.getItemInHand(), target, face,
                 target.isAir() ? Action.LEFT_CLICK_AIR : Action.LEFT_CLICK_BLOCK);
         this.getServer().getPluginManager().callEvent(playerInteractEvent);
+        playerHandle.setInteract();
         if (playerInteractEvent.isCancelled()) {
             this.inventory.sendHeldItem(this);
             this.getLevel().sendBlocks(new Player[]{this}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);

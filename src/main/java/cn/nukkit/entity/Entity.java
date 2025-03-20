@@ -1,6 +1,7 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBubbleColumn;
@@ -1938,6 +1939,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         ev.setCancelled(cancelled);
 
         this.server.getPluginManager().callEvent(ev);
+        if(this instanceof Player player) new PlayerHandle(player).setInteract();
         return ev.isCancelled();
     }
 
