@@ -291,13 +291,13 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                                 } else {
                                     logTriedToSetButHadInHand(playerHandle, i, oldItem);
                                 }
-                                player.getInventory().sendHeldItem(player.getViewers().values());
+                                player.getInventory().sendSlot(useItemData.hotbarSlot, player.getViewers().values());
                             }
                             return;
                         }
                     }
                 }
-                player.getInventory().sendHeldItem(player);
+                player.getInventory().sendSlot(useItemData.hotbarSlot, player);
                 if (blockVector.distanceSquared(player) > 10000) {
                     return;
                 }
@@ -323,13 +323,12 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                             } else {
                                 logTriedToSetButHadInHand(playerHandle, i, oldItem);
                             }
-                            player.getInventory().sendHeldItem(player.getViewers().values());
+                            player.getInventory().sendSlot(useItemData.hotbarSlot, player.getViewers().values());
                         }
                         return;
                     }
                 }
                 player.getInventory().sendContents(player);
-                player.getInventory().sendHeldItem(player);
                 if (blockVector.distanceSquared(player) < 10000) {
                     Block target = player.level.getBlock(blockVector.asVector3());
                     player.level.sendBlocks(new Player[]{player}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
@@ -368,7 +367,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     if (interactEvent.getItem() != null && interactEvent.getItem().isArmor()) {
                         player.getInventory().sendArmorContents(player);
                     }
-                    player.getInventory().sendHeldItem(player);
+                    player.getInventory().sendSlot(useItemData.hotbarSlot, player);
                     return;
                 }
                 if (item.onClickAir(player, directionVector)) {
