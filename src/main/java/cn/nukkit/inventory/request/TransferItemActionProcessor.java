@@ -35,9 +35,11 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             log.warn("transfer an air item is not allowed");
             return context.error();
         }
-        if (validateStackNetworkId(sourItem.getNetId(), sourceStackNetworkId)) {
-            log.warn("mismatch source stack network id!");
-            return context.error();
+        if(sourItem.isUsingNetId()) {
+            if (validateStackNetworkId(sourItem.getNetId(), sourceStackNetworkId)) {
+                log.warn("mismatch source stack network id!");
+                return context.error();
+            }
         }
         if (sourItem.getCount() < count) {
             log.warn("transfer an item that has not enough count is not allowed. Expected: {}, Actual: {}", sourItem.getCount(), count);
