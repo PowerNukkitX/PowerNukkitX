@@ -171,7 +171,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     }
 
                     if (item.isNull() || player.getInventory().getItemInHand().getId() == item.getId()) {
-                        player.getInventory().setItemInHand(item);
+                        player.getInventory().setItem(useItemOnEntityData.hotbarSlot, item);
                     } else {
                         logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInHand());
                     }
@@ -248,10 +248,10 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 if (item.isTool() && (player.isSurvival() || player.isAdventure())) {
                     if (item.useOn(target) && item.getDamage() >= item.getMaxDurability()) {
                         player.getLevel().addSound(player, Sound.RANDOM_BREAK);
-                        player.getInventory().setItemInHand(Item.AIR);
+                        player.getInventory().setItem(useItemOnEntityData.hotbarSlot, Item.AIR);
                     } else {
                         if (item.isNull() || player.getInventory().getItemInHand().getId() == item.getId()) {
-                            player.getInventory().setItemInHand(item);
+                            player.getInventory().setItem(useItemOnEntityData.hotbarSlot, item);
                         } else {
                             logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInHand());
                         }
@@ -266,8 +266,10 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         UseItemData useItemData = (UseItemData) pk.transactionData;
         BlockVector3 blockVector = useItemData.blockPos;
         BlockFace face = useItemData.face;
-
         int type = useItemData.actionType;
+        if(player.getInventory().getHeldItemIndex() != useItemData.hotbarSlot) {
+            player.getInventory().equipItem(useItemData.hotbarSlot);
+        }
         switch (type) {
             case InventoryTransactionPacket.USE_ITEM_ACTION_CLICK_BLOCK -> {
                 // Remove if client bug is ever fixed
@@ -291,7 +293,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         if ((i = player.level.useItemOn(blockVector.asVector3(), i, face, useItemData.clickPos.x, useItemData.clickPos.y, useItemData.clickPos.z, player)) != null) {
                             if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
                                 if (Objects.equals(oldItem.getId(), i.getId()) || i.isNull()) {
-                                    player.getInventory().setItemInHand(i);
+                                    player.getInventory().setItem(useItemData.hotbarSlot, i);
                                 } else {
                                     logTriedToSetButHadInHand(playerHandle, i, oldItem);
                                 }
@@ -323,7 +325,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         player.getFoodData().exhaust(0.005);
                         if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
                             if (Objects.equals(oldItem.getId(), i.getId()) || i.isNull()) {
-                                player.getInventory().setItemInHand(i);
+                                player.getInventory().setItem(useItemData.hotbarSlot, i);
                             } else {
                                 logTriedToSetButHadInHand(playerHandle, i, oldItem);
                             }
@@ -377,7 +379,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 if (item.onClickAir(player, directionVector)) {
                     if (!player.isCreative()) {
                         if (item.isNull() || Objects.equals(player.getInventory().getItemInHand().getId(), item.getId())) {
-                            player.getInventory().setItemInHand(item);
+                            player.getInventory().setItem(useItemData.hotbarSlot, item);
                         } else {
                             logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInHand());
                         }
