@@ -147,6 +147,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
             case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_INTERACT -> {
                 PlayerInteractEntityEvent playerInteractEntityEvent = new PlayerInteractEntityEvent(player, target, item, useItemOnEntityData.clickPos);
                 if (player.isSpectator()) playerInteractEntityEvent.setCancelled();
+                playerHandle.setInteract();
                 player.getServer().getPluginManager().callEvent(playerInteractEntityEvent);
                 if (playerInteractEntityEvent.isCancelled()) {
                     return;
@@ -362,6 +363,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 }
                 PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, item, directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
                 player.getServer().getPluginManager().callEvent(interactEvent);
+                playerHandle.setInteract();
                 if (interactEvent.isCancelled()) {
                     if (interactEvent.getItem() != null && interactEvent.getItem().isArmor()) {
                         player.getInventory().sendArmorContents(player);
