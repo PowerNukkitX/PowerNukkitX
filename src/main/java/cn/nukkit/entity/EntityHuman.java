@@ -51,6 +51,11 @@ public class EntityHuman extends EntityHumanType {
     }
 
     @Override
+    public float getCrawlingHeight() {
+        return 0.625f;
+    }
+
+    @Override
     public float getEyeHeight() {
         return (float) (boundingBox.getMaxY() - boundingBox.getMinY() - 0.18);
     }
