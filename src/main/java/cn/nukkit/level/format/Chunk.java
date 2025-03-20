@@ -664,9 +664,6 @@ public class Chunk implements IChunk {
 
     @Override
     public long getSectionBlockChanges(int sectionY) {
-        if(sectionY < 0 || sectionY >= getDimensionData().getChunkSectionCount()) {
-            return 0L;
-        }
         return sections[sectionY].blockChanges().get();
     }
 

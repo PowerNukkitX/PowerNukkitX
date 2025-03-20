@@ -418,7 +418,6 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * @see HorseInventory#setSaddle(Item)
      */
     public void setSaddle(Item item) {
-        if(this.getInventory() == null) return Item.AIR;
         this.getInventory().setSaddle(item);
     }
 
@@ -426,7 +425,6 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * @see HorseInventory#setHorseArmor(Item)
      */
     public void setHorseArmor(Item item) {
-        if(this.getInventory() == null) return Item.AIR;
         this.getInventory().setHorseArmor(item);
     }
 
@@ -434,7 +432,6 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * @see HorseInventory#getSaddle()
      */
     public Item getSaddle() {
-        if(this.getInventory() == null) return Item.AIR;
         return this.getInventory().getSaddle();
     }
 
@@ -442,7 +439,6 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * @see HorseInventory#getHorseArmor()
      */
     public Item getHorseArmor() {
-        if(this.getInventory() == null) return Item.AIR;
         return this.getInventory().getHorseArmor();
     }
 
