@@ -56,6 +56,7 @@ public final class CameraPreset {
     }
 
     public static final CameraPreset FIRST_PERSON;
+    public static final CameraPreset FOLLOW_ORBIT;
     public static final CameraPreset FREE;
     public static final CameraPreset THIRD_PERSON;
     public static final CameraPreset THIRD_PERSON_FRONT;
@@ -63,6 +64,9 @@ public final class CameraPreset {
     static {
         FIRST_PERSON = CameraPreset.builder()
                 .identifier("minecraft:first_person")
+                .build();
+        FOLLOW_ORBIT = CameraPreset.builder()
+                .identifier("minecraft:follow_orbit")
                 .build();
         FREE = CameraPreset.builder()
                 .identifier("minecraft:free")
@@ -77,7 +81,7 @@ public final class CameraPreset {
                 .identifier("minecraft:third_person_front")
                 .build();
 
-        registerCameraPresets(FIRST_PERSON, FREE, THIRD_PERSON, THIRD_PERSON_FRONT);
+        registerCameraPresets(FIRST_PERSON, FOLLOW_ORBIT, FREE, THIRD_PERSON, THIRD_PERSON_FRONT);
     }
 
     private final String identifier;
