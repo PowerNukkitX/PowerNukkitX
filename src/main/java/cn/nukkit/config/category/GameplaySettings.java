@@ -18,4 +18,22 @@ public class GameplaySettings extends OkaeriConfig {
     boolean enableRedstone = true;
     @Comment("pnx.settings.gameplay.tickRedstone")
     boolean tickRedstone = true;
+
+    int viewDistance = 8;
+    boolean achievements = true;
+    boolean announceAchievements = true;
+    int spawnProtection = 16;
+    boolean allowFlight = false;
+    boolean spawnMobs = true;
+    boolean spawnAnimals = true;
+    int gamemode = 0;
+    boolean forceGamemode = false;
+    boolean hardcore = false;
+    boolean pvp = true;
+    int difficulty = 1;
+    boolean allowNether = true;
+    boolean allowTheEnd = true;
+    boolean forceResources = false;
+    boolean allowClientPacks = true;
+    String serverAuthoritativeMovement = "server-auth";
 }

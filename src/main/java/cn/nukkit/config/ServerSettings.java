@@ -4,6 +4,7 @@ import cn.nukkit.config.category.*;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
 import eu.okaeri.configs.annotation.CustomKey;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -47,4 +48,8 @@ public final class ServerSettings extends OkaeriConfig {
     @Comment("pnx.settings.performance")
     @CustomKey("performance-settings")
     private PerformanceSettings performanceSettings = new PerformanceSettings();
+
+    @Comment("pnx.settings.version")
+    @CustomKey("config")
+    private ConfigSettings configSettings = new ConfigSettings();
 }

@@ -24,4 +24,8 @@ public class NetworkSettings extends OkaeriConfig {
     int maxDecompressSize = 67108864;
     @Comment("pnx.settings.network.packetlimit")
     int packetLimit = 240;
+
+    boolean enableQuery = true;
+    boolean networkEncryption = true;
+    boolean checkLoginTime = false;
 }
