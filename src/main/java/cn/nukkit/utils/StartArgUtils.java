@@ -8,12 +8,14 @@ public final class StartArgUtils {
     private StartArgUtils() {
     }
 
-    public static boolean isValidStart() {
-        try {
-            return Class.forName("java.lang.ClassLoader").getModule().isOpen("java.lang", Thread.currentThread().getContextClassLoader().getUnnamedModule());
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
+    public static boolean loadModules() {
+        Module module = Nukkit.class.getModule();
+        Module targetModule = Object.class.getModule(); // java.base module
+        module.addOpens("java.lang", targetModule);
+        module.addOpens("java.io", targetModule);
+        module.addOpens("java.net", targetModule);
+
+        return true;
     }
 
     public static boolean isShaded() {
