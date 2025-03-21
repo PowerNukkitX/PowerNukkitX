@@ -1382,7 +1382,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return if the gets powered.
      */
     public boolean isGettingPower() {
-        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) return false;
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) return false;
 
         for (BlockFace side : BlockFace.values()) {
             Block b = this.getSide(side).getLevelBlock();

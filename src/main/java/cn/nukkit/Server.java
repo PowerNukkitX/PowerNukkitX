@@ -273,7 +273,7 @@ public class Server {
         this.consoleThread = new ConsoleThread();
         this.consoleThread.start();
 
-        File config = new File(this.dataPath + "nukkit.yml");
+        File config = new File(this.dataPath + "pnx.yml");
         String chooseLanguage = null;
         if (!config.exists()) {
             log.info("{}Welcome! Please choose a language first!", TextFormat.GREEN);
@@ -316,8 +316,8 @@ public class Server {
         }
         this.baseLang = new BaseLang(chooseLanguage);
         this.baseLangCode = mapInternalLang(chooseLanguage);
-        log.info("Loading {}...", TextFormat.GREEN + "nukkit.yml" + TextFormat.RESET);
         this.settings = ConfigManager.create(ServerSettings.class, it -> {
+            log.info("Loading {}...", TextFormat.GREEN + "pnx.yml" + TextFormat.RESET);
             it.withConfigurer(new YamlSnakeYamlConfigurer());
             it.withBindFile(config);
             it.withRemoveOrphans(true);
@@ -340,7 +340,7 @@ public class Server {
         this.properties = new ServerProperties(this.dataPath);
 
         var isShaded = StartArgUtils.isShaded();
-        if (!StartArgUtils.isValidStart() || (JarStart.isUsingJavaJar() && !isShaded)) {
+        if (!StartArgUtils.loadModules() || (JarStart.isUsingJavaJar() && !isShaded)) {
             log.error(getLanguage().tr("nukkit.start.invalid"));
             return;
         }
@@ -359,7 +359,7 @@ public class Server {
         log.info(this.getLanguage().tr("language.selected", getLanguage().getName(), getLanguage().getLang()));
         log.info(getLanguage().tr("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
 
-        String poolSize = settings.baseSettings().asyncWorkers();
+        String poolSize = settings.performanceSettings().asyncWorkers();
         int poolSizeNumber;
         try {
             poolSizeNumber = Integer.parseInt(poolSize);
@@ -444,15 +444,15 @@ public class Server {
         }
 
         freezableArrayManager = new FreezableArrayManager(
-                this.settings.freezeArraySettings().enable(),
-                this.settings.freezeArraySettings().slots(),
-                this.settings.freezeArraySettings().defaultTemperature(),
-                this.settings.freezeArraySettings().freezingPoint(),
-                this.settings.freezeArraySettings().absoluteZero(),
-                this.settings.freezeArraySettings().boilingPoint(),
-                this.settings.freezeArraySettings().melting(),
-                this.settings.freezeArraySettings().singleOperation(),
-                this.settings.freezeArraySettings().batchOperation());
+                this.settings.performanceSettings().enable(),
+                this.settings.performanceSettings().slots(),
+                this.settings.performanceSettings().defaultTemperature(),
+                this.settings.performanceSettings().freezingPoint(),
+                this.settings.performanceSettings().absoluteZero(),
+                this.settings.performanceSettings().boilingPoint(),
+                this.settings.performanceSettings().melting(),
+                this.settings.performanceSettings().singleOperation(),
+                this.settings.performanceSettings().batchOperation());
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(commandDataPath + "/scoreboard.json"));
         functionManager = new FunctionManager(commandDataPath + "/functions");
         tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.dataPath + "worlds/"));
@@ -533,7 +533,7 @@ public class Server {
         EntityProperty.buildPacketData();
         EntityProperty.buildPlayerProperty();
 
-        if (settings.baseSettings().installSpark()) {
+        if (settings.miscSettings().installSpark()) {
             SparkInstaller.initSpark(this);
         }
 
@@ -716,7 +716,7 @@ public class Server {
             }
 
             for (Player player : new ArrayList<>(this.players.values())) {
-                player.close(player.getLeaveMessage(), getSettings().baseSettings().shutdownMessage());
+                player.close(player.getLeaveMessage(), getSettings().miscSettings().shutdownMessage());
             }
 
             this.getSettings().save();

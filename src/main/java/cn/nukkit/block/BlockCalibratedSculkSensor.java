@@ -91,7 +91,7 @@ public class BlockCalibratedSculkSensor extends BlockFlowable implements BlockEn
     public int onUpdate(int type) {
         getOrCreateBlockEntity();
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (level.getServer().getSettings().levelSettings().enableRedstone()) {
+            if (level.getServer().getSettings().gameplaySettings().enableRedstone()) {
                 this.getBlockEntity().calPower();
                 this.setPhase(0);
                 updateAroundRedstone();
