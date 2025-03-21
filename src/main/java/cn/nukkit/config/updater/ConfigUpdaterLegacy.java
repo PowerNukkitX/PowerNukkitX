@@ -129,7 +129,7 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .allowTheEnd(oldProp.get(LegacyServerPropertiesKeys.ALLOW_THE_END, game.allowTheEnd()))
                 .spawnMobs(oldProp.get(LegacyServerPropertiesKeys.SPAWN_MOBS, game.spawnMobs()))
                 .spawnAnimals(oldProp.get(LegacyServerPropertiesKeys.SPAWN_ANIMALS, game.spawnAnimals()))
-                .gamemode(oldProp.get(LegacyServerPropertiesKeys.GAMEMODE, game.gamemode())) //TODO: STRINgS
+                .gamemode(parseGamemode(oldProp, game.gamemode()))
                 .forceGamemode(oldProp.get(LegacyServerPropertiesKeys.FORCE_GAMEMODE, game.forceGamemode()))
                 .hardcore(oldProp.get(LegacyServerPropertiesKeys.HARDCORE, game.hardcore()))
                 .pvp(oldProp.get(LegacyServerPropertiesKeys.PVP, game.pvp()))
@@ -143,6 +143,13 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
         net.enableQuery(oldProp.get(LegacyServerPropertiesKeys.ENABLE_QUERY, net.enableQuery()))
                 .networkEncryption(oldProp.get(LegacyServerPropertiesKeys.NETWORK_ENCRYPTION, net.networkEncryption()))
                 .checkLoginTime(oldProp.get(LegacyServerPropertiesKeys.CHECK_LOGIN_TIME, net.checkLoginTime()));
+    }
 
+    public int parseGamemode(LegacyServerProperties properties, int def) {
+        try {
+            return properties.get(LegacyServerPropertiesKeys.GAMEMODE, def) & 0b11;
+        } catch (NumberFormatException exception) {
+            return Server.getGamemodeFromString(properties.get(LegacyServerPropertiesKeys.GAMEMODE, Server.getGamemodeString(def))) & 0b11;
+        }
     }
 }
