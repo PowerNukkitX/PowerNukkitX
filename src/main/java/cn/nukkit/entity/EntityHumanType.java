@@ -73,19 +73,17 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
         if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.CUSTOM && source.getCause() != DamageCause.MAGIC && source.getCause() != DamageCause.HUNGER) {
             int armorPoints = 0;
             int epf = 0;
-//            int toughness = 0;
 
             for (Item armor : inventory.getArmorContents()) {
                 armorPoints += armor.getArmorPoints();
                 epf += calculateEnchantmentProtectionFactor(armor, source);
-                //toughness += armor.getToughness();
             }
 
             if (source.canBeReducedByArmor()) {
                 source.setDamage(-source.getFinalDamage() * armorPoints * 0.04f, DamageModifier.ARMOR);
             }
 
-            source.setDamage(-source.getFinalDamage() * Math.min(NukkitMath.ceilFloat(Math.min(epf, 25) * ((float) ThreadLocalRandom.current().nextInt(50, 100) / 100)), 20) * 0.04f,
+            source.setDamage(-source.getFinalDamage() * Math.min(Math.min(NukkitMath.ceilFloat(Math.min(epf, 25)), 20) * 0.04f, 0.8f),
                     DamageModifier.ARMOR_ENCHANTMENTS);
 
             source.setDamage(-Math.min(this.getAbsorption(), source.getFinalDamage()), DamageModifier.ABSORPTION);
@@ -121,7 +119,9 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
 
         if (item.applyEnchantments()) {
             for (Enchantment ench : item.getEnchantments()) {
-                epf += ench.getProtectionFactor(source);
+                if(ench.canEnchant(item)) { //only apply enchantment when applicable to the item
+                    epf += ench.getProtectionFactor(source);
+                }
             }
         }
 
