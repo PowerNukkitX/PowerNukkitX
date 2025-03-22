@@ -218,7 +218,7 @@ public class EntityFallingBlock extends Entity {
                             level.addParticle(new DestroyBlockParticle(pos, Block.get(blockState)));
                         } else {
                             while(pos.getY() < getLevel().getMaxHeight()) {
-                                if(!getLevel().getBlock(pos).isAir()) pos.y++; else break;
+                                if(!getLevel().getBlock(pos).canBeReplaced()) pos.y++; else break;
                             }
                             getLevel().setBlock(pos, eventTo, true);
                         }
