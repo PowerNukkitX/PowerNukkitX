@@ -66,8 +66,10 @@ public class ItemCrossbow extends ItemTool {
             else if(inventoryOptional.isPresent())  {
                 inventory = player.getInventory();
                 item = inventoryOptional.get().getValue();;
+            } else if(player.isCreative()) {
+                item = new ItemArrow();
             }
-            if(inventory == null) return false;
+            if(item == null) return false;
             if (!this.canLoad(item)) {
                 if (player.isCreative()) {
                     this.loadArrow(player, item);
