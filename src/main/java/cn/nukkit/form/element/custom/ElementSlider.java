@@ -41,8 +41,10 @@ public class ElementSlider extends Element implements ElementCustom {
 
     @Override
     public JsonObject toJson() {
-        Preconditions.checkArgument(this.min < this.max, "Maximum slider value must exceed the minimum value");
-        Preconditions.checkArgument(this.defaultValue >= this.min && this.defaultValue <= this.max, "Default value out of range");
+        Preconditions.checkArgument(this.min < this.max,
+                "Maximum slider value must exceed the minimum value");
+        Preconditions.checkArgument(this.defaultValue >= this.min && this.defaultValue <= this.max,
+                "Default value out of range");
 
         this.object.addProperty("type", "slider");
         this.object.addProperty("text", this.text);

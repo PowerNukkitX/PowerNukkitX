@@ -105,7 +105,7 @@ public class FormTest {
         );
 
         test.addElement(new ElementButton("button1", ButtonImage.Type.PATH.of("textures/items/compass")))
-                .addButton("button2", ButtonImage.Type.URL.of("https://static.wikia.nocookie.net/minecraft_gamepedia/images/9/94/Oak_Button_%28S%29_JE4.png"))
+                .addButton("button2", ButtonImage.Type.URL.of("https://minecraft.wiki/images/Oak_Button_JE5.png"))
                 .addButton("button3");
 
         test.send(player, 1);

@@ -49,7 +49,8 @@ public class ElementStepSlider extends Element implements ElementCustom {
 
     @Override
     public JsonObject toJson() {
-        Preconditions.checkArgument(this.defaultStep > -1 && this.defaultStep < this.steps.size(), "Default option not within range");
+        Preconditions.checkArgument(this.defaultStep > -1 && this.defaultStep < this.steps.size(),
+                "Default option not within range");
 
         this.object.addProperty("type", "step_slider");
         this.object.addProperty("text", this.text);

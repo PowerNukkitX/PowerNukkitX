@@ -49,7 +49,8 @@ public class ElementDropdown extends Element implements ElementCustom {
 
     @Override
     public JsonObject toJson() {
-        Preconditions.checkArgument(0 > this.defaultOption || this.defaultOption < this.options.size(), "Default option not an index");
+        Preconditions.checkArgument(0 > this.defaultOption || this.defaultOption < this.options.size(),
+                "Default option not an index");
 
         this.object.addProperty("type", "dropdown");
         this.object.addProperty("text", this.text);

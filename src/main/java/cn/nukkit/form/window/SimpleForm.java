@@ -71,18 +71,19 @@ public class SimpleForm extends Form<SimpleResponse> {
     }
 
     public ElementSimple updateElement(int index, ElementSimple newElement) {
-        if (this.elements.size() > index) {
-            ElementSimple element = this.elements.keySet().toArray(ElementSimple.EMPTY_LIST)[index];
-
-            return switch (newElement) {
-                case ElementButton button -> element instanceof ElementButton oldButton ? oldButton.text(button.text()).image(button.image()) : null;
-                case ElementDivider divider -> element instanceof ElementDivider oldDivider ? oldDivider.text(divider.text()) : null;
-                case ElementHeader header -> element instanceof ElementHeader oldHeader ? oldHeader.text(header.text()) : null;
-                case ElementLabel label -> element instanceof ElementLabel oldLabel ? oldLabel.text(label.text()) : null;
-                default -> null;
-            };
+        if (this.elements.size() <= index) {
+            return null;
         }
-        return null;
+
+        ElementSimple element = this.elements.keySet().toArray(ElementSimple.EMPTY_LIST)[index];
+
+        return switch (newElement) {
+            case ElementButton button -> element instanceof ElementButton oldButton ? oldButton.text(button.text()).image(button.image()) : null;
+            case ElementDivider divider -> element instanceof ElementDivider oldDivider ? oldDivider.text(divider.text()) : null;
+            case ElementHeader header -> element instanceof ElementHeader oldHeader ? oldHeader.text(header.text()) : null;
+            case ElementLabel label -> element instanceof ElementLabel oldLabel ? oldLabel.text(label.text()) : null;
+            default -> null;
+        };
     }
 
     public void updateElement(int index, ElementButton newElement, Consumer<Player> callback) {

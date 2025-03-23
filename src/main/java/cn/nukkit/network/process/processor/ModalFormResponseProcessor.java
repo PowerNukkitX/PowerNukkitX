@@ -55,11 +55,13 @@ public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormRes
                 ((CustomResponse) response).getResponses().forEach((i, res) -> {
                     ElementCustom e = customForm.elements().get(i);
                     switch (e) {
-                        case ElementDropdown dropdown -> dropdown.defaultOption(((ElementResponse) res).elementId());
+                        case ElementDropdown dropdown -> dropdown.defaultOption(((ElementResponse) res)
+                                .elementId());
                         case ElementInput input -> input.defaultText(String.valueOf(res));
                         case ElementSlider slider -> slider.defaultValue((Float) res);
                         case ElementToggle toggle -> toggle.defaultValue((Boolean) res);
-                        case ElementStepSlider stepSlider -> stepSlider.defaultStep(((ElementResponse) res).elementId());
+                        case ElementStepSlider stepSlider -> stepSlider.defaultStep(((ElementResponse) res)
+                                .elementId());
                         default -> log.warn("Illegal element {} within ServerSettings", e);
                     }
                 });
