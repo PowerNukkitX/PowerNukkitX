@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.block.property.enums.CrackedState;
 import cn.nukkit.block.property.enums.TurtleEggCount;
 import cn.nukkit.entity.Entity;
@@ -268,6 +269,7 @@ public class BlockTurtleEgg extends BlockFlowable {
 
             ev.setCancelled(ThreadLocalRandom.current().nextInt(200) > 0);
             this.level.getServer().getPluginManager().callEvent(ev);
+            if(entity instanceof Player player) new PlayerHandle(player).setInteract();
             if (!ev.isCancelled()) {
                 this.level.useBreakOn(this, null, null, true);
             }

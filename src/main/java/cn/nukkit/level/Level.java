@@ -1,6 +1,7 @@
 package cn.nukkit.level;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.api.NonComputationAtomic;
 import cn.nukkit.block.*;
@@ -359,8 +360,7 @@ public class Level implements Metadatable {
         }
         LevelProvider levelProvider = requireProvider();
         //to be changed later as the Dim0 will be deleted to be put in a config.json file of the world
-        String levelNameDim = levelProvider.getName().replace(" Dim0", "");
-        log.info(this.server.getLanguage().tr("nukkit.level.preparing", TextFormat.GREEN + levelNameDim + TextFormat.RESET));
+        log.info(this.server.getLanguage().tr("nukkit.level.preparing", TextFormat.GREEN + levelProvider.getName() + TextFormat.RESET));
         levelProvider.updateLevelName(name);
 
         if (generatorConfig.enableAntiXray()) {
@@ -557,7 +557,7 @@ public class Level implements Metadatable {
         if(getServer().getSettings().levelSettings().levelThread()) {
             this.baseTickThread.start();
         }
-        log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getFolderName() + TextFormat.RESET));
+        log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getName() + TextFormat.RESET));
     }
 
     public Generator getGenerator() {
@@ -1060,7 +1060,7 @@ public class Level implements Metadatable {
                 CompletableFuture.runAsync(() -> updateEntities.keySet()
                         .longParallelStream().forEach(id -> {
                             Entity entity = this.updateEntities.get(id);
-                            if (entity != null && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
+                            if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
                                 entityAsyncPrepare.asyncPrepare(getTick());
                             }
                         }), Server.getInstance().getComputeThreadPool()).join();
@@ -1222,6 +1222,19 @@ public class Level implements Metadatable {
                 setThundering(false);
             }
         }
+    }
+
+    public Level getDimensionDestinationLevel(int dimension) {
+        if(dimensionCount > 1) {
+            for(Level level : getServer().getLevels().values()) {
+                if(level.getFolderPath().equals(this.getFolderPath())) {
+                    if(level.getDimension() == dimension) {
+                        return level;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -2742,6 +2755,7 @@ public class Level implements Metadatable {
             }
 
             this.server.getPluginManager().callEvent(ev);
+            new PlayerHandle(player).setInteract();
             if (!ev.isCancelled()) {
                 target.onTouch(vector, item, face, fx, fy, fz, player, ev.getAction());
                 if (ev.getAction() == Action.RIGHT_CLICK_BLOCK && target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {
@@ -2824,8 +2838,10 @@ public class Level implements Metadatable {
             if (player != null) {
                 var diff = player.getNextPosition().subtract(player.getPosition());
                 var aabb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
-                if (aabb.intersectsWith(hand.getBoundingBox().shrink(0.02, 0.02, 0.02))) {
-                    ++realCount;
+                if (aabb.intersectsWith(hand.getBoundingBox())) {
+                    if(aabb.intersection(hand.getBoundingBox()).getVolume() > 0.005f) {
+                        ++realCount;
+                    }
                 }
             }
             if (realCount > 0) {

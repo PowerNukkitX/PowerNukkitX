@@ -225,23 +225,12 @@ public final class PlayerHandle {
         player.dialogWindows = dialogWindows;
     }
 
+    public void setInteract() {
+        player.previousInteractTick = player.getServer().getTick();
+    }
+
     public void setDummyBossBars(Map<Long, DummyBossBar> dummyBossBars) {
         player.dummyBossBars = dummyBossBars;
-    }
-    public double getLastRightClickTime() {
-        return player.lastRightClickTime;
-    }
-
-    public void setLastRightClickTime(double lastRightClickTime) {
-        player.lastRightClickTime = lastRightClickTime;
-    }
-
-    public Vector3 getLastRightClickPos() {
-        return player.lastRightClickPos;
-    }
-
-    public void setLastRightClickPos(Vector3 lastRightClickPos) {
-        player.lastRightClickPos = lastRightClickPos;
     }
 
     public void setLastInAirTick(int lastInAirTick) {

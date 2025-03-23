@@ -80,18 +80,19 @@ public class ItemBow extends ItemTool {
         Enchantment flameEnchant = this.getEnchantment(Enchantment.ID_BOW_FLAME);
         boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
 
-        Location arrowLocation = player.getLocation();
-        Vector3 directionVector = player.getDirectionVector().multiply(1.1);
-        arrowLocation = arrowLocation.add(directionVector.getX(), 0, directionVector.getZ());
-        arrowLocation.setY(player.y + player.getEyeHeight() + directionVector.getY());
+        ItemArrow itemArrow = (ItemArrow) (offhandOptional.isPresent() ?  offhandOptional.get().getValue() : inventoryOptional.map(Map.Entry::getValue).orElse(null));
 
-        ItemArrow itemArrow = (ItemArrow) (offhandOptional.isPresent() ?  offhandOptional.get().getValue() : inventoryOptional.get().getValue());
+        if(itemArrow == null) {
+            if(player.isCreative()) {
+                itemArrow = new ItemArrow();
+            } else return false;
+        }
 
         CompoundTag nbt = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(arrowLocation.x))
-                        .add(new DoubleTag(arrowLocation.y))
-                        .add(new DoubleTag(arrowLocation.z)))
+                        .add(new DoubleTag(player.x))
+                        .add(new DoubleTag(player.y + player.getEyeHeight()))
+                        .add(new DoubleTag(player.z)))
                 .putList("Motion", new ListTag<DoubleTag>()
                         .add(new DoubleTag(-Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
                         .add(new DoubleTag(-Math.sin(player.pitch / 180 * Math.PI)))

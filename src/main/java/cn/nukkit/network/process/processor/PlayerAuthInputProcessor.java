@@ -8,6 +8,7 @@ import cn.nukkit.entity.item.EntityMinecartAbstract;
 import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.event.player.PlayerJumpEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
+import cn.nukkit.event.player.PlayerToggleCrawlEvent;
 import cn.nukkit.event.player.PlayerToggleFlightEvent;
 import cn.nukkit.event.player.PlayerToggleGlideEvent;
 import cn.nukkit.event.player.PlayerToggleSneakEvent;
@@ -130,6 +131,26 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.setSwimming(false);
             }
         }
+
+        if (pk.inputData.contains(AuthInputAction.START_CRAWLING)) {
+            var playerToggleCrawlEvent = new PlayerToggleCrawlEvent(player, true);
+            player.getServer().getPluginManager().callEvent(playerToggleCrawlEvent);
+            if (playerToggleCrawlEvent.isCancelled()) {
+                player.sendData(player);
+            } else {
+                player.setCrawling(true);
+            }
+        }
+        if (pk.inputData.contains(AuthInputAction.STOP_CRAWLING)) {
+            var playerToggleCrawlEvent = new PlayerToggleCrawlEvent(player, false);
+            player.getServer().getPluginManager().callEvent(playerToggleCrawlEvent);
+            if (playerToggleCrawlEvent.isCancelled()) {
+                player.sendData(player);
+            } else {
+                player.setCrawling(false);
+            }
+        }
+
         if (pk.inputData.contains(AuthInputAction.START_GLIDING)) {
             var playerToggleGlideEvent = new PlayerToggleGlideEvent(player, true);
             player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);

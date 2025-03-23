@@ -1,16 +1,15 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockPortal;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -23,7 +22,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 
+import static cn.nukkit.level.Level.DIMENSION_NETHER;
 import static cn.nukkit.level.Level.DIMENSION_OVERWORLD;
+import static cn.nukkit.level.Level.DIMENSION_THE_END;
 
 @Slf4j
 public final class PortalHelper implements BlockID {
@@ -99,29 +100,40 @@ public final class PortalHelper implements BlockID {
     }
 
     public static Position convertPosBetweenNetherAndOverworld(Position current) {
-        Level defaultNetherLevel = Server.getInstance().getDefaultNetherLevel();
-        if (defaultNetherLevel == null) return null;
         DimensionData dimensionData;
         if (current.level.getDimension() == DIMENSION_OVERWORLD) {
             dimensionData = DimensionEnum.NETHER.getDimensionData();
-            return new Position(current.getFloorX() >> 3, NukkitMath.clamp(current.getFloorY(), dimensionData.getMinHeight(), dimensionData.getMaxHeight()), current.getFloorZ() >> 3, defaultNetherLevel);
+            Level netherLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_NETHER);
+            if(netherLevel == null) return null;
+            return new Position(current.getFloorX() >> 3, NukkitMath.clamp(current.getFloorY(), dimensionData.getMinHeight(), dimensionData.getMaxHeight()) + 1, current.getFloorZ() >> 3, netherLevel);
         } else if (current.level.getDimension() == Level.DIMENSION_NETHER) {
             dimensionData = DimensionEnum.OVERWORLD.getDimensionData();
-            return new Position(current.getFloorX() << 3, NukkitMath.clamp(current.getFloorY(), dimensionData.getMinHeight(), dimensionData.getMaxHeight()), current.getFloorZ() << 3, Server.getInstance().getDefaultLevel());
+            Level overworldLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_OVERWORLD);
+            if(overworldLevel == null) return null;
+            int x = current.getFloorX() << 3;
+            int z = current.getFloorZ() << 3;
+            int y = overworldLevel.getHighestBlockAt(x, z);
+            for(int i = overworldLevel.getMinHeight(); i < y; i++) {
+                if(overworldLevel.getBlock(x, i, z) instanceof BlockPortal) y = i;
+                break;
+            }
+            return new Position(x, NukkitMath.clamp(y, dimensionData.getMinHeight(), dimensionData.getMaxHeight()) + 1, z, overworldLevel);
         } else {
             throw new IllegalArgumentException("Neither overworld nor nether given!");
         }
     }
 
-    public static Position moveToTheEnd(Position current) {
-        Level defaultEndLevel = Server.getInstance().getDefaultEndLevel();
-        if (defaultEndLevel == null) return null;
+    public static Position convertPosBetweenEndAndOverworld(Position current) {
         if (current.level.getDimension() == DIMENSION_OVERWORLD) {
-            return new Position(100, 49, 0, defaultEndLevel);
-        } else if (current.level.getDimension() == Level.DIMENSION_THE_END) {
-            return Server.getInstance().getDefaultLevel().getSpawnLocation();
+            Level endLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_THE_END);
+            if(endLevel == null) return null;
+            return new Location(100, 50, 0, endLevel);
+        } else if (current.level.getDimension() == DIMENSION_THE_END) {
+            Level overworldLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_OVERWORLD);
+            if(overworldLevel == null) return null;
+            return overworldLevel.getSafeSpawn();
         } else {
-            throw new IllegalArgumentException("Neither overworld nor the end given!");
+            throw new IllegalArgumentException("Neither overworld nor end given!");
         }
     }
 }

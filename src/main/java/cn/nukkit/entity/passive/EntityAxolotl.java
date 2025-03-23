@@ -85,7 +85,7 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                 ),
-                                1, 1
+                                1, 1, 1, false
                         ),
                         new Behavior(entity -> {
                             setMoveTarget(getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK));

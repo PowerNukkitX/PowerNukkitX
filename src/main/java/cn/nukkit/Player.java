@@ -269,9 +269,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected Cache<String, FormWindowDialog> dialogWindows = Caffeine.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
-    protected double lastRightClickTime = 0.0;
-    protected Vector3 lastRightClickPos = null;
     protected int lastInAirTick = 0;
+    protected int previousInteractTick = 0;
     private static final float ROTATION_UPDATE_THRESHOLD = 1;
     private static final float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
     private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
@@ -454,6 +453,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this, this.inventory.getItemInHand(), target, face,
                 target.isAir() ? Action.LEFT_CLICK_AIR : Action.LEFT_CLICK_BLOCK);
         this.getServer().getPluginManager().callEvent(playerInteractEvent);
+        playerHandle.setInteract();
         if (playerInteractEvent.isCancelled()) {
             this.inventory.sendHeldItem(this);
             this.getLevel().sendBlocks(new Player[]{this}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
@@ -804,7 +804,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     getServer().getPluginManager().callEvent(ev);
 
                     if (!ev.isCancelled()) {
-                        final Position newPos = PortalHelper.moveToTheEnd(this);
+                        final Position newPos = PortalHelper.convertPosBetweenEndAndOverworld(this);
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
                                 if (teleport(newPos, TeleportCause.END_PORTAL)) {
@@ -1548,6 +1548,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public int getLastInAirTick() {
         return this.lastInAirTick;
+    }
+
+    public int getPreviousInteractTick() {
+        return this.previousInteractTick;
+    }
+
+    public int getPreviousInteractTickDifference() {
+        return getServer().getTick() - getPreviousInteractTick();
     }
 
     /**

@@ -240,6 +240,10 @@ public interface CoreMemoryTypes {
 
     MemoryType<Integer> INVULNERABLE_TICKS = new MemoryType<>("minecraft:invulnerable_ticks", 0);
 
+    MemoryType<Integer> LAST_SITTING_CHECK = new MemoryType<>("minecraft:last_sitting_check", 0);
+
+    MemoryType<Integer> PIG_BOOST = new MemoryType<>("minecraft:pig_boost", 0);
+
 
     /**
      * 实体的主人

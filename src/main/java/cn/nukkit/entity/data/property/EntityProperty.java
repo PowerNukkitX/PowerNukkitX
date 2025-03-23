@@ -65,6 +65,7 @@ public abstract class EntityProperty {
     }
 
     public static void buildPacketData() {
+        nbtCache.clear();
         for (Map.Entry<String, List<EntityProperty>> entry : entityPropertyMap.entrySet()) {
             ListTag<CompoundTag> listProperty = buildPropertyList(entry.getValue());
             CompoundTag tag = new CompoundTag().putList(PROPERTIES_KEY, listProperty).putString("type", entry.getKey());

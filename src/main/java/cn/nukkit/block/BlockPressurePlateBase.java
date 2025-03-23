@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.block.BlockRedstoneEvent;
@@ -141,7 +142,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
             }
 
             this.level.getServer().getPluginManager().callEvent(ev);
-
+            if(entity instanceof Player player) new PlayerHandle(player).setInteract();
             if (!ev.isCancelled()) {
                 updateState(power);
             }

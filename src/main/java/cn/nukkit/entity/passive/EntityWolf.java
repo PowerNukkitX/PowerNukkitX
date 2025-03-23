@@ -72,7 +72,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
                                         //Only wolves with a master can mate
                                         (entity) -> this.hasOwner()
                                 ),
-                                1, 1
+                                1, 1, 1, false
                         ),
                         //刷新攻击目标
                         new Behavior(

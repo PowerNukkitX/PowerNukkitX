@@ -432,6 +432,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * @see HorseInventory#getSaddle()
      */
     public Item getSaddle() {
+        if(this.getInventory() == null) return Item.AIR;
         return this.getInventory().getSaddle();
     }
 
@@ -439,6 +440,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * @see HorseInventory#getHorseArmor()
      */
     public Item getHorseArmor() {
+        if(this.getInventory() == null) return Item.AIR;
         return this.getInventory().getHorseArmor();
     }
 
