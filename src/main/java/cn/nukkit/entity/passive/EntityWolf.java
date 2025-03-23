@@ -1,7 +1,6 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.entity.*;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -31,6 +30,8 @@ import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.registry.BiomeRegistry;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +44,20 @@ import java.util.Set;
  * @author Cool_Loong (PowerNukkitX Project)
  * todo 野生狼不会被刷新
  */
-public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor {
+public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor, EntityVariant {
+
+    private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+
+    private static final int PALE = 0;
+    private static final int ASHEN = 1;
+    private static final int BLACK = 2;
+    private static final int CHESSNUT = 3;
+    private static final int RUSTY = 4;
+    private static final int SNOWY = 5;
+    private static final int SPOTTED = 6;
+    private static final int STRIPPED = 7;
+    private static final int WOODS = 8;
+
     @Override
     @NotNull
     public String getIdentifier() {
@@ -185,6 +199,9 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     public void initEntity() {
         this.setMaxHealth(8);
         super.initEntity();
+        if (!hasVariant()) {
+            this.setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
+        }
         //update CollarColor to Color
         if (namedTag.contains("CollarColor")) {
             this.setColor(DyeColor.getByWoolData(namedTag.getByte("CollarColor")));
@@ -305,8 +322,29 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
         };
     }
 
+
     @Override
     public float[] getDiffHandDamage() {
         return diffHandDamage;
+    }
+
+    @Override
+    public int[] getAllVariant() {
+        return VARIANTS;
+    }
+
+    public static int getBiomeVariant(int biomeId) {
+        BiomeRegistry.BiomeDefinition definition = Registries.BIOME.get(biomeId);
+        Set<String> tags = definition.tags();
+        String name = definition.name();
+        if(name.equals("cold_taiga")) return ASHEN;
+        if(name.equals("mega_taiga")) return BLACK;
+        if(name.equals("redwood_taiga_mutated")) return CHESSNUT;
+        if(tags.contains("jungle")) return RUSTY;
+        if(name.equals("grove") || tags.contains("frozen")) return SNOWY;
+        if(tags.contains("mesa")) return STRIPPED;
+        if(tags.contains("savanna")) return SPOTTED;
+        if(name.equals("forest")) return WOODS;
+        return PALE;
     }
 }
