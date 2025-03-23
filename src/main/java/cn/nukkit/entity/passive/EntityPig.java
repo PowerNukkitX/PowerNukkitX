@@ -42,6 +42,7 @@ import java.util.Set;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRideable, ClimateVariant {
+
     @Override
     @NotNull public String getIdentifier() {
         return PIG;
@@ -131,6 +132,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRid
         if(namedTag.contains("variant")) {
             setVariant(Variant.get(namedTag.getString("variant")));
         } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
+
     }
 
     public void setSaddled(boolean saddled) {
