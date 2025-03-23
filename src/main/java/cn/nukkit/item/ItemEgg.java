@@ -17,6 +17,10 @@ public class ItemEgg extends ProjectileItem {
         super(EGG, meta, count, "Egg");
     }
 
+    protected ItemEgg(String id, Integer meta, int count, String name) {
+        super(id, meta, count, name);
+    }
+
     @Override
     public String getProjectileEntityType() {
         return EGG;
