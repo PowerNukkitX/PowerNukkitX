@@ -1,6 +1,7 @@
 package cn.nukkit.form.window;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.form.element.ElementDivider;
 import cn.nukkit.form.element.ElementHeader;
 import cn.nukkit.form.element.ElementLabel;
@@ -166,12 +167,18 @@ public class SimpleForm extends Form<SimpleResponse> {
 
         Map.Entry<ElementSimple, Consumer<Player>> entry = entries[clickedId];
 
+        ElementSimple element = entry.getKey();
+        if (!(element instanceof ElementButton button)) {
+            Server.getInstance().getLogger().alert("Player " + player.getName() + " responded to a SimpleForm with an invalid index");
+            return null;
+        }
+
         Consumer<Player> action = entry.getValue();
         if (action != null) {
             action.accept(player);
         }
 
-        SimpleResponse response = new SimpleResponse(clickedId, (ElementButton) entry.getKey());
+        SimpleResponse response = new SimpleResponse(clickedId, button);
         this.supplySubmitted(player, response);
         return response;
     }
