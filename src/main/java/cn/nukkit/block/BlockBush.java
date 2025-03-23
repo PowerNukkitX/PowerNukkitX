@@ -40,7 +40,17 @@ public class BlockBush extends BlockFlowable {
     }
 
     @Override
-    public String getName() {
-        return "Bush";
+    public boolean canBeReplaced() {
+        return true;
     }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+        if (BlockSweetBerryBush.isSupportValid(down())) {
+            this.getLevel().setBlock(block, this, true);
+            return true;
+        }
+        return false;
+    }
+
 }

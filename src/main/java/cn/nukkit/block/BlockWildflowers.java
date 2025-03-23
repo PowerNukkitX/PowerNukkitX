@@ -1,5 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
+import cn.nukkit.item.Item;
+import cn.nukkit.level.particle.BoneMealParticle;
+import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.GROWTH;
@@ -32,4 +36,33 @@ public class BlockWildflowers extends BlockSegmented {
         return "Wildflowers";
     }
 
+    @Override
+    public boolean isSupportValid(Block block) {
+        return BlockSweetBerryBush.isSupportValid(block);
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if (item.isFertilizer()) { //Bone meal
+            if (player != null && (player.gamemode & 0x01) == 0) {
+                item.count--;
+            }
+            this.level.addParticle(new BoneMealParticle(this));
+            this.level.dropItem(this, this.toItem());
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

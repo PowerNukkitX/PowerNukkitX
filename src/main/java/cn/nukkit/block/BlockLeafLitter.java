@@ -32,4 +32,8 @@ public class BlockLeafLitter extends BlockSegmented {
         return "Leaf Litter";
     }
 
+    @Override
+    public boolean isSupportValid(Block block) {
+        return block.isFullBlock();
+    }
 }

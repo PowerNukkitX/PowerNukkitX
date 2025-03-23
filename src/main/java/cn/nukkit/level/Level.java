@@ -2813,7 +2813,7 @@ public class Level implements Metadatable {
         }
 
         //cause bug (eg: frog_spawn) (and I don't know what this is for)
-        if (!(hand instanceof BlockFrogSpawn) && target.canBeReplaced()) {
+        if (!(hand instanceof BlockFrogSpawn || hand instanceof BlockSegmented) && target.canBeReplaced()) {
             block = target;
             hand.position(block);
         }

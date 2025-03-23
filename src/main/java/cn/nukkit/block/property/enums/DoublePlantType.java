@@ -13,6 +13,5 @@ public enum DoublePlantType {
     FERN,
     ROSE,
     PAEONIA,
-    PITCHER_PLANT,
-    DRY
+    PITCHER_PLANT
 }
