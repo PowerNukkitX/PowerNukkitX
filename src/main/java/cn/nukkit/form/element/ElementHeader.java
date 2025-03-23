@@ -26,4 +26,13 @@ public class ElementHeader extends Element implements ElementCustom, ElementSimp
 
         return this.object;
     }
+
+    @Override
+    public ElementSimple updateWith(ElementSimple element) {
+        if (!(element instanceof ElementHeader header)) {
+            return this;
+        }
+
+        return this.text(header.text());
+    }
 }

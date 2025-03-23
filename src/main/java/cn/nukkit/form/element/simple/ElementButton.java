@@ -45,4 +45,14 @@ public class ElementButton extends Element implements ElementSimple {
 
         return this.object;
     }
+
+    @Override
+    public ElementSimple updateWith(ElementSimple element) {
+        if (!(element instanceof ElementButton button)) {
+            return this;
+        }
+
+        return this.text(button.text())
+                .image(button.image());
+    }
 }

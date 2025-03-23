@@ -26,4 +26,13 @@ public class ElementDivider extends Element implements ElementCustom, ElementSim
 
         return this.object;
     }
+
+    @Override
+    public ElementSimple updateWith(ElementSimple element) {
+        if (!(element instanceof ElementDivider divider)) {
+            return this;
+        }
+
+        return this.text(divider.text());
+    }
 }

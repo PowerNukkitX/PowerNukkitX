@@ -26,4 +26,13 @@ public class ElementLabel extends Element implements ElementCustom, ElementSimpl
 
         return this.object;
     }
+
+    @Override
+    public ElementSimple updateWith(ElementSimple element) {
+        if (!(element instanceof ElementLabel label)) {
+            return this;
+        }
+
+        return this.text(label.text());
+    }
 }
