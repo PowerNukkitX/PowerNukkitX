@@ -35,7 +35,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
-        try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_id_and_type.json")) {
+        try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biomes.json")) { //From Endstone Data
             Gson gson = new GsonBuilder().setObjectToNumberStrategy(JsonReader::nextInt).create();
             Map<String, ?> map = gson.fromJson(new InputStreamReader(stream), Map.class);
             for (var e : map.entrySet()) {
@@ -54,6 +54,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
                 ListTag<StringTag> tags1 = value.getList("tags", StringTag.class);
                 Set<String> list = tags1.getAll().stream().map(StringTag::parseValue).collect(Collectors.toSet());
                 BiomeDefinition biomeDefinition = new BiomeDefinition(
+                        e.getKey(),
                         value.getFloat("ash"),
                         value.getFloat("blue_spores"),
                         value.getFloat("depth"),
@@ -133,7 +134,8 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
         }
     }
 
-    public record BiomeDefinition(float ash,
+    public record BiomeDefinition(String name,
+                                  float ash,
                                   float blue_spores,
                                   float depth,
                                   float downfall,
