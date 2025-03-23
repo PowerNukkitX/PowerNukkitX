@@ -1,5 +1,7 @@
-package cn.nukkit.form.element.custom;
+package cn.nukkit.form.element;
 
+import cn.nukkit.form.element.custom.ElementCustom;
+import cn.nukkit.form.element.simple.ElementSimple;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,16 +12,16 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(chain = true, fluent = true)
 @AllArgsConstructor
-public class ElementLabel extends ElementCustom {
+public class ElementHeader extends Element implements ElementCustom, ElementSimple {
     private String text;
 
-    public ElementLabel() {
+    public ElementHeader() {
         this("");
     }
 
     @Override
     public JsonObject toJson() {
-        this.object.addProperty("type", "label");
+        this.object.addProperty("type", "header");
         this.object.addProperty("text", this.text);
 
         return this.object;

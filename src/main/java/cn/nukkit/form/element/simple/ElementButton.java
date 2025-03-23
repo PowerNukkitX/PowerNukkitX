@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(chain = true, fluent = true)
 @AllArgsConstructor
-public class ElementButton extends Element {
+public class ElementButton extends Element implements ElementSimple {
     public static ElementButton[] EMPTY_LIST = new ElementButton[0];
 
     /**
@@ -36,6 +36,7 @@ public class ElementButton extends Element {
 
     @Override
     public JsonObject toJson() {
+        this.object.addProperty("type", "button");
         this.object.addProperty("text", this.text);
 
         if (this.image != null) {

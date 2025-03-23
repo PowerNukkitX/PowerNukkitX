@@ -1,8 +1,12 @@
 package cn.nukkit.form.window;
 
 import cn.nukkit.Player;
+import cn.nukkit.form.element.ElementDivider;
+import cn.nukkit.form.element.ElementHeader;
+import cn.nukkit.form.element.ElementLabel;
 import cn.nukkit.form.element.simple.ButtonImage;
 import cn.nukkit.form.element.simple.ElementButton;
+import cn.nukkit.form.element.simple.ElementSimple;
 import cn.nukkit.form.response.SimpleResponse;
 import com.google.gson.JsonArray;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -22,7 +26,7 @@ import java.util.function.Consumer;
 public class SimpleForm extends Form<SimpleResponse> {
     protected String content = "";
 
-    protected Object2ObjectArrayMap<ElementButton, Consumer<Player>> buttons = new Object2ObjectArrayMap<>();
+    protected Object2ObjectArrayMap<ElementSimple, Consumer<Player>> elements = new Object2ObjectArrayMap<>();
 
     public SimpleForm(String title) {
         super(title);
@@ -39,12 +43,13 @@ public class SimpleForm extends Form<SimpleResponse> {
         return (SimpleForm) super.title(title);
     }
 
-    public SimpleForm addButton(ElementButton element) {
-        return this.addButton(element, null);
+    public SimpleForm addElement(ElementSimple element) {
+        this.elements.put(element, null);
+        return this;
     }
 
     public SimpleForm addButton(ElementButton element, Consumer<Player> callback) {
-        this.buttons.put(element, callback);
+        this.elements.put(element, callback);
         return this;
     }
 
@@ -64,28 +69,34 @@ public class SimpleForm extends Form<SimpleResponse> {
         return this.addButton(new ElementButton(text, image), callback);
     }
 
-    public ElementButton updateElement(int index, ElementButton newElement) {
-        if (this.buttons.size() > index) {
-            return this.buttons.keySet().toArray(ElementButton.EMPTY_LIST)[index]
-                    .text(newElement.text())
-                    .image(newElement.image());
+    public ElementSimple updateElement(int index, ElementSimple newElement) {
+        if (this.elements.size() > index) {
+            ElementSimple element = this.elements.keySet().toArray(ElementSimple.EMPTY_LIST)[index];
+
+            return switch (newElement) {
+                case ElementButton button -> element instanceof ElementButton oldButton ? oldButton.text(button.text()).image(button.image()) : null;
+                case ElementDivider divider -> element instanceof ElementDivider oldDivider ? oldDivider.text(divider.text()) : null;
+                case ElementHeader header -> element instanceof ElementHeader oldHeader ? oldHeader.text(header.text()) : null;
+                case ElementLabel label -> element instanceof ElementLabel oldLabel ? oldLabel.text(label.text()) : null;
+                default -> null;
+            };
         }
         return null;
     }
 
     public void updateElement(int index, ElementButton newElement, Consumer<Player> callback) {
-        ElementButton element = this.updateElement(index, newElement);
+        ElementSimple element = this.updateElement(index, newElement);
         if (element != null) {
-            this.buttons.put(element, callback);
+            this.elements.put(element, callback);
         }
     }
 
     public void removeElement(int index) {
-        this.removeElement(this.buttons.keySet().toArray(ElementButton.EMPTY_LIST)[index]);
+        this.removeElement(this.elements.keySet().toArray(ElementSimple.EMPTY_LIST)[index]);
     }
 
-    public void removeElement(ElementButton elementButton) {
-        this.buttons.remove(elementButton);
+    public void removeElement(ElementSimple element) {
+        this.elements.remove(element);
     }
 
     @Override
@@ -125,7 +136,7 @@ public class SimpleForm extends Form<SimpleResponse> {
         this.object.addProperty("content", this.content);
 
         JsonArray buttons = new JsonArray();
-        this.buttons()
+        this.elements()
                 .keySet()
                 .forEach(element -> buttons.add(element.toJson()));
         this.object.add("buttons", buttons);
@@ -142,7 +153,7 @@ public class SimpleForm extends Form<SimpleResponse> {
         }
 
 
-        Map.Entry<ElementButton, Consumer<Player>>[] entries = this.buttons.entrySet().toArray(Map.Entry[]::new);
+        Map.Entry<ElementSimple, Consumer<Player>>[] entries = this.elements.entrySet().toArray(Map.Entry[]::new);
 
         int clickedId = -1;
         try {
@@ -153,14 +164,14 @@ public class SimpleForm extends Form<SimpleResponse> {
             return null;
         }
 
-        Map.Entry<ElementButton, Consumer<Player>> entry = entries[clickedId];
+        Map.Entry<ElementSimple, Consumer<Player>> entry = entries[clickedId];
 
         Consumer<Player> action = entry.getValue();
         if (action != null) {
             action.accept(player);
         }
 
-        SimpleResponse response = new SimpleResponse(clickedId, entry.getKey());
+        SimpleResponse response = new SimpleResponse(clickedId, (ElementButton) entry.getKey());
         this.supplySubmitted(player, response);
         return response;
     }
