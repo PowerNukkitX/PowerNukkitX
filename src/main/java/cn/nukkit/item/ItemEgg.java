@@ -1,5 +1,8 @@
 package cn.nukkit.item;
 
+import cn.nukkit.entity.ClimateVariant;
+import cn.nukkit.nbt.tag.CompoundTag;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
@@ -33,4 +36,9 @@ public class ItemEgg extends ProjectileItem {
 
     @Override
     public int getMaxStackSize() { return 16; }
+
+    @Override
+    protected void correctNBT(CompoundTag nbt) {
+        nbt.putString("variant", ClimateVariant.Variant.TEMPERATE.getName());
+    }
 }

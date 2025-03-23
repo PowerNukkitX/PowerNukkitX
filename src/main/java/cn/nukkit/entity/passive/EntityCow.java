@@ -1,6 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.ClimateVariant;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -29,7 +30,7 @@ import java.util.Set;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityCow extends EntityAnimal implements EntityWalkable {
+public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVariant {
     @Override
     @NotNull public String getIdentifier() {
         return COW;
@@ -104,6 +105,9 @@ public class EntityCow extends EntityAnimal implements EntityWalkable {
     protected void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
+        if(namedTag.contains("variant")) {
+            setVariant(Variant.get(namedTag.getString("variant")));
+        } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
     }
 
     @Override
