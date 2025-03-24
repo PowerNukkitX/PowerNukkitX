@@ -7,11 +7,15 @@ import cn.nukkit.config.category.*;
 import cn.nukkit.config.legacy.LegacyServerProperties;
 import cn.nukkit.config.legacy.LegacyServerPropertiesKeys;
 import cn.nukkit.config.legacy.LegacyServerSettings;
+import cn.nukkit.lang.BaseLang;
 import cn.nukkit.utils.TextFormat;
 import eu.okaeri.configs.ConfigManager;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.lang.reflect.Field;
 
+@Slf4j
 public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
     private final String version = "2.0.0";
 
@@ -22,6 +26,31 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
 
     @Override
     public void update(Server server) {
+
+        try {
+            //For the settings comments, we need a language first. Otherwise, we will get an error. That is why we're injecting a default language.
+            Field baseLang = server.getClass().getDeclaredField("baseLang");
+            baseLang.setAccessible(true);
+            baseLang.set(server, new BaseLang("eng"));
+            baseLang.setAccessible(false);
+
+            //We need the new server settings. Therefore, we're generating the default settings here and injecting them into the server.
+            Field settings = server.getClass().getDeclaredField("settings");
+            settings.setAccessible(true);
+            settings.set(server, ConfigManager.create(ServerSettings.class, it -> {
+                File config = new File(server.getDataPath() + "pnx.yml");
+                it.withConfigurer(new YamlSnakeYamlConfigurer());
+                it.withBindFile(config);
+                it.withRemoveOrphans(true);
+                it.saveDefaults();
+                it.load(true);
+            })
+            );
+            settings.setAccessible(false);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
         LegacyServerSettings legacyNukkit = ConfigManager.create(LegacyServerSettings.class, it -> {
             it.withConfigurer(new YamlSnakeYamlConfigurer());
             it.withBindFile(new File(server.getDataPath() + "nukkit.yml"));
@@ -142,6 +171,7 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
         net.enableQuery(oldProp.get(LegacyServerPropertiesKeys.ENABLE_QUERY, net.enableQuery()))
                 .networkEncryption(oldProp.get(LegacyServerPropertiesKeys.NETWORK_ENCRYPTION, net.networkEncryption()))
                 .checkLoginTime(oldProp.get(LegacyServerPropertiesKeys.CHECK_LOGIN_TIME, net.checkLoginTime()));
+        settings.save();
     }
 
     public int parseGamemode(LegacyServerProperties properties, int def) {
