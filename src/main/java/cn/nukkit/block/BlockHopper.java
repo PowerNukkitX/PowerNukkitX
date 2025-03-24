@@ -91,7 +91,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
 
         setBlockFace(facing);
 
-        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             boolean powered = this.isGettingPower();
 
             if (powered == this.isEnabled()) {
@@ -143,7 +143,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return 0;
         }
 

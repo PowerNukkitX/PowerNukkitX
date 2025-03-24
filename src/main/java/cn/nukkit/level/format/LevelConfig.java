@@ -24,12 +24,16 @@ public class LevelConfig {
     @Accessors(fluent = true)
     public static class GeneratorConfig {
         String name;
-        long seed = ThreadLocalRandom.current().nextLong(Long.MIN_VALUE, Long.MAX_VALUE);
+        long seed = randomSeed();
         boolean enableAntiXray = false;
         AntiXrayMode antiXrayMode = AntiXrayMode.LOW;
         boolean preDeobfuscate = true;
         DimensionData dimensionData;
         Map<String, Object> preset;
+
+        public static Long randomSeed() {
+            return ThreadLocalRandom.current().nextLong(Long.MIN_VALUE, Long.MAX_VALUE);
+        }
     }
 
     public enum AntiXrayMode {

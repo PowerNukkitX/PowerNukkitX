@@ -90,7 +90,7 @@ public abstract class BlockHead extends BlockTransparent implements RedstoneComp
 
     @Override
     public int onUpdate(int type) {
-        if ((type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_NORMAL) || !level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if ((type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_NORMAL) || !level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return 0;
         }
 

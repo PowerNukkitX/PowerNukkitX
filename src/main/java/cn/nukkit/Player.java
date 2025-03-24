@@ -19,7 +19,6 @@ import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.camera.data.CameraPreset;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.utils.RawText;
-import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
@@ -2344,7 +2343,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public boolean awardAchievement(String achievementId) {
-        if (!Server.getInstance().getProperties().get(ServerPropertiesKeys.ACHIEVEMENTS, true)) {
+        if (!Server.getInstance().getSettings().gameplaySettings().achievements()) {
             return false;
         }
 

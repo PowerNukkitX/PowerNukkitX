@@ -40,7 +40,7 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
                 return 0; // Already broken
             }
 
-            if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+            if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
                 return 0;
             }
 

@@ -62,7 +62,7 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
 
     @Override
     public boolean onVibrationOccur(VibrationEvent event) {
-        if (this.isBlockEntityValid() && level.getServer().getSettings().levelSettings().enableRedstone() && !(this.level.getBlock(event.source()) instanceof BlockSculkSensor)) {
+        if (this.isBlockEntityValid() && level.getServer().getSettings().gameplaySettings().enableRedstone() && !(this.level.getBlock(event.source()) instanceof BlockSculkSensor)) {
             boolean canBeActive = (getLevel().getTick() - lastActiveTime) > 40 && !waitForVibration;
             if (canBeActive) waitForVibration = true;
             return canBeActive;
@@ -73,7 +73,7 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
 
     @Override
     public void onVibrationArrive(VibrationEvent event) {
-        if (this.level != null && this.isBlockEntityValid() && level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (this.level != null && this.isBlockEntityValid() && level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             this.lastVibrationEvent = event;
             this.updateLastActiveTime();
             waitForVibration = false;
