@@ -264,6 +264,8 @@ public class Server {
         this.consoleThread = new ConsoleThread();
         this.consoleThread.start();
 
+        while(convertLegacyConfiguration());
+
         File config = new File(this.dataPath + "pnx.yml");
         String chooseLanguage = null;
         if (!config.exists()) {
@@ -316,36 +318,6 @@ public class Server {
             it.load(true);
         });
         this.settings.baseSettings().language(chooseLanguage);
-
-        File oldNukkitYml = new File(this.dataPath + "nukkit.yml");
-        File oldServerProperties = new File(this.dataPath + "server.properties");
-        if(oldNukkitYml.exists() && oldServerProperties.exists()) {
-            try {
-                File backupFolder = new File(this.dataPath + "backup/");
-                if (!backupFolder.exists()) {
-                    backupFolder.mkdirs();
-                }
-                FileUtils.copyFile(oldNukkitYml, new File(backupFolder, "nukkit.yml"));
-                FileUtils.copyFile(oldServerProperties, new File(backupFolder, "server.properties"));
-                log.info("Copied nukkit.yml and server.properties to backup folder");
-                log.info("Start migration now...");
-
-                ConfigUpdater.update("1.0.0", this);
-
-                oldNukkitYml.delete();
-                oldServerProperties.delete();
-
-                log.info("Migration completed, start server now...");
-            } catch (IOException e) {
-                log.error("Failed to copy nukkit.yml to server.properties", e);
-            }
-        }
-
-        if(ConfigUpdater.canUpdate(this.settings.configSettings().version())) {
-            log.info("New version detected, updating config...");
-            ConfigUpdater.update(this.settings.configSettings().version(), this);
-            log.info("Config updated to version {}", this.settings.configSettings().version());
-        }
 
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
 
@@ -545,6 +517,41 @@ public class Server {
         }
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
         this.start();
+    }
+
+    private boolean convertLegacyConfiguration() {
+        File oldNukkitYml = new File(this.dataPath + "nukkit.yml");
+        File oldServerProperties = new File(this.dataPath + "server.properties");
+        if(oldNukkitYml.exists() && oldServerProperties.exists()) {
+            try {
+                File backupFolder = new File(this.dataPath + "backup/");
+                if (!backupFolder.exists()) {
+                    backupFolder.mkdirs();
+                }
+                FileUtils.copyFile(oldNukkitYml, new File(backupFolder, "nukkit.yml"));
+                FileUtils.copyFile(oldServerProperties, new File(backupFolder, "server.properties"));
+                log.info("Copied nukkit.yml and server.properties to backup folder");
+                log.info("Start migration now...");
+
+                ConfigUpdater.update("1.0.0", this);
+
+                oldNukkitYml.delete();
+                oldServerProperties.delete();
+
+                log.info("Migration completed, start server now...");
+            } catch (IOException e) {
+                log.error("Failed to copy nukkit.yml to server.properties", e);
+            }
+            return true;
+        }
+
+        if(ConfigUpdater.canUpdate(this.settings.configSettings().version())) {
+            log.info("New version detected, updating config...");
+            ConfigUpdater.update(this.settings.configSettings().version(), this);
+            log.info("Config updated to version {}", this.settings.configSettings().version());
+            return true;
+        }
+        return false;
     }
 
     private void loadLevels() {
