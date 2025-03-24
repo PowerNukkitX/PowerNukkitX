@@ -1301,7 +1301,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
         this.spawnToAll();
         Arrays.stream(this.level.getEntities()).filter(entity -> entity.getViewers().containsKey(this.getLoaderId()) && entity instanceof EntityBoss).forEach(entity -> ((EntityBoss) entity).addBossbar(this));
-        this.refreshBlockEntity(1);
     }
 
     /**
@@ -2241,6 +2240,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 if (this != entity && !entity.closed && entity.isAlive()) {
                     entity.spawnTo(this);
                 }
+            }
+        }
+
+        for(BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
+            if(entity instanceof BlockEntitySpawnable spawnable) {
+                spawnable.spawnTo(this);
             }
         }
 
@@ -4355,7 +4360,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.positionChanged = true;
 
         if (switchLevel) {
-            refreshBlockEntity(10);
             refreshChunkRender();
         }
         this.resetFallDistance();
@@ -4379,32 +4383,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setViewDistance(1);
         this.setViewDistance(32);
         this.setViewDistance(origin);
-    }
-
-    public void refreshBlockEntity(int delay) {
-        getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
-            for (var b : this.level.getBlockEntities().values()) {
-                if(b == null) continue;
-                if (b instanceof BlockEntitySpawnable blockEntitySpawnable) {
-                    UpdateBlockPacket setAir = new UpdateBlockPacket();
-                    setAir.blockRuntimeId = BlockAir.STATE.blockStateHash();
-                    setAir.flags = UpdateBlockPacket.FLAG_NETWORK;
-                    setAir.x = b.getFloorX();
-                    setAir.y = b.getFloorY();
-                    setAir.z = b.getFloorZ();
-                    this.dataPacket(setAir);
-
-                    UpdateBlockPacket revertAir = new UpdateBlockPacket();
-                    revertAir.blockRuntimeId = b.getBlock().getRuntimeId();
-                    revertAir.flags = UpdateBlockPacket.FLAG_NETWORK;
-                    revertAir.x = b.getFloorX();
-                    revertAir.y = b.getFloorY();
-                    revertAir.z = b.getFloorZ();
-                    this.dataPacket(revertAir);
-                    blockEntitySpawnable.spawnTo(this);
-                }
-            }
-        }, delay, true);
     }
 
     /**
