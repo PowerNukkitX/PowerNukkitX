@@ -353,7 +353,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 if (player.isCreative()) {
                     item = serverItemInHand;
                 } else if (!player.getInventory().getItemInHand().equals(useItemDataItem)) {
-                    player.getServer().getLogger().warning("Item received did not match item in hand.");
+                    player.getServer().getLogger().debug("Item received did not match item in hand."); //Client seems to send multiple packets with the same durability.
                     player.getInventory().sendHeldItem(player);
                     return;
                 } else {

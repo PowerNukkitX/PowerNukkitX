@@ -2,7 +2,6 @@ package cn.nukkit.network.process.processor;
 
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.event.player.PlayerTeleportEvent;
-import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -21,7 +20,9 @@ public class ShowCreditsProcessor extends DataPacketProcessor<ShowCreditsPacket>
                 if(playerHandle.player.getSpawn().right() == SpawnPointType.WORLD) {
                     spawn = PortalHelper.convertPosBetweenEndAndOverworld(playerHandle.player.getLocation());
                 } else spawn = playerHandle.player.getSpawn().left();
-                playerHandle.player.teleport(spawn, PlayerTeleportEvent.TeleportCause.END_PORTAL);
+                if(spawn != null) {
+                    playerHandle.player.teleport(spawn, PlayerTeleportEvent.TeleportCause.END_PORTAL);
+                }
             }
         }
     }

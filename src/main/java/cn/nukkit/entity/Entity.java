@@ -1502,20 +1502,22 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_NETHER)) {
 
                 Position newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
-                IChunk destChunk = newPos.getChunk();
-                if(!destChunk.isGenerated()) {
-                    newPos.getLevel().syncGenerateChunk(destChunk.getX(), destChunk.getZ());
-                    newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
-                }
-                if (newPos != null) {
-                    Position nearestPortal = PortalHelper.getNearestValidPortal(newPos);
-                    if (nearestPortal != null) {
-                        teleport(nearestPortal.add(0.5, 0, 0.5), PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
-                    } else {
-                        final Position finalPos = newPos.add(1.5, 1, 1.5);
-                        inPortalTicks = 81;
-                        PortalHelper.spawnPortal(newPos);
-                        teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+                if(newPos != null) {
+                    IChunk destChunk = newPos.getChunk();
+                    if (!destChunk.isGenerated()) {
+                        newPos.getLevel().syncGenerateChunk(destChunk.getX(), destChunk.getZ());
+                        newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
+                    }
+                    if (newPos != null) {
+                        Position nearestPortal = PortalHelper.getNearestValidPortal(newPos);
+                        if (nearestPortal != null) {
+                            teleport(nearestPortal.add(0.5, 0, 0.5), PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+                        } else {
+                            final Position finalPos = newPos.add(1.5, 1, 1.5);
+                            inPortalTicks = 81;
+                            PortalHelper.spawnPortal(newPos);
+                            teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+                        }
                     }
                 }
             }
