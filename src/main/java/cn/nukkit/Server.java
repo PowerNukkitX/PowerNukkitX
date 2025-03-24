@@ -319,6 +319,8 @@ public class Server {
         });
         this.settings.baseSettings().language(chooseLanguage);
 
+        while(updateConfiguration());
+
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
 
         levelArray = Level.EMPTY_ARRAY;
@@ -544,13 +546,17 @@ public class Server {
             }
             return true;
         }
+        return false;
+    }
 
+    private boolean updateConfiguration() {
         if(ConfigUpdater.canUpdate(this.settings.configSettings().version())) {
             log.info("New version detected, updating config...");
             ConfigUpdater.update(this.settings.configSettings().version(), this);
             log.info("Config updated to version {}", this.settings.configSettings().version());
             return true;
         }
+
         return false;
     }
 
