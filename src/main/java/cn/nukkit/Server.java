@@ -563,27 +563,18 @@ public class Server {
         }
 
         if (this.getDefaultLevel() == null) {
-            String levelFolder = this.settings.baseSettings().levelName();
+            String levelFolder = this.settings.baseSettings().defaultLevelName();
             if (levelFolder == null || levelFolder.trim().isEmpty()) {
                 log.warn("level-name cannot be null, using default");
                 levelFolder = "world";
-                this.settings.baseSettings().levelName(levelFolder);
+                this.settings.baseSettings().defaultLevelName(levelFolder);
             }
 
             if (!this.loadLevel(levelFolder)) {
                 //default world not exist
                 //generate the default world
                 HashMap<Integer, LevelConfig.GeneratorConfig> generatorConfig = new HashMap<>();
-                //spawn seed
-                long seed;
-                String seedString = this.settings.baseSettings().levelSeed();
-                try {
-                    seed = Long.parseLong(seedString);
-                } catch (NumberFormatException e) {
-                    seed = seedString.hashCode();
-                }
-
-                generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+                generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", LevelConfig.GeneratorConfig.randomSeed(), false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
                 LevelConfig levelConfig = new LevelConfig("leveldb", true, generatorConfig);
                 this.generateLevel(levelFolder, levelConfig);
             }

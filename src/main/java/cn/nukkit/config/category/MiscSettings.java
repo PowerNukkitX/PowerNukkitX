@@ -14,6 +14,6 @@ public class MiscSettings extends OkaeriConfig {
     String shutdownMessage = "Server closed";
     @Comment("pnx.settings.misc.installspark")
     boolean installSpark = true;
-
+    @Comment("pnx.settings.misc.enableterra")
     boolean enableTerra = false;
 }

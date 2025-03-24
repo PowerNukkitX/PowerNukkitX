@@ -11,6 +11,21 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(fluent = true)
 public class BaseSettings extends OkaeriConfig {
+    @Comment("pnx.settings.base.ip")
+    String ip = "0.0.0.0";
+    @Comment("pnx.settings.base.port")
+    int port = 19132;
+    @Comment("pnx.settings.base.maxplayers")
+    int maxPlayers = 20;
+    @Comment("pnx.settings.base.defaultlevel")
+    String defaultLevelName = "world";
+    @Comment("pnx.settings.base.allowlist")
+    boolean allowList = false;
+    @Comment("pnx.settings.base.motd")
+    String motd = "PowerNukkitX Server";
+    @CustomKey("sub-motd")
+    @Comment("pnx.settings.base.submotd")
+    String subMotd = "powernukkitx.org";
     @Comment("pnx.settings.base.language")
     String language = "eng";
     @Comment("pnx.settings.base.forcetranslate")
@@ -24,18 +39,6 @@ public class BaseSettings extends OkaeriConfig {
     int autosaveDelay = 6000;
     @Comment("pnx.settings.base.saveunknownblock")
     boolean saveUnknownBlock = true;
-
-    @Comment("pnx.settings.base.motd")
-    String motd = "PowerNukkitX Server";
-    @CustomKey("sub-motd")
-    @Comment("pnx.settings.base.submotd")
-    String subMotd = "powernukkitx.org";
-
-    String ip = "0.0.0.0";
-    int port = 19132;
-    int maxPlayers = 20;
-    String levelName = "world";
-    String levelSeed = String.valueOf(System.currentTimeMillis());
-    boolean allowList = false;
+    @Comment("pnx.settings.base.xboxauth")
     boolean xboxAuth = true;
 }

@@ -115,8 +115,7 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .ip(oldProp.get(LegacyServerPropertiesKeys.SERVER_IP, base.ip()))
                 .port(oldProp.get(LegacyServerPropertiesKeys.SERVER_PORT, base.port()))
                 .maxPlayers(oldProp.get(LegacyServerPropertiesKeys.MAX_PLAYERS, base.maxPlayers()))
-                .levelName(oldProp.get(LegacyServerPropertiesKeys.LEVEL_NAME, base.levelName()))
-                .levelSeed(oldProp.get(LegacyServerPropertiesKeys.LEVEL_SEED, base.levelSeed()))
+                .defaultLevelName(oldProp.get(LegacyServerPropertiesKeys.LEVEL_NAME, base.defaultLevelName()))
                 .allowList(oldProp.get(LegacyServerPropertiesKeys.WHITE_LIST, base.allowList()))
                 .xboxAuth(oldProp.get(LegacyServerPropertiesKeys.XBOX_AUTH, base.xboxAuth()));
 
