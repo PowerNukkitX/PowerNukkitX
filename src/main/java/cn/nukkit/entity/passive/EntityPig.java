@@ -2,6 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.entity.ClimateVariant;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityRideable;
@@ -40,7 +41,8 @@ import java.util.Set;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRideable {
+public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRideable, ClimateVariant {
+
     @Override
     @NotNull public String getIdentifier() {
         return PIG;
@@ -127,6 +129,10 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRid
         if(this.namedTag.contains("saddled")) {
             setSaddled(this.namedTag.getBoolean("saddled"));
         }
+        if(namedTag.contains("variant")) {
+            setVariant(Variant.get(namedTag.getString("variant")));
+        } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
+
     }
 
     public void setSaddled(boolean saddled) {

@@ -735,7 +735,7 @@ public class Level implements Metadatable {
      * @param isGlobal   the is global,default false
      */
     public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, boolean isGlobal) {
-        LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
+        LevelSoundEventPacket pk = new LevelSoundEventPacket();
         pk.sound = type;
         pk.extraData = data;
         pk.entityIdentifier = identifier;
@@ -2813,7 +2813,7 @@ public class Level implements Metadatable {
         }
 
         //cause bug (eg: frog_spawn) (and I don't know what this is for)
-        if (!(hand instanceof BlockFrogSpawn) && target.canBeReplaced()) {
+        if (!(hand instanceof BlockFrogSpawn || hand instanceof BlockSegmented) && target.canBeReplaced()) {
             block = target;
             hand.position(block);
         }

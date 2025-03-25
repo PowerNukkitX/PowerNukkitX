@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.block.property.CommonBlockProperties.DOUBLE_PLANT_TYPE;
 import static cn.nukkit.block.property.CommonBlockProperties.UPPER_BLOCK_BIT;
 
 public abstract class BlockDoublePlant extends BlockFlowable {

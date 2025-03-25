@@ -1,5 +1,6 @@
 package cn.nukkit.entity.projectile;
 
+import cn.nukkit.entity.ClimateVariant;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.ItemEgg;
 import cn.nukkit.level.format.IChunk;
@@ -12,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class EntityEgg extends EntityProjectile {
+public class EntityEgg extends EntityProjectile implements ClimateVariant {
 
     @Override
     @NotNull public String getIdentifier() {
@@ -27,7 +28,13 @@ public class EntityEgg extends EntityProjectile {
         super(chunk, nbt, shootingEntity);
     }
 
-    
+    @Override
+    protected void initEntity() {
+        super.initEntity();
+        if(namedTag.containsString("variant")) {
+            setVariant(Variant.get(namedTag.getString("variant")));
+        } else setVariant(Variant.TEMPERATE);
+    }
 
     @Override
     public float getWidth() {
