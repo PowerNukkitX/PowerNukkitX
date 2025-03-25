@@ -1,6 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Server;
+import cn.nukkit.entity.ClimateVariant;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -28,7 +29,7 @@ import java.util.Set;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityChicken extends EntityAnimal implements EntityWalkable {
+public class EntityChicken extends EntityAnimal implements EntityWalkable, ClimateVariant {
     @Override
     @NotNull public String getIdentifier() {
         return CHICKEN;
@@ -82,7 +83,7 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
                         new Behavior(new FlatRandomRoamExecutor(0.22f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1),
                         new Behavior(entity -> {
                             entity.getMemoryStorage().put(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, getLevel().getTick());
-                            entity.getLevel().dropItem(entity, Item.get(Item.EGG));
+                            entity.getLevel().dropItem(entity, getEgg());
                             entity.getLevel().addSound(entity, Sound.MOB_CHICKEN_PLOP);
                             return false;
                         }, any(
@@ -98,6 +99,12 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
         );
+    }
+
+    private Item getEgg() {
+        if(getVariant() == Variant.COLD) return Item.get(Item.BLUE_EGG);
+        if(getVariant() == Variant.WARM) return Item.get(Item.BROWN_EGG);
+        return Item.get(Item.EGG);
     }
 
     @Override
@@ -126,18 +133,18 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
         return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_CHICKEN : Item.CHICKEN)), Item.get(Item.FEATHER)};
     }
 
-    
-
     @Override
     protected void initEntity() {
         this.setMaxHealth(4);
         super.initEntity();
+        if(namedTag.contains("variant")) {
+            setVariant(Variant.get(namedTag.getString("variant")));
+        } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
     }
 
     @Override
     public boolean isBreedingItem(Item item) {
         String id = item.getId();
-
         return id == Item.WHEAT_SEEDS || id == Item.MELON_SEEDS || id == Item.PUMPKIN_SEEDS || id == Item.BEETROOT_SEEDS;
     }
 }

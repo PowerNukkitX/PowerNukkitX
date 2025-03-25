@@ -5,14 +5,12 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.LevelEventPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacketV2;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +37,7 @@ public class EntityEvocationFang extends EntityMob implements EntityWalkable {
     protected void initEntity() {
         this.setMaxHealth(1);
         super.initEntity();
-        getLevel().addLevelSoundEvent(this, LevelSoundEventPacketV2.SOUND_FANG, -1, EntityID.EVOCATION_FANG, false, false);
+        getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_FANG, -1, EntityID.EVOCATION_FANG, false, false);
         for(Entity entity : getLevel().getCollidingEntities(getBoundingBox())) {
             if(attackTarget(entity)) {
                 EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(this, entity, EntityDamageEvent.DamageCause.MAGIC, 6);

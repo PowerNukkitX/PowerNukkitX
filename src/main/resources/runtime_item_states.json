@@ -457,7 +457,7 @@
     },
     {
         "name": "minecraft:banner_pattern",
-        "id": 793,
+        "id": 795,
         "version": 2,
         "componentBased": false
     },
@@ -679,7 +679,7 @@
     },
     {
         "name": "minecraft:black_bundle",
-        "id": 265,
+        "id": 257,
         "version": 1,
         "componentBased": true
     },
@@ -823,7 +823,7 @@
     },
     {
         "name": "minecraft:blue_bundle",
-        "id": 268,
+        "id": 258,
         "version": 1,
         "componentBased": true
     },
@@ -860,6 +860,12 @@
     {
         "name": "minecraft:blue_dye",
         "id": 425,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:blue_egg",
+        "id": 749,
         "version": 2,
         "componentBased": false
     },
@@ -919,7 +925,7 @@
     },
     {
         "name": "minecraft:boat",
-        "id": 791,
+        "id": 793,
         "version": 2,
         "componentBased": false
     },
@@ -1081,7 +1087,7 @@
     },
     {
         "name": "minecraft:brown_bundle",
-        "id": 262,
+        "id": 259,
         "version": 1,
         "componentBased": true
     },
@@ -1118,6 +1124,12 @@
     {
         "name": "minecraft:brown_dye",
         "id": 424,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:brown_egg",
+        "id": 750,
         "version": 2,
         "componentBased": false
     },
@@ -1219,7 +1231,7 @@
     },
     {
         "name": "minecraft:bundle",
-        "id": 261,
+        "id": 260,
         "version": 1,
         "componentBased": true
     },
@@ -1230,8 +1242,20 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:bush",
+        "id": -1023,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:cactus",
         "id": 81,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:cactus_flower",
+        "id": -1030,
         "version": 2,
         "componentBased": false
     },
@@ -1285,7 +1309,7 @@
     },
     {
         "name": "minecraft:carpet",
-        "id": 750,
+        "id": 752,
         "version": 2,
         "componentBased": false
     },
@@ -1411,7 +1435,7 @@
     },
     {
         "name": "minecraft:chemistry_table",
-        "id": 785,
+        "id": 787,
         "version": 2,
         "componentBased": false
     },
@@ -1813,7 +1837,7 @@
     },
     {
         "name": "minecraft:colored_torch_bp",
-        "id": 789,
+        "id": 791,
         "version": 2,
         "componentBased": false
     },
@@ -1837,7 +1861,7 @@
     },
     {
         "name": "minecraft:colored_torch_rg",
-        "id": 788,
+        "id": 790,
         "version": 2,
         "componentBased": false
     },
@@ -1885,13 +1909,13 @@
     },
     {
         "name": "minecraft:concrete",
-        "id": 776,
+        "id": 778,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:concrete_powder",
-        "id": 777,
+        "id": 779,
         "version": 2,
         "componentBased": false
     },
@@ -1993,25 +2017,25 @@
     },
     {
         "name": "minecraft:coral",
-        "id": 772,
+        "id": 774,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:coral_block",
-        "id": 754,
+        "id": 756,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:coral_fan",
-        "id": 763,
+        "id": 765,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:coral_fan_dead",
-        "id": 764,
+        "id": 766,
         "version": 2,
         "componentBased": false
     },
@@ -2281,7 +2305,7 @@
     },
     {
         "name": "minecraft:cyan_bundle",
-        "id": 271,
+        "id": 261,
         "version": 1,
         "componentBased": true
     },
@@ -2959,31 +2983,31 @@
     },
     {
         "name": "minecraft:double_plant",
-        "id": 770,
+        "id": 772,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:double_stone_block_slab",
-        "id": 759,
-        "version": 2,
-        "componentBased": false
-    },
-    {
-        "name": "minecraft:double_stone_block_slab2",
-        "id": 760,
-        "version": 2,
-        "componentBased": false
-    },
-    {
-        "name": "minecraft:double_stone_block_slab3",
         "id": 761,
         "version": 2,
         "componentBased": false
     },
     {
-        "name": "minecraft:double_stone_block_slab4",
+        "name": "minecraft:double_stone_block_slab2",
         "id": 762,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:double_stone_block_slab3",
+        "id": 763,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:double_stone_block_slab4",
+        "id": 764,
         "version": 2,
         "componentBased": false
     },
@@ -3043,7 +3067,7 @@
     },
     {
         "name": "minecraft:dye",
-        "id": 792,
+        "id": 794,
         "version": 2,
         "componentBased": false
     },
@@ -3847,7 +3871,7 @@
     },
     {
         "name": "minecraft:end_crystal",
-        "id": 795,
+        "id": 797,
         "version": 2,
         "componentBased": false
     },
@@ -4033,7 +4057,7 @@
     },
     {
         "name": "minecraft:fence",
-        "id": 752,
+        "id": 754,
         "version": 2,
         "componentBased": false
     },
@@ -4100,6 +4124,12 @@
     {
         "name": "minecraft:fire_coral_wall_fan",
         "id": -907,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:firefly_bush",
+        "id": -1025,
         "version": 2,
         "componentBased": false
     },
@@ -4279,7 +4309,7 @@
     },
     {
         "name": "minecraft:glow_berries",
-        "id": 796,
+        "id": 798,
         "version": 0,
         "componentBased": false
     },
@@ -4495,7 +4525,7 @@
     },
     {
         "name": "minecraft:gray_bundle",
-        "id": 264,
+        "id": 262,
         "version": 1,
         "componentBased": true
     },
@@ -4573,7 +4603,7 @@
     },
     {
         "name": "minecraft:green_bundle",
-        "id": 267,
+        "id": 263,
         "version": 1,
         "componentBased": true
     },
@@ -4867,13 +4897,13 @@
     },
     {
         "name": "minecraft:hard_stained_glass",
-        "id": 786,
+        "id": 788,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:hard_stained_glass_pane",
-        "id": 787,
+        "id": 789,
         "version": 2,
         "componentBased": false
     },
@@ -5592,6 +5622,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:leaf_litter",
+        "id": -1026,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:leather",
         "id": 407,
         "version": 2,
@@ -5629,13 +5665,13 @@
     },
     {
         "name": "minecraft:leaves",
-        "id": 766,
+        "id": 768,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:leaves2",
-        "id": 767,
+        "id": 769,
         "version": 2,
         "componentBased": false
     },
@@ -5653,7 +5689,7 @@
     },
     {
         "name": "minecraft:light_block",
-        "id": 790,
+        "id": 792,
         "version": 2,
         "componentBased": false
     },
@@ -5755,7 +5791,7 @@
     },
     {
         "name": "minecraft:light_blue_bundle",
-        "id": 272,
+        "id": 264,
         "version": 1,
         "componentBased": true
     },
@@ -5833,7 +5869,7 @@
     },
     {
         "name": "minecraft:light_gray_bundle",
-        "id": 257,
+        "id": 265,
         "version": 1,
         "componentBased": true
     },
@@ -5929,7 +5965,7 @@
     },
     {
         "name": "minecraft:lime_bundle",
-        "id": 260,
+        "id": 266,
         "version": 1,
         "componentBased": true
     },
@@ -6073,13 +6109,13 @@
     },
     {
         "name": "minecraft:log",
-        "id": 751,
+        "id": 753,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:log2",
-        "id": 774,
+        "id": 776,
         "version": 2,
         "componentBased": false
     },
@@ -6097,7 +6133,7 @@
     },
     {
         "name": "minecraft:magenta_bundle",
-        "id": 263,
+        "id": 267,
         "version": 1,
         "componentBased": true
     },
@@ -6391,7 +6427,7 @@
     },
     {
         "name": "minecraft:monster_egg",
-        "id": 775,
+        "id": 777,
         "version": 2,
         "componentBased": false
     },
@@ -6583,13 +6619,13 @@
     },
     {
         "name": "minecraft:music_disc_creator",
-        "id": 782,
+        "id": 784,
         "version": 2,
         "componentBased": true
     },
     {
         "name": "minecraft:music_disc_creator_music_box",
-        "id": 783,
+        "id": 785,
         "version": 2,
         "componentBased": true
     },
@@ -6625,7 +6661,7 @@
     },
     {
         "name": "minecraft:music_disc_precipice",
-        "id": 784,
+        "id": 786,
         "version": 2,
         "componentBased": true
     },
@@ -6985,7 +7021,7 @@
     },
     {
         "name": "minecraft:ominous_trial_key",
-        "id": 276,
+        "id": 275,
         "version": 1,
         "componentBased": true
     },
@@ -6997,7 +7033,7 @@
     },
     {
         "name": "minecraft:orange_bundle",
-        "id": 266,
+        "id": 268,
         "version": 1,
         "componentBased": true
     },
@@ -7513,7 +7549,7 @@
     },
     {
         "name": "minecraft:planks",
-        "id": 771,
+        "id": 773,
         "version": 2,
         "componentBased": false
     },
@@ -7945,7 +7981,7 @@
     },
     {
         "name": "minecraft:purple_bundle",
-        "id": 259,
+        "id": 270,
         "version": 1,
         "componentBased": true
     },
@@ -8197,7 +8233,7 @@
     },
     {
         "name": "minecraft:red_bundle",
-        "id": 258,
+        "id": 271,
         "version": 1,
         "componentBased": true
     },
@@ -8239,7 +8275,7 @@
     },
     {
         "name": "minecraft:red_flower",
-        "id": 769,
+        "id": 771,
         "version": 2,
         "componentBased": false
     },
@@ -8557,7 +8593,7 @@
     },
     {
         "name": "minecraft:sapling",
-        "id": 765,
+        "id": 767,
         "version": 2,
         "componentBased": false
     },
@@ -8664,6 +8700,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:short_dry_grass",
+        "id": -1028,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:short_grass",
         "id": 31,
         "version": 2,
@@ -8677,7 +8719,7 @@
     },
     {
         "name": "minecraft:shulker_box",
-        "id": 780,
+        "id": 782,
         "version": 2,
         "componentBased": false
     },
@@ -8977,7 +9019,7 @@
     },
     {
         "name": "minecraft:spawn_egg",
-        "id": 794,
+        "id": 796,
         "version": 2,
         "componentBased": false
     },
@@ -9151,13 +9193,13 @@
     },
     {
         "name": "minecraft:stained_glass",
-        "id": 778,
+        "id": 780,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:stained_glass_pane",
-        "id": 779,
+        "id": 781,
         "version": 2,
         "componentBased": false
     },
@@ -9211,25 +9253,25 @@
     },
     {
         "name": "minecraft:stone_block_slab",
-        "id": 755,
-        "version": 2,
-        "componentBased": false
-    },
-    {
-        "name": "minecraft:stone_block_slab2",
-        "id": 756,
-        "version": 2,
-        "componentBased": false
-    },
-    {
-        "name": "minecraft:stone_block_slab3",
         "id": 757,
         "version": 2,
         "componentBased": false
     },
     {
-        "name": "minecraft:stone_block_slab4",
+        "name": "minecraft:stone_block_slab2",
         "id": 758,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:stone_block_slab3",
+        "id": 759,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:stone_block_slab4",
+        "id": 760,
         "version": 2,
         "componentBased": false
     },
@@ -9307,7 +9349,7 @@
     },
     {
         "name": "minecraft:stonebrick",
-        "id": 753,
+        "id": 755,
         "version": 2,
         "componentBased": false
     },
@@ -9552,6 +9594,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:tall_dry_grass",
+        "id": -1029,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:tall_grass",
         "id": -864,
         "version": 2,
@@ -9559,7 +9607,7 @@
     },
     {
         "name": "minecraft:tallgrass",
-        "id": 773,
+        "id": 775,
         "version": 2,
         "componentBased": false
     },
@@ -9643,7 +9691,7 @@
     },
     {
         "name": "minecraft:trial_key",
-        "id": 277,
+        "id": 276,
         "version": 1,
         "componentBased": true
     },
@@ -10399,7 +10447,7 @@
     },
     {
         "name": "minecraft:white_bundle",
-        "id": 273,
+        "id": 272,
         "version": 1,
         "componentBased": true
     },
@@ -10488,8 +10536,14 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:wildflowers",
+        "id": -1024,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:wind_charge",
-        "id": 275,
+        "id": 277,
         "version": 1,
         "componentBased": true
     },
@@ -10537,7 +10591,7 @@
     },
     {
         "name": "minecraft:wood",
-        "id": 781,
+        "id": 783,
         "version": 2,
         "componentBased": false
     },
@@ -10585,7 +10639,7 @@
     },
     {
         "name": "minecraft:wooden_slab",
-        "id": 768,
+        "id": 770,
         "version": 2,
         "componentBased": false
     },
@@ -10597,7 +10651,7 @@
     },
     {
         "name": "minecraft:wool",
-        "id": 749,
+        "id": 751,
         "version": 2,
         "componentBased": false
     },
@@ -10615,7 +10669,7 @@
     },
     {
         "name": "minecraft:yellow_bundle",
-        "id": 270,
+        "id": 273,
         "version": 1,
         "componentBased": true
     },

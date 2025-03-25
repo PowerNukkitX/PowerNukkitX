@@ -58,7 +58,7 @@ public class BlockEntityCalibratedSculkSensor extends BlockEntity implements Vib
 
     @Override
     public boolean onVibrationOccur(VibrationEvent event) {
-        if (this.isBlockEntityValid() && level.getServer().getSettings().levelSettings().enableRedstone() && !(this.level.getBlock(event.source()) instanceof BlockCalibratedSculkSensor)) {
+        if (this.isBlockEntityValid() && level.getServer().getSettings().gameplaySettings().enableRedstone() && !(this.level.getBlock(event.source()) instanceof BlockCalibratedSculkSensor)) {
             boolean canBeActive = (getLevel().getTick() - lastActiveTime) > 40 && !waitForVibration;
             if (canBeActive) waitForVibration = true;
             return canBeActive;
@@ -69,7 +69,7 @@ public class BlockEntityCalibratedSculkSensor extends BlockEntity implements Vib
 
     @Override
     public void onVibrationArrive(VibrationEvent event) {
-        if (this.level != null && this.isBlockEntityValid() && level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (this.level != null && this.isBlockEntityValid() && level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             this.lastVibrationEvent = event;
             this.updateLastActiveTime();
             waitForVibration = false;

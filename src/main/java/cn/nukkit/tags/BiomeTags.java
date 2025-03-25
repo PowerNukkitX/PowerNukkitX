@@ -19,7 +19,7 @@ public final class BiomeTags {
     public static final String CAVES = "caves";
     public static final String COLD = "cold";
     public static final String CRIMSON_FOREST = "crimson_forest";
-    public static final String DEEP = "deep";
+    public static final String DEEP_DOWN = "deep_down";
     public static final String DESERT = "desert";
     public static final String DRIPSTONE_CAVES = "dripstone_caves";
     public static final String EDGE = "edge";

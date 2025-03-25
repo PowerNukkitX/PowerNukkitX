@@ -87,6 +87,8 @@ public interface ItemID {
 
     String BLUE_DYE = "minecraft:blue_dye";
 
+    String BLUE_EGG = "minecraft:blue_egg";
+
     String BOAT = "minecraft:boat";
 
     String BOGGED_SPAWN_EGG = "minecraft:bogged_spawn_egg";
@@ -118,6 +120,8 @@ public interface ItemID {
     String BROWN_BUNDLE = "minecraft:brown_bundle";
 
     String BROWN_DYE = "minecraft:brown_dye";
+
+    String BROWN_EGG = "minecraft:brown_egg";
 
     String BRUSH = "minecraft:brush";
 

@@ -1,6 +1,6 @@
-package cn.nukkit.config;
+package cn.nukkit.config.legacy;
 
-public enum ServerPropertiesKeys {
+public enum LegacyServerPropertiesKeys {
     MOTD("motd"),
     SUB_MOTD("sub-motd"),
     SERVER_PORT("server-port"),
@@ -32,14 +32,12 @@ public enum ServerPropertiesKeys {
     FORCE_RESOURCES_ALLOW_CLIENT_PACKS("force-resources-allow-client-packs"),
     XBOX_AUTH("xbox-auth"),
     CHECK_LOGIN_TIME("check-login-time"),
-    DISABLE_AUTO_BUG_REPORT("disable-auto-bug-report"),
-    ALLOW_SHADED("allow-shaded"),
     SERVER_AUTHORITATIVE_MOVEMENT("server-authoritative-movement"),
     NETWORK_ENCRYPTION("network-encryption");
 
     private final String key;
 
-    ServerPropertiesKeys(String key) {
+    LegacyServerPropertiesKeys(String key) {
         this.key = key;
     }
 

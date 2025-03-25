@@ -141,7 +141,7 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
             return false;
         }
 
-        if (level.getServer().getSettings().levelSettings().enableRedstone() && !this.isOpen() && this.isGettingPower()) {
+        if (level.getServer().getSettings().gameplaySettings().enableRedstone() && !this.isOpen() && this.isGettingPower()) {
             this.setOpen(null, true);
         }
         
@@ -262,7 +262,7 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
                 level.setBlock(this, this, true);
                 return type;
             }
-        } else if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        } else if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             this.onRedstoneUpdate();
             return type;
         }

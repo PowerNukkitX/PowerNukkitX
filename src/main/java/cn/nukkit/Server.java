@@ -9,10 +9,9 @@ import cn.nukkit.command.SimpleCommandMap;
 import cn.nukkit.command.defaults.WorldCommand;
 import cn.nukkit.command.function.FunctionManager;
 import cn.nukkit.compression.ZlibChooser;
-import cn.nukkit.config.ServerProperties;
-import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.config.ServerSettings;
 import cn.nukkit.config.YamlSnakeYamlConfigurer;
+import cn.nukkit.config.updater.ConfigUpdater;
 import cn.nukkit.console.NukkitConsole;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
@@ -60,7 +59,6 @@ import cn.nukkit.network.protocol.PlayerListPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.PlayerInfo;
 import cn.nukkit.network.protocol.types.XboxLivePlayerInfo;
-import cn.nukkit.network.rcon.RCON;
 import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.permission.DefaultPermissions;
@@ -116,12 +114,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.security.AccessControlContext;
-import java.security.AccessController;
-import java.security.Permission;
-import java.security.Permissions;
-import java.security.PrivilegedAction;
-import java.security.ProtectionDomain;
+import java.security.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
@@ -183,7 +176,6 @@ public class Server {
      * 配置项是否检查登录时间.<P>Does the configuration item check the login time.
      */
     public boolean checkLoginTime = false;
-    private RCON rcon;
     private EntityMetadataStore entityMetadata;
     private PlayerMetadataStore playerMetadata;
     private LevelMetadataStore levelMetadata;
@@ -201,7 +193,6 @@ public class Server {
     private final String dataPath;
     private final String pluginPath;
     private final Set<UUID> uniquePlayers = new HashSet<>();
-    private final ServerProperties properties;
     private final Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
     private final Map<UUID, Player> playerList = new ConcurrentHashMap<>();
     private QueryRegenerateEvent queryRegenerateEvent;
@@ -273,7 +264,9 @@ public class Server {
         this.consoleThread = new ConsoleThread();
         this.consoleThread.start();
 
-        File config = new File(this.dataPath + "nukkit.yml");
+        while(convertLegacyConfiguration());
+
+        File config = new File(this.dataPath + "pnx.yml");
         String chooseLanguage = null;
         if (!config.exists()) {
             log.info("{}Welcome! Please choose a language first!", TextFormat.GREEN);
@@ -316,8 +309,8 @@ public class Server {
         }
         this.baseLang = new BaseLang(chooseLanguage);
         this.baseLangCode = mapInternalLang(chooseLanguage);
-        log.info("Loading {}...", TextFormat.GREEN + "nukkit.yml" + TextFormat.RESET);
         this.settings = ConfigManager.create(ServerSettings.class, it -> {
+            log.info("Loading {}...", TextFormat.GREEN + "pnx.yml" + TextFormat.RESET);
             it.withConfigurer(new YamlSnakeYamlConfigurer());
             it.withBindFile(config);
             it.withRemoveOrphans(true);
@@ -325,6 +318,8 @@ public class Server {
             it.load(true);
         });
         this.settings.baseSettings().language(chooseLanguage);
+
+        while(updateConfiguration());
 
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
 
@@ -336,30 +331,20 @@ public class Server {
             Nukkit.setLogLevel(targetLevel);
         }
 
-        log.info("Loading {}...", TextFormat.GREEN + "server.properties" + TextFormat.RESET);
-        this.properties = new ServerProperties(this.dataPath);
-
-        var isShaded = StartArgUtils.isShaded();
-        if (!StartArgUtils.isValidStart() || (JarStart.isUsingJavaJar() && !isShaded)) {
+        if (!StartArgUtils.loadModules()) {
             log.error(getLanguage().tr("nukkit.start.invalid"));
             return;
         }
-        if (!this.properties.get(ServerPropertiesKeys.ALLOW_SHADED, false) && isShaded) {
-            log.error(getLanguage().tr("nukkit.start.shaded1"));
-            log.error(getLanguage().tr("nukkit.start.shaded2"));
-            log.error(getLanguage().tr("nukkit.start.shaded3"));
-            return;
-        }
 
-        this.allowNether = this.properties.get(ServerPropertiesKeys.ALLOW_NETHER, true);
-        this.allowTheEnd = this.properties.get(ServerPropertiesKeys.ALLOW_THE_END, true);
-        this.useTerra = this.properties.get(ServerPropertiesKeys.USE_TERRA, false);
-        this.checkLoginTime = this.properties.get(ServerPropertiesKeys.CHECK_LOGIN_TIME, false);
+        this.allowNether = this.settings.gameplaySettings().allowNether();
+        this.allowTheEnd = this.settings.gameplaySettings().allowTheEnd();
+        this.useTerra = this.settings.miscSettings().enableTerra();
+        this.checkLoginTime = this.settings.networkSettings().checkLoginTime();
 
         log.info(this.getLanguage().tr("language.selected", getLanguage().getName(), getLanguage().getLang()));
         log.info(getLanguage().tr("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
 
-        String poolSize = settings.baseSettings().asyncWorkers();
+        String poolSize = settings.performanceSettings().asyncWorkers();
         int poolSizeNumber;
         try {
             poolSizeNumber = Integer.parseInt(poolSize);
@@ -371,24 +356,17 @@ public class Server {
 
         ZlibChooser.setProvider(settings.networkSettings().zlibProvider());
 
-        this.serverAuthoritativeMovementMode = switch (this.properties.get(ServerPropertiesKeys.SERVER_AUTHORITATIVE_MOVEMENT, "server-auth")) {
+        this.serverAuthoritativeMovementMode = switch (this.settings.gameplaySettings().serverAuthoritativeMovement()) {
             case "client-auth" -> 0;
             case "server-auth" -> 1;
             case "server-auth-with-rewind" -> 2;
             default -> throw new IllegalArgumentException();
         };
-        this.enabledNetworkEncryption = this.properties.get(ServerPropertiesKeys.NETWORK_ENCRYPTION, true);
+        this.enabledNetworkEncryption = this.settings.networkSettings().networkEncryption();
         if (this.getSettings().baseSettings().waterdogpe()) {
             this.checkLoginTime = false;
         }
 
-        if (this.properties.get(ServerPropertiesKeys.ENABLE_RCON, false)) {
-            try {
-                this.rcon = new RCON(this, this.properties.get(ServerPropertiesKeys.RCON_PASSWORD, ""), (!this.getIp().equals("")) ? this.getIp() : "0.0.0.0", this.getPort());
-            } catch (IllegalArgumentException e) {
-                log.error(getLanguage().tr(e.getMessage(), e.getCause().getMessage()));
-            }
-        }
         this.entityMetadata = new EntityMetadataStore();
         this.playerMetadata = new PlayerMetadataStore();
         this.levelMetadata = new LevelMetadataStore();
@@ -398,10 +376,10 @@ public class Server {
         this.banByName.load();
         this.banByIP = new BanList(this.dataPath + "banned-ips.json");
         this.banByIP.load();
-        this.maxPlayers = this.properties.get(ServerPropertiesKeys.MAX_PLAYERS, 20);
-        this.setAutoSave(this.properties.get(ServerPropertiesKeys.AUTO_SAVE, true));
-        if (this.properties.get(ServerPropertiesKeys.HARDCORE, false) && this.getDifficulty() < 3) {
-            this.properties.get(ServerPropertiesKeys.DIFFICULTY, 3);
+        this.maxPlayers = this.settings.baseSettings().maxPlayers();
+        this.setAutoSave(this.settings.baseSettings().autoSave());
+        if (this.settings.gameplaySettings().hardcore() && this.getDifficulty() < 3) {
+            this.settings.gameplaySettings().difficulty(3);
         }
 
         log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + TextFormat.RESET + " (" + TextFormat.YELLOW + this.getGitCommit() + TextFormat.RESET + ")" + TextFormat.RESET, this.getApiVersion()));
@@ -444,15 +422,15 @@ public class Server {
         }
 
         freezableArrayManager = new FreezableArrayManager(
-                this.settings.freezeArraySettings().enable(),
-                this.settings.freezeArraySettings().slots(),
-                this.settings.freezeArraySettings().defaultTemperature(),
-                this.settings.freezeArraySettings().freezingPoint(),
-                this.settings.freezeArraySettings().absoluteZero(),
-                this.settings.freezeArraySettings().boilingPoint(),
-                this.settings.freezeArraySettings().melting(),
-                this.settings.freezeArraySettings().singleOperation(),
-                this.settings.freezeArraySettings().batchOperation());
+                this.settings.performanceSettings().enable(),
+                this.settings.performanceSettings().slots(),
+                this.settings.performanceSettings().defaultTemperature(),
+                this.settings.performanceSettings().freezingPoint(),
+                this.settings.performanceSettings().absoluteZero(),
+                this.settings.performanceSettings().boilingPoint(),
+                this.settings.performanceSettings().melting(),
+                this.settings.performanceSettings().singleOperation(),
+                this.settings.performanceSettings().batchOperation());
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(commandDataPath + "/scoreboard.json"));
         functionManager = new FunctionManager(commandDataPath + "/functions");
         tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.dataPath + "worlds/"));
@@ -515,8 +493,6 @@ public class Server {
         this.network = new Network(this);
         this.getTickingAreaManager().loadAllTickingArea();
 
-        this.properties.save();
-
         if (this.getDefaultLevel() == null) {
             log.error(this.getLanguage().tr("nukkit.level.defaultError"));
             this.forceShutdown();
@@ -524,7 +500,7 @@ public class Server {
             return;
         }
 
-        this.autoSaveTicks = settings.baseSettings().autosave();
+        this.autoSaveTicks = settings.baseSettings().autosaveDelay();
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
 
@@ -533,7 +509,7 @@ public class Server {
         EntityProperty.buildPacketData();
         EntityProperty.buildPlayerProperty();
 
-        if (settings.baseSettings().installSpark()) {
+        if (settings.miscSettings().installSpark()) {
             SparkInstaller.initSpark(this);
         }
 
@@ -543,6 +519,45 @@ public class Server {
         }
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
         this.start();
+    }
+
+    private boolean convertLegacyConfiguration() {
+        File oldNukkitYml = new File(this.dataPath + "nukkit.yml");
+        File oldServerProperties = new File(this.dataPath + "server.properties");
+        if(oldNukkitYml.exists() && oldServerProperties.exists()) {
+            try {
+                File backupFolder = new File(this.dataPath + "backup/");
+                if (!backupFolder.exists()) {
+                    backupFolder.mkdirs();
+                }
+                FileUtils.copyFile(oldNukkitYml, new File(backupFolder, "nukkit.yml"));
+                FileUtils.copyFile(oldServerProperties, new File(backupFolder, "server.properties"));
+                log.info("Copied nukkit.yml and server.properties to backup folder");
+                log.info("Start migration now...");
+
+                ConfigUpdater.update("1.0.0", this);
+
+                oldNukkitYml.delete();
+                oldServerProperties.delete();
+
+                log.info("Migration completed, start server now...");
+            } catch (IOException e) {
+                log.error("Failed to copy nukkit.yml to server.properties", e);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean updateConfiguration() {
+        if(ConfigUpdater.canUpdate(this.settings.configSettings().version())) {
+            log.info("New version detected, updating config...");
+            ConfigUpdater.update(this.settings.configSettings().version(), this);
+            log.info("Config updated to version {}", this.settings.configSettings().version());
+            return true;
+        }
+
+        return false;
     }
 
     private void loadLevels() {
@@ -561,27 +576,18 @@ public class Server {
         }
 
         if (this.getDefaultLevel() == null) {
-            String levelFolder = this.properties.get(ServerPropertiesKeys.LEVEL_NAME, "world");
+            String levelFolder = this.settings.baseSettings().defaultLevelName();
             if (levelFolder == null || levelFolder.trim().isEmpty()) {
                 log.warn("level-name cannot be null, using default");
                 levelFolder = "world";
-                this.properties.get(ServerPropertiesKeys.LEVEL_NAME, levelFolder);
+                this.settings.baseSettings().defaultLevelName(levelFolder);
             }
 
             if (!this.loadLevel(levelFolder)) {
                 //default world not exist
                 //generate the default world
                 HashMap<Integer, LevelConfig.GeneratorConfig> generatorConfig = new HashMap<>();
-                //spawn seed
-                long seed;
-                String seedString = String.valueOf(this.properties.get(ServerPropertiesKeys.LEVEL_SEED, System.currentTimeMillis()));
-                try {
-                    seed = Long.parseLong(seedString);
-                } catch (NumberFormatException e) {
-                    seed = seedString.hashCode();
-                }
-
-                generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+                generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", LevelConfig.GeneratorConfig.randomSeed(), false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
                 LevelConfig levelConfig = new LevelConfig("leveldb", true, generatorConfig);
                 this.generateLevel(levelFolder, levelConfig);
             }
@@ -608,13 +614,6 @@ public class Server {
         this.pluginManager.disablePlugins();
         this.pluginManager.clearPlugins();
         this.commandMap.clearCommands();
-
-        log.info("Reloading properties...");
-        this.properties.reload();
-        this.maxPlayers = this.properties.get(ServerPropertiesKeys.MAX_PLAYERS, 20);
-        if (this.properties.get(ServerPropertiesKeys.HARDCORE, false) && this.getDifficulty() < 3) {
-            this.properties.get(ServerPropertiesKeys.DIFFICULTY, difficulty = 3);
-        }
 
         this.banByIP.load();
         this.banByName.load();
@@ -711,12 +710,8 @@ public class Server {
             ServerStopEvent serverStopEvent = new ServerStopEvent();
             getPluginManager().callEvent(serverStopEvent);
 
-            if (this.rcon != null) {
-                this.rcon.close();
-            }
-
             for (Player player : new ArrayList<>(this.players.values())) {
-                player.close(player.getLeaveMessage(), getSettings().baseSettings().shutdownMessage());
+                player.close(player.getLeaveMessage(), getSettings().miscSettings().shutdownMessage());
             }
 
             this.getSettings().save();
@@ -910,10 +905,6 @@ public class Server {
 
         ++this.tickCounter;
         this.network.processInterfaces();
-
-        if (this.rcon != null) {
-            this.rcon.check();
-        }
 
         this.getScheduler().mainThreadHeartbeat(this.tickCounter);
 
@@ -1588,7 +1579,7 @@ public class Server {
         if (bytes == null) {
             playerDataDB.put(nameBytes, array);
         }
-        boolean xboxAuthEnabled = this.properties.get(ServerPropertiesKeys.XBOX_AUTH, false);
+        boolean xboxAuthEnabled = this.settings.baseSettings().xboxAuth();
         if (info instanceof XboxLivePlayerInfo || !xboxAuthEnabled) {
             playerDataDB.put(nameBytes, array);
         }
@@ -2331,21 +2322,21 @@ public class Server {
      * @return 服务器端口<br>server port
      */
     public int getPort() {
-        return this.properties.get(ServerPropertiesKeys.SERVER_PORT, 19132);
+        return this.settings.baseSettings().port();
     }
 
     /**
      * @return 可视距离<br>server view distance
      */
     public int getViewDistance() {
-        return this.properties.get(ServerPropertiesKeys.VIEW_DISTANCE, 10);
+        return this.settings.gameplaySettings().viewDistance();
     }
 
     /**
      * @return 服务器网络地址<br>server ip
      */
     public String getIp() {
-        return this.properties.get(ServerPropertiesKeys.SERVER_IP, "0.0.0.0");
+        return this.settings.baseSettings().ip();
     }
 
     /**
@@ -2377,15 +2368,12 @@ public class Server {
      * @return gamemode id
      */
     public int getGamemode() {
-        try {
-            return this.properties.get(ServerPropertiesKeys.GAMEMODE, 0) & 0b11;
-        } catch (NumberFormatException exception) {
-            return getGamemodeFromString(this.properties.get(ServerPropertiesKeys.GAMEMODE, "survival")) & 0b11;
-        }
+        return this.settings.gameplaySettings().gamemode() & 0b11;
+
     }
 
     public boolean getForceGamemode() {
-        return this.properties.get(ServerPropertiesKeys.FORCE_GAMEMODE, false);
+        return this.settings.gameplaySettings().forceGamemode();
     }
 
     /**
@@ -2475,9 +2463,6 @@ public class Server {
      * @return 游戏难度id<br>game difficulty id
      */
     public int getDifficulty() {
-        if (this.difficulty == Integer.MAX_VALUE) {
-            this.difficulty = getDifficultyFromString(this.properties.get(ServerPropertiesKeys.DIFFICULTY, "1"));
-        }
         return this.difficulty;
     }
 
@@ -2493,21 +2478,21 @@ public class Server {
         if (value < 0) value = 0;
         if (value > 3) value = 3;
         this.difficulty = value;
-        this.properties.get(ServerPropertiesKeys.DIFFICULTY, value);
+        this.settings.gameplaySettings().difficulty(value);
     }
 
     /**
      * @return 是否开启白名单<br>Whether to start server whitelist
      */
     public boolean hasWhitelist() {
-        return this.properties.get(ServerPropertiesKeys.WHITE_LIST, false);
+        return this.settings.baseSettings().allowList();
     }
 
     /**
      * @return 得到服务器出生点保护半径<br>Get server birth point protection radius
      */
     public int getSpawnRadius() {
-        return this.properties.get(ServerPropertiesKeys.SPAWN_PROTECTION, 16);
+        return this.settings.playerSettings().spawnRadius();
     }
 
     /**
@@ -2515,7 +2500,7 @@ public class Server {
      */
     public boolean getAllowFlight() {
         if (getAllowFlight == null) {
-            getAllowFlight = this.properties.get(ServerPropertiesKeys.ALLOW_FLIGHT, false);
+            getAllowFlight = this.settings.gameplaySettings().allowFlight();
         }
         return getAllowFlight;
     }
@@ -2524,7 +2509,7 @@ public class Server {
      * @return 服务器是否为硬核模式<br>Whether the server is in hardcore mode
      */
     public boolean isHardcore() {
-        return this.properties.get(ServerPropertiesKeys.HARDCORE, false);
+        return this.settings.gameplaySettings().hardcore();
     }
 
     /**
@@ -2551,7 +2536,7 @@ public class Server {
      * @return 得到服务器标题<br>Get server motd
      */
     public String getMotd() {
-        return this.properties.get(ServerPropertiesKeys.MOTD, "PowerNukkitX Server");
+        return this.settings.baseSettings().motd();
     }
 
     /**
@@ -2560,7 +2545,7 @@ public class Server {
      * @param motd the motd content
      */
     public void setMotd(String motd) {
-        this.properties.get(ServerPropertiesKeys.MOTD, motd);
+        this.settings.baseSettings().motd(motd);
         this.getNetwork().getPong().motd(motd).update();
     }
 
@@ -2568,9 +2553,9 @@ public class Server {
      * @return 得到服务器子标题<br>Get the server subheading
      */
     public String getSubMotd() {
-        String subMotd = this.properties.get(ServerPropertiesKeys.SUB_MOTD, "v2.powernukkitx.com");
+        String subMotd = this.settings.baseSettings().subMotd();
         if (subMotd.isEmpty()) {
-            subMotd = "v2.powernukkitx.com";
+            subMotd = "powernukkitx.org";
         }
         return subMotd;
     }
@@ -2581,7 +2566,7 @@ public class Server {
      * @param subMotd the sub motd
      */
     public void setSubMotd(String subMotd) {
-        this.properties.get(ServerPropertiesKeys.SUB_MOTD, subMotd);
+        this.settings.baseSettings().subMotd(subMotd);
         this.getNetwork().getPong().subMotd(subMotd).update();
     }
 
@@ -2589,14 +2574,14 @@ public class Server {
      * @return 是否强制使用服务器资源包<br>Whether to force the use of server resourcepack
      */
     public boolean getForceResources() {
-        return this.properties.get(ServerPropertiesKeys.FORCE_RESOURCES, false);
+        return this.settings.gameplaySettings().forceResources();
     }
 
     /**
      * @return 是否强制使用服务器资源包的同时允许加载客户端资源包<br>Whether to force the use of server resourcepack while allowing the loading of client resourcepack
      */
     public boolean getForceResourcesAllowOwnPacks() {
-        return this.properties.get(ServerPropertiesKeys.FORCE_RESOURCES_ALLOW_CLIENT_PACKS, false);
+        return this.settings.gameplaySettings().allowClientPacks();
     }
 
     private LangCode mapInternalLang(String langName) {
@@ -2633,10 +2618,6 @@ public class Server {
 
     public ServerSettings getSettings() {
         return settings;
-    }
-
-    public ServerProperties getProperties() {
-        return properties;
     }
 
     public boolean isNetherAllowed() {

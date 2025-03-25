@@ -19,6 +19,7 @@ public class ClientMovementPredictionSyncPacket extends DataPacket {
     private Vector3f actorBoundingBox;
     private MovementAttributesComponent movementAttributesComponent;
     private long actorRuntimeId;
+    private boolean actorFlyingState;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -31,6 +32,7 @@ public class ClientMovementPredictionSyncPacket extends DataPacket {
         actorBoundingBox = byteBuf.readVector3f();
         readMovementAttributesComponent(byteBuf);
         actorRuntimeId = byteBuf.readEntityRuntimeId();
+        actorFlyingState = byteBuf.readBoolean();
     }
 
     @Override
@@ -43,6 +45,7 @@ public class ClientMovementPredictionSyncPacket extends DataPacket {
         byteBuf.writeVector3f(actorBoundingBox);
         writeMovementAttributesComponent(byteBuf);
         byteBuf.writeEntityRuntimeId(actorRuntimeId);
+        byteBuf.writeBoolean(actorFlyingState);
     }
 
     public void writeMovementAttributesComponent(HandleByteBuf byteBuf) {

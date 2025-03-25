@@ -172,7 +172,7 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
                 if (this.isOpen() != this.isGettingPower()) {
                     level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));
@@ -215,7 +215,7 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
             return false;
         }
 
-        if (level.getServer().getSettings().levelSettings().enableRedstone() && !this.isOpen() && this.isGettingPower()) {
+        if (level.getServer().getSettings().gameplaySettings().enableRedstone() && !this.isOpen() && this.isGettingPower()) {
             this.setOpen(null, true);
         }
 

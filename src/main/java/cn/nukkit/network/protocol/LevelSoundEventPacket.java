@@ -552,6 +552,7 @@ public class LevelSoundEventPacket extends DataPacket {
     public String entityIdentifier;
     public boolean isBabyMob;
     public boolean isGlobal;
+    public long entityUniqueId = -1;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -564,6 +565,7 @@ public class LevelSoundEventPacket extends DataPacket {
         this.entityIdentifier = byteBuf.readString();
         this.isBabyMob = byteBuf.readBoolean();
         this.isGlobal = byteBuf.readBoolean();
+        this.entityUniqueId = byteBuf.readLongLE();
     }
 
     @Override
@@ -574,6 +576,7 @@ public class LevelSoundEventPacket extends DataPacket {
         byteBuf.writeString(this.entityIdentifier);
         byteBuf.writeBoolean(this.isBabyMob);
         byteBuf.writeBoolean(this.isGlobal);
+        byteBuf.writeLongLE(this.entityUniqueId);
     }
 
     @Override

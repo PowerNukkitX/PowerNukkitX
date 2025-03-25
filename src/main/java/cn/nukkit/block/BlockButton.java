@@ -79,7 +79,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         setActivated(true, player);
         this.level.setBlock(this, this, true, false);
         this.level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_POWER_ON, this.getBlockState().blockStateHash());
-        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
 
             updateAroundRedstone();
@@ -105,7 +105,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
                 this.level.setBlock(this, this, true, false);
                 this.level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_POWER_OFF, this.getBlockState().blockStateHash());
 
-                if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+                if (this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
                     this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
 
                     updateAroundRedstone();
