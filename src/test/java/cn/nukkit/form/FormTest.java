@@ -6,15 +6,16 @@ import cn.nukkit.TestEventHandler;
 import cn.nukkit.TestPlayer;
 import cn.nukkit.TestPluginManager;
 import cn.nukkit.event.player.PlayerFormRespondedEvent;
-import cn.nukkit.form.element.Element;
+import cn.nukkit.form.element.custom.ElementCustom;
 import cn.nukkit.form.element.simple.ElementButton;
 import cn.nukkit.form.element.simple.ButtonImage;
 import cn.nukkit.form.element.custom.ElementDropdown;
 import cn.nukkit.form.element.custom.ElementInput;
-import cn.nukkit.form.element.custom.ElementLabel;
+import cn.nukkit.form.element.ElementLabel;
 import cn.nukkit.form.element.custom.ElementSlider;
 import cn.nukkit.form.element.custom.ElementStepSlider;
 import cn.nukkit.form.element.custom.ElementToggle;
+import cn.nukkit.form.element.simple.ElementSimple;
 import cn.nukkit.form.response.CustomResponse;
 import cn.nukkit.form.response.ElementResponse;
 import cn.nukkit.form.response.ModalResponse;
@@ -86,7 +87,7 @@ public class FormTest {
                         Assertions.assertEquals(6, responses.size());
 
                         Assertions.assertEquals("test", test.title());
-                        Assertions.assertEquals(test1, test.elements().toArray(Element[]::new)[0]);
+                        Assertions.assertEquals(test1, test.elements().toArray(ElementCustom[]::new)[0]);
                     }
                 }
         ));
@@ -103,8 +104,8 @@ public class FormTest {
                 "123456"
         );
 
-        test.addButton(new ElementButton("button1", ButtonImage.Type.PATH.of("textures/items/compass")))
-                .addButton("button2", ButtonImage.Type.URL.of("https://static.wikia.nocookie.net/minecraft_gamepedia/images/9/94/Oak_Button_%28S%29_JE4.png"))
+        test.addElement(new ElementButton("button1", ButtonImage.Type.PATH.of("textures/items/compass")))
+                .addButton("button2", ButtonImage.Type.URL.of("https://minecraft.wiki/images/Oak_Button_JE5.png"))
                 .addButton("button3");
 
         test.send(player, 1);
@@ -127,12 +128,12 @@ public class FormTest {
                         int buttonId = response.buttonId();
                         Assertions.assertEquals(1, buttonId);
 
-                        ElementButton[] buttons = test.buttons().keySet().toArray(ElementButton.EMPTY_LIST);
+                        ElementSimple[] buttons = test.elements().keySet().toArray(ElementSimple.EMPTY_LIST);
 
                         Assertions.assertEquals("test_FormWindowSimple", test.title());
-                        Assertions.assertEquals("button1", buttons[0].text());
-                        Assertions.assertEquals("button3", buttons[2].text());
-                        Assertions.assertEquals("textures/items/compass", buttons[0].image().data());
+                        Assertions.assertEquals("button1", ((ElementButton) buttons[0]).text());
+                        Assertions.assertEquals("button3", ((ElementButton) buttons[2]).text());
+                        Assertions.assertEquals("textures/items/compass", ((ElementButton) buttons[0]).image().data());
                     }
                 }
         ));

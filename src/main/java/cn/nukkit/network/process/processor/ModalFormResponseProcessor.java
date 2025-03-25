@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.event.player.PlayerFormRespondedEvent;
 import cn.nukkit.event.player.PlayerSettingsRespondedEvent;
-import cn.nukkit.form.element.Element;
+import cn.nukkit.form.element.custom.ElementCustom;
 import cn.nukkit.form.element.custom.ElementDropdown;
 import cn.nukkit.form.element.custom.ElementInput;
 import cn.nukkit.form.element.custom.ElementSlider;
@@ -53,13 +53,15 @@ public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormRes
             // Apply responses as default settings
             if (!event.isCancelled() && window instanceof CustomForm customForm && response != null) {
                 ((CustomResponse) response).getResponses().forEach((i, res) -> {
-                    Element e = customForm.elements().get(i);
+                    ElementCustom e = customForm.elements().get(i);
                     switch (e) {
-                        case ElementDropdown dropdown -> dropdown.defaultOption(((ElementResponse) res).elementId());
+                        case ElementDropdown dropdown -> dropdown.defaultOption(((ElementResponse) res)
+                                .elementId());
                         case ElementInput input -> input.defaultText(String.valueOf(res));
                         case ElementSlider slider -> slider.defaultValue((Float) res);
                         case ElementToggle toggle -> toggle.defaultValue((Boolean) res);
-                        case ElementStepSlider stepSlider -> stepSlider.defaultStep(((ElementResponse) res).elementId());
+                        case ElementStepSlider stepSlider -> stepSlider.defaultStep(((ElementResponse) res)
+                                .elementId());
                         default -> log.warn("Illegal element {} within ServerSettings", e);
                     }
                 });

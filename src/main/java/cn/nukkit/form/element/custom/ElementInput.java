@@ -1,5 +1,6 @@
 package cn.nukkit.form.element.custom;
 
+import cn.nukkit.form.element.Element;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(chain = true, fluent = true)
 @AllArgsConstructor
-public class ElementInput extends ElementCustom {
+public class ElementInput extends Element implements ElementCustom {
     private String text;
     private String placeholder;
     private String defaultText;
