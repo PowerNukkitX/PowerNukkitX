@@ -1,7 +1,6 @@
 package cn.nukkit.form.window;
 
 import cn.nukkit.Player;
-import cn.nukkit.form.element.ElementDivider;
 import cn.nukkit.form.element.ElementHeader;
 import cn.nukkit.form.element.custom.ElementCustom;
 import cn.nukkit.form.element.custom.ElementDropdown;
@@ -123,7 +122,6 @@ public class CustomForm extends Form<CustomResponse> {
                     elementResponse = new ElementResponse(index, step);
                 }
                 case ElementToggle toggle -> elementResponse = Boolean.parseBoolean(responseData);
-                case ElementDivider divider -> elementResponse = divider.text();
                 case ElementHeader header -> elementResponse = header.text();
                 case ElementLabel label -> elementResponse = label.text();
                 default -> {}

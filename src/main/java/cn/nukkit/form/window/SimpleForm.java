@@ -70,6 +70,30 @@ public class SimpleForm extends Form<SimpleResponse> {
         return this.addButton(new ElementButton(text, image), callback);
     }
 
+    public SimpleForm header() {
+        return this.addElement(new ElementHeader(""));
+    }
+
+    public SimpleForm header(String text) {
+        return this.addElement(new ElementHeader(text));
+    }
+
+    public SimpleForm label() {
+        return this.addElement(new ElementLabel(""));
+    }
+
+    public SimpleForm label(String text) {
+        return this.addElement(new ElementLabel(text));
+    }
+
+    public SimpleForm divider() {
+        return this.addElement(new ElementDivider(""));
+    }
+
+    public SimpleForm divider(String text) {
+        return this.addElement(new ElementDivider(text));
+    }
+
     public ElementSimple updateElement(int index, ElementSimple newElement) {
         if (this.elements.size() <= index) {
             return null;
@@ -132,11 +156,11 @@ public class SimpleForm extends Form<SimpleResponse> {
         this.object.addProperty("title", this.title);
         this.object.addProperty("content", this.content);
 
-        JsonArray buttons = new JsonArray();
+        JsonArray elements = new JsonArray();
         this.elements()
                 .keySet()
-                .forEach(element -> buttons.add(element.toJson()));
-        this.object.add("buttons", buttons);
+                .forEach(element -> elements.add(element.toJson()));
+        this.object.add("elements", elements);
 
         return this.object.toString();
     }
@@ -150,7 +174,10 @@ public class SimpleForm extends Form<SimpleResponse> {
         }
 
 
-        Map.Entry<ElementSimple, Consumer<Player>>[] entries = this.elements.entrySet().toArray(Map.Entry[]::new);
+        Map.Entry<ElementButton, Consumer<Player>>[] entries = this.elements.entrySet()
+                .stream()
+                .filter(entry -> entry.getKey() instanceof ElementButton)
+                .toArray(Map.Entry[]::new);
 
         int clickedId = -1;
         try {
@@ -161,13 +188,9 @@ public class SimpleForm extends Form<SimpleResponse> {
             return null;
         }
 
-        Map.Entry<ElementSimple, Consumer<Player>> entry = entries[clickedId];
+        Map.Entry<ElementButton, Consumer<Player>> entry = entries[clickedId];
 
-        ElementSimple element = entry.getKey();
-        if (!(element instanceof ElementButton button)) {
-            Server.getInstance().getLogger().alert("Player " + player.getName() + " responded to a SimpleForm with an invalid index");
-            return null;
-        }
+        ElementButton button = entry.getKey();
 
         Consumer<Player> action = entry.getValue();
         if (action != null) {
