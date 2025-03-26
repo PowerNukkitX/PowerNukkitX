@@ -35,4 +35,9 @@ public class ElementDivider extends Element implements ElementCustom, ElementSim
 
         return this.text(divider.text());
     }
+
+    @Override
+    public boolean hasResponse() {
+        return false;
+    }
 }
