@@ -35,4 +35,9 @@ public class ElementLabel extends Element implements ElementCustom, ElementSimpl
 
         return this.text(label.text());
     }
+
+    @Override
+    public boolean hasResponse() {
+        return false;
+    }
 }

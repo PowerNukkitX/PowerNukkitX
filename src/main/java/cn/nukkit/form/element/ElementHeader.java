@@ -35,4 +35,9 @@ public class ElementHeader extends Element implements ElementCustom, ElementSimp
 
         return this.text(header.text());
     }
+
+    @Override
+    public boolean hasResponse() {
+        return false;
+    }
 }
