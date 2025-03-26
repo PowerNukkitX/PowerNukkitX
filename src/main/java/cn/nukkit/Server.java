@@ -182,7 +182,6 @@ public class Server {
     private Network network;
     private int serverAuthoritativeMovementMode = 0;
     private Boolean getAllowFlight = null;
-    private int difficulty = Integer.MAX_VALUE;
     private int defaultGamemode = Integer.MAX_VALUE;
     private int autoSaveTicker = 0;
     private int autoSaveTicks = 6000;
@@ -2463,7 +2462,7 @@ public class Server {
      * @return 游戏难度id<br>game difficulty id
      */
     public int getDifficulty() {
-        return this.difficulty;
+        return this.settings.gameplaySettings().difficulty();
     }
 
     /**
@@ -2477,7 +2476,6 @@ public class Server {
         int value = difficulty;
         if (value < 0) value = 0;
         if (value > 3) value = 3;
-        this.difficulty = value;
         this.settings.gameplaySettings().difficulty(value);
     }
 
