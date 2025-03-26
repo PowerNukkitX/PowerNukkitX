@@ -6,6 +6,8 @@ import cn.nukkit.TestEventHandler;
 import cn.nukkit.TestPlayer;
 import cn.nukkit.TestPluginManager;
 import cn.nukkit.event.player.PlayerFormRespondedEvent;
+import cn.nukkit.form.element.ElementDivider;
+import cn.nukkit.form.element.ElementHeader;
 import cn.nukkit.form.element.custom.ElementCustom;
 import cn.nukkit.form.element.simple.ElementButton;
 import cn.nukkit.form.element.simple.ButtonImage;
@@ -44,6 +46,8 @@ public class FormTest {
         ElementSlider test4 = new ElementSlider("test4", 0, 100, 1, 50);
         ElementStepSlider test5 = new ElementStepSlider("test5", List.of("step1", "step2"), 1);//default step2
         ElementToggle test6 = new ElementToggle("test6", true);
+        ElementHeader test7 = new ElementHeader("test7");
+        ElementDivider test8 = new ElementDivider("test8");
         CustomForm test = new CustomForm("test")
                 .elements(ObjectArrayList.of(
                         test1,
@@ -51,7 +55,9 @@ public class FormTest {
                         test3,
                         test4,
                         test5,
-                        test6));
+                        test6,
+                        test7,
+                        test8));
 
         test.send(player, 1);
         DataPacketManager dataPacketManager = player.getSession().getDataPacketManager();
@@ -59,7 +65,7 @@ public class FormTest {
 
         ModalFormResponsePacket modalFormResponsePacket = new ModalFormResponsePacket();
         modalFormResponsePacket.formId = 1;
-        modalFormResponsePacket.data = "[\"1\",\"input\",\"\",\"6\",\"0\",\"false\"]";
+        modalFormResponsePacket.data = "[\"1\",\"input\",\"6\",\"0\",\"false\"]";
         assert dataPacketManager != null;
 
         testPluginManager.registerTestEventHandler(List.of(
@@ -79,12 +85,16 @@ public class FormTest {
                         Assertions.assertEquals("step1", stepSliderResponse.elementText());
                         boolean toggleResponse = response.getToggleResponse(5);
                         Assertions.assertFalse(toggleResponse);
+                        String headerResponse = response.getHeaderResponse(6);
+                        Assertions.assertEquals("test7", headerResponse);
+                        String dividerResponse = response.getDividerResponse(7);
+                        Assertions.assertEquals("test8", dividerResponse);
 
                         ElementResponse genericDropdownResponse = response.getResponse(0);
                         Assertions.assertEquals(dropdownResponse.elementId(), genericDropdownResponse.elementId());
 
                         Int2ObjectOpenHashMap<Object> responses = response.getResponses();
-                        Assertions.assertEquals(6, responses.size());
+                        Assertions.assertEquals(8, responses.size());
 
                         Assertions.assertEquals("test", test.title());
                         Assertions.assertEquals(test1, test.elements().toArray(ElementCustom[]::new)[0]);
