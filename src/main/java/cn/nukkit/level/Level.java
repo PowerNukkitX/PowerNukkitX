@@ -3495,6 +3495,8 @@ public class Level implements Metadatable {
         }
     }
 
+
+
     private void processChunkRequest() {
         for (long index : this.chunkSendQueue.keySet()) {
             int x = getHashX(index);
@@ -3514,7 +3516,9 @@ public class Level implements Metadatable {
                         pk.chunkZ = z;
                         pk.dimension = getDimensionData().getDimensionId();
                         pk.subChunkCount = pair.right();
-                        pk.data = pair.left();
+                        pk.requestSubChunks = true;
+                        pk.cacheEnabled = false;
+                        pk.data = new byte[0];
                         player.sendChunk(x, z, pk);
                     }
                 }
@@ -3987,13 +3991,15 @@ public class Level implements Metadatable {
         }
     }
 
-    public void syncGenerateChunk(int x, int z) {
+    public IChunk syncGenerateChunk(int x, int z) {
         long index = Level.chunkHash(x, z);
         if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
             IChunk chunk = this.getChunk(x, z, true);
             this.generator.syncGenerate(chunk);
             chunkGenerationQueue.remove(index);
+            return chunk;
         }
+        throw new IllegalStateException("Chunk already in generation stage");
     }
 
     /**

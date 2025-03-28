@@ -12,6 +12,7 @@ import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector2f;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.LittleEndianByteBufInputStreamNBTInputStream;
@@ -807,6 +808,11 @@ public class HandleByteBuf extends ByteBuf {
         return this;
     }
 
+    public void writeByteBuf(ByteBuf toWrite) {
+        writeUnsignedVarInt(toWrite.readableBytes());
+        writeBytes(toWrite, toWrite.readerIndex(), toWrite.writerIndex());
+    }
+
     @Override
     public ByteBuf writeBytes(ByteBuf src) {
         buf.writeBytes(src);
@@ -1412,6 +1418,16 @@ public class HandleByteBuf extends ByteBuf {
         this.writeFloatLE(x);
         this.writeFloatLE(y);
         this.writeFloatLE(z);
+    }
+
+    public void writeVector3i(Vector3 v) {
+        this.writeVector3i(v.getFloorX(), v.getFloorY(), v.getFloorZ());
+    }
+
+    public void writeVector3i(int x, int y, int z) {
+        this.writeVarInt(x);
+        this.writeVarInt(y);
+        this.writeVarInt(z);
     }
 
     public Vector2f readVector2f() {

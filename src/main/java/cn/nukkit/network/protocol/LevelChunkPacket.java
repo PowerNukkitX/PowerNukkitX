@@ -42,7 +42,7 @@ public class LevelChunkPacket extends DataPacket {
             byteBuf.writeUnsignedVarInt(-1);
         } else {
             byteBuf.writeUnsignedVarInt(-2);
-            byteBuf.writeUnsignedVarInt(this.subChunkLimit);
+            byteBuf.writeShort(this.subChunkLimit);
         }
         byteBuf.writeBoolean(cacheEnabled);
         if (this.cacheEnabled) {

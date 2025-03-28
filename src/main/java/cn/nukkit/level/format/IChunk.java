@@ -11,6 +11,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Range;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -199,6 +200,8 @@ public interface IChunk {
     Map<Long, Entity> getEntities();
 
     Map<Long, BlockEntity> getBlockEntities();
+
+    Collection<BlockEntity> getSectionBlockEntities(int sectionY);
 
     BlockEntity getTile(int x, int y, int z);
 
