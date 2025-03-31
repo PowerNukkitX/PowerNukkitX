@@ -152,7 +152,6 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .achievements(oldProp.get(LegacyServerPropertiesKeys.ACHIEVEMENTS, game.achievements()))
                 .announceAchievements(oldProp.get(LegacyServerPropertiesKeys.ANNOUNCE_PLAYER_ACHIEVEMENTS, game.announceAchievements()))
                 .spawnProtection(oldProp.get(LegacyServerPropertiesKeys.SPAWN_PROTECTION, game.spawnProtection()))
-                .allowFlight(oldProp.get(LegacyServerPropertiesKeys.ALLOW_FLIGHT, game.allowFlight()))
                 .allowNether(oldProp.get(LegacyServerPropertiesKeys.ALLOW_NETHER, game.allowNether()))
                 .allowTheEnd(oldProp.get(LegacyServerPropertiesKeys.ALLOW_THE_END, game.allowTheEnd()))
                 .spawnMobs(oldProp.get(LegacyServerPropertiesKeys.SPAWN_MOBS, game.spawnMobs()))

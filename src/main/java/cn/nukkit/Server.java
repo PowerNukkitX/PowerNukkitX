@@ -2494,16 +2494,6 @@ public class Server {
     }
 
     /**
-     * @return 服务器是否允许飞行<br>Whether the server allows flying
-     */
-    public boolean getAllowFlight() {
-        if (getAllowFlight == null) {
-            getAllowFlight = this.settings.gameplaySettings().allowFlight();
-        }
-        return getAllowFlight;
-    }
-
-    /**
      * @return 服务器是否为硬核模式<br>Whether the server is in hardcore mode
      */
     public boolean isHardcore() {
