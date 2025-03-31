@@ -634,10 +634,6 @@ public interface Node extends Comparable<Node> {
         } else {
             output = String.format("<%s (%d, %d)-(%d, %d)>", getClass().getSimpleName(), getBeginLine(), getBeginColumn(), getEndLine(), getEndColumn());
         }
-        // String output = (this instanceof Token) ? toString().trim() : getClass().getSimpleName();
-        if (output.length() > 0) {
-            System.out.println(prefix + output);
-        }
         for (Iterator<Node> it = iterator(); it.hasNext(); ) {
             Node child = it.next();
             child.dump(prefix + "  ");

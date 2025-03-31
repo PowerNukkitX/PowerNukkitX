@@ -132,7 +132,6 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
                     Block block1 = b.south();
                     Block block2 = b.west();
                     Block block3 = b.east();
-                    System.out.println(block0.isAir() && block1.isAir() && block2.isAir() && block3.isAir());
                     if (!block0.isAir() || !block1.isAir() || !block2.isAir() || !block3.isAir()) {
                         this.setAge(getMinAge());
                         return 1;
