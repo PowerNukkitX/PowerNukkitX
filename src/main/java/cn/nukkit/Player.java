@@ -899,23 +899,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         double corrX = this.x - clientPos.getX();
         double corrY = this.y - clientPos.getY();
         double corrZ = this.z - clientPos.getZ();
-        if (this.checkMovement && (Math.abs(corrX) > 0.5 || Math.abs(corrY) > 0.5 || Math.abs(corrZ) > 0.5) && this.riding == null && !this.hasEffect(EffectType.LEVITATION) && !this.hasEffect(EffectType.SLOW_FALLING) && !server.getAllowFlight()) {
-            double diff = corrX * corrX + corrZ * corrZ;
-            //这里放宽了判断，否则对角穿过脚手架会判断非法移动。
-            if (diff > 1.2) {
-                PlayerInvalidMoveEvent event = new PlayerInvalidMoveEvent(this, true);
-                this.getServer().getPluginManager().callEvent(event);
-                if (!event.isCancelled() && (invalidMotion = event.isRevert())) {
-                    log.warn(this.getServer().getLanguage().tr("nukkit.player.invalidMove", this.getName()));
-                }
-            }
-            if (invalidMotion) {
-                this.setPositionAndRotation(revertPos.asVector3f().asVector3(), revertPos.getYaw(), revertPos.getPitch(), revertPos.getHeadYaw());
-                this.revertClientMotion(revertPos);
-                this.resetClientMovement();
-                return;
-            }
-        }
 
         //update server-side position and rotation and aabb
         Location last = new Location(this.lastX, this.lastY, this.lastZ, this.lastYaw, this.lastPitch, this.lastHeadYaw, this.level);
@@ -2720,36 +2703,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     }
                 } else {
                     this.lastInAirTick = level.getTick();
-                    //check fly for player
-                    if (this.checkMovement && !this.isGliding() && !server.getAllowFlight() &&
-                            !this.getAdventureSettings().get(Type.ALLOW_FLIGHT) &&
-                            this.inAirTicks > 20 && !this.isSleeping() && !this.isImmobile() && !this.isSwimming() &&
-                            this.riding == null && !this.hasEffect(EffectType.LEVITATION) && !this.hasEffect(EffectType.SLOW_FALLING)) {
-                        double expectedVelocity = (-this.getGravity()) / ((double) this.getDrag()) - ((-this.getGravity()) / ((double) this.getDrag())) * Math.exp(-((double) this.getDrag()) * ((double) (this.inAirTicks - this.startAirTicks)));
-                        double diff = (this.speed.y - expectedVelocity) * (this.speed.y - expectedVelocity);
-
-                        Block block = level.getBlock(this);
-                        String blockId = block.getId();
-                        boolean ignore = blockId.equals(Block.LADDER) || blockId.equals(Block.VINE) || blockId.equals(Block.WEB)
-                                || blockId.equals(Block.SCAFFOLDING);// || (blockId == Block.SWEET_BERRY_BUSH && block.getDamage() > 0);
-
-                        if (!this.hasEffect(EffectType.JUMP_BOOST) && diff > 0.6 && expectedVelocity < this.speed.y && !ignore) {
-                            if (this.inAirTicks < 150) {
-                                PlayerInvalidMoveEvent ev = new PlayerInvalidMoveEvent(this, true);
-                                this.getServer().getPluginManager().callEvent(ev);
-
-                                if(!ev.isCancelled()) {
-                                    this.setMotion(new Vector3(0, expectedVelocity, 0));
-                                }
-                            } else if (this.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server")) {
-                                return false;
-                            }
-                        }
-                        if (ignore) {
-                            this.resetFallDistance();
-                        }
-                    }
-
                     if (this.y > highestPosition) {
                         this.highestPosition = this.y;
                     }
