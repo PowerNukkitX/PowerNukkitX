@@ -528,7 +528,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public void kill() {
         if(getLastDamageCause() instanceof EntityDamageByEntityEvent event) {
             if(event.getEntity() instanceof Player player) {
-                System.out.println("1");
                 Arrays.stream(this.getLevel().getCollidingEntities(this.getBoundingBox().grow(16, 16, 16))).filter(entity -> entity instanceof EntityVillagerV2).forEach(entity -> ((EntityVillagerV2) entity).addGossip(player.getLoginChainData().getXUID(), Gossip.MAJOR_NEGATIVE, 25));
             }
         }

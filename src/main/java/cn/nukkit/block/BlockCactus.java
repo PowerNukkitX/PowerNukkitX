@@ -13,6 +13,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -120,10 +121,26 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
                 this.getLevel().setBlock(this, this);
                 return 0;
             }
-            for (int y = 1; y < 3; ++y) {
+            for (int y = 1; y < 4; ++y) {
                 Block b = this.getLevel().getBlock(new Vector3(this.x, this.y + y, this.z));
-                if (!b.isAir()) { continue; }
-                BlockGrowEvent event = new BlockGrowEvent(b, Block.get(BlockID.CACTUS));
+                if (b.getId().equals(getId())) { continue; }
+                if(!b.isAir()) return Level.BLOCK_UPDATE_NORMAL;
+                int rand = Utils.rand(0, 100);
+                boolean cactusFlower = (y < 2 && rand < 10) || y == 3 && rand <= 25;
+                if(cactusFlower) {
+                    Block block0 = b.north();
+                    Block block1 = b.south();
+                    Block block2 = b.west();
+                    Block block3 = b.east();
+                    if (!block0.isAir() || !block1.isAir() || !block2.isAir() || !block3.isAir()) {
+                        this.setAge(getMinAge());
+                        return 1;
+                    }
+                } else if(y == 3) {
+                    this.setAge(getMinAge());
+                    return 1;
+                }
+                BlockGrowEvent event = new BlockGrowEvent(b, Block.get(cactusFlower ? BlockID.CACTUS_FLOWER : BlockID.CACTUS));
                 Server.getInstance().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
                     this.getLevel().setBlock(b, event.getNewState(), true);
