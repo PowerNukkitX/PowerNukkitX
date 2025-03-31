@@ -3,9 +3,11 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
+import cn.nukkit.Server;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
 import cn.nukkit.entity.passive.EntityHorse;
+import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.player.PlayerJumpEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerToggleCrawlEvent;
@@ -170,8 +172,11 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             }
         }
         if (pk.inputData.contains(AuthInputAction.START_FLYING)) {
-            if (!player.getServer().getAllowFlight() && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
-                player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
+            if (!player.getAllowFlight()) {
+                PlayerHackDetectedEvent detectedEvent = new PlayerHackDetectedEvent(player, PlayerHackDetectedEvent.HackType.FLIGHT);
+                Server.getInstance().getPluginManager().callEvent(detectedEvent);
+                if(detectedEvent.isKick())
+                    player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
                 return;
             }
             PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, true);

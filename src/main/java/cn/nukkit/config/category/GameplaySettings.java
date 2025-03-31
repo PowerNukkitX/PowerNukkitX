@@ -26,8 +26,6 @@ public class GameplaySettings extends OkaeriConfig {
     boolean announceAchievements = true;
     @Comment("pnx.settings.gameplay.spawnProtection")
     int spawnProtection = 16;
-    @Comment("pnx.settings.gameplay.allowFlight")
-    boolean allowFlight = false;
     @Comment("pnx.settings.gameplay.spawnMobs")
     boolean spawnMobs = true;
     @Comment("pnx.settings.gameplay.spawnAnimals")
