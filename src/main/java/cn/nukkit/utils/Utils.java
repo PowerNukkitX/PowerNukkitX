@@ -266,7 +266,9 @@ public class Utils {
     public static <T> T[] concatArray(T[]... arrays) {
         ArrayList<T> list = new ArrayList<>();
         for(T[] array : arrays) list.addAll(Arrays.asList(array));
-        return (T[]) Array.newInstance(arrays[0][0].getClass().getComponentType(), list.size());
+        T[] output = (T[]) Array.newInstance(list.getFirst().getClass(), list.size());
+        for(int i = 0; i < list.size(); i++) output[i] = list.get(i);
+        return output;
     }
 
     public static <T> T[] reverseArray(T[] array, boolean copy) {
