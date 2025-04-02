@@ -9,7 +9,9 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.item.ItemFilledMap;
+import cn.nukkit.level.Location;
 import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
 
 import java.util.Arrays;
@@ -30,6 +32,12 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         this.commandParameters.put("rendermap", new CommandParameter[]{
                 CommandParameter.newEnum("rendermap", new String[]{"rendermap"}),
                 CommandParameter.newType("zoom", CommandParamType.INT)
+        });
+        this.commandParameters.put("biome", new CommandParameter[]{
+                CommandParameter.newEnum("biome", new String[]{"biome"})
+        });
+        this.commandParameters.put("light", new CommandParameter[]{
+                CommandParameter.newEnum("light", new String[]{"light"})
         });
         this.enableParamTree();
     }
@@ -68,6 +76,21 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     log.addSuccess("Start rendering the map in your hand. Zoom: " + zoom).output();
                     return 1;
                 }
+                return 0;
+            }
+            case "biome" -> {
+                if (!sender.isPlayer())
+                    return 0;
+                Location loc = sender.getLocation();
+                var biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+                sender.sendMessage(biome.name() + " " + Arrays.toString(biome.tags().toArray(String[]::new)));
+                return 0;
+            }
+            case "light" -> {
+                if (!sender.isPlayer())
+                    return 0;
+                Location loc = sender.getLocation();
+                sender.sendMessage("light level: " + loc.getLevel().getFullLight(loc));
                 return 0;
             }
             default -> {
