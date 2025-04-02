@@ -1,19 +1,27 @@
 package cn.nukkit.level.format;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.camera.data.Pos;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.BiomeID;
+import cn.nukkit.level.entity.spawners.SpawnRule;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +29,11 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.StampedLock;
@@ -514,6 +524,77 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    public void doMobSpawning() {
+        Level level = getProvider().getLevel();
+        if(isLoaded() && isGenerated() && isLightPopulated()) {
+            if(Utils.rand(0, 50) == 0) {
+                Entity[] spawnedEntities = level.getChunkEntities(getX(), getZ()).values().stream().filter(entity -> entity.despawnable).toArray(Entity[]::new);
+                //Spawning
+                if(Utils.rand(0, 4) == 0) {
+                    if(!level.getChunkPlayers(getX(), getZ()).isEmpty()) {
+                        int nearbyEntities = 0;
+                        for(int x = -4; x <= 4; x++) {
+                            for(int z = -4; z <= 4; z++) {
+                                nearbyEntities += (int) level.getChunkEntities(getX() + x, getZ() + z).values().stream().filter(entity -> entity.despawnable).count();
+                                if(nearbyEntities > Server.getInstance().getSettings().playerSettings().entityCap()) return;
+                            }
+                        }
+                    }
+                    if (spawnedEntities.length < Server.getInstance().getSettings().chunkSettings().spawnLimit()) {
+                        int x = Utils.rand(0, 16);
+                        int z = Utils.rand(0, 16);
+                        DimensionData data = getDimensionData();
+                        SpawnRule[] spawnRules = Registries.ENTITY.getSpawnRules().toArray(new SpawnRule[0]);
+                        var players = level.getPlayers().values();
+                        for (int y = data.getMaxHeight(); y > data.getMinHeight(); y--) {
+                            Vector3 lookVec = new Vector3(x + 16 * getX(), y, z + 16 * getZ());
+                            if(players.stream().anyMatch(player -> {
+                                double distance = player.distanceSquared(lookVec);
+                                return distance > 24 && distance < 54;
+                            })) continue;
+                            Block block = level.getBlock(lookVec, true);
+                            SpawnRule[] rules = Arrays.stream(spawnRules).filter(spawnRule -> spawnRule.evaluate(block)).toArray(SpawnRule[]::new);
+                            if(rules.length > 0) {
+                                SpawnRule spawnRule = rules[Utils.rand(0, rules.length-1)];
+                                int herd = Utils.rand(spawnRule.getHerdMin(), spawnRule.getHerdMax());
+                                for(int i = 0; i < herd; i++) {
+                                    int difference = spawnRule.getHerdMax()-spawnRule.getHerdMin();
+                                    Position newPos = block.add(Utils.rand(0, difference), 0, Utils.rand(0, difference));
+                                    Position spawnPos = newPos;
+                                    if(!EntityFlyable.class.isAssignableFrom(Registries.ENTITY.getEntityClass(spawnRule.getEntityId()))) {
+                                        level.getSafeSpawn(newPos, difference, true).add(0.5, 0, 0.5);
+                                    }
+                                    Entity entity = Registries.ENTITY.provideEntity(spawnRule.getEntityId(), this, Entity.getDefaultNBT(spawnPos));
+                                    if(entity.isInsideOfSolid()) {
+                                        entity.close();
+                                        continue;
+                                    }
+                                    if (entity == null) continue;
+                                    entity.despawnable = true;
+                                    entity.spawnToAll();
+                                    y-=0xF;
+                                }
+                            }
+                        }
+                    }
+                }
+                //Despawning
+                if(spawnedEntities.length != 0) {
+                    int rand = Utils.rand(0, spawnedEntities.length-1);
+                    try {
+                        Entity randomEntity = spawnedEntities[rand];
+                        if(level.getPlayers().values().stream().anyMatch(player -> player.distance(randomEntity) > 54)) {
+                            randomEntity.close();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public Map<Long, BlockEntity> getBlockEntities() {
         return tiles;
     }
@@ -667,7 +748,7 @@ public class Chunk implements IChunk {
         if(sectionY < 0 || sectionY >= getDimensionData().getChunkSectionCount()) {
             return 0L;
         }
-        
+        if(sections[sectionY] == null) return 0L;
         return sections[sectionY].blockChanges().get();
     }
 

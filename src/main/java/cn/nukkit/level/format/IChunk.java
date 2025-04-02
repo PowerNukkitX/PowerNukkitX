@@ -198,6 +198,8 @@ public interface IChunk {
 
     Map<Long, Entity> getEntities();
 
+    void doMobSpawning();
+
     Map<Long, BlockEntity> getBlockEntities();
 
     BlockEntity getTile(int x, int y, int z);
