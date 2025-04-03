@@ -1048,7 +1048,7 @@ public class Level implements Metadatable {
 
             if(getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
                 if(Arrays.stream(getEntities()).filter(entity -> entity.despawnable).toArray().length < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
-                    getChunks().values().forEach(IChunk::doMobSpawning);
+                    getChunks().values().forEach(chunk -> getScheduler().scheduleTask(InternalPlugin.INSTANCE, chunk::doMobSpawning));
                 }
             }
 
