@@ -48,7 +48,6 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ExplodeParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -84,7 +83,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -152,6 +150,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public boolean justCreated;
     public boolean fireProof;
     public boolean invulnerable;
+    public boolean despawnable;
     public double highestPosition;
     public boolean closed = false;
     public boolean noClip = false;
@@ -557,7 +556,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             this.namedTag.putFloat("Scale", 1);
         }
         this.scale = this.namedTag.getFloat("Scale");
-
+        if (!this.namedTag.contains("Despawnable")) {
+            this.namedTag.putBoolean("Despawnable", false);
+        }
+        this.despawnable = this.namedTag.getBoolean("Despawnable");
         try {
             this.initEntity();
             if (this.initialized) {
@@ -929,6 +931,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.namedTag.putShort("Air", this.getDataProperty(AIR_SUPPLY, (short) 0));
         this.namedTag.putBoolean("OnGround", this.onGround);
         this.namedTag.putBoolean("Invulnerable", this.invulnerable);
+        this.namedTag.putBoolean("Despawnable", this.despawnable);
         this.namedTag.putFloat("Scale", this.scale);
 
         if (!this.effects.isEmpty()) {
@@ -2019,6 +2022,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean onInteract(Player player, Item item) {
+        this.despawnable = false;
         return false;
     }
 
@@ -2973,11 +2977,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.setDataFlag(EntityFlag.HAS_COLLISION, noClip);
     }
 
-
     public boolean isBoss() {
         return this instanceof EntityBoss;
     }
-
 
     public void addTag(String tag) {
         this.namedTag.putList("Tags", this.namedTag.getList("Tags", StringTag.class).add(new StringTag(tag)));

@@ -17,6 +17,7 @@ public final class BiomeTags {
     public static final String BEE_HABITAT = "bee_habitat";
     public static final String BIRCH = "birch";
     public static final String CAVES = "caves";
+    public static final String CHERRY_GROVE = "cherry_grove";
     public static final String COLD = "cold";
     public static final String CRIMSON_FOREST = "crimson_forest";
     public static final String DEEP_DOWN = "deep_down";
@@ -36,6 +37,7 @@ public final class BiomeTags {
     public static final String JUNGLE = "jungle";
     public static final String LUKEWARM = "lukewarm";
     public static final String LUSH_CAVES = "lush_caves";
+    public static final String MANGROVE_SWAMP = "mangrove_swamp";
     public static final String MEADOW = "meadow";
     public static final String MEGA = "mega";
     public static final String MESA = "mesa";
@@ -69,6 +71,7 @@ public final class BiomeTags {
     public static final String SPAWN_PIGLIN = "spawn_piglin";
     public static final String SPAWN_ZOMBIFIED_PIGLIN = "spawn_zombified_piglin";
     public static final String STONE = "stone";
+    public static final String SUNFLOWER_PLAINS = "sunflower_plains";
     public static final String SWAMP = "swamp";
     public static final String TAIGA = "taiga";
     public static final String THE_END = "the_end";

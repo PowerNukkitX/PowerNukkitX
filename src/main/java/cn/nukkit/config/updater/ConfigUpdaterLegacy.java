@@ -154,8 +154,6 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .spawnProtection(oldProp.get(LegacyServerPropertiesKeys.SPAWN_PROTECTION, game.spawnProtection()))
                 .allowNether(oldProp.get(LegacyServerPropertiesKeys.ALLOW_NETHER, game.allowNether()))
                 .allowTheEnd(oldProp.get(LegacyServerPropertiesKeys.ALLOW_THE_END, game.allowTheEnd()))
-                .spawnMobs(oldProp.get(LegacyServerPropertiesKeys.SPAWN_MOBS, game.spawnMobs()))
-                .spawnAnimals(oldProp.get(LegacyServerPropertiesKeys.SPAWN_ANIMALS, game.spawnAnimals()))
                 .gamemode(parseGamemode(oldProp, game.gamemode()))
                 .forceGamemode(oldProp.get(LegacyServerPropertiesKeys.FORCE_GAMEMODE, game.forceGamemode()))
                 .hardcore(oldProp.get(LegacyServerPropertiesKeys.HARDCORE, game.hardcore()))

@@ -287,6 +287,7 @@ public class Level implements Metadatable {
     public boolean stopTime;
     public int skyLightSubtracted;
     public int sleepTicks = 0;
+    public int noSleepNights = 0;
     public int tickRateTime = 0;
     public int tickRateCounter = 0;
     /**
@@ -390,7 +391,7 @@ public class Level implements Metadatable {
         if (this.thunderTime <= 0) {
             setThunderTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
         }
-
+        this.noSleepNights = levelProvider.getNoSleepNight();
         this.levelCurrentTick = levelProvider.getCurrentTick();
         this.updateQueue = new BlockUpdateScheduler(this, levelCurrentTick);
 
@@ -954,7 +955,9 @@ public class Level implements Metadatable {
 
     public void checkTime() {
         if (!this.stopTime && this.gameRules.getBoolean(GameRule.DO_DAYLIGHT_CYCLE)) {
+            float prior = this.time;
             this.time += tickRate;
+            if(prior%TIME_FULL > TIME_NIGHT && this.time%TIME_FULL < TIME_DAY) this.noSleepNights++;
         }
     }
 
@@ -1042,6 +1045,12 @@ public class Level implements Metadatable {
             this.levelCurrentTick++;
 
             this.updateQueue.tick(this.getCurrentTick());
+
+            if(getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+                if(Arrays.stream(getEntities()).filter(entity -> entity.despawnable).toArray().length < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
+                    getChunks().values().forEach(IChunk::doMobSpawning);
+                }
+            }
 
             while (!this.normalUpdateQueue.isEmpty()) {
                 QueuedUpdate queuedUpdate = this.normalUpdateQueue.poll();
@@ -1324,6 +1333,7 @@ public class Level implements Metadatable {
                 for (Player p : this.getPlayers().values()) {
                     p.stopSleep();
                 }
+                this.noSleepNights = 0;
             }
         }
     }
@@ -1523,6 +1533,7 @@ public class Level implements Metadatable {
         levelProvider.setRainTime(this.rainTime);
         levelProvider.setThundering(this.thundering);
         levelProvider.setThunderTime(this.thunderTime);
+        levelProvider.setNoSleepNight(this.noSleepNights);
         levelProvider.setCurrentTick(this.levelCurrentTick);
         levelProvider.setGameRules(this.gameRules);
         this.saveChunks();
@@ -3812,22 +3823,27 @@ public class Level implements Metadatable {
         if (standable(spawn, true))
             return Position.fromObject(spawn, this);
 
-        int maxY = isNether() ? 127 : (isOverWorld() ? 319 : 255);
-        int minY = isOverWorld() ? -64 : 0;
+        int maxY = getDimensionData().getMaxHeight();
+        int minY = getDimensionData().getMinHeight();
 
-        for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
-            for (int y = maxY; y >= minY; y--) {
-                Position pos = Position.fromObject(spawn, this);
-                pos.setY(y);
-                Position newSpawn;
-                if (standable(newSpawn = pos.add(horizontalOffset, 0, horizontalOffset), allowWaterUnder))
-                    return newSpawn;
-                if (standable(newSpawn = pos.add(horizontalOffset, 0, -horizontalOffset), allowWaterUnder))
-                    return newSpawn;
-                if (standable(newSpawn = pos.add(-horizontalOffset, 0, horizontalOffset), allowWaterUnder))
-                    return newSpawn;
-                if (standable(newSpawn = pos.add(-horizontalOffset, 0, -horizontalOffset), allowWaterUnder))
-                    return newSpawn;
+        int count = 0;
+
+        int checkHeight = (int) Math.max(Math.abs(minY-spawn.y), Math.abs(maxY-spawn.y));
+        for (int r = 1; r <= checkHeight; r++) {
+            int horizontalLimit = Math.min(r, horizontalMaxOffset);
+            for (int dx = -r; dx <= r; dx++) {
+                for (int dy = -r; dy <= r; dy++) {
+                    for (int dz = -r; dz <= r; dz++) {
+                        if (Math.abs(dx) != horizontalLimit && Math.abs(dy) != r && Math.abs(dz) != horizontalLimit) continue;
+                        Position checkLoc = Position.fromObject(spawn, this).add(dx, dy, dz);
+                        count++;
+                        if(count > 10000) {
+                            log.warn("cannot find a safe spawn around " + spawn.asBlockVector3() + ". Too many attempts!");
+                            return Position.fromObject(spawn, this);
+                        }
+                        if(standable(checkLoc, allowWaterUnder)) return checkLoc;
+                    }
+                }
             }
         }
 

@@ -22,4 +22,6 @@ public class LevelSettings extends OkaeriConfig {
     boolean alwaysTickPlayers = false;
     @Comment("pnx.settings.level.chunkunloaddelay")
     int chunkUnloadDelay = 15000;
+    @Comment("pnx.settings.level.entityspawncap")
+    int entitySpawnCap = 512;
 }
