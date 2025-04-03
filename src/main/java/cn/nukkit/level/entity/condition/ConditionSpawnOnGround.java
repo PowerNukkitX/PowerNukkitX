@@ -17,6 +17,6 @@ public class ConditionSpawnOnGround extends Condition {
 
     @Override
     public boolean evaluate(Block block) {
-        return block.getLevel().standable(block, allowWater) && !block.down().isTransparent();
+        return block.getLevel().standable(block, allowWater);
     }
 }
