@@ -3512,24 +3512,29 @@ public class Level implements Metadatable {
             int z = getHashZ(index);
             final Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
             if (players != null) {
-                final var pair = this.requireProvider().requestChunkData(x, z);
-                for (Player player : Objects.requireNonNull(players).values()) {
-                    if (player.isConnected()) {
-                        NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
-                        ncp.position = player.asBlockVector3();
-                        ncp.radius = player.getViewDistance() << 4;
-                        player.dataPacket(ncp);
+                IChunk chunk = this.getChunk(x, z);
+                if(chunk.getChunkState().canSend()) {
+                    final var pair = this.requireProvider().requestChunkData(x, z);
+                    for (Player player : Objects.requireNonNull(players).values()) {
+                        if (player.isConnected()) {
+                            NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
+                            ncp.position = player.asBlockVector3();
+                            ncp.radius = player.getViewDistance() << 4;
+                            player.dataPacket(ncp);
 
-                        LevelChunkPacket pk = new LevelChunkPacket();
-                        pk.chunkX = x;
-                        pk.chunkZ = z;
-                        pk.dimension = getDimensionData().getDimensionId();
-                        pk.subChunkCount = pair.right();
-                        pk.data = pair.left();
-                        player.sendChunk(x, z, pk);
+                            LevelChunkPacket pk = new LevelChunkPacket();
+                            pk.chunkX = x;
+                            pk.chunkZ = z;
+                            pk.dimension = getDimensionData().getDimensionId();
+                            pk.subChunkCount = pair.right();
+                            pk.data = pair.left();
+                            player.sendChunk(x, z, pk);
+                        }
                     }
+                    this.chunkSendQueue.remove(index);
+                } else if(!this.chunkGenerationQueue.containsKey(index)) {
+                    this.generateChunk(x, z, true);
                 }
-                this.chunkSendQueue.remove(index);
             }
         }
     }
