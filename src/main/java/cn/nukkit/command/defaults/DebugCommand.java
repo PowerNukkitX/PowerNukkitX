@@ -1,6 +1,9 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Server;
+import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
+import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -9,7 +12,9 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.item.ItemFilledMap;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
@@ -38,6 +43,10 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         });
         this.commandParameters.put("light", new CommandParameter[]{
                 CommandParameter.newEnum("light", new String[]{"light"})
+        });
+        this.commandParameters.put("chunk", new CommandParameter[]{
+                CommandParameter.newEnum("chunk", new String[]{"chunk"}),
+                CommandParameter.newEnum("options", new String[]{"info", "regenerate", "resend", "unload", "load"})
         });
         this.enableParamTree();
     }
@@ -92,6 +101,52 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 Location loc = sender.getLocation();
                 sender.sendMessage("light level: " + loc.getLevel().getFullLight(loc));
                 return 0;
+            }
+            case "chunk" -> {
+                if (!sender.isPlayer())
+                    return 0;
+                Player player = sender.asPlayer();
+                IChunk chunk = player.getChunk();
+                Level level = chunk.getProvider().getLevel();
+                switch (list.getResult(1).toString()) {
+                    case "info" -> {
+                        player.sendMessage("Chunk: X: " + chunk.getX() + ", Z: " + chunk.getZ());
+                        player.sendMessage("Stage: " + chunk.getChunkState().name());
+                        player.sendMessage("Loaded: " + chunk.isLoaded());
+                        player.sendMessage("Current Block: " + player.getLevelBlock().getId());
+                        player.sendMessage("Pending block updates: " + level.getPendingBlockUpdates(chunk).size());
+                        int blocks = 0;
+                        for(int x = 0; x < 16; x++)
+                            for(int z = 0; z < 16; z++)
+                                for(int y = level.getMinHeight(); y < level.getMaxHeight(); y++)
+                                    if(chunk.getBlockState(x,y,z, 0).getIdentifier().equals(BlockAir.STATE.getIdentifier())) blocks++;
+                        player.sendMessage("Blocks: " + blocks);
+                        return 0;
+                    }
+                    case "regenerate" -> {
+                        level.syncRegenerateChunk(chunk.getX(), chunk.getZ());
+                        return 0;
+                    }
+                    case "resend" -> {
+                        level.requestChunk(chunk.getX(), chunk.getZ(), player);
+                        return 0;
+                    }
+                    case "unload" -> {
+                        chunk.unload(false);
+                        return 0;
+                    }
+                    case "load" -> {
+                        try {
+                            chunk.load(true);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        return 0;
+                    }
+                    default -> {
+                        return 0;
+                    }
+                }
             }
             default -> {
                 return 0;
