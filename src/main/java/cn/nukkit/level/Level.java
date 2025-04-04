@@ -42,7 +42,9 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.particle.BlockForceFieldParticle;
 import cn.nukkit.level.particle.DestroyBlockParticle;
+import cn.nukkit.level.particle.FloatingTextParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.level.util.SimpleTickCachedBlockStore;
@@ -93,6 +95,7 @@ import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -312,7 +315,7 @@ public class Level implements Metadatable {
     private int updateLCG = ThreadLocalRandom.current().nextInt();
     private int tickRate;
     private long levelCurrentTick = 0;
-    private final Map<Long, Map<Integer, Object>> lightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
+    private final Map<Long, Map<Integer, Object>> blockLightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
     private final int dimensionCount;
     ///base tick system
     private final Thread baseTickThread;
@@ -1016,7 +1019,7 @@ public class Level implements Metadatable {
         requireProvider();
         try {
             getScheduler().mainThreadHeartbeat(currentTick);
-            updateBlockLight(lightQueue);
+            updateBlockLight();
             this.checkTime();
             if (currentTick >= nextTimeSendTick) { // Send time to client every 30 seconds to make sure it
                 this.sendTime();
@@ -2101,7 +2104,7 @@ public class Level implements Metadatable {
 
     public void updateAllLight(Vector3 pos) {
         this.updateBlockSkyLight((int) pos.x, (int) pos.y, (int) pos.z);
-        this.addLightUpdate((int) pos.x, (int) pos.y, (int) pos.z);
+        this.addBlockLightUpdate((int) pos.x, (int) pos.y, (int) pos.z);
     }
 
     public void updateBlockSkyLight(int x, int y, int z) {
@@ -2109,33 +2112,20 @@ public class Level implements Metadatable {
 
         if (chunk == null) return;
 
-        int oldHeightMap = chunk.getHeightMap(x & 0xf, z & 0xf);
-        Block sourceBlock = getBlock(x, y, z);
-
-        int newHeightMap;
-        if (y == oldHeightMap) { // Block changed directly in the heightmap. Check if a block was removed or changed to a different light-filter
-            newHeightMap = chunk.recalculateHeightMapColumn(x & 0x0f, z & 0x0f);
-        } else if (y > oldHeightMap) { // Block changed above the heightmap
-            if (sourceBlock.getLightFilter() > 1 || sourceBlock.diffusesSkyLight()) {
-                chunk.setHeightMap(x & 0xf, z & 0xf, y);
-                newHeightMap = y;
-            } else { // Block changed which has no effect on direct skylight, for example placing or removing glass.
-                return;
+        int height = chunk.recalculateHeightMapColumn(x & 0x0f, z & 0x0f);
+        int level = 15;
+        for(int _y = height ; _y >= getDimensionData().getMinHeight(); _y--) {
+            Block block = getBlock(x, _y, z);
+            if (!block.isTransparent()) {
+                level = 0;
+            } else if (block.diffusesSkyLight()) {
+                level--;
+            } else {
+                level -= block.getLightLevel();
             }
-        } else { // Block changed below heightmap
-            newHeightMap = oldHeightMap;
-        }
-
-        if (newHeightMap > oldHeightMap) { // Heightmap increase, block placed, remove skylight
-            for (int i = y; i >= oldHeightMap; --i) {
-                setBlockSkyLightAt(x, i, z, 0);
-            }
-        } else if (newHeightMap < oldHeightMap) { // Heightmap decrease, block changed or removed, add skylight
-            for (int i = y; i >= newHeightMap; --i) {
-                setBlockSkyLightAt(x, i, z, 15);
-            }
-        } else { // No heightmap change, block changed "underground"
-            setBlockSkyLightAt(x, y, z, Math.max(0, getHighestAdjacentBlockSkyLight(x, y, z) - sourceBlock.getLightFilter()));
+            if(level <= 0) level = 0;
+            //if(_y != height && !block.canPassThrough() && block.up().canPassThrough()) addSkyLightUpdate(x, _y+1, z); ToDo: Light Spread
+            setBlockSkyLightAt(x, _y, z, level);
         }
     }
 
@@ -2162,8 +2152,8 @@ public class Level implements Metadatable {
         return maxValue;
     }
 
-    public void updateBlockLight(Map<Long, Map<Integer, Object>> map) {
-        int size = map.size();
+    public void updateBlockLight() {
+        int size = blockLightQueue.size();
         if (size == 0) {
             return;
         }
@@ -2172,7 +2162,7 @@ public class Level implements Metadatable {
         Long2ObjectOpenHashMap<Object> visited = new Long2ObjectOpenHashMap<>();
         Long2ObjectOpenHashMap<Object> removalVisited = new Long2ObjectOpenHashMap<>();
 
-        var iter = map.entrySet().iterator();
+        var iter = blockLightQueue.entrySet().iterator();
         while (iter.hasNext() && size-- > 0) {
             var entry = iter.next();
             iter.remove();
@@ -2287,12 +2277,12 @@ public class Level implements Metadatable {
         }
     }
 
-    public void addLightUpdate(int x, int y, int z) {
+    public void addBlockLightUpdate(int x, int y, int z) {
         long index = chunkHash(x >> 4, z >> 4);
-        var currentMap = lightQueue.get(index);
+        var currentMap = blockLightQueue.get(index);
         if (currentMap == null) {
             currentMap = new ConcurrentHashMap<>(8, 0.9f, 1);
-            this.lightQueue.put(index, currentMap);
+            this.blockLightQueue.put(index, currentMap);
         }
         currentMap.put(Level.localBlockHash(x, y, z, this), changeBlocksPresent);
     }

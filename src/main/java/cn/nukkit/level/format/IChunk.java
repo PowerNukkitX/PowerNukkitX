@@ -5,6 +5,7 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.ApiStatus;
@@ -77,6 +78,8 @@ public interface IChunk {
     long getIndex();
 
     LevelProvider getProvider();
+
+    Level getLevel();
 
     default DimensionData getDimensionData() {
         return getProvider().getDimensionData();

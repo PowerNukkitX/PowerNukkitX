@@ -200,6 +200,11 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    public Level getLevel() {
+        return getProvider().getLevel();
+    }
+
+    @Override
     public BlockState getBlockState(int x, int y, int z, int layer) {
         long stamp = blockLock.tryOptimisticRead();
         try {
@@ -358,47 +363,19 @@ public class Chunk implements IChunk {
             // basic light calculation
             for (int z = 0; z < 16; ++z) {
                 for (int x = 0; x < 16; ++x) { // iterating over all columns in chunk
-                    int top = unsafe.getHeightMap(x, z); // top-most block
-
-                    int y;
-                    for (y = getDimensionData().getMaxHeight(); y > top; --y) {
-                        // all the blocks above & including the top-most block in a column are exposed to sun and
-                        // thus have a skylight value of 15
-                        unsafe.setBlockSkyLight(x, y, z, 15);
-                    }
-
-                    int light = 15; // light value that will be applied starting with the next block
-                    int nextDecrease = 0; // decrease that that will be applied starting with the next block
-
-                    for (y = top; y >= getDimensionData().getMinHeight(); --y) { // going under the top-most block
-                        light -= nextDecrease; // this light value will be applied for this block. The following checks are all about the next blocks
-
-                        if (light < 0) {
-                            light = 0;
-                        }
-
-                        unsafe.setBlockSkyLight(x, y, z, light);
-
-                        if (light == 0) { // skipping block checks, because everything under a block that has a skylight value
-                            // of 0 also has a skylight value of 0
-                            continue;
-                        }
-
-                        // START of checks for the next block
+                    int level = 15;
+                    for(int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); y--) {
                         Block block = unsafe.getBlockState(x, y, z).toBlock();
 
-                        if (!block.isTransparent()) { // if we encounter an opaque block, all the blocks under it will
-                            // have a skylight value of 0 (the block itself has a value of 15, if it's a top-most block)
-                            light = 0;
+                        if (!block.isTransparent()) {
+                            level = 0;
                         } else if (block.diffusesSkyLight()) {
-                            nextDecrease += 1; // skylight value decreases by one for each block under a block
-                            // that diffuses skylight. The block itself has a value of 15 (if it's a top-most block)
+                            level--;
                         } else {
-                            nextDecrease += block.getLightFilter(); // blocks under a light filtering block will have a skylight value
-                            // decreased by the lightFilter value of that block. The block itself
-                            // has a value of 15 (if it's a top-most block)
+                            level -= block.getLightLevel();
                         }
-                        // END of checks for the next block
+                        if(level <= 0) break;
+                        unsafe.setBlockSkyLight(x, y, z, level);
                     }
                 }
             }
@@ -412,6 +389,7 @@ public class Chunk implements IChunk {
         try {
             unsafeChunkConsumer.accept(new UnsafeChunk(this));
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("An error occurred while executing chunk batch operation", e);
         } finally {
             blockLock.unlockWrite(stamp1);
