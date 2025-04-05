@@ -95,7 +95,7 @@ jobs:
           cd ../
           mv build/powernukkitx-${{ steps.read_version.outputs.git-build-version }}.jar build/core.jar
           mv build/powernukkitx-${{ steps.read_version.outputs.git-build-version }}-all.jar build/powernukkitx-shaded.jar
-          cp build/powernukkitx-shaded build/powernukkitx.jar
+          cp build/powernukkitx-shaded.jar build/powernukkitx.jar
           tar -vczf build/libs.tar.gz build/libs
 
       - name: Calculate hashes
