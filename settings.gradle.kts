@@ -1,1 +1,1 @@
-rootProject.name = "powernukkitx"
+rootProject.name = "server"
