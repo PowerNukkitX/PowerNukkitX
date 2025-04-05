@@ -230,7 +230,7 @@ publishing {
 
     repositories {
         maven {
-            url = uri("https://repo.lostplacemc.eu/snapshots")
+            url = uri("https://repo.powernukkitx.org/releases")
             credentials {
                 username = findProperty("pnxUsername") as String? ?: System.getenv("PNX_REPO_USERNAME")
                 password = findProperty("pnxPassword") as String? ?: System.getenv("PNX_REPO_PASSWORD")
