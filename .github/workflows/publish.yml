@@ -162,8 +162,9 @@ jobs:
             4. Enjoy the latest features and bug fixes !
 
             Thank you for using PowerNukkitX ⭐
-          assets: 
+          assets: |
             build/powernukkitx-shaded.jar;
+            build/powernukkitx-run.zip;
             build/powernukkitx.jar;
             build/core.jar
             build/libs.tar.gz;
