@@ -133,7 +133,7 @@ tasks.build {
 
 tasks.clean {
     group = "alpha build"
-    delete("pny.yml", "terra", "services")
+    delete("pnx.yml", "terra", "services")
 }
 
 tasks.compileJava {
