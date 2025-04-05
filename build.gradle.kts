@@ -15,7 +15,7 @@ plugins {
 
 group = "org.powernukkitx"
 version = "2.0.0-SNAPSHOT"
-description = "server"
+description = "PNX Server"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
 repositories {
@@ -212,6 +212,7 @@ tasks.javadoc {
 publishing {
     publications.create<MavenPublication>("maven") {
         from(components["java"])
+        artifactId = "server"
         pom {
             url.set("https://github.com/PowerNukkitX/PowerNukkitX")
             licenses {
