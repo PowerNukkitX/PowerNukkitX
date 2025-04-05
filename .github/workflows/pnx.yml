@@ -47,6 +47,7 @@ jobs:
       github.event.pull_request.head.repo.full_name != github.repository) && 
       (contains(needs.check-files.outputs.changed-files, 'src/') ||
       contains(needs.check-files.outputs.changed-files, '.github/workflows') || 
+      contains(needs.check-files.outputs.changed-files, 'build.gradle.kts') || 
       (github.event_name == 'push' && 
       (contains(github.event.commits[0].message, '+b') || contains(github.event.commits[0].message, '+u'))
       ))
@@ -174,3 +175,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit: ${{ github.ref_name }}
           allowUpdates: true
+
+      - name: Publish to Maven repository
+        run: |
+          ./gradlew publish
+        env:            
+          PNX_REPO_USERNAME: ${{ secrets.PNX_REPO_USERNAME }}
+          PNX_REPO_PASSWORD: ${{ secrets.PNX_REPO_PASSWORD }}
