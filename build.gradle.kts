@@ -213,17 +213,32 @@ publishing {
     publications.create<MavenPublication>("maven") {
         from(components["java"])
         pom {
-            repositories {
-                mavenLocal()
-                mavenCentral()
-                maven("https://repo.maven.apache.org/maven2/")
-                maven("https://jitpack.io")
-                maven("https://repo.opencollab.dev/maven-releases/")
-                maven("https://repo.opencollab.dev/maven-snapshots/")
+            url.set("https://github.com/PowerNukkitX/PowerNukkitX")
+            licenses {
+                license {
+                    name.set("MIT License")
+                    url.set("https://opensource.org/licenses/MIT")
+                }
+            }
+            scm {
+                connection.set("scm:git:git://github.com/PowerNukkitX/PowerNukkitX.git")
+                developerConnection.set("scm:git:ssh://github.com/PowerNukkitX/PowerNukkitX.git")
+                url.set("https://github.com/PowerNukkitX/PowerNukkitX")
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url = uri("https://repo.lostplacemc.eu/snapshots")
+            credentials {
+                username = findProperty("pnxUsername") as String? ?: System.getenv("PNX_REPO_USERNAME")
+                password = findProperty("pnxPassword") as String? ?: System.getenv("PNX_REPO_PASSWORD")
             }
         }
     }
 }
+
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
