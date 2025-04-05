@@ -15,7 +15,7 @@ plugins {
 
 group = "org.powernukkitx"
 version = "2.0.0-SNAPSHOT"
-description = "server"
+description = "PNX Server"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
 repositories {
@@ -133,7 +133,7 @@ tasks.build {
 
 tasks.clean {
     group = "alpha build"
-    delete("pny.yml", "terra", "services")
+    delete("pnx.yml", "terra", "services")
 }
 
 tasks.compileJava {
@@ -212,6 +212,7 @@ tasks.javadoc {
 publishing {
     publications.create<MavenPublication>("maven") {
         from(components["java"])
+        artifactId = "server"
         pom {
             url.set("https://github.com/PowerNukkitX/PowerNukkitX")
             licenses {
