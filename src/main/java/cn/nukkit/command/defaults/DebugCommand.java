@@ -19,9 +19,11 @@ import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DebugCommand extends TestCommand implements CoreCommand {
     public DebugCommand(String name) {
@@ -46,7 +48,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         });
         this.commandParameters.put("chunk", new CommandParameter[]{
                 CommandParameter.newEnum("chunk", new String[]{"chunk"}),
-                CommandParameter.newEnum("options", new String[]{"info", "regenerate", "resend", "unload", "load"})
+                CommandParameter.newEnum("options", new String[]{"info", "regenerate", "resend", "queue"})
         });
         this.enableParamTree();
     }
@@ -131,13 +133,12 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                         level.requestChunk(chunk.getX(), chunk.getZ(), player);
                         return 0;
                     }
-                    case "unload" -> {
-                        chunk.unload(false);
-                        return 0;
-                    }
-                    case "load" -> {
+                    case "queue" -> {
                         try {
-                            chunk.load(true);
+                            Field field = Level.class.getDeclaredField("chunkGenerationQueue");
+                            field.setAccessible(true);
+                            player.sendMessage("Queue: " + ((ConcurrentHashMap<Long, Boolean>) field.get(level)).size() + " / " + level.getServer().getSettings().chunkSettings().generationQueueSize());
+                            field.setAccessible(false);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
