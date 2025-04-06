@@ -42,21 +42,22 @@ public class GeneratorTest {
 
         Flat flat = new Flat(DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>());
         flat.setLevel(level);
+        level.setRaining(false);
+        level.setThundering(false);
         int x = 10000;
         int z = 10000;
         IChunk chunk = levelProvider.getChunk(x >> 4, z >> 4, true);
         flat.syncGenerate(chunk);
-        int blockLightAt = level.getBlockLightAt(x, 4, z);
-        int blockSkyLightAt = level.getBlockSkyLightAt(x, 4, z);
-        int fullLight = level.getFullLight(new Vector3(x, 4, z));
-        int highestAdjacentBlockSkyLight = level.getHighestAdjacentBlockSkyLight(x, 4, z);
-        //for flat, 0~4 is block,4 is top block
-        //TODO: FIX LIGHT STUFF IN HERE
-        //Assertions.assertEquals(0, blockLightAt);
-        //Assertions.assertEquals(15, blockSkyLightAt);
-        //Assertions.assertEquals(15, fullLight);
-        //Assertions.assertEquals(15, highestAdjacentBlockSkyLight);
-        //Assertions.assertEquals(0, level.getBlockSkyLightAt(x, 3, z));//so the skylight is 0
+        int blockLightAt = level.getBlockLightAt(x, 5, z);
+        int blockSkyLightAt = level.getBlockSkyLightAt(x, 5, z);
+        int fullLight = level.getFullLight(new Vector3(x, 5, z));
+        int highestAdjacentBlockSkyLight = level.getHighestAdjacentBlockSkyLight(x, 5, z);
+        //for flat, 0~4 is block,5 is first air block
+        Assertions.assertEquals(0, blockLightAt);
+        Assertions.assertEquals(15, blockSkyLightAt);
+        Assertions.assertEquals(15, fullLight);
+        Assertions.assertEquals(15, highestAdjacentBlockSkyLight);
+        Assertions.assertEquals(0, level.getBlockSkyLightAt(x, 3, z));//so the skylight is 0
         loop.stop();
     }
 }
