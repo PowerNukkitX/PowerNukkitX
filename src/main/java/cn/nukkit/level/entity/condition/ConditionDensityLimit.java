@@ -1,7 +1,6 @@
 package cn.nukkit.level.entity.condition;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.entity.Entity;
 
 import java.util.Arrays;
 
