@@ -32,6 +32,7 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.custom.CustomEntity;
+import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.block.FarmLandDecayEvent;
@@ -524,7 +525,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         addEntity.speedX = (float) this.motionX;
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
+        addEntity.entityData = this.entityDataMap.copy();
         addEntity.attributes = this.attributeMap.values().toArray(Attribute.EMPTY_ARRAY);
         addEntity.links = new EntityLink[this.passengers.size()];
         for (int i = 0; i < addEntity.links.length; i++) {

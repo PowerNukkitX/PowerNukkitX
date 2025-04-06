@@ -181,6 +181,17 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
         return this.map.hashCode();
     }
 
+    public EntityDataMap copy() {
+        EntityDataMap entityDataMap = new EntityDataMap();
+        for (var t : keySet()) {
+            Object o = this.get(t);
+            if (o != null) {
+                entityDataMap.put(t, o);
+            }
+        }
+        return entityDataMap;
+    }
+
     public EntityDataMap copy(EntityDataType<?>... entityDataTypes) {
         EntityDataMap entityDataMap = new EntityDataMap();
         for (var t : entityDataTypes) {
