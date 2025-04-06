@@ -550,7 +550,7 @@ public class Chunk implements IChunk {
                                     if (entity == null) continue;
                                     entity.despawnable = true;
                                     entity.spawnToAll();
-                                    y-=0xF;
+                                    return;
                                 }
                             }
                         }
