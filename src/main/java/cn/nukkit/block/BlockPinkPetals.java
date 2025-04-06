@@ -19,7 +19,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.*;
  *
  * @author daoge_cmd
  */
-public class BlockPinkPetals extends BlockFlowable {
+public class BlockPinkPetals extends BlockFlower {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(PINK_PETALS,
             GROWTH, MINECRAFT_CARDINAL_DIRECTION);
@@ -55,14 +55,6 @@ public class BlockPinkPetals extends BlockFlowable {
         return this.getLevel().setBlock(this, this);
     }
 
-    private static boolean isSupportValid(Block block) {
-        return block.is(BlockTags.DIRT);
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
@@ -79,7 +71,7 @@ public class BlockPinkPetals extends BlockFlowable {
             return true;
         }
 
-        if (Objects.equals(item.getBlockId(), PINK_PETALS) && getPropertyValue(GROWTH) < 3) {
+        if (Objects.equals(item.getBlockId(), getId()) && getPropertyValue(GROWTH) < 3) {
             setPropertyValue(GROWTH, getPropertyValue(GROWTH) + 1);
             getLevel().setBlock(this, this);
             item.count--;

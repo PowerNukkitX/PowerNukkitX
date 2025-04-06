@@ -1,6 +1,7 @@
 package cn.nukkit.level.entity.condition;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockLeaves;
 
 public class ConditionSpawnOnGround extends Condition {
 
@@ -17,6 +18,6 @@ public class ConditionSpawnOnGround extends Condition {
 
     @Override
     public boolean evaluate(Block block) {
-        return block.getLevel().standable(block, allowWater);
+        return block.getLevel().standable(block, allowWater) && !(block.down() instanceof BlockLeaves);
     }
 }

@@ -28,7 +28,7 @@ public class SpawnRuleEnderman extends MultiSpawnRule {
                     new ConditionDifficultyFilter(),
                     new ConditionBrightnessFilter(0, 7),
                     new ConditionBiomeFilter(BiomeTags.MONSTER),
-                    new ConditionDensityLimit(Entity.ENDERMAN, 2));
+                    new ConditionDensityLimit(Entity.ENDERMAN, 2, 64));
         }
     }
 
