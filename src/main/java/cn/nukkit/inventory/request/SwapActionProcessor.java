@@ -29,8 +29,11 @@ public class SwapActionProcessor implements ItemStackRequestActionProcessor<Swap
     public ActionResponse handle(SwapAction action, Player player, ItemStackRequestContext context) {
         ContainerSlotType sourceSlotType = action.getSource().getContainer();
         ContainerSlotType destinationSlotType = action.getDestination().getContainer();
-        Inventory source = NetworkMapping.getInventory(player, sourceSlotType);
-        Inventory destination = NetworkMapping.getInventory(player, destinationSlotType);
+        Integer dynamicSrc = action.getSource().getContainerName().getDynamicId();
+        Integer dynamicDst = action.getDestination().getContainerName().getDynamicId();
+
+        Inventory source = NetworkMapping.getInventory(player, sourceSlotType, dynamicSrc);
+        Inventory destination = NetworkMapping.getInventory(player, destinationSlotType, dynamicDst);
 
         var sourceSlot = source.fromNetworkSlot(action.getSource().getSlot());
         var destinationSlot = destination.fromNetworkSlot(action.getDestination().getSlot());

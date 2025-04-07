@@ -2,6 +2,7 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
@@ -25,6 +26,19 @@ public class PlayerCursorInventory extends BaseInventory {
     @Override
     public Player getHolder() {
         return (Player) super.getHolder();
+    }
+
+    @Override
+    public boolean setItem(int index, Item item) {
+        return this.setItem(index, item, true);
+    }
+
+    @Override
+    public boolean setItem(int index, Item item, boolean send) {
+        if(super.setItem(index, item, send)) {
+            if(item instanceof INBT nbt) nbt.onChange(this);
+            return true;
+        } else return false;
     }
 
     public Item getItem() {

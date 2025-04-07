@@ -1,6 +1,21 @@
 package cn.nukkit.item;
 
-public class ItemBundle extends Item {
+import cn.nukkit.Player;
+import cn.nukkit.inventory.BundleInventory;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.level.Level;
+import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class ItemBundle extends Item implements INBT, InventoryHolder {
+
+    @Getter
+    private Inventory holder;
+    private BundleInventory inventory;
 
     public ItemBundle() {
         this(BUNDLE);
@@ -11,8 +26,59 @@ public class ItemBundle extends Item {
     }
 
     @Override
+    public void onChange(Inventory inventory) {
+        INBT.super.onChange(inventory);
+        this.holder = inventory;
+        if(holder == null || holder != inventory.getHolder()) {
+            for(Player player : inventory.getViewers()) {
+                getInventory().sendContents(player);
+            }
+        }
+    }
+
+    public int getBundleId() {
+        return getNamedTag().getInt("bundle_id");
+    }
+
+    @Override
     public int getMaxStackSize() {
         return 1;
+    }
+
+    @Override
+    public Inventory getInventory() {
+        if(inventory == null) {
+            CompoundTag tag;
+            inventory = new BundleInventory(this);
+            tag = this.getNamedTag();
+            this.setNamedTag(tag);
+        }
+        return inventory;
+    }
+
+    @Override
+    public Level getLevel() {
+        return holder.getHolder().getLevel();
+    }
+
+    @Override
+    public double getX() {
+        return holder.getHolder().getX();
+    }
+
+    @Override
+    public double getY() {
+        return holder.getHolder().getY();
+    }
+
+    @Override
+    public double getZ() {
+        return holder.getHolder().getZ();
+    }
+
+    @Override
+    public Vector3 getVector3() {
+        return holder.getHolder().getVector3();
     }
 }
 

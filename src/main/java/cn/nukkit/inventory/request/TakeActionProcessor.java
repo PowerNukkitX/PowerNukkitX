@@ -25,7 +25,8 @@ public class TakeActionProcessor extends TransferItemActionProcessor<TakeAction>
     public ActionResponse handle(TakeAction action, Player player, ItemStackRequestContext context) {
         ContainerSlotType sourceSlotType = action.getSource().getContainer();
         if (sourceSlotType == ContainerSlotType.CREATED_OUTPUT) {
-            Inventory source = NetworkMapping.getInventory(player, sourceSlotType);
+            Integer dynamicId = action.getSource().getContainerName().getDynamicId();
+            Inventory source = NetworkMapping.getInventory(player, sourceSlotType, dynamicId);
             Item sourItem = source.getUnclonedItem(0);
             int count = action.getCount();
             if (sourItem.getCount() > count) {

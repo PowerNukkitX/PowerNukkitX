@@ -62,9 +62,11 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.PlayerCursorInventory;
 import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.inventory.fake.FakeInventory;
+import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemArrow;
+import cn.nukkit.item.ItemBundle;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.ItemTool;
@@ -1254,6 +1256,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void onPlayerLocallyInitialized() {
         if (locallyInitialized) return;
         locallyInitialized = true;
+        windows.keySet().stream().filter(inv -> !(inv instanceof CreativeOutputInventory)).forEach(inv -> {
+            inv.getContents().values().stream().filter(item -> item instanceof INBT).map(item -> (INBT) item).forEach(item -> item.onChange(inv));
+        });
 
         //init entity data property
         this.setDataProperty(NAME, info.getUsername(), false);

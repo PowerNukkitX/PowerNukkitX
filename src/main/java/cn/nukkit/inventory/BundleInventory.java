@@ -1,0 +1,94 @@
+package cn.nukkit.inventory;
+
+import cn.nukkit.Player;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBundle;
+import cn.nukkit.math.AtomicIntIncrementSupplier;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.InventoryContentPacket;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
+
+@Slf4j
+public class BundleInventory extends BaseInventory {
+
+    private static AtomicIntIncrementSupplier BUNDLE_ID_INCREMENT = new AtomicIntIncrementSupplier(0, 1);
+
+    private final ItemBundle holder;
+
+    public BundleInventory(ItemBundle holder) {
+        super(null, InventoryType.NONE, 64);
+        this.holder = holder;
+        CompoundTag tag = holder.getNamedTag();
+        tag.putInt("bundle_id", BUNDLE_ID_INCREMENT.getAsInt());
+        if (!tag.containsList("Items")) {
+            tag.putList("Items", new ListTag<CompoundTag>());
+        }
+
+        ListTag<CompoundTag> list = (ListTag<CompoundTag>) tag.getList("Items");
+        for (CompoundTag compound : list.getAll()) {
+            Item item = NBTIO.getItemHelper(compound);
+            this.setItemInternal(compound.getByte("Slot"), item);
+        }
+    }
+
+    @Override
+    public boolean setItem(int index, Item item) {
+        return super.setItem(index, item, true);
+    }
+
+    @Override
+    public boolean setItem(int index, Item item, boolean send) {
+        if(super.setItem(index, item, send)) {
+            CompoundTag tag = holder.getNamedTag();
+            ListTag<CompoundTag> items = tag.getList("Items", CompoundTag.class);
+            items.add(index, NBTIO.putItemHelper(item, index));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean clear(int index, boolean send) {
+        if(super.clear(index, send)) {
+
+            return true;
+        } else return false;
+    }
+
+    @Override
+    public void sendContents(Player... players) {
+        InventoryContentPacket pk = new InventoryContentPacket();
+        pk.slots = new Item[this.getSize()];
+        pk.storageItem = holder;
+        pk.fullContainerName = new FullContainerName(ContainerSlotType.DYNAMIC_CONTAINER, holder.getBundleId());
+        for (int i = 0; i < this.getSize(); ++i) {
+            pk.slots[i] = this.getUnclonedItem(i);
+        }
+
+        for (Player player : players) {
+            int id = SpecialWindowId.CONTAINER_ID_REGISTRY.getId();
+            if (id == -1 || !player.spawned) {
+                this.close(player);
+                continue;
+            }
+            pk.inventoryId = id;
+            player.dataPacket(pk);
+        }
+    }
+
+    @Override
+    public Map<Integer, ContainerSlotType> slotTypeMap() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        for(int i = 0; i < getSize(); i++) {
+            map.put(i, ContainerSlotType.DYNAMIC_CONTAINER);
+        }
+        return map;
+    }
+
+}

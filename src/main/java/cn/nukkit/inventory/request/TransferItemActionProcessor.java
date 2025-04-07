@@ -1,6 +1,7 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
+import cn.nukkit.inventory.BundleInventory;
 import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.SoleInventory;
@@ -22,14 +23,15 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
     public ActionResponse handle(T action, Player player, ItemStackRequestContext context) {
         ContainerSlotType sourceSlotType = action.getSource().getContainer();
         ContainerSlotType destinationSlotType = action.getDestination().getContainer();
-        Inventory source = NetworkMapping.getInventory(player, sourceSlotType);
-        Inventory destination = NetworkMapping.getInventory(player, destinationSlotType);
+        Integer dynamicSrc = action.getSource().getContainerName().getDynamicId();
+        Integer dynamicDst = action.getDestination().getContainerName().getDynamicId();
+        Inventory source = NetworkMapping.getInventory(player, sourceSlotType, dynamicSrc);
+        Inventory destination = NetworkMapping.getInventory(player, destinationSlotType, dynamicDst);
         int sourceSlot = source.fromNetworkSlot(action.getSource().getSlot());
         int sourceStackNetworkId = action.getSource().getStackNetworkId();
         int destinationSlot = destination.fromNetworkSlot(action.getDestination().getSlot());
         int destinationStackNetworkId = action.getDestination().getStackNetworkId();
         int count = action.getCount();
-
         var sourItem = source.getItem(sourceSlot);
         if (sourItem.isNull()) {
             log.warn("transfer an air item is not allowed");
@@ -37,6 +39,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         }
         if(sourItem.isUsingNetId()) {
             if (validateStackNetworkId(sourItem.getNetId(), sourceStackNetworkId)) {
+                System.out.println(sourItem);
                 log.warn("mismatch source stack network id!");
                 return context.error();
             }
