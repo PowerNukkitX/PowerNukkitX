@@ -65,11 +65,16 @@ public class NetworkMapping {
                 }
             }
             case DYNAMIC_CONTAINER -> {
+                //If player is looking in container. If not, check the players inventory.
                 var item = player.getTopWindow().orElse(player.getInventory()).getContents().values().stream().filter(itm -> itm instanceof ItemBundle bundle && bundle.getBundleId() == dynamicId).findFirst();
                 if(item.isPresent()) {
                     yield ((ItemBundle) item.get()).getInventory();
                 } else {
-                    yield ((ItemBundle) player.getCursorInventory().getUnclonedItem()).getInventory();
+                    //If player is looking in container, but bundle is not inside the container.
+                    item = player.getInventory().getContents().values().stream().filter(itm -> itm instanceof ItemBundle bundle && bundle.getBundleId() == dynamicId).findFirst();
+                    if(item.isPresent()) {
+                        yield ((ItemBundle) item.get()).getInventory();
+                    } else yield ((ItemBundle) player.getCursorInventory().getUnclonedItem()).getInventory();
                 }
             }
             default -> {
