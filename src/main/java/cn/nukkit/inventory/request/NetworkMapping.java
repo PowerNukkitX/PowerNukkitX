@@ -68,13 +68,13 @@ public class NetworkMapping {
                 if(dynamicId == null) {
                     yield player.getWindowById(SpecialWindowId.CONTAINER_ID_REGISTRY.getId());
                 } else {
-                    var item = player.getInventory().getContents().values().stream().filter(itm -> itm instanceof ItemBundle bundle && bundle.getBundleId() == dynamicId).findFirst();
+                    var item = player.getTopWindow().orElse(player.getInventory()).getContents().values().stream().filter(itm -> itm instanceof ItemBundle bundle && bundle.getBundleId() == dynamicId).findFirst();
                     if(item.isPresent()) {
                         Inventory inventory = ((ItemBundle) item.get()).getInventory();
                         player.addWindow(inventory, SpecialWindowId.CONTAINER_ID_REGISTRY.getId());
                         yield inventory;
                     } else {
-                        yield ((ItemBundle) player.getCursorInventory().getItem()).getInventory();
+                        yield ((ItemBundle) player.getCursorInventory().getUnclonedItem()).getInventory();
                     }
                 }
             }

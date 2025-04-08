@@ -6,9 +6,15 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Arrays;
 
 @Slf4j
 public class ItemBundle extends Item implements INBT, InventoryHolder {
@@ -53,7 +59,18 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
             tag = this.getNamedTag();
             this.setNamedTag(tag);
         }
+        if(inventory.getHolder() != this) inventory.setHolder(this);
         return inventory;
+    }
+
+    public void saveNBT() {
+        CompoundTag tag = this.getNamedTag();
+        ListTag<CompoundTag> items = new ListTag<>(Tag.TAG_Compound);
+        for(var entry : getInventory().getContents().entrySet()) {
+            items.add(entry.getKey(), NBTIO.putItemHelper(entry.getValue(), entry.getKey()));
+        }
+        tag.putList("Items", items);
+        this.setNamedTag(tag);
     }
 
     @Override

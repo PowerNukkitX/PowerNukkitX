@@ -11,6 +11,7 @@ import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.InternalApi;
 
 import java.util.Map;
 
@@ -19,10 +20,8 @@ public class BundleInventory extends BaseInventory {
 
     private static AtomicIntIncrementSupplier BUNDLE_ID_INCREMENT = new AtomicIntIncrementSupplier(0, 1);
 
-    private final ItemBundle holder;
-
     public BundleInventory(ItemBundle holder) {
-        super(null, InventoryType.NONE, 64);
+        super(holder, InventoryType.NONE, 64);
         this.holder = holder;
         CompoundTag tag = holder.getNamedTag();
         tag.putInt("bundle_id", BUNDLE_ID_INCREMENT.getAsInt());
@@ -41,22 +40,24 @@ public class BundleInventory extends BaseInventory {
     public boolean setItem(int index, Item item) {
         return super.setItem(index, item, true);
     }
-
     @Override
     public boolean setItem(int index, Item item, boolean send) {
         if(super.setItem(index, item, send)) {
-            CompoundTag tag = holder.getNamedTag();
-            ListTag<CompoundTag> items = tag.getList("Items", CompoundTag.class);
-            items.add(index, NBTIO.putItemHelper(item, index));
+            getHolder().saveNBT();
             return true;
         }
         return false;
     }
 
     @Override
+    public boolean clear(int index) {
+        return super.clear(index, true);
+    }
+
+    @Override
     public boolean clear(int index, boolean send) {
         if(super.clear(index, send)) {
-
+            getHolder().saveNBT();
             return true;
         } else return false;
     }
@@ -65,8 +66,8 @@ public class BundleInventory extends BaseInventory {
     public void sendContents(Player... players) {
         InventoryContentPacket pk = new InventoryContentPacket();
         pk.slots = new Item[this.getSize()];
-        pk.storageItem = holder;
-        pk.fullContainerName = new FullContainerName(ContainerSlotType.DYNAMIC_CONTAINER, holder.getBundleId());
+        pk.storageItem = getHolder();
+        pk.fullContainerName = new FullContainerName(ContainerSlotType.DYNAMIC_CONTAINER, getHolder().getBundleId());
         for (int i = 0; i < this.getSize(); ++i) {
             pk.slots[i] = this.getUnclonedItem(i);
         }
@@ -91,4 +92,12 @@ public class BundleInventory extends BaseInventory {
         return map;
     }
 
+    public ItemBundle getHolder() {
+        return (ItemBundle) holder;
+    }
+
+    @InternalApi
+    public void setHolder(ItemBundle bundle) {
+        holder = bundle;
+    }
 }

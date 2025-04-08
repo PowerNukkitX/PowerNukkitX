@@ -32,14 +32,13 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         int destinationSlot = destination.fromNetworkSlot(action.getDestination().getSlot());
         int destinationStackNetworkId = action.getDestination().getStackNetworkId();
         int count = action.getCount();
-        var sourItem = source.getItem(sourceSlot);
+        var sourItem = source.getUnclonedItem(sourceSlot);
         if (sourItem.isNull()) {
             log.warn("transfer an air item is not allowed");
             return context.error();
         }
         if(sourItem.isUsingNetId()) {
             if (validateStackNetworkId(sourItem.getNetId(), sourceStackNetworkId)) {
-                System.out.println(sourItem);
                 log.warn("mismatch source stack network id!");
                 return context.error();
             }
@@ -70,7 +69,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             }
         }
 
-        var destItem = destination.getItem(destinationSlot);
+        var destItem = destination.getUnclonedItem(destinationSlot);
         if (!destItem.isNull() && !destItem.equals(sourItem, true, true)) {
             log.warn("transfer an item to a slot that has a different item is not allowed");
             return context.error();

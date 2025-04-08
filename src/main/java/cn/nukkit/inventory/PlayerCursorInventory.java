@@ -28,21 +28,12 @@ public class PlayerCursorInventory extends BaseInventory {
         return (Player) super.getHolder();
     }
 
-    @Override
-    public boolean setItem(int index, Item item) {
-        return this.setItem(index, item, true);
-    }
-
-    @Override
-    public boolean setItem(int index, Item item, boolean send) {
-        if(super.setItem(index, item, send)) {
-            if(item instanceof INBT nbt) nbt.onChange(this);
-            return true;
-        } else return false;
-    }
-
     public Item getItem() {
         return getItem(0);
+    }
+
+    public Item getUnclonedItem() {
+        return getUnclonedItem(0);
     }
 
     @Override

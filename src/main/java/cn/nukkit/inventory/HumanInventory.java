@@ -141,7 +141,7 @@ public class HumanInventory extends BaseInventory {
     }
 
     public Item getItemInHand() {
-        return this.getUnclonedItem(this.getHeldItemIndex());
+        return this.getItem(this.getHeldItemIndex());
     }
 
     public boolean setItemInHand(Item item) {
@@ -368,8 +368,6 @@ public class HumanInventory extends BaseInventory {
         } else if (item.isNull()) {
             return this.clear(index);
         }
-
-        if(item instanceof INBT nbt) nbt.onChange(this);
 
         //Armor change
         if (!ignoreArmorEvents && index >= ARMORS_INDEX) {
