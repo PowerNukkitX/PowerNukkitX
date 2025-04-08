@@ -31,8 +31,8 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
 
             return context.error();
         }
-
-        Inventory sourceContainer = NetworkMapping.getInventory(player, action.getSource().getContainer());
+        Integer dynamicId = action.getSource().getContainerName().getDynamicId();
+        Inventory sourceContainer = NetworkMapping.getInventory(player, action.getSource().getContainer(), dynamicId);
         int slot = sourceContainer.fromNetworkSlot(action.getSource().getSlot());
         Item item = sourceContainer.getItem(slot);
         if (validateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {

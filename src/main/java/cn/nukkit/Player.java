@@ -54,6 +54,7 @@ import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.window.Form;
+import cn.nukkit.inventory.BundleInventory;
 import cn.nukkit.inventory.CraftTypeInventory;
 import cn.nukkit.inventory.CraftingGridInventory;
 import cn.nukkit.inventory.CreativeOutputInventory;
@@ -62,9 +63,11 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.PlayerCursorInventory;
 import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.inventory.fake.FakeInventory;
+import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemArrow;
+import cn.nukkit.item.ItemBundle;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.ItemTool;
@@ -4594,11 +4597,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (this.spawned && inventory.open(this)) {
             updateTrackingPositions(true);
-            return cnt;
         } else {
             this.removeWindow(inventory);
             return -1;
         }
+        for(int index : inventory.getContents().keySet()) {
+            Item item = inventory.getUnclonedItem(index);
+            if(item instanceof ItemBundle bundle) {
+                if(bundle.hasCompoundTag()) {
+                    bundle.onChange(inventory);
+                    inventory.sendSlot(index, this);
+                }
+            }
+        }
+        return cnt;
     }
 
     public int addWindow(@NotNull Inventory inventory, Integer forceId) {

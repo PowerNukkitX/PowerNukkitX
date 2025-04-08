@@ -37,7 +37,8 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
             return context.error();
         }
         ContainerSlotType container = action.getSource().getContainer();
-        var sourceInventory = NetworkMapping.getInventory(player, container);
+        Integer dynamicId = action.getSource().getContainerName().getDynamicId();
+        var sourceInventory = NetworkMapping.getInventory(player, container, dynamicId);
         var count = action.getCount();
         var slot = sourceInventory.fromNetworkSlot(action.getSource().getSlot());
         var item = sourceInventory.getItem(slot);

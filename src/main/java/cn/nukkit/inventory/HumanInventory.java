@@ -6,6 +6,7 @@ import cn.nukkit.entity.IHuman;
 import cn.nukkit.event.entity.EntityArmorChangeEvent;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.player.PlayerItemHeldEvent;
+import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemFilledMap;
@@ -141,6 +142,10 @@ public class HumanInventory extends BaseInventory {
 
     public Item getItemInHand() {
         return this.getItem(this.getHeldItemIndex());
+    }
+
+    public Item getUnclonedItemInHand() {
+        return this.getUnclonedItem(this.getHeldItemIndex());
     }
 
     public boolean setItemInHand(Item item) {
@@ -606,7 +611,7 @@ public class HumanInventory extends BaseInventory {
         int inventoryAndHotBarSize = this.getSize() - 4;
         pk.slots = new Item[inventoryAndHotBarSize];
         for (int i = 0; i < inventoryAndHotBarSize; ++i) {
-            pk.slots[i] = this.getItem(i);
+            pk.slots[i] = this.getUnclonedItem(i);
         }
 
         for (Player player : players) {
