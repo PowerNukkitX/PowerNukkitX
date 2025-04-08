@@ -1,26 +1,15 @@
 package cn.nukkit.entity.ai.executor.evocation;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityColor;
-import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntityEvocationIllager;
-import cn.nukkit.entity.mob.EntityVex;
 import cn.nukkit.entity.passive.EntitySheep;
-import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 import static cn.nukkit.entity.ai.memory.CoreMemoryTypes.LAST_MAGIC;
 

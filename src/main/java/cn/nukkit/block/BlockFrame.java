@@ -22,7 +22,9 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.ITEM_FRAME_MAP_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.ITEM_FRAME_PHOTO_BIT;
 import static cn.nukkit.math.BlockFace.AxisDirection.POSITIVE;
 
 public class BlockFrame extends BlockTransparent implements BlockEntityHolder<BlockEntityItemFrame>, Faceable {

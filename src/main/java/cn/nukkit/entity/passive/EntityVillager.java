@@ -8,12 +8,8 @@ import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.level.vibration.VibrationEvent;
-import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Pub4Game

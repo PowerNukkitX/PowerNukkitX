@@ -6,7 +6,6 @@ import cn.nukkit.entity.ai.executor.EntityControl;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.utils.Utils;
 
 public class ShakeExecutor implements EntityControl, IBehaviorExecutor {
 

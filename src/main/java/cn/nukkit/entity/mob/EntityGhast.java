@@ -1,6 +1,5 @@
 package cn.nukkit.entity.mob;
 
-import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -11,16 +10,13 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.SpaceMoveController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
-import cn.nukkit.entity.ai.executor.BlazeShootExecutor;
 import cn.nukkit.entity.ai.executor.GhastShootExecutor;
-import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
 import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.executor.SpaceRandomRoamExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.projectile.EntityFireball;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;

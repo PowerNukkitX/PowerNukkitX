@@ -1,9 +1,6 @@
 package cn.nukkit.level.entity.condition;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.registry.Registries;
-
-import java.util.Arrays;
 
 public class ConditionNot extends Condition {
 

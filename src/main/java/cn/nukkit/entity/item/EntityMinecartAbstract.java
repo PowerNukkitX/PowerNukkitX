@@ -1,8 +1,11 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.*;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockActivatorRail;
+import cn.nukkit.block.BlockDetectorRail;
+import cn.nukkit.block.BlockGoldenRail;
+import cn.nukkit.block.BlockRail;
 import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
@@ -17,7 +20,12 @@ import cn.nukkit.item.ItemMinecart;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.math.*;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.MathHelper;
+import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
 import cn.nukkit.utils.Rail;

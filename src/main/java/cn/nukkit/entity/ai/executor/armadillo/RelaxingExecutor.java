@@ -4,7 +4,6 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.executor.EntityControl;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 import cn.nukkit.entity.passive.EntityArmadillo;
-import cn.nukkit.utils.Utils;
 
 
 public class RelaxingExecutor implements EntityControl, IBehaviorExecutor {

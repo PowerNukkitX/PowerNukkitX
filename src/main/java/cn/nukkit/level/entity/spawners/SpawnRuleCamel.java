@@ -9,7 +9,6 @@ import cn.nukkit.level.entity.condition.ConditionInAir;
 import cn.nukkit.level.entity.condition.ConditionSpawnOnBlockFilter;
 import cn.nukkit.level.entity.condition.ConditionSpawnOnGround;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.tags.BlockTags;
 
 public class SpawnRuleCamel extends SpawnRule {
 

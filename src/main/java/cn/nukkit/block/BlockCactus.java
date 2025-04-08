@@ -6,13 +6,13 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
-import cn.nukkit.tags.ItemTags;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 

@@ -3,7 +3,6 @@ package cn.nukkit.math;
 import cn.nukkit.level.MovingObjectPosition;
 
 import java.util.List;
-import java.util.Map;
 
 public interface AxisAlignedBB extends Cloneable {
 

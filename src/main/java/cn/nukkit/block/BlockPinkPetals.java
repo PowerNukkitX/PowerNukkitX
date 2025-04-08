@@ -6,13 +6,13 @@ import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.GROWTH;
+import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 
 /**
  * PowerNukkitX Project 2023/7/15

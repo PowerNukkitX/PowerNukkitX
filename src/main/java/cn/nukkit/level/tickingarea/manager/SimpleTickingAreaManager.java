@@ -5,7 +5,6 @@ import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.level.tickingarea.storage.TickingAreaStorage;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;

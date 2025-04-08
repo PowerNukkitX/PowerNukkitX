@@ -35,7 +35,6 @@ import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.entity.passive.EntitySheep;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;

@@ -1,7 +1,5 @@
 package cn.nukkit.entity.mob;
 
-import cn.nukkit.Player;
-import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.EntityWalkable;
@@ -10,14 +8,12 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.HoppingController;
 import cn.nukkit.entity.ai.controller.LookController;
-import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.passive.EntityFrog;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;

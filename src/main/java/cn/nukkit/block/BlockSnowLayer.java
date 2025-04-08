@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;

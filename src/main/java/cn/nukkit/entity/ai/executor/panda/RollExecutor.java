@@ -4,10 +4,8 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.executor.EntityControl;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
-import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.Utils;
 
 public class RollExecutor implements EntityControl, IBehaviorExecutor {
 

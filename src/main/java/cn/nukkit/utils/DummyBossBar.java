@@ -5,7 +5,12 @@ import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.EntityDataMap;
-import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.network.protocol.BossEventPacket;
+import cn.nukkit.network.protocol.MoveEntityAbsolutePacket;
+import cn.nukkit.network.protocol.RemoveEntityPacket;
+import cn.nukkit.network.protocol.SetEntityDataPacket;
+import cn.nukkit.network.protocol.UpdateAttributesPacket;
 import cn.nukkit.registry.Registries;
 
 import javax.annotation.Nullable;

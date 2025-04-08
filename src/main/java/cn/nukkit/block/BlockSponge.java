@@ -1,23 +1,15 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.enums.SpongeType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.particle.CloudParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
-import java.util.concurrent.ThreadLocalRandom;
-
-import static cn.nukkit.block.property.CommonBlockProperties.SPONGE_TYPE;
-import static cn.nukkit.block.property.enums.SpongeType.DRY;
-import static cn.nukkit.block.property.enums.SpongeType.WET;
 
 public class BlockSponge extends BlockSolid {
 

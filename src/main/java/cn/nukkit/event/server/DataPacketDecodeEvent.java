@@ -4,8 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
-import cn.nukkit.network.protocol.DataPacket;
-import io.netty.buffer.ByteBuf;
 
 
 /**

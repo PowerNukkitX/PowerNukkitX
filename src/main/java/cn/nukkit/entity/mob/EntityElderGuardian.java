@@ -2,7 +2,6 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -12,7 +11,6 @@ import cn.nukkit.entity.ai.controller.DiveController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.SpaceMoveController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
-import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;

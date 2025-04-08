@@ -1,14 +1,11 @@
 package cn.nukkit.entity.mob;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
-import cn.nukkit.entity.ai.controller.HoppingController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.evaluator.DistanceEvaluator;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;

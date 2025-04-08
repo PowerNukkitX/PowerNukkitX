@@ -32,7 +32,6 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.custom.CustomEntity;
-import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.block.FarmLandDecayEvent;

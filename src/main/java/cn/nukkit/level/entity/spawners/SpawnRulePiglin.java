@@ -4,15 +4,12 @@ import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.entity.condition.Condition;
 import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
-import cn.nukkit.level.entity.condition.ConditionBrightnessFilter;
 import cn.nukkit.level.entity.condition.ConditionDensityLimit;
 import cn.nukkit.level.entity.condition.ConditionInAir;
 import cn.nukkit.level.entity.condition.ConditionNot;
 import cn.nukkit.level.entity.condition.ConditionSpawnOnBlockFilter;
 import cn.nukkit.level.entity.condition.ConditionSpawnOnGround;
-import cn.nukkit.level.entity.condition.ConditionSpawnOnSurface;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.tags.BlockTags;
 
 public class SpawnRulePiglin extends MultiSpawnRule {
 

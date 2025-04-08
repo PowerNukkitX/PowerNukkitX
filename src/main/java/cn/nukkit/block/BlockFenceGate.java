@@ -21,8 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.Set;
 
-import static cn.nukkit.block.property.CommonBlockProperties.DIRECTION;
-import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.IN_WALL_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.OPEN_BIT;

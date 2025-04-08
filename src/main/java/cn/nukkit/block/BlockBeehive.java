@@ -4,8 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBeehive;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.passive.EntityBee;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;

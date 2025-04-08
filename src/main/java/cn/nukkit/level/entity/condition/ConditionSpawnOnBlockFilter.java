@@ -1,10 +1,7 @@
 package cn.nukkit.level.entity.condition;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
-import java.util.Arrays;
 
 public class ConditionSpawnOnBlockFilter extends Condition {
 

@@ -7,7 +7,11 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.SyncEntityPropertyPacket;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Peng_Lx

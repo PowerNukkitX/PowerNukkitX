@@ -7,7 +7,6 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.FluctuateController;
 import cn.nukkit.entity.ai.controller.HoppingController;
 import cn.nukkit.entity.ai.controller.LookController;
-import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;

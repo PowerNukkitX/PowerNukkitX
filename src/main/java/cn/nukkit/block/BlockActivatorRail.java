@@ -6,7 +6,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.OptionalBoolean;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.RedstoneComponent;
-
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DATA_BIT;
