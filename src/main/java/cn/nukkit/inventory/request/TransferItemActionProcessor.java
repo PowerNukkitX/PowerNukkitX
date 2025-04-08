@@ -1,11 +1,14 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.inventory.BundleInventory;
 import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.SoleInventory;
+import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.TransferItemStackRequestAction;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
@@ -51,6 +54,10 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         if (context.has(CRAFT_CREATIVE_KEY) && (Boolean) context.get(CRAFT_CREATIVE_KEY)) {//If the player takes an item from creative mode, the destination is overridden directly
             if (source instanceof CreativeOutputInventory) {
                 sourItem = sourItem.clone().autoAssignStackNetworkId();
+                if(sourItem instanceof INBT inbt) {
+                    inbt.onChange(destination);
+                    Server.getInstance().getScheduler().scheduleTask(() -> destination.sendSlot(destinationSlot, player)); //sending the player the slot
+                }
                 destination.setItem(destinationSlot, sourItem, false);
                 return context.success(List.of(new ItemStackResponseContainer(
                         destination.getSlotType(destinationSlot),
