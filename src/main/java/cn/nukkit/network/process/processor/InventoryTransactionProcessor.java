@@ -341,7 +341,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
             case InventoryTransactionPacket.USE_ITEM_ACTION_CLICK_AIR -> {
                 Item item;
                 Item useItemDataItem = useItemData.itemInHand;
-                Item serverItemInHand = player.getInventory().getItemInHand();
+                Item serverItemInHand = player.getInventory().getUnclonedItemInHand();
                 Vector3 directionVector = player.getDirectionVector();
                 // Removes Damage Tag that the client adds, but we do not store.
                 if(useItemDataItem.hasCompoundTag() && (!serverItemInHand.hasCompoundTag() || !serverItemInHand.getNamedTag().containsInt("Damage"))) {
@@ -359,7 +359,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 } else {
                     item = serverItemInHand;
                 }
-                PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, item, directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
+                PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, item.clone(), directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
                 player.getServer().getPluginManager().callEvent(interactEvent);
                 playerHandle.setInteract();
                 if (interactEvent.isCancelled()) {

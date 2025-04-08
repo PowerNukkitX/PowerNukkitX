@@ -65,17 +65,11 @@ public class NetworkMapping {
                 }
             }
             case DYNAMIC_CONTAINER -> {
-                if(dynamicId == null) {
-                    yield player.getWindowById(SpecialWindowId.CONTAINER_ID_REGISTRY.getId());
+                var item = player.getTopWindow().orElse(player.getInventory()).getContents().values().stream().filter(itm -> itm instanceof ItemBundle bundle && bundle.getBundleId() == dynamicId).findFirst();
+                if(item.isPresent()) {
+                    yield ((ItemBundle) item.get()).getInventory();
                 } else {
-                    var item = player.getTopWindow().orElse(player.getInventory()).getContents().values().stream().filter(itm -> itm instanceof ItemBundle bundle && bundle.getBundleId() == dynamicId).findFirst();
-                    if(item.isPresent()) {
-                        Inventory inventory = ((ItemBundle) item.get()).getInventory();
-                        player.addWindow(inventory, SpecialWindowId.CONTAINER_ID_REGISTRY.getId());
-                        yield inventory;
-                    } else {
-                        yield ((ItemBundle) player.getCursorInventory().getUnclonedItem()).getInventory();
-                    }
+                    yield ((ItemBundle) player.getCursorInventory().getUnclonedItem()).getInventory();
                 }
             }
             default -> {

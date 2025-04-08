@@ -10,11 +10,10 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
+import java.util.Optional;
 
 @Slf4j
 public class ItemBundle extends Item implements INBT, InventoryHolder {
@@ -69,8 +68,20 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
         for(var entry : getInventory().getContents().entrySet()) {
             items.add(entry.getKey(), NBTIO.putItemHelper(entry.getValue(), entry.getKey()));
         }
-        tag.putList("Items", items);
+        tag.putList("storage_item_component_content", items);
         this.setNamedTag(tag);
+    }
+
+    @Override
+    public boolean onClickAir(Player player, Vector3 directionVector) {
+        Optional<Item> item = getInventory().getContents().values().stream().findFirst();
+        if(item.isPresent()) {
+            Item instance = item.get();
+            player.getInventory().addItem(instance);
+            getInventory().remove(instance);
+            getInventory().sendContents(player);
+            return true;
+        } else return false;
     }
 
     @Override

@@ -18,6 +18,8 @@ import java.util.Map;
 @Slf4j
 public class BundleInventory extends BaseInventory {
 
+    private static final int MAX_FILL = 64;
+
     private static AtomicIntIncrementSupplier BUNDLE_ID_INCREMENT = new AtomicIntIncrementSupplier(0, 1);
 
     public BundleInventory(ItemBundle holder) {
@@ -25,11 +27,11 @@ public class BundleInventory extends BaseInventory {
         this.holder = holder;
         CompoundTag tag = holder.getNamedTag();
         tag.putInt("bundle_id", BUNDLE_ID_INCREMENT.getAsInt());
-        if (!tag.containsList("Items")) {
-            tag.putList("Items", new ListTag<CompoundTag>());
+        if (!tag.containsList("storage_item_component_content")) {
+            tag.putList("storage_item_component_content", new ListTag<CompoundTag>());
         }
 
-        ListTag<CompoundTag> list = (ListTag<CompoundTag>) tag.getList("Items");
+        ListTag<CompoundTag> list = (ListTag<CompoundTag>) tag.getList("storage_item_component_content");
         for (CompoundTag compound : list.getAll()) {
             Item item = NBTIO.getItemHelper(compound);
             this.setItemInternal(compound.getByte("Slot"), item);
@@ -42,6 +44,10 @@ public class BundleInventory extends BaseInventory {
     }
     @Override
     public boolean setItem(int index, Item item, boolean send) {
+        if(getWeight() + getWeight(item) > MAX_FILL) {
+            log.warn("Tried to overfill bundle!");
+            return false;
+        }
         if(super.setItem(index, item, send)) {
             getHolder().saveNBT();
             return true;
@@ -60,6 +66,20 @@ public class BundleInventory extends BaseInventory {
             getHolder().saveNBT();
             return true;
         } else return false;
+    }
+
+    protected int getWeight(Item item) {
+        if(item instanceof ItemBundle bundle) {
+            return ((BundleInventory) bundle.getInventory()).getWeight() + 4;
+        } else return (MAX_FILL/item.getMaxStackSize()) * item.getCount();
+    }
+
+    public int getWeight() {
+        int weight = 0;
+        for(Item item : getContents().values()) {
+            weight += getWeight(item);
+        }
+        return weight;
     }
 
     @Override

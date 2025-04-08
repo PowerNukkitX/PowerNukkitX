@@ -144,6 +144,10 @@ public class HumanInventory extends BaseInventory {
         return this.getItem(this.getHeldItemIndex());
     }
 
+    public Item getUnclonedItemInHand() {
+        return this.getUnclonedItem(this.getHeldItemIndex());
+    }
+
     public boolean setItemInHand(Item item) {
         return this.setItem(this.getHeldItemIndex(), item);
     }
