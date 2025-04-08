@@ -5,6 +5,7 @@ import cn.nukkit.inventory.BundleInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -77,9 +78,10 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
         Optional<Item> item = getInventory().getContents().values().stream().findFirst();
         if(item.isPresent()) {
             Item instance = item.get();
-            player.getInventory().addItem(instance);
             getInventory().remove(instance);
+            player.dropItem(instance);
             getInventory().sendContents(player);
+            getLevel().addSound(getVector3(), Sound.BUNDLE_DROP_CONTENTS);
             return true;
         } else return false;
     }
