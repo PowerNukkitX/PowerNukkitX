@@ -1,13 +1,25 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.Server;
 import cn.nukkit.blockentity.BlockEntityCrafter;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.recipe.Input;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import org.jetbrains.annotations.Range;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 public class CrafterInventory extends ContainerInventory implements CraftTypeInventory, InputInventory {
 
@@ -39,6 +51,66 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
         return new Input(3, 3, items);
     }
 
+    @Override
+    public Item[] addItem(Item... slots) {
+
+        List<Item> itemSlots = new ArrayList<>();
+
+        Map<Integer, Item> inventory = new HashMap<>();
+        for(int i = 0; i < getSize(); i++) inventory.put(i, getUnclonedItem(i));
+        for(Item toAdd : slots) {
+            Item clone = toAdd.clone();
+            clone.setCount(1);
+            Optional<Map.Entry<Integer, Item>> optional = inventory.entrySet().stream().filter(entry -> canAddItem(clone, entry.getKey()) != 0).min(Comparator.comparingInt(o -> o.getValue().getCount()));
+            if(optional.isPresent()) {
+                int slot = optional.get().getKey();
+                if(getItem(slot).isNull()) {
+                    setItem(slot, clone);
+                } else {
+                    toAdd.count--;
+                    getUnclonedItem(slot).count++;
+                    sendSlot(slot, getViewers());
+                }
+            } else {
+                itemSlots.add(toAdd);
+            }
+        }
+        return itemSlots.toArray(Item.EMPTY_ARRAY);
+    }
+
+
+    protected int canAddItem(Item item, int slot) {
+        Item current = getItem(slot);
+        if(isLocked(slot)) return 0;
+        if(current.isNull()) return Math.min(item.getCount(), item.getMaxStackSize());
+        if(!current.equals(item)) return 0;
+        return Math.min(item.getCount(), item.getMaxStackSize() - getItem(slot).getCount());
+    }
+
+    @Override
+    public boolean canAddItem(Item item) {
+        item = item.clone();
+        boolean checkDamage = item.hasMeta();
+        boolean checkTag = item.getCompoundTag() != null;
+        for (int i = 0; i < this.getSize(); ++i) {
+            if(isLocked(i)) continue;
+            Item slot = this.getUnclonedItem(i);
+            if (item.equals(slot, checkDamage, checkTag)) {
+                int diff;
+                if ((diff = Math.min(slot.getMaxStackSize(), this.getMaxStackSize()) - slot.getCount()) > 0) {
+                    item.setCount(item.getCount() - diff);
+                }
+            } else if (slot.isNull()) {
+                item.setCount(item.getCount() - Math.min(slot.getMaxStackSize(), this.getMaxStackSize()));
+            }
+
+            if (item.getCount() <= 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public int getLockedBitMask() {
         return disabledSlots;
@@ -54,5 +126,6 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
 
     public void setSlotState(@Range(from = 0, to = 8) int slot, boolean state) {
         this.setLockedBitMask(state ? disabledSlots ^ (1 << slot) : disabledSlots | (1 << slot));
+        Server.broadcastPacket(getViewers(), getHolder().getSpawnPacket());
     }
 }
