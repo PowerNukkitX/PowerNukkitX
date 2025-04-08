@@ -37,6 +37,8 @@ public interface BlockEntityID {
 
     String CONDUIT = "Conduit";
 
+    String CRAFTER = "Crafter";
+
     String CREAKING_HEART = "CreakingHeart";
 
     String DAYLIGHT_DETECTOR = "DaylightDetector";

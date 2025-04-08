@@ -17,7 +17,7 @@ public class ToggleCrafterSlotRequestPacket extends DataPacket {
     @Override
     public void decode(HandleByteBuf byteBuf) {
         this.blockPosition = byteBuf.readVector3f();
-        this.slot = (byte) byteBuf.readByte();
+        this.slot = byteBuf.readByte();
         this.disabled = byteBuf.readBoolean();
     }
 
