@@ -21,20 +21,22 @@ public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
                 .putInt("crafting_ticks_remaining", 0)
-                .putShort("disabled_slots", this.namedTag.getShort("disabledSlots"));
+                .putShort("disabled_slots", getInventory().getLockedBitMask());
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-
         if (!this.namedTag.contains("disabledSlots")) {
             this.namedTag.putShort("disabledSlots", 0);
         }
+        this.getInventory().setLockedBitMask(this.namedTag.getShort("disabledSlots"));
+    }
 
-        if (!this.namedTag.contains("Items")) {
-            this.namedTag.putList("Items", new ListTag<>());
-        }
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+        this.namedTag.putShort("disabledSlots", getInventory().getLockedBitMask());
     }
 
     @Override
@@ -65,15 +67,5 @@ public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
         }
 
         this.namedTag.putString("CustomName", name);
-    }
-
-    public void setSlotState(int slot, boolean state) {
-        short disabledSlots = this.namedTag.getShort("disabledSlots");
-        if (state) {
-            this.namedTag.putShort("disabledSlots", (short) (disabledSlots ^ (1 << slot)));
-            return;
-        }
-
-        this.namedTag.putShort("disabledSlots", (short) (disabledSlots | (1 << slot)));
     }
 }

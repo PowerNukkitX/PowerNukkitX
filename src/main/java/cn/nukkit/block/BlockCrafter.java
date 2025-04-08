@@ -70,7 +70,6 @@ public class BlockCrafter extends BlockSolid implements BlockEntityHolder<BlockE
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (isNotActivate(player)) return false;
-
         BlockEntityCrafter crafter = this.getOrCreateBlockEntity();
         player.addWindow(crafter.getInventory());
         return true;
