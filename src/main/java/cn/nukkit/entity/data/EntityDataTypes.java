@@ -35,7 +35,7 @@ public interface EntityDataTypes {
     EntityDataType<Float> ROW_TIME_RIGHT = new EntityDataType<>(0f, "ROW_TIME_RIGHT", 14);
     EntityDataType<Integer> VALUE = new EntityDataType<>(0, "VALUE", 15);
     // Same ID shares three different types -facepalm-
-    EntityDataType<Integer> HORSE_FLAGS = new EntityDataType<>(0, "HORSE_FLAGS", 16);//int (id | (data << 16))
+    EntityDataType<Integer> DISPLAY_TILE_RUNTIME_ID = new EntityDataType<>(0, "HORSE_FLAGS", 16);//int (id | (data << 16))
     EntityDataType<Integer> DISPLAY_OFFSET = new EntityDataType<>(0, "DISPLAY_OFFSET", 17);
     EntityDataType<Byte> CUSTOM_DISPLAY = new EntityDataType<>((byte) 0, "CUSTOM_DISPLAY", 18);
     EntityDataType<Byte> HORSE_TYPE = new EntityDataType<>((byte) 0, "HORSE_TYPE", 19);
