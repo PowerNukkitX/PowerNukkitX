@@ -1257,17 +1257,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void onPlayerLocallyInitialized() {
         if (locallyInitialized) return;
         locallyInitialized = true;
-        windows.keySet().stream().filter(inv -> !(inv instanceof CreativeOutputInventory)).forEach(inventory -> {
-            for(int index : inventory.getContents().keySet()) {
-                Item item = inventory.getUnclonedItem(index);
-                if(item instanceof ItemBundle bundle) {
-                    if(bundle.hasCompoundTag()) {
-                        bundle.onChange(inventory);
-                        inventory.sendSlot(index, this);
-                    }
-                }
-            }
-        });
 
         //init entity data property
         this.setDataProperty(NAME, info.getUsername(), false);
