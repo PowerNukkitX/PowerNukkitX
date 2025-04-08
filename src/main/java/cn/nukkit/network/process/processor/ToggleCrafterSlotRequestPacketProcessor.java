@@ -5,8 +5,9 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCrafter;
 import cn.nukkit.blockentity.BlockEntityCrafter;
 import cn.nukkit.level.Level;
-import cn.nukkit.math.Vector3f;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.process.DataPacketProcessor;
+import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.ToggleCrafterSlotRequestPacket;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,9 +15,9 @@ public class ToggleCrafterSlotRequestPacketProcessor extends DataPacketProcessor
 
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ToggleCrafterSlotRequestPacket pk) {
-        Level level = playerHandle.player.getLevel();
-        Vector3f position = pk.getBlockPosition();
 
+        Level level = playerHandle.player.getLevel();
+        BlockVector3 position = pk.getBlockPosition();
         Block block = level.getBlock(position.asVector3());
         if (!(block instanceof BlockCrafter crafter)) {
             return;
@@ -26,11 +27,11 @@ public class ToggleCrafterSlotRequestPacketProcessor extends DataPacketProcessor
         int slot = pk.slot;
         boolean state = !pk.isDisabled();
 
-        blockEntity.setSlotState(slot, state);
+        blockEntity.getInventory().setSlotState(slot, state);
     }
 
     @Override
     public int getPacketId() {
-        return 0;
+        return ProtocolInfo.TOGGLE_CRAFTER_SLOT_REQUEST;
     }
 }
