@@ -149,7 +149,7 @@ public class FireworkBuilder {
                 .putCompound("FireworkItem", NBTIO.putItemHelper(this.itemFirework));
         EntityFireworksRocket eFirework = new EntityFireworksRocket(chunk, nbt);
         if(this.rider != null) eFirework.mountEntity(this.rider);
-        eFirework.setDataProperty(Entity.HORSE_FLAGS, this.itemFirework.getNamedTag());
+        eFirework.setDataProperty(Entity.DATA_FIREWORK_ITEM, this.itemFirework.getNamedTag());
         return eFirework;
     }
 }
