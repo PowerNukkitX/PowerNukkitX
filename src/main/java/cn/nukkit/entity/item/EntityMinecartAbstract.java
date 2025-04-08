@@ -735,7 +735,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 int display = namedTag.getInt("DisplayTile");
                 int offSet = namedTag.getInt("DisplayOffset");
                 setDataProperty(CUSTOM_DISPLAY, 1);
-                setDataProperty(HORSE_FLAGS, display);
+                setDataProperty(DISPLAY_TILE_RUNTIME_ID, display);
                 setDataProperty(DISPLAY_OFFSET, offSet);
             }
         } else {
@@ -745,7 +745,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 return;
             }
             setDataProperty(CUSTOM_DISPLAY, 1);
-            setDataProperty(HORSE_FLAGS, display);
+            setDataProperty(DISPLAY_TILE_RUNTIME_ID, display);
             setDataProperty(DISPLAY_OFFSET, 6);
         }
     }
@@ -796,14 +796,14 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 //              Runtimeid
                 int display = blockInside.getRuntimeId();
                 setDataProperty(CUSTOM_DISPLAY, 1);
-                setDataProperty(HORSE_FLAGS, display);
+                setDataProperty(DISPLAY_TILE_RUNTIME_ID, display);
                 setDisplayBlockOffset(6);
             }
         } else {
             // Set block to air (default).
             blockInside = null;
             setDataProperty(CUSTOM_DISPLAY, 0);
-            setDataProperty(HORSE_FLAGS, 0);
+            setDataProperty(DISPLAY_TILE_RUNTIME_ID, 0);
             setDisplayBlockOffset(0);
         }
         return true;
