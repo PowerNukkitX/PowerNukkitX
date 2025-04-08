@@ -9,7 +9,11 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.AddPlayerPacket;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.PlayerListPacket;
+import cn.nukkit.network.protocol.RemoveEntityPacket;
+import cn.nukkit.network.protocol.SetEntityDataPacket;
 import cn.nukkit.utils.SerializedImage;
 import com.google.common.base.Strings;
 

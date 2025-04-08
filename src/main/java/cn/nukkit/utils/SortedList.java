@@ -3,7 +3,15 @@ package cn.nukkit.utils;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.AbstractList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 /**
  * SortedList是{@link List}的一个有序实现，内部是用平衡二叉树实现的。

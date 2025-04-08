@@ -2,7 +2,6 @@ package cn.nukkit.level.updater.util.tagupdater;
 
 import cn.nukkit.level.updater.util.TagUtils;
 import cn.nukkit.nbt.tag.CompoundTag;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;

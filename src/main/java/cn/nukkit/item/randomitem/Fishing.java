@@ -7,7 +7,9 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.randomitem.fishing.FishingEnchantmentItemSelector;
 import cn.nukkit.math.NukkitMath;
 
-import static cn.nukkit.item.randomitem.RandomItem.*;
+import static cn.nukkit.item.randomitem.RandomItem.ROOT;
+import static cn.nukkit.item.randomitem.RandomItem.putSelector;
+import static cn.nukkit.item.randomitem.RandomItem.selectFrom;
 
 /**
  * @author Snake1999

@@ -2,7 +2,6 @@ package cn.nukkit.entity.ai.sensor;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.level.Location;
 import lombok.Getter;

@@ -2,11 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.OxidizationLevel;
-import cn.nukkit.blockentity.BlockEntityHopper;
-import cn.nukkit.event.redstone.RedstoneUpdateEvent;
-import cn.nukkit.inventory.ContainerInventory;
-import cn.nukkit.level.Level;
-import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCopperBulb extends BlockCopperBulbBase {

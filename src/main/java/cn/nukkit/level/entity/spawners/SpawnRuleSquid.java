@@ -5,8 +5,6 @@ import cn.nukkit.level.entity.condition.ConditionAll;
 import cn.nukkit.level.entity.condition.ConditionAny;
 import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
 import cn.nukkit.level.entity.condition.ConditionDensityLimit;
-import cn.nukkit.level.entity.condition.ConditionHeightFilter;
-import cn.nukkit.level.entity.condition.ConditionNot;
 import cn.nukkit.level.entity.condition.ConditionSpawnUnderwater;
 import cn.nukkit.tags.BiomeTags;
 

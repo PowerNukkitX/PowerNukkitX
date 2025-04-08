@@ -12,7 +12,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.BRUSHED_PROGRESS;
+import static cn.nukkit.block.property.CommonBlockProperties.HANGING;
 
 public class BlockSuspiciousSand extends BlockFallable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SUSPICIOUS_SAND, HANGING, BRUSHED_PROGRESS);

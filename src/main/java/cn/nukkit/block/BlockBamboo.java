@@ -18,8 +18,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
-import static cn.nukkit.block.property.enums.BambooLeafSize.*;
+import static cn.nukkit.block.property.CommonBlockProperties.AGE_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.BAMBOO_LEAF_SIZE;
+import static cn.nukkit.block.property.CommonBlockProperties.BAMBOO_STALK_THICKNESS;
+import static cn.nukkit.block.property.enums.BambooLeafSize.LARGE_LEAVES;
+import static cn.nukkit.block.property.enums.BambooLeafSize.NO_LEAVES;
+import static cn.nukkit.block.property.enums.BambooLeafSize.SMALL_LEAVES;
 
 
 public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.FlowerPotBlock {

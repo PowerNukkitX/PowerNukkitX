@@ -6,8 +6,6 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.property.CommonBlockProperties.PRISMARINE_BLOCK_TYPE;
-
 
 public class BlockPrismarine extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(PRISMARINE);

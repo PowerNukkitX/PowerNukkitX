@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemCreeperHead;
 import cn.nukkit.item.ItemZombieHead;
 import org.jetbrains.annotations.NotNull;
 

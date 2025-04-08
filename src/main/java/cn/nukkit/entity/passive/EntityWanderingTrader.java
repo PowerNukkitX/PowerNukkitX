@@ -5,8 +5,6 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 public class EntityWanderingTrader extends EntityCreature implements IEntityNPC {
     @Override
     @NotNull public String getIdentifier() {

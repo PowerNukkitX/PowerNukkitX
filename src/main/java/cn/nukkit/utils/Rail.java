@@ -3,11 +3,20 @@ package cn.nukkit.utils;
 import cn.nukkit.block.Block;
 import cn.nukkit.math.BlockFace;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
-import static cn.nukkit.math.BlockFace.*;
-import static cn.nukkit.utils.Rail.Orientation.State.*;
+import static cn.nukkit.math.BlockFace.EAST;
+import static cn.nukkit.math.BlockFace.NORTH;
+import static cn.nukkit.math.BlockFace.SOUTH;
+import static cn.nukkit.math.BlockFace.WEST;
+import static cn.nukkit.utils.Rail.Orientation.State.ASCENDING;
+import static cn.nukkit.utils.Rail.Orientation.State.CURVED;
+import static cn.nukkit.utils.Rail.Orientation.State.STRAIGHT;
 
 /**
  * INTERNAL helper class of railway

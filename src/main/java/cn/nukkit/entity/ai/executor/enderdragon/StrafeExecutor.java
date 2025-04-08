@@ -1,31 +1,19 @@
 package cn.nukkit.entity.ai.executor.enderdragon;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.executor.EntityControl;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.entity.mob.EntityEvocationFang;
-import cn.nukkit.entity.mob.EntityEvocationIllager;
 import cn.nukkit.level.Location;
-import cn.nukkit.level.Sound;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.utils.BlockColor;
-
-import java.util.concurrent.ThreadLocalRandom;
-
-import static cn.nukkit.entity.ai.memory.CoreMemoryTypes.LAST_MAGIC;
 
 
 public class StrafeExecutor implements EntityControl, IBehaviorExecutor {

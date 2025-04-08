@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemMangroveSign;
 import cn.nukkit.item.ItemPaleOakSign;
 import org.jetbrains.annotations.NotNull;
 

@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.block.property.enums.CauldronLiquid;
 import cn.nukkit.block.property.enums.DripstoneThickness;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.block.BlockFallEvent;
 import cn.nukkit.event.block.CauldronFilledByDrippingLiquidEvent;
@@ -16,7 +17,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.entity.effect.Effect;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

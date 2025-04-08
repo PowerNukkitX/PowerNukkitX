@@ -21,7 +21,6 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
-import cn.nukkit.entity.passive.EntityAxolotl;
 import cn.nukkit.entity.passive.EntityCat;
 import cn.nukkit.entity.passive.EntityOcelot;
 import cn.nukkit.entity.weather.EntityLightningStrike;
@@ -32,7 +31,6 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.apache.logging.log4j.core.Core;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
