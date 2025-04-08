@@ -4,7 +4,6 @@ import cn.nukkit.blockentity.BlockEntityCrafter;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.recipe.Input;
-import com.google.common.collect.BiMap;
 
 import java.util.List;
 import java.util.Map;
@@ -13,27 +12,6 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
 
     public CrafterInventory(BlockEntityCrafter crafter) {
         super(crafter, InventoryType.CRAFTER, 9);
-    }
-
-    @Override
-    public boolean setItem(int index, Item item) {
-        super.setItem(index, item, false);
-        getViewers().forEach(p -> sendSlot(index, p));
-        return true;
-    }
-
-    @Override
-    public boolean setItem(int index, Item item, boolean send) {
-        super.setItem(index, item, false);
-        getViewers().forEach(p -> sendSlot(index, p));
-        return true;
-    }
-
-    @Override
-    public boolean clear(int index) {
-        super.clear(index);
-        getViewers().forEach(p -> sendSlot(index, p));
-        return true;
     }
 
     @Override
