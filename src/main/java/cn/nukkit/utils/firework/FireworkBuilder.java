@@ -52,8 +52,12 @@ public class FireworkBuilder {
         return this;
     }
 
-    public FireworkBuilder setFlightDuration(int duration) {
-        this.fireworkTag.putByte("Flight", (byte) duration);
+    /**
+     * @param flight (0-1)
+     * @return FireworkBuilder
+     */
+    public FireworkBuilder setFlight(int flight) {
+        this.fireworkTag.putByte("Flight", (byte) flight);
         return this;
     }
     
@@ -108,7 +112,7 @@ public class FireworkBuilder {
             this.addExplosion(explosionBuilder);
         }
 
-        this.setFlightDuration(fireworkRandom.nextInt(3) + 1);
+        this.setFlight(1);
 
         return this;
     }
