@@ -32,25 +32,6 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
     }
 
     @Override
-    public void onOpen(Player who) {
-        super.onOpen(who);
-        ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.windowId = who.getWindowId(this);
-        pk.type = this.getType().getNetworkType();
-        InventoryHolder holder = this.getHolder();
-        pk.x = (int) holder.getX();
-        pk.y = (int) holder.getY();
-        pk.z = (int) holder.getZ();
-        who.dataPacket(pk);
-        this.sendContents(who);
-    }
-
-    @Override
-    public void onClose(Player who) {
-        super.onClose(who);
-    }
-
-    @Override
     public BlockEntityCrafter getHolder() {
         return (BlockEntityCrafter) super.getHolder();
     }

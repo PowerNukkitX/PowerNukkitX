@@ -59,8 +59,12 @@ public class BlockCrafter extends BlockSolid implements BlockEntityHolder<BlockE
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+        if(BlockEntityHolder.setBlockAndCreateEntity(this, true, true) != null) {
+            //Rotation
+            return true;
+        }
+        return false;
     }
 
     @Override
