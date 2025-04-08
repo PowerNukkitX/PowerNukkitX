@@ -1,9 +1,7 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityCrafter;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.recipe.Input;
 import com.google.common.collect.BiMap;
@@ -18,16 +16,31 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
     }
 
     @Override
-    public void init() {
-        BiMap<Integer, Integer> map = super.networkSlotMap();
-        for (int i = 0; i < getSize(); i++) {
-            map.put(i, 32 + i);
-        }
+    public boolean setItem(int index, Item item) {
+        super.setItem(index, item, false);
+        getViewers().forEach(p -> sendSlot(index, p));
+        return true;
+    }
 
-        Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
+    @Override
+    public boolean setItem(int index, Item item, boolean send) {
+        super.setItem(index, item, false);
+        getViewers().forEach(p -> sendSlot(index, p));
+        return true;
+    }
+
+    @Override
+    public boolean clear(int index) {
+        super.clear(index);
+        getViewers().forEach(p -> sendSlot(index, p));
+        return true;
+    }
+
+    @Override
+    public void init() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
         for (int i = 0; i < getSize(); i++) {
-            map2.put(i, ContainerSlotType.CRAFTING_INPUT);
-            map2.put(i+32, ContainerSlotType.CRAFTING_INPUT);
+            map.put(i, ContainerSlotType.CRAFTER_BLOCK_CONTAINER);
         }
     }
 
