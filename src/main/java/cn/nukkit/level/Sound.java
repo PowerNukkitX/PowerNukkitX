@@ -237,6 +237,8 @@ public enum Sound {
     CONDUIT_SHORT("conduit.short"),
     COPPER_WAX_OFF("copper.wax.off"),
     COPPER_WAX_ON("copper.wax.on"),
+    CRAFTER_CRAFT("crafter.craft"),
+    CRAFTER_FAIL("crafter.fail"),
     CROSSBOW_LOADING_END("crossbow.loading.end"),
     CROSSBOW_LOADING_MIDDLE("crossbow.loading.middle"),
     CROSSBOW_LOADING_START("crossbow.loading.start"),

@@ -1,25 +1,21 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Server;
+import cn.nukkit.block.BlockCrafter;
 import cn.nukkit.blockentity.BlockEntityCrafter;
 import cn.nukkit.item.Item;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.recipe.Input;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+import cn.nukkit.recipe.Recipe;
+import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 public class CrafterInventory extends ContainerInventory implements CraftTypeInventory, InputInventory {
 
@@ -79,6 +75,14 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
     }
 
 
+    @Override
+    public boolean setItem(int index, Item item, boolean send) {
+        if(super.setItem(index, item, send)) {
+            ((BlockCrafter) getHolder().getLevelBlock()).updateAroundRedstone();
+            return true;
+        } else return false;
+    }
+
     protected int canAddItem(Item item, int slot) {
         Item current = getItem(slot);
         if(isLocked(slot)) return 0;
@@ -108,8 +112,13 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
                 return true;
             }
         }
-
         return false;
+    }
+
+    public Recipe getRecipe() {
+        Recipe recipe = Registries.RECIPE.findShapedRecipe(getInput());
+        if(recipe != null) return recipe;
+        return Registries.RECIPE.findShapelessRecipe(getInput().getFlatItems());
     }
 
     public int getLockedBitMask() {
@@ -127,5 +136,14 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
     public void setSlotState(@Range(from = 0, to = 8) int slot, boolean state) {
         this.setLockedBitMask(state ? disabledSlots ^ (1 << slot) : disabledSlots | (1 << slot));
         Server.broadcastPacket(getViewers(), getHolder().getSpawnPacket());
+        ((BlockCrafter) getHolder().getLevelBlock()).updateAroundRedstone();
+    }
+
+    public int getComperatorOutput() {
+        int output = 0;
+        for(int i = 0; i < getSize(); i++) {
+            if(!getItem(i).isNull() || isLocked(i)) output++;
+        }
+        return output;
     }
 }

@@ -1,5 +1,6 @@
 package cn.nukkit.math;
 
+import cn.nukkit.block.property.enums.Orientation;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Iterators;
 

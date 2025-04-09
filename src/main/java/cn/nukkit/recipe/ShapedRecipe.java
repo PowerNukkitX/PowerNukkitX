@@ -162,6 +162,7 @@ public class ShapedRecipe extends CraftingRecipe {
             mirrorInput = new Input(3, 3, mirrorItemArray(input.getData()));
         }
         tryShrinkMatrix(input);
+        if(input.getRow() != row || input.getCol() != col) return false;
 
         boolean checkMirror = false;
         next:
@@ -224,6 +225,7 @@ public class ShapedRecipe extends CraftingRecipe {
      */
     public static void tryShrinkMatrix(Input input) {
         Item[][] inputs = input.getData();
+        if(inputs.length == 0) return;
         int startRow = 0, endRow = inputs.length - 1;
         for (int row = 0; row < inputs.length; row++) {
             if (notAllEmptyRow(inputs[row])) {
