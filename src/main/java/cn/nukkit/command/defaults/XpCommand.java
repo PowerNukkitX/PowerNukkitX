@@ -10,9 +10,9 @@ import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.tree.node.XpLevelNode;
 import cn.nukkit.command.utils.CommandLogger;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Snake1999
@@ -39,7 +39,7 @@ public class XpCommand extends Command {
         //  "/xp <amount> [player]"  for adding exp
         //  "/xp <amount>L [player]" for adding exp level
         var list = result.getValue();
-        List<Player> players = sender.isPlayer() ? Collections.singletonList(sender.asPlayer()) : null;
+        List<Player> players = sender.isPlayer() ? List.of(sender.asPlayer()) : List.of();
         switch (result.getKey()) {
             case "default" -> {
                 int amount = list.getResult(0);
@@ -50,7 +50,8 @@ public class XpCommand extends Command {
                 if (list.hasResult(1)) {
                     players = list.getResult(1);
                 }
-                if (players == null || players.isEmpty()) {
+                players = players.stream().filter(Objects::nonNull).toList();
+                if (players.isEmpty()) {
                     log.addNoTargetMatch().output();
                     return 0;
                 }
@@ -66,7 +67,8 @@ public class XpCommand extends Command {
                 if (list.hasResult(1)) {
                     players = list.getResult(1);
                 }
-                if (players == null || players.isEmpty()) {
+                players = players.stream().filter(Objects::nonNull).toList();
+                if (players.isEmpty()) {
                     log.addNoTargetMatch().output();
                     return 0;
                 }

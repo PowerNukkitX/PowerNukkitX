@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author daoge_cmd <br>
@@ -157,6 +158,7 @@ public class CameraCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Player> players = list.getResult(0);
+        players = players.stream().filter(Objects::nonNull).toList();
         if (players.isEmpty()) {
             log.addNoTargetMatch().output();
             return 0;

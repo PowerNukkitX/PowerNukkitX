@@ -12,6 +12,7 @@ import cn.nukkit.network.protocol.types.hud.HudElement;
 import cn.nukkit.network.protocol.types.hud.HudVisibility;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class HudCommand extends VanillaCommand {
 
@@ -32,6 +33,7 @@ public class HudCommand extends VanillaCommand {
         var list = result.getValue();
 
         List<Player> players = list.getResult(0);
+        players = players.stream().filter(Objects::nonNull).toList();
         if (players.isEmpty()) {
             log.addNoTargetMatch().output();
             return 0;
