@@ -1,11 +1,9 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.CrafterInventory;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 
 public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
 

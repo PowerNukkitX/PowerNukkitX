@@ -1,17 +1,19 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.Orientation;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCrafter;
-import cn.nukkit.inventory.ContainerInventory;
+import cn.nukkit.event.inventory.CraftItemEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -21,11 +23,15 @@ import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockCrafter extends BlockSolid implements RedstoneComponent, BlockEntityHolder<BlockEntityCrafter> {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRAFTER, CommonBlockProperties.CRAFTING, CommonBlockProperties.ORIENTATION, CommonBlockProperties.TRIGGERED_BIT);
+
+    private static final List<Location> manualOverrides = new ArrayList<>();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -69,13 +75,22 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if(BlockEntityHolder.setBlockAndCreateEntity(this, true, true) != null) {
-            Orientation orientation = CommonPropertyMap.BLOCKFACE_ORIENTATION_SIMPLIFIED.get(face);
-            System.out.println(face + " " + orientation.name());
-            setOrientation(orientation);
-            return true;
-        }
-        return false;
+        Orientation orientation;
+        if(player != null) {
+            double pitch = player.getLookingAngleAtPitch(new Vector3(fx, fy, fz)) * (player.getPitch()/Math.abs(player.getPitch()));
+            BlockFace primary = BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex());
+            if(pitch > 70 || player.getPitch() > 80) primary = BlockFace.UP;
+            if(pitch < -45) primary = BlockFace.DOWN;
+            BlockFace secondary;
+            if(primary.getAxis().isHorizontal()) {
+                secondary = BlockFace.UP;
+            } else {
+                secondary = BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex());
+            }
+            orientation = Orientation.getByFaces(primary, secondary);
+        } else orientation = Orientation.DOWN_EAST;
+        setOrientation(orientation);
+        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true) != null;
     }
 
     public void setOrientation(Orientation orientation) {
@@ -98,6 +113,20 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
         setPropertyValue(CommonBlockProperties.TRIGGERED_BIT, value);
     }
 
+    public void setManualOverride(boolean val) {
+        Location location = this.getLocation();
+        if (val) {
+            manualOverrides.add(location);
+        } else {
+            manualOverrides.remove(location);
+        }
+    }
+
+    public boolean getManualOverride() {
+        Location location = this.getLocation();
+        return manualOverrides.contains(location);
+    }
+
     @Override
     public int onUpdate(int type) {
         if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
@@ -107,6 +136,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if(isTriggered()) {
                 getLevel().addSound(this, craft() ? Sound.CRAFTER_CRAFT : Sound.CRAFTER_FAIL);
+                updateAllAroundRedstone();
                 this.setTriggered(false);
                 setCrafting(true);
                 this.level.setBlock(this, this, false, false);
@@ -117,13 +147,13 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
             }
             return type;
         } else if (type == Level.BLOCK_UPDATE_REDSTONE) {
-            boolean triggered = this.isTriggered();
-
-            if (this.isGettingPower() && !triggered) {
+            if (this.isGettingPower() && !isTriggered() && !getManualOverride()) {
+                this.setManualOverride(true);
                 this.setTriggered(true);
                 this.level.setBlock(this, this, false, false);
                 level.scheduleUpdate(this, this, 4);
             }
+            if(!isGettingPower()) this.setManualOverride(false);
             return type;
         }
 
@@ -139,6 +169,11 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
 
         Recipe recipe = getBlockEntity().getInventory().getRecipe();
         if(recipe == null) return false;
+
+        CraftItemEvent event = new CraftItemEvent(blockEntity, getBlockEntity().getInventory().getInput().getFlatItems(), recipe, 1);
+        getLevel().getServer().getPluginManager().callEvent(event);
+        if(event.isCancelled()) return false;
+        
         for(Item target : recipe.getResults()) {
 
             LevelEventPacket pk = new LevelEventPacket();

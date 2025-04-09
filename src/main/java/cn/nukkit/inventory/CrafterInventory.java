@@ -78,9 +78,18 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
     @Override
     public boolean setItem(int index, Item item, boolean send) {
         if(super.setItem(index, item, send)) {
-            ((BlockCrafter) getHolder().getLevelBlock()).updateAroundRedstone();
+            ((BlockCrafter) getHolder().getLevelBlock()).updateAllAroundRedstone();
             return true;
         } else return false;
+    }
+
+    @Override
+    public boolean clear(int index, boolean send) {
+        if(super.clear(index, send)) {
+            ((BlockCrafter) getHolder().getLevelBlock()).updateAllAroundRedstone();
+            return true;
+        }
+        return false;
     }
 
     protected int canAddItem(Item item, int slot) {
@@ -136,7 +145,7 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
     public void setSlotState(@Range(from = 0, to = 8) int slot, boolean state) {
         this.setLockedBitMask(state ? disabledSlots ^ (1 << slot) : disabledSlots | (1 << slot));
         Server.broadcastPacket(getViewers(), getHolder().getSpawnPacket());
-        ((BlockCrafter) getHolder().getLevelBlock()).updateAroundRedstone();
+        ((BlockCrafter) getHolder().getLevelBlock()).updateAllAroundRedstone();
     }
 
     public int getComperatorOutput() {
