@@ -60,6 +60,7 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
         register0(HANGING_SIGN, BlockEntityHangingSign.class);
         register0(CHISELED_BOOKSHELF, BlockEntityChiseledBookshelf.class);
         register0(DECORATED_POT, BlockEntityDecoratedPot.class);
+        register0(CRAFTER, BlockEntityCrafter.class);
     }
 
     @Override

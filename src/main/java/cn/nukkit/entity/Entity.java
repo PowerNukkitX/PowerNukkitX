@@ -12,6 +12,7 @@ import cn.nukkit.block.BlockFlowingLava;
 import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockTurtleEgg;
+import cn.nukkit.block.property.enums.Orientation;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.data.EntityDataMap;

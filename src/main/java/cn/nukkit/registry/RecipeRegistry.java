@@ -103,14 +103,9 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         return result;
     }
 
-    public ShapedRecipe findShapedRecipe(Item... items) {
-        Set<Recipe> recipes = recipeMaps.get(RecipeType.SHAPED).get(items.length);
-        if (recipes != null) {
-            for (var r : recipes) {
-                if (r.fastCheck(items)) return (ShapedRecipe) r;
-            }
-        }
-        return null;
+    public ShapedRecipe findShapedRecipe(Input input) {
+        Optional<ShapedRecipe> recipe = getShapedRecipeMap().stream().filter(r -> r.match(input)).findFirst();
+        return recipe.orElse(null);
     }
 
     public Set<FurnaceRecipe> getFurnaceRecipeMap() {
