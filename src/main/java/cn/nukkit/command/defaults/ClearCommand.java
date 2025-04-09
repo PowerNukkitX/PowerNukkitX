@@ -14,6 +14,7 @@ import cn.nukkit.item.Item;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class ClearCommand extends VanillaCommand {
@@ -34,7 +35,7 @@ public class ClearCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
             var list = result.getValue();
-            List<Player> targets = sender.isPlayer() ? List.of(sender.asPlayer()) : null;
+            List<Player> targets = sender.isPlayer() ? List.of(sender.asPlayer()) : List.of();
             int maxCount = -1;
             Item item = null;
 
@@ -53,7 +54,9 @@ public class ClearCommand extends VanillaCommand {
                 }
             }
 
-            if (targets == null || targets.isEmpty()) {
+            targets = targets.stream().filter(Objects::nonNull).toList();
+
+            if (targets.isEmpty()) {
                 log.addNoTargetMatch().output();
                 return 0;
             }
