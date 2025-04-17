@@ -24,7 +24,7 @@ public class SpawnRuleMagmaCube extends MultiSpawnRule {
         public SpawnRuleMagmaCubeLess() {
             super(Entity.MAGMA_CUBE, 1 ,4,
                     new ConditionBiomeFilter(BiomeTags.SPAWN_MAGMA_CUBES),
-                    new ConditionDensityLimit(Entity.BEE, 4));
+                    new ConditionDensityLimit(Entity.MAGMA_CUBE, 4));
         }
     }
 
@@ -33,7 +33,7 @@ public class SpawnRuleMagmaCube extends MultiSpawnRule {
         public SpawnRuleMagmaCubeMany() {
             super(Entity.MAGMA_CUBE, 2, 5,
                     new ConditionBiomeFilter(BiomeTags.SPAWN_MANY_MAGMA_CUBES),
-                    new ConditionDensityLimit(Entity.BEE, 5));
+                    new ConditionDensityLimit(Entity.MAGMA_CUBE, 5));
         }
     }
 

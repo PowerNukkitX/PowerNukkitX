@@ -12,7 +12,6 @@ import cn.nukkit.block.BlockFlowingLava;
 import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockTurtleEgg;
-import cn.nukkit.block.property.enums.Orientation;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.data.EntityDataMap;
@@ -80,6 +79,7 @@ import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.collect.Iterables;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -93,6 +93,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @author MagicDroidX
  */
+@Slf4j
 public abstract class Entity extends Location implements Metadatable, EntityID, EntityDataTypes {
     public static final Entity[] EMPTY_ARRAY = new Entity[0];
     protected final EntityDataMap entityDataMap = new EntityDataMap();
@@ -1003,7 +1004,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @param player the player
      */
     public void spawnTo(Player player) {
-
+        if(this.closed) return;
         if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.getUsedChunks().contains(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
             this.hasSpawned.put(player.getLoaderId(), player);
             player.dataPacket(createAddEntityPacket());

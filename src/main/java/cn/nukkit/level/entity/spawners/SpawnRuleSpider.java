@@ -1,12 +1,8 @@
 package cn.nukkit.level.entity.spawners;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
-import cn.nukkit.level.entity.condition.ConditionBrightnessFilter;
-import cn.nukkit.level.entity.condition.ConditionDensityLimit;
-import cn.nukkit.level.entity.condition.ConditionDifficultyFilter;
-import cn.nukkit.level.entity.condition.ConditionInAir;
-import cn.nukkit.level.entity.condition.ConditionSpawnOnGround;
+import cn.nukkit.entity.mob.EntityMob;
+import cn.nukkit.level.entity.condition.*;
 import cn.nukkit.tags.BiomeTags;
 
 public class SpawnRuleSpider extends SpawnRule {
@@ -18,7 +14,16 @@ public class SpawnRuleSpider extends SpawnRule {
                 new ConditionSpawnOnGround(),
                 new ConditionBrightnessFilter(0, 7),
                 new ConditionBiomeFilter(BiomeTags.MONSTER),
-                new ConditionDensityLimit(Entity.SPIDER, 1));
+                new ConditionAny(
+                        new ConditionAll(
+                                new ConditionSpawnUnderground(),
+                                new ConditionPopulationControl(EntityMob.class, new int[]{8, 16, 8})
+                        ),
+                        new ConditionAll(
+                                new ConditionSpawnOnSurface(),
+                                new ConditionPopulationControl(EntityMob.class, new int[]{8, 0, 10})
+                        )
+                ));
     }
 
 }

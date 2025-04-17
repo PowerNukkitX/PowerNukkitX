@@ -1,11 +1,8 @@
 package cn.nukkit.level.entity.spawners;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
-import cn.nukkit.level.entity.condition.ConditionDensityLimit;
-import cn.nukkit.level.entity.condition.ConditionDifficultyFilter;
-import cn.nukkit.level.entity.condition.ConditionInAir;
-import cn.nukkit.level.entity.condition.ConditionSpawnOnGround;
+import cn.nukkit.entity.mob.EntityMob;
+import cn.nukkit.level.entity.condition.*;
 import cn.nukkit.tags.BiomeTags;
 
 public class SpawnRuleSlime extends SpawnRule {
@@ -16,7 +13,16 @@ public class SpawnRuleSlime extends SpawnRule {
                 new ConditionDifficultyFilter(),
                 new ConditionSpawnOnGround(),
                 new ConditionBiomeFilter(BiomeTags.SWAMP, BiomeTags.MANGROVE_SWAMP),
-                new ConditionDensityLimit(Entity.POLAR_BEAR, 1)
+                new ConditionAny(
+                        new ConditionAll(
+                                new ConditionSpawnUnderground(),
+                                new ConditionPopulationControl(EntityMob.class, new int[]{8, 16, 8})
+                        ),
+                        new ConditionAll(
+                                new ConditionSpawnOnSurface(),
+                                new ConditionPopulationControl(EntityMob.class, new int[]{8, 0, 10})
+                        )
+                )
         );
     }
 

@@ -20,6 +20,4 @@ public class PlayerSettings extends OkaeriConfig {
     boolean checkMovement = true;
     @Comment("pnx.settings.player.spawnradius")
     int spawnRadius = 16;
-    @Comment("pnx.settings.player.entitycap")
-    int entityCap = 50;
 }

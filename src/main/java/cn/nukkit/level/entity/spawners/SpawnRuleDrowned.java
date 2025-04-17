@@ -1,14 +1,8 @@
 package cn.nukkit.level.entity.spawners;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.entity.condition.ConditionAll;
-import cn.nukkit.level.entity.condition.ConditionAny;
-import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
-import cn.nukkit.level.entity.condition.ConditionBrightnessFilter;
-import cn.nukkit.level.entity.condition.ConditionDensityLimit;
-import cn.nukkit.level.entity.condition.ConditionDifficultyFilter;
-import cn.nukkit.level.entity.condition.ConditionSpawnOnGround;
-import cn.nukkit.level.entity.condition.ConditionSpawnUnderwater;
+import cn.nukkit.entity.mob.EntityMob;
+import cn.nukkit.level.entity.condition.*;
 import cn.nukkit.tags.BiomeTags;
 
 public class SpawnRuleDrowned extends SpawnRule {
@@ -29,7 +23,7 @@ public class SpawnRuleDrowned extends SpawnRule {
                                 new ConditionDensityLimit(Entity.DROWNED, 2, 128)
                         )
                 ),
-                new ConditionDensityLimit(Entity.DROWNED, 4)
+                new ConditionPopulationControl(EntityMob.class, new int[]{8, 0, 10})
         );
 
     }
