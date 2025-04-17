@@ -1,6 +1,8 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAngryable;
 import cn.nukkit.entity.EntityCanAttack;
@@ -35,14 +37,22 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.ai.sensor.WolfNearestFeedingPlayerSensor;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.inventory.EntityArmorInventory;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemWolfArmor;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
@@ -58,7 +68,9 @@ import java.util.Set;
  * @author Cool_Loong (PowerNukkitX Project)
  * todo 野生狼不会被刷新
  */
-public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor, EntityVariant {
+public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor, EntityVariant, InventoryHolder {
+
+    private static final String TAG_ARMOR = "Armor";
 
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6, 7, 8};
 
@@ -71,6 +83,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     private static final int SPOTTED = 6;
     private static final int STRIPPED = 7;
     private static final int WOODS = 8;
+
+    private EntityArmorInventory armorInventory;
 
     @Override
     @NotNull
@@ -211,7 +225,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
 
     @Override
     public void initEntity() {
-        this.setMaxHealth(8);
+        setMaxHealth(8);
         super.initEntity();
         if (!hasVariant()) {
             this.setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
@@ -219,6 +233,14 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
         //update CollarColor to Color
         if (namedTag.contains("CollarColor")) {
             this.setColor(DyeColor.getByWoolData(namedTag.getByte("CollarColor")));
+        }
+        this.armorInventory = new EntityArmorInventory(this);
+
+        if (this.namedTag.contains(TAG_ARMOR)) {
+            ListTag<CompoundTag> armorList = this.namedTag.getList(TAG_ARMOR, CompoundTag.class);
+            for (CompoundTag armorTag : armorList.getAll()) {
+                this.armorInventory.setItem(armorTag.getByte("Slot"), NBTIO.getItemHelper(armorTag));
+            }
         }
     }
 
@@ -273,6 +295,14 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
                 this.setColor(((ItemDye) item).getDyeColor());
                 return true;
             }
+        } else if (item instanceof ItemWolfArmor armor) {
+            if (this.hasOwner() && player.equals(this.getOwner())) {
+                if(armorInventory.getChestplate().isNull()) {
+                    armorInventory.setChestplate(armor);
+                    player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+                }
+                return true;
+            }
         } else if (this.isBreedingItem(item)) {
             player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
             this.getLevel().addSound(this, Sound.RANDOM_EAT);
@@ -291,6 +321,18 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
         }
 
         return false;
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+        if (this.armorInventory != null) {
+            ListTag<CompoundTag> armorTag = new ListTag<>();
+            for (int i = 0; i < 4; i++) {
+                armorTag.add(NBTIO.putItemHelper(this.armorInventory.getItem(i), i));
+            }
+            this.namedTag.putList(TAG_ARMOR,armorTag);
+        }
     }
 
     @Override
@@ -360,5 +402,70 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
         if(tags.contains("savanna")) return SPOTTED;
         if(name.equals("forest")) return WOODS;
         return PALE;
+    }
+
+    @Override
+    public EntityArmorInventory getInventory() {
+        return armorInventory;
+    }
+
+    @Override
+    public void spawnTo(Player player) {
+        super.spawnTo(player);
+        armorInventory.sendContents(player);
+    }
+
+    public Item getArmor() {
+        return getInventory().getChestplate();
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if(!getArmor().isNull()) {
+            switch (source.getCause()) {
+                case DROWNING,
+                     FREEZING,
+                     SUFFOCATION,
+                     MAGIC,
+                     THORNS,
+                     WITHER,
+                     VOID,
+                     SUICIDE -> {
+                    return super.attack(source);
+                }
+                default -> {
+                    Item armor = damageArmor((int) source.getFinalDamage());
+                    getInventory().setChestplate(armor);
+                    source.setDamage(0);
+                }
+            }
+        }
+        return super.attack(source);
+    }
+
+    protected Item damageArmor(int amount) {
+        Item armor = getArmor();
+        if (armor.hasEnchantments()) {
+
+            Enchantment durability = armor.getEnchantment(Enchantment.ID_DURABILITY);
+            if (durability != null
+                    && durability.getLevel() > 0
+                    && (100 / (durability.getLevel() + 1)) <= Utils.random.nextInt(100)) {
+                return armor;
+            }
+        }
+
+        if (armor.isUnbreakable() || armor.getMaxDurability() < 0) {
+            return armor;
+        }
+
+        armor.setDamage(armor.getDamage() + amount);
+
+        if (armor.getDamage() >= armor.getMaxDurability()) {
+            getLevel().addSound(this, Sound.RANDOM_BREAK);
+            return Item.get(BlockID.AIR, 0, 0);
+        }
+
+        return armor;
     }
 }
