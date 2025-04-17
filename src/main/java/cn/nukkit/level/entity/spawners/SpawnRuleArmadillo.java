@@ -2,6 +2,7 @@ package cn.nukkit.level.entity.spawners;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.passive.EntityAnimal;
 import cn.nukkit.level.entity.condition.*;
 import cn.nukkit.tags.BiomeTags;
 
@@ -24,7 +25,7 @@ public class SpawnRuleArmadillo extends MultiSpawnRule {
                                                 Block.YELLOW_TERRACOTTA
                 ),
                 new ConditionBiomeFilter(BiomeTags.SAVANNA, BiomeTags.MESA),
-                new ConditionDensityLimit(Entity.ARMADILLO, 3),
+                new ConditionPopulationControl(EntityAnimal.class, new int[]{4, 0, 4})
         }, new SpawnRuleArmadilloSavanna(), new SpawnRuleArmadilloMesa());
     }
 

@@ -2,15 +2,8 @@ package cn.nukkit.level.entity.spawners;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.entity.condition.Condition;
-import cn.nukkit.level.entity.condition.ConditionAll;
-import cn.nukkit.level.entity.condition.ConditionAny;
-import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
-import cn.nukkit.level.entity.condition.ConditionDensityLimit;
-import cn.nukkit.level.entity.condition.ConditionInAir;
-import cn.nukkit.level.entity.condition.ConditionNot;
-import cn.nukkit.level.entity.condition.ConditionSpawnOnBlockFilter;
-import cn.nukkit.level.entity.condition.ConditionSpawnOnGround;
+import cn.nukkit.entity.passive.EntityAnimal;
+import cn.nukkit.level.entity.condition.*;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.Utils;
@@ -36,7 +29,7 @@ public class SpawnRuleRabbit extends MultiSpawnRule {
                             new ConditionAll(
                                     new ConditionBiomeFilter(BiomeTags.TAIGA),
                                     new ConditionNot(new ConditionBiomeFilter(BiomeTags.MEGA)),
-                                    new ConditionDensityLimit(Entity.RABBIT, 3)
+                                    new ConditionPopulationControl(EntityAnimal.class, new int[]{3, 0, 0})
                             )
                     )
             );
@@ -48,7 +41,7 @@ public class SpawnRuleRabbit extends MultiSpawnRule {
         public SpawnRuleRabbitMeadow() {
             super(Entity.RABBIT, 2, 6,
                     new ConditionBiomeFilter(BiomeTags.MEADOW, BiomeTags.CHERRY_GROVE),
-                    new ConditionDensityLimit(Entity.RABBIT, 6, 64)
+                    new ConditionPopulationControl(EntityAnimal.class, new int[]{6, 0, 0})
             );
         }
     }
