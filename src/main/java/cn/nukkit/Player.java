@@ -546,7 +546,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         boolean canInteract = this.canInteract(blockPos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7);
         if (canInteract) {
             handItem = this.level.useBreakOn(blockPos.asVector3(), face, handItem, this, true);
-            if (handItem != null && this.isSurvival()) {
+            if (handItem != null && (this.isSurvival() || this.isAdventure())) {
                 this.getFoodData().exhaust(0.005);
                 if (handItem.equals(clone) && handItem.getCount() == clone.getCount()) {
                     return;
