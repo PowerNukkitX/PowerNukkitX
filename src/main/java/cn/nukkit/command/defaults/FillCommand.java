@@ -94,7 +94,6 @@ public class FillCommand extends VanillaCommand {
                     String str = list.getResult(4);
                     oldBlockHandling = FillMode.valueOf(str.toUpperCase(Locale.ENGLISH));
                 }
-                System.out.println(oldBlockHandling);
                 switch (oldBlockHandling) {
                     case OUTLINE -> {
                         for (int x = NukkitMath.floorDouble(aabb.getMinX()); x <= NukkitMath.floorDouble(aabb.getMaxX()); x++) {
