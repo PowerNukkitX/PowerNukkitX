@@ -785,7 +785,7 @@ public class Server {
             public void onRun(int currentTick) {
                 System.gc();
             }
-        }, new NukkitRandom().nextInt(1,3) * 20);
+        }, new NukkitRandom().nextInt(1,3) * 60);
 
         this.nextTick = System.currentTimeMillis();
         try {
