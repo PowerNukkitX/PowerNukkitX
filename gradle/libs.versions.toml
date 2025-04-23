@@ -12,8 +12,6 @@ com-google-guava-guava = "33.0.0-jre"
 commons-io-commons-io = "2.15.1"
 io-netty-netty-transport-classes-epoll = "4.1.101.Final"
 io-netty-netty-transport-classes-kqueue = "4.1.101.Final"
-io-sentry-sentry = "7.1.0"
-io-sentry-sentry-log4j2 = "7.1.0"
 it-unimi-dsi-fastutil = "8.5.12"
 leveldb = "1.0.1"
 net-minecrell-terminalconsoleappender = "1.3.0"
@@ -21,7 +19,6 @@ net-sf-jopt-simple-jopt-simple = "5.0.4"
 log4j = "2.23.1"
 org-bitbucket-b-c-jose4j = "0.9.4"
 org-cloudburstmc-netty-netty-transport-raknet = "1.0.0.CR3-SNAPSHOT"
-graalvm-version = "23.1.3"
 org-jetbrains-annotations = "24.1.0"
 org-jline-jline-reader = "3.25.0"
 org-jline-jline-terminal = "3.25.0"
@@ -46,14 +43,11 @@ libdeflate = { module = "cn.powernukkitx:libdeflate-java", version.ref = "cn-pow
 terra = { module = "com.github.PowerNukkitX:Terra-Binary", version.ref = "cn-powernukkitx-terra-binary" }
 fastreflection = { module = "com.github.AllayMC:fast-reflection", version.ref = "fastreflection" }
 oshi = { module = "com.github.oshi:oshi-core", version.ref = "com-github-oshi-oshi-core" }
-jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "com-google-code-findbugs-jsr305" }
 gson = { module = "com.google.code.gson:gson", version.ref = "com-google-code-gson-gson" }
 guava = { module = "com.google.guava:guava", version.ref = "com-google-guava-guava" }
 disruptor = { module = "com.lmax:disruptor", version.ref = "disruptor" }
 commonsio = { module = "commons-io:commons-io", version.ref = "commons-io-commons-io" }
 commonslang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
-sentry = { module = "io.sentry:sentry", version.ref = "io-sentry-sentry" }
-sentry-log4j2 = { module = "io.sentry:sentry-log4j2", version.ref = "io-sentry-sentry-log4j2" }
 fastutil = { module = "it.unimi.dsi:fastutil", version.ref = "it-unimi-dsi-fastutil" }
 leveldb = { group = "com.hivemc.leveldb", name = "leveldb", version.ref = "leveldb" }
 leveldb-api = { group = "com.hivemc.leveldb", name = "leveldb-api", version.ref = "leveldb" }
@@ -70,9 +64,6 @@ jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "org-bitbucket-b-c
 netty-epoll = { module = "io.netty:netty-transport-classes-epoll", version.ref = "io-netty-netty-transport-classes-epoll" }
 netty-kqueue = { module = "io.netty:netty-transport-classes-kqueue", version.ref = "io-netty-netty-transport-classes-kqueue" }
 netty-raknet = { module = "org.cloudburstmc.netty:netty-transport-raknet", version.ref = "org-cloudburstmc-netty-netty-transport-raknet" }
-graalvm-polyglot = { module = "org.graalvm.polyglot:polyglot", version.ref = "graalvm-version" }
-graalvm-js = { module = "org.graalvm.js:js-language", version.ref = "graalvm-version" }
-graalvm-truffle = { module = "org.graalvm.truffle:truffle-runtime", version.ref = "graalvm-version" }
 terminalconsoleappender = { module = "net.minecrell:terminalconsoleappender", version.ref = "net-minecrell-terminalconsoleappender" }
 jline-reader = { module = "org.jline:jline-reader", version.ref = "org-jline-jline-reader" }
 jline-terminal = { module = "org.jline:jline-terminal", version.ref = "org-jline-jline-terminal" }
@@ -89,7 +80,6 @@ okaeri = { module = "com.github.PowerNukkitX:okaeri-configs", version.ref = "eu-
 
 [bundles]
 netty = ["netty-raknet", "netty-epoll", "netty-kqueue"]
-graalvm-runtime = ["graalvm-js", "graalvm-truffle"]
 terminal = ["jline-reader", "jline-terminal", "jline-terminaljna", "terminalconsoleappender"]
 logging = ["log4j-slf4j2-impl", "log4j-core"]
 test = ["junit", "mockito", "jmh-core", "jmh-generator"]

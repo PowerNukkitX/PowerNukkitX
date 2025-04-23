@@ -84,7 +84,8 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
         return config.getGeneratorProvider().newInstance(config);
     }
 
-    class TerraStage extends GenerateStage {
+    //Keep public to allow other plugins to use Terra as base generator
+    public class TerraStage extends GenerateStage {
         @Override
         public void apply(ChunkGenerateContext context) {
             final IChunk chunk = context.getChunk();

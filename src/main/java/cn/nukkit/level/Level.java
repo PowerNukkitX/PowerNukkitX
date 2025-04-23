@@ -42,7 +42,9 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.particle.BlockForceFieldParticle;
 import cn.nukkit.level.particle.DestroyBlockParticle;
+import cn.nukkit.level.particle.FloatingTextParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.level.util.SimpleTickCachedBlockStore;
@@ -93,6 +95,7 @@ import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -3988,12 +3991,32 @@ public class Level implements Metadatable {
         if (this.chunkGenerationQueue.size() >= this.chunkGenerationQueueSize && !force) {
             return;
         }
-        long index = Level.chunkHash(x, z);
-        if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
-            final IChunk chunk = this.getChunk(x, z, true);
-            this.generator.asyncGenerate(chunk, (c) -> chunkGenerationQueue.remove(c.getChunk().getIndex()));//async
+
+        long index = chunkHash(x, z);
+
+        // Prevent duplicate generation
+        if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) != null) {
+            return;
+        }
+
+        IChunk chunk = this.getChunk(x, z, true); // assumed non-blocking
+
+        try {
+            this.generator.asyncGenerate(chunk, (completedChunk) -> {
+                try {
+                    // Add post-processing if needed
+                } catch (Exception e) {
+                    log.error("Post-processing async chunk failed at ({}, {}): {}", x, z, e.getMessage(), e);
+                } finally {
+                    this.chunkGenerationQueue.remove(completedChunk.getChunk().getIndex());
+                }
+            });
+        } catch (Exception e) {
+            log.error("Async chunk generation failed at ({}, {}): {}", x, z, e.getMessage(), e);
+            this.chunkGenerationQueue.remove(index);
         }
     }
+
 
     public void syncGenerateChunk(int x, int z) {
         long index = Level.chunkHash(x, z);
