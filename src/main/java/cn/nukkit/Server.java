@@ -87,6 +87,7 @@ import cn.nukkit.tags.BlockTags;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.collection.FreezableArrayManager;
+import cn.nukkit.utils.random.NukkitRandom;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import eu.okaeri.configs.ConfigManager;
@@ -784,7 +785,7 @@ public class Server {
             public void onRun(int currentTick) {
                 System.gc();
             }
-        }, 60);
+        }, new NukkitRandom().nextInt(1,3) * 60);
 
         this.nextTick = System.currentTimeMillis();
         try {
