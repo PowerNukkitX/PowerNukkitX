@@ -5528,4 +5528,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public PlayerInfo getPlayerInfo() {
         return this.info;
     }
+
+    public String getXUID() {
+        return this.loginChainData.getXUID();
+    }
 }
