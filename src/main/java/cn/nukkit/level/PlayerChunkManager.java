@@ -22,6 +22,24 @@ public final class PlayerChunkManager {
     private long lastLoaderChunkPosHashed = Long.MAX_VALUE;
     private final int trySendChunkCountPerTick;
 
+    private final LongComparator chunkDistanceComparator = new LongComparator() {
+        @Override
+        public int compare(long chunkHash1, long chunkHash2) {
+            BlockVector3 floor = player.getPosition().asBlockVector3();
+            var loaderChunkX = floor.x >> 4;
+            var loaderChunkZ = floor.z >> 4;
+            var chunkDX1 = loaderChunkX - Level.getHashX(chunkHash1);
+            var chunkDZ1 = loaderChunkZ - Level.getHashZ(chunkHash1);
+            var chunkDX2 = loaderChunkX - Level.getHashX(chunkHash2);
+            var chunkDZ2 = loaderChunkZ - Level.getHashZ(chunkHash2);
+            //Compare distance to loader
+            return Integer.compare(
+                    chunkDX1 * chunkDX1 + chunkDZ1 * chunkDZ1,
+                    chunkDX2 * chunkDX2 + chunkDZ2 * chunkDZ2
+            );
+        }
+    };
+
     public PlayerChunkManager(Player player) {
         this.player = player;
         this.trySendChunkCountPerTick = player.getChunkSendCountPerTick();
