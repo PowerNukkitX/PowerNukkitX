@@ -11,7 +11,6 @@ plugins {
     id("io.github.goooler.shadow") version "8.1.7"
     id("io.freefair.lombok") version "8.4"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
-    id("io.freefair.lombok") version "5.3.3.3"
 }
 
 group = "org.powernukkitx"
