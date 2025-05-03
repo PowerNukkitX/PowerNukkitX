@@ -1,400 +1,960 @@
-package cn.nukkit.command.defaults;
+package cn.nukkit.level.format;
 
-import cn.nukkit.Nukkit;
-import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockState;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityFlyable;
+import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
-import cn.nukkit.math.NukkitMath;
-import cn.nukkit.utils.TextFormat;
-import com.sun.jna.platform.win32.COM.WbemcliUtil;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import oshi.SystemInfo;
-import oshi.driver.windows.wmi.Win32ComputerSystem;
-import oshi.hardware.HardwareAbstractionLayer;
-import oshi.hardware.NetworkIF;
-import oshi.util.platform.windows.WmiQueryHandler;
+import cn.nukkit.level.biome.BiomeID;
+import cn.nukkit.level.entity.spawners.SpawnRule;
+import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.Vector2;
+import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.NumberTag;
+import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.Utils;
+import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
+import com.google.common.base.Preconditions;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.ApiStatus;
 
-import java.io.File;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.nio.file.Files;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.StampedLock;
+import java.util.function.BiPredicate;
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
- * @author xtypr
- * @since 2015/11/11
+ * @author Cool_Loong
  */
-public final class StatusCommand extends TestCommand implements CoreCommand {
-    private static final String UPTIME_FORMAT = TextFormat.RED + "%d" + TextFormat.GOLD + " days " +
-            TextFormat.RED + "%d" + TextFormat.GOLD + " hours " +
-            TextFormat.RED + "%d" + TextFormat.GOLD + " minutes " +
-            TextFormat.RED + "%d" + TextFormat.GOLD + " seconds";
-    private static final Map<String, String> vmVendor = new HashMap<>(10, 0.99f);
-    private static final Map<String, String> vmMac = new HashMap<>(10, 0.99f);
-    private static final String[] vmModelArray = new String[]{"Linux KVM", "Linux lguest", "OpenVZ", "Qemu",
-            "Microsoft Virtual PC", "VMWare", "linux-vserver", "Xen", "FreeBSD Jail", "VirtualBox", "Parallels",
-            "Linux Containers", "LXC", "Bochs"};
+@Slf4j
+public class Chunk implements IChunk {
+    private volatile int x;
+    private volatile int z;
+    private volatile long hash;
+    protected final AtomicReference<ChunkState> chunkState;
+    protected final ChunkSection[] sections;
+    protected final short[] heightMap;//256 size Values start at 0 and are 0-384 for the Overworld range
+    protected final AtomicLong changes;
 
-    static {
-        vmVendor.put("bhyve", "bhyve");
-        vmVendor.put("KVM", "KVM");
-        vmVendor.put("TCG", "QEMU");
-        vmVendor.put("Microsoft Hv", "Microsoft Hyper-V or Windows Virtual PC");
-        vmVendor.put("lrpepyh vr", "Parallels");
-        vmVendor.put("VMware", "VMware");
-        vmVendor.put("XenVM", "Xen HVM");
-        vmVendor.put("ACRN", "Project ACRN");
-        vmVendor.put("QNXQVMBSQG", "QNX Hypervisor");
+    protected final Long2ObjectNonBlockingMap<Entity> entities;
+    protected final Long2ObjectNonBlockingMap<BlockEntity> tiles;//block entity id -> block entity
+    protected final Long2ObjectNonBlockingMap<BlockEntity> tileList;//block entity position hash index -> block entity
+    //delay load block entity and entity
+    protected final CompoundTag extraData;
+    protected final StampedLock blockLock;
+    protected final StampedLock heightAndBiomeLock;
+    protected final StampedLock lightLock;
+    protected final LevelProvider provider;
+    protected boolean isInit;
+    protected List<CompoundTag> blockEntityNBT;
+    protected List<CompoundTag> entityNBT;
+
+    private Chunk(
+            final int chunkX,
+            final int chunkZ,
+            final LevelProvider levelProvider
+    ) {
+        this.chunkState = new AtomicReference<>(ChunkState.NEW);
+        this.x = chunkX;
+        setZ(chunkZ);
+        this.provider = levelProvider;
+        this.sections = new ChunkSection[levelProvider.getDimensionData().getChunkSectionCount()];
+        this.heightMap = new short[256];
+        this.entities = new Long2ObjectNonBlockingMap<>();
+        this.tiles = new Long2ObjectNonBlockingMap<>();
+        this.tileList = new Long2ObjectNonBlockingMap<>();
+        this.entityNBT = new ArrayList<>();
+        this.blockEntityNBT = new ArrayList<>();
+        this.extraData = new CompoundTag();
+        this.changes = new AtomicLong();
+        this.blockLock = new StampedLock();
+        this.heightAndBiomeLock = new StampedLock();
+        this.lightLock = new StampedLock();
     }
 
-    static {
-        vmMac.put("00:50:56", "VMware ESX 3");
-        vmMac.put("00:0C:29", "VMware ESX 3");
-        vmMac.put("00:05:69", "VMware ESX 3");
-        vmMac.put("00:03:FF", "Microsoft Hyper-V");
-        vmMac.put("00:1C:42", "Parallels Desktop");
-        vmMac.put("00:0F:4B", "Virtual Iron 4");
-        vmMac.put("00:16:3E", "Xen or Oracle VM");
-        vmMac.put("08:00:27", "VirtualBox");
-        vmMac.put("02:42:AC", "Docker Container");
-    }
-
-    private final SystemInfo systemInfo = new SystemInfo();
-
-    public StatusCommand(String name) {
-        super(name, "%nukkit.command.status.description", "%nukkit.command.status.usage");
-        this.setPermission("nukkit.command.status");
-        this.getCommandParameters().clear();
-        this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newEnum("mode", true, new String[]{"full", "simple"})
-        });
-    }
-
-    private static String formatKB(double bytes) {
-        return NukkitMath.round((bytes / 1024 * 1000), 2) + " KB";
-    }
-
-    private static String formatKB(long bytes) {
-        return NukkitMath.round((bytes / 1024d * 1000), 2) + " KB";
-    }
-
-    private static String formatMB(double bytes) {
-        return NukkitMath.round((bytes / 1024 / 1024 * 1000), 2) + " MB";
-    }
-
-    private static String formatMB(long bytes) {
-        return NukkitMath.round((bytes / 1024d / 1024 * 1000), 2) + " MB";
-    }
-
-    private static String formatFreq(long hz) {
-        if (hz >= 1000000000) {
-            return String.format("%.2fGHz", hz / 1000000000.0);
-        } else if (hz >= 1000 * 1000) {
-            return String.format("%.2fMHz", hz / 1000000.0);
-        } else if (hz >= 1000) {
-            return String.format("%.2fKHz", hz / 1000.0);
-        } else {
-            return String.format("%dHz", hz);
-        }
-    }
-
-    private static String formatUptime(long uptime) {
-        long days = TimeUnit.MILLISECONDS.toDays(uptime);
-        uptime -= TimeUnit.DAYS.toMillis(days);
-        long hours = TimeUnit.MILLISECONDS.toHours(uptime);
-        uptime -= TimeUnit.HOURS.toMillis(hours);
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(uptime);
-        uptime -= TimeUnit.MINUTES.toMillis(minutes);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(uptime);
-        return String.format(UPTIME_FORMAT, days, hours, minutes, seconds);
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static String isInVM(HardwareAbstractionLayer hardware) {
-        // CPU型号检测
-        String vendor = hardware.getProcessor().getProcessorIdentifier().getVendor().trim();
-        if (vmVendor.containsKey(vendor)) {
-            return vmVendor.get(vendor);
-        }
-
-        // MAC地址检测
-        List<NetworkIF> nifs = hardware.getNetworkIFs();
-        for (NetworkIF nif : nifs) {
-            String mac = nif.getMacaddr().toUpperCase(Locale.ENGLISH);
-            String oui = mac.length() > 7 ? mac.substring(0, 8) : mac;
-            if (vmMac.containsKey(oui)) {
-                return vmMac.get(oui);
-            }
-        }
-
-        // 模型检测
-        String model = hardware.getComputerSystem().getModel();
-        for (String vm : vmModelArray) {
-            if (model.contains(vm)) {
-                return vm;
-            }
-        }
-        String manufacturer = hardware.getComputerSystem().getManufacturer();
-        if ("Microsoft Corporation".equals(manufacturer) && "Virtual Machine".equals(model)) {
-            return "Microsoft Hyper-V";
-        }
-
-        //内存型号检测
-        if (hardware.getMemory().getPhysicalMemory().get(0).getManufacturer().equals("QEMU")) {
-            return "QEMU";
-        }
-
-        //检查Windows系统参数
-        //Wmi虚拟机查询只能在Windows上使用，Linux上不执行这个部分即可
-        if (System.getProperties().getProperty("os.name").toUpperCase(Locale.ENGLISH).contains("WINDOWS")) {
-            WbemcliUtil.WmiQuery<Win32ComputerSystem.ComputerSystemProperty> computerSystemQuery = new WbemcliUtil.WmiQuery("Win32_ComputerSystem", ComputerSystemEntry.class);
-            WbemcliUtil.WmiResult result = WmiQueryHandler.createInstance().queryWMI(computerSystemQuery);
-            var tmp = result.getValue(ComputerSystemEntry.HYPERVISORPRESENT, 0);
-            if (tmp != null && tmp.toString().equals("true")) {
-                return "Hyper-V";
-            }
-        }
-        //检查是否在Docker容器中
-        //Docker检查只在非Windows上执行
-        else {
-            var file = new File("/.dockerenv");
-            if (file.exists()) {
-                return "Docker Container";
-            }
-            var cgroupFile = new File("/proc/1/cgroup");
-            if (cgroupFile.exists()) {
-                try (var lineStream = Files.lines(cgroupFile.toPath())) {
-                    var searchResult = lineStream.filter(line -> line.contains("docker") || line.contains("lxc"));
-                    if (searchResult.findAny().isPresent()) {
-                        return "Docker Container";
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return null;
-
+    private Chunk(
+            final ChunkState state,
+            final int chunkX,
+            final int chunkZ,
+            final LevelProvider levelProvider,
+            final ChunkSection[] sections,
+            final short[] heightMap,
+            final List<CompoundTag> entityNBT,
+            final List<CompoundTag> blockEntityNBT,
+            final CompoundTag extraData
+    ) {
+        this.chunkState = new AtomicReference<>(state);
+        this.x = chunkX;
+        setZ(chunkZ);
+        this.provider = levelProvider;
+        this.sections = sections;
+        this.heightMap = heightMap;
+        this.entities = new Long2ObjectNonBlockingMap<>();
+        this.tiles = new Long2ObjectNonBlockingMap<>();
+        this.tileList = new Long2ObjectNonBlockingMap<>();
+        this.entityNBT = entityNBT;
+        this.blockEntityNBT = blockEntityNBT;
+        this.extraData = extraData;
+        this.changes = new AtomicLong();
+        this.blockLock = new StampedLock();
+        this.heightAndBiomeLock = new StampedLock();
+        this.lightLock = new StampedLock();
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
+    public boolean isSectionEmpty(int fY) {
+        ChunkSection section = this.getSection(fY - getDimensionData().getMinSectionY());
+        return section == null || section.isEmpty();
+    }
+
+    @Override
+    public ChunkSection getSection(int fY) {
+        long stamp = blockLock.tryOptimisticRead();
+        try {
+            for (; ; stamp = blockLock.readLock()) {
+                if (stamp == 0L) continue;
+                ChunkSection section = this.sections[fY - getDimensionData().getMinSectionY()];
+                if (!blockLock.validate(stamp)) continue;
+                return section;
+            }
+        } finally {
+            if (StampedLock.isReadLockStamp(stamp)) blockLock.unlockRead(stamp);
+        }
+    }
+
+    private ChunkSection getSectionInternal(int fY) {
+        return this.sections[fY - getDimensionData().getMinSectionY()];
+    }
+
+    @Override
+    public void setSection(int fY, ChunkSection section) {
+        long stamp = blockLock.writeLock();
+        try {
+            this.sections[fY - getDimensionData().getMinSectionY()] = section;
+            setChanged();
+        } finally {
+            blockLock.unlockWrite(stamp);
+        }
+    }
+
+    @Override
+    @ApiStatus.Internal
+    public ChunkSection[] getSections() {
+        long stamp = blockLock.readLock();
+        try {
+            return this.sections;
+        } finally {
+            blockLock.unlockRead(stamp);
+        }
+    }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public void setX(int x) {
+        this.x = x;
+        this.hash = Level.chunkHash(x, getZ());
+    }
+
+    @Override
+    public int getZ() {
+        return z;
+    }
+
+    @Override
+    public void setZ(int z) {
+        this.z = z;
+        this.hash = Level.chunkHash(getX(), z);
+    }
+
+    @Override
+    public final long getIndex() {
+        return this.hash;
+    }
+
+    @Override
+    public LevelProvider getProvider() {
+        return provider;
+    }
+
+    @Override
+    public Level getLevel() {
+        return getProvider().getLevel();
+    }
+
+    @Override
+    public BlockState getBlockState(int x, int y, int z, int layer) {
+        long stamp = blockLock.tryOptimisticRead();
+        try {
+            for (; ; stamp = blockLock.readLock()) {
+                if (stamp == 0L) continue;
+                ChunkSection sectionInternal = getSectionInternal(y >> 4);
+                if (sectionInternal == null) return BlockAir.STATE;
+                BlockState result = sectionInternal.getBlockState(x, y & 0x0f, z, layer);
+                if (!blockLock.validate(stamp)) continue;
+                return result;
+            }
+        } finally {
+            if (StampedLock.isReadLockStamp(stamp)) blockLock.unlockRead(stamp);
+        }
+    }
+
+    @Override
+    public BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate, int layer) {
+        long stamp = blockLock.writeLock();
+        try {
+            setChanged();
+            return getOrCreateSection(y >> 4).getAndSetBlockState(x, y & 0x0f, z, blockstate, layer);
+        } finally {
+            blockLock.unlockWrite(stamp);
+            removeInvalidTile(x, y, z);
+        }
+    }
+
+    @Override
+    public void setBlockState(int x, int y, int z, BlockState blockstate, int layer) {
+        long stamp = blockLock.writeLock();
+        try {
+            setChanged();
+            getOrCreateSection(y >> 4).setBlockState(x, y & 0x0f, z, blockstate, layer);
+        } finally {
+            blockLock.unlockWrite(stamp);
+            removeInvalidTile(x, y, z);
+        }
+    }
+
+    @Override
+    public int getBlockSkyLight(int x, int y, int z) {
+        long stamp = lightLock.tryOptimisticRead();
+        try {
+            for (; ; stamp = lightLock.readLock()) {
+                if (stamp == 0L) continue;
+                ChunkSection sectionInternal = getSectionInternal(y >> 4);
+                if (sectionInternal == null) return 0;
+                int result = sectionInternal.getBlockSkyLight(x, y & 0x0f, z);
+                if (!lightLock.validate(stamp)) continue;
+                return result;
+            }
+        } finally {
+            if (StampedLock.isReadLockStamp(stamp)) lightLock.unlockRead(stamp);
+        }
+    }
+
+    @Override
+    public void setBlockSkyLight(int x, int y, int z, int level) {
+        long stamp = lightLock.writeLock();
+        try {
+            setChanged();
+            getOrCreateSection(y >> 4).setBlockSkyLight(x, y & 0x0f, z, (byte) level);
+        } finally {
+            lightLock.unlockWrite(stamp);
+        }
+    }
+
+    @Override
+    public int getBlockLight(int x, int y, int z) {
+        long stamp = lightLock.tryOptimisticRead();
+        try {
+            for (; ; stamp = lightLock.readLock()) {
+                if (stamp == 0L) continue;
+                ChunkSection sectionInternal = getSectionInternal(y >> 4);
+                if (sectionInternal == null) return 0;
+                int result = sectionInternal.getBlockLight(x, y & 0x0f, z);
+                if (!lightLock.validate(stamp)) continue;
+                return result;
+            }
+        } finally {
+            if (StampedLock.isReadLockStamp(stamp)) lightLock.unlockRead(stamp);
+        }
+    }
+
+    @Override
+    public void setBlockLight(int x, int y, int z, int level) {
+        long stamp = lightLock.writeLock();
+        try {
+            setChanged();
+            getOrCreateSection(y >> 4).setBlockLight(x, y & 0x0f, z, (byte) level);
+        } finally {
+            lightLock.unlockWrite(stamp);
+        }
+    }
+
+    @Override
+    public int getHeightMap(int x, int z) {
+        long stamp = heightAndBiomeLock.tryOptimisticRead();
+        try {
+            for (; ; stamp = heightAndBiomeLock.readLock()) {
+                if (stamp == 0L) continue;
+                int result = this.heightMap[(z << 4) | x] + getDimensionData().getMinHeight();
+                if (!heightAndBiomeLock.validate(stamp)) continue;
+                return result;
+            }
+        } finally {
+            if (StampedLock.isReadLockStamp(stamp)) heightAndBiomeLock.unlockRead(stamp);
+        }
+    }
+
+    @Override
+    public void setHeightMap(int x, int z, int value) {
+        //基岩版3d-data保存heightMap是以0为索引保存的，所以这里需要减去世界最小值，详情查看
+        //Bedrock Edition 3d-data saves the height map start from index of 0, so need to subtract the world minimum height here, see for details:
+        //https://github.com/bedrock-dev/bedrock-level/blob/main/src/include/data_3d.h#L115
+        long stamp = heightAndBiomeLock.writeLock();
+        try {
+            this.heightMap[(z << 4) | x] = (short) (value - getDimensionData().getMinHeight());
+        } finally {
+            heightAndBiomeLock.unlockWrite(stamp);
+        }
+    }
+
+    @Override
+    public void recalculateHeightMap() {
+        batchProcess(UnsafeChunk::recalculateHeightMap);
+    }
+
+    @Override
+    public int recalculateHeightMapColumn(int x, int z) {
+        long stamp1 = heightAndBiomeLock.writeLock();
+        long stamp2 = blockLock.writeLock();
+        try {
+            UnsafeChunk unsafeChunk = new UnsafeChunk(this);
+            int max = unsafeChunk.getHighestBlockAt(x, z);
+            int y;
+            for (y = max; y >= getDimensionData().getMinHeight(); --y) {
+                BlockState blockState = unsafeChunk.getBlockState(x, y, z);
+                Block block = Block.get(blockState);
+                if (block.getLightFilter() > 1 || block.diffusesSkyLight()) {
+                    break;
+                }
+            }
+            unsafeChunk.setHeightMap(x, z, y);
+            return y;
+        } finally {
+            heightAndBiomeLock.unlockWrite(stamp1);
+            blockLock.unlockWrite(stamp2);
+        }
+    }
+
+    @Override
+    public void populateSkyLight() {
+        batchProcess(unsafe -> {
+            // basic light calculation
+            for (int z = 0; z < 16; ++z) {
+                for (int x = 0; x < 16; ++x) { // iterating over all columns in chunk
+                    int level = 15;
+                    for(int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); y--) {
+                        Block block = unsafe.getBlockState(x, y, z).toBlock();
+
+                        if (!block.isTransparent()) {
+                            level = 0;
+                        } else if (block.diffusesSkyLight()) {
+                            level--;
+                        } else {
+                            level -= block.getLightLevel();
+                        }
+                        if(level <= 0) break;
+                        unsafe.setBlockSkyLight(x, y, z, level);
+                    }
+                }
+            }
+        });
+    }
+
+    public void batchProcess(Consumer<UnsafeChunk> unsafeChunkConsumer) {
+        long stamp1 = blockLock.writeLock();
+        long stamp2 = heightAndBiomeLock.writeLock();
+        long stamp3 = lightLock.writeLock();
+        try {
+            unsafeChunkConsumer.accept(new UnsafeChunk(this));
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("An error occurred while executing chunk batch operation", e);
+        } finally {
+            blockLock.unlockWrite(stamp1);
+            heightAndBiomeLock.unlockWrite(stamp2);
+            lightLock.unlockWrite(stamp3);
+        }
+    }
+
+    @Override
+    public int getBiomeId(int x, int y, int z) {
+        long stamp = heightAndBiomeLock.tryOptimisticRead();
+        try {
+            for (; ; stamp = heightAndBiomeLock.readLock()) {
+                if (stamp == 0L) continue;
+                ChunkSection sectionInternal = getSectionInternal(y >> 4);
+                if (sectionInternal == null) return BiomeID.PLAINS;
+                int result = sectionInternal.getBiomeId(x, y & 0x0f, z);
+                if (!heightAndBiomeLock.validate(stamp)) continue;
+                return result;
+            }
+        } finally {
+            if (StampedLock.isReadLockStamp(stamp)) heightAndBiomeLock.unlockRead(stamp);
+        }
+    }
+
+    @Override
+    public void setBiomeId(int x, int y, int z, int biomeId) {
+        long stamp = heightAndBiomeLock.writeLock();
+        try {
+            setChanged();
+            getOrCreateSection(y >> 4).setBiomeId(x, y & 0x0f, z, biomeId);
+        } finally {
+            heightAndBiomeLock.unlockWrite(stamp);
+        }
+    }
+
+    @Override
+    public boolean isLightPopulated() {
+        return extraData.contains("LightPopulated") && extraData.getBoolean("LightPopulated");
+    }
+
+    @Override
+    public void setLightPopulated(boolean value) {
+        extraData.putBoolean("LightPopulated", value);
+    }
+
+    @Override
+    public void setLightPopulated() {
+        extraData.putBoolean("LightPopulated", true);
+    }
+
+    @Override
+    public ChunkState getChunkState() {
+        return this.chunkState.get();
+    }
+
+    @Override
+    public void setChunkState(ChunkState chunkState) {
+        this.chunkState.set(chunkState);
+    }
+
+    @Override
+    public void addEntity(Entity entity) {
+        this.entities.put(entity.getId(), entity);
+        if (!(entity instanceof Player) && this.isInit) {
+            this.setChanged();
+        }
+    }
+
+    @Override
+    public void removeEntity(Entity entity) {
+        if (this.entities != null) {
+            this.entities.remove(entity.getId());
+            if (!(entity instanceof Player) && this.isInit) {
+                this.setChanged();
+            }
+        }
+    }
+
+    @Override
+    public void addBlockEntity(BlockEntity blockEntity) {
+        this.tiles.put(blockEntity.getId(), blockEntity);
+        int index = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
+        BlockEntity entity = this.tileList.get(index);
+        if (this.tileList.containsKey(index) && !entity.equals(blockEntity)) {
+            this.tiles.remove(entity.getId());
+            entity.close();
+        }
+        this.tileList.put(index, blockEntity);
+        if (this.isInit) {
+            this.setChanged();
+        }
+    }
+
+    @Override
+    public void removeBlockEntity(BlockEntity blockEntity) {
+        if (this.tiles != null) {
+            this.tiles.remove(blockEntity.getId());
+            int index = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
+            this.tileList.remove(index);
+            if (this.isInit) {
+                this.setChanged();
+            }
+        }
+    }
+
+    @Override
+    public Map<Long, Entity> getEntities() {
+        return entities;
+    }
+
+    @Override
+    public void doMobSpawning() {
+        Level level = getProvider().getLevel();
+        if (!isLoaded() || !isGenerated() || !isLightPopulated()) return;
+        if (Utils.rand(0, 50) != 0) return;
+
+        var chunkEntities = level.getChunkEntities(getX(), getZ());
+        Collection<Entity> spawnedEntities = chunkEntities.values().stream().filter(
+                e -> e.despawnable && e.isAlive() && !e.closed
+        ).toList();
+
+        // Spawning
+        if (Utils.rand(0, 4) == 0 && spawnedEntities.size() < Server.getInstance().getSettings().chunkSettings().spawnLimit()) {
+            int x = Utils.rand(0, 16);
+            int z = Utils.rand(0, 16);
+            int chunkX = getX(), chunkZ = getZ();
+            int absX = (chunkX << 4) + x;
+            int absZ = (chunkZ << 4) + z;
+
+            int spawnedEntityCount = spawnedEntities.size();
+            int maxEntityCount = Server.getInstance().getSettings().chunkSettings().spawnLimit();
+
+            DimensionData data = getDimensionData();
+            SpawnRule[] spawnRules = Registries.ENTITY.getSpawnRules().toArray(new SpawnRule[0]);
+            var players = level.getPlayers().values();
+
+            boolean nearPlayer = false;
+            for (Player player : players) {
+                double dx = player.x - absX;
+                double dz = player.z - absZ;
+                double distSq = dx * dx + dz * dz;
+                if (distSq < 54 * 54 && distSq > 24 * 24) {
+                    nearPlayer = true;
+                    break;
+                }
+            }
+            if (!nearPlayer) return;
+
+            Vector3 lookVec = new Vector3();
+            for (int y = data.getMaxHeight(); y > data.getMinHeight(); y--) {
+                lookVec.setComponents(absX, y, absZ);
+                Block block = level.getBlock(lookVec, true);
+
+                List<SpawnRule> applicableRules = null;
+                for (SpawnRule rule : spawnRules) {
+                    if (rule.evaluate(block)) {
+                        if (applicableRules == null) applicableRules = new ArrayList<>();
+                        applicableRules.add(rule);
+                    }
+                }
+
+                if (applicableRules != null && !applicableRules.isEmpty()) {
+                    SpawnRule spawnRule = applicableRules.get(Utils.rand(0, applicableRules.size() - 1));
+                    int herd = Utils.rand(spawnRule.getHerdMin(), spawnRule.getHerdMax());
+                    int herdSpread = spawnRule.getHerdMax() - spawnRule.getHerdMin();
+
+                    for (int i = 0; i < herd; i++) {
+                        Vector3 spawnPos = lookVec;
+                        if (!EntityFlyable.class.isAssignableFrom(Registries.ENTITY.getEntityClass(spawnRule.getEntityId()))) {
+                            spawnPos = level.getSafeSpawn(lookVec, herdSpread, true).add(0.5, 0, 0.5);
+                        }
+                        if (spawnedEntityCount >= maxEntityCount) {
+                            break;
+                        }
+
+                        Entity entity = Registries.ENTITY.provideEntity(spawnRule.getEntityId(), this, Entity.getDefaultNBT(spawnPos));
+                        if (entity != null) {
+                            spawnedEntityCount++;
+                            entity.despawnable = true;
+                            entity.spawnToAll();
+                        }
+                    }
+                }
+            }
         }
 
-        var simpleMode = args.length == 0 || !args[0].equalsIgnoreCase("full");
-        var server = sender.getServer();
-
-        if (simpleMode) {
-            sender.sendMessage(TextFormat.GREEN + "---- " + TextFormat.WHITE + "Server status" + TextFormat.GREEN + " ----");
-
-            long time = System.currentTimeMillis() - Nukkit.START_TIME;
-
-            sender.sendMessage(TextFormat.GOLD + "Uptime: " + formatUptime(time));
-
-            TextFormat tpsColor = TextFormat.GREEN;
-            float tps = server.getTicksPerSecond();
-            if (tps < 12) {
-                tpsColor = TextFormat.RED;
-            } else if (tps < 17) {
-                tpsColor = TextFormat.GOLD;
-            }
-
-            sender.sendMessage(TextFormat.GOLD + "Current TPS: " + tpsColor + NukkitMath.round(tps, 2));
-
-            sender.sendMessage(TextFormat.GOLD + "Load: " + tpsColor + server.getTickUsage() + "%");
-
-
-            Runtime runtime = Runtime.getRuntime();
-            double totalMB = NukkitMath.round(((double) runtime.totalMemory()) / 1024 / 1024, 2);
-            double usedMB = NukkitMath.round((double) (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024, 2);
-            double maxMB = NukkitMath.round(((double) runtime.maxMemory()) / 1024 / 1024, 2);
-            double usage = usedMB / maxMB * 100;
-            TextFormat usageColor = TextFormat.GREEN;
-
-            if (usage > 85) {
-                usageColor = TextFormat.GOLD;
-            }
-
-            sender.sendMessage(TextFormat.GOLD + "Used VM memory: " + usageColor + usedMB + " MB. (" + NukkitMath.round(usage, 2) + "%)");
-
-            sender.sendMessage(TextFormat.GOLD + "Total VM memory: " + TextFormat.RED + totalMB + " MB.");
-
-
-            TextFormat playerColor = TextFormat.GREEN;
-            if (((float) server.getOnlinePlayers().size() / (float) server.getMaxPlayers()) > 0.85) {
-                playerColor = TextFormat.GOLD;
-            }
-
-            sender.sendMessage(TextFormat.GOLD + "Players: " + playerColor + server.getOnlinePlayers().size() + TextFormat.GREEN + " online, " +
-                    TextFormat.RED + server.getMaxPlayers() + TextFormat.GREEN + " max. ");
-
-            for (Level level : server.getLevels().values()) {
-                sender.sendMessage(
-                        TextFormat.GOLD + "World \"" + level.getFolderName() + "\"" + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
-                                TextFormat.RED + level.getChunks().size() + TextFormat.GREEN + " chunks, " +
-                                TextFormat.RED + level.getEntities().length + TextFormat.GREEN + " entities, " +
-                                TextFormat.RED + level.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." +
-                                " Time " + ((level.getTickRate() > 1 || level.getTickRateTime() > 40) ? TextFormat.RED : TextFormat.YELLOW) + NukkitMath.round(level.getTickRateTime(), 2) + "ms" +
-                                (" [delayOpt " + (level.tickRateOptDelay - 1) + "]") +
-                                (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "") +
-                                (level.getBaseTickGameLoop().isRunning() ? " (" + ((level.getBaseTickGameLoop().getTps() >= 19) ? TextFormat.GREEN : ((level.getBaseTickGameLoop().getTps() < 5) ? TextFormat.RED : TextFormat.YELLOW)) + level.getBaseTickGameLoop().getTps() + " TPS, " + level.getBaseTickGameLoop().getMSPT() + " MSPT)" : "")
-                );
-            }
-        } else {
-            // 完整模式
-            sender.sendMessage(TextFormat.GREEN + "---- " + TextFormat.WHITE + "Server status" + TextFormat.GREEN + " ----");
-
-            // PNX服务器信息
-            {
-                sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "PNX Server Info" + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
-                // 运行时间
-                long time = System.currentTimeMillis() - Nukkit.START_TIME;
-                sender.sendMessage(TextFormat.GOLD + "Uptime: " + formatUptime(time));
-                // TPS
-                TextFormat tpsColor = TextFormat.GREEN;
-                float tps = server.getTicksPerSecond();
-                if (tps < 12) {
-                    tpsColor = TextFormat.RED;
-                } else if (tps < 17) {
-                    tpsColor = TextFormat.GOLD;
-                }
-                sender.sendMessage(TextFormat.GOLD + "Current TPS: " + tpsColor + NukkitMath.round(tps, 2));
-                // 游戏刻负载
-                sender.sendMessage(TextFormat.GOLD + "Tick Load: " + tpsColor + server.getTickUsage() + "%");
-                // 在线玩家情况
-                var playerColor = TextFormat.GREEN;
-                if (((float) server.getOnlinePlayers().size() / (float) server.getMaxPlayers()) > 0.85) {
-                    playerColor = TextFormat.GOLD;
-                }
-                sender.sendMessage(TextFormat.GOLD + "Players: " + playerColor + server.getOnlinePlayers().size() + TextFormat.GREEN + " online, " +
-                        TextFormat.RED + server.getMaxPlayers() + TextFormat.GREEN + " max. ");
-                // 各个世界的情况
-                for (Level level : server.getLevels().values()) {
-                    sender.sendMessage(
-                            TextFormat.GOLD + "World \"" + level.getFolderName() + "\"" + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
-                                    TextFormat.RED + level.getChunks().size() + TextFormat.GREEN + " chunks, " +
-                                    TextFormat.RED + level.getEntities().length + TextFormat.GREEN + " entities, " +
-                                    TextFormat.RED + level.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." +
-                                    " Time " + ((level.getTickRate() > 1 || level.getTickRateTime() > 40) ? TextFormat.RED : TextFormat.YELLOW) + NukkitMath.round(level.getTickRateTime(), 2) + "ms" +
-                                    (" [delayOpt " + (level.tickRateOptDelay - 1) + "]") +
-                                    (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "")
-                    );
-                }
-                sender.sendMessage("");
-            }
-            // 操作系统&JVM信息
-            {
-                var os = systemInfo.getOperatingSystem();
-                var mxBean = ManagementFactory.getRuntimeMXBean();
-                sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "OS & JVM Info" + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
-                sender.sendMessage(TextFormat.GOLD + "OS: " + TextFormat.AQUA + os.getFamily() + " " + os.getManufacturer() + " " +
-                        os.getVersionInfo().getVersion() + " " + os.getVersionInfo().getCodeName() + " " + os.getBitness() + "bit, " +
-                        "build " + os.getVersionInfo().getBuildNumber());
-                sender.sendMessage(TextFormat.GOLD + "JVM: " + TextFormat.AQUA + mxBean.getVmName() + " " + mxBean.getVmVendor() + " " + mxBean.getVmVersion());
-                try {
-                    var vm = isInVM(systemInfo.getHardware());
-                    if (vm == null) {
-                        sender.sendMessage(TextFormat.GOLD + "Virtual environment: " + TextFormat.GREEN + "no");
-                    } else {
-                        sender.sendMessage(TextFormat.GOLD + "Virtual environment: " + TextFormat.YELLOW + "yes (" + vm + ")");
+        // Despawning
+        if (!spawnedEntities.isEmpty()) {
+            int randIndex = Utils.rand(0, spawnedEntities.size() - 1);
+            Entity randomEntity = spawnedEntities.stream().skip(randIndex).findFirst().orElse(null);
+            if (randomEntity != null) {
+                boolean anyNear = false;
+                for (Player player : level.getPlayers().values()) {
+                    if (player.distance(randomEntity) <= 54) {
+                        anyNear = true;
+                        break;
                     }
-                } catch (Exception ignore) {
-
                 }
-                sender.sendMessage("");
-            }
-            // 网络信息
-            try {
-                var network = server.getNetwork();
-                if (network.getHardWareNetworkInterfaces() != null) {
-                    sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "Network Info" + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
-                    sender.sendMessage(TextFormat.GOLD + "Network upload: " + TextFormat.GREEN + formatKB(network.getUpload()) + "/s");
-                    sender.sendMessage(TextFormat.GOLD + "Network download: " + TextFormat.GREEN + formatKB(network.getDownload()) + "/s");
-                    sender.sendMessage(TextFormat.GOLD + "Network hardware list: ");
-                    ObjectArrayList<String> list;
-                    for (var each : network.getHardWareNetworkInterfaces()) {
-                        list = new ObjectArrayList<>(each.getIPv4addr().length + each.getIPv6addr().length);
-                        list.addElements(0, each.getIPv4addr());
-                        list.addElements(list.size(), each.getIPv6addr());
-                        sender.sendMessage(TextFormat.AQUA + "  " + each.getDisplayName());
-                        sender.sendMessage(TextFormat.RESET + "    " + formatKB(each.getSpeed()) + "/s " + TextFormat.GRAY + String.join(", ", list));
+                if (!anyNear && randomEntity.getAge() > 6000) {
+                    try {
+                        randomEntity.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    sender.sendMessage("");
                 }
-            } catch (Exception ignored) {
-                sender.sendMessage(TextFormat.RED + "    Failed to get network info.");
-            }
-            // CPU信息
-            {
-                var cpu = systemInfo.getHardware().getProcessor();
-                sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "CPU Info" + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
-                sender.sendMessage(TextFormat.GOLD + "CPU: " + TextFormat.AQUA + cpu.getProcessorIdentifier().getName() + TextFormat.GRAY +
-                        " (" + formatFreq(cpu.getMaxFreq()) + " baseline; " + cpu.getPhysicalProcessorCount() + " cores, " + cpu.getLogicalProcessorCount() + " logical cores)");
-                sender.sendMessage(TextFormat.GOLD + "Thread count: " + TextFormat.GREEN + Thread.getAllStackTraces().size());
-                sender.sendMessage(TextFormat.GOLD + "CPU Features: " + TextFormat.RESET + (cpu.getProcessorIdentifier().isCpu64bit() ? "64bit, " : "32bit, ") +
-                        cpu.getProcessorIdentifier().getModel() + ", micro-arch: " + cpu.getProcessorIdentifier().getMicroarchitecture());
-                sender.sendMessage("");
-            }
-            // 内存信息
-            {
-                var globalMemory = systemInfo.getHardware().getMemory();
-                var physicalMemories = globalMemory.getPhysicalMemory();
-                var virtualMemory = globalMemory.getVirtualMemory();
-                long allPhysicalMemory = globalMemory.getTotal() / 1000;
-                long usedPhysicalMemory = (globalMemory.getTotal() - globalMemory.getAvailable()) / 1000;
-                long allVirtualMemory = virtualMemory.getVirtualMax() / 1000;
-                long usedVirtualMemory = virtualMemory.getVirtualInUse() / 1000;
-                sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "Memory Info" + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
-                //JVM内存
-                var runtime = Runtime.getRuntime();
-                double totalMB = NukkitMath.round(((double) runtime.totalMemory()) / 1024 / 1024, 2);
-                double usedMB = NukkitMath.round((double) (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024, 2);
-                double maxMB = NukkitMath.round(((double) runtime.maxMemory()) / 1024 / 1024, 2);
-                double usage = usedMB / maxMB * 100;
-                var usageColor = TextFormat.GREEN;
-                if (usage > 85) {
-                    usageColor = TextFormat.GOLD;
-                }
-                sender.sendMessage(TextFormat.GOLD + "JVM memory: ");
-                sender.sendMessage(TextFormat.GOLD + "  Used JVM memory: " + usageColor + usedMB + " MB. (" + NukkitMath.round(usage, 2) + "%)");
-                sender.sendMessage(TextFormat.GOLD + "  Total JVM memory: " + TextFormat.RED + totalMB + " MB.");
-                sender.sendMessage(TextFormat.GOLD + "  Maximum JVM memory: " + TextFormat.RED + maxMB + " MB.");
-                // 操作系统内存
-                usage = (double) usedPhysicalMemory / allPhysicalMemory * 100;
-                usageColor = TextFormat.GREEN;
-                if (usage > 85) {
-                    usageColor = TextFormat.GOLD;
-                }
-                sender.sendMessage(TextFormat.GOLD + "OS memory: ");
-                sender.sendMessage(TextFormat.GOLD + "  Physical memory: " + TextFormat.GREEN + usageColor + formatMB(usedPhysicalMemory) + " / " + formatMB(allPhysicalMemory) + ". (" + NukkitMath.round(usage, 2) + "%)");
-                usage = (double) usedVirtualMemory / allVirtualMemory * 100;
-                usageColor = TextFormat.GREEN;
-                if (usage > 85) {
-                    usageColor = TextFormat.GOLD;
-                }
-                sender.sendMessage(TextFormat.GOLD + "  Virtual memory: " + TextFormat.GREEN + usageColor + formatMB(usedVirtualMemory) + " / " + formatMB(allVirtualMemory) + ". (" + NukkitMath.round(usage, 2) + "%)");
-                if (physicalMemories.size() > 0)
-                    sender.sendMessage(TextFormat.GOLD + "  Hardware list: ");
-                for (var each : physicalMemories) {
-                    sender.sendMessage(TextFormat.AQUA + "    " + each.getBankLabel() + " @ " + formatFreq(each.getClockSpeed()) + TextFormat.WHITE + " " + formatMB(each.getCapacity() / 1000));
-                    sender.sendMessage(TextFormat.GRAY + "      " + each.getMemoryType() + ", " + each.getManufacturer());
-                }
-                sender.sendMessage("");
             }
         }
+    }
 
+    @Override
+    public Map<Long, BlockEntity> getBlockEntities() {
+        return tiles;
+    }
+
+    @Override
+    public BlockEntity getTile(int x, int y, int z) {
+        return this.tileList.get(((long) z << 16) | ((long) x << 12) | (y + 64));
+    }
+
+    @Override
+    public boolean isLoaded() {
+        return this.getProvider() != null && this.getProvider().isChunkLoaded(this.getX(), this.getZ());
+    }
+
+    @Override
+    public boolean load() throws IOException {
+        return this.load(true);
+    }
+
+    @Override
+    public boolean load(boolean generate) throws IOException {
+        return this.getProvider() != null && this.getProvider().getChunk(this.getX(), this.getZ(), true) != null;
+    }
+
+    @Override
+    public boolean unload() {
+        return this.unload(true, true);
+    }
+
+    @Override
+    public boolean unload(boolean save) {
+        return this.unload(save, true);
+    }
+
+    @Override
+    public boolean unload(boolean save, boolean safe) {
+        LevelProvider provider = this.getProvider();
+        if (provider == null) {
+            return true;
+        }
+        if (save && this.changes.get() != 0) {
+            provider.saveChunk(this.getX(), this.getZ());
+        }
+        if (safe) {
+            for (Entity entity : this.getEntities().values()) {
+                if (entity instanceof Player) {
+                    return false;
+                }
+            }
+        }
+        for (Entity entity : new ArrayList<>(this.getEntities().values())) {
+            if (entity instanceof Player) {
+                continue;
+            }
+            entity.close();
+        }
+
+        for (BlockEntity blockEntity : new ArrayList<>(this.getBlockEntities().values())) {
+            blockEntity.close();
+        }
         return true;
     }
 
-    public enum ComputerSystemEntry {
-        HYPERVISORPRESENT
+    @Override
+    public void initChunk() {
+        if (this.getProvider() != null && !this.isInit) {
+            boolean changed = false;
+            if (this.entityNBT != null) {
+                for (CompoundTag nbt : entityNBT) {
+                    if (!nbt.contains("identifier")) {
+                        this.setChanged();
+                        continue;
+                    }
+                    ListTag<? extends Tag> pos = nbt.getList("Pos");
+                    if ((((NumberTag<?>) pos.get(0)).getData().intValue() >> 4) != this.getX() || ((((NumberTag<?>) pos.get(2)).getData().intValue() >> 4) != this.getZ())) {
+                        changed = true;
+                        continue;
+                    }
+                    Entity entity = Entity.createEntity(nbt.getString("identifier"), this, nbt);
+                    if (entity != null) {
+                        changed = true;
+                    }
+                }
+                this.entityNBT = null;
+            }
+
+            if (this.blockEntityNBT != null) {
+                for (CompoundTag nbt : blockEntityNBT) {
+                    if (nbt != null) {
+                        if (!nbt.contains("id")) {
+                            changed = true;
+                            continue;
+                        }
+                        if ((nbt.getInt("x") >> 4) != this.getX() || ((nbt.getInt("z") >> 4) != this.getZ())) {
+                            changed = true;
+                            continue;
+                        }
+                        BlockEntity blockEntity = BlockEntity.createBlockEntity(nbt.getString("id"), this, nbt);
+                        if (blockEntity == null) {
+                            changed = true;
+                        }
+                    }
+                }
+                this.blockEntityNBT = null;
+            }
+
+            if (changed) {
+                this.setChanged();
+            }
+
+            this.isInit = true;
+        }
+    }
+
+    @Override
+    public short[] getHeightMapArray() {
+        return heightMap;
+    }
+
+    @Override
+    public CompoundTag getExtraData() {
+        return this.extraData;
+    }
+
+    @Override
+    public boolean hasChanged() {
+        return this.changes.get() != 0;
+    }
+
+    @Override
+    public void setChanged() {
+        this.changes.incrementAndGet();
+    }
+
+    @Override
+    public void setChanged(boolean changed) {
+        if (changed) {
+            setChanged();
+        } else {
+            changes.set(0);
+        }
+    }
+
+    @Override
+    public long getChanges() {
+        return changes.get();
+    }
+
+    @Override
+    public long getSectionBlockChanges(int sectionY) {
+        if(sectionY < 0 || sectionY >= getDimensionData().getChunkSectionCount()) {
+            return 0L;
+        }
+        if(sections[sectionY] == null) return 0L;
+        return sections[sectionY].blockChanges().get();
+    }
+
+    @Override
+    public boolean isBlockChangeAllowed(int chunkX, int chunkY, int chunkZ) {
+        //todo complete
+        return true;
+    }
+
+    @Override
+    public Stream<Block> scanBlocks(BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
+        int offsetX = getX() << 4;
+        int offsetZ = getZ() << 4;
+        return IntStream.rangeClosed(0, getDimensionData().getChunkSectionCount() - 1)
+                .mapToObj(sectionY -> sections[sectionY])
+                .filter(section -> section != null && !section.isEmpty()).parallel()
+                .map(section -> section.scanBlocks(getProvider(), offsetX, offsetZ, min, max, condition))
+                .flatMap(Collection::stream);
+    }
+
+    /**
+     * Gets or create section.
+     *
+     * @param sectionY the section y range -4 ~ 19
+     * @return the or create section
+     */
+    protected ChunkSection getOrCreateSection(int sectionY) {
+        int minSectionY = this.getDimensionData().getMinSectionY();
+        int offsetY = sectionY - minSectionY;
+        for (int i = 0; i <= offsetY; i++) {
+            if (sections[i] == null) {
+                sections[i] = new ChunkSection((byte) (i + minSectionY));
+            }
+        }
+        return sections[offsetY];
+    }
+
+    private void removeInvalidTile(int x, int y, int z) {
+        BlockEntity entity = getTile(x, y, z);
+        if (entity != null) {
+            try {
+                if (!entity.closed && entity.isBlockEntityValid()) {
+                    return;
+                }
+            } catch (Exception e) {
+                try {
+                    log.warn("Block entity validation of {} at {}, {} {} {} failed, removing as invalid.",
+                            entity.getClass().getName(),
+                            getProvider().getLevel().getName(),
+                            entity.x,
+                            entity.y,
+                            entity.z,
+                            e
+                    );
+                } catch (Exception e2) {
+                    e.addSuppressed(e2);
+                    log.warn("Block entity validation failed", e);
+                }
+            }
+            entity.close();
+        }
+    }
+
+    @Override
+    public void reObfuscateChunk() {
+        for (var section : getSections()) {
+            if (section != null) {
+                section.setNeedReObfuscate();
+            }
+        }
+    }
+
+    private int ensureY(final int y) {
+        final int minHeight = getDimensionData().getMinHeight();
+        final int maxHeight = getDimensionData().getMaxHeight();
+        return Math.max(Math.min(y, maxHeight), minHeight);
+    }
+
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    @Override
+    public String toString() {
+        return "Chunk{" +
+                "x=" + x +
+                ", z=" + z +
+                '}';
+    }
+
+    public static class Builder implements IChunkBuilder {
+        ChunkState state;
+        int chunkZ;
+        int chunkX;
+        LevelProvider levelProvider;
+        ChunkSection[] sections;
+        short[] heightMap;
+        List<CompoundTag> entities;
+        List<CompoundTag> blockEntities;
+        CompoundTag extraData;
+
+        private Builder() {
+        }
+
+        @Override
+        public Builder chunkX(int chunkX) {
+            this.chunkX = chunkX;
+            return this;
+        }
+
+        @Override
+        public int getChunkX() {
+            return chunkX;
+        }
+
+        @Override
+        public Builder chunkZ(int chunkZ) {
+            this.chunkZ = chunkZ;
+            return this;
+        }
+
+        @Override
+        public int getChunkZ() {
+            return chunkZ;
+        }
+
+        @Override
+        public Builder state(ChunkState state) {
+            this.state = state;
+            return this;
+        }
+
+        @Override
+        public Builder levelProvider(LevelProvider levelProvider) {
+            this.levelProvider = levelProvider;
+            return this;
+        }
+
+        @Override
+        public DimensionData getDimensionData() {
+            Preconditions.checkNotNull(levelProvider);
+            return levelProvider.getDimensionData();
+        }
+
+        public Builder sections(ChunkSection[] sections) {
+            this.sections = sections;
+            return this;
+        }
+
+        @Override
+        public ChunkSection[] getSections() {
+            return sections;
+        }
+
+        public Builder heightMap(short[] heightMap) {
+            this.heightMap = heightMap;
+            return this;
+        }
+
+        @Override
+        public Builder entities(List<CompoundTag> entities) {
+            this.entities = entities;
+            return this;
+        }
+
+        @Override
+        public Builder blockEntities(List<CompoundTag> blockEntities) {
+            this.blockEntities = blockEntities;
+            return this;
+        }
+
+        @Override
+        public IChunkBuilder extraData(CompoundTag extraData) {
+            this.extraData = extraData;
+            return this;
+        }
+
+        public Chunk build() {
+            Preconditions.checkNotNull(levelProvider);
+            if (state == null) state = ChunkState.NEW;
+            if (sections == null) sections = new ChunkSection[levelProvider.getDimensionData().getChunkSectionCount()];
+            if (heightMap == null) heightMap = new short[256];
+            if (entities == null) entities = new ArrayList<>();
+            if (blockEntities == null) blockEntities = new ArrayList<>();
+            if (extraData == null) extraData = new CompoundTag();
+            return new Chunk(
+                    state,
+                    chunkX,
+                    chunkZ,
+                    levelProvider,
+                    sections,
+                    heightMap,
+                    entities,
+                    blockEntities,
+                    extraData
+            );
+        }
+
+        public Chunk emptyChunk(int chunkX, int chunkZ) {
+            Preconditions.checkNotNull(levelProvider);
+            return new Chunk(chunkX, chunkZ, levelProvider);
+        }
     }
 }
