@@ -988,8 +988,8 @@ public class Level implements Metadatable {
         int baseTickRate = getServer().getSettings().levelSettings().baseTickRate();
         long levelTime = System.currentTimeMillis();
         int tickMs = (int) (System.currentTimeMillis() - levelTime);
-        doTick(gameLoop.getTick());
-        if (getServer().getSettings().levelSettings().autoTickRate()) {
+        doTick((int) gameLoop.getTick());
+        /*if (getServer().getSettings().levelSettings().autoTickRate()) {
             if (tickMs < 50 && this.getTickRate() > baseTickRate) {
                 int r;
                 this.setTickRate(r = this.getTickRate() - 1);
@@ -1009,48 +1009,81 @@ public class Level implements Metadatable {
                 this.tickRateCounter = this.getTickRate();
             }
         }
+         */
     }
 
     public void doTick(int currentTick) {
         players.values().forEach(player -> player.getSession().tick());
         requireProvider();
-        try {
-            getScheduler().mainThreadHeartbeat(currentTick);
-            updateBlockLight();
-            this.checkTime();
-            if (currentTick >= nextTimeSendTick) { // Send time to client every 30 seconds to make sure it
-                this.sendTime();
-                nextTimeSendTick = currentTick + 30 * 20;
-            }
+        getScheduler().mainThreadHeartbeat(currentTick);
+        CompletableFuture.runAsync(() -> {
+            try {
+                updateBlockLight();
+                this.checkTime();
+                if (currentTick >= nextTimeSendTick) { // Send time to client every 30 seconds to make sure it
+                    this.sendTime();
+                    nextTimeSendTick = currentTick + 30 * 20;
+                }
 
-            // 检查突出区块（玩家附近3x3区块）
-            if ((currentTick & 127) == 0) { // 每127刻检查一次是比较合理的
-                highLightChunks.clear();
-                for (var player : this.players.values()) {
-                    if (player.isOnline()) {
-                        int chunkX = player.getChunkX();
-                        int chunkZ = player.getChunkZ();
-                        for (int dx = -1; dx <= 1; dx++) {
-                            for (int dz = -1; dz <= 1; dz++) {
-                                highLightChunks.add(Level.chunkHash(chunkX + dx, chunkZ + dz));
+                // 检查突出区块（玩家附近3x3区块）
+                if ((currentTick & 127) == 0) { // 每127刻检查一次是比较合理的
+                    highLightChunks.clear();
+                    for (var player : this.players.values()) {
+                        if (player.isOnline()) {
+                            int chunkX = player.getChunkX();
+                            int chunkZ = player.getChunkZ();
+                            for (int dx = -1; dx <= 1; dx++) {
+                                for (int dz = -1; dz <= 1; dz++) {
+                                    highLightChunks.add(Level.chunkHash(chunkX + dx, chunkZ + dz));
+                                }
                             }
                         }
                     }
                 }
+                checkWeather();
+
+                this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
+
+                if (getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+                    if (Arrays.stream(getEntities()).filter(entity -> entity.despawnable).toArray().length < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
+                        getChunks().values().forEach(IChunk::doMobSpawning);
+                    }
+                }
+
+                if (!this.updateEntities.isEmpty()) {
+                    CompletableFuture.runAsync(() -> updateEntities.keySet()
+                            .longParallelStream().forEach(id -> {
+                                Entity entity = this.updateEntities.get(id);
+                                if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
+                                    entityAsyncPrepare.asyncPrepare(getTick());
+                                }
+                            }), Server.getInstance().getComputeThreadPool()).join();
+                    for (long id : this.updateEntities.keySetLong()) {
+                        Entity entity = this.updateEntities.get(id);
+                        if (entity instanceof EntityIntelligent intelligent) {
+                            if (intelligent.getBehaviorGroup() == null) {
+                                this.updateEntities.remove(id);
+                                continue;
+                            }
+                        }
+                        if (entity == null) {
+                            this.updateEntities.remove(id);
+                            continue;
+                        }
+                        if (entity.closed || !entity.onUpdate(currentTick)) {
+                            this.updateEntities.remove(id);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            checkWeather();
+        }, Server.getInstance().getComputeThreadPool());
 
-            this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
-
+        try {
             this.levelCurrentTick++;
 
             this.updateQueue.tick(this.getCurrentTick());
-
-            if(getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
-                if(Arrays.stream(getEntities()).filter(entity -> entity.despawnable).toArray().length < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
-                    getChunks().values().forEach(IChunk::doMobSpawning);
-                }
-            }
 
             while (!this.normalUpdateQueue.isEmpty()) {
                 QueuedUpdate queuedUpdate = this.normalUpdateQueue.poll();
@@ -1065,31 +1098,7 @@ public class Level implements Metadatable {
                     }
                 }
             }
-            if (!this.updateEntities.isEmpty()) {
-                CompletableFuture.runAsync(() -> updateEntities.keySet()
-                        .longParallelStream().forEach(id -> {
-                            Entity entity = this.updateEntities.get(id);
-                            if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
-                                entityAsyncPrepare.asyncPrepare(getTick());
-                            }
-                        }), Server.getInstance().getComputeThreadPool()).join();
-                for (long id : this.updateEntities.keySetLong()) {
-                    Entity entity = this.updateEntities.get(id);
-                    if (entity instanceof EntityIntelligent intelligent) {
-                        if (intelligent.getBehaviorGroup() == null) {
-                            this.updateEntities.remove(id);
-                            continue;
-                        }
-                    }
-                    if (entity == null) {
-                        this.updateEntities.remove(id);
-                        continue;
-                    }
-                    if (entity.closed || !entity.onUpdate(currentTick)) {
-                        this.updateEntities.remove(id);
-                    }
-                }
-            }
+
             this.updateBlockEntities.removeIf(blockEntity -> !(!blockEntity.closed && blockEntity.isValid() && blockEntity.onUpdate()));
 
             this.tickChunks();
@@ -1157,7 +1166,10 @@ public class Level implements Metadatable {
                     this.getFolderPath(), Utils.getExceptionMessage(e)), e);
             e.printStackTrace();
         } finally {
-            getPlayers().values().forEach(Player::checkNetwork);
+            CompletableFuture.runAsync(() -> {
+                getPlayers().values().forEach(Player::checkNetwork);
+            }, Server.getInstance().getComputeThreadPool()).join();
+
             releaseTickCachedBlocks();
         }
     }
@@ -4768,7 +4780,7 @@ public class Level implements Metadatable {
     }
 
     public int getTick() {
-        return getServer().getSettings().levelSettings().levelThread() ? this.getBaseTickGameLoop().getTick() : getServer().getTick();
+        return getServer().getSettings().levelSettings().levelThread() ? (int) this.getBaseTickGameLoop().getTick() : getServer().getTick();
     }
 
     /**
