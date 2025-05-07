@@ -574,4 +574,9 @@ public interface PacketHandler {
 
     default void handle(PlayerUpdateEntityOverridesPacket pk) {
     }
-}
+
+    default void handle(ClientboundControlSchemeSetPacket pk) {
+    }
+
+    default void handle(PlayerLocationPacket pk) {
+    }}

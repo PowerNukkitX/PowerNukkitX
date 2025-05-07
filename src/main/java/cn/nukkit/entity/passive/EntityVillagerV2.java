@@ -63,6 +63,7 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.network.protocol.UpdateTradePacket;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -905,8 +906,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         TAIGA;
 
         public static Clothing getClothing(int biomeId) {
-            BiomeRegistry.BiomeDefinition definition = Registries.BIOME.get(biomeId);
-            Set<String> tags = definition.tags();
+            BiomeDefinition definition = Registries.BIOME.get(biomeId);
+            Set<String> tags = definition.getTags();
             if(tags.contains("desert") || tags.contains("mesa")) return DESERT;
             if(tags.contains("jungle")) return JUNGLE;
             if(tags.contains("savanna")) return SAVANNA;

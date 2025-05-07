@@ -5,6 +5,7 @@ import cn.nukkit.entity.data.Skin;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.*;
 
+import java.awt.*;
 import java.util.UUID;
 
 @Getter
@@ -42,6 +43,7 @@ public class PlayerListPacket extends DataPacket {
                 byteBuf.writeBoolean(entry.isTeacher);
                 byteBuf.writeBoolean(entry.isHost);
                 byteBuf.writeBoolean(entry.subClient);
+                byteBuf.writeIntLE(entry.color.getRGB());
             }
 
             for (Entry entry : this.entries) {
@@ -69,6 +71,7 @@ public class PlayerListPacket extends DataPacket {
         public boolean isHost;
         private boolean subClient;
         public boolean trustedSkin;
+        public Color color = Color.WHITE;
 
         public Entry(UUID uuid) {
             this.uuid = uuid;

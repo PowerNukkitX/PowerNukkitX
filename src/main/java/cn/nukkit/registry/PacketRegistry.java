@@ -259,8 +259,10 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.CLIENT_CAMERA_AIM_ASSIST_PACKET, ClientCameraAimAssistPacket.class);
         this.register0(ProtocolInfo.CLIENT_MOVEMENT_PREDICTION_SYNC_PACKET, ClientMovementPredictionSyncPacket.class);
         this.register0(ProtocolInfo.UPDATE_CLIENT_OPTIONS_PACKET, UpdateClientOptionsPacket.class);
-
-
+        this.register0(ProtocolInfo.CLIENTBOUND_CONTROL_SCHEME_SET_PACKET, ClientboundControlSchemeSetPacket.class);
+        this.register0(ProtocolInfo.PLAYER_VIDEO_CAPTURE_PACKET, PlayerVideoCapturePacket.class);
+        this.register0(ProtocolInfo.PLAYER_UPDATE_ENTITY_OVERRIDES_PACKET, PlayerUpdateEntityOverridesPacket.class);
+        this.register0(ProtocolInfo.PLAYER_LOCATION_PACKET, PlayerLocationPacket.class);
 
         this.PACKET_POOL.trim();
     }

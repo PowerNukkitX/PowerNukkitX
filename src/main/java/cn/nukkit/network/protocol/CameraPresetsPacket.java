@@ -55,6 +55,7 @@ public class CameraPresetsPacket extends DataPacket {
         byteBuf.writeOptional(preset.getPlayEffect(), byteBuf::writeBoolean);
         byteBuf.writeOptional(preset.getAlignTargetAndCameraForward(), byteBuf::writeBoolean);
         writeCameraPresetAimAssist(byteBuf, preset.getAimAssist());
+        byteBuf.writeBoolean(false);
     }
 
     public void writeCameraPresetAimAssist(HandleByteBuf byteBuf, OptionalValue<CameraPresetAimAssist> data) {

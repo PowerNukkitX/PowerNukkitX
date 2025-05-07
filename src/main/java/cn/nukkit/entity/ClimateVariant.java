@@ -1,6 +1,7 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
@@ -18,8 +19,8 @@ public interface ClimateVariant {
     String[] warmTags = new String[]{BiomeTags.SAVANNA, BiomeTags.JUNGLE, BiomeTags.MESA, BiomeTags.DESERT, BiomeTags.LUKEWARM, BiomeTags.SWAMP, BiomeTags.NETHER};
 
     default Variant getBiomeVariant(int biomeId) {
-        BiomeRegistry.BiomeDefinition definition = Registries.BIOME.get(biomeId);
-        Set<String> tags = definition.tags();
+        BiomeDefinition definition = Registries.BIOME.get(biomeId);
+        Set<String> tags = definition.getTags();
         for(String tag : coldTags) if(tags.contains(tag)) return Variant.COLD;
         for(String tag : warmTags) if(tags.contains(tag)) return Variant.WARM;
         return Variant.TEMPERATE;
