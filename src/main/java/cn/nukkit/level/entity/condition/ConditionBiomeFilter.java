@@ -17,6 +17,6 @@ public class ConditionBiomeFilter extends Condition {
     @Override
     public boolean evaluate(Block block) {
         int biomeId = block.getLevel().getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ());
-        return Arrays.stream(biomeTag).anyMatch(tag -> Registries.BIOME.get(biomeId).tags().contains(tag));
+        return Arrays.stream(biomeTag).anyMatch(tag -> Registries.BIOME.get(biomeId).getTags().contains(tag));
     }
 }

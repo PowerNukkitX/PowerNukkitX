@@ -54,6 +54,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.DyeColor;
@@ -390,9 +391,9 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     }
 
     public static int getBiomeVariant(int biomeId) {
-        BiomeRegistry.BiomeDefinition definition = Registries.BIOME.get(biomeId);
-        Set<String> tags = definition.tags();
-        String name = definition.name();
+        BiomeDefinition definition = Registries.BIOME.get(biomeId);
+        Set<String> tags = definition.getTags();
+        String name = definition.getName();
         if(name.equals("cold_taiga")) return ASHEN;
         if(name.equals("mega_taiga")) return BLACK;
         if(name.equals("redwood_taiga_mutated")) return CHESSNUT;
