@@ -177,7 +177,7 @@ public final class PlayerChunkManager {
     }
 
     private void sendChunk() {
-        if (!chunkReadyToSend.isEmpty()) {p);
+        if (!chunkReadyToSend.isEmpty()) {
             for (var e : chunkReadyToSend.long2ObjectEntrySet()) {
                 int chunkX = Level.getHashX(e.getLongKey());
                 int chunkZ = Level.getHashZ(e.getLongKey());
