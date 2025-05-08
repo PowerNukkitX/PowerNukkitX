@@ -910,7 +910,7 @@ public class Server {
         }
 
         // 处理可冻结数组
-        int freezableArrayCompressTime = (int) (50 - (tickStartTime - loop.getMSPT()));
+        int freezableArrayCompressTime = (int) (50 - (loop.getNextTick() - System.currentTimeMillis()));
         if (freezableArrayCompressTime > 4) {
             getFreezableArrayManager().setMaxCompressionTime(freezableArrayCompressTime).tick();
         }
