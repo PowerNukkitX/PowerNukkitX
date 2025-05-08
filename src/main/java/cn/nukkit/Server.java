@@ -690,7 +690,7 @@ public class Server {
     public void shutdown() {
         isRunning.compareAndSet(true, false);
         if(baseTick != null) baseTick.stop();
-        else forceShutdown();
+        forceShutdown();
     }
 
     /**
@@ -872,6 +872,8 @@ public class Server {
     }
 
     private void tick(GameLoop loop) {
+        if(!isRunning()) return;
+
         tickCounter = (int) loop.getTick();
 
         this.network.processInterfaces();

@@ -106,7 +106,6 @@ public final class GameLoop {
                 Thread.yield();
             }
         }
-        onStop.run();
     }
 
     private void updateTPS(int ticksLastSecond) {
@@ -139,6 +138,7 @@ public final class GameLoop {
 
     public void stop() {
         isRunning.set(false);
+        onStop.run();
     }
 
     public boolean isRunning() {
