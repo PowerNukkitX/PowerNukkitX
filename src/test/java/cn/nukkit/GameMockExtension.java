@@ -170,8 +170,6 @@ public class GameMockExtension extends MockitoExtension {
             try {
                 FieldUtils.writeDeclaredField(server, "levelArray", Level.EMPTY_ARRAY, true);
                 FieldUtils.writeDeclaredField(server, "autoSave", false, true);
-                FieldUtils.writeDeclaredField(server, "tickAverage", new float[]{20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20}, true);
-                FieldUtils.writeDeclaredField(server, "useAverage", new float[]{20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20}, true);
                 network = new Network(server);
                 FieldUtils.writeDeclaredField(server, "network", network, true);
                 FieldUtils.writeDeclaredStaticField(Server.class, "instance", server, true);
