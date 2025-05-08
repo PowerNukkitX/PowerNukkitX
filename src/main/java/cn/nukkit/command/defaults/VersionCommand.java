@@ -35,72 +35,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class VersionCommand extends Command implements CoreCommand {
 
-    private List<Query> queryQueue = new LinkedList<>();
     private int lastUpdateTick = 0;
     private JsonArray listVersionCache = null;
-
-    {
-        Server.getInstance().getScheduler().scheduleRepeatingTask(null, () -> {
-            try {
-                for (Query query : queryQueue.toArray(new Query[queryQueue.size()])) {
-                    if (query.jsonArrayFuture.isDone()) {
-                        JsonArray cores = query.jsonArrayFuture.get();
-                        String localCommitInfo = Server.getInstance().getGitCommit();
-                        localCommitInfo = localCommitInfo.substring(4);
-                        int versionMissed = -1;
-                        query.sender.sendMessage("####################");
-                        var matched = false;
-                        for (int i = 0, len = cores.size(); i < len; i++) {
-                            var entry = cores.get(i).getAsJsonObject();
-                            var remoteCommitInfo = entry.get("name").getAsString().split("-")[1];
-                            matched = remoteCommitInfo.equals(localCommitInfo);
-
-                            var infoBuilder = new StringBuilder();
-                            infoBuilder.append("[").append(i + 1).append("] ");
-                            if (i == 0)
-                                infoBuilder.append("Name: §e").append(entry.get("name").getAsString()).append("§f, Time: §e").append(utcToLocal(entry.get("lastModified").getAsString())).append(" §e(LATEST)").append(matched ? " §b(CURRENT)" : "");
-                            else if (matched)
-                                infoBuilder.append("Name: §b").append(entry.get("name").getAsString()).append("§f, Time: §b").append(utcToLocal(entry.get("lastModified").getAsString())).append(" §b(CURRENT)");
-                            else
-                                infoBuilder.append("Name: §a").append(entry.get("name").getAsString()).append("§f, Time: §a").append(utcToLocal(entry.get("lastModified").getAsString()));
-                            //打印相关信息
-                            query.sender.sendMessage(infoBuilder.toString());
-
-                            if (matched) {
-                                versionMissed = i;
-                                break;
-                            }
-                        }
-                        //too old
-                        if (!matched) {
-                            query.sender.sendMessage("....................");
-                            var localInfoBuilder = new StringBuilder();
-                            localInfoBuilder.append("[???] ").append("Name: §c").append(localCommitInfo).append("§f, Time: §c???").append(" §c(CURRENT)");
-                            query.sender.sendMessage(localInfoBuilder.toString());
-                        }
-                        query.sender.sendMessage("####################");
-                        if (versionMissed == 0)
-                            query.sender.sendMessage("§aYou are using the latest version of PowerNukkitX!");
-                        else if (versionMissed > 0) {
-                            query.sender.sendMessage("§cYou are using an outdated version of PowerNukkitX!, §f" + versionMissed + " §aversions behind!");
-                        } else {
-                            query.sender.sendMessage("§cCouldn't match your version number: §f" + localCommitInfo + "§c, maybe you are using a custom build or your version is too old!");
-                        }
-                        if (versionMissed != 0) {
-                            query.sender.sendMessage("Download the latest version at §a" + cores.get(0).getAsJsonObject().get("url").getAsString());
-                            query.sender.sendMessage("You can enter command §a \"pnx server update\"§f to automatically update your server if you are using PNX-CLI");
-                            query.sender.sendMessage("Download PNX-CLI at: §a" + "https://github.com/PowerNukkitX/PNX-CLI/releases");
-                        }
-                        queryQueue.remove(query);
-                    }
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        }, 15);
-    }
 
     public VersionCommand(String name) {
         super(name,

@@ -116,6 +116,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.*;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
@@ -137,6 +138,7 @@ public class Server {
     public static final String BROADCAST_CHANNEL_USERS = "nukkit.broadcast.user";
     private static Server instance = null;
 
+    private GameLoop baseTick;
     private BanList banByName;
     private BanList banByIP;
     private Config operators;
@@ -150,11 +152,6 @@ public class Server {
      * 一个tick计数器,记录服务器已经经过的tick数
      */
     private int tickCounter;
-    private long nextTick;
-    private final float[] tickAverage = {20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
-    private final float[] useAverage = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    private float maxTick = 20;
-    private float maxUse = 0;
     private int sendUsageTicker = 0;
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
@@ -181,7 +178,6 @@ public class Server {
     private LevelMetadataStore levelMetadata;
     private Network network;
     private int serverAuthoritativeMovementMode = 0;
-    private Boolean getAllowFlight = null;
     private int defaultGamemode = Integer.MAX_VALUE;
     private int autoSaveTicker = 0;
     private int autoSaveTicks = 6000;
@@ -520,6 +516,10 @@ public class Server {
         this.start();
     }
 
+    public long getNextTick() {
+        return baseTick.getNextTick();
+    }
+
     private boolean convertLegacyConfiguration() {
         File oldNukkitYml = new File(this.dataPath + "nukkit.yml");
         File oldServerProperties = new File(this.dataPath + "server.properties");
@@ -689,6 +689,8 @@ public class Server {
      */
     public void shutdown() {
         isRunning.compareAndSet(true, false);
+        if(baseTick != null) baseTick.stop();
+        else forceShutdown();
     }
 
     /**
@@ -713,8 +715,6 @@ public class Server {
                 player.close(player.getLeaveMessage(), getSettings().miscSettings().shutdownMessage());
             }
 
-            this.getSettings().save();
-
             log.debug("Disabling all plugins");
             this.pluginManager.disablePlugins();
 
@@ -730,6 +730,7 @@ public class Server {
 
             log.debug("Unloading all levels");
             for (Level level : this.levelArray) {
+                level.save(true);
                 this.unloadLevel(level, true);
                 while(level.isThreadRunning()) Thread.sleep(1);
             }
@@ -775,7 +776,6 @@ public class Server {
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
         getPluginManager().callEvent(serverStartedEvent);
         this.tickProcessor();
-        this.forceShutdown();
     }
 
     public void tickProcessor() {
@@ -786,29 +786,15 @@ public class Server {
             }
         }, 60);
 
-        this.nextTick = System.currentTimeMillis();
-        try {
-            while (this.isRunning.get()) {
-                try {
-                    this.tick();
+        baseTick = GameLoop.builder()
+                .onTick(this::tick)
+                .loopCountPerSec(20)
+                .onStop(() -> {
+                    this.forceShutdown();
+                })
+                .build();
 
-                    long next = this.nextTick;
-                    long current = System.currentTimeMillis();
-
-                    if (next - 0.1 > current) {
-                        long allocated = next - current - 1;
-                        if (allocated > 0) {
-                            //noinspection BusyWait
-                            Thread.sleep(allocated, 900000);
-                        }
-                    }
-                } catch (RuntimeException e) {
-                    log.error("A RuntimeException happened while ticking the server", e);
-                }
-            }
-        } catch (Throwable e) {
-            log.error("Exception happened while ticking server\n{}", Utils.getAllThreadDumps(), e);
-        }
+        baseTick.startLoop();
     }
 
     private void checkTickUpdates(int currentTick) {
@@ -885,25 +871,15 @@ public class Server {
         }
     }
 
-    private void tick() {
-        long tickTime = System.currentTimeMillis();
+    private void tick(GameLoop loop) {
+        tickCounter = (int) loop.getTick();
 
-        long time = tickTime - this.nextTick;
-        if (time < -25) {
-            try {
-                Thread.sleep(Math.max(5, -time - 25));
-            } catch (InterruptedException e) {
-                log.debug("The thread {} got interrupted", Thread.currentThread().getName(), e);
-            }
-        }
-
-        long tickTimeNano = System.nanoTime();
-        if ((tickTime - this.nextTick) < -25) {
-            return;
-        }
-
-        ++this.tickCounter;
         this.network.processInterfaces();
+
+        players.values().forEach(player -> {
+            player.getSession().tick();
+            player.checkNetwork();
+        });
 
         this.getScheduler().mainThreadHeartbeat(this.tickCounter);
 
@@ -911,8 +887,6 @@ public class Server {
 
         if ((this.tickCounter & 0b1111) == 0) {
             this.titleTick();
-            this.maxTick = 20;
-            this.maxUse = 0;
 
             if ((this.tickCounter & 0b111111111) == 0) {
                 try {
@@ -925,7 +899,9 @@ public class Server {
 
         if (this.autoSave && ++this.autoSaveTicker >= this.autoSaveTicks) {
             this.autoSaveTicker = 0;
-            this.doAutoSave();
+            CompletableFuture.runAsync(() -> {
+                this.doAutoSave();
+            });
         }
 
         if (this.sendUsageTicker > 0 && --this.sendUsageTicker == 0) {
@@ -934,40 +910,12 @@ public class Server {
         }
 
         // 处理可冻结数组
-        int freezableArrayCompressTime = (int) (50 - (System.currentTimeMillis() - tickTime));
+        int freezableArrayCompressTime = (int) (50 - (System.currentTimeMillis() - loop.getMSPT()));
         if (freezableArrayCompressTime > 4) {
             getFreezableArrayManager().setMaxCompressionTime(freezableArrayCompressTime).tick();
         }
-
-        long nowNano = System.nanoTime();
-        float tick = (float) Math.min(20, 1000000000 / Math.max(1000000, ((double) nowNano - tickTimeNano)));
-        float use = (float) Math.min(1, ((double) (nowNano - tickTimeNano)) / 50000000);
-
-        if (this.maxTick > tick) {
-            this.maxTick = tick;
-        }
-
-        if (this.maxUse < use) {
-            this.maxUse = use;
-        }
-
-        System.arraycopy(this.tickAverage, 1, this.tickAverage, 0, this.tickAverage.length - 1);
-        this.tickAverage[this.tickAverage.length - 1] = tick;
-
-        System.arraycopy(this.useAverage, 1, this.useAverage, 0, this.useAverage.length - 1);
-        this.useAverage[this.useAverage.length - 1] = use;
-
-        if ((this.nextTick - tickTime) < -1000) {
-            this.nextTick = tickTime;
-        } else {
-            this.nextTick += 50;
-        }
-
     }
 
-    public long getNextTick() {
-        return nextTick;
-    }
 
     /**
      * @return 返回服务器经历过的tick数<br>Returns the number of ticks recorded by the server
@@ -977,29 +925,15 @@ public class Server {
     }
 
     public float getTicksPerSecond() {
-        return ((float) Math.round(this.maxTick * 100)) / 100;
+        return baseTick.getTPS();
     }
 
     public float getTicksPerSecondAverage() {
-        float sum = 0;
-        int count = this.tickAverage.length;
-        for (float aTickAverage : this.tickAverage) {
-            sum += aTickAverage;
-        }
-        return (float) NukkitMath.round(sum / count, 2);
+        return (float) NukkitMath.round(this.baseTick.getTPS(), 2);
     }
 
     public float getTickUsage() {
-        return (float) NukkitMath.round(this.maxUse * 100, 2);
-    }
-
-    public float getTickUsageAverage() {
-        float sum = 0;
-        int count = this.useAverage.length;
-        for (float aUseAverage : this.useAverage) {
-            sum += aUseAverage;
-        }
-        return ((float) Math.round(sum / count * 100)) / 100;
+        return baseTick.getMSPT();
     }
 
     // TODO: Fix title tick
@@ -2168,7 +2102,7 @@ public class Server {
             this.getPluginManager().callEvent(new LevelLoadEvent(level));
             level.setTickRate(getSettings().levelSettings().baseTickRate());
         }
-        if (tickCounter != 0) {//update world enum when load  
+        if (tickCounter != 0) {//update world enum when load
             WorldCommand.WORLD_NAME_ENUM.updateSoftEnum();
         }
         return true;
@@ -2704,3 +2638,4 @@ public class Server {
     // endregion
 
 }
+
