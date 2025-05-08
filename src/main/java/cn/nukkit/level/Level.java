@@ -84,6 +84,7 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
@@ -97,6 +98,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -297,7 +299,6 @@ public class Level implements Metadatable {
     public GameRules gameRules;
     private AtomicReference<LevelProvider> provider;
     private float time;
-    private int nextTimeSendTick;
     private final String name;
     private final String folderPath;
     private Vector3 mutableBlock;
@@ -312,7 +313,7 @@ public class Level implements Metadatable {
     private int updateLCG = ThreadLocalRandom.current().nextInt();
     private int tickRate;
     private long levelCurrentTick = 0;
-    private final Map<Long, Map<Integer, Object>> blockLightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
+    private final Long2ObjectOpenHashMap<IntOpenHashSet> blockLightQueue = new Long2ObjectOpenHashMap<>(8);
     private final int dimensionCount;
     ///base tick system
     private final Thread baseTickThread;
@@ -320,6 +321,7 @@ public class Level implements Metadatable {
     private final GameLoop baseTickGameLoop;
     ///sub tick system
     private final Thread subTickThread;
+    @Getter
     private final GameLoop subTickGameLoop;
     //Scheduler
     @Getter
@@ -555,7 +557,7 @@ public class Level implements Metadatable {
             this.generateChunk(spawn.getChunkX(), spawn.getChunkZ());
         }
         this.subTickThread.start();
-        if(getServer().getSettings().levelSettings().levelThread()) {
+        if (getServer().getSettings().levelSettings().levelThread()) {
             this.baseTickThread.start();
         }
         log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getName() + TextFormat.RESET));
@@ -602,7 +604,7 @@ public class Level implements Metadatable {
     }
 
     public void close() {
-        if(getServer().getSettings().levelSettings().levelThread() && baseTickThread.isAlive()) {
+        if (getServer().getSettings().levelSettings().levelThread() && baseTickThread.isAlive()) {
             this.baseTickGameLoop.stop();
         } else remove();
     }
@@ -855,9 +857,9 @@ public class Level implements Metadatable {
         }
 
         this.close();
-        if(force && getServer().getSettings().levelSettings().levelThread()) {
+        if (force && getServer().getSettings().levelSettings().levelThread()) {
             getServer().getScheduler().scheduleDelayedTask(() -> {
-                if(baseTickThread.isAlive()) {
+                if (baseTickThread.isAlive()) {
                     getServer().getLogger().critical(getName() + " failed to unload. Trying to stop the thread.");
                     baseTickThread.interrupt();
                 }
@@ -871,7 +873,7 @@ public class Level implements Metadatable {
         if (this.chunkLoaders.containsKey(index)) {
             return this.chunkLoaders.get(index).entrySet()
                     .stream()
-                    .filter(e -> e.getValue() instanceof Player)
+                    .filter(e -> (e.getValue() instanceof Player p && p.getPlayerChunkManager().getUsedChunks().contains(index)))
                     .collect(HashMap::new, (m, e) -> {
                         m.put(e.getKey(), (Player) e.getValue());
                     }, HashMap::putAll);
@@ -957,7 +959,7 @@ public class Level implements Metadatable {
         if (!this.stopTime && this.gameRules.getBoolean(GameRule.DO_DAYLIGHT_CYCLE)) {
             float prior = this.time;
             this.time += tickRate;
-            if(prior%TIME_FULL > TIME_NIGHT && this.time%TIME_FULL < TIME_DAY) this.noSleepNights++;
+            if (prior % TIME_FULL > TIME_NIGHT && this.time % TIME_FULL < TIME_DAY) this.noSleepNights++;
         }
     }
 
@@ -989,7 +991,7 @@ public class Level implements Metadatable {
         long levelTime = System.currentTimeMillis();
         int tickMs = (int) (System.currentTimeMillis() - levelTime);
         doTick((int) gameLoop.getTick());
-        /*if (getServer().getSettings().levelSettings().autoTickRate()) {
+        if (getServer().getSettings().levelSettings().autoTickRate()) {
             if (tickMs < 50 && this.getTickRate() > baseTickRate) {
                 int r;
                 this.setTickRate(r = this.getTickRate() - 1);
@@ -1009,84 +1011,72 @@ public class Level implements Metadatable {
                 this.tickRateCounter = this.getTickRate();
             }
         }
-         */
     }
 
     public void doTick(int currentTick) {
-        players.values().forEach(player -> player.getSession().tick());
         requireProvider();
         getScheduler().mainThreadHeartbeat(currentTick);
-        CompletableFuture.runAsync(() -> {
-            try {
-                updateBlockLight();
-                this.checkTime();
-                if (currentTick >= nextTimeSendTick) { // Send time to client every 30 seconds to make sure it
-                    this.sendTime();
-                    nextTimeSendTick = currentTick + 30 * 20;
-                }
+        try {
+            updateBlockLight();
+            this.checkTime();
+            checkWeather();
 
-                // 检查突出区块（玩家附近3x3区块）
-                if ((currentTick & 127) == 0) { // 每127刻检查一次是比较合理的
-                    highLightChunks.clear();
-                    for (var player : this.players.values()) {
-                        if (player.isOnline()) {
-                            int chunkX = player.getChunkX();
-                            int chunkZ = player.getChunkZ();
-                            for (int dx = -1; dx <= 1; dx++) {
-                                for (int dz = -1; dz <= 1; dz++) {
-                                    highLightChunks.add(Level.chunkHash(chunkX + dx, chunkZ + dz));
-                                }
+            if (currentTick % 6000 == 0) {
+                this.sendTime();
+            }
+
+            // needed for entity AI
+            if ((currentTick & 127) == 0) {
+                highLightChunks.clear();
+                for (var player : this.players.values()) {
+                    if (player.isOnline()) {
+                        int chunkX = player.getChunkX();
+                        int chunkZ = player.getChunkZ();
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                highLightChunks.add(Level.chunkHash(chunkX + dx, chunkZ + dz));
                             }
                         }
                     }
                 }
-                checkWeather();
+            }
 
+            if (getServer().getSettings().chunkSettings().lightUpdates()) {
                 this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
+            }
 
-                if (getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
-                    if (Arrays.stream(getEntities()).filter(entity -> entity.despawnable).toArray().length < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
-                        getChunks().values().forEach(IChunk::doMobSpawning);
-                    }
-                }
-
-                if (!this.updateEntities.isEmpty()) {
-                    CompletableFuture.runAsync(() -> updateEntities.keySet()
-                            .longParallelStream().forEach(id -> {
-                                Entity entity = this.updateEntities.get(id);
-                                if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
-                                    entityAsyncPrepare.asyncPrepare(getTick());
-                                }
-                            }), Server.getInstance().getComputeThreadPool()).join();
-                    for (long id : this.updateEntities.keySetLong()) {
-                        Entity entity = this.updateEntities.get(id);
-                        if (entity instanceof EntityIntelligent intelligent) {
-                            if (intelligent.getBehaviorGroup() == null) {
-                                this.updateEntities.remove(id);
-                                continue;
+            if (!this.updateEntities.isEmpty()) {
+                CompletableFuture.runAsync(() -> updateEntities.keySet()
+                        .longParallelStream().forEach(id -> {
+                            Entity entity = this.updateEntities.get(id);
+                            if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
+                                entityAsyncPrepare.asyncPrepare(getTick());
                             }
-                        }
-                        if (entity == null) {
+                        }), Server.getInstance().getComputeThreadPool()).join();
+                for (long id : this.updateEntities.keySetLong()) {
+                    Entity entity = this.updateEntities.get(id);
+                    if (entity instanceof EntityIntelligent intelligent) {
+                        if (intelligent.getBehaviorGroup() == null) {
                             this.updateEntities.remove(id);
                             continue;
                         }
-                        if (entity.closed || !entity.onUpdate(currentTick)) {
-                            this.updateEntities.remove(id);
-                        }
+                    }
+                    if (entity == null) {
+                        this.updateEntities.remove(id);
+                        continue;
+                    }
+                    if (entity.closed || !entity.onUpdate(currentTick)) {
+                        this.updateEntities.remove(id);
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        }, Server.getInstance().getComputeThreadPool());
 
-        try {
             this.levelCurrentTick++;
-
             this.updateQueue.tick(this.getCurrentTick());
 
             while (!this.normalUpdateQueue.isEmpty()) {
                 QueuedUpdate queuedUpdate = this.normalUpdateQueue.poll();
+                if (queuedUpdate == null) continue;
                 Block block = getBlock(queuedUpdate.block, queuedUpdate.block.layer);
                 BlockUpdateEvent event = new BlockUpdateEvent(block);
                 this.server.getPluginManager().callEvent(event);
@@ -1099,61 +1089,67 @@ public class Level implements Metadatable {
                 }
             }
 
-            this.updateBlockEntities.removeIf(blockEntity -> !(!blockEntity.closed && blockEntity.isValid() && blockEntity.onUpdate()));
+            this.updateBlockEntities.removeIf(blockEntity ->
+                    blockEntity.closed || !blockEntity.isValid() || !blockEntity.onUpdate()
+            );
 
             this.tickChunks();
+
             synchronized (changedBlocks) {
                 if (!this.changedBlocks.isEmpty()) {
-                    if (!this.players.isEmpty()) {
-                        var iter = changedBlocks.long2ObjectEntrySet().fastIterator();
-                        while (iter.hasNext()) {
-                            var entry = iter.next();
-                            long index = entry.getLongKey();
-                            var blocks = entry.getValue().get();
-                            int chunkX = Level.getHashX(index);
-                            int chunkZ = Level.getHashZ(index);
-                            if (blocks == null || blocks.size() > MAX_BLOCK_CACHE) {
-                                IChunk chunk = this.getChunk(chunkX, chunkZ);
-                                chunk.reObfuscateChunk();
-                                for (Player p : this.getChunkPlayers(chunkX, chunkZ).values()) {
-                                    p.onChunkChanged(chunk);
-                                }
+                    var iter = changedBlocks.long2ObjectEntrySet().fastIterator();
+                    while (iter.hasNext()) {
+                        var entry = iter.next();
+                        long index = entry.getLongKey();
+                        var blocksOpt = entry.getValue();
+                        if (blocksOpt == null) continue;
+                        var blocks = blocksOpt.get();
+                        int chunkX = Level.getHashX(index);
+                        int chunkZ = Level.getHashZ(index);
+
+                        if (blocks == null || blocks.size() > MAX_BLOCK_CACHE) {
+                            IChunk chunk = this.getChunk(chunkX, chunkZ);
+                            chunk.reObfuscateChunk();
+                            for (Player p : this.getChunkPlayers(chunkX, chunkZ).values()) {
+                                p.onChunkChanged(chunk);
+                            }
+                        } else {
+                            Collection<Player> toSend = this.getChunkPlayers(chunkX, chunkZ).values();
+                            Player[] playerArray = toSend.toArray(Player.EMPTY_ARRAY);
+                            if (isAntiXrayEnabled()) {
+                                antiXraySystem.obfuscateSendBlocks(index, playerArray, blocks);
                             } else {
-                                Collection<Player> toSend = this.getChunkPlayers(chunkX, chunkZ).values();
-                                Player[] playerArray = toSend.toArray(Player.EMPTY_ARRAY);
-                                var size = blocks.size();
-                                if (isAntiXrayEnabled()) {
-                                    antiXraySystem.obfuscateSendBlocks(index, playerArray, blocks);
-                                } else {
-                                    var blocksArray = new Vector3[size];
-                                    int i = 0;
-                                    for (int blockHash : blocks.keySet()) {
-                                        Vector3 hash = getBlockXYZ(index, blockHash, this);
-                                        blocksArray[i++] = hash;
-                                    }
-                                    this.sendBlocks(playerArray, blocksArray, UpdateBlockPacket.FLAG_ALL);
+                                var blocksArray = new Vector3[blocks.size()];
+                                int i = 0;
+                                for (int blockHash : blocks.keySet()) {
+                                    Vector3 hash = getBlockXYZ(index, blockHash, this);
+                                    blocksArray[i++] = hash;
                                 }
+                                this.sendBlocks(playerArray, blocksArray, UpdateBlockPacket.FLAG_ALL);
                             }
                         }
                     }
-                    this.changedBlocks.clear();
+                    this.changedBlocks.clear(); // Always clear, even if no players
                 }
             }
+
             if (this.sleepTicks > 0 && --this.sleepTicks <= 0) {
                 this.checkSleep();
             }
 
-            for (long index : this.chunkPackets.keySet()) {
-                int chunkX = Level.getHashX(index);
-                int chunkZ = Level.getHashZ(index);
-                Player[] chunkPlayers = this.getChunkPlayers(chunkX, chunkZ).values().toArray(Player.EMPTY_ARRAY);
-                if (chunkPlayers.length > 0) {
-                    for (var pk : this.chunkPackets.get(index)) {
-                        Server.broadcastPacket(chunkPlayers, pk);
+            if (!this.chunkPackets.isEmpty()) {
+                for (long index : this.chunkPackets.keySet()) {
+                    int chunkX = Level.getHashX(index);
+                    int chunkZ = Level.getHashZ(index);
+                    Player[] chunkPlayers = this.getChunkPlayers(chunkX, chunkZ).values().toArray(Player.EMPTY_ARRAY);
+                    if (chunkPlayers.length > 0) {
+                        for (var pk : this.chunkPackets.get(index)) {
+                            Server.broadcastPacket(chunkPlayers, pk);
+                        }
                     }
                 }
+                this.chunkPackets.clear();
             }
-            this.chunkPackets.clear();
 
             if (gameRules.isStale()) {
                 GameRulesChangedPacket packet = new GameRulesChangedPacket();
@@ -1161,17 +1157,34 @@ public class Level implements Metadatable {
                 Server.broadcastPacket(players.values().toArray(Player.EMPTY_ARRAY), packet);
                 gameRules.refresh();
             }
-        } catch (Exception e) {
+
+            if (currentTick % 100 == 0 && getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+                long despawnableCount = Arrays.stream(getEntities())
+                        .filter(entity -> entity.despawnable)
+                        .count();
+                if (despawnableCount < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
+                    getChunks().values().forEach(IChunk::doMobSpawning);
+                }
+            }
+
+            if (currentTick % (20 * 60 * 5) == 0) {
+                log.debug(String.format("Diagnostics - Entities: %d, UpdateEntities: %d, NormalUpdateQueue: %d, ChangedBlocks: %d, ChunkPackets: %d",
+                        getEntities().length,
+                        updateEntities.size(),
+                        normalUpdateQueue.size(),
+                        changedBlocks.size(),
+                        chunkPackets.size()
+                ));
+            }
+        } catch (
+                Exception e) {
             log.error(getServer().getLanguage().tr("nukkit.level.tickError",
                     this.getFolderPath(), Utils.getExceptionMessage(e)), e);
             e.printStackTrace();
         } finally {
-            CompletableFuture.runAsync(() -> {
-                getPlayers().values().forEach(Player::checkNetwork);
-            }, Server.getInstance().getComputeThreadPool()).join();
-
             releaseTickCachedBlocks();
         }
+
     }
 
     private void checkWeather() {
@@ -1200,25 +1213,19 @@ public class Level implements Metadatable {
                 }
             }
             // Tick Weather
-            if (this.getDimension() != DIMENSION_NETHER && this.getDimension() != DIMENSION_THE_END) {
-                if(getDayTime() == tickRate) {
+            if (this.getDimension() == DIMENSION_OVERWORLD) {
+                if (getDayTime() == tickRate) {
                     setRaining(false);
                     setThundering(false);
                 }
 
                 this.rainTime--;
-                if (this.rainTime <= 0) {
-                    if (!this.setRaining(!this.raining)) {//if raining,set false
-                        setRaining(!raining);// and if event cancel,revert raining change
-                    }
-                }
+                if (this.rainTime <= 0)
+                    setRaining(!this.raining);
 
                 this.thunderTime--;
-                if (this.thunderTime <= 0) {
-                    if (!this.setThundering(!this.thundering)) {
-                        setThundering(!thundering);
-                    }
-                }
+                if (this.thunderTime <= 0)
+                    setThundering(!thundering);
 
                 if (this.isThundering()) {
                     final Map<Long, IChunk> chunks = getChunks();
@@ -1246,10 +1253,10 @@ public class Level implements Metadatable {
     }
 
     public Level getDimensionDestinationLevel(int dimension) {
-        if(dimensionCount > 1) {
-            for(Level level : getServer().getLevels().values()) {
-                if(level.getFolderPath().equals(this.getFolderPath())) {
-                    if(level.getDimension() == dimension) {
+        if (dimensionCount > 1) {
+            for (Level level : getServer().getLevels().values()) {
+                if (level.getFolderPath().equals(this.getFolderPath())) {
+                    if (level.getDimension() == dimension) {
                         return level;
                     }
                 }
@@ -1443,90 +1450,96 @@ public class Level implements Metadatable {
     }
 
     private void tickChunks() {
-        if (this.chunksPerTicks <= 0 || this.loaders.isEmpty()) {
-            this.chunkTickList.clear();
+        if (chunksPerTicks <= 0 || loaders.isEmpty()) {
+            chunkTickList.clear();
             return;
         }
 
-        int chunksPerLoader = Math.min(200, Math.max(1, (int) (((double) (this.chunksPerTicks - this.loaders.size()) / this.loaders.size() + 0.5))));
-        int randRange = 3 + chunksPerLoader / 30;
-        randRange = Math.min(randRange, this.chunkTickRadius);
+        int chunksPerLoader = Math.min(200, Math.max(1, (chunksPerTicks - loaders.size()) / loaders.size()));
+        int randRange = Math.min(3 + chunksPerLoader / 30, chunkTickRadius);
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        if (!this.loaders.isEmpty()) {
-            for (ChunkLoader loader : this.loaders.values()) {
-                int chunkX = (int) loader.getX() >> 4;
-                int chunkZ = (int) loader.getZ() >> 4;
 
-                long index = Level.chunkHash(chunkX, chunkZ);
-                int existingLoaders = Math.max(0, this.chunkTickList.getOrDefault(index, 0));
-                this.chunkTickList.put(index, existingLoaders + 1);
-                for (int chunk = 0; chunk < chunksPerLoader; ++chunk) {
-                    int dx = random.nextInt(2 * randRange) - randRange;
-                    int dz = random.nextInt(2 * randRange) - randRange;
-                    long hash = Level.chunkHash(dx + chunkX, dz + chunkZ);
-                    if (!this.chunkTickList.containsKey(hash) && requireProvider().isChunkLoaded(hash)) {
-                        this.chunkTickList.put(hash, -1);
-                    }
+        // Build the chunk tick list
+        for (ChunkLoader loader : loaders.values()) {
+            int chunkX = (int) Math.floor(loader.getX() / 16.0);
+            int chunkZ = (int) Math.floor(loader.getZ() / 16.0);
+
+            long index = Level.chunkHash(chunkX, chunkZ);
+
+            chunkTickList.merge(index, 1, Integer::sum);
+
+            for (int i = 0; i < chunksPerLoader; i++) {
+                int dx = random.nextInt(-randRange, randRange + 1);
+                int dz = random.nextInt(-randRange, randRange + 1);
+                long hash = Level.chunkHash(chunkX + dx, chunkZ + dz);
+                if (!chunkTickList.containsKey(hash) && requireProvider().isChunkLoaded(hash)) {
+                    chunkTickList.put(hash, -1);
                 }
             }
         }
 
-        if (!chunkTickList.isEmpty()) {
-            ObjectIterator<Long2IntMap.Entry> iter = chunkTickList.long2IntEntrySet().iterator();
-            while (iter.hasNext()) {
-                Long2IntMap.Entry entry = iter.next();
-                long index = entry.getLongKey();
-                if (!areNeighboringChunksLoaded(index)) {
-                    iter.remove();
-                    continue;
-                }
+        if (chunkTickList.isEmpty()) return;
 
-                int loaders = entry.getIntValue();
+        ObjectIterator<Long2IntMap.Entry> iter = chunkTickList.long2IntEntrySet().iterator();
+        while (iter.hasNext()) {
+            Long2IntMap.Entry entry = iter.next();
+            long index = entry.getLongKey();
 
-                int chunkX = getHashX(index);
-                int chunkZ = getHashZ(index);
+            if (!areNeighboringChunksLoaded(index)) {
+                iter.remove();
+                continue;
+            }
 
-                IChunk chunk;
-                if ((chunk = this.getChunk(chunkX, chunkZ, false)) == null) {
-                    iter.remove();
-                    continue;
-                } else if (loaders <= 0) {
-                    iter.remove();
-                }
+            int loaders = entry.getIntValue();
+            int chunkX = getHashX(index);
+            int chunkZ = getHashZ(index);
+            IChunk chunk = getChunk(chunkX, chunkZ, false);
 
+            if (chunk == null || loaders <= 0) {
+                iter.remove();
+                continue;
+            }
+
+            CompletableFuture.runAsync(() -> {
+                // Schedule entity updates
                 for (Entity entity : chunk.getEntities().values()) {
                     entity.scheduleUpdate();
                 }
+
+                // Apply random block ticks
                 int tickSpeed = gameRules.getInteger(GameRule.RANDOM_TICK_SPEED);
-                if (tickSpeed <= 0) {
-                    continue;
-                }
+                if (tickSpeed <= 0) return;
 
                 for (ChunkSection section : chunk.getSections()) {
-                    if (section == null || section.isEmpty()) {
-                        continue;
-                    }
-                    for (int i = 0; i < tickSpeed; ++i) {
-                        int lcg = this.getUpdateLCG();
+                    if (section == null || section.isEmpty()) continue;
+
+                    for (int i = 0; i < tickSpeed; i++) {
+                        int lcg = getUpdateLCG();
                         int x = lcg & 0x0f;
-                        int y = lcg >>> 8 & 0x0f;
-                        int z = lcg >>> 16 & 0x0f;
+                        int y = (lcg >>> 8) & 0x0f;
+                        int z = (lcg >>> 16) & 0x0f;
+
                         BlockState state = section.getBlockState(x, y, z);
                         if (state != null && randomTickBlocks.contains(state.getIdentifier())) {
-                            Block block = Block.get(state, this, (chunk.getX() << 4) + x, (section.y() << 4) + y, (chunk.getZ() << 4) + z);
+                            int worldX = (chunk.getX() << 4) + x;
+                            int worldY = (section.y() << 4) + y;
+                            int worldZ = (chunk.getZ() << 4) + z;
+
+                            Block block = Block.get(state, this, worldX, worldY, worldZ);
                             block.setLevel(this);
                             block.onUpdate(BLOCK_UPDATE_RANDOM);
                         }
                     }
                 }
-            }
+            }, Server.getInstance().getComputeThreadPool());
         }
 
-        if (this.clearChunksOnTick) {
-            this.chunkTickList.clear();
+        if (clearChunksOnTick) {
+            chunkTickList.clear();
         }
     }
+
 
     public boolean save() {
         return this.save(false);
@@ -1717,7 +1730,7 @@ public class Level implements Metadatable {
         for (double i = 0; i < start.distance(end); i += space) {
             Block block = this.getBlock(currentPos.floor(), load);
             currentPos = currentPos.add(direction);
-            if(!block.isAir() || !ignoreAir) result.add(block);
+            if (!block.isAir() || !ignoreAir) result.add(block);
         }
         return Collections.unmodifiableList(result);
     }
@@ -1957,16 +1970,6 @@ public class Level implements Metadatable {
         float e = 1.0F - (this.getThunderStrength(tickDiff) * 5.0F) / 16.0F;
         float f = 0.5F + 2.0F * MathHelper.clamp(MathHelper.cos(this.getCelestialAngle(tickDiff) * 6.2831855F), -0.25F, 0.25F);
         return (int) ((1.0F - f * d * e) * 11.0F);
-        /* Old NukkitX Code
-        float angle = this.getCelestialAngle(tickDiff);
-        float light = 1.0F - (MathHelper.cos(angle * ((float) Math.PI * 2F)) * 2.0F + 0.5F);
-        light = MathHelper.clamp(light, 0.0F, 1.0F);
-        light = 1.0F - light;
-        light = (float) ((double) light * (1.0D - (double) (this.getRainStrength(tickDiff) * 5.0F) / 16.0D));
-        light = (float) ((double) light * (1.0D - (double) (this.getThunderStrength(tickDiff) * 5.0F) / 16.0D));
-        light = 1.0F - light;
-        return (int) (light * 11.0F);
-         */
     }
 
     public float getRainStrength(float tickDiff) {
@@ -2123,7 +2126,7 @@ public class Level implements Metadatable {
 
         int height = chunk.recalculateHeightMapColumn(x & 0x0f, z & 0x0f);
         int level = 15;
-        for(int _y = height ; _y >= getDimensionData().getMinHeight(); _y--) {
+        for (int _y = height; _y >= getDimensionData().getMinHeight(); _y--) {
             Block block = getBlock(x, _y, z);
             if (!block.isTransparent()) {
                 level = 0;
@@ -2132,7 +2135,7 @@ public class Level implements Metadatable {
             } else {
                 level -= block.getLightLevel();
             }
-            if(level <= 0) level = 0;
+            if (level <= 0) level = 0;
             //if(_y != height && !block.canPassThrough() && block.up().canPassThrough()) addSkyLightUpdate(x, _y+1, z); ToDo: Light Spread
             setBlockSkyLightAt(x, _y, z, level);
         }
@@ -2174,14 +2177,18 @@ public class Level implements Metadatable {
         var iter = blockLightQueue.entrySet().iterator();
         while (iter.hasNext() && size-- > 0) {
             var entry = iter.next();
-            iter.remove();
             long index = entry.getKey();
             var blocks = entry.getValue();
+            iter.remove();  // ❗ only remove AFTER getting key + value
+
+            if (blocks == null || blocks.isEmpty()) continue;
+
             int chunkX = Level.getHashX(index);
             int chunkZ = Level.getHashZ(index);
             int bx = chunkX << 4;
             int bz = chunkZ << 4;
-            for (int blockHash : blocks.keySet()) {
+
+            for (int blockHash : blocks) {
                 int hi = (byte) (blockHash >>> 16);
                 int lo = (short) blockHash;
                 int y = ensureY(lo - 64);
@@ -2195,12 +2202,13 @@ public class Level implements Metadatable {
                     int newLevel = Registries.BLOCK.get(chunk.getBlockState(lcx, y, lcz), x, y, z, this).getLightLevel();
                     if (oldLevel != newLevel) {
                         this.setBlockLightAt(x, y, z, newLevel);
+                        long blockPosHash = Hash.hashBlock(x, y, z);
                         if (newLevel < oldLevel) {
-                            removalVisited.put(Hash.hashBlock(x, y, z), changeBlocksPresent);
-                            lightRemovalQueue.add(new Object[]{Hash.hashBlock(x, y, z), oldLevel});
+                            removalVisited.put(blockPosHash, changeBlocksPresent);
+                            lightRemovalQueue.add(new Object[]{blockPosHash, oldLevel});
                         } else {
-                            visited.put(Hash.hashBlock(x, y, z), changeBlocksPresent);
-                            lightPropagationQueue.add(Hash.hashBlock(x, y, z));
+                            visited.put(blockPosHash, changeBlocksPresent);
+                            lightPropagationQueue.add(blockPosHash);
                         }
                     }
                 }
@@ -2213,26 +2221,18 @@ public class Level implements Metadatable {
             int x = Hash.hashBlockX(node);
             int y = Hash.hashBlockY(node);
             int z = Hash.hashBlockZ(node);
-
             int lightLevel = (int) val[1];
 
-            this.computeRemoveBlockLight(x - 1, y, z, lightLevel, lightRemovalQueue, lightPropagationQueue,
-                    removalVisited, visited);
-            this.computeRemoveBlockLight(x + 1, y, z, lightLevel, lightRemovalQueue, lightPropagationQueue,
-                    removalVisited, visited);
-            this.computeRemoveBlockLight(x, y - 1, z, lightLevel, lightRemovalQueue, lightPropagationQueue,
-                    removalVisited, visited);
-            this.computeRemoveBlockLight(x, y + 1, z, lightLevel, lightRemovalQueue, lightPropagationQueue,
-                    removalVisited, visited);
-            this.computeRemoveBlockLight(x, y, z - 1, lightLevel, lightRemovalQueue, lightPropagationQueue,
-                    removalVisited, visited);
-            this.computeRemoveBlockLight(x, y, z + 1, lightLevel, lightRemovalQueue, lightPropagationQueue,
-                    removalVisited, visited);
+            this.computeRemoveBlockLight(x - 1, y, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
+            this.computeRemoveBlockLight(x + 1, y, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
+            this.computeRemoveBlockLight(x, y - 1, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
+            this.computeRemoveBlockLight(x, y + 1, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
+            this.computeRemoveBlockLight(x, y, z - 1, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
+            this.computeRemoveBlockLight(x, y, z + 1, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
         }
 
         while (!lightPropagationQueue.isEmpty()) {
             long node = lightPropagationQueue.poll();
-
             int x = Hash.hashBlockX(node);
             int y = Hash.hashBlockY(node);
             int z = Hash.hashBlockZ(node);
@@ -2248,6 +2248,7 @@ public class Level implements Metadatable {
             }
         }
     }
+
 
     private void computeRemoveBlockLight(int x, int y, int z, int currentLight, Queue<Object[]> queue,
                                          Queue<Long> spreadQueue, Map<Long, Object> visited, Map<Long, Object> spreadVisited) {
@@ -2288,12 +2289,12 @@ public class Level implements Metadatable {
 
     public void addBlockLightUpdate(int x, int y, int z) {
         long index = chunkHash(x >> 4, z >> 4);
-        var currentMap = blockLightQueue.get(index);
-        if (currentMap == null) {
-            currentMap = new ConcurrentHashMap<>(8, 0.9f, 1);
-            this.blockLightQueue.put(index, currentMap);
+        IntOpenHashSet blockSet = blockLightQueue.get(index);
+        if (blockSet == null) {
+            blockSet = new IntOpenHashSet();
+            blockLightQueue.put(index, blockSet);
         }
-        currentMap.put(Level.localBlockHash(x, y, z, this), changeBlocksPresent);
+        blockSet.add(Level.localBlockHash(x, y, z, this));
     }
 
     public boolean setBlock(Vector3 pos, Block block) {
@@ -2403,7 +2404,7 @@ public class Level implements Metadatable {
     }
 
     public void breakBlock(Block block) {
-        if(block.isValid() && block.level == this) {
+        if (block.isValid() && block.level == this) {
             this.setBlock(block, Block.get(Block.AIR));
             Position position = block.add(0.5, 0.5, 0.5);
             this.addParticle(new DestroyBlockParticle(position, block));
@@ -2849,7 +2850,7 @@ public class Level implements Metadatable {
                 var diff = player.getNextPosition().subtract(player.getPosition());
                 var aabb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
                 if (aabb.intersectsWith(hand.getBoundingBox())) {
-                    if(aabb.intersection(hand.getBoundingBox()).getVolume() > 0.005f) {
+                    if (aabb.intersection(hand.getBoundingBox()).getVolume() > 0.005f) {
                         ++realCount;
                     }
                 }
@@ -3498,13 +3499,14 @@ public class Level implements Metadatable {
             processChunkRequest();
 
             if (currentTick.getTick() % 100 == 0) {
-                doLevelGarbageCollection(false);
+                CompletableFuture.runAsync(() -> doLevelGarbageCollection(false));
             }
         } catch (Exception e) {
             getServer().getLogger().error("Subtick Thread for level " + getFolderName() + " failed.", e);
         }
     }
 
+    @SneakyThrows
     private void processChunkRequest() {
         for (long index : this.chunkSendQueue.keySet()) {
             int x = getHashX(index);
@@ -3512,7 +3514,7 @@ public class Level implements Metadatable {
             final Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
             if (players != null) {
                 IChunk chunk = this.getChunk(x, z);
-                if(chunk.getChunkState().canSend()) {
+                if (chunk.getChunkState().canSend()) {
                     final var pair = this.requireProvider().requestChunkData(x, z);
                     for (Player player : Objects.requireNonNull(players).values()) {
                         if (player.isConnected()) {
@@ -3524,6 +3526,7 @@ public class Level implements Metadatable {
                             LevelChunkPacket pk = new LevelChunkPacket();
                             pk.chunkX = x;
                             pk.chunkZ = z;
+                            pk.cacheEnabled = false;
                             pk.dimension = getDimensionData().getDimensionId();
                             pk.subChunkCount = pair.right();
                             pk.data = pair.left();
@@ -3531,7 +3534,7 @@ public class Level implements Metadatable {
                         }
                     }
                     this.chunkSendQueue.remove(index);
-                } else if(!this.chunkGenerationQueue.containsKey(index)) {
+                } else if (!this.chunkGenerationQueue.containsKey(index)) {
                     this.generateChunk(x, z, true);
                 }
             }
@@ -3832,20 +3835,21 @@ public class Level implements Metadatable {
 
         int count = 0;
 
-        int checkHeight = (int) Math.max(Math.abs(minY-spawn.y), Math.abs(maxY-spawn.y));
+        int checkHeight = (int) Math.max(Math.abs(minY - spawn.y), Math.abs(maxY - spawn.y));
         for (int r = 1; r <= checkHeight; r++) {
             int horizontalLimit = Math.min(r, horizontalMaxOffset);
             for (int dx = -r; dx <= r; dx++) {
                 for (int dy = -r; dy <= r; dy++) {
                     for (int dz = -r; dz <= r; dz++) {
-                        if (Math.abs(dx) != horizontalLimit && Math.abs(dy) != r && Math.abs(dz) != horizontalLimit) continue;
+                        if (Math.abs(dx) != horizontalLimit && Math.abs(dy) != r && Math.abs(dz) != horizontalLimit)
+                            continue;
                         Position checkLoc = Position.fromObject(spawn, this).add(dx, dy, dz);
                         count++;
-                        if(count > 10000) {
+                        if (count > 10000) {
                             log.warn("cannot find a safe spawn around " + spawn.asBlockVector3() + ". Too many attempts!");
                             return Position.fromObject(spawn, this);
                         }
-                        if(standable(checkLoc, allowWaterUnder)) return checkLoc;
+                        if (standable(checkLoc, allowWaterUnder)) return checkLoc;
                     }
                 }
             }
@@ -3875,7 +3879,7 @@ public class Level implements Metadatable {
     }
 
     public boolean isTicked() {
-        if(getServer().getSettings().levelSettings().levelThread()) {
+        if (getServer().getSettings().levelSettings().levelThread()) {
             return baseTickGameLoop.isRunning();
         } else return this.server.getLevels().containsKey(this.levelId);
     }
@@ -3911,8 +3915,8 @@ public class Level implements Metadatable {
      * Set the elapsed time for this level
      */
     public void setTime(int time) {
-        if(isRaining()) {
-            if(getTime()%TIME_FULL != time%TIME_FULL) {
+        if (isRaining()) {
+            if (getTime() % TIME_FULL != time % TIME_FULL) {
                 //Day changed
                 setRaining(false);
                 setThundering(false);
@@ -4000,12 +4004,14 @@ public class Level implements Metadatable {
         if (this.chunkGenerationQueue.size() >= this.chunkGenerationQueueSize && !force) {
             return;
         }
+
         long index = Level.chunkHash(x, z);
         if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
             final IChunk chunk = this.getChunk(x, z, true);
             this.generator.asyncGenerate(chunk, (c) -> chunkGenerationQueue.remove(c.getChunk().getIndex()));//async
         }
     }
+
 
     public void syncGenerateChunk(int x, int z) {
         long index = Level.chunkHash(x, z);

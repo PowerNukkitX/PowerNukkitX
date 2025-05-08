@@ -17,10 +17,18 @@ public final class GameLoop {
     private final Runnable onStop;
     @Getter
     private final int loopCountPerSec;
-    private final float[] tickSummary = new float[20];
-    private final float[] MSPTSummary = new float[20];
+    private final float[] tpsSummary = new float[20];
+    private final float[] msptSummary = new float[20];
     @Getter
     private long tick;
+
+    private long lastSecondTime = System.currentTimeMillis();
+    private int tickCounter = 0;
+
+    private long lastOverloadWarnTime = 0;
+    private int overloadTickCount = 0;
+    private static final int OVERLOAD_TICK_THRESHOLD = 10;
+    private static final long OVERLOAD_WARN_INTERVAL_MS = 1000; // 1 sec
 
     private GameLoop(Runnable onStart, Consumer<GameLoop> onTick, Runnable onStop, int loopCountPerSec, long currentTick) {
         if (loopCountPerSec <= 0) {
@@ -31,8 +39,8 @@ public final class GameLoop {
         this.onStop = onStop;
         this.loopCountPerSec = loopCountPerSec;
         this.tick = currentTick;
-        Arrays.fill(tickSummary, 20f);
-        Arrays.fill(MSPTSummary, 0f);
+        Arrays.fill(tpsSummary, loopCountPerSec);
+        Arrays.fill(msptSummary, 0f);
     }
 
     public static GameLoopBuilder builder() {
@@ -43,103 +51,90 @@ public final class GameLoop {
         return getMSPT() / (1000f / loopCountPerSec);
     }
 
+    public long getNextTick() {
+        long tickIntervalMillis = 1000L / loopCountPerSec;
+        return lastSecondTime + tickCounter * tickIntervalMillis;
+    }
+
     public float getTPS() {
         float sum = 0;
-        int count = tickSummary.length;
-        for (float tick : tickSummary) {
-            sum += tick;
+        for (float tps : tpsSummary) {
+            sum += tps;
         }
-        return sum / count;
+        return sum / tpsSummary.length;
     }
 
     public float getMSPT() {
         float sum = 0;
-        int count = MSPTSummary.length;
-        for (float mspt : MSPTSummary) {
+        for (float mspt : msptSummary) {
             sum += mspt;
         }
-        return sum / count;
+        return sum / msptSummary.length;
     }
 
     public void startLoop() {
         onStart.run();
-        long nanoSleepTime = 0;
-        long idealNanoSleepPerTick = 1_000_000_000L / loopCountPerSec;
-        long lastWarnTime = 0;
-        long warnIntervalNanos = 1_000_000_000L; // warn at most once per second
-
-        long overloadWarnTime = 0;
-        long overloadWarnThreshold = 10;  // Warn after 10 ticks of overload
+        long idealNanoPerTick = 1_000_000_000L / loopCountPerSec;
 
         while (isRunning.get()) {
             long startTickTime = System.nanoTime();
             onTick.accept(this);
             tick++;
-            long timeTakenToTick = System.nanoTime() - startTickTime;
-            updateMSTP(timeTakenToTick, MSPTSummary);
-            updateTPS(timeTakenToTick);
+            tickCounter++;
 
-            long sumOperateTime = System.nanoTime() - startTickTime;
-            nanoSleepTime += idealNanoSleepPerTick - sumOperateTime;
+            long timeTaken = System.nanoTime() - startTickTime;
+            updateMSPT(timeTaken);
 
-            if (nanoSleepTime <= 0) {
-                // Clamp sleep time to zero to avoid negative buildup
-                nanoSleepTime = 0;
+            long now = System.currentTimeMillis();
+            if (now - lastSecondTime >= 1000) {
+                updateTPS(tickCounter);
+                tickCounter = 0;
+                lastSecondTime = now;
+            }
 
-                // Throttle warning logs to avoid spam
-                long now = System.nanoTime();
-                if (now - lastWarnTime >= warnIntervalNanos) {
-                    log.warn("No sleep time available. Server is overloaded!");
-                    lastWarnTime = now;
-                }
-
-                // Prevent busy spin — sleep at least 1 ms to yield CPU
+            long sleepTime = idealNanoPerTick - (System.nanoTime() - startTickTime);
+            if (sleepTime > 0) {
                 try {
-                    // Sleep for a minimal amount of time, e.g., 1ms
-                    Thread.sleep(1);  // Sleep in milliseconds to avoid busy spinning
-                } catch (InterruptedException exception) {
-                    log.error("GameLoop interrupted during fallback sleep", exception);
+                    TimeUnit.NANOSECONDS.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    log.error("GameLoop interrupted during sleep", e);
                     onStop.run();
                     return;
                 }
             } else {
-                // If sleep time is greater than 0, we sleep for the required amount in nanoseconds.
-                long sleepTimeToUse = Math.min(nanoSleepTime, idealNanoSleepPerTick);
-
-                long startTime = System.nanoTime();
-                while (System.nanoTime() - startTime < sleepTimeToUse) {
-                    // Loop until the time has passed (busy-waiting)
-                    // This helps us avoid precision issues with Thread.sleep() for sub-millisecond sleeps
-                }
-                nanoSleepTime -= sleepTimeToUse;
-
+                log.debug("GameLoop is running behind! Time taken: {} ns, ideal: {} ns", timeTaken, idealNanoPerTick);
+                Thread.yield();
             }
-
         }
         onStop.run();
     }
 
-    private void updateTPS(long timeTakenToTick) {
-        // Calculate the TPS from the current tick time, but add smoothing (exponential moving average)
-        float tickRate = Math.max(0, Math.min(20, 1000000000f / (timeTakenToTick == 0 ? 1 : timeTakenToTick)));
+    private void updateTPS(int ticksLastSecond) {
+        System.arraycopy(tpsSummary, 1, tpsSummary, 0, tpsSummary.length - 1);
+        tpsSummary[tpsSummary.length - 1] = ticksLastSecond;
 
-        // Smooth out the TPS using a weighted moving average for better stability
-        float smoothingFactor = 0.9f;  // Tweak this value based on your needs for smoothness
-        tickSummary[0] = tickSummary[0] * smoothingFactor + tickRate * (1 - smoothingFactor); // Smoothing logic
+        if (ticksLastSecond < loopCountPerSec) {
+            overloadTickCount++;
+        } else {
+            overloadTickCount = 0;
+        }
 
-        // Shift the array
-        System.arraycopy(tickSummary, 1, tickSummary, 0, tickSummary.length - 1);
-        tickSummary[tickSummary.length - 1] = tickRate;
+        long now = System.currentTimeMillis();
+        if (overloadTickCount >= OVERLOAD_TICK_THRESHOLD && now - lastOverloadWarnTime >= OVERLOAD_WARN_INTERVAL_MS) {
+            float tps = getTPS();
+            float mspt = getMSPT();
+            log.warn("Can't keep up! TPS: {}, MSPT: {}", String.format("%.2f", tps), String.format("%.2f", mspt));
+            lastOverloadWarnTime = now;
+            overloadTickCount = 0;
+        }
     }
 
-    private void updateMSTP(long timeTakenToTick, float[] mstpSummary) {
-        // Smooth the MSPT values similarly
+    private void updateMSPT(long timeTaken) {
+        float mspt = timeTaken / 1_000_000f; // nanos to millis
         float smoothingFactor = 0.9f;
-        MSPTSummary[0] = MSPTSummary[0] * smoothingFactor + (timeTakenToTick / 1000000f) * (1 - smoothingFactor); // Smoothing logic
-
-        // Shift the array
-        System.arraycopy(mstpSummary, 1, mstpSummary, 0, mstpSummary.length - 1);
-        mstpSummary[mstpSummary.length - 1] = timeTakenToTick / 1000000f;
+        msptSummary[0] = msptSummary[0] * smoothingFactor + mspt * (1 - smoothingFactor);
+        System.arraycopy(msptSummary, 1, msptSummary, 0, msptSummary.length - 1);
+        msptSummary[msptSummary.length - 1] = mspt;
     }
 
     public void stop() {
@@ -151,12 +146,9 @@ public final class GameLoop {
     }
 
     public static class GameLoopBuilder {
-        private Runnable onStart = () -> {
-        };
-        private Consumer<GameLoop> onTick = gameLoop -> {
-        };
-        private Runnable onStop = () -> {
-        };
+        private Runnable onStart = () -> {};
+        private Consumer<GameLoop> onTick = gameLoop -> {};
+        private Runnable onStop = () -> {};
         private int loopCountPerSec = 20;
         private long currentTick = 0;
 
