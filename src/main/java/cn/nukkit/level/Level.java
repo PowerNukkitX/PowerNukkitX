@@ -1271,7 +1271,7 @@ public class Level implements Metadatable {
             Vector3 vector = this.adjustPosToNearbyEntity(new Vector3(chunkX + (LCG & 0xf), 0, chunkZ + (LCG >> 8 & 0xf)));
 
             int biome = this.getBiomeId(vector.getFloorX(), 70, vector.getFloorZ());
-            if (Registries.BIOME.get(biome).rain() <= 0) {
+            if (Registries.BIOME.get(biome).data.downfall <= 0) {
                 return;
             }
 
@@ -4000,32 +4000,12 @@ public class Level implements Metadatable {
         if (this.chunkGenerationQueue.size() >= this.chunkGenerationQueueSize && !force) {
             return;
         }
-
-        long index = chunkHash(x, z);
-
-        // Prevent duplicate generation
-        if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) != null) {
-            return;
-        }
-
-        IChunk chunk = this.getChunk(x, z, true); // assumed non-blocking
-
-        try {
-            this.generator.asyncGenerate(chunk, (completedChunk) -> {
-                try {
-                    // Add post-processing if needed
-                } catch (Exception e) {
-                    log.error("Post-processing async chunk failed at ({}, {}): {}", x, z, e.getMessage(), e);
-                } finally {
-                    this.chunkGenerationQueue.remove(completedChunk.getChunk().getIndex());
-                }
-            });
-        } catch (Exception e) {
-            log.error("Async chunk generation failed at ({}, {}): {}", x, z, e.getMessage(), e);
-            this.chunkGenerationQueue.remove(index);
+        long index = Level.chunkHash(x, z);
+        if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
+            final IChunk chunk = this.getChunk(x, z, true);
+            this.generator.asyncGenerate(chunk, (c) -> chunkGenerationQueue.remove(c.getChunk().getIndex()));//async
         }
     }
-
 
     public void syncGenerateChunk(int x, int z) {
         long index = Level.chunkHash(x, z);

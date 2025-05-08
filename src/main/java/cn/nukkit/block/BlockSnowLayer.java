@@ -12,6 +12,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
@@ -195,8 +196,8 @@ public class BlockSnowLayer extends BlockFallable {
     public int onUpdate(int type) {
         super.onUpdate(type);
         if (type == Level.BLOCK_UPDATE_RANDOM) {
-            BiomeRegistry.BiomeDefinition biomeDefinition = Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ()));
-            if (biomeDefinition.tags().contains(BiomeTags.WARM) || this.getLevel().getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) >= 10) {
+            BiomeDefinition biomeDefinition = Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ()));
+            if (biomeDefinition.getTags().contains(BiomeTags.WARM) || this.getLevel().getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) >= 10) {
                 melt();
                 return Level.BLOCK_UPDATE_RANDOM;
             }

@@ -1,7 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import cn.nukkit.registry.Registries;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import lombok.*;
 
 @Getter
@@ -9,13 +9,18 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 public class BiomeDefinitionListPacket extends DataPacket {
+
+    public String[] biomeStringList;
+    public BiomeDefinition[] biomeDefinitionData;
+
     @Override
     public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeBytes(Registries.BIOME.getBiomeDefinitionListPacketData());
+        byteBuf.writeArray(biomeDefinitionData, v -> v.encode(byteBuf));
+        byteBuf.writeArray(biomeStringList, byteBuf::writeString);
     }
 
     @Override

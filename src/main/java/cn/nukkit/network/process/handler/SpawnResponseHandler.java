@@ -63,7 +63,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         }
 
         log.debug("Sending biome definitions");
-        player.dataPacket(new BiomeDefinitionListPacket());
+        player.dataPacket(Registries.BIOME.getBiomeDefinitionListPacket());
 
         log.debug("Sending attributes");
         player.syncAttributes();

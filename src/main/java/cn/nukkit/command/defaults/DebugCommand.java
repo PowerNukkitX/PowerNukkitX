@@ -98,7 +98,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     return 0;
                 Location loc = sender.getLocation();
                 var biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
-                sender.sendMessage(biome.name() + " " + Arrays.toString(biome.tags().toArray(String[]::new)));
+                sender.sendMessage(biome.getName() + " " + Arrays.toString(biome.getTags().toArray(String[]::new)));
                 return 0;
             }
             case "light" -> {
