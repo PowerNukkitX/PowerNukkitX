@@ -4004,14 +4004,13 @@ public class Level implements Metadatable {
         if (this.chunkGenerationQueue.size() >= this.chunkGenerationQueueSize && !force) {
             return;
         }
-
+      
         long index = Level.chunkHash(x, z);
         if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
             final IChunk chunk = this.getChunk(x, z, true);
             this.generator.asyncGenerate(chunk, (c) -> chunkGenerationQueue.remove(c.getChunk().getIndex()));//async
         }
     }
-
 
     public void syncGenerateChunk(int x, int z) {
         long index = Level.chunkHash(x, z);
