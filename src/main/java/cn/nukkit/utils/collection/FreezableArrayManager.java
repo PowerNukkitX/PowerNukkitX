@@ -166,22 +166,26 @@ public class FreezableArrayManager {
         // 冻结数组
         var start = System.currentTimeMillis();
         // 清理死引用
-        CompletableFuture.runAsync(() -> set.parallelForeach(e -> {
-            if (e == null) return;
-            int temp = e.getTemperature();
-            e.colder(1);
-            if (temp <= getFreezingPoint() + 1) {
-                if (System.currentTimeMillis() - start > maxCompressionTime) {
-                    return;
-                }
-                if (e.getFreezeStatus() == AutoFreezable.FreezeStatus.NONE || e.getFreezeStatus() == AutoFreezable.FreezeStatus.FREEZE) {
-                    if (e.getTemperature() == absoluteZero) {
-                        e.deepFreeze();
-                    } else {
-                        e.freeze();
+        try {
+            CompletableFuture.runAsync(() -> set.parallelForeach(e -> {
+                if (e == null) return;
+                int temp = e.getTemperature();
+                e.colder(1);
+                if (temp <= getFreezingPoint() + 1) {
+                    if (System.currentTimeMillis() - start > maxCompressionTime) {
+                        return;
+                    }
+                    if (e.getFreezeStatus() == AutoFreezable.FreezeStatus.NONE || e.getFreezeStatus() == AutoFreezable.FreezeStatus.FREEZE) {
+                        if (e.getTemperature() == absoluteZero) {
+                            e.deepFreeze();
+                        } else {
+                            e.freeze();
+                        }
                     }
                 }
-            }
-        }), Server.getInstance().getComputeThreadPool()).thenRun(set::clearDeadReferences);
+            }), Server.getInstance().getComputeThreadPool()).thenRun(set::clearDeadReferences);
+        } catch(Exception e) {
+            //ignore exeption, only happened at shutdown so far
+        }
     }
 }

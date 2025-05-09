@@ -9,33 +9,38 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-/**
- * Allay Project 2023/4/14
- *
- * @author daoge_cmd
- */
 @Slf4j
 public final class GameLoop {
-    private final AtomicBoolean isRunning = new AtomicBoolean(false);
+    private final AtomicBoolean isRunning = new AtomicBoolean(true);
     private final Runnable onStart;
     private final Consumer<GameLoop> onTick;
     private final Runnable onStop;
     @Getter
     private final int loopCountPerSec;
-    private final float[] tickSummary = new float[20];
-    private final float[] MSPTSummary = new float[20];
+    private final float[] tpsSummary = new float[20];
+    private final float[] msptSummary = new float[20];
     @Getter
-    private int tick;
+    private long tick;
 
-    private GameLoop(Runnable onStart, Consumer<GameLoop> onTick, Runnable onStop, int loopCountPerSec) {
-        if (loopCountPerSec <= 0)
+    private long lastSecondTime = System.currentTimeMillis();
+    private int tickCounter = 0;
+
+    private long lastOverloadWarnTime = 0;
+    private int overloadTickCount = 0;
+    private static final int OVERLOAD_TICK_THRESHOLD = 10;
+    private static final long OVERLOAD_WARN_INTERVAL_MS = 1000; // 1 sec
+
+    private GameLoop(Runnable onStart, Consumer<GameLoop> onTick, Runnable onStop, int loopCountPerSec, long currentTick) {
+        if (loopCountPerSec <= 0) {
             throw new IllegalArgumentException("Loop count per second must be greater than 0! (loopCountPerSec=" + loopCountPerSec + ")");
+        }
         this.onStart = onStart;
         this.onTick = onTick;
         this.onStop = onStop;
         this.loopCountPerSec = loopCountPerSec;
-        Arrays.fill(tickSummary, 20f);
-        Arrays.fill(MSPTSummary, 0f);
+        this.tick = currentTick;
+        Arrays.fill(tpsSummary, loopCountPerSec);
+        Arrays.fill(msptSummary, 0f);
     }
 
     public static GameLoopBuilder builder() {
@@ -46,24 +51,28 @@ public final class GameLoop {
         return getMSPT() / (1000f / loopCountPerSec);
     }
 
-    public float getTps() {
+    public long getNextTick() {
+        long tickIntervalMillis = 1000L / loopCountPerSec;
+        return lastSecondTime + tickCounter * tickIntervalMillis;
+    }
+
+    public float getTPS() {
         float sum = 0;
-        int count = tickSummary.length;
-        for (float tick : tickSummary) {
-            sum += tick;
+        for (float tps : tpsSummary) {
+            sum += tps;
         }
-        return sum / count;
+        return sum / tpsSummary.length;
     }
 
     public float getMSPT() {
         float sum = 0;
-        int count = MSPTSummary.length;
-        for (float mspt : MSPTSummary) {
+        for (float mspt : msptSummary) {
             sum += mspt;
         }
-        return sum / count;
+        return sum / msptSummary.length;
     }
 
+    public long lastTickMs = System.currentTimeMillis();
     public void startLoop() {
         isRunning.set(true);
         onStart.run();
@@ -75,7 +84,7 @@ public final class GameLoop {
             onTick.accept(this);
             tick++;
             long timeTakenToTick = System.nanoTime() - startTickTime;
-            updateMSTP(timeTakenToTick, MSPTSummary);
+            updateMSTP(timeTakenToTick);
             updateTPS(timeTakenToTick);
 
             long sumOperateTime = System.nanoTime() - startTickTime;
@@ -103,17 +112,18 @@ public final class GameLoop {
 
     private void updateTPS(long timeTakenToTick) {
         float tick = Math.max(0, Math.min(20, 1000000000f / (timeTakenToTick == 0 ? 1 : timeTakenToTick)));
-        System.arraycopy(tickSummary, 1, tickSummary, 0, tickSummary.length - 1);
-        tickSummary[tickSummary.length - 1] = tick;
+        System.arraycopy(tpsSummary, 1, tpsSummary, 0, tpsSummary.length - 1);
+        tpsSummary[tpsSummary.length - 1] = tick;
     }
 
-    private void updateMSTP(float timeTakenToTick, float[] mstpSummary) {
-        System.arraycopy(mstpSummary, 1, mstpSummary, 0, mstpSummary.length - 1);
-        mstpSummary[mstpSummary.length - 1] = timeTakenToTick / 1000000f;
+    private void updateMSTP(float timeTakenToTick) {
+        System.arraycopy(msptSummary, 1, msptSummary, 0, msptSummary.length - 1);
+        msptSummary[msptSummary.length - 1] = timeTakenToTick / 1000000f;
     }
 
     public void stop() {
         isRunning.set(false);
+        onStop.run();
     }
 
     public boolean isRunning() {
@@ -125,6 +135,7 @@ public final class GameLoop {
         private Consumer<GameLoop> onTick = gameLoop -> {};
         private Runnable onStop = () -> {};
         private int loopCountPerSec = 20;
+        private long currentTick = 0;
 
         public GameLoopBuilder onStart(Runnable onStart) {
             this.onStart = onStart;
@@ -147,8 +158,13 @@ public final class GameLoop {
             return this;
         }
 
+        public GameLoopBuilder currentTick(long currentTick) {
+            this.currentTick = currentTick;
+            return this;
+        }
+
         public GameLoop build() {
-            return new GameLoop(onStart, onTick, onStop, loopCountPerSec);
+            return new GameLoop(onStart, onTick, onStop, loopCountPerSec, currentTick);
         }
     }
 }

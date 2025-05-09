@@ -10,6 +10,8 @@ public class ConditionSpawnUnderground extends Condition {
 
     @Override
     public boolean evaluate(Block block) {
-        return block.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ())-1 != block.getFloorY() && block.canPassThrough();
+        int highest = block.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ());
+        return highest > block.getFloorY() && block.canPassThrough() &&
+                block.getLevel().getBlock(block.getFloorX(), highest, block.getFloorZ()).isSolid();
     }
 }
