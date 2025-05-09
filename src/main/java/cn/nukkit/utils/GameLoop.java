@@ -72,68 +72,53 @@ public final class GameLoop {
         return sum / msptSummary.length;
     }
 
+    public long lastTickMs = System.currentTimeMillis();
     public void startLoop() {
+        isRunning.set(true);
         onStart.run();
-        long idealNanoPerTick = 1_000_000_000L / loopCountPerSec;
-
+        long nanoSleepTime = 0;
+        long idealNanoSleepPerTick = 1000000000 / loopCountPerSec;
         while (isRunning.get()) {
+            // Figure out how long it took to tick
             long startTickTime = System.nanoTime();
             onTick.accept(this);
             tick++;
-            tickCounter++;
+            long timeTakenToTick = System.nanoTime() - startTickTime;
+            updateMSTP(timeTakenToTick);
+            updateTPS(timeTakenToTick);
 
-            long timeTaken = System.nanoTime() - startTickTime;
-            updateMSPT(timeTaken);
-
-            long now = System.currentTimeMillis();
-            if (now - lastSecondTime >= 1000) {
-                updateTPS(tickCounter);
-                tickCounter = 0;
-                lastSecondTime = now;
-            }
-
-            long sleepTime = idealNanoPerTick - (System.nanoTime() - startTickTime);
-            if (sleepTime > 0) {
-                try {
-                    TimeUnit.NANOSECONDS.sleep(sleepTime);
-                } catch (InterruptedException e) {
-                    log.error("GameLoop interrupted during sleep", e);
-                    onStop.run();
-                    return;
+            long sumOperateTime = System.nanoTime() - startTickTime;
+            // Sleep for the ideal time but take into account the time spent running the tick
+            nanoSleepTime += idealNanoSleepPerTick - sumOperateTime;
+            long sleepStart = System.nanoTime();
+            try {
+                if (nanoSleepTime > 0) {
+                    // noinspection BusyWait
+                    Thread.sleep(TimeUnit.NANOSECONDS.toMillis(nanoSleepTime));
                 }
-            } else {
-                log.debug("GameLoop is running behind! Time taken: {} ns, ideal: {} ns", timeTaken, idealNanoPerTick);
-                Thread.yield();
+            } catch (InterruptedException exception) {
+                log.error("GameLoop interrupted", exception);
+                onStop.run();
+                return;
             }
+            // How long did it actually take to sleep?
+            // If we didn't sleep for the correct amount,
+            // take that into account for the next sleep by
+            // leaving extra/less for the next sleep.
+            nanoSleepTime -= System.nanoTime() - sleepStart;
         }
+        onStop.run();
     }
 
-    private void updateTPS(int ticksLastSecond) {
+    private void updateTPS(long timeTakenToTick) {
+        float tick = Math.max(0, Math.min(20, 1000000000f / (timeTakenToTick == 0 ? 1 : timeTakenToTick)));
         System.arraycopy(tpsSummary, 1, tpsSummary, 0, tpsSummary.length - 1);
-        tpsSummary[tpsSummary.length - 1] = ticksLastSecond;
-
-        if (ticksLastSecond < loopCountPerSec) {
-            overloadTickCount++;
-        } else {
-            overloadTickCount = 0;
-        }
-
-        long now = System.currentTimeMillis();
-        if (overloadTickCount >= OVERLOAD_TICK_THRESHOLD && now - lastOverloadWarnTime >= OVERLOAD_WARN_INTERVAL_MS) {
-            float tps = getTPS();
-            float mspt = getMSPT();
-            log.warn("Can't keep up! TPS: {}, MSPT: {}", String.format("%.2f", tps), String.format("%.2f", mspt));
-            lastOverloadWarnTime = now;
-            overloadTickCount = 0;
-        }
+        tpsSummary[tpsSummary.length - 1] = tick;
     }
 
-    private void updateMSPT(long timeTaken) {
-        float mspt = timeTaken / 1_000_000f; // nanos to millis
-        float smoothingFactor = 0.9f;
-        msptSummary[0] = msptSummary[0] * smoothingFactor + mspt * (1 - smoothingFactor);
+    private void updateMSTP(float timeTakenToTick) {
         System.arraycopy(msptSummary, 1, msptSummary, 0, msptSummary.length - 1);
-        msptSummary[msptSummary.length - 1] = mspt;
+        msptSummary[msptSummary.length - 1] = timeTakenToTick / 1000000f;
     }
 
     public void stop() {

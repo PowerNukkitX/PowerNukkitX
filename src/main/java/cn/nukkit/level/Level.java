@@ -1050,7 +1050,9 @@ public class Level implements Metadatable {
                         .longParallelStream().forEach(id -> {
                             Entity entity = this.updateEntities.get(id);
                             if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
-                                entityAsyncPrepare.asyncPrepare(getTick());
+                                try {
+                                    entityAsyncPrepare.asyncPrepare(getTick());
+                                } catch (Exception e) {}
                             }
                         }), Server.getInstance().getComputeThreadPool()).join();
                 for (long id : this.updateEntities.keySetLong()) {
@@ -1158,7 +1160,7 @@ public class Level implements Metadatable {
                 gameRules.refresh();
             }
 
-            if (currentTick % 100 == 0 && getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+            if (getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
                 long despawnableCount = Arrays.stream(getEntities())
                         .filter(entity -> entity.despawnable)
                         .count();
@@ -2179,7 +2181,7 @@ public class Level implements Metadatable {
             var entry = iter.next();
             long index = entry.getKey();
             var blocks = entry.getValue();
-            iter.remove();  // ❗ only remove AFTER getting key + value
+            iter.remove();
 
             if (blocks == null || blocks.isEmpty()) continue;
 
