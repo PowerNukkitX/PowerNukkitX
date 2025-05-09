@@ -65,6 +65,7 @@ public final class DataPacketManager {
                 new CraftingEventProcessor(),
                 new BlockEntityDataProcessor(),
                 new SetPlayerGameTypeProcessor(),
+                new SubChunkRequestProcessor(),
                 new LecternUpdateProcessor(),
                 new MapInfoRequestProcessor(),
                 /*

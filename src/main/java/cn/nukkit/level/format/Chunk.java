@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -314,6 +315,8 @@ public class Chunk implements IChunk {
         }
     }
 
+
+
     @Override
     public void setHeightMap(int x, int z, int value) {
         //基岩版3d-data保存heightMap是以0为索引保存的，所以这里需要减去世界最小值，详情查看
@@ -560,6 +563,15 @@ public class Chunk implements IChunk {
     @Override
     public Map<Long, BlockEntity> getBlockEntities() {
         return tiles;
+    }
+    public void checkSectionY(int sectionY) {
+        Preconditions.checkArgument(sectionY >= getDimensionData().getMinSectionY() && sectionY <= getDimensionData().getMaxSectionY());
+    }
+    public Collection<BlockEntity> getSectionBlockEntities(int sectionY) {
+        checkSectionY(sectionY);
+        return getBlockEntities().values().stream()
+                .filter(blockEntity -> blockEntity.getPosition().getFloorY() >> 4 == sectionY)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     @Override
