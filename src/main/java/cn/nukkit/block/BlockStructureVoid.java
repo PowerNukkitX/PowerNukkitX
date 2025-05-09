@@ -1,15 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.enums.StructureVoidType;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-
-import static cn.nukkit.block.property.CommonBlockProperties.*;
 
 /**
  * @author good777LUCKY

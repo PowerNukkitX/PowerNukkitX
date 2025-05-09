@@ -178,6 +178,8 @@ public class LevelDat {
     boolean raining = false;//PNX Custom field
     @Builder.Default
     boolean thundering = false;//PNX Custom field
+    @Builder.Default
+    int noSleepNight = 0;//PNX Custom field
 
     public void setRandomSeed(long seed) {
         this.randomSeed = seed;
@@ -193,6 +195,10 @@ public class LevelDat {
 
     public void setThundering(boolean thundering) {
         this.thundering = thundering;
+    }
+
+    public void setNoSleepNight(int noSleepNight) {
+        this.noSleepNight = noSleepNight;
     }
 
     public void setRainTime(int rainTime) {

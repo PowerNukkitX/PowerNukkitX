@@ -1,6 +1,5 @@
 package cn.nukkit.entity.ai.evaluator;
 
-import cn.nukkit.Server;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.MemoryType;
 

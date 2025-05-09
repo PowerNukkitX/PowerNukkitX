@@ -2,7 +2,6 @@ package cn.nukkit.event.entity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.event.HandlerList;
 
 /**
  * @author Box (Nukkit Project)

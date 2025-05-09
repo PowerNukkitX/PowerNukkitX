@@ -72,7 +72,7 @@ public class BlockMycelium extends BlockDirt {
                 y = random.nextInt((int) y - 1, (int) y + 1);
                 z = random.nextInt((int) z - 1, (int) z + 1);
                 Block block = this.getLevel().getBlock(new Vector3(x, y, z));
-                if (block.getId().equals(Block.DIRT) && block.getPropertyValue(CommonBlockProperties.DIRT_TYPE) == DirtType.NORMAL) {
+                if (block.getId().equals(Block.DIRT)) {
                     if (block.up().isTransparent()) {
                         BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.MYCELIUM));
                         Server.getInstance().getPluginManager().callEvent(ev);

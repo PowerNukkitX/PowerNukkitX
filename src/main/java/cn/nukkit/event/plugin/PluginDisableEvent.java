@@ -1,6 +1,5 @@
 package cn.nukkit.event.plugin;
 
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.plugin.Plugin;
 
 /**

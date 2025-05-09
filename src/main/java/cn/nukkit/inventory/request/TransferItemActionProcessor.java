@@ -1,10 +1,14 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.inventory.BundleInventory;
 import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.SoleInventory;
+import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.TransferItemStackRequestAction;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
@@ -22,15 +26,16 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
     public ActionResponse handle(T action, Player player, ItemStackRequestContext context) {
         ContainerSlotType sourceSlotType = action.getSource().getContainer();
         ContainerSlotType destinationSlotType = action.getDestination().getContainer();
-        Inventory source = NetworkMapping.getInventory(player, sourceSlotType);
-        Inventory destination = NetworkMapping.getInventory(player, destinationSlotType);
+        Integer dynamicSrc = action.getSource().getContainerName().getDynamicId();
+        Integer dynamicDst = action.getDestination().getContainerName().getDynamicId();
+        Inventory source = NetworkMapping.getInventory(player, sourceSlotType, dynamicSrc);
+        Inventory destination = NetworkMapping.getInventory(player, destinationSlotType, dynamicDst);
         int sourceSlot = source.fromNetworkSlot(action.getSource().getSlot());
         int sourceStackNetworkId = action.getSource().getStackNetworkId();
         int destinationSlot = destination.fromNetworkSlot(action.getDestination().getSlot());
         int destinationStackNetworkId = action.getDestination().getStackNetworkId();
         int count = action.getCount();
-
-        var sourItem = source.getItem(sourceSlot);
+        var sourItem = source.getUnclonedItem(sourceSlot);
         if (sourItem.isNull()) {
             log.warn("transfer an air item is not allowed");
             return context.error();
@@ -49,6 +54,10 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         if (context.has(CRAFT_CREATIVE_KEY) && (Boolean) context.get(CRAFT_CREATIVE_KEY)) {//If the player takes an item from creative mode, the destination is overridden directly
             if (source instanceof CreativeOutputInventory) {
                 sourItem = sourItem.clone().autoAssignStackNetworkId();
+                if(sourItem instanceof INBT inbt) {
+                    inbt.onChange(destination);
+                    Server.getInstance().getScheduler().scheduleTask(() -> destination.sendSlot(destinationSlot, player)); //sending the player the slot
+                }
                 destination.setItem(destinationSlot, sourItem, false);
                 return context.success(List.of(new ItemStackResponseContainer(
                         destination.getSlotType(destinationSlot),
@@ -67,7 +76,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             }
         }
 
-        var destItem = destination.getItem(destinationSlot);
+        var destItem = destination.getUnclonedItem(destinationSlot);
         if (!destItem.isNull() && !destItem.equals(sourItem, true, true)) {
             log.warn("transfer an item to a slot that has a different item is not allowed");
             return context.error();

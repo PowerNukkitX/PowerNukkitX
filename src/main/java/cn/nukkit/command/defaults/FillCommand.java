@@ -2,6 +2,7 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
@@ -16,9 +17,11 @@ import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.registry.Registries;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
@@ -158,6 +161,14 @@ public class FillCommand extends VanillaCommand {
                 }
             }
             case "replace" -> {
+                if (list.hasResult(3)) tileState = list.getResult(3);
+                int tileHash;
+                if (tileState != null) {
+                    tileHash = tileState.blockStateHash();
+                } else tileHash = Objects.requireNonNull(Registries.BLOCK.get(BlockID.AIR))
+                        .getBlockState()
+                        .blockStateHash();
+
                 Block replaceBlock = list.getResult(5);
                 if (list.hasResult(6)) {
                     replaceState = list.getResult(6);
@@ -166,7 +177,7 @@ public class FillCommand extends VanillaCommand {
                 }
                 blocks = getLevelBlocks(level, aabb);
                 for (Block block : blocks) {
-                    if (block.getId().equals(replaceBlock.getId())) {
+                    if (block.getBlockState().blockStateHash() == tileHash) {
                         blockManager.setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), replaceState);
                         ++count;
                     }

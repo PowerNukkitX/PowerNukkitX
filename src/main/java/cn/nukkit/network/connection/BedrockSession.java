@@ -9,7 +9,9 @@ import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.event.server.DataPacketDecodeEvent;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
+import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBundle;
 import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec;
@@ -530,6 +532,20 @@ public class BedrockSession {
             player.getCursorInventory().sendContents(player);
             player.getOffhandInventory().sendContents(player);
             player.getEnderChestInventory().sendContents(player);
+
+            //Send bundle content
+            PlayerHandle handle = new PlayerHandle(player);
+            handle.getWindows().keySet().stream().filter(inv -> !(inv instanceof CreativeOutputInventory)).forEach(inventory -> {
+                for(int index : inventory.getContents().keySet()) {
+                    Item item = inventory.getUnclonedItem(index);
+                    if(item instanceof ItemBundle bundle) {
+                        if(bundle.hasCompoundTag()) {
+                            bundle.onChange(inventory);
+                            inventory.sendSlot(index, player);
+                        }
+                    }
+                }
+            });
         }
     }
 

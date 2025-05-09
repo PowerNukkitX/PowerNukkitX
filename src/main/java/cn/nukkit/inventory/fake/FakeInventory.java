@@ -169,7 +169,8 @@ public class FakeInventory extends BaseInventory implements InputInventory {
         }
         if (source != null) {
             ContainerSlotType sourceSlotType = source.getContainerName().getContainer();
-            Inventory sourceI = NetworkMapping.getInventory(event.getPlayer(), sourceSlotType);
+            Integer dynamicSrc = source.getContainerName().getDynamicId();
+            Inventory sourceI = NetworkMapping.getInventory(event.getPlayer(), sourceSlotType, dynamicSrc);
             int sourceSlot = sourceI.fromNetworkSlot(source.getSlot());
             Item sourItem = sourceI.getItem(sourceSlot);
             if (sourceI.equals(this)) {
@@ -177,7 +178,8 @@ public class FakeInventory extends BaseInventory implements InputInventory {
                 handler.handle(this, sourceSlot, sourItem, Item.AIR, event);
             } else if(destination != null) {
                 ContainerSlotType destinationSlotType = destination.getContainerName().getContainer();
-                Inventory destinationI = NetworkMapping.getInventory(event.getPlayer(), destinationSlotType);
+                Integer dynamicDst = source.getContainerName().getDynamicId();
+                Inventory destinationI = NetworkMapping.getInventory(event.getPlayer(), destinationSlotType, dynamicDst);
                 int destinationSlot = destinationI.fromNetworkSlot(destination.getSlot());
                 Item destItem = destinationI.getItem(destinationSlot);
                 if (destinationI.equals(this)) {

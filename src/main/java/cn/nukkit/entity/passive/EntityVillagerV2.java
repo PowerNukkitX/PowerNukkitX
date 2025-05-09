@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBed;
-import cn.nukkit.block.BlockCrops;
 import cn.nukkit.block.BlockDoor;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
@@ -21,7 +20,6 @@ import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
-import cn.nukkit.entity.ai.executor.DoNothingExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
@@ -35,7 +33,6 @@ import cn.nukkit.entity.ai.executor.villager.WillingnessExecutor;
 import cn.nukkit.entity.ai.executor.villager.WorkExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
-import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
@@ -66,6 +63,7 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.network.protocol.UpdateTradePacket;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -528,7 +526,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public void kill() {
         if(getLastDamageCause() instanceof EntityDamageByEntityEvent event) {
             if(event.getEntity() instanceof Player player) {
-                System.out.println("1");
                 Arrays.stream(this.getLevel().getCollidingEntities(this.getBoundingBox().grow(16, 16, 16))).filter(entity -> entity instanceof EntityVillagerV2).forEach(entity -> ((EntityVillagerV2) entity).addGossip(player.getLoginChainData().getXUID(), Gossip.MAJOR_NEGATIVE, 25));
             }
         }
@@ -909,8 +906,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         TAIGA;
 
         public static Clothing getClothing(int biomeId) {
-            BiomeRegistry.BiomeDefinition definition = Registries.BIOME.get(biomeId);
-            Set<String> tags = definition.tags();
+            BiomeDefinition definition = Registries.BIOME.get(biomeId);
+            Set<String> tags = definition.getTags();
             if(tags.contains("desert") || tags.contains("mesa")) return DESERT;
             if(tags.contains("jungle")) return JUNGLE;
             if(tags.contains("savanna")) return SAVANNA;

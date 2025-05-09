@@ -1,9 +1,9 @@
 package cn.nukkit.event.entity;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.entity.effect.Effect;
 
 
 public class EntityEffectUpdateEvent extends EntityEvent implements Cancellable {

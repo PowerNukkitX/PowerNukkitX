@@ -287,6 +287,7 @@ public class Level implements Metadatable {
     public boolean stopTime;
     public int skyLightSubtracted;
     public int sleepTicks = 0;
+    public int noSleepNights = 0;
     public int tickRateTime = 0;
     public int tickRateCounter = 0;
     /**
@@ -311,7 +312,7 @@ public class Level implements Metadatable {
     private int updateLCG = ThreadLocalRandom.current().nextInt();
     private int tickRate;
     private long levelCurrentTick = 0;
-    private final Map<Long, Map<Integer, Object>> lightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
+    private final Map<Long, Map<Integer, Object>> blockLightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
     private final int dimensionCount;
     ///base tick system
     private final Thread baseTickThread;
@@ -390,7 +391,7 @@ public class Level implements Metadatable {
         if (this.thunderTime <= 0) {
             setThunderTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
         }
-
+        this.noSleepNights = levelProvider.getNoSleepNight();
         this.levelCurrentTick = levelProvider.getCurrentTick();
         this.updateQueue = new BlockUpdateScheduler(this, levelCurrentTick);
 
@@ -954,7 +955,9 @@ public class Level implements Metadatable {
 
     public void checkTime() {
         if (!this.stopTime && this.gameRules.getBoolean(GameRule.DO_DAYLIGHT_CYCLE)) {
+            float prior = this.time;
             this.time += tickRate;
+            if(prior%TIME_FULL > TIME_NIGHT && this.time%TIME_FULL < TIME_DAY) this.noSleepNights++;
         }
     }
 
@@ -1013,7 +1016,7 @@ public class Level implements Metadatable {
         requireProvider();
         try {
             getScheduler().mainThreadHeartbeat(currentTick);
-            updateBlockLight(lightQueue);
+            updateBlockLight();
             this.checkTime();
             if (currentTick >= nextTimeSendTick) { // Send time to client every 30 seconds to make sure it
                 this.sendTime();
@@ -1042,6 +1045,12 @@ public class Level implements Metadatable {
             this.levelCurrentTick++;
 
             this.updateQueue.tick(this.getCurrentTick());
+
+            if(getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+                if(Arrays.stream(getEntities()).filter(entity -> entity.despawnable).toArray().length < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
+                    getChunks().values().forEach(IChunk::doMobSpawning);
+                }
+            }
 
             while (!this.normalUpdateQueue.isEmpty()) {
                 QueuedUpdate queuedUpdate = this.normalUpdateQueue.poll();
@@ -1250,7 +1259,7 @@ public class Level implements Metadatable {
             Vector3 vector = this.adjustPosToNearbyEntity(new Vector3(chunkX + (LCG & 0xf), 0, chunkZ + (LCG >> 8 & 0xf)));
 
             int biome = this.getBiomeId(vector.getFloorX(), 70, vector.getFloorZ());
-            if (Registries.BIOME.get(biome).rain() <= 0) {
+            if (Registries.BIOME.get(biome).data.downfall <= 0) {
                 return;
             }
 
@@ -1324,6 +1333,7 @@ public class Level implements Metadatable {
                 for (Player p : this.getPlayers().values()) {
                     p.stopSleep();
                 }
+                this.noSleepNights = 0;
             }
         }
     }
@@ -1523,6 +1533,7 @@ public class Level implements Metadatable {
         levelProvider.setRainTime(this.rainTime);
         levelProvider.setThundering(this.thundering);
         levelProvider.setThunderTime(this.thunderTime);
+        levelProvider.setNoSleepNight(this.noSleepNights);
         levelProvider.setCurrentTick(this.levelCurrentTick);
         levelProvider.setGameRules(this.gameRules);
         this.saveChunks();
@@ -2090,7 +2101,7 @@ public class Level implements Metadatable {
 
     public void updateAllLight(Vector3 pos) {
         this.updateBlockSkyLight((int) pos.x, (int) pos.y, (int) pos.z);
-        this.addLightUpdate((int) pos.x, (int) pos.y, (int) pos.z);
+        this.addBlockLightUpdate((int) pos.x, (int) pos.y, (int) pos.z);
     }
 
     public void updateBlockSkyLight(int x, int y, int z) {
@@ -2098,33 +2109,20 @@ public class Level implements Metadatable {
 
         if (chunk == null) return;
 
-        int oldHeightMap = chunk.getHeightMap(x & 0xf, z & 0xf);
-        Block sourceBlock = getBlock(x, y, z);
-
-        int newHeightMap;
-        if (y == oldHeightMap) { // Block changed directly in the heightmap. Check if a block was removed or changed to a different light-filter
-            newHeightMap = chunk.recalculateHeightMapColumn(x & 0x0f, z & 0x0f);
-        } else if (y > oldHeightMap) { // Block changed above the heightmap
-            if (sourceBlock.getLightFilter() > 1 || sourceBlock.diffusesSkyLight()) {
-                chunk.setHeightMap(x & 0xf, z & 0xf, y);
-                newHeightMap = y;
-            } else { // Block changed which has no effect on direct skylight, for example placing or removing glass.
-                return;
+        int height = chunk.recalculateHeightMapColumn(x & 0x0f, z & 0x0f);
+        int level = 15;
+        for(int _y = height ; _y >= getDimensionData().getMinHeight(); _y--) {
+            Block block = getBlock(x, _y, z);
+            if (!block.isTransparent()) {
+                level = 0;
+            } else if (block.diffusesSkyLight()) {
+                level--;
+            } else {
+                level -= block.getLightLevel();
             }
-        } else { // Block changed below heightmap
-            newHeightMap = oldHeightMap;
-        }
-
-        if (newHeightMap > oldHeightMap) { // Heightmap increase, block placed, remove skylight
-            for (int i = y; i >= oldHeightMap; --i) {
-                setBlockSkyLightAt(x, i, z, 0);
-            }
-        } else if (newHeightMap < oldHeightMap) { // Heightmap decrease, block changed or removed, add skylight
-            for (int i = y; i >= newHeightMap; --i) {
-                setBlockSkyLightAt(x, i, z, 15);
-            }
-        } else { // No heightmap change, block changed "underground"
-            setBlockSkyLightAt(x, y, z, Math.max(0, getHighestAdjacentBlockSkyLight(x, y, z) - sourceBlock.getLightFilter()));
+            if(level <= 0) level = 0;
+            //if(_y != height && !block.canPassThrough() && block.up().canPassThrough()) addSkyLightUpdate(x, _y+1, z); ToDo: Light Spread
+            setBlockSkyLightAt(x, _y, z, level);
         }
     }
 
@@ -2151,8 +2149,8 @@ public class Level implements Metadatable {
         return maxValue;
     }
 
-    public void updateBlockLight(Map<Long, Map<Integer, Object>> map) {
-        int size = map.size();
+    public void updateBlockLight() {
+        int size = blockLightQueue.size();
         if (size == 0) {
             return;
         }
@@ -2161,7 +2159,7 @@ public class Level implements Metadatable {
         Long2ObjectOpenHashMap<Object> visited = new Long2ObjectOpenHashMap<>();
         Long2ObjectOpenHashMap<Object> removalVisited = new Long2ObjectOpenHashMap<>();
 
-        var iter = map.entrySet().iterator();
+        var iter = blockLightQueue.entrySet().iterator();
         while (iter.hasNext() && size-- > 0) {
             var entry = iter.next();
             iter.remove();
@@ -2276,12 +2274,12 @@ public class Level implements Metadatable {
         }
     }
 
-    public void addLightUpdate(int x, int y, int z) {
+    public void addBlockLightUpdate(int x, int y, int z) {
         long index = chunkHash(x >> 4, z >> 4);
-        var currentMap = lightQueue.get(index);
+        var currentMap = blockLightQueue.get(index);
         if (currentMap == null) {
             currentMap = new ConcurrentHashMap<>(8, 0.9f, 1);
-            this.lightQueue.put(index, currentMap);
+            this.blockLightQueue.put(index, currentMap);
         }
         currentMap.put(Level.localBlockHash(x, y, z, this), changeBlocksPresent);
     }
@@ -2813,7 +2811,7 @@ public class Level implements Metadatable {
         }
 
         //cause bug (eg: frog_spawn) (and I don't know what this is for)
-        if (!(hand instanceof BlockFrogSpawn || hand instanceof BlockSegmented) && target.canBeReplaced()) {
+        if (!(hand instanceof BlockFrogSpawn) && target.canBeReplaced()) {
             block = target;
             hand.position(block);
         }
@@ -3503,26 +3501,31 @@ public class Level implements Metadatable {
             int z = getHashZ(index);
             final Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
             if (players != null) {
-                final var pair = this.requireProvider().requestChunkData(x, z);
-                for (Player player : Objects.requireNonNull(players).values()) {
-                    if (player.isConnected()) {
-                        NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
-                        ncp.position = player.asBlockVector3();
-                        ncp.radius = player.getViewDistance() << 4;
-                        player.dataPacket(ncp);
+                IChunk chunk = this.getChunk(x, z);
+                if(chunk.getChunkState().canSend()) {
+                    final var pair = this.requireProvider().requestChunkData(x, z);
+                    for (Player player : Objects.requireNonNull(players).values()) {
+                        if (player.isConnected()) {
+                            NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
+                            ncp.position = player.asBlockVector3();
+                            ncp.radius = player.getViewDistance() << 4;
+                            player.dataPacket(ncp);
 
-                        LevelChunkPacket pk = new LevelChunkPacket();
-                        pk.chunkX = x;
-                        pk.chunkZ = z;
-                        pk.dimension = getDimensionData().getDimensionId();
-                        pk.subChunkCount = pair.right();
-                        pk.requestSubChunks = true;
-                        pk.cacheEnabled = false;
-                        pk.data = new byte[0];
-                        player.sendChunk(x, z, pk);
+                            LevelChunkPacket pk = new LevelChunkPacket();
+                            pk.chunkX = x;
+                            pk.chunkZ = z;
+                            pk.dimension = getDimensionData().getDimensionId();
+                            pk.subChunkCount = pair.right();
+                            pk.requestSubChunks = true;
+                            pk.cacheEnabled = false;
+                            pk.data = new byte[0];
+                            player.sendChunk(x, z, pk);
+                        }
                     }
+                    this.chunkSendQueue.remove(index);
+                } else if(!this.chunkGenerationQueue.containsKey(index)) {
+                    this.generateChunk(x, z, true);
                 }
-                this.chunkSendQueue.remove(index);
             }
         }
     }
@@ -3816,22 +3819,27 @@ public class Level implements Metadatable {
         if (standable(spawn, true))
             return Position.fromObject(spawn, this);
 
-        int maxY = isNether() ? 127 : (isOverWorld() ? 319 : 255);
-        int minY = isOverWorld() ? -64 : 0;
+        int maxY = getDimensionData().getMaxHeight();
+        int minY = getDimensionData().getMinHeight();
 
-        for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
-            for (int y = maxY; y >= minY; y--) {
-                Position pos = Position.fromObject(spawn, this);
-                pos.setY(y);
-                Position newSpawn;
-                if (standable(newSpawn = pos.add(horizontalOffset, 0, horizontalOffset), allowWaterUnder))
-                    return newSpawn;
-                if (standable(newSpawn = pos.add(horizontalOffset, 0, -horizontalOffset), allowWaterUnder))
-                    return newSpawn;
-                if (standable(newSpawn = pos.add(-horizontalOffset, 0, horizontalOffset), allowWaterUnder))
-                    return newSpawn;
-                if (standable(newSpawn = pos.add(-horizontalOffset, 0, -horizontalOffset), allowWaterUnder))
-                    return newSpawn;
+        int count = 0;
+
+        int checkHeight = (int) Math.max(Math.abs(minY-spawn.y), Math.abs(maxY-spawn.y));
+        for (int r = 1; r <= checkHeight; r++) {
+            int horizontalLimit = Math.min(r, horizontalMaxOffset);
+            for (int dx = -r; dx <= r; dx++) {
+                for (int dy = -r; dy <= r; dy++) {
+                    for (int dz = -r; dz <= r; dz++) {
+                        if (Math.abs(dx) != horizontalLimit && Math.abs(dy) != r && Math.abs(dz) != horizontalLimit) continue;
+                        Position checkLoc = Position.fromObject(spawn, this).add(dx, dy, dz);
+                        count++;
+                        if(count > 10000) {
+                            log.warn("cannot find a safe spawn around " + spawn.asBlockVector3() + ". Too many attempts!");
+                            return Position.fromObject(spawn, this);
+                        }
+                        if(standable(checkLoc, allowWaterUnder)) return checkLoc;
+                    }
+                }
             }
         }
 

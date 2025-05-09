@@ -12,6 +12,7 @@ import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Tee7even
@@ -49,6 +50,7 @@ public class TitleCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Player> players = list.getResult(0);
+        players = players.stream().filter(Objects::nonNull).toList();
         if (players.isEmpty()) {
             log.addNoTargetMatch().output();
             return 0;

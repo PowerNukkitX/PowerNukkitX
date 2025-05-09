@@ -1,10 +1,5 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.nbt.stream.NBTInputStream;
-import cn.nukkit.nbt.stream.NBTOutputStream;
-
-import java.io.IOException;
-
 public class ShortTag extends NumberTag<Integer> {
     public short data;
     public ShortTag() {

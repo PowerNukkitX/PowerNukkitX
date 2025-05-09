@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDragonHead;
-import cn.nukkit.item.ItemZombieHead;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDragonHead extends BlockHead {

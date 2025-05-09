@@ -3,12 +3,19 @@ package cn.nukkit.config.updater;
 import cn.nukkit.Server;
 import cn.nukkit.config.ServerSettings;
 import cn.nukkit.config.YamlSnakeYamlConfigurer;
-import cn.nukkit.config.category.*;
+import cn.nukkit.config.category.BaseSettings;
+import cn.nukkit.config.category.ChunkSettings;
+import cn.nukkit.config.category.DebugSettings;
+import cn.nukkit.config.category.GameplaySettings;
+import cn.nukkit.config.category.LevelSettings;
+import cn.nukkit.config.category.MiscSettings;
+import cn.nukkit.config.category.NetworkSettings;
+import cn.nukkit.config.category.PerformanceSettings;
+import cn.nukkit.config.category.PlayerSettings;
 import cn.nukkit.config.legacy.LegacyServerProperties;
 import cn.nukkit.config.legacy.LegacyServerPropertiesKeys;
 import cn.nukkit.config.legacy.LegacyServerSettings;
 import cn.nukkit.lang.BaseLang;
-import cn.nukkit.utils.TextFormat;
 import eu.okaeri.configs.ConfigManager;
 import lombok.extern.slf4j.Slf4j;
 
@@ -152,11 +159,8 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .achievements(oldProp.get(LegacyServerPropertiesKeys.ACHIEVEMENTS, game.achievements()))
                 .announceAchievements(oldProp.get(LegacyServerPropertiesKeys.ANNOUNCE_PLAYER_ACHIEVEMENTS, game.announceAchievements()))
                 .spawnProtection(oldProp.get(LegacyServerPropertiesKeys.SPAWN_PROTECTION, game.spawnProtection()))
-                .allowFlight(oldProp.get(LegacyServerPropertiesKeys.ALLOW_FLIGHT, game.allowFlight()))
                 .allowNether(oldProp.get(LegacyServerPropertiesKeys.ALLOW_NETHER, game.allowNether()))
                 .allowTheEnd(oldProp.get(LegacyServerPropertiesKeys.ALLOW_THE_END, game.allowTheEnd()))
-                .spawnMobs(oldProp.get(LegacyServerPropertiesKeys.SPAWN_MOBS, game.spawnMobs()))
-                .spawnAnimals(oldProp.get(LegacyServerPropertiesKeys.SPAWN_ANIMALS, game.spawnAnimals()))
                 .gamemode(parseGamemode(oldProp, game.gamemode()))
                 .forceGamemode(oldProp.get(LegacyServerPropertiesKeys.FORCE_GAMEMODE, game.forceGamemode()))
                 .hardcore(oldProp.get(LegacyServerPropertiesKeys.HARDCORE, game.hardcore()))

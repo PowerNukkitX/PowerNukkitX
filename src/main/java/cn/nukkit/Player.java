@@ -54,6 +54,7 @@ import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.window.Form;
+import cn.nukkit.inventory.BundleInventory;
 import cn.nukkit.inventory.CraftTypeInventory;
 import cn.nukkit.inventory.CraftingGridInventory;
 import cn.nukkit.inventory.CreativeOutputInventory;
@@ -62,9 +63,11 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.PlayerCursorInventory;
 import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.inventory.fake.FakeInventory;
+import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemArrow;
+import cn.nukkit.item.ItemBundle;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.ItemTool;
@@ -899,23 +902,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         double corrX = this.x - clientPos.getX();
         double corrY = this.y - clientPos.getY();
         double corrZ = this.z - clientPos.getZ();
-        if (this.checkMovement && (Math.abs(corrX) > 0.5 || Math.abs(corrY) > 0.5 || Math.abs(corrZ) > 0.5) && this.riding == null && !this.hasEffect(EffectType.LEVITATION) && !this.hasEffect(EffectType.SLOW_FALLING) && !server.getAllowFlight()) {
-            double diff = corrX * corrX + corrZ * corrZ;
-            //这里放宽了判断，否则对角穿过脚手架会判断非法移动。
-            if (diff > 1.2) {
-                PlayerInvalidMoveEvent event = new PlayerInvalidMoveEvent(this, true);
-                this.getServer().getPluginManager().callEvent(event);
-                if (!event.isCancelled() && (invalidMotion = event.isRevert())) {
-                    log.warn(this.getServer().getLanguage().tr("nukkit.player.invalidMove", this.getName()));
-                }
-            }
-            if (invalidMotion) {
-                this.setPositionAndRotation(revertPos.asVector3f().asVector3(), revertPos.getYaw(), revertPos.getPitch(), revertPos.getHeadYaw());
-                this.revertClientMotion(revertPos);
-                this.resetClientMovement();
-                return;
-            }
-        }
 
         //update server-side position and rotation and aabb
         Location last = new Location(this.lastX, this.lastY, this.lastZ, this.lastYaw, this.lastPitch, this.lastHeadYaw, this.level);
@@ -2720,36 +2706,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     }
                 } else {
                     this.lastInAirTick = level.getTick();
-                    //check fly for player
-                    if (this.checkMovement && !this.isGliding() && !server.getAllowFlight() &&
-                            !this.getAdventureSettings().get(Type.ALLOW_FLIGHT) &&
-                            this.inAirTicks > 20 && !this.isSleeping() && !this.isImmobile() && !this.isSwimming() &&
-                            this.riding == null && !this.hasEffect(EffectType.LEVITATION) && !this.hasEffect(EffectType.SLOW_FALLING)) {
-                        double expectedVelocity = (-this.getGravity()) / ((double) this.getDrag()) - ((-this.getGravity()) / ((double) this.getDrag())) * Math.exp(-((double) this.getDrag()) * ((double) (this.inAirTicks - this.startAirTicks)));
-                        double diff = (this.speed.y - expectedVelocity) * (this.speed.y - expectedVelocity);
-
-                        Block block = level.getBlock(this);
-                        String blockId = block.getId();
-                        boolean ignore = blockId.equals(Block.LADDER) || blockId.equals(Block.VINE) || blockId.equals(Block.WEB)
-                                || blockId.equals(Block.SCAFFOLDING);// || (blockId == Block.SWEET_BERRY_BUSH && block.getDamage() > 0);
-
-                        if (!this.hasEffect(EffectType.JUMP_BOOST) && diff > 0.6 && expectedVelocity < this.speed.y && !ignore) {
-                            if (this.inAirTicks < 150) {
-                                PlayerInvalidMoveEvent ev = new PlayerInvalidMoveEvent(this, true);
-                                this.getServer().getPluginManager().callEvent(ev);
-
-                                if(!ev.isCancelled()) {
-                                    this.setMotion(new Vector3(0, expectedVelocity, 0));
-                                }
-                            } else if (this.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server")) {
-                                return false;
-                            }
-                        }
-                        if (ignore) {
-                            this.resetFallDistance();
-                        }
-                    }
-
                     if (this.y > highestPosition) {
                         this.highestPosition = this.y;
                     }
@@ -4641,11 +4597,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (this.spawned && inventory.open(this)) {
             updateTrackingPositions(true);
-            return cnt;
         } else {
             this.removeWindow(inventory);
             return -1;
         }
+        for(int index : inventory.getContents().keySet()) {
+            Item item = inventory.getUnclonedItem(index);
+            if(item instanceof ItemBundle bundle) {
+                if(bundle.hasCompoundTag()) {
+                    bundle.onChange(inventory);
+                    inventory.sendSlot(index, this);
+                }
+            }
+        }
+        return cnt;
     }
 
     public int addWindow(@NotNull Inventory inventory, Integer forceId) {
@@ -5562,5 +5527,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @NotNull
     public PlayerInfo getPlayerInfo() {
         return this.info;
+    }
+
+    public String getXUID() {
+        return this.loginChainData.getXUID();
     }
 }

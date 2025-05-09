@@ -232,6 +232,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                 this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.CAULDRON_ADDDYE);
 
                 break;
+            case ItemID.WOLF_ARMOR:
             case ItemID.LEATHER_HELMET:
             case ItemID.LEATHER_CHESTPLATE:
             case ItemID.LEATHER_LEGGINGS:

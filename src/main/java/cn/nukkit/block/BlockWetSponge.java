@@ -52,8 +52,10 @@ public class BlockWetSponge extends BlockSolid {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (level.getDimension() != Level.DIMENSION_NETHER)
-            return true;
+        if (level.getDimension() != Level.DIMENSION_NETHER) {
+            return super.place(item, block, target, face, fx, fy, fz, player);
+        }
+
 
         level.setBlock(block, new BlockSponge(), true, true);
         this.getLevel().addLevelEvent(block.add(0.5, 0.875, 0.5), LevelEventPacket.EVENT_CAULDRON_EXPLODE);

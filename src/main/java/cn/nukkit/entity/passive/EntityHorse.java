@@ -59,6 +59,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -202,6 +203,11 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     @Override
     public String getOriginalName() {
         return "Horse";
+    }
+
+    @Override
+    public int randomVariant() {
+        return getAllVariant()[new Random(System.currentTimeMillis()).nextInt(getAllVariant().length)];
     }
 
     @Override
@@ -518,7 +524,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         addEntity.speedX = (float) this.motionX;
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
+        addEntity.entityData = this.entityDataMap.copy();
         addEntity.attributes = this.attributeMap.values().toArray(Attribute.EMPTY_ARRAY);
         addEntity.links = new EntityLink[this.passengers.size()];
         for (int i = 0; i < addEntity.links.length; i++) {

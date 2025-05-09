@@ -3,7 +3,6 @@ package cn.nukkit.entity.item;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.data.EntityDataType;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntityEnderDragon;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;

@@ -434,6 +434,7 @@ public class ServerScheduler {
         return taskHandler;
     }
 
+    @ApiStatus.Internal
     public void mainThreadHeartbeat(int currentTick) {
         // Accepts pending.
         TaskHandler task;

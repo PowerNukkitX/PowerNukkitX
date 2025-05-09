@@ -1,6 +1,5 @@
 package cn.nukkit.entity.ai.controller;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCarpet;
 import cn.nukkit.block.BlockID;

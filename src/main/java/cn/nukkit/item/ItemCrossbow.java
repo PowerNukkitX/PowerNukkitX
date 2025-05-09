@@ -16,7 +16,6 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.Utils;
 
 import java.util.Map;

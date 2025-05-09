@@ -1,22 +1,19 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.tags.BlockTags;
+import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 
 /**
  * PowerNukkitX Project 2023/7/15
  *
  * @author daoge_cmd
  */
-public class BlockCactusFlower extends BlockFlowable {
+public class BlockCactusFlower extends BlockFlower {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CACTUS_FLOWER);
 
@@ -40,13 +37,20 @@ public class BlockCactusFlower extends BlockFlowable {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (!isSupportValid(block.down())) {
+        if (!isBlockValidSupport(block.down())) {
             return false;
         }
         return this.getLevel().setBlock(this, this);
     }
 
-    private static boolean isSupportValid(Block block) {
-        return block instanceof BlockCactus;
+    private boolean isBlockValidSupport(Block block) {
+        Vector3 check = new Vector3(this.getX() +.5f, this.getY(), this.getZ() + .5f);
+        AxisAlignedBB box = block.recalculateBoundingBox();
+        return (!block.isAir() && box != null && box.isVectorInside(check)) || block instanceof BlockCactus;
+    }
+
+    @Override
+    public boolean canPlantOn(Block block) {
+        return isBlockValidSupport(block);
     }
 }

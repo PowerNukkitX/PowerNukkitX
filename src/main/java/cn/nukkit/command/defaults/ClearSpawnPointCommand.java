@@ -12,6 +12,7 @@ import cn.nukkit.network.protocol.types.SpawnPointType;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -30,9 +31,10 @@ public class ClearSpawnPointCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
-        List<Player> players = sender.isPlayer() ? List.of(sender.asPlayer()) : null;
+        List<Player> players = sender.isPlayer() ? List.of(sender.asPlayer()) : List.of();
         if (list.hasResult(0)) players = list.getResult(0);
-        if (players == null || players.isEmpty()) {
+        players = players.stream().filter(Objects::nonNull).toList();
+        if (players.isEmpty()) {
             log.addNoTargetMatch().output();
             return 0;
         }

@@ -10,8 +10,10 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(fluent = true)
 public class ChunkSettings extends OkaeriConfig {
+    @Comment("pnx.settings.chunk.spawnlimit")
+    int spawnLimit = 3;
     @Comment("pnx.settings.chunk.perticksend")
-    int perTickSend = 8;
+    int perTickSend = 32;
     @Comment("pnx.settings.chunk.spawnthreshold")
     int spawnThreshold = 56;
     @Comment("pnx.settings.chunk.chunksperticks")
