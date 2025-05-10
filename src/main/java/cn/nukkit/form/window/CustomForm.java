@@ -99,11 +99,15 @@ public class CustomForm extends Form<CustomResponse> {
 
         List<String> elementResponses = JSONUtils.from(formData, LIST_STRING_TYPE);
 
-        for (int i = 0, j = 0; i < this.elements.size(); i++) {
+        for (int i = 0, responseSize = elementResponses.size(); i < responseSize; i++) {
+            if (i >= this.elements.size()) {
+                break;
+            }
+
+            String responseData = elementResponses.get(i);
             ElementCustom element = this.elements.get(i);
 
             Object elementResponse = null;
-            String responseData = element.hasResponse() ? elementResponses.get(j++) : "";
 
             switch (element) {
                 case ElementDropdown dropdown -> {
