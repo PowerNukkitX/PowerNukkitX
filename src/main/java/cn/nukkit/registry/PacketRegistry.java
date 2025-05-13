@@ -213,7 +213,6 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.PLAYER_START_ITEM_COOL_DOWN_PACKET, PlayerStartItemCoolDownPacket.class);
         this.register0(ProtocolInfo.CODE_BUILDER_SOURCE_PACKET, CodeBuilderSourcePacket.class);
         this.register0(ProtocolInfo.UPDATE_SUB_CHUNK_BLOCKS_PACKET, UpdateSubChunkBlocksPacket.class);
-        //powernukkitx only
         this.register0(ProtocolInfo.REQUEST_PERMISSIONS_PACKET, RequestPermissionsPacket.class);
         this.register0(ProtocolInfo.COMMAND_BLOCK_UPDATE_PACKET, CommandBlockUpdatePacket.class);
         this.register0(ProtocolInfo.SET_SCORE_PACKET, SetScorePacket.class);

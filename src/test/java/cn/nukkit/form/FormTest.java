@@ -65,7 +65,7 @@ public class FormTest {
 
         ModalFormResponsePacket modalFormResponsePacket = new ModalFormResponsePacket();
         modalFormResponsePacket.formId = 1;
-        modalFormResponsePacket.data = "[\"1\",\"input\",\"6\",\"0\",\"false\"]";
+        modalFormResponsePacket.data = "[\"1\",\"input\",\"test3\",\"6\",\"0\",\"false\", \"test7\",\"test8\"]";
         assert dataPacketManager != null;
 
         testPluginManager.registerTestEventHandler(List.of(
