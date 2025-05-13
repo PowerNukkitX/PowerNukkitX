@@ -122,6 +122,10 @@ public class BlockManager {
     }
 
     public void applySubChunkUpdate(List<Block> blockList, Predicate<Block> predicate) {
+        this.applySubChunkUpdate(blockList, predicate, false);
+    }
+
+    public void applySubChunkUpdate(List<Block> blockList, Predicate<Block> predicate, boolean queueSave) {
         if (predicate != null) {
             blockList = blockList.stream().filter(predicate).toList();
         }
@@ -146,6 +150,9 @@ public class BlockManager {
                 });
                 unsafeChunk.recalculateHeightMap();
             });
+            if (queueSave) {
+                key.setChanged();
+            }
             key.reObfuscateChunk();
         });
         for (var p : batchs.values()) {
