@@ -4,6 +4,7 @@ import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
 import cn.nukkit.entity.passive.EntityHorse;
@@ -71,7 +72,6 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 dataPacketManager.processPacket(playerHandle, itemStackRequestPacket);
             }
         }
-
         if (pk.inputData.contains(AuthInputAction.START_SPRINTING)) {
             PlayerToggleSprintEvent event = new PlayerToggleSprintEvent(player, true);
             player.getServer().getPluginManager().callEvent(event);
@@ -194,6 +194,14 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.getAdventureSettings().update();
             } else {
                 player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
+            }
+        }
+        if(pk.inputData.contains(AuthInputAction.JUMP_RELEASED_RAW)) {
+            if(player.getRiding() != null) {
+                if (playerHandle.player.riding instanceof EntityHorse horse && horse.isAlive() && !horse.isJumping()) {
+                    horse.getJumping().set(player.getLevel().getTick());
+                    horse.setDataFlag(EntityFlag.STANDING);
+                }
             }
         }
         Vector3 clientPosition = pk.position.asVector3().subtract(0, playerHandle.getBaseOffset(), 0);

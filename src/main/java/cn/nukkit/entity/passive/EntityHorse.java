@@ -63,6 +63,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author PikyCZ
@@ -77,7 +79,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4};
     private Map<String, Attribute> attributeMap;
     private HorseInventory horseInventory;
-    private final AtomicBoolean jumping = new AtomicBoolean(false);
+    private final AtomicInteger jumping = new AtomicInteger(-1);
 
     public EntityHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -220,7 +222,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return MARK_VARIANTS;
     }
 
-    public AtomicBoolean getJumping() {
+    public AtomicInteger getJumping() {
         return jumping;
     }
 
@@ -335,13 +337,17 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         }
     }
 
+    public boolean isJumping() {
+        return this.jumping.get() != -1;
+    }
+
     @Override
     public boolean onUpdate(int currentTick) {
         boolean b = super.onUpdate(currentTick);
         if (currentTick % 2 == 0) {
-            if (this.jumping!=null && this.jumping.get() && this.isOnGround()) {
+            if (currentTick - getJumping().get() > 5 && this.isOnGround()) {
                 this.setDataFlag(EntityFlag.STANDING, false);
-                this.jumping.set(false);
+                this.jumping.set(-1);
             }
         }
         return b;
@@ -395,7 +401,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
     @Override
     public boolean dismountEntity(Entity entity) {
-        this.getMemoryStorage().clear(CoreMemoryTypes.RIDER_NAME);
+        this.getMemoryStorage().put(CoreMemoryTypes.RIDER_NAME, null);
         return super.dismountEntity(entity);
     }
 
@@ -410,10 +416,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     public @Nullable Entity getRider() {
-        String name = getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
+        String name = this.getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
         if (name != null) {
             return Server.getInstance().getPlayerExact(name);
-        } else return null;//todo other entity
+        } else return null;
     }
 
     public float getClientMaxJumpHeight() {
