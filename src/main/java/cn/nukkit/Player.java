@@ -150,6 +150,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -159,6 +160,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -322,6 +324,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected Entity lastBeAttackEntity = null;
     private final @NotNull PlayerHandle playerHandle = new PlayerHandle(this);
+    @Getter
     protected final PlayerChunkManager playerChunkManager;
     private boolean needDimensionChangeACK = false;
     private Boolean openSignFront = null;
@@ -558,9 +561,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     log.debug("Tried to set item " + handItem.getId() + " but " + this.getName() + " had item " + clone.getId() + " in their hand slot");
                 }
                 inventory.sendHeldItem(this.getViewers().values());
-            } else if (handItem == null)
+            } else if (handItem == null) {
                 this.level.sendBlocks(new Player[]{this}, new Block[]{this.level.getBlock(blockPos.asVector3())}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
-            return;
+                BlockEntity blockEntity = this.getLevel().getBlockEntity(blockPos.asVector3());
+
+                if (blockEntity instanceof BlockEntitySpawnable) {
+                    ((BlockEntitySpawnable) blockEntity).spawnTo(this);
+                }
+            }
         }
 
         inventory.sendContents(this);
@@ -849,7 +857,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     protected void checkNearEntities() {
         for (Entity entity : this.level.getNearbyEntities(this.boundingBox.grow(1, 0.5, 1), this)) {
-            if(entity == null) continue;
+            if (entity == null) continue;
             entity.scheduleUpdate();
 
             if (!entity.isAlive() || !this.isAlive()) {
@@ -2227,11 +2235,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     entity.spawnTo(this);
                 }
             }
-        }
 
-        for(BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
-            if(entity instanceof BlockEntitySpawnable spawnable) {
-                spawnable.spawnTo(this);
+            for (BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
+                if (entity instanceof BlockEntitySpawnable spawnable) {
+                    spawnable.spawnTo(this);
+                }
             }
         }
 
@@ -2862,7 +2870,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.nextChunkOrderRun-- <= 0 || this.chunk == null) {
-            playerChunkManager.tick();
+            CompletableFuture.runAsync(() -> {
+                playerChunkManager.tick();
+            }, this.server.getComputeThreadPool());
         }
 
         if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
@@ -4342,7 +4352,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     *
      * Sends a form to a player and assigns the next ID to it
      * To open a form safely, please use {@link Form#send(Player)}
      *
@@ -4354,12 +4363,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     *
      * Sends a form to a player and assigns a given ID to it
      * To open a form safely, please use {@link Form#send(Player)}
      *
      * @param form The form to open
-     * @param id The ID to assign the form to
+     * @param id   The ID to assign the form to
      * @return The id assigned to the form
      */
     public int sendForm(Form<?> form, int id) {
@@ -4368,7 +4376,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return id;
         }
 
-        if(!form.isViewer(this)) {
+        if (!form.isViewer(this)) {
             form.viewers().add(this);
         }
 
@@ -4601,10 +4609,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.removeWindow(inventory);
             return -1;
         }
-        for(int index : inventory.getContents().keySet()) {
+        for (int index : inventory.getContents().keySet()) {
             Item item = inventory.getUnclonedItem(index);
-            if(item instanceof ItemBundle bundle) {
-                if(bundle.hasCompoundTag()) {
+            if (item instanceof ItemBundle bundle) {
+                if (bundle.hasCompoundTag()) {
                     bundle.onChange(inventory);
                     inventory.sendSlot(index, this);
                 }
