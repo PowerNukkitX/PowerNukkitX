@@ -78,7 +78,7 @@ public class LoginPacket extends DataPacket {
                 JsonObject extra = chainMap.get("extraData").getAsJsonObject();
                 if (extra.has("displayName")) this.username = extra.get("displayName").getAsString();
                 if (extra.has("identity")) this.clientUUID = UUID.fromString(extra.get("identity").getAsString());
-                if (extra.has("titleId")) this.titleId = extra.get("titleId").getAsString();
+                if (extra.has("titleId") && extra.get("titleId").isJsonPrimitive()) this.titleId = extra.get("titleId").getAsString();
             }
         }
     }
