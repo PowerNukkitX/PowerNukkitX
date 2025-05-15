@@ -66,6 +66,7 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.SpawnPointType;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinitionData;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
@@ -3305,7 +3306,6 @@ public class Level implements Metadatable {
     }
 
     protected static final BlockColor VOID_BLOCK_COLOR = BlockColor.VOID_BLOCK_COLOR;
-    protected static final BlockColor WATER_BLOCK_COLOR = BlockColor.WATER_BLOCK_COLOR;
 
     public BlockColor getMapColorAt(int x, int z) {
         var color = VOID_BLOCK_COLOR.toAwtColor();
@@ -3315,23 +3315,7 @@ public class Level implements Metadatable {
             return VOID_BLOCK_COLOR;
 
         //在z轴存在高度差的地方，颜色变深或变浅
-        var nzy = getMapColoredBlockAt(x, z - 1);
-        if (nzy == null)
-            return block.getColor();
         color = block.getColor().toAwtColor();
-        if (nzy.getFloorY() > block.getFloorY()) {
-            color = darker(color, 0.875 - Math.min(5, nzy.getFloorY() - block.getFloorY()) * 0.05);
-        } else if (nzy.getFloorY() < block.getFloorY()) {
-            color = brighter(color, 0.875 - Math.min(5, block.getFloorY() - nzy.getFloorY()) * 0.05);
-        }
-
-        //效果不好，暂时禁用
-//        var deltaY = block.y - 128;
-//        if (deltaY > 0) {
-//            color = brighter(color, 1 - deltaY / (192 * 3));
-//        } else if (deltaY < 0) {
-//            color = darker(color, 1 - (-deltaY) / (192 * 3));
-//        }
 
         var up = block.getSide(BlockFace.UP);
         var up1 = block.getSideAtLayer(1, BlockFace.UP);
@@ -3340,6 +3324,13 @@ public class Level implements Metadatable {
             var g1 = color.getGreen();
             var b1 = color.getBlue();
             //在水下
+            BiomeDefinitionData data = Registries.BIOME.get(getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ())).data;
+            int colorInt = data.mapWaterColor;
+            int r = (int)( (((colorInt >> 16) & 0xff) / 255.0f) + BlockColor.WATER_BLOCK_COLOR.getRed()*3) / 4;
+            int g = (int) ((((colorInt >> 8) & 0xff) / 255.0f) + BlockColor.WATER_BLOCK_COLOR.getGreen()*3) / 4;
+            int b = (int) ((((colorInt) & 0xff) / 255.0f) + BlockColor.WATER_BLOCK_COLOR.getBlue()*3) / 4;
+            int a = (int) (((colorInt >> 24) & 0xff) / 255.0f);
+            BlockColor WATER_BLOCK_COLOR = new BlockColor(r, g, b, a);
             if (block.y < 62) {
                 //在海平面下
                 //海平面为62格。离海平面越远颜色越接近海洋颜色
@@ -3347,7 +3338,7 @@ public class Level implements Metadatable {
                 if (depth > 96) return WATER_BLOCK_COLOR;
                 b1 = WATER_BLOCK_COLOR.getBlue();
                 var radio = (depth / 96.0);
-                if (radio < 0.5) radio = 0.5;
+                if (radio < 0.9) radio = 0.9;
                 r1 += (WATER_BLOCK_COLOR.getRed() - r1) * radio;
                 g1 += (WATER_BLOCK_COLOR.getGreen() - g1) * radio;
             } else {
@@ -3357,6 +3348,22 @@ public class Level implements Metadatable {
                 g1 += (WATER_BLOCK_COLOR.getGreen() - g1) * 0.5;
             }
             color = new Color(r1, g1, b1);
+        }
+        if(block.isTransparent()) {
+            int y = block.getFloorY();
+            float light = 0.5f;
+            int r = (int) (color.getRed() * light);
+            int g = (int) (color.getGreen() * light);
+            int b = (int) (color.getBlue() * light);
+            color = new Color(r, g, b);
+        }
+        var nzy = getMapColoredBlockAt(x, z - 1);
+        if (nzy == null)
+            return block.getColor();
+        if (nzy.getFloorY() > block.getFloorY()) {
+            color = darker(color, 0.875 - Math.min(5, nzy.getFloorY() - block.getFloorY()) * 0.05);
+        } else if (nzy.getFloorY() < block.getFloorY()) {
+            color = brighter(color, 0.875 - Math.min(5, block.getFloorY() - nzy.getFloorY()) * 0.05);
         }
 
         return new BlockColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
@@ -3397,8 +3404,9 @@ public class Level implements Metadatable {
         int y = chunk.getHeightMap(chunkX, chunkZ);
         while (y >= getMinHeight()) {
             Block block = getBlock(x, y, z);
-            if (block.getColor() == null) return null;
-            if (block.getColor().getAlpha() == 0/* || block instanceof BlockFlowingWater*/) {
+            BlockColor color = block.getColor();
+            if (color == null) return null;
+            if (color.getAlpha() == 0 && color.getTint() == BlockColor.Tint.NONE) {
                 y--;
             } else {
                 return block;
