@@ -412,15 +412,14 @@ public class Materials implements NBTData {
      * @param texture          材质名称<br>Specify the texture's name
      * @param tintType         材质名称<br>Specify the tinting type
      */
-    //public void process(@NotNull String face, boolean ambientOcclusion, boolean faceDimming, @NotNull String renderMethodName, @NotNull String texture, @Nullable String tintType) {
-    //    this.tag.putCompound(face, new CompoundTag()
-    //            .putBoolean("ambient_occlusion", ambientOcclusion)
-    //            .putBoolean("face_dimming", faceDimming)
-    //            .putString("render_method", renderMethodName)
-    //            .putString("texture", texture));
-    //            if (tintType != null && !tintType.isBlank()) faceTag.putString("tint_method", tintType)
-    //}
-    public void process(@NotNull String face, boolean ambientOcclusion, boolean faceDimming, @NotNull String renderMethodName, @NotNull String texture, @Nullable String tintType) {
+    public void process(
+        @NotNull String face,
+        boolean ambientOcclusion,
+        boolean faceDimming,
+        @NotNull String renderMethodName,
+        @NotNull String texture,
+        @Nullable String tintType
+    ) {
         CompoundTag faceTag = new CompoundTag()
             .putBoolean("ambient_occlusion", ambientOcclusion)
             .putBoolean("face_dimming", faceDimming)
@@ -433,15 +432,14 @@ public class Materials implements NBTData {
         this.tag.putCompound(face, faceTag);
     }
 
-    //private void process(@NotNull String face, boolean ambientOcclusion, boolean faceDimming, @NotNull RenderMethod renderMethod, @NotNull String texture, @Nullable String tintType) {
-    //    this.tag.putCompound(face, new CompoundTag()
-    //            .putBoolean("ambient_occlusion", ambientOcclusion)
-    //            .putBoolean("face_dimming", faceDimming)
-    //            .putString("render_method", renderMethod.name().toLowerCase(Locale.ENGLISH))
-    //            .putString("texture", texture));
-    //            if (tintType != null && !tintType.isBlank()) faceTag.putString("tint_method", tintType)
-    //}
-    private void process(@NotNull String face, boolean ambientOcclusion, boolean faceDimming, @NotNull RenderMethod renderMethod, @NotNull String texture, @Nullable String tintType) {
+    private void process(
+        @NotNull String face,
+        boolean ambientOcclusion,
+        boolean faceDimming,
+        @NotNull RenderMethod renderMethod,
+        @NotNull String texture,
+        @Nullable String tintType
+    ) {
         CompoundTag faceTag = new CompoundTag()
             .putBoolean("ambient_occlusion", ambientOcclusion)
             .putBoolean("face_dimming", faceDimming)
