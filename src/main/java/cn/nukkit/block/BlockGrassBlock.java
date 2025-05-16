@@ -107,7 +107,7 @@ public class BlockGrassBlock extends BlockDirt {
                 Block block = this.getLevel().getBlock(new Vector3(x, y, z));
                 if (block.getId().equals(Block.DIRT)
                         // The dirt block must have a light level of at least 4 above it.
-                        && getLevel().getFullLight(block) >= 4
+                        && getLevel().getFullLight(block.up()) >= 4
 
                         // Any block directly above the dirt block must not reduce light by 2 levels or more.
                         && block.up().getLightFilter() < 2) {
