@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockEntityHolder;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
