@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
@@ -20,6 +21,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.RedstoneComponent;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
@@ -663,7 +665,22 @@ public class Chunk implements IChunk {
                 }
                 this.blockEntityNBT = null;
             }
-
+            if(isGenerated())
+            for (int x = 0; x < 16; x++) {
+                for (int y = getDimensionData().getMinHeight(); y < getDimensionData().getMaxHeight(); y++) {
+                    for (int z = 0; z < 16; z++) {
+                        Vector3 pos = new Vector3(x * this.getX(), y, z * this.getZ());
+                        Block block = this.getLevel().getBlock(pos);
+                        if (block instanceof RedstoneComponent) {
+                            if (block.isPowerSource() || block.isGettingPower()) {
+                                block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                            }
+                        } else if (block instanceof BlockLiquid) {
+                            block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                        }
+                    }
+                }
+            }
             if (changed) {
                 this.setChanged();
             }
