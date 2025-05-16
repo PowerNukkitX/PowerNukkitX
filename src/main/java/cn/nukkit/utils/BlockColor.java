@@ -1,12 +1,28 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.registry.ItemRegistry;
+
 import java.awt.*;
+import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @author Snake1999
  * @since 2016/1/10
  */
-public class BlockColor {
+public class BlockColor implements Cloneable {
+
+    private static final CompoundTag tint_tag;
+
+    static {
+        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("tint_map.nbt")) {
+            tint_tag = NBTIO.readCompressed(stream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static final BlockColor TRANSPARENT_BLOCK_COLOR = new BlockColor(0x00, 0x00, 0x00, 0x00);
     public static final BlockColor VOID_BLOCK_COLOR = TRANSPARENT_BLOCK_COLOR;
@@ -124,12 +140,18 @@ public class BlockColor {
     private int green;
     private int blue;
     private int alpha;
+    private Tint tint;
 
     public BlockColor(int red, int green, int blue, int alpha) {
+        this(red, green, blue, alpha, Tint.NONE);
+    }
+
+    public BlockColor(int red, int green, int blue, int alpha, Tint tint) {
         this.red = red & 0xff;
         this.green = green & 0xff;
         this.blue = blue & 0xff;
         this.alpha = alpha & 0xff;
+        this.tint = tint;
     }
 
     public BlockColor(int red, int green, int blue) {
@@ -178,6 +200,10 @@ public class BlockColor {
         return this.alpha;
     }
 
+    public Tint getTint() {
+        return tint;
+    }
+
     public int getRGB() {
         return (this.red << 16 | this.green << 8 | this.blue) & 0xffffff;
     }
@@ -192,5 +218,57 @@ public class BlockColor {
 
     public static BlockColor getDyeColor(int dyeColorMeta) {
         return DyeColor.getByDyeData(dyeColorMeta).getColor();
+    }
+
+    public void applyTint(int biomeId) {
+        if(tint != Tint.NONE) {
+            try {
+                String hexString = tint_tag.getCompound(String.valueOf(biomeId)).getString(tint.texture);
+                red =  Integer.parseInt(hexString.substring(0,2), 16);
+                green = Integer.parseInt(hexString.substring(2,4), 16);
+                blue = Integer.parseInt(hexString.substring(4,6), 16);
+                alpha = Integer.parseInt(hexString.substring(6,8), 16);
+            }catch (Exception e) {
+                e.printStackTrace();
+                System.out.println(tint_tag.getCompound(String.valueOf(biomeId)).getString(tint.texture));
+            }
+        }
+    }
+
+    @Override
+    public BlockColor clone() {
+        return new BlockColor(red, green, blue, alpha, tint);
+    }
+
+
+    public enum Tint {
+
+        NONE("None"),
+        DRY_FOLIAGE("DryFoliage", "dry_foliage"),
+        DEFAULT_FOLIAGE("DefaultFoliage", "foliage"),
+        BIRCH_FOLIAGE("BirchFoliage", "birch"),
+        //REDSTONE_WIRE("RedStoneWire"),
+        EVERGREEN_FOLIAGE("EvergreenFoliage", "evergreen"),
+        //WATER("Water"),
+        //STEM("Stem"),
+        GRASS("Grass", "grass");
+
+        String name;
+        String texture;
+
+        public static Tint[] VALUES = values();
+
+        Tint(String name) {
+            this(name, "foliage");
+        }
+
+        Tint(String name, String texture) {
+            this.name = name;
+            this.texture = texture;
+        }
+
+        public static Tint get(String name) {
+            return Arrays.stream(VALUES).filter(tint -> tint.name.equals(name)).findFirst().orElse(NONE);
+        }
     }
 }
