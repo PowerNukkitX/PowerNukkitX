@@ -139,6 +139,8 @@ public final class LegacyServerSettings extends OkaeriConfig {
         boolean clearTickList = false;
         @Comment("nukkit.server.settings.chunkSettings.generationQueueSize")
         int generationQueueSize = 128;
+        @Comment("pnx.settings.chunk.tickOnLoad")
+        boolean tickOnLoad = true;
     }
 
     @EqualsAndHashCode(callSuper = true)
