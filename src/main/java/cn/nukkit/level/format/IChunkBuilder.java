@@ -23,6 +23,8 @@ public interface IChunkBuilder {
 
     IChunkBuilder levelProvider(LevelProvider levelProvider);
 
+    LevelProvider getLevelProvider();
+
     DimensionData getDimensionData();
 
     IChunkBuilder sections(ChunkSection[] sections);
