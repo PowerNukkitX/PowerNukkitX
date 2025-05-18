@@ -1,12 +1,17 @@
 package cn.nukkit.level.format.leveldb;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
@@ -16,6 +21,7 @@ import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.level.format.palette.BlockPalette;
 import cn.nukkit.level.format.palette.Palette;
 import cn.nukkit.level.util.LevelDBKeyUtil;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
@@ -25,6 +31,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.WriteBatch;
@@ -37,6 +44,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import static cn.nukkit.level.format.IChunk.index;
 
 /**
  * Allay Project 8/23/2023
@@ -93,6 +102,35 @@ public class LevelDBChunkSerializer {
         deserializeHeightAndBiome(db, builder, pnxExtraData);
         deserializeTileAndEntity(db, builder, pnxExtraData);
         deserializeLight(db, builder, pnxExtraData);
+        if(Server.getInstance().getSettings().chunkSettings().checkForTickable()) {
+            ObjectOpenHashSet<BlockVector3> updates = new ObjectOpenHashSet<>();
+            for(int i = 0; i < builder.getSections().length; i++) {
+                ChunkSection section = builder.getSections()[i];
+                if(section == null) continue;
+                for (int x = 15; x >= 0; x--) {
+                    for (int z = 15; z >= 0; z--) {
+                        for (int y = 15; y >= 0; y--) {
+                            BlockState blockState = section.blockLayer()[0].get(index(x, y, z));
+                            switch (blockState.getIdentifier()) {
+                                case BlockID.FLOWING_WATER, BlockID.WATER,
+                                     BlockID.FLOWING_LAVA, BlockID.LAVA,
+                                     BlockID.REDSTONE_WIRE,
+                                     BlockID.POWERED_REPEATER, BlockID.UNPOWERED_REPEATER,
+                                     BlockID.POWERED_COMPARATOR, BlockID.UNPOWERED_COMPARATOR -> {
+                                    updates.add(new BlockVector3(x + 16*builder.getChunkX(), y + (section.y() << 4), z + 16*builder.getChunkZ()));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Level level = builder.getLevelProvider().getLevel();
+            level.getScheduler().scheduleDelayedTask(() -> {
+                for(BlockVector3 vector3 : updates) {
+                    level.getBlock(vector3.x, vector3.y, vector3.z).onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                }
+            }, 20);
+        }
     }
 
     //serialize chunk section light

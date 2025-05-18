@@ -85,9 +85,7 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .tickRadius(chunkOld.tickRadius())
                 .lightUpdates(chunkOld.lightUpdates())
                 .clearTickList(chunkOld.clearTickList())
-                .generationQueueSize(chunkOld.generationQueueSize())
-                .tickOnLoad(chunkOld.tickOnLoad());
-
+                .generationQueueSize(chunkOld.generationQueueSize());
         DebugSettings debug = settings.debugSettings();
         LegacyServerSettings.DebugSettings debugOld = legacyNukkit.debugSettings();
         debug.deprecatedVerbose(legacyNukkit.baseSettings().deprecatedVerbose())
