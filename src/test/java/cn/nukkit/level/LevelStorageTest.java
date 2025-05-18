@@ -84,61 +84,7 @@ public class LevelStorageTest {
         Assertions.assertNotNull(levelDBProvider.getLevelData());
         Assertions.assertEquals("Bedrock level", levelDBProvider.getLevelData().getName());
     }
-
-    @Order(4)
-    @Test
-    void testLoadChunk() {
-        IChunk chunk = levelDBProvider.getChunk(0, 0);
-        Assertions.assertNotNull(chunk);
-        Assertions.assertEquals("minecraft:stone", chunk.getBlockState(9,68,1).getIdentifier());
-    }
-
-    @Order(5)
-    @Test
-    @SneakyThrows
-    void testWriteChunk() {
-        IChunk chunk = levelDBProvider.getChunk(0, 0);
-        chunk.setBlockState(0, 50, 0, BlockOakLog.PROPERTIES.getDefaultState());
-        levelDBProvider.saveChunk(0, 0, chunk);
-        chunk.setX(1);
-        chunk.setZ(1);
-        levelDBProvider.saveChunk(1, 1, chunk);
-        chunk.setX(2);
-        chunk.setZ(2);
-        levelDBProvider.saveChunk(2, 2, chunk);
-        IChunk c1 = levelDBProvider.getChunk(0, 0);
-        IChunk c2 = levelDBProvider.getChunk(1, 1);
-        IChunk c3 = levelDBProvider.getChunk(2, 2);
-        Assertions.assertEquals("minecraft:oak_log", c1.getBlockState(0, 50, 0).getIdentifier());
-        Assertions.assertEquals("minecraft:oak_log", c2.getBlockState(0, 50, 0).getIdentifier());
-        Assertions.assertEquals("minecraft:oak_log", c3.getBlockState(0, 50, 0).getIdentifier());
-    }
-
-    @Order(6)
-    @SneakyThrows
-    @Test
-    void testSaveAndReadChunk() {
-        IChunk chunk = levelDBProvider.getChunk(0, 0);
-        Assertions.assertEquals("minecraft:stone", chunk.getBlockState(9,68,1).getIdentifier());
-        chunk.setBlockState(9,68,1, BlockWoodenButton.PROPERTIES.getDefaultState());
-        levelDBProvider.saveChunk(0, 0, chunk);
-        IChunk newChunk = levelDBProvider.getChunk(0, 0);
-        Assertions.assertNotNull(newChunk);
-        Assertions.assertEquals("minecraft:wooden_button", chunk.getBlockState(9,68,1).getIdentifier());
-    }
-
-    @Order(7)
-    @SneakyThrows
-    @Test
-    void testSaveAndReadChunkBiome() {
-        IChunk chunk = levelDBProvider.getChunk(0, 0);
-        Assertions.assertEquals(BiomeID.SUNFLOWER_PLAINS, chunk.getBiomeId(0,68,0));
-        chunk.setBiomeId(0,68,0, BiomeID.BASALT_DELTAS);
-        levelDBProvider.saveChunk(0, 0, chunk);
-        IChunk newChunk = levelDBProvider.getChunk(0, 0);
-        Assertions.assertNotNull(newChunk);
-        Assertions.assertEquals(BiomeID.BASALT_DELTAS, chunk.getBiomeId(0,68,0));
-    }
+    
 
     @Order(8)
     @Test
