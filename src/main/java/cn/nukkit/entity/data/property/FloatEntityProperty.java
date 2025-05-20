@@ -11,29 +11,30 @@ public class FloatEntityProperty extends EntityProperty{
     private final float maxValue;
     private final float minValue;
 
-    public FloatEntityProperty(String identifier, float defaultValue, float maxValue, float minValue) {
+    public FloatEntityProperty(String identifier, float defaultValue, float minValue, float maxValue) {
         super(identifier);
         this.defaultValue = defaultValue;
-        this.maxValue = maxValue;
         this.minValue = minValue;
+        this.maxValue = maxValue;
     }
 
     public float getDefaultValue() {
         return defaultValue;
     }
 
-    public float getMaxValue() {
-        return maxValue;
-    }
-
     public float getMinValue() {
         return minValue;
     }
 
+    public float getMaxValue() {
+        return maxValue;
+    }
+
+
     @Override
     public void populateTag(CompoundTag tag) {
         tag.putInt("type", 1);
-        tag.putFloat("max", getMaxValue());
         tag.putFloat("min", getMinValue());
+        tag.putFloat("max", getMaxValue());
     }
 }
