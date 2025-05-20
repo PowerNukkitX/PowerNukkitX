@@ -157,7 +157,7 @@ public final class PlayerChunkManager {
             var chunkTask = chunkLoadingQueue.computeIfAbsent(chunkHash, (hash) -> player.getLevel().getChunkAsync(chunkX, chunkZ));
             if (chunkTask.isDone()) {
                 try {
-                    IChunk chunk = chunkTask.get(10, TimeUnit.MICROSECONDS);
+                    IChunk chunk = chunkTask.get(5, TimeUnit.MILLISECONDS);
                     if (chunk == null || !chunk.getChunkState().canSend()) {
                         player.level.generateChunk(chunkX, chunkZ, force);
                         chunkSendQueue.enqueue(chunkHash);
@@ -178,10 +178,6 @@ public final class PlayerChunkManager {
 
     private void sendChunk() {
         if (!chunkReadyToSend.isEmpty()) {
-            NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
-            ncp.position = player.asBlockVector3();
-            ncp.radius = player.getViewDistance() << 4;
-            player.dataPacket(ncp);
             for (var e : chunkReadyToSend.long2ObjectEntrySet()) {
                 int chunkX = Level.getHashX(e.getLongKey());
                 int chunkZ = Level.getHashZ(e.getLongKey());

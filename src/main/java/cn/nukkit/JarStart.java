@@ -18,6 +18,8 @@ public final class JarStart {
         }
         usingJavaJar = true;
         Nukkit.main(args);
+
+        System.out.println(); //Fixes issue: console input turns invisible after server close
     }
 
     public static boolean isUsingJavaJar() {
