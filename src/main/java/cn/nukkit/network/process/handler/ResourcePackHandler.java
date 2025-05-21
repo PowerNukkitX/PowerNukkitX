@@ -1,5 +1,7 @@
 package cn.nukkit.network.process.handler;
 
+import cn.nukkit.scheduler.ServerScheduler;
+import cn.nukkit.Server;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.ResourcePackChunkDataPacket;
