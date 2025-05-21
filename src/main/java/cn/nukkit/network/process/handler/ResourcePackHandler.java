@@ -102,6 +102,9 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
         dataPacket.chunkIndex = pk.chunkIndex;
         dataPacket.data = resourcePack.getPackChunk(maxChunkSize * pk.chunkIndex, maxChunkSize);
         dataPacket.progress = maxChunkSize * (long) pk.chunkIndex;
-        session.sendPacket(dataPacket);
+        session.getServer().getScheduler().scheduleDelayedTask(() -> {
+            session.sendPacket(dataPacket);
+            session.flushSendBuffer();
+        }, 4);
     }
 }
