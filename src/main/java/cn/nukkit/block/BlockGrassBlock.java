@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.DirtType;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.event.block.BlockSpreadEvent;
 import cn.nukkit.item.Item;
@@ -17,7 +15,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockGrassBlock extends BlockDirt {
@@ -110,7 +107,7 @@ public class BlockGrassBlock extends BlockDirt {
                 Block block = this.getLevel().getBlock(new Vector3(x, y, z));
                 if (block.getId().equals(Block.DIRT)
                         // The dirt block must have a light level of at least 4 above it.
-                        && getLevel().getFullLight(block) >= 4
+                        && getLevel().getFullLight(block.up()) >= 4
 
                         // Any block directly above the dirt block must not reduce light by 2 levels or more.
                         && block.up().getLightFilter() < 2) {

@@ -1,6 +1,5 @@
 package cn.nukkit;
 
-import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.HashMap;
@@ -33,7 +32,7 @@ public class Achievement {
         }
         String translation = Server.getInstance().getLanguage().tr("chat.type.achievement", player.getDisplayName(), TextFormat.GREEN + achievements.get(achievementId).getMessage() + TextFormat.RESET);
 
-        if (Server.getInstance().getProperties().get(ServerPropertiesKeys.ANNOUNCE_PLAYER_ACHIEVEMENTS, true)) {
+        if (Server.getInstance().getSettings().gameplaySettings().announceAchievements()) {
             Server.getInstance().broadcastMessage(translation);
         } else {
             player.sendMessage(translation);
@@ -65,7 +64,7 @@ public class Achievement {
     public void broadcast(Player player) {
         String translation = Server.getInstance().getLanguage().tr("chat.type.achievement", player.getDisplayName(), TextFormat.GREEN + this.getMessage());
 
-        if (Server.getInstance().getProperties().get(ServerPropertiesKeys.ANNOUNCE_PLAYER_ACHIEVEMENTS, true)) {
+        if (Server.getInstance().getSettings().gameplaySettings().announceAchievements()) {
             Server.getInstance().broadcastMessage(translation);
         } else {
             player.sendMessage(translation);

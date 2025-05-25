@@ -7,7 +7,11 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.SyncEntityPropertyPacket;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Peng_Lx
@@ -65,6 +69,7 @@ public abstract class EntityProperty {
     }
 
     public static void buildPacketData() {
+        nbtCache.clear();
         for (Map.Entry<String, List<EntityProperty>> entry : entityPropertyMap.entrySet()) {
             ListTag<CompoundTag> listProperty = buildPropertyList(entry.getValue());
             CompoundTag tag = new CompoundTag().putList(PROPERTIES_KEY, listProperty).putString("type", entry.getKey());

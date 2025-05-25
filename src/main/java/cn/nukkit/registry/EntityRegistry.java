@@ -9,10 +9,12 @@ import cn.nukkit.entity.mob.*;
 import cn.nukkit.entity.passive.*;
 import cn.nukkit.entity.projectile.*;
 import cn.nukkit.entity.weather.EntityLightningBolt;
+import cn.nukkit.level.entity.spawners.*;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.types.camera.aimassist.CameraAimAssist;
 import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -44,7 +46,9 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     private static final Int2ObjectArrayMap<String> RID2ID = new Int2ObjectArrayMap<>();
     private static final Object2ObjectOpenHashMap<String, EntityRegistry.EntityDefinition> DEFINITIONS = new Object2ObjectOpenHashMap<>();
     private static final List<EntityRegistry.EntityDefinition> CUSTOM_ENTITY_DEFINITIONS = new ArrayList<>();
+    private static final List<SpawnRule> SPAWN_RULES = new ArrayList<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+
     private static byte[] TAG;
 
 
@@ -70,7 +74,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(SKELETON_HORSE, "", 26, true, true), EntitySkeletonHorse.class);
         registerInternal(new EntityDefinition(ZOMBIE_HORSE, "", 27, true, true), EntityZombieHorse.class);
         registerInternal(new EntityDefinition(POLAR_BEAR, "", 28, true, true), EntityPolarBear.class);
-        registerInternal(new EntityDefinition(LLAMA, "", 29, true, true), EntityLlamaSpit.class);
+        registerInternal(new EntityDefinition(LLAMA, "", 29, true, true), EntityLlama.class);
         registerInternal(new EntityDefinition(PARROT, "", 30, true, true), EntityParrot.class);
         registerInternal(new EntityDefinition(DOLPHIN, "", 31, true, true), EntityDolphin.class);
         registerInternal(new EntityDefinition(ZOMBIE, "", 32, true, true), EntityZombie.class);
@@ -179,6 +183,55 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(BOGGED, "", 144, true, true), EntityBogged.class);
         registerInternal(new EntityDefinition(CREAKING, "", 146, true, true), EntityCreaking.class);
 
+        registerSpawner(new SpawnRuleArmadillo());
+        registerSpawner(new SpawnRuleAxolotl());
+        registerSpawner(new SpawnRuleBat());
+        registerSpawner(new SpawnRuleBee());
+        registerSpawner(new SpawnRuleBogged());
+        registerSpawner(new SpawnRuleCamel());
+        registerSpawner(new SpawnRuleChicken());
+        registerSpawner(new SpawnRuleCod());
+        registerSpawner(new SpawnRuleCow());
+        registerSpawner(new SpawnRuleCreeper());
+        registerSpawner(new SpawnRuleDolphin());
+        registerSpawner(new SpawnRuleDonkey());
+        registerSpawner(new SpawnRuleDrowned());
+        registerSpawner(new SpawnRuleEnderman());
+        registerSpawner(new SpawnRuleFox());
+        registerSpawner(new SpawnRuleFrog());
+        registerSpawner(new SpawnRuleGhast());
+        registerSpawner(new SpawnRuleGlowSquid());
+        registerSpawner(new SpawnRuleGoat());
+        registerSpawner(new SpawnRuleHoglin());
+        registerSpawner(new SpawnRuleHorse());
+        registerSpawner(new SpawnRuleHusk());
+        registerSpawner(new SpawnRuleLlama());
+        registerSpawner(new SpawnRuleMagmaCube());
+        registerSpawner(new SpawnRuleMooshroom());
+        registerSpawner(new SpawnRuleOcelot());
+        registerSpawner(new SpawnRulePanda());
+        registerSpawner(new SpawnRuleParrot());
+        registerSpawner(new SpawnRulePhantom());
+        registerSpawner(new SpawnRulePig());
+        registerSpawner(new SpawnRulePiglin());
+        registerSpawner(new SpawnRulePolarBear());
+        registerSpawner(new SpawnRulePufferfish());
+        registerSpawner(new SpawnRuleRabbit());
+        registerSpawner(new SpawnRuleSalmon());
+        registerSpawner(new SpawnRuleSheep());
+        registerSpawner(new SpawnRuleSkeleton());
+        registerSpawner(new SpawnRuleSlime());
+        registerSpawner(new SpawnRuleSpider());
+        registerSpawner(new SpawnRuleSquid());
+        registerSpawner(new SpawnRuleStray());
+        registerSpawner(new SpawnRuleStrider());
+        registerSpawner(new SpawnRuleTropicalFish());
+        registerSpawner(new SpawnRuleTurtle());
+        registerSpawner(new SpawnRuleWitch());
+        registerSpawner(new SpawnRuleWolf());
+        registerSpawner(new SpawnRuleZombie());
+        registerSpawner(new SpawnRuleZombieVillager());
+
         this.rebuildTag();
     }
 
@@ -205,6 +258,10 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     @UnmodifiableView
     public List<EntityDefinition> getCustomEntityDefinitions() {
         return Collections.unmodifiableList(CUSTOM_ENTITY_DEFINITIONS);
+    }
+
+    public List<SpawnRule> getSpawnRules() {
+        return Collections.unmodifiableList(SPAWN_RULES);
     }
 
     /**
@@ -390,6 +447,10 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         } catch (RegisterException e) {
             log.error("{}", e.getCause().getMessage());
         }
+    }
+
+    public void registerSpawner(@NotNull SpawnRule spawnRule) {
+        SPAWN_RULES.add(spawnRule);
     }
 
     private static AtomicInteger RUNTIME_ID = new AtomicInteger(10000);

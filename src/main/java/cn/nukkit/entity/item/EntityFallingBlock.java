@@ -17,7 +17,6 @@ import cn.nukkit.event.entity.EntityBlockChangeEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
-import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
@@ -218,7 +217,7 @@ public class EntityFallingBlock extends Entity {
                             level.addParticle(new DestroyBlockParticle(pos, Block.get(blockState)));
                         } else {
                             while(pos.getY() < getLevel().getMaxHeight()) {
-                                if(!getLevel().getBlock(pos).isAir()) pos.y++; else break;
+                                if(!getLevel().getBlock(pos).canBeReplaced()) pos.y++; else break;
                             }
                             getLevel().setBlock(pos, eventTo, true);
                         }

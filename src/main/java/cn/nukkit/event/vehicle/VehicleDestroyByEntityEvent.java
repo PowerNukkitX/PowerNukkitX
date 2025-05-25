@@ -1,7 +1,6 @@
 package cn.nukkit.event.vehicle;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.event.HandlerList;
 
 /**
  * Is called when an entity destroyed a vehicle

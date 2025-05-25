@@ -565,4 +565,18 @@ public interface PacketHandler {
 
     default void handle(ClientMovementPredictionSyncPacket pk) {
     }
-}
+
+    default void handle(UpdateClientOptionsPacket pk) {
+    }
+
+    default void handle(PlayerVideoCapturePacket pk) {
+    }
+
+    default void handle(PlayerUpdateEntityOverridesPacket pk) {
+    }
+
+    default void handle(ClientboundControlSchemeSetPacket pk) {
+    }
+
+    default void handle(PlayerLocationPacket pk) {
+    }}

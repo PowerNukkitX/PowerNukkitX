@@ -10,7 +10,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 public class BlockBasalt extends BlockSolid {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(BASALT,PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BASALT, PILLAR_AXIS);
 
     @Override
     @NotNull public BlockProperties getProperties() {

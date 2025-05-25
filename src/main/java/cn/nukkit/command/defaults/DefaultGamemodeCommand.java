@@ -7,7 +7,6 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.config.ServerPropertiesKeys;
 
 import java.util.Map;
 
@@ -47,7 +46,7 @@ public class DefaultGamemodeCommand extends VanillaCommand {
 
         boolean valid = gameMode >= 0 && gameMode <= 3;
         if (valid) {
-            sender.getServer().getProperties().get(ServerPropertiesKeys.GAMEMODE, gameMode);
+            sender.getServer().getSettings().gameplaySettings().gamemode(gameMode);
             log.addSuccess("commands.defaultgamemode.success", Server.getGamemodeString(gameMode)).output();
             return 1;
         } else {

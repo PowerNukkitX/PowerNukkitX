@@ -292,7 +292,11 @@ public interface BlockID {
 
     String BUDDING_AMETHYST = "minecraft:budding_amethyst";
 
+    String BUSH = "minecraft:bush";
+
     String CACTUS = "minecraft:cactus";
+
+    String CACTUS_FLOWER = "minecraft:cactus_flower";
 
     String CAKE = "minecraft:cake";
 
@@ -1024,6 +1028,8 @@ public interface BlockID {
 
     String FIRE = "minecraft:fire";
 
+    String FIREFLY_BUSH = "minecraft:firefly_bush";
+
     String FIRE_CORAL = "minecraft:fire_coral";
 
     String FIRE_CORAL_BLOCK = "minecraft:fire_coral_block";
@@ -1309,6 +1315,8 @@ public interface BlockID {
     String LARGE_FERN = "minecraft:large_fern";
 
     String LAVA = "minecraft:lava";
+
+    String LEAF_LITTER = "minecraft:leaf_litter";
 
     String LECTERN = "minecraft:lectern";
 
@@ -2026,6 +2034,8 @@ public interface BlockID {
 
     String SEAGRASS = "minecraft:seagrass";
 
+    String SHORT_DRY_GRASS = "minecraft:short_dry_grass";
+
     String SHORT_GRASS = "minecraft:short_grass";
 
     String SHROOMLIGHT = "minecraft:shroomlight";
@@ -2227,6 +2237,8 @@ public interface BlockID {
     String SUSPICIOUS_SAND = "minecraft:suspicious_sand";
 
     String SWEET_BERRY_BUSH = "minecraft:sweet_berry_bush";
+
+    String TALL_DRY_GRASS = "minecraft:tall_dry_grass";
 
     String TALL_GRASS = "minecraft:tall_grass";
 
@@ -2479,6 +2491,8 @@ public interface BlockID {
     String WHITE_TULIP = "minecraft:white_tulip";
 
     String WHITE_WOOL = "minecraft:white_wool";
+
+    String WILDFLOWERS = "minecraft:wildflowers";
 
     String WITHER_ROSE = "minecraft:wither_rose";
 

@@ -15,11 +15,11 @@
 
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://www.minecraft.net/en-us/article/minecraft-1-21-60-bedrock-changelog">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.60%20(Bedrock)-56383E" />
+   <a href="https://www.minecraft.net/en-us/article/minecraft-1-21-70-bedrock-changelog">
+      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.70%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
-      <img alt="Minecraft" src="https://img.shields.io/badge/protocol-776-blue" />
+      <img alt="Minecraft" src="https://img.shields.io/badge/protocol-786-blue" />
    </a>
    <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
       <img alt="Action" src="https://github.com/PowerNukkitX/PowerNukkitX/actions/workflows/pnx.yml/badge.svg?branch=master" />
@@ -30,7 +30,7 @@
    <a href="https://discord.com/invite/XXus4FB6qf">
       <img alt="Discord" src="https://img.shields.io/discord/944227466912870410?label=discord&color=7289DA&logo=discord" />
    </a>
-   <a href="https://docs.powernukkitx.com" target="_blank">
+   <a href="https://docs.powernukkitx.org" target="_blank">
       <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
    </a>
    <a href="https://codecov.io/github/PowerNukkitX/PowerNukkitX" > 

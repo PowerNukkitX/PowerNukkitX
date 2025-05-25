@@ -1,9 +1,9 @@
 package cn.nukkit.event.inventory;
 
-import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.Recipe;
 
@@ -19,12 +19,12 @@ public class CraftItemEvent extends Event implements Cancellable {
 
     private final Recipe recipe;
 
-    private final Player player;
+    private final InventoryHolder holder;
 
     private final int count;
 
-    public CraftItemEvent(Player player, Item[] input, Recipe recipe, int count) {
-        this.player = player;
+    public CraftItemEvent(InventoryHolder holder, Item[] input, Recipe recipe, int count) {
+        this.holder = holder;
         this.input = input;
         this.recipe = recipe;
         this.count = count;
@@ -38,8 +38,8 @@ public class CraftItemEvent extends Event implements Cancellable {
         return recipe;
     }
 
-    public Player getPlayer() {
-        return this.player;
+    public InventoryHolder getHolder() {
+        return this.holder;
     }
 
     public int getCount() {

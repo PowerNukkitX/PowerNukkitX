@@ -1,6 +1,7 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBubbleColumn;
@@ -78,6 +79,7 @@ import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.collect.Iterables;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -91,6 +93,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @author MagicDroidX
  */
+@Slf4j
 public abstract class Entity extends Location implements Metadatable, EntityID, EntityDataTypes {
     public static final Entity[] EMPTY_ARRAY = new Entity[0];
     protected final EntityDataMap entityDataMap = new EntityDataMap();
@@ -149,6 +152,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public boolean justCreated;
     public boolean fireProof;
     public boolean invulnerable;
+    public boolean despawnable;
     public double highestPosition;
     public boolean closed = false;
     public boolean noClip = false;
@@ -383,10 +387,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return 0;
     }
 
-
     public float getCurrentHeight() {
         if (isSwimming()) {
             return getSwimmingHeight();
+        } else if(isSneaking()) {
+            return getSneakingHeight();
+        } else if (isCrawling()) {
+            return getCrawlingHeight();
         } else {
             return getHeight();
         }
@@ -551,7 +558,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             this.namedTag.putFloat("Scale", 1);
         }
         this.scale = this.namedTag.getFloat("Scale");
-
+        if (!this.namedTag.contains("Despawnable")) {
+            this.namedTag.putBoolean("Despawnable", false);
+        }
+        this.despawnable = this.namedTag.getBoolean("Despawnable");
         try {
             this.initEntity();
             if (this.initialized) {
@@ -643,6 +653,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.setDataFlag(EntityFlag.SPRINTING, value);
     }
 
+    public boolean isCrawling() {
+        return this.getDataFlag(EntityFlag.CRAWLING);
+    }
+
+    public void setCrawling(boolean value) {
+        this.setDataFlag(EntityFlag.CRAWLING, value);
+    }
+
     public boolean isGliding() {
         return this.getDataFlag(EntityFlag.GLIDING);
     }
@@ -686,6 +704,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public float getSwimmingHeight() {
+        return getHeight();
+    }
+
+    public float getSneakingHeight() {
+        return getHeight();
+    }
+
+    public float getCrawlingHeight() {
         return getHeight();
     }
 
@@ -907,6 +933,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.namedTag.putShort("Air", this.getDataProperty(AIR_SUPPLY, (short) 0));
         this.namedTag.putBoolean("OnGround", this.onGround);
         this.namedTag.putBoolean("Invulnerable", this.invulnerable);
+        this.namedTag.putBoolean("Despawnable", this.despawnable);
         this.namedTag.putFloat("Scale", this.scale);
 
         if (!this.effects.isEmpty()) {
@@ -977,7 +1004,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @param player the player
      */
     public void spawnTo(Player player) {
-
+        if(this.closed) return;
         if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.getUsedChunks().contains(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
             this.hasSpawned.put(player.getLoaderId(), player);
             player.dataPacket(createAddEntityPacket());
@@ -1478,24 +1505,23 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             getServer().getPluginManager().callEvent(ev);//call event
 
             if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_NETHER)) {
+
                 Position newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
-                if (newPos != null) {
-                    Position nearestPortal = PortalHelper.getNearestValidPortal(newPos);
-                    if (nearestPortal != null) {
-                        teleport(nearestPortal.add(0.5, 0, 0.5), PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
-                    } else {
-                        final Position finalPos = newPos.add(1.5, 1, 1.5);
-                        if (teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)) {
-                            level.getScheduler().scheduleDelayedTask(new Task() {
-                                @Override
-                                public void onRun(int currentTick) {
-                                    // dirty hack to make sure chunks are loaded and generated before spawning
-                                    // player
-                                    inPortalTicks = 81;
-                                    teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
-                                    PortalHelper.spawnPortal(newPos);
-                                }
-                            }, 5);
+                if(newPos != null) {
+                    IChunk destChunk = newPos.getChunk();
+                    if (!destChunk.isGenerated()) {
+                        newPos.getLevel().syncGenerateChunk(destChunk.getX(), destChunk.getZ());
+                        newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
+                    }
+                    if (newPos != null) {
+                        Position nearestPortal = PortalHelper.getNearestValidPortal(newPos);
+                        if (nearestPortal != null) {
+                            teleport(nearestPortal.add(0.5, 0, 0.5), PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+                        } else {
+                            final Position finalPos = newPos.add(1.5, 1, 1.5);
+                            inPortalTicks = 81;
+                            PortalHelper.spawnPortal(newPos);
+                            teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
                         }
                     }
                 }
@@ -1920,6 +1946,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         ev.setCancelled(cancelled);
 
         this.server.getPluginManager().callEvent(ev);
+        if(this instanceof Player player) new PlayerHandle(player).setInteract();
         return ev.isCancelled();
     }
 
@@ -1997,6 +2024,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean onInteract(Player player, Item item) {
+        this.despawnable = false;
         return false;
     }
 
@@ -2399,7 +2427,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                     getServer().getPluginManager().callEvent(ev);
 
                     if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_THE_END)) {
-                        final Position newPos = PortalHelper.moveToTheEnd(this);
+                        final Position newPos = PortalHelper.convertPosBetweenEndAndOverworld(this);
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
                                 if (teleport(newPos.add(0.5, 1, 0.5), PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
@@ -2951,11 +2979,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.setDataFlag(EntityFlag.HAS_COLLISION, noClip);
     }
 
-
     public boolean isBoss() {
         return this instanceof EntityBoss;
     }
-
 
     public void addTag(String tag) {
         this.namedTag.putList("Tags", this.namedTag.getList("Tags", StringTag.class).add(new StringTag(tag)));

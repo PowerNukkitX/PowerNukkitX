@@ -461,12 +461,13 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     public BlockColor getColor() {
         if (color != null) return color;
-        else color = VANILLA_BLOCK_COLOR_MAP.get(this.blockstate.blockStateHash());
+        else color = VANILLA_BLOCK_COLOR_MAP.get(this.blockstate.blockStateHash()).clone();
         if (color == null) {
             log.error("Failed to get color of block " + getName());
             log.error("Current block state hash: " + this.blockstate.blockStateHash());
             color = BlockColor.VOID_BLOCK_COLOR;
         }
+        color.applyTint(level.getBiomeId(getFloorX(), getFloorY(), getFloorZ()));
         return color;
     }
 
@@ -1382,7 +1383,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return if the gets powered.
      */
     public boolean isGettingPower() {
-        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) return false;
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) return false;
 
         for (BlockFace side : BlockFace.values()) {
             Block b = this.getSide(side).getLevelBlock();

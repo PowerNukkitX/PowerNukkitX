@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.customitem.ItemCustomTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSmoothSandstoneSlab extends BlockSlab {

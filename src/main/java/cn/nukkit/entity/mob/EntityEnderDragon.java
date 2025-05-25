@@ -3,6 +3,7 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockBedrock;
 import cn.nukkit.block.BlockEndGateway;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
@@ -13,13 +14,12 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.controller.LiftController;
-import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.SpaceMoveController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
-import cn.nukkit.entity.ai.executor.*;
+import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.executor.enderdragon.CircleMovementExecutor;
 import cn.nukkit.entity.ai.executor.enderdragon.PerchingExecutor;
 import cn.nukkit.entity.ai.executor.enderdragon.StrafeExecutor;
@@ -33,8 +33,6 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.item.EntityEnderCrystal;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BVector3;
@@ -45,11 +43,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.BossEventPacket;
 import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.DeathInfoPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.plugin.InternalPlugin;
-import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -179,14 +175,21 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
             if(!isRevived()) {
                 getLevel().setBlock(new Vector3(0, getLevel().getHighestBlockAt(Vector2.ZERO)+1, 0), Block.get(Block.DRAGON_EGG));
             }
-            for(int i = -2; i <= 2; i++) {
-                for(int j = -1; j <= 1; j++) {
-                    if(!(i == 0 && j == 0)) {
-                        getLevel().setBlock(new Vector3(i, 63, j), Block.get(Block.END_PORTAL));
-                        getLevel().setBlock(new Vector3(j, 63, i), Block.get(Block.END_PORTAL));
+
+            for(int y = getLevel().getMinHeight(); y < getLevel().getHighestBlockAt(0, 0); y++) {
+                if(getLevel().getBlock(0, y, 0) instanceof BlockBedrock) {
+                    for(int i = -2; i <= 2; i++) {
+                        for(int j = -1; j <= 1; j++) {
+                            if(!(i == 0 && j == 0)) {
+                                getLevel().setBlock(new Vector3(i, y+1, j), Block.get(Block.END_PORTAL));
+                                getLevel().setBlock(new Vector3(j, y+1, i), Block.get(Block.END_PORTAL));
+                            }
+                        }
                     }
+                    break;
                 }
             }
+
             for(int i = 0; i < 20; i++) {
                 Vector3 origin = Vector3.ZERO;
                 double angleIncrement = 360.0 / 20;

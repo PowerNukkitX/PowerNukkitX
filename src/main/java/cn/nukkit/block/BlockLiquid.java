@@ -233,7 +233,7 @@ public abstract class BlockLiquid extends BlockTransparent {
                     this.level.setBlock(this, 1, Block.get(BlockID.AIR), false, false);
                     this.level.setBlock(this, 0, this, false, false);
                 } else if (layer0.getWaterloggingLevel() <= 0 || layer0.getWaterloggingLevel() == 1 && getLiquidDepth() > 0) {
-                    this.level.setBlock(this, 1, Block.get(BlockID.AIR), true, true);
+                    this.level.setBlockStateAt(getFloorX(), getFloorY(), getFloorZ(), 1, BlockAir.STATE);
                 }
             }
             this.level.scheduleUpdate(this, this.tickRate());

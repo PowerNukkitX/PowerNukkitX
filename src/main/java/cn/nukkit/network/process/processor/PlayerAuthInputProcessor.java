@@ -3,11 +3,15 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
+import cn.nukkit.Server;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
 import cn.nukkit.entity.passive.EntityHorse;
+import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.player.PlayerJumpEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
+import cn.nukkit.event.player.PlayerToggleCrawlEvent;
 import cn.nukkit.event.player.PlayerToggleFlightEvent;
 import cn.nukkit.event.player.PlayerToggleGlideEvent;
 import cn.nukkit.event.player.PlayerToggleSneakEvent;
@@ -68,7 +72,6 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 dataPacketManager.processPacket(playerHandle, itemStackRequestPacket);
             }
         }
-
         if (pk.inputData.contains(AuthInputAction.START_SPRINTING)) {
             PlayerToggleSprintEvent event = new PlayerToggleSprintEvent(player, true);
             player.getServer().getPluginManager().callEvent(event);
@@ -130,6 +133,26 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.setSwimming(false);
             }
         }
+
+        if (pk.inputData.contains(AuthInputAction.START_CRAWLING)) {
+            var playerToggleCrawlEvent = new PlayerToggleCrawlEvent(player, true);
+            player.getServer().getPluginManager().callEvent(playerToggleCrawlEvent);
+            if (playerToggleCrawlEvent.isCancelled()) {
+                player.sendData(player);
+            } else {
+                player.setCrawling(true);
+            }
+        }
+        if (pk.inputData.contains(AuthInputAction.STOP_CRAWLING)) {
+            var playerToggleCrawlEvent = new PlayerToggleCrawlEvent(player, false);
+            player.getServer().getPluginManager().callEvent(playerToggleCrawlEvent);
+            if (playerToggleCrawlEvent.isCancelled()) {
+                player.sendData(player);
+            } else {
+                player.setCrawling(false);
+            }
+        }
+
         if (pk.inputData.contains(AuthInputAction.START_GLIDING)) {
             var playerToggleGlideEvent = new PlayerToggleGlideEvent(player, true);
             player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
@@ -149,8 +172,11 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             }
         }
         if (pk.inputData.contains(AuthInputAction.START_FLYING)) {
-            if (!player.getServer().getAllowFlight() && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
-                player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
+            if (!player.getAllowFlight()) {
+                PlayerHackDetectedEvent detectedEvent = new PlayerHackDetectedEvent(player, PlayerHackDetectedEvent.HackType.FLIGHT);
+                Server.getInstance().getPluginManager().callEvent(detectedEvent);
+                if(detectedEvent.isKick())
+                    player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
                 return;
             }
             PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, true);
@@ -168,6 +194,14 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.getAdventureSettings().update();
             } else {
                 player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
+            }
+        }
+        if(pk.inputData.contains(AuthInputAction.JUMP_RELEASED_RAW)) {
+            if(player.getRiding() != null) {
+                if (playerHandle.player.riding instanceof EntityHorse horse && horse.isAlive() && !horse.isJumping()) {
+                    horse.getJumping().set(player.getLevel().getTick());
+                    horse.setDataFlag(EntityFlag.STANDING);
+                }
             }
         }
         Vector3 clientPosition = pk.position.asVector3().subtract(0, playerHandle.getBaseOffset(), 0);

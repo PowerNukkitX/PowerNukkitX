@@ -19,7 +19,6 @@ import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.camera.data.CameraPreset;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.utils.RawText;
-import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
@@ -55,6 +54,7 @@ import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.window.Form;
+import cn.nukkit.inventory.BundleInventory;
 import cn.nukkit.inventory.CraftTypeInventory;
 import cn.nukkit.inventory.CraftingGridInventory;
 import cn.nukkit.inventory.CreativeOutputInventory;
@@ -63,9 +63,11 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.PlayerCursorInventory;
 import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.inventory.fake.FakeInventory;
+import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemArrow;
+import cn.nukkit.item.ItemBundle;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.ItemTool;
@@ -269,9 +271,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected Cache<String, FormWindowDialog> dialogWindows = Caffeine.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
-    protected double lastRightClickTime = 0.0;
-    protected Vector3 lastRightClickPos = null;
     protected int lastInAirTick = 0;
+    protected int previousInteractTick = 0;
     private static final float ROTATION_UPDATE_THRESHOLD = 1;
     private static final float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
     private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
@@ -454,6 +455,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this, this.inventory.getItemInHand(), target, face,
                 target.isAir() ? Action.LEFT_CLICK_AIR : Action.LEFT_CLICK_BLOCK);
         this.getServer().getPluginManager().callEvent(playerInteractEvent);
+        playerHandle.setInteract();
         if (playerInteractEvent.isCancelled()) {
             this.inventory.sendHeldItem(this);
             this.getLevel().sendBlocks(new Player[]{this}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
@@ -804,7 +806,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     getServer().getPluginManager().callEvent(ev);
 
                     if (!ev.isCancelled()) {
-                        final Position newPos = PortalHelper.moveToTheEnd(this);
+                        final Position newPos = PortalHelper.convertPosBetweenEndAndOverworld(this);
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
                                 if (teleport(newPos, TeleportCause.END_PORTAL)) {
@@ -900,23 +902,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         double corrX = this.x - clientPos.getX();
         double corrY = this.y - clientPos.getY();
         double corrZ = this.z - clientPos.getZ();
-        if (this.checkMovement && (Math.abs(corrX) > 0.5 || Math.abs(corrY) > 0.5 || Math.abs(corrZ) > 0.5) && this.riding == null && !this.hasEffect(EffectType.LEVITATION) && !this.hasEffect(EffectType.SLOW_FALLING) && !server.getAllowFlight()) {
-            double diff = corrX * corrX + corrZ * corrZ;
-            //这里放宽了判断，否则对角穿过脚手架会判断非法移动。
-            if (diff > 1.2) {
-                PlayerInvalidMoveEvent event = new PlayerInvalidMoveEvent(this, true);
-                this.getServer().getPluginManager().callEvent(event);
-                if (!event.isCancelled() && (invalidMotion = event.isRevert())) {
-                    log.warn(this.getServer().getLanguage().tr("nukkit.player.invalidMove", this.getName()));
-                }
-            }
-            if (invalidMotion) {
-                this.setPositionAndRotation(revertPos.asVector3f().asVector3(), revertPos.getYaw(), revertPos.getPitch(), revertPos.getHeadYaw());
-                this.revertClientMotion(revertPos);
-                this.resetClientMovement();
-                return;
-            }
-        }
 
         //update server-side position and rotation and aabb
         Location last = new Location(this.lastX, this.lastY, this.lastZ, this.lastYaw, this.lastPitch, this.lastHeadYaw, this.level);
@@ -1302,7 +1287,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
         this.spawnToAll();
         Arrays.stream(this.level.getEntities()).filter(entity -> entity.getViewers().containsKey(this.getLoaderId()) && entity instanceof EntityBoss).forEach(entity -> ((EntityBoss) entity).addBossbar(this));
-        this.refreshBlockEntity(1);
     }
 
     /**
@@ -1548,6 +1532,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public int getLastInAirTick() {
         return this.lastInAirTick;
+    }
+
+    public int getPreviousInteractTick() {
+        return this.previousInteractTick;
+    }
+
+    public int getPreviousInteractTickDifference() {
+        return getServer().getTick() - getPreviousInteractTick();
     }
 
     /**
@@ -2237,6 +2229,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
+        for(BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
+            if(entity instanceof BlockEntitySpawnable spawnable) {
+                spawnable.spawnTo(this);
+            }
+        }
+
         if (this.needDimensionChangeACK) {
             this.needDimensionChangeACK = false;
 
@@ -2336,7 +2334,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public boolean awardAchievement(String achievementId) {
-        if (!Server.getInstance().getProperties().get(ServerPropertiesKeys.ACHIEVEMENTS, true)) {
+        if (!Server.getInstance().getSettings().gameplaySettings().achievements()) {
             return false;
         }
 
@@ -2708,36 +2706,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     }
                 } else {
                     this.lastInAirTick = level.getTick();
-                    //check fly for player
-                    if (this.checkMovement && !this.isGliding() && !server.getAllowFlight() &&
-                            !this.getAdventureSettings().get(Type.ALLOW_FLIGHT) &&
-                            this.inAirTicks > 20 && !this.isSleeping() && !this.isImmobile() && !this.isSwimming() &&
-                            this.riding == null && !this.hasEffect(EffectType.LEVITATION) && !this.hasEffect(EffectType.SLOW_FALLING)) {
-                        double expectedVelocity = (-this.getGravity()) / ((double) this.getDrag()) - ((-this.getGravity()) / ((double) this.getDrag())) * Math.exp(-((double) this.getDrag()) * ((double) (this.inAirTicks - this.startAirTicks)));
-                        double diff = (this.speed.y - expectedVelocity) * (this.speed.y - expectedVelocity);
-
-                        Block block = level.getBlock(this);
-                        String blockId = block.getId();
-                        boolean ignore = blockId.equals(Block.LADDER) || blockId.equals(Block.VINE) || blockId.equals(Block.WEB)
-                                || blockId.equals(Block.SCAFFOLDING);// || (blockId == Block.SWEET_BERRY_BUSH && block.getDamage() > 0);
-
-                        if (!this.hasEffect(EffectType.JUMP_BOOST) && diff > 0.6 && expectedVelocity < this.speed.y && !ignore) {
-                            if (this.inAirTicks < 150) {
-                                PlayerInvalidMoveEvent ev = new PlayerInvalidMoveEvent(this, true);
-                                this.getServer().getPluginManager().callEvent(ev);
-
-                                if(!ev.isCancelled()) {
-                                    this.setMotion(new Vector3(0, expectedVelocity, 0));
-                                }
-                            } else if (this.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server")) {
-                                return false;
-                            }
-                        }
-                        if (ignore) {
-                            this.resetFallDistance();
-                        }
-                    }
-
                     if (this.y > highestPosition) {
                         this.highestPosition = this.y;
                     }
@@ -3994,7 +3962,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.lastPlayerdLevelUpSoundTime = this.age;
             this.level.addLevelSoundEvent(
                     this,
-                    LevelSoundEventPacketV2.SOUND_LEVELUP,
+                    LevelSoundEventPacket.SOUND_LEVELUP,
                     Math.min(7, level / 5) << 28,
                     "",
                     false, false
@@ -4348,7 +4316,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.positionChanged = true;
 
         if (switchLevel) {
-            refreshBlockEntity(10);
             refreshChunkRender();
         }
         this.resetFallDistance();
@@ -4372,32 +4339,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setViewDistance(1);
         this.setViewDistance(32);
         this.setViewDistance(origin);
-    }
-
-    public void refreshBlockEntity(int delay) {
-        getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
-            for (var b : this.level.getBlockEntities().values()) {
-                if(b == null) continue;
-                if (b instanceof BlockEntitySpawnable blockEntitySpawnable) {
-                    UpdateBlockPacket setAir = new UpdateBlockPacket();
-                    setAir.blockRuntimeId = BlockAir.STATE.blockStateHash();
-                    setAir.flags = UpdateBlockPacket.FLAG_NETWORK;
-                    setAir.x = b.getFloorX();
-                    setAir.y = b.getFloorY();
-                    setAir.z = b.getFloorZ();
-                    this.dataPacket(setAir);
-
-                    UpdateBlockPacket revertAir = new UpdateBlockPacket();
-                    revertAir.blockRuntimeId = b.getBlock().getRuntimeId();
-                    revertAir.flags = UpdateBlockPacket.FLAG_NETWORK;
-                    revertAir.x = b.getFloorX();
-                    revertAir.y = b.getFloorY();
-                    revertAir.z = b.getFloorZ();
-                    this.dataPacket(revertAir);
-                    blockEntitySpawnable.spawnTo(this);
-                }
-            }
-        }, delay, true);
     }
 
     /**
@@ -4656,11 +4597,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (this.spawned && inventory.open(this)) {
             updateTrackingPositions(true);
-            return cnt;
         } else {
             this.removeWindow(inventory);
             return -1;
         }
+        for(int index : inventory.getContents().keySet()) {
+            Item item = inventory.getUnclonedItem(index);
+            if(item instanceof ItemBundle bundle) {
+                if(bundle.hasCompoundTag()) {
+                    bundle.onChange(inventory);
+                    inventory.sendSlot(index, this);
+                }
+            }
+        }
+        return cnt;
     }
 
     public int addWindow(@NotNull Inventory inventory, Integer forceId) {
@@ -5577,5 +5527,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @NotNull
     public PlayerInfo getPlayerInfo() {
         return this.info;
+    }
+
+    public String getXUID() {
+        return this.loginChainData.getXUID();
     }
 }

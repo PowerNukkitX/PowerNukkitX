@@ -1,10 +1,10 @@
 package cn.nukkit.event.potion;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.PotionType;
+import cn.nukkit.event.Cancellable;
+import cn.nukkit.event.HandlerList;
 
 import java.util.List;
 

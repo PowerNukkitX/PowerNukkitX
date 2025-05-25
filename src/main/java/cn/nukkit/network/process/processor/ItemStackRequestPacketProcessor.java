@@ -149,11 +149,13 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                 return;
 
             Player player = event.getPlayer();
-            Inventory sourceInventory = NetworkMapping.getInventory(player, transferResult.source.getContainerName().getContainer());
+            Integer dynamicId = transferResult.source.getContainerName().getDynamicId();
+
+            Inventory sourceInventory = NetworkMapping.getInventory(player, transferResult.source.getContainerName().getContainer(), dynamicId);
             int sourceSlot = sourceInventory.fromNetworkSlot(transferResult.source.getSlot());
 
             Optional<Inventory> destinationInventory = transferResult.destination
-                    .map(destination -> NetworkMapping.getInventory(player, destination.getContainerName().getContainer()));
+                    .map(destination -> NetworkMapping.getInventory(player, destination.getContainerName().getContainer(), destination.getContainerName().getDynamicId()));
             Optional<Integer> destinationSlot = destinationInventory
                     .flatMap(inventory -> transferResult.destination
                             .map(destination -> inventory.fromNetworkSlot(destination.getSlot())));

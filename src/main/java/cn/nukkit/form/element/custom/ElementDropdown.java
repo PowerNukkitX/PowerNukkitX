@@ -1,5 +1,6 @@
 package cn.nukkit.form.element.custom;
 
+import cn.nukkit.form.element.Element;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -15,7 +16,7 @@ import java.util.List;
 @Setter
 @Accessors(chain = true, fluent = true)
 @AllArgsConstructor
-public class ElementDropdown extends ElementCustom {
+public class ElementDropdown extends Element implements ElementCustom {
     protected String text;
     protected List<String> options;
     protected int defaultOption;
@@ -48,7 +49,8 @@ public class ElementDropdown extends ElementCustom {
 
     @Override
     public JsonObject toJson() {
-        Preconditions.checkArgument(0 > this.defaultOption || this.defaultOption < this.options.size(), "Default option not an index");
+        Preconditions.checkArgument(0 > this.defaultOption || this.defaultOption < this.options.size(),
+                "Default option not an index");
 
         this.object.addProperty("type", "dropdown");
         this.object.addProperty("text", this.text);

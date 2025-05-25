@@ -299,7 +299,7 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
                 this.level.useBreakOn(this);
             }
             return type;
-        } else if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        } else if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             if (this.isGettingPower()) {
                 if (!isToggled()) {
                     setToggled(true);

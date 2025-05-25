@@ -1,6 +1,6 @@
 package cn.nukkit.item.customitem;
 
-import cn.nukkit.item.*;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;

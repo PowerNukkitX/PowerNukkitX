@@ -3,7 +3,12 @@ package cn.nukkit.math;
 import cn.nukkit.api.DoNotModify;
 import cn.nukkit.level.Location;
 
-import static java.lang.StrictMath.*;
+import static java.lang.StrictMath.asin;
+import static java.lang.StrictMath.cos;
+import static java.lang.StrictMath.sin;
+import static java.lang.StrictMath.sqrt;
+import static java.lang.StrictMath.toDegrees;
+import static java.lang.StrictMath.toRadians;
 
 /**
  * 向量计算工具，同时整合了yaw和pitch与坐标空间的转换功能

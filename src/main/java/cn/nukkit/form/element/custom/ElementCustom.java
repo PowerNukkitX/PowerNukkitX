@@ -1,6 +1,14 @@
 package cn.nukkit.form.element.custom;
 
-import cn.nukkit.form.element.Element;
+import com.google.gson.JsonObject;
 
-public abstract class ElementCustom extends Element {
+public interface ElementCustom {
+    JsonObject toJson();
+
+    /**
+     * @return Whether the element can be responded to
+     */
+    default boolean hasResponse() {
+        return true;
+    }
 }

@@ -1,6 +1,7 @@
 package cn.nukkit.level;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.api.NonComputationAtomic;
 import cn.nukkit.block.*;
@@ -65,6 +66,7 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.SpawnPointType;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinitionData;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
@@ -286,6 +288,7 @@ public class Level implements Metadatable {
     public boolean stopTime;
     public int skyLightSubtracted;
     public int sleepTicks = 0;
+    public int noSleepNights = 0;
     public int tickRateTime = 0;
     public int tickRateCounter = 0;
     /**
@@ -310,7 +313,7 @@ public class Level implements Metadatable {
     private int updateLCG = ThreadLocalRandom.current().nextInt();
     private int tickRate;
     private long levelCurrentTick = 0;
-    private final Map<Long, Map<Integer, Object>> lightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
+    private final Map<Long, Map<Integer, Object>> blockLightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
     private final int dimensionCount;
     ///base tick system
     private final Thread baseTickThread;
@@ -359,8 +362,7 @@ public class Level implements Metadatable {
         }
         LevelProvider levelProvider = requireProvider();
         //to be changed later as the Dim0 will be deleted to be put in a config.json file of the world
-        String levelNameDim = levelProvider.getName().replace(" Dim0", "");
-        log.info(this.server.getLanguage().tr("nukkit.level.preparing", TextFormat.GREEN + levelNameDim + TextFormat.RESET));
+        log.info(this.server.getLanguage().tr("nukkit.level.preparing", TextFormat.GREEN + levelProvider.getName() + TextFormat.RESET));
         levelProvider.updateLevelName(name);
 
         if (generatorConfig.enableAntiXray()) {
@@ -390,7 +392,7 @@ public class Level implements Metadatable {
         if (this.thunderTime <= 0) {
             setThunderTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
         }
-
+        this.noSleepNights = levelProvider.getNoSleepNight();
         this.levelCurrentTick = levelProvider.getCurrentTick();
         this.updateQueue = new BlockUpdateScheduler(this, levelCurrentTick);
 
@@ -557,7 +559,7 @@ public class Level implements Metadatable {
         if(getServer().getSettings().levelSettings().levelThread()) {
             this.baseTickThread.start();
         }
-        log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getFolderName() + TextFormat.RESET));
+        log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getName() + TextFormat.RESET));
     }
 
     public Generator getGenerator() {
@@ -735,7 +737,7 @@ public class Level implements Metadatable {
      * @param isGlobal   the is global,default false
      */
     public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, boolean isGlobal) {
-        LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
+        LevelSoundEventPacket pk = new LevelSoundEventPacket();
         pk.sound = type;
         pk.extraData = data;
         pk.entityIdentifier = identifier;
@@ -954,7 +956,9 @@ public class Level implements Metadatable {
 
     public void checkTime() {
         if (!this.stopTime && this.gameRules.getBoolean(GameRule.DO_DAYLIGHT_CYCLE)) {
+            float prior = this.time;
             this.time += tickRate;
+            if(prior%TIME_FULL > TIME_NIGHT && this.time%TIME_FULL < TIME_DAY) this.noSleepNights++;
         }
     }
 
@@ -1013,7 +1017,7 @@ public class Level implements Metadatable {
         requireProvider();
         try {
             getScheduler().mainThreadHeartbeat(currentTick);
-            updateBlockLight(lightQueue);
+            updateBlockLight();
             this.checkTime();
             if (currentTick >= nextTimeSendTick) { // Send time to client every 30 seconds to make sure it
                 this.sendTime();
@@ -1043,6 +1047,12 @@ public class Level implements Metadatable {
 
             this.updateQueue.tick(this.getCurrentTick());
 
+            if(getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+                if(Arrays.stream(getEntities()).filter(entity -> entity.despawnable).toArray().length < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
+                    getChunks().values().forEach(IChunk::doMobSpawning);
+                }
+            }
+
             while (!this.normalUpdateQueue.isEmpty()) {
                 QueuedUpdate queuedUpdate = this.normalUpdateQueue.poll();
                 Block block = getBlock(queuedUpdate.block, queuedUpdate.block.layer);
@@ -1060,7 +1070,7 @@ public class Level implements Metadatable {
                 CompletableFuture.runAsync(() -> updateEntities.keySet()
                         .longParallelStream().forEach(id -> {
                             Entity entity = this.updateEntities.get(id);
-                            if (entity != null && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
+                            if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
                                 entityAsyncPrepare.asyncPrepare(getTick());
                             }
                         }), Server.getInstance().getComputeThreadPool()).join();
@@ -1224,6 +1234,19 @@ public class Level implements Metadatable {
         }
     }
 
+    public Level getDimensionDestinationLevel(int dimension) {
+        if(dimensionCount > 1) {
+            for(Level level : getServer().getLevels().values()) {
+                if(level.getFolderPath().equals(this.getFolderPath())) {
+                    if(level.getDimension() == dimension) {
+                        return level;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Spawn lightning when thunder
      */
@@ -1237,7 +1260,7 @@ public class Level implements Metadatable {
             Vector3 vector = this.adjustPosToNearbyEntity(new Vector3(chunkX + (LCG & 0xf), 0, chunkZ + (LCG >> 8 & 0xf)));
 
             int biome = this.getBiomeId(vector.getFloorX(), 70, vector.getFloorZ());
-            if (Registries.BIOME.get(biome).rain() <= 0) {
+            if (Registries.BIOME.get(biome).data.downfall <= 0) {
                 return;
             }
 
@@ -1311,6 +1334,7 @@ public class Level implements Metadatable {
                 for (Player p : this.getPlayers().values()) {
                     p.stopSleep();
                 }
+                this.noSleepNights = 0;
             }
         }
     }
@@ -1510,6 +1534,7 @@ public class Level implements Metadatable {
         levelProvider.setRainTime(this.rainTime);
         levelProvider.setThundering(this.thundering);
         levelProvider.setThunderTime(this.thunderTime);
+        levelProvider.setNoSleepNight(this.noSleepNights);
         levelProvider.setCurrentTick(this.levelCurrentTick);
         levelProvider.setGameRules(this.gameRules);
         this.saveChunks();
@@ -2077,7 +2102,7 @@ public class Level implements Metadatable {
 
     public void updateAllLight(Vector3 pos) {
         this.updateBlockSkyLight((int) pos.x, (int) pos.y, (int) pos.z);
-        this.addLightUpdate((int) pos.x, (int) pos.y, (int) pos.z);
+        this.addBlockLightUpdate((int) pos.x, (int) pos.y, (int) pos.z);
     }
 
     public void updateBlockSkyLight(int x, int y, int z) {
@@ -2085,33 +2110,20 @@ public class Level implements Metadatable {
 
         if (chunk == null) return;
 
-        int oldHeightMap = chunk.getHeightMap(x & 0xf, z & 0xf);
-        Block sourceBlock = getBlock(x, y, z);
-
-        int newHeightMap;
-        if (y == oldHeightMap) { // Block changed directly in the heightmap. Check if a block was removed or changed to a different light-filter
-            newHeightMap = chunk.recalculateHeightMapColumn(x & 0x0f, z & 0x0f);
-        } else if (y > oldHeightMap) { // Block changed above the heightmap
-            if (sourceBlock.getLightFilter() > 1 || sourceBlock.diffusesSkyLight()) {
-                chunk.setHeightMap(x & 0xf, z & 0xf, y);
-                newHeightMap = y;
-            } else { // Block changed which has no effect on direct skylight, for example placing or removing glass.
-                return;
+        int height = chunk.recalculateHeightMapColumn(x & 0x0f, z & 0x0f);
+        int level = 15;
+        for(int _y = height ; _y >= getDimensionData().getMinHeight(); _y--) {
+            Block block = getBlock(x, _y, z);
+            if (!block.isTransparent()) {
+                level = 0;
+            } else if (block.diffusesSkyLight()) {
+                level--;
+            } else {
+                level -= block.getLightLevel();
             }
-        } else { // Block changed below heightmap
-            newHeightMap = oldHeightMap;
-        }
-
-        if (newHeightMap > oldHeightMap) { // Heightmap increase, block placed, remove skylight
-            for (int i = y; i >= oldHeightMap; --i) {
-                setBlockSkyLightAt(x, i, z, 0);
-            }
-        } else if (newHeightMap < oldHeightMap) { // Heightmap decrease, block changed or removed, add skylight
-            for (int i = y; i >= newHeightMap; --i) {
-                setBlockSkyLightAt(x, i, z, 15);
-            }
-        } else { // No heightmap change, block changed "underground"
-            setBlockSkyLightAt(x, y, z, Math.max(0, getHighestAdjacentBlockSkyLight(x, y, z) - sourceBlock.getLightFilter()));
+            if(level <= 0) level = 0;
+            //if(_y != height && !block.canPassThrough() && block.up().canPassThrough()) addSkyLightUpdate(x, _y+1, z); ToDo: Light Spread
+            setBlockSkyLightAt(x, _y, z, level);
         }
     }
 
@@ -2138,8 +2150,8 @@ public class Level implements Metadatable {
         return maxValue;
     }
 
-    public void updateBlockLight(Map<Long, Map<Integer, Object>> map) {
-        int size = map.size();
+    public void updateBlockLight() {
+        int size = blockLightQueue.size();
         if (size == 0) {
             return;
         }
@@ -2148,7 +2160,7 @@ public class Level implements Metadatable {
         Long2ObjectOpenHashMap<Object> visited = new Long2ObjectOpenHashMap<>();
         Long2ObjectOpenHashMap<Object> removalVisited = new Long2ObjectOpenHashMap<>();
 
-        var iter = map.entrySet().iterator();
+        var iter = blockLightQueue.entrySet().iterator();
         while (iter.hasNext() && size-- > 0) {
             var entry = iter.next();
             iter.remove();
@@ -2263,12 +2275,12 @@ public class Level implements Metadatable {
         }
     }
 
-    public void addLightUpdate(int x, int y, int z) {
+    public void addBlockLightUpdate(int x, int y, int z) {
         long index = chunkHash(x >> 4, z >> 4);
-        var currentMap = lightQueue.get(index);
+        var currentMap = blockLightQueue.get(index);
         if (currentMap == null) {
             currentMap = new ConcurrentHashMap<>(8, 0.9f, 1);
-            this.lightQueue.put(index, currentMap);
+            this.blockLightQueue.put(index, currentMap);
         }
         currentMap.put(Level.localBlockHash(x, y, z, this), changeBlocksPresent);
     }
@@ -2742,6 +2754,7 @@ public class Level implements Metadatable {
             }
 
             this.server.getPluginManager().callEvent(ev);
+            new PlayerHandle(player).setInteract();
             if (!ev.isCancelled()) {
                 target.onTouch(vector, item, face, fx, fy, fz, player, ev.getAction());
                 if (ev.getAction() == Action.RIGHT_CLICK_BLOCK && target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {
@@ -2824,8 +2837,10 @@ public class Level implements Metadatable {
             if (player != null) {
                 var diff = player.getNextPosition().subtract(player.getPosition());
                 var aabb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
-                if (aabb.intersectsWith(hand.getBoundingBox().shrink(0.02, 0.02, 0.02))) {
-                    ++realCount;
+                if (aabb.intersectsWith(hand.getBoundingBox())) {
+                    if(aabb.intersection(hand.getBoundingBox()).getVolume() > 0.005f) {
+                        ++realCount;
+                    }
                 }
             }
             if (realCount > 0) {
@@ -3291,7 +3306,6 @@ public class Level implements Metadatable {
     }
 
     protected static final BlockColor VOID_BLOCK_COLOR = BlockColor.VOID_BLOCK_COLOR;
-    protected static final BlockColor WATER_BLOCK_COLOR = BlockColor.WATER_BLOCK_COLOR;
 
     public BlockColor getMapColorAt(int x, int z) {
         var color = VOID_BLOCK_COLOR.toAwtColor();
@@ -3301,23 +3315,7 @@ public class Level implements Metadatable {
             return VOID_BLOCK_COLOR;
 
         //在z轴存在高度差的地方，颜色变深或变浅
-        var nzy = getMapColoredBlockAt(x, z - 1);
-        if (nzy == null)
-            return block.getColor();
         color = block.getColor().toAwtColor();
-        if (nzy.getFloorY() > block.getFloorY()) {
-            color = darker(color, 0.875 - Math.min(5, nzy.getFloorY() - block.getFloorY()) * 0.05);
-        } else if (nzy.getFloorY() < block.getFloorY()) {
-            color = brighter(color, 0.875 - Math.min(5, block.getFloorY() - nzy.getFloorY()) * 0.05);
-        }
-
-        //效果不好，暂时禁用
-//        var deltaY = block.y - 128;
-//        if (deltaY > 0) {
-//            color = brighter(color, 1 - deltaY / (192 * 3));
-//        } else if (deltaY < 0) {
-//            color = darker(color, 1 - (-deltaY) / (192 * 3));
-//        }
 
         var up = block.getSide(BlockFace.UP);
         var up1 = block.getSideAtLayer(1, BlockFace.UP);
@@ -3326,6 +3324,13 @@ public class Level implements Metadatable {
             var g1 = color.getGreen();
             var b1 = color.getBlue();
             //在水下
+            BiomeDefinitionData data = Registries.BIOME.get(getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ())).data;
+            int colorInt = data.mapWaterColor;
+            int r = (int)( (((colorInt >> 16) & 0xff) / 255.0f) + BlockColor.WATER_BLOCK_COLOR.getRed()*3) / 4;
+            int g = (int) ((((colorInt >> 8) & 0xff) / 255.0f) + BlockColor.WATER_BLOCK_COLOR.getGreen()*3) / 4;
+            int b = (int) ((((colorInt) & 0xff) / 255.0f) + BlockColor.WATER_BLOCK_COLOR.getBlue()*3) / 4;
+            int a = (int) (((colorInt >> 24) & 0xff) / 255.0f);
+            BlockColor WATER_BLOCK_COLOR = new BlockColor(r, g, b, a);
             if (block.y < 62) {
                 //在海平面下
                 //海平面为62格。离海平面越远颜色越接近海洋颜色
@@ -3333,7 +3338,7 @@ public class Level implements Metadatable {
                 if (depth > 96) return WATER_BLOCK_COLOR;
                 b1 = WATER_BLOCK_COLOR.getBlue();
                 var radio = (depth / 96.0);
-                if (radio < 0.5) radio = 0.5;
+                if (radio < 0.9) radio = 0.9;
                 r1 += (WATER_BLOCK_COLOR.getRed() - r1) * radio;
                 g1 += (WATER_BLOCK_COLOR.getGreen() - g1) * radio;
             } else {
@@ -3343,6 +3348,22 @@ public class Level implements Metadatable {
                 g1 += (WATER_BLOCK_COLOR.getGreen() - g1) * 0.5;
             }
             color = new Color(r1, g1, b1);
+        }
+        if(block.isTransparent()) {
+            int y = block.getFloorY();
+            float light = 0.5f;
+            int r = (int) (color.getRed() * light);
+            int g = (int) (color.getGreen() * light);
+            int b = (int) (color.getBlue() * light);
+            color = new Color(r, g, b);
+        }
+        var nzy = getMapColoredBlockAt(x, z - 1);
+        if (nzy == null)
+            return block.getColor();
+        if (nzy.getFloorY() > block.getFloorY()) {
+            color = darker(color, 0.875 - Math.min(5, nzy.getFloorY() - block.getFloorY()) * 0.05);
+        } else if (nzy.getFloorY() < block.getFloorY()) {
+            color = brighter(color, 0.875 - Math.min(5, block.getFloorY() - nzy.getFloorY()) * 0.05);
         }
 
         return new BlockColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
@@ -3383,8 +3404,9 @@ public class Level implements Metadatable {
         int y = chunk.getHeightMap(chunkX, chunkZ);
         while (y >= getMinHeight()) {
             Block block = getBlock(x, y, z);
-            if (block.getColor() == null) return null;
-            if (block.getColor().getAlpha() == 0/* || block instanceof BlockFlowingWater*/) {
+            BlockColor color = block.getColor();
+            if (color == null) return null;
+            if (color.getAlpha() == 0 && color.getTint() == BlockColor.Tint.NONE) {
                 y--;
             } else {
                 return block;
@@ -3485,24 +3507,29 @@ public class Level implements Metadatable {
             int z = getHashZ(index);
             final Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
             if (players != null) {
-                final var pair = this.requireProvider().requestChunkData(x, z);
-                for (Player player : Objects.requireNonNull(players).values()) {
-                    if (player.isConnected()) {
-                        NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
-                        ncp.position = player.asBlockVector3();
-                        ncp.radius = player.getViewDistance() << 4;
-                        player.dataPacket(ncp);
+                IChunk chunk = this.getChunk(x, z);
+                if(chunk.getChunkState().canSend()) {
+                    final var pair = this.requireProvider().requestChunkData(x, z);
+                    for (Player player : Objects.requireNonNull(players).values()) {
+                        if (player.isConnected()) {
+                            NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
+                            ncp.position = player.asBlockVector3();
+                            ncp.radius = player.getViewDistance() << 4;
+                            player.dataPacket(ncp);
 
-                        LevelChunkPacket pk = new LevelChunkPacket();
-                        pk.chunkX = x;
-                        pk.chunkZ = z;
-                        pk.dimension = getDimensionData().getDimensionId();
-                        pk.subChunkCount = pair.right();
-                        pk.data = pair.left();
-                        player.sendChunk(x, z, pk);
+                            LevelChunkPacket pk = new LevelChunkPacket();
+                            pk.chunkX = x;
+                            pk.chunkZ = z;
+                            pk.dimension = getDimensionData().getDimensionId();
+                            pk.subChunkCount = pair.right();
+                            pk.data = pair.left();
+                            player.sendChunk(x, z, pk);
+                        }
                     }
+                    this.chunkSendQueue.remove(index);
+                } else if(!this.chunkGenerationQueue.containsKey(index)) {
+                    this.generateChunk(x, z, true);
                 }
-                this.chunkSendQueue.remove(index);
             }
         }
     }
@@ -3796,22 +3823,27 @@ public class Level implements Metadatable {
         if (standable(spawn, true))
             return Position.fromObject(spawn, this);
 
-        int maxY = isNether() ? 127 : (isOverWorld() ? 319 : 255);
-        int minY = isOverWorld() ? -64 : 0;
+        int maxY = getDimensionData().getMaxHeight();
+        int minY = getDimensionData().getMinHeight();
 
-        for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
-            for (int y = maxY; y >= minY; y--) {
-                Position pos = Position.fromObject(spawn, this);
-                pos.setY(y);
-                Position newSpawn;
-                if (standable(newSpawn = pos.add(horizontalOffset, 0, horizontalOffset), allowWaterUnder))
-                    return newSpawn;
-                if (standable(newSpawn = pos.add(horizontalOffset, 0, -horizontalOffset), allowWaterUnder))
-                    return newSpawn;
-                if (standable(newSpawn = pos.add(-horizontalOffset, 0, horizontalOffset), allowWaterUnder))
-                    return newSpawn;
-                if (standable(newSpawn = pos.add(-horizontalOffset, 0, -horizontalOffset), allowWaterUnder))
-                    return newSpawn;
+        int count = 0;
+
+        int checkHeight = (int) Math.max(Math.abs(minY-spawn.y), Math.abs(maxY-spawn.y));
+        for (int r = 1; r <= checkHeight; r++) {
+            int horizontalLimit = Math.min(r, horizontalMaxOffset);
+            for (int dx = -r; dx <= r; dx++) {
+                for (int dy = -r; dy <= r; dy++) {
+                    for (int dz = -r; dz <= r; dz++) {
+                        if (Math.abs(dx) != horizontalLimit && Math.abs(dy) != r && Math.abs(dz) != horizontalLimit) continue;
+                        Position checkLoc = Position.fromObject(spawn, this).add(dx, dy, dz);
+                        count++;
+                        if(count > 10000) {
+                            log.warn("cannot find a safe spawn around " + spawn.asBlockVector3() + ". Too many attempts!");
+                            return Position.fromObject(spawn, this);
+                        }
+                        if(standable(checkLoc, allowWaterUnder)) return checkLoc;
+                    }
+                }
             }
         }
 

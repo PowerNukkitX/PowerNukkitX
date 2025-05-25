@@ -7,7 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 
-import static cn.nukkit.entity.data.Skin.*;
+import static cn.nukkit.entity.data.Skin.DOUBLE_SKIN_SIZE;
+import static cn.nukkit.entity.data.Skin.SINGLE_SKIN_SIZE;
+import static cn.nukkit.entity.data.Skin.SKIN_128_128_SIZE;
+import static cn.nukkit.entity.data.Skin.SKIN_128_64_SIZE;
+import static cn.nukkit.entity.data.Skin.SKIN_64_32_SIZE;
 
 @ToString(exclude = {"data"})
 @EqualsAndHashCode

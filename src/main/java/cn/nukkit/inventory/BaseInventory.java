@@ -7,6 +7,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
+import cn.nukkit.item.AliasItem;
+import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.network.protocol.InventoryContentPacket;
@@ -15,7 +17,6 @@ import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import lombok.extern.slf4j.Slf4j;
@@ -441,6 +442,15 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
+
+        if(this.getUnclonedItem(index) instanceof AliasItem aliasItem) {
+            this.setItem(index, aliasItem.getItem());
+        }
+
+        if(this.getUnclonedItem(index) instanceof INBT nbtItem) {
+            nbtItem.onChange(this);
+        }
+
         if (send) {
             this.sendSlot(index, this.getViewers());
         }

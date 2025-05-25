@@ -66,7 +66,7 @@ public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
-            if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+            if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
                 return 0;
             }
 

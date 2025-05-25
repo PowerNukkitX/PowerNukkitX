@@ -1,15 +1,13 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.enums.StructureVoidType;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-
-import static cn.nukkit.block.property.CommonBlockProperties.*;
 
 /**
  * @author good777LUCKY
@@ -45,20 +43,20 @@ public class BlockStructureVoid extends BlockSolid {
     public double getResistance() {
         return 0;
     }
-    
+
     @Override
     public boolean canPassThrough() {
         return true;
     }
 
     @Override
-    public boolean isSolid(BlockFace side) {
+    public boolean isSolid() {
         return false;
     }
 
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
-        return false;
+        return player != null && player.isCreative();
     }
     
     @Override
@@ -72,7 +70,12 @@ public class BlockStructureVoid extends BlockSolid {
     }
     
     @Override
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
+    }
+
+    @Override
+    public AxisAlignedBB getBoundingBox() {
+        return null;
     }
 }

@@ -1,6 +1,7 @@
 package cn.nukkit.entity.ai.evaluator;
 
 import cn.nukkit.entity.EntityIntelligent;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -14,7 +15,7 @@ import java.util.Set;
 
 public class AllMatchEvaluator extends MultiBehaviorEvaluator {
 
-    public AllMatchEvaluator(@NotNull Set<IBehaviorEvaluator> evaluators) {
+    public AllMatchEvaluator(@NotNull ObjectArrayList<IBehaviorEvaluator> evaluators) {
         super(evaluators);
     }
 

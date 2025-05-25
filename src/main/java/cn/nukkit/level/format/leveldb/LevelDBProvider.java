@@ -325,6 +325,16 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
+    public int getNoSleepNight() {
+        return this.levelDat.getNoSleepNight();
+    }
+
+    @Override
+    public void setNoSleepNight(int noSleepNight) {
+        this.levelDat.setNoSleepNight(noSleepNight);
+    }
+
+    @Override
     public long getCurrentTick() {
         return this.levelDat.getCurrentTick();
     }
@@ -790,6 +800,7 @@ public class LevelDBProvider implements LevelProvider {
         //PNX Custom field
         levelDat.putBoolean("raining", worldData.isRaining());
         levelDat.putBoolean("thundering", worldData.isThundering());
+        levelDat.putInt("nosleepnights", worldData.getNoSleepNight());
         return levelDat;
     }
 }

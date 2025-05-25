@@ -1,11 +1,8 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.property.enums.OldLeafType;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Locale;
 
 import static cn.nukkit.block.property.CommonBlockProperties.PERSISTENT_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;

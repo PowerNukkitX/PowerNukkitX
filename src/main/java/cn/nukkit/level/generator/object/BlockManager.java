@@ -8,7 +8,6 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.UpdateBlockPacket;
 import cn.nukkit.network.protocol.UpdateSubChunkBlocksPacket;
 import cn.nukkit.network.protocol.types.BlockChangeEntry;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -123,6 +122,10 @@ public class BlockManager {
     }
 
     public void applySubChunkUpdate(List<Block> blockList, Predicate<Block> predicate) {
+        this.applySubChunkUpdate(blockList, predicate, false);
+    }
+
+    public void applySubChunkUpdate(List<Block> blockList, Predicate<Block> predicate, boolean queueSave) {
         if (predicate != null) {
             blockList = blockList.stream().filter(predicate).toList();
         }
@@ -147,6 +150,9 @@ public class BlockManager {
                 });
                 unsafeChunk.recalculateHeightMap();
             });
+            if (queueSave) {
+                key.setChanged();
+            }
             key.reObfuscateChunk();
         });
         for (var p : batchs.values()) {

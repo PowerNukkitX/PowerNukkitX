@@ -59,9 +59,12 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author PikyCZ
@@ -76,7 +79,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4};
     private Map<String, Attribute> attributeMap;
     private HorseInventory horseInventory;
-    private final AtomicBoolean jumping = new AtomicBoolean(false);
+    private final AtomicInteger jumping = new AtomicInteger(-1);
 
     public EntityHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -205,6 +208,11 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    public int randomVariant() {
+        return getAllVariant()[new Random(System.currentTimeMillis()).nextInt(getAllVariant().length)];
+    }
+
+    @Override
     public int[] getAllVariant() {
         return VARIANTS;
     }
@@ -214,7 +222,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return MARK_VARIANTS;
     }
 
-    public AtomicBoolean getJumping() {
+    public AtomicInteger getJumping() {
         return jumping;
     }
 
@@ -329,13 +337,17 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         }
     }
 
+    public boolean isJumping() {
+        return this.jumping.get() != -1;
+    }
+
     @Override
     public boolean onUpdate(int currentTick) {
         boolean b = super.onUpdate(currentTick);
         if (currentTick % 2 == 0) {
-            if (this.jumping!=null && this.jumping.get() && this.isOnGround()) {
+            if (getJumping() != null && currentTick - getJumping().get() > 5 && this.isOnGround()) {
                 this.setDataFlag(EntityFlag.STANDING, false);
-                this.jumping.set(false);
+                this.jumping.set(-1);
             }
         }
         return b;
@@ -389,7 +401,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
     @Override
     public boolean dismountEntity(Entity entity) {
-        this.getMemoryStorage().clear(CoreMemoryTypes.RIDER_NAME);
+        this.getMemoryStorage().put(CoreMemoryTypes.RIDER_NAME, null);
         return super.dismountEntity(entity);
     }
 
@@ -404,10 +416,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     public @Nullable Entity getRider() {
-        String name = getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
+        String name = this.getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
         if (name != null) {
             return Server.getInstance().getPlayerExact(name);
-        } else return null;//todo other entity
+        } else return null;
     }
 
     public float getClientMaxJumpHeight() {
@@ -432,6 +444,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * @see HorseInventory#getSaddle()
      */
     public Item getSaddle() {
+        if(this.getInventory() == null) return Item.AIR;
         return this.getInventory().getSaddle();
     }
 
@@ -439,6 +452,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * @see HorseInventory#getHorseArmor()
      */
     public Item getHorseArmor() {
+        if(this.getInventory() == null) return Item.AIR;
         return this.getInventory().getHorseArmor();
     }
 
@@ -516,7 +530,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         addEntity.speedX = (float) this.motionX;
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
+        addEntity.entityData = this.entityDataMap.copy();
         addEntity.attributes = this.attributeMap.values().toArray(Attribute.EMPTY_ARRAY);
         addEntity.links = new EntityLink[this.passengers.size()];
         for (int i = 0; i < addEntity.links.length; i++) {

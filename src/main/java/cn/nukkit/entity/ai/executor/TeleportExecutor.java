@@ -4,7 +4,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;

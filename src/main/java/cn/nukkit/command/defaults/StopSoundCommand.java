@@ -12,6 +12,7 @@ import cn.nukkit.network.protocol.StopSoundPacket;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -32,6 +33,7 @@ public class StopSoundCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Player> targets = list.getResult(0);
+        targets = targets.stream().filter(Objects::nonNull).toList();
         if (targets.isEmpty()) {
             log.addNoTargetMatch().output();
             return 0;

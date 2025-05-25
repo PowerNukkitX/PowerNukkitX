@@ -354,7 +354,9 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(BUBBLE_CORAL_FAN, BlockBubbleCoralFan.class);
             register(BUBBLE_CORAL_WALL_FAN, BlockBubbleCoralWallFan.class);
             register(BUDDING_AMETHYST, BlockBuddingAmethyst.class);
+            register(BUSH, BlockBush.class);
             register(CACTUS, BlockCactus.class);
+            register(CACTUS_FLOWER, BlockCactusFlower.class);
             register(CAKE, BlockCake.class);
             register(CALCITE, BlockCalcite.class);
             register(CALIBRATED_SCULK_SENSOR, BlockCalibratedSculkSensor.class);
@@ -588,6 +590,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(FENCE_GATE, BlockFenceGate.class);
             register(FERN, BlockFern.class);
             register(FIRE, BlockFire.class);
+            register(FIREFLY_BUSH, BlockFireflyBush.class);
             register(FIRE_CORAL, BlockFireCoral.class);
             register(FIRE_CORAL_BLOCK, BlockFireCoralBlock.class);
             register(FIRE_CORAL_FAN, BlockFireCoralFan.class);
@@ -697,6 +700,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(LARGE_AMETHYST_BUD, BlockLargeAmethystBud.class);
             register(LARGE_FERN, BlockLargeFern.class);
             register(LAVA, BlockLava.class);
+            register(LEAF_LITTER, BlockLeafLitter.class);
             register(LECTERN, BlockLectern.class);
             register(LEVER, BlockLever.class);
             register(LIGHT_BLOCK_0, BlockLightBlock0.class);
@@ -1055,6 +1059,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(SEA_LANTERN, BlockSeaLantern.class);
             register(SEA_PICKLE, BlockSeaPickle.class);
             register(SEAGRASS, BlockSeagrass.class);
+            register(SHORT_DRY_GRASS, BlockShortDryGrass.class);
             register(SHORT_GRASS, BlockShortGrass.class);
             register(SHROOMLIGHT, BlockShroomlight.class);
             register(SILVER_GLAZED_TERRACOTTA, BlockSilverGlazedTerracotta.class);
@@ -1153,6 +1158,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(SUSPICIOUS_SAND, BlockSuspiciousSand.class);
             register(SWEET_BERRY_BUSH, BlockSweetBerryBush.class);
             register(TALL_GRASS, BlockTallGrass.class);
+            register(TALL_DRY_GRASS, BlockTallDryGrass.class);
             register(TARGET, BlockTarget.class);
             register(TINTED_GLASS, BlockTintedGlass.class);
             register(TNT, BlockTnt.class);
@@ -1277,6 +1283,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(WHITE_TERRACOTTA, BlockWhiteTerracotta.class);
             register(WHITE_TULIP, BlockWhiteTulip.class);
             register(WHITE_WOOL, BlockWhiteWool.class);
+            register(WILDFLOWERS, BlockWildflowers.class);
             register(WITHER_ROSE, BlockWitherRose.class);
             register(WITHER_SKELETON_SKULL, BlockWitherSkeletonSkull.class);
             register(WOODEN_BUTTON, BlockWoodenButton.class);

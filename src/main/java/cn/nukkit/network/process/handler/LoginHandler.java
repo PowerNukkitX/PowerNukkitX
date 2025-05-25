@@ -1,7 +1,6 @@
 package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Server;
-import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.connection.util.EncryptionUtils;
@@ -55,7 +54,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         var chainData = ClientChainData.read(pk);
 
         //verify the player if enable the xbox-auth
-        if (!chainData.isXboxAuthed() && server.getProperties().get(ServerPropertiesKeys.XBOX_AUTH, true)) {
+        if (!chainData.isXboxAuthed() && server.getSettings().baseSettings().xboxAuth()) {
             log.debug("disconnection due to notAuthenticated");
             session.close("disconnectionScreen.notAuthenticated");
             return;
@@ -75,11 +74,15 @@ public class LoginHandler extends BedrockSessionPacketHandler {
             Server.getInstance().getNetwork().replaceSessionAddress(oldAddress, session.getAddress(), session);
         }
 
-        //Verify if the titleId match with DeviceOs
-        int predictedDeviceOS = getPredictedDeviceOS(chainData);
-        if(predictedDeviceOS != chainData.getDeviceOS()) {
-            session.close("§cPacket handling error");
-            return;
+        //The client won't send this data when it isn't logged in.
+        if(server.getSettings().baseSettings().xboxAuth()) {
+            //Verify if the titleId match with DeviceOs
+
+            /*int predictedDeviceOS = getPredictedDeviceOS(chainData);
+            if(predictedDeviceOS != chainData.getDeviceOS()) {
+                session.close("§cPacket handling error");
+                return;
+            } */ //Temporary removed because of microsoft.
         }
 
         //Verify if the language is valid
@@ -89,7 +92,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         }
 
         //Verify if the GameVersion has valid format
-        if(chainData.getGameVersion().split("\\.").length != 3 && !Server.getInstance().getSettings().debugSettings().allowBeta()) {
+        if(chainData.getGameVersion().split("\\.").length != 3 && !Server.getInstance().getSettings().gameplaySettings().allowBeta()) {
             session.close("§cPacket handling error");
             return;
         }
@@ -184,6 +187,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
 
     private int getPredictedDeviceOS(ClientChainData chainData) {
         String titleId = chainData.getTitleId();
+        if(titleId == null) return Platform.UNKNOWN.getId();
         return switch (titleId) {
             case "896928775":
                 yield Platform.WINDOWS_10.getId();

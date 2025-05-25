@@ -69,7 +69,7 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
                 player.getLevel().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
                     @Override
                     public void onRun() {
-                        map.renderMap(player.getLevel(), (player.getFloorX() / 128) << 7, (player.getFloorZ() / 128) << 7, 1);
+                        map.renderMap(player.getLevel(), (player.getFloorX() / 128) * 128, (player.getFloorZ() / 128) * 128, 1);
                         if (finalOffhand) {
                             if (checkMapItemValid(player.getOffhandInventory().getUnclonedItem(finalIndex), pk))
                                 player.getOffhandInventory().setItem(finalIndex, map);

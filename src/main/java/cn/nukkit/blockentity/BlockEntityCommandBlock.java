@@ -581,9 +581,17 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                 this.lastOutputParams = newParams;
             }
         }
-        if (this.getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT)) {
+
+        Level level = this.getLevel();
+        if (level == null) {
+            Server.getInstance().getLogger().error("CommandBlock message failed: level is null. Location approx at x=" + this.x + " y=" + this.y + " z=" + this.z);
+            return;
+        }
+
+        if (level.getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT)) {
             message.setText(TextFormat.GRAY + "" + TextFormat.ITALIC + "[" + this.getName() + ": " + TextFormat.RESET +
                     (!message.getText().equals(this.getServer().getLanguage().get(message.getText())) ? "%" : "") + message.getText() + "]");
+
             Set<Permissible> users = this.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
             for (var user : users) {
                 if (user instanceof Player || user instanceof ConsoleCommandSender) {

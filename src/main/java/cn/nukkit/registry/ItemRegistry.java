@@ -83,6 +83,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(BLEACH, ItemBleach.class);
             register(BLUE_BUNDLE, ItemBlueBundle.class);
             register(BLUE_DYE, ItemBlueDye.class);
+            register(BLUE_EGG, ItemBlueEgg.class);
             register(BOAT, ItemBoat.class);
             register(BOGGED_SPAWN_EGG, ItemBoggedSpawnEgg.class);
             register(BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, ItemBoltArmorTrimSmithingTemplate.class);
@@ -99,6 +100,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(BRICK, ItemBrick.class);
             register(BROWN_BUNDLE, ItemBrownBundle.class);
             register(BROWN_DYE, ItemBrownDye.class);
+            register(BROWN_EGG, ItemBrownEgg.class);
             register(BRUSH, ItemBrush.class);
             register(BUCKET, ItemBucket.class);
             register(BUNDLE, ItemBundle.class);

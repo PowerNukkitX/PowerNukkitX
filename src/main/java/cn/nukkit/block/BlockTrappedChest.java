@@ -12,9 +12,8 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
-
 import javax.annotation.Nullable;
+import java.util.Map;
 
 
 public class BlockTrappedChest extends BlockChest {

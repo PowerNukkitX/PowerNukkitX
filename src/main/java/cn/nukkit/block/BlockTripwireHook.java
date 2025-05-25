@@ -107,7 +107,7 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
 
     public void updateLine(boolean isHookBroken, boolean doUpdateAroundHook,
                            int eventDistance, BlockTripWire eventBlock) {
-        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return;
         }
 
