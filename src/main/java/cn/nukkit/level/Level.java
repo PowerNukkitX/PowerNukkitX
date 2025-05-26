@@ -85,6 +85,7 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
@@ -313,7 +314,7 @@ public class Level implements Metadatable {
     private int updateLCG = ThreadLocalRandom.current().nextInt();
     private int tickRate;
     private long levelCurrentTick = 0;
-    private final Map<Long, Map<Integer, Object>> blockLightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
+    private final Long2ObjectOpenHashMap<IntOpenHashSet> blockLightQueue = new Long2ObjectOpenHashMap<>(8);    
     private final int dimensionCount;
     ///base tick system
     private final Thread baseTickThread;
@@ -605,7 +606,8 @@ public class Level implements Metadatable {
     public void close() {
         if(getServer().getSettings().levelSettings().levelThread() && baseTickThread.isAlive()) {
             this.baseTickGameLoop.stop();
-        } else remove();
+        }
+        remove();
     }
 
     private void remove() {
@@ -872,7 +874,7 @@ public class Level implements Metadatable {
         if (this.chunkLoaders.containsKey(index)) {
             return this.chunkLoaders.get(index).entrySet()
                     .stream()
-                    .filter(e -> e.getValue() instanceof Player)
+                    .filter(e -> (e.getValue() instanceof Player p && p.getPlayerChunkManager().getUsedChunks().contains(index)))
                     .collect(HashMap::new, (m, e) -> {
                         m.put(e.getKey(), (Player) e.getValue());
                     }, HashMap::putAll);
@@ -1071,7 +1073,9 @@ public class Level implements Metadatable {
                         .longParallelStream().forEach(id -> {
                             Entity entity = this.updateEntities.get(id);
                             if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
-                                entityAsyncPrepare.asyncPrepare(getTick());
+                                try {
+                                    entityAsyncPrepare.asyncPrepare(getTick());
+                                } catch(Exception e) {}
                             }
                         }), Server.getInstance().getComputeThreadPool()).join();
                 for (long id : this.updateEntities.keySetLong()) {
@@ -1189,7 +1193,7 @@ public class Level implements Metadatable {
                 }
             }
             // Tick Weather
-            if (this.getDimension() != DIMENSION_NETHER && this.getDimension() != DIMENSION_THE_END) {
+            if (this.getDimension() == DIMENSION_OVERWORLD) {
                 if(getDayTime() == tickRate) {
                     setRaining(false);
                     setThundering(false);
@@ -1484,9 +1488,12 @@ public class Level implements Metadatable {
                     iter.remove();
                 }
 
-                for (Entity entity : chunk.getEntities().values()) {
-                    entity.scheduleUpdate();
-                }
+                CompletableFuture.runAsync(() -> {
+                    for (Entity entity : chunk.getEntities().values()) {
+                        entity.scheduleUpdate();
+                    }
+                });
+
                 int tickSpeed = gameRules.getInteger(GameRule.RANDOM_TICK_SPEED);
                 if (tickSpeed <= 0) {
                     continue;
@@ -2151,90 +2158,92 @@ public class Level implements Metadatable {
     }
 
     public void updateBlockLight() {
-        int size = blockLightQueue.size();
-        if (size == 0) {
-            return;
-        }
-        Queue<Long> lightPropagationQueue = new ConcurrentLinkedQueue<>();
-        Queue<Object[]> lightRemovalQueue = new ConcurrentLinkedQueue<>();
-        Long2ObjectOpenHashMap<Object> visited = new Long2ObjectOpenHashMap<>();
-        Long2ObjectOpenHashMap<Object> removalVisited = new Long2ObjectOpenHashMap<>();
+        try {
+            int size = blockLightQueue.size();
+            if (size == 0) {
+                return;
+            }
+            Queue<Long> lightPropagationQueue = new ConcurrentLinkedQueue<>();
+            Queue<Object[]> lightRemovalQueue = new ConcurrentLinkedQueue<>();
+            Long2ObjectOpenHashMap<Object> visited = new Long2ObjectOpenHashMap<>();
+            Long2ObjectOpenHashMap<Object> removalVisited = new Long2ObjectOpenHashMap<>();
 
-        var iter = blockLightQueue.entrySet().iterator();
-        while (iter.hasNext() && size-- > 0) {
-            var entry = iter.next();
-            iter.remove();
-            long index = entry.getKey();
-            var blocks = entry.getValue();
-            int chunkX = Level.getHashX(index);
-            int chunkZ = Level.getHashZ(index);
-            int bx = chunkX << 4;
-            int bz = chunkZ << 4;
-            for (int blockHash : blocks.keySet()) {
-                int hi = (byte) (blockHash >>> 16);
-                int lo = (short) blockHash;
-                int y = ensureY(lo - 64);
-                int x = (hi & 0xF) + bx;
-                int z = ((hi >> 4) & 0xF) + bz;
-                IChunk chunk = getChunk(x >> 4, z >> 4, false);
-                if (chunk != null) {
-                    int lcx = x & 0xF;
-                    int lcz = z & 0xF;
-                    int oldLevel = chunk.getBlockLight(lcx, y, lcz);
-                    int newLevel = Registries.BLOCK.get(chunk.getBlockState(lcx, y, lcz), x, y, z, this).getLightLevel();
-                    if (oldLevel != newLevel) {
-                        this.setBlockLightAt(x, y, z, newLevel);
-                        if (newLevel < oldLevel) {
-                            removalVisited.put(Hash.hashBlock(x, y, z), changeBlocksPresent);
-                            lightRemovalQueue.add(new Object[]{Hash.hashBlock(x, y, z), oldLevel});
-                        } else {
-                            visited.put(Hash.hashBlock(x, y, z), changeBlocksPresent);
-                            lightPropagationQueue.add(Hash.hashBlock(x, y, z));
+            var iter = blockLightQueue.entrySet().iterator();
+            while (iter.hasNext() && size-- > 0) {
+                var entry = iter.next();
+                long index = entry.getKey();
+                var blocks = entry.getValue();
+
+                iter.remove();
+                if (blocks == null || blocks.isEmpty()) continue;
+
+                int chunkX = Level.getHashX(index);
+                int chunkZ = Level.getHashZ(index);
+                int bx = chunkX << 4;
+                int bz = chunkZ << 4;
+                for (int blockHash : blocks) {
+                    int hi = (byte) (blockHash >>> 16);
+                    int lo = (short) blockHash;
+                    int y = ensureY(lo - 64);
+                    int x = (hi & 0xF) + bx;
+                    int z = ((hi >> 4) & 0xF) + bz;
+                    IChunk chunk = getChunk(x >> 4, z >> 4, false);
+                    if (chunk != null) {
+                        int lcx = x & 0xF;
+                        int lcz = z & 0xF;
+                        int oldLevel = chunk.getBlockLight(lcx, y, lcz);
+                        int newLevel = Registries.BLOCK.get(chunk.getBlockState(lcx, y, lcz), x, y, z, this).getLightLevel();
+                        if (oldLevel != newLevel) {
+                            this.setBlockLightAt(x, y, z, newLevel);
+                            long blockPosHash = Hash.hashBlock(x, y, z);
+                            if (newLevel < oldLevel) {
+                                removalVisited.put(blockPosHash, changeBlocksPresent);
+                                lightRemovalQueue.add(new Object[]{blockPosHash, oldLevel});
+                            } else {
+                                visited.put(blockPosHash, changeBlocksPresent);
+                                lightPropagationQueue.add(blockPosHash);
+                            }
                         }
                     }
                 }
             }
-        }
 
-        while (!lightRemovalQueue.isEmpty()) {
-            Object[] val = lightRemovalQueue.poll();
-            long node = (long) val[0];
-            int x = Hash.hashBlockX(node);
-            int y = Hash.hashBlockY(node);
-            int z = Hash.hashBlockZ(node);
+            while (!lightRemovalQueue.isEmpty()) {
+                Object[] val = lightRemovalQueue.poll();
+                long node = (long) val[0];
+                int x = Hash.hashBlockX(node);
+                int y = Hash.hashBlockY(node);
+                int z = Hash.hashBlockZ(node);
 
-            int lightLevel = (int) val[1];
+                int lightLevel = (int) val[1];
 
-            this.computeRemoveBlockLight(x - 1, y, z, lightLevel, lightRemovalQueue, lightPropagationQueue,
-                    removalVisited, visited);
-            this.computeRemoveBlockLight(x + 1, y, z, lightLevel, lightRemovalQueue, lightPropagationQueue,
-                    removalVisited, visited);
-            this.computeRemoveBlockLight(x, y - 1, z, lightLevel, lightRemovalQueue, lightPropagationQueue,
-                    removalVisited, visited);
-            this.computeRemoveBlockLight(x, y + 1, z, lightLevel, lightRemovalQueue, lightPropagationQueue,
-                    removalVisited, visited);
-            this.computeRemoveBlockLight(x, y, z - 1, lightLevel, lightRemovalQueue, lightPropagationQueue,
-                    removalVisited, visited);
-            this.computeRemoveBlockLight(x, y, z + 1, lightLevel, lightRemovalQueue, lightPropagationQueue,
-                    removalVisited, visited);
-        }
-
-        while (!lightPropagationQueue.isEmpty()) {
-            long node = lightPropagationQueue.poll();
-
-            int x = Hash.hashBlockX(node);
-            int y = Hash.hashBlockY(node);
-            int z = Hash.hashBlockZ(node);
-            int lightLevel = this.getBlockLightAt(x, y, z) - getBlock(x, y, z).getLightFilter();
-
-            if (lightLevel >= 1) {
-                this.computeSpreadBlockLight(x - 1, y, z, lightLevel, lightPropagationQueue, visited);
-                this.computeSpreadBlockLight(x + 1, y, z, lightLevel, lightPropagationQueue, visited);
-                this.computeSpreadBlockLight(x, y - 1, z, lightLevel, lightPropagationQueue, visited);
-                this.computeSpreadBlockLight(x, y + 1, z, lightLevel, lightPropagationQueue, visited);
-                this.computeSpreadBlockLight(x, y, z - 1, lightLevel, lightPropagationQueue, visited);
-                this.computeSpreadBlockLight(x, y, z + 1, lightLevel, lightPropagationQueue, visited);
+                this.computeRemoveBlockLight(x - 1, y, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x + 1, y, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x, y - 1, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x, y + 1, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x, y, z - 1, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x, y, z + 1, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
             }
+
+            while (!lightPropagationQueue.isEmpty()) {
+                long node = lightPropagationQueue.poll();
+
+                int x = Hash.hashBlockX(node);
+                int y = Hash.hashBlockY(node);
+                int z = Hash.hashBlockZ(node);
+                int lightLevel = this.getBlockLightAt(x, y, z) - getBlock(x, y, z).getLightFilter();
+
+                if (lightLevel >= 1) {
+                    this.computeSpreadBlockLight(x - 1, y, z, lightLevel, lightPropagationQueue, visited);
+                    this.computeSpreadBlockLight(x + 1, y, z, lightLevel, lightPropagationQueue, visited);
+                    this.computeSpreadBlockLight(x, y - 1, z, lightLevel, lightPropagationQueue, visited);
+                    this.computeSpreadBlockLight(x, y + 1, z, lightLevel, lightPropagationQueue, visited);
+                    this.computeSpreadBlockLight(x, y, z - 1, lightLevel, lightPropagationQueue, visited);
+                    this.computeSpreadBlockLight(x, y, z + 1, lightLevel, lightPropagationQueue, visited);
+                }
+            }
+        } catch (Throwable e) {
+            log.error("Error while updating block light", e);
         }
     }
 
@@ -2277,12 +2286,12 @@ public class Level implements Metadatable {
 
     public void addBlockLightUpdate(int x, int y, int z) {
         long index = chunkHash(x >> 4, z >> 4);
-        var currentMap = blockLightQueue.get(index);
-        if (currentMap == null) {
-            currentMap = new ConcurrentHashMap<>(8, 0.9f, 1);
-            this.blockLightQueue.put(index, currentMap);
+        IntOpenHashSet blockSet = blockLightQueue.get(index);
+        if (blockSet == null) {
+            blockSet = new IntOpenHashSet();
+            blockLightQueue.put(index, blockSet);
         }
-        currentMap.put(Level.localBlockHash(x, y, z, this), changeBlocksPresent);
+        blockSet.add(Level.localBlockHash(x, y, z, this));
     }
 
     public boolean setBlock(Vector3 pos, Block block) {
@@ -3187,7 +3196,9 @@ public class Level implements Metadatable {
     public void setBlockStateAt(int x, int y, int z, int layer, BlockState state) {
         IChunk chunk = this.getChunk(x >> 4, z >> 4, true);
         chunk.setBlockState(x & 0x0f, ensureY(y), z & 0x0f, state, layer);
-        addBlockChange(x, y, z);
+        if(chunk.isFinished())
+            addBlockChange(x, y, z);
+
         temporalVector.setComponents(x, y, z);
         if (server.getSettings().chunkSettings().lightUpdates()) {
             updateAllLight(new Vector3(x, y, z));
@@ -3494,7 +3505,7 @@ public class Level implements Metadatable {
             processChunkRequest();
 
             if (currentTick.getTick() % 100 == 0) {
-                doLevelGarbageCollection(false);
+                CompletableFuture.runAsync(() -> doLevelGarbageCollection(false));
             }
         } catch (Exception e) {
             getServer().getLogger().error("Subtick Thread for level " + getFolderName() + " failed.", e);
