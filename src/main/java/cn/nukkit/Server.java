@@ -97,6 +97,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
+import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.ApiStatus;
@@ -1887,6 +1888,73 @@ public class Server {
     public Map<UUID, Player> getOnlinePlayers() {
         return ImmutableMap.copyOf(playerList);
     }
+
+    /**
+     * Deletes all player data (both UUID mapping and player data) for the specified player name.
+     * This method handles the LevelDB structure used by PowerNukkitX where player data is stored
+     * in two separate databases: one for name-to-UUID mapping and another for actual player data.
+     *
+     * @param name The player name to delete (case-insensitive)
+     * @throws Exception if any LevelDB operation fails
+     */
+    public void deletePlayerData(String name) {
+        try {
+            byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
+            byte[] uuidBytes = playerDataDB.get(nameBytes);
+
+            if (uuidBytes != null && uuidBytes.length == 16) {
+                ByteBuffer buffer = ByteBuffer.wrap(uuidBytes);
+                UUID uuid = new UUID(buffer.getLong(), buffer.getLong());
+                String uuidStr = uuid.toString();
+
+                playerDataDB.delete(uuidBytes);  // Delete from player data DB
+                playerDataDB.delete(nameBytes);   // Delete name-to-UUID mapping
+
+                log.info(name + " player data deleted (UUID: " + uuidStr + ")");
+            } else {
+                log.warn(name + " player not found or invalid UUID data");
+            }
+        } catch (Exception e) {
+            log.error("Error deleting player data for " + name, e);
+        }
+    }
+
+    /**
+     * Deletes all player data for the specified UUID.
+     * This handles the LevelDB structure by:
+     * 1. Deleting the main player data record
+     * 2. Finding and deleting the name-to-UUID mapping
+     *
+     * @param uuid The UUID of the player to delete
+     * @throws Exception if any LevelDB operation fails
+     */
+    public void deletePlayerData(UUID uuid) {
+        try {
+            ByteBuffer buffer = ByteBuffer.allocate(16);
+            buffer.putLong(uuid.getMostSignificantBits());
+            buffer.putLong(uuid.getLeastSignificantBits());
+            byte[] uuidBytes = buffer.array();
+
+            playerDataDB.delete(uuidBytes);
+
+            try (DBIterator iterator = playerDataDB.iterator()) {
+                for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) {
+                    byte[] key = iterator.peekNext().getKey();
+                    byte[] value = iterator.peekNext().getValue();
+
+                    if (Arrays.equals(value, uuidBytes)) {
+                        playerDataDB.delete(key);
+                        String playerName = new String(key, StandardCharsets.UTF_8);
+                        log.info("Deleted name mapping for " + playerName);
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error deleting player data for UUID " + uuid, e);
+        }
+    }
+
 
     // endregion
 
