@@ -116,6 +116,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.*;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
@@ -905,6 +906,11 @@ public class Server {
         ++this.tickCounter;
         this.network.processInterfaces();
 
+        players.values().forEach(player -> {
+            player.getSession().tick();
+            player.checkNetwork();
+        });
+
         this.getScheduler().mainThreadHeartbeat(this.tickCounter);
 
         this.checkTickUpdates(this.tickCounter);
@@ -925,7 +931,9 @@ public class Server {
 
         if (this.autoSave && ++this.autoSaveTicker >= this.autoSaveTicks) {
             this.autoSaveTicker = 0;
-            this.doAutoSave();
+            CompletableFuture.runAsync(() -> {
+                this.doAutoSave();
+            });
         }
 
         if (this.sendUsageTicker > 0 && --this.sendUsageTicker == 0) {

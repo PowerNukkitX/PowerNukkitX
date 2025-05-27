@@ -150,6 +150,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -158,6 +159,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -322,6 +324,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected Entity lastBeAttackEntity = null;
     private final @NotNull PlayerHandle playerHandle = new PlayerHandle(this);
+    @Getter
     protected final PlayerChunkManager playerChunkManager;
     private boolean needDimensionChangeACK = false;
     private Boolean openSignFront = null;
@@ -2862,7 +2865,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.nextChunkOrderRun-- <= 0 || this.chunk == null) {
-            playerChunkManager.tick();
+            CompletableFuture.runAsync(playerChunkManager::tick, this.server.getComputeThreadPool());
         }
 
         if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
