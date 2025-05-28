@@ -1,5 +1,7 @@
 package cn.nukkit.network.process.handler;
 
+import cn.nukkit.scheduler.ServerScheduler;
+import cn.nukkit.Server;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.ResourcePackChunkDataPacket;
@@ -102,6 +104,9 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
         dataPacket.chunkIndex = pk.chunkIndex;
         dataPacket.data = resourcePack.getPackChunk(maxChunkSize * pk.chunkIndex, maxChunkSize);
         dataPacket.progress = maxChunkSize * (long) pk.chunkIndex;
-        session.sendPacket(dataPacket);
+        session.getServer().getScheduler().scheduleDelayedTask(() -> {
+            session.sendPacket(dataPacket);
+            session.flushSendBuffer();
+        }, 4);
     }
 }
