@@ -90,9 +90,21 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         this.namedTag.putFloat("Health", this.getHealth());
     }
 
-    public boolean hasLineOfSight(Entity entity) {
-        //todo
-        return true;
+    public boolean hasLineOfSight(Entity target) {
+        if (this.level != target.level) return false;
+
+        Vector3[] fromPoints = new Vector3[] {
+            this.getPosition().add(0, this.getEyeHeight(), 0),    // eye level
+            this.getPosition().add(0, this.getHeight() * 0.6, 0)  // upper chest
+        };
+        Vector3 to = target.getPosition().add(0, target.getHeight() * 0.6, 0); // target chest
+
+        for (Vector3 from : fromPoints) {
+            List<Block> blocks = this.level.raycastBlocks(from, to, true, false, 0.25);
+            boolean blocked = blocks.stream().anyMatch(b -> !b.isTransparent() && b.getBoundingBox() != null);
+            if (!blocked) return true;
+        }
+        return false;
     }
 
     public void collidingWith(Entity ent) { // can override (IronGolem|Bats)
