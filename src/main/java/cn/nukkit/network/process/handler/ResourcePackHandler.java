@@ -1,7 +1,5 @@
 package cn.nukkit.network.process.handler;
 
-import cn.nukkit.scheduler.ServerScheduler;
-import cn.nukkit.Server;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.ResourcePackChunkDataPacket;
@@ -15,9 +13,14 @@ import cn.nukkit.utils.version.Version;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
 public class ResourcePackHandler extends BedrockSessionPacketHandler {
+
+    private final Queue<ResourcePackChunkRequestPacket> chunkRequestQueue = new ConcurrentLinkedQueue<>();
+    private boolean sendingChunks = false;
 
     public ResourcePackHandler(BedrockSession session) {
         super(session);
@@ -90,13 +93,28 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
 
     @Override
     public void handle(ResourcePackChunkRequestPacket pk) {
-        // TODO: Pack version check
+        chunkRequestQueue.add(pk);
+        if (!sendingChunks) {
+            sendingChunks = true;
+            processNextChunk();
+        }
+    }
+
+    private void processNextChunk() {
+        ResourcePackChunkRequestPacket pk = chunkRequestQueue.poll();
+        if (pk == null) {
+            sendingChunks = false;
+            return;
+        }
+
         var mgr = session.getServer().getResourcePackManager();
         ResourcePack resourcePack = mgr.getPackById(pk.getPackId());
         if (resourcePack == null) {
             this.session.close("disconnectionScreen.resourcePack");
+            sendingChunks = false;
             return;
         }
+
         int maxChunkSize = mgr.getMaxChunkSize();
         ResourcePackChunkDataPacket dataPacket = new ResourcePackChunkDataPacket();
         dataPacket.setPackId(resourcePack.getPackId());
@@ -104,9 +122,13 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
         dataPacket.chunkIndex = pk.chunkIndex;
         dataPacket.data = resourcePack.getPackChunk(maxChunkSize * pk.chunkIndex, maxChunkSize);
         dataPacket.progress = maxChunkSize * (long) pk.chunkIndex;
+
+        session.sendPacket(dataPacket);
+        session.flushSendBuffer();
+
+        // DELAY THE SEND OF PACKETS TO AVOID BURSTING SLOWER AND/OR HIGHER PIGNS CLIENTS
         session.getServer().getScheduler().scheduleDelayedTask(() -> {
-            session.sendPacket(dataPacket);
-            session.flushSendBuffer();
+            processNextChunk();
         }, 4);
     }
 }
