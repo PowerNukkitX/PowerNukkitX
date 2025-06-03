@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Slf4j
 public class ResourcePackHandler extends BedrockSessionPacketHandler {
 
+    private static final int PACKET_SEND_DELAY = 4; // DELAY THE SEND OF PACKETS TO AVOID BURSTING SLOWER AND/OR HIGHER PING CLIENTS
     private final Queue<ResourcePackChunkRequestPacket> chunkRequestQueue = new ConcurrentLinkedQueue<>();
     private boolean sendingChunks = false;
 
@@ -129,6 +130,6 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
         // DELAY THE SEND OF PACKETS TO AVOID BURSTING SLOWER AND/OR HIGHER PIGNS CLIENTS
         session.getServer().getScheduler().scheduleDelayedTask(() -> {
             processNextChunk();
-        }, 4);
+        }, PACKET_SEND_DELAY);
     }
 }
