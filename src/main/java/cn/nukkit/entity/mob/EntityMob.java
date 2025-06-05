@@ -223,7 +223,9 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
             return armor;
         }
 
-        armor.setDamage(armor.getDamage() + 1);
+        if (shouldDamageArmor(armor)) {
+            armor.setDamage(armor.getDamage() + 1);
+        }
 
         if (armor.getDamage() >= armor.getMaxDurability()) {
             getLevel().addSound(this, Sound.RANDOM_BREAK);
@@ -231,6 +233,15 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
         }
 
         return armor;
+    }
+
+    public boolean shouldDamageArmor(Item armor) {
+        if (armor.isUnbreakable() || armor.getMaxDurability() <= 0) return false;
+
+        int min = armor.getDamageChanceMin();
+        int max = armor.getDamageChanceMax();
+        int chance = (min == max) ? min : ThreadLocalRandom.current().nextInt(min, max + 1);
+        return ThreadLocalRandom.current().nextInt(100) < chance;
     }
 
     @Override

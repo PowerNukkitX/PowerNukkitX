@@ -123,6 +123,10 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         protected int maxStackSize = -1;
         protected List<String> tags;
         protected boolean makePersistent = false;
+        protected Float cooldownDuration;
+        protected String cooldownCategory;
+        protected Float useModifierMovement;
+        protected Float useModifierDuration;
 
         protected SimpleBuilder(CustomItem customItem) {
             this.item = (Item) customItem;
@@ -273,6 +277,30 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
+         * Add category and cooldown to use this type of item.
+         * <p>
+         * First paramenter String categiry, second parameter float coodown duration.
+        */
+        public SimpleBuilder cooldown(String category, float duration) {
+            this.cooldownCategory = category;
+            this.cooldownDuration = duration;
+            return this;
+        }
+
+        /**
+         * Determines how long an item takes to use in combination with components such as Shooter, Throwable, or Food.
+         * <p>
+         * First paramenter Float movementModifier to scale the players movement speed when item is in use. Value must be <= 1.
+         * <p>
+         * Second paramenter Float useModifierDuration controls how long the item takes to use in seconds.
+        */
+        public SimpleBuilder useModifiers(float movementModifier, float useDuration) {
+            this.useModifierMovement = movementModifier;
+            this.useModifierDuration = useDuration;
+            return this;
+        }
+
+        /**
          * Block Placer allow to render custom items as a block 3D, for that you need also to provide a block with your custom geometry.
         */
         public SimpleBuilder blockPlacer(String blockId, String... useOn) {
@@ -319,9 +347,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * Block Placer and Minecraft Icon should not coexist, the calculateID now checks for the
-         * fields and prioritize blockPlacer if the setting was provided, if not fallback
-         * to minecraft:icon.
+         * Block Placer and Minecraft Icon should not coexist, the calculateID now checks for
+         * <p>
+         * the fields and prioritize blockPlacer if the setting was provided, if not fallback to minecraft:icon.
         */
         protected CustomItemDefinition calculateID() {
             CompoundTag components = nbt.getCompound("components");
@@ -341,6 +369,18 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             components.putCompound("minecraft:max_stack_size", new CompoundTag().putByte("value", (byte) stackSize));
 
             itemProps.putBoolean("should_despawn", !makePersistent);
+
+            if (cooldownCategory != null && cooldownDuration != null) {
+                components.putCompound("minecraft:cooldown", new CompoundTag()
+                        .putString("category", cooldownCategory)
+                        .putFloat("duration", cooldownDuration));
+            }
+
+            if (useModifierMovement != null && useModifierDuration != null) {
+                components.putCompound("minecraft:use_modifiers", new CompoundTag()
+                        .putFloat("movement_modifier", useModifierMovement)
+                        .putFloat("use_duration", useModifierDuration));
+            }
 
             if (tags != null && !tags.isEmpty()) {
                 ListTag<StringTag> tagList = new ListTag<>();

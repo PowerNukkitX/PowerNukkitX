@@ -181,18 +181,30 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
                 return armor;
             }
 
-            if (armor instanceof ItemShield)
-                armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
-            else
-                armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
+            if (shouldDamageArmor(armor)) {
+                if (armor instanceof ItemShield) {
+                    armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
+                } else {
+                    armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
+                }
 
-            if (armor.getDamage() >= armor.getMaxDurability()) {
-                getLevel().addSound(this, Sound.RANDOM_BREAK);
-                return Item.get(BlockID.AIR, 0, 0);
+                if (armor.getDamage() >= armor.getMaxDurability()) {
+                    getLevel().addSound(this, Sound.RANDOM_BREAK);
+                    return Item.get(BlockID.AIR, 0, 0);
+                }
             }
         }
 
         return armor;
+    }
+
+    public boolean shouldDamageArmor(Item armor) {
+        if (armor.isUnbreakable() || armor.getMaxDurability() <= 0) return false;
+
+        int min = armor.getDamageChanceMin();
+        int max = armor.getDamageChanceMax();
+        int chance = (min == max) ? min : ThreadLocalRandom.current().nextInt(min, max + 1);
+        return ThreadLocalRandom.current().nextInt(100) < chance;
     }
 
     @Override
