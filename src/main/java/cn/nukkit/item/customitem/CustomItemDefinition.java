@@ -319,7 +319,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * Block Placer and Minecraft Icon should not coexist, the calculateID now checks for the fields and prioritize blockPlacer if the setting was provided, if not fallback to minecraft:icon.
+         * Block Placer and Minecraft Icon should not coexist, the calculateID now checks for the
+         * fields and prioritize blockPlacer if the setting was provided, if not fallback
+         * to minecraft:icon.
         */
         protected CustomItemDefinition calculateID() {
             CompoundTag components = nbt.getCompound("components");
