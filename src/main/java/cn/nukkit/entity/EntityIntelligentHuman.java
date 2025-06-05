@@ -298,10 +298,6 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
                 event.getCause() != EntityDamageEvent.DamageCause.FIRE_TICK &&
                 event.getCause() != EntityDamageEvent.DamageCause.FALL) { // No armor damage
 
-            if (armor.isUnbreakable() || armor.getMaxDurability() < 0) {
-                return armor;
-            }
-
             if (shouldDamageArmor(armor)) {
                 if (armor instanceof ItemShield) {
                     armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
@@ -309,7 +305,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
                     armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
                 }
 
-                if (armor.getDamage() >= armor.getMaxDurability()) {
+                if (armor.getMaxDurability() > 0 && armor.getDamage() >= armor.getMaxDurability()) {
                     getLevel().addSound(this, Sound.RANDOM_BREAK);
                     return Item.get(BlockID.AIR, 0, 0);
                 }

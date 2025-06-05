@@ -177,10 +177,6 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
                 event.getCause() != DamageCause.FIRE_TICK &&
                 event.getCause() != DamageCause.FALL) { // No armor damage
 
-            if (armor.isUnbreakable() || armor.getMaxDurability() < 0) {
-                return armor;
-            }
-
             if (shouldDamageArmor(armor)) {
                 if (armor instanceof ItemShield) {
                     armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
@@ -188,7 +184,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
                     armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
                 }
 
-                if (armor.getDamage() >= armor.getMaxDurability()) {
+                if (armor.getMaxDurability() > 0 && armor.getDamage() >= armor.getMaxDurability()) {
                     getLevel().addSound(this, Sound.RANDOM_BREAK);
                     return Item.get(BlockID.AIR, 0, 0);
                 }
