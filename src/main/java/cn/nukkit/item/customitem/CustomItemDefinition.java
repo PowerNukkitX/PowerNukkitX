@@ -242,14 +242,15 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         public SimpleBuilder tag(String... tags) {
             Arrays.stream(tags).forEach(Identifier::assertValid);
             this.tags = Arrays.asList(tags);
-            ListTag<StringTag> list = nbt.getCompound("components").getList("item_tags", StringTag.class);
-            if (list == null) {
-                list = new ListTag<>();
-                nbt.getCompound("components").putList("item_tags", list);
+            CompoundTag components = nbt.getCompound("components");
+
+            ListTag<StringTag> tagList = new ListTag<>();
+            for (String tag : tags) {
+                tagList.add(new StringTag(tag));
             }
-            for (String s : tags) {
-                list.add(new StringTag(s));
-            }
+
+            components.putList("item_tags", tagList);
+            components.putCompound("minecraft:tags", new CompoundTag().putList("tags", tagList));
             return this;
         }
 
@@ -342,10 +343,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             return calculateID();
         }
 
-        public CompoundTag previewNbt() {
-            return calculateID().getNbt();
-        }
-
         /**
          * Block Placer and Minecraft Icon should not coexist, the calculateID now checks for
          * <p>
@@ -380,14 +377,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                 components.putCompound("minecraft:use_modifiers", new CompoundTag()
                         .putFloat("movement_modifier", useModifierMovement)
                         .putFloat("use_duration", useModifierDuration));
-            }
-
-            if (tags != null && !tags.isEmpty()) {
-                ListTag<StringTag> tagList = new ListTag<>();
-                for (String tag : tags) {
-                    tagList.add(new StringTag(tag));
-                }
-                components.putCompound("minecraft:tags", new CompoundTag().putList("tags", tagList));
             }
 
             var result = new CustomItemDefinition(identifier, nbt);
