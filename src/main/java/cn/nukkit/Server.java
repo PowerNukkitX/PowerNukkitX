@@ -907,11 +907,6 @@ public class Server {
         ++this.tickCounter;
         this.network.processInterfaces();
 
-        players.values().forEach(player -> {
-            player.getSession().tick();
-            player.checkNetwork();
-        });
-
         this.getScheduler().mainThreadHeartbeat(this.tickCounter);
 
         this.checkTickUpdates(this.tickCounter);
