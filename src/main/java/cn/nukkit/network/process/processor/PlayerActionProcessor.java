@@ -84,6 +84,9 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
             case PlayerActionPacket.ACTION_DROP_ITEM -> {
                 //TODO
             }
+            case PlayerActionPacket.ACTION_START_SLEEPING -> {
+
+            }
             case PlayerActionPacket.ACTION_STOP_SLEEPING -> player.stopSleep();
             case PlayerActionPacket.ACTION_RESPAWN -> {
                 if (!player.spawned || player.isAlive() || !player.isOnline()) {
