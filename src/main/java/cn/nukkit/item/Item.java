@@ -976,6 +976,24 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
+     * Specifies the percentage chance of this item losing durability. Default is set to 100. Defined as an int range with min and max value.
+     * <p>
+     * getDamageChanceMin() and getDamageChanceMax()
+     */
+    public int getDamageChanceMin() {
+        return 100;
+    }
+
+    /**
+     * Specifies the percentage chance of this item losing durability. Default is set to 100. Defined as an int range with min and max value.
+     * <p>
+     * getDamageChanceMin() and getDamageChanceMax()
+     */
+    public int getDamageChanceMax() {
+        return 100;
+    }
+
+    /**
      * 定义物品的挖掘等级
      * <p>
      * Define the item Tier level

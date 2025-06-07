@@ -219,18 +219,25 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
             }
         }
 
-        if (armor.isUnbreakable() || armor.getMaxDurability() < 0) {
-            return armor;
+        if (shouldDamageArmor(armor)) {
+            armor.setDamage(armor.getDamage() + 1);
         }
 
-        armor.setDamage(armor.getDamage() + 1);
-
-        if (armor.getDamage() >= armor.getMaxDurability()) {
+        if (armor.getMaxDurability() > 0 && armor.getDamage() >= armor.getMaxDurability()) {
             getLevel().addSound(this, Sound.RANDOM_BREAK);
             return Item.get(BlockID.AIR, 0, 0);
         }
 
         return armor;
+    }
+
+    public boolean shouldDamageArmor(Item armor) {
+        if (armor.isUnbreakable() || armor.getMaxDurability() <= 0) return false;
+
+        int min = armor.getDamageChanceMin();
+        int max = armor.getDamageChanceMax();
+        int chance = (min == max) ? min : ThreadLocalRandom.current().nextInt(min, max + 1);
+        return ThreadLocalRandom.current().nextInt(100) < chance;
     }
 
     @Override
