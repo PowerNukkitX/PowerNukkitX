@@ -289,31 +289,38 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
             }
         }
 
-        if (event.getCause() != EntityDamageEvent.DamageCause.VOID &&
+        if (shouldDamageArmor(armor) &&
+                event.getCause() != EntityDamageEvent.DamageCause.VOID &&
                 event.getCause() != EntityDamageEvent.DamageCause.MAGIC &&
                 event.getCause() != EntityDamageEvent.DamageCause.HUNGER &&
                 event.getCause() != EntityDamageEvent.DamageCause.DROWNING &&
                 event.getCause() != EntityDamageEvent.DamageCause.SUFFOCATION &&
                 event.getCause() != EntityDamageEvent.DamageCause.SUICIDE &&
                 event.getCause() != EntityDamageEvent.DamageCause.FIRE_TICK &&
-                event.getCause() != EntityDamageEvent.DamageCause.FALL) { // No armor damage
+                event.getCause() != EntityDamageEvent.DamageCause.FALL) {
 
-            if (armor.isUnbreakable() || armor.getMaxDurability() < 0) {
-                return armor;
+            if (armor instanceof ItemShield) {
+                armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
+            } else {
+                armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
             }
 
-            if (armor instanceof ItemShield)
-                armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
-            else
-                armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
-
-            if (armor.getDamage() >= armor.getMaxDurability()) {
+            if (armor.getMaxDurability() > 0 && armor.getDamage() >= armor.getMaxDurability()) {
                 getLevel().addSound(this, Sound.RANDOM_BREAK);
                 return Item.get(BlockID.AIR, 0, 0);
             }
         }
 
         return armor;
+    }
+
+    public boolean shouldDamageArmor(Item armor) {
+        if (armor.isUnbreakable() || armor.getMaxDurability() <= 0) return false;
+
+        int min = armor.getDamageChanceMin();
+        int max = armor.getDamageChanceMax();
+        int chance = (min == max) ? min : ThreadLocalRandom.current().nextInt(min, max + 1);
+        return ThreadLocalRandom.current().nextInt(100) < chance;
     }
 
     @Override
