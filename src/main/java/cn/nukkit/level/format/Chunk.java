@@ -643,7 +643,7 @@ public class Chunk implements IChunk {
         if (provider == null) {
             return true;
         }
-        if (save && this.changes.get() != 0) {
+        if (save && this.changes.get() != 0 && isInit) {
             provider.saveChunk(this.getX(), this.getZ());
         }
         if (safe) {
@@ -681,10 +681,14 @@ public class Chunk implements IChunk {
                         changed = true;
                         continue;
                     }
-                    Entity entity = Entity.createEntity(nbt.getString("identifier"), this, nbt);
-                    if (entity != null) {
-                        changed = true;
-                    }
+                   try {
+                       Entity entity = Entity.createEntity(nbt.getString("identifier"), this, nbt);
+                       if (entity != null) {
+                           changed = true;
+                       }
+                   } catch (Exception e) {
+                       log.error("Failed to spawn blockentity", e);
+                   }
                 }
                 this.entityNBT = null;
             }
@@ -694,10 +698,12 @@ public class Chunk implements IChunk {
                     if (nbt != null) {
                         if (!nbt.contains("id")) {
                             changed = true;
+                            log.warn("BlockEntity tag without id");
                             continue;
                         }
                         if ((nbt.getInt("x") >> 4) != this.getX() || ((nbt.getInt("z") >> 4) != this.getZ())) {
                             changed = true;
+                            log.warn("BlockEntity tag position does not match chunk!");
                             continue;
                         }
                         BlockEntity blockEntity = BlockEntity.createBlockEntity(nbt.getString("id"), this, nbt);
@@ -714,6 +720,11 @@ public class Chunk implements IChunk {
 
             this.isInit = true;
         }
+    }
+
+    @Override
+    public boolean isInitiated() {
+        return isInit;
     }
 
     @Override
