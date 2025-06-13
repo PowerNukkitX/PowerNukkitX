@@ -4,7 +4,7 @@
 
 <p align="center">
     <a href="https://powernukkitx.com">
-      <img src="https://www.powernukkitx.com/assets/image/PNX_LOGO_sm.png" width=20%>
+      <img src="https://docs.powernukkitx.org/img/PNX_LOGO_sm.png" width=20%>
     </a>
     <p align="center">
         <strong>
