@@ -21,6 +21,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 /**
  * @author CreeperFace
  */
+@Slf4j
 public abstract class BlockPistonBase extends BlockTransparent implements Faceable, RedstoneComponent, BlockEntityHolder<BlockEntityPistonArm> {
     public boolean sticky = false;
 
@@ -133,7 +135,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED || type == Level.BLOCK_UPDATE_NORMAL) {
             if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone())
                 return 0;
-            level.scheduleUpdate(this, 2);
+            level.scheduleUpdate(this, 0);
             return type;
         }
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
