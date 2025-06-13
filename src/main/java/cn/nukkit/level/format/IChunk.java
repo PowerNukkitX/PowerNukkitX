@@ -227,6 +227,8 @@ public interface IChunk {
      */
     void initChunk();
 
+    boolean isInitiated();
+
     short[] getHeightMapArray();
 
     CompoundTag getExtraData();
