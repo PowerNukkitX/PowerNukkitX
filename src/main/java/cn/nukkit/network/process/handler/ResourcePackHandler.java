@@ -28,6 +28,7 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
         ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
         infoPacket.resourcePackEntries = session.getServer().getResourcePackManager().getResourceStack();
         infoPacket.mustAccept = session.getServer().getForceResources();
+        infoPacket.disableVibrantVisuals = !session.getServer().allowVibrantVisuals();
         infoPacket.worldTemplateId = UUID.randomUUID();
         infoPacket.worldTemplateVersion = "";
         session.sendPacket(infoPacket);

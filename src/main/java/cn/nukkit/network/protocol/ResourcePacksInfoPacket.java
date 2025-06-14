@@ -19,6 +19,11 @@ public class ResourcePacksInfoPacket extends DataPacket {
     public boolean scripting;
 
     /**
+     * @since v818
+     */
+    public boolean disableVibrantVisuals;
+
+    /**
      * @since v766
      */
     public UUID worldTemplateId;

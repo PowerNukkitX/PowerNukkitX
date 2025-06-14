@@ -17,7 +17,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelEventPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
@@ -65,7 +65,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
             }
             // If a sign is waxed, it cannot be modified.
             if (sign.isWaxed() || (Objects.requireNonNull(player).isSneaking() && !Objects.equals(item.getId(), AIR))) {
-                level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_WAXED_SIGN_INTERACT_FAIL);
+                level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEvent.WAXED_SIGN_INTERACT_FAIL);
                 return;
             }
             boolean front = switch (getSignDirection()) {

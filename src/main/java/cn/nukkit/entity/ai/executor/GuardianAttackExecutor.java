@@ -12,7 +12,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Location;
 import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 
 public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor {
     protected MemoryType<? extends Entity> memory;
@@ -125,7 +125,7 @@ public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor 
 
     private void startSequence(Entity entity) {
         entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
-        entity.level.addLevelSoundEvent(entity, LevelSoundEventPacket.SOUND_MOB_WARNING, -1, entity.getIdentifier(), false, false);
+        entity.level.addLevelSoundEvent(entity, LevelSoundEvent.MOB_WARNING, -1, entity.getIdentifier(), false, false);
     }
 
     private void endSequence(Entity entity) {

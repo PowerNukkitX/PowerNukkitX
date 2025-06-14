@@ -3,7 +3,6 @@ package cn.nukkit;
 import cn.nukkit.AdventureSettings.Type;
 import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockBed;
 import cn.nukkit.block.BlockEndPortal;
 import cn.nukkit.block.BlockID;
@@ -54,7 +53,6 @@ import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.window.Form;
-import cn.nukkit.inventory.BundleInventory;
 import cn.nukkit.inventory.CraftTypeInventory;
 import cn.nukkit.inventory.CraftingGridInventory;
 import cn.nukkit.inventory.CreativeOutputInventory;
@@ -63,7 +61,6 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.PlayerCursorInventory;
 import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.inventory.fake.FakeInventory;
-import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemArrow;
@@ -105,12 +102,7 @@ import cn.nukkit.network.connection.BedrockDisconnectReasons;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.CommandOriginData;
-import cn.nukkit.network.protocol.types.CommandOutputType;
-import cn.nukkit.network.protocol.types.GameType;
-import cn.nukkit.network.protocol.types.PlayerBlockActionData;
-import cn.nukkit.network.protocol.types.PlayerInfo;
-import cn.nukkit.network.protocol.types.SpawnPointType;
+import cn.nukkit.network.protocol.types.*;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
@@ -473,7 +465,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         Block block = target.getSide(face);
         if (block.getId().equals(Block.FIRE) || block.getId().equals(BlockID.SOUL_FIRE)) {
             this.level.setBlock(block, Block.get(BlockID.AIR), true);
-            this.level.addLevelSoundEvent(block, LevelSoundEventPacket.SOUND_EXTINGUISH_FIRE);
+            this.level.addLevelSoundEvent(block, LevelSoundEvent.EXTINGUISH_FIRE);
             return;
         }
 
@@ -3965,7 +3957,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.lastPlayerdLevelUpSoundTime = this.age;
             this.level.addLevelSoundEvent(
                     this,
-                    LevelSoundEventPacket.SOUND_LEVELUP,
+                    LevelSoundEvent.LEVEL_UP,
                     Math.min(7, level / 5) << 28,
                     "",
                     false, false

@@ -27,7 +27,7 @@ import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -83,9 +83,9 @@ public class EntityHusk extends EntityZombie {
         super.initEntity();
         this.setDataProperty(Entity.AMBIENT_SOUND_INTERVAL, 8);
         this.setDataProperty(Entity.AMBIENT_SOUND_INTERVAL_RANGE, 16);
-        this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT);
+        this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT);
         if (this.isBaby()) {
-            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT_BABY);
+            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT_BABY);
         }
     }
 

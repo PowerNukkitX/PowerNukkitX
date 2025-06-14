@@ -2726,6 +2726,10 @@ public class Server {
         return computeThreadPool;
     }
 
+    public boolean allowVibrantVisuals() {
+        return settings.gameplaySettings().allowVibrantVisuals();
+    }
+
     //todo NukkitConsole 会阻塞关不掉
     private class ConsoleThread extends Thread implements InterruptibleThread {
         public ConsoleThread() {

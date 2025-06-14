@@ -130,6 +130,11 @@ public class StartGamePacket extends DataPacket {
      * @since v685
      */
     private String scenarioId = "";
+    /**
+     * @since v818
+     */
+    private String ownerIdentifier = "";
+
     @Override
     public void decode(HandleByteBuf byteBuf) {
 
@@ -257,6 +262,7 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeString(serverId);
         byteBuf.writeString(worldId);
         byteBuf.writeString(scenarioId);
+        byteBuf.writeString(ownerIdentifier);
         /* Level settings end */
     }
 

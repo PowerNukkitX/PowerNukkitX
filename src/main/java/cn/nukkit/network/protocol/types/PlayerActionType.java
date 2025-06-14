@@ -55,8 +55,11 @@ public enum PlayerActionType {
     STOP_FLYING,
     /**
      * @since v622
+     * @deprecated v818
+     * Used to be RECEIVED_SERVER_DATA
      */
-    RECEIVED_SERVER_DATA,
+    @Deprecated
+    DEPRECATED_ClientAckServerData,
     /**
      * @since v766
      */
