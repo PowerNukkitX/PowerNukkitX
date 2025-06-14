@@ -17,7 +17,7 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
     @Override
     protected void initBlockEntity() {
         super.initBlockEntity();
-        this.spawnToAll();
+        //this.spawnToAll();
     }
 
     public CompoundTag getSpawnCompound() {

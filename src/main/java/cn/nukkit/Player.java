@@ -1290,6 +1290,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
         this.spawnToAll();
         Arrays.stream(this.level.getEntities()).filter(entity -> entity.getViewers().containsKey(this.getLoaderId()) && entity instanceof EntityBoss).forEach(entity -> ((EntityBoss) entity).addBossbar(this));
+        this.refreshBlockEntity(chunk);
     }
 
     /**
@@ -2229,12 +2230,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 if (this != entity && !entity.closed && entity.isAlive()) {
                     entity.spawnTo(this);
                 }
-            }
-        }
-
-        for(BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
-            if(entity instanceof BlockEntitySpawnable spawnable) {
-                spawnable.spawnTo(this);
             }
         }
 
@@ -4320,6 +4315,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (switchLevel) {
             refreshChunkRender();
+            refreshBlockEntity(chunk);
         }
         this.resetFallDistance();
         //DummyBossBar
@@ -4337,10 +4333,45 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return true;
     }
 
+    public void refreshBlockEntity(@Nullable IChunk chunk) {
+        Collection<BlockEntity> blockEntities;
+        if (chunk == null) {
+            blockEntities = this.level.getBlockEntities().values();
+        } else {
+            blockEntities = chunk.getBlockEntities().values();
+        }
+        getLevel().getScheduler().scheduleDelayedTask(
+                InternalPlugin.INSTANCE, () -> {
+                    for (var blockEntity : blockEntities) {
+                        if (blockEntity == null) continue;
+
+                        if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
+                            UpdateBlockPacket setAir = new UpdateBlockPacket();
+                            setAir.blockRuntimeId = BlockAir.STATE.blockStateHash();
+                            setAir.flags = UpdateBlockPacket.FLAG_NETWORK;
+                            setAir.x = blockEntity.getFloorX();
+                            setAir.y = blockEntity.getFloorY();
+                            setAir.z = blockEntity.getFloorZ();
+                            this.dataPacket(setAir);
+
+                            UpdateBlockPacket revertAir = new UpdateBlockPacket();
+                            revertAir.blockRuntimeId = blockEntity.getBlock().getRuntimeId();
+                            revertAir.flags = UpdateBlockPacket.FLAG_NETWORK;
+                            revertAir.x = blockEntity.getFloorX();
+                            revertAir.y = blockEntity.getFloorY();
+                            revertAir.z = blockEntity.getFloorZ();
+                            this.dataPacket(revertAir);
+
+                            blockEntitySpawnable.spawnTo(this);
+                        }
+                    }
+                }, 40, true);
+    }
+
     public void refreshChunkRender() {
         final int origin = getViewDistance();
         this.setViewDistance(1);
-        this.setViewDistance(32);
+        this.setViewDistance(Server.getInstance().getViewDistance());
         this.setViewDistance(origin);
     }
 
@@ -4617,6 +4648,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public int addWindow(@NotNull Inventory inventory, Integer forceId) {
+        if(inventoryOpen) return -1;
+        removeAllWindows();
         Preconditions.checkNotNull(inventory);
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
@@ -5059,10 +5092,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         int tick = this.getLevel().getTick();
-        if (pickedXPOrb < tick && entity instanceof EntityXpOrb xpOrb && this.boundingBox.isVectorInside(entity)) {
+        if (pickedXPOrb < tick && entity instanceof EntityXpOrb xpOrb) {
             if (xpOrb.getPickupDelay() <= 0) {
                 int exp = xpOrb.getExp();
-                entity.kill();
+                entity.close();
                 this.getLevel().addLevelEvent(LevelEventPacket.EVENT_SOUND_EXPERIENCE_ORB_PICKUP, 0, this);
                 pickedXPOrb = tick;
 
@@ -5070,7 +5103,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 ArrayList<Integer> itemsWithMending = new ArrayList<>();
                 for (int i = 0; i < 4; i++) {
                     if (inventory.getArmorItem(i).hasEnchantment(Enchantment.ID_MENDING)) {
-                        itemsWithMending.add(inventory.getSize() + i);
+                        itemsWithMending.add(HumanInventory.ARMORS_INDEX + i);
                     }
                 }
                 if (inventory.getItemInHand().hasEnchantment(Enchantment.ID_MENDING)) {
