@@ -3,7 +3,9 @@ package cn.nukkit.utils;
 import cn.nukkit.Server;
 import cn.nukkit.network.connection.util.EncryptionUtils;
 import cn.nukkit.network.protocol.LoginPacket;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.lang.JoseException;
@@ -271,21 +273,13 @@ public final class ClientChainData implements LoginChainData {
     }
 
     private void decodeChainData() {
-        Map<String, List<String>> map = JSONUtils.from(new String(bs.get(bs.getLInt()), StandardCharsets.UTF_8),
-                new TypeToken<Map<String, List<String>>>() {
-                }.getType());
-        if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty()) return;
-        List<String> chains = map.get("chain");
-
-        // Validate keys
-        try {
-            xboxAuthed = verifyChain(chains);
-        } catch (Exception e) {
-            xboxAuthed = false;
-        }
-
-        for (String c : chains) {
-            JsonObject chainMap = decodeToken(c);
+        String chainData = new String(bs.get(bs.getLInt()), StandardCharsets.UTF_8);
+        JsonObject jwt = JsonParser.parseString(chainData).getAsJsonObject();
+        String certificateRaw = jwt.get("Certificate").getAsString();
+        JsonObject certificate = JsonParser.parseString(certificateRaw).getAsJsonObject();
+        JsonArray chain = certificate.get("chain").getAsJsonArray();
+        for(int i = 0; i < chain.size(); i++) {
+            JsonObject chainMap = decodeToken(chain.get(i).getAsString());
             if (chainMap == null) continue;
             if (chainMap.has("extraData")) {
                 JsonObject extra = chainMap.get("extraData").getAsJsonObject();

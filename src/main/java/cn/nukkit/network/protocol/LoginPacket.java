@@ -9,8 +9,10 @@ import cn.nukkit.utils.PersonaPieceTint;
 import cn.nukkit.utils.SerializedImage;
 import cn.nukkit.utils.SkinAnimation;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import lombok.*;
 
@@ -63,13 +65,13 @@ public class LoginPacket extends DataPacket {
     }
 
     private void decodeChainData(BinaryStream binaryStream) {
-        Map<String, List<String>> map = JSONUtils.from(new String(binaryStream.get(binaryStream.getLInt()), StandardCharsets.UTF_8),
-                new TypeToken<Map<String, List<String>>>() {
-                });
-        if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty()) return;
-        List<String> chains = map.get("chain");
-        for (String c : chains) {
-            JsonObject chainMap = decodeToken(c);
+        String chainData = new String(binaryStream.get(binaryStream.getLInt()), StandardCharsets.UTF_8);
+        JsonObject jwt = JsonParser.parseString(chainData).getAsJsonObject();
+        String certificateRaw = jwt.get("Certificate").getAsString();
+        JsonObject certificate = JsonParser.parseString(certificateRaw).getAsJsonObject();
+        JsonArray chain = certificate.get("chain").getAsJsonArray();
+        for(int i = 0; i < chain.size(); i++) {
+            JsonObject chainMap = decodeToken(chain.get(i).getAsString());
             if (chainMap == null) continue;
             if (chainMap.has("extraData")) {
                 if (chainMap.has("iat")) {
