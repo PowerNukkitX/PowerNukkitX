@@ -44,6 +44,7 @@ public class ResourcePacksInfoPacket extends DataPacket {
         byteBuf.writeBoolean(this.mustAccept);
         byteBuf.writeBoolean(this.hasAddonPacks);
         byteBuf.writeBoolean(this.scripting);
+        byteBuf.writeBoolean(this.disableVibrantVisuals);
         byteBuf.writeUUID(this.worldTemplateId);
         byteBuf.writeString(this.worldTemplateVersion);
         this.encodePacks(byteBuf, this.resourcePackEntries, false);
