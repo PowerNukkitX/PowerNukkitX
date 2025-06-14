@@ -153,7 +153,6 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeString(this.worldName);
         byteBuf.writeString(this.premiumWorldTemplateId);
         byteBuf.writeBoolean(this.isTrial);
-        byteBuf.writeVarInt(Objects.requireNonNullElseGet(this.serverAuthoritativeMovement, () -> this.isMovementServerAuthoritative ? 1 : 0));// 2 - rewind
         byteBuf.writeVarInt(0); // RewindHistorySize
         if (this.serverAuthoritativeMovement != null) {
             byteBuf.writeBoolean(this.serverAuthoritativeMovement > 0); // isServerAuthoritativeBlockBreaking
