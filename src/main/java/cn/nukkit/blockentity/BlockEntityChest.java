@@ -63,10 +63,6 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     @Override
     public BaseInventory getInventory() {
-        if (this.doubleInventory == null && this.isPaired()) {
-            this.checkPairing();
-        }
-
         return this.doubleInventory != null ? this.doubleInventory : this.inventory;
     }
 
