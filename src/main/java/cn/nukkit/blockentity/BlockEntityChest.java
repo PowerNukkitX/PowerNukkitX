@@ -46,6 +46,12 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     @Override
+    protected void initBlockEntity() {
+        super.initBlockEntity();
+        this.getLevel().getScheduler().scheduleTask(this::checkPairing);
+    }
+
+    @Override
     public boolean isBlockEntityValid() {
         String blockID = this.getBlock().getId();
         return blockID.equals(Block.CHEST) || blockID.equals(Block.TRAPPED_CHEST);
