@@ -14,9 +14,6 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 public class CreativeContentPacket extends DataPacket {
-    private final List<CreativeItemGroup> groups = new ObjectArrayList<>();
-    private final List<CreativeItemData> contents = new ObjectArrayList<>();
-
     @Override
     public void decode(HandleByteBuf byteBuf) {
 

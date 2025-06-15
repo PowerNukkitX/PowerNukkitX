@@ -457,7 +457,7 @@
     },
     {
         "name": "minecraft:banner_pattern",
-        "id": 795,
+        "id": 813,
         "version": 2,
         "componentBased": false
     },
@@ -726,6 +726,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:black_harness",
+        "id": 752,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:black_shulker_box",
         "id": -627,
         "version": 2,
@@ -876,6 +882,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:blue_harness",
+        "id": 753,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:blue_ice",
         "id": -11,
         "version": 2,
@@ -925,7 +937,7 @@
     },
     {
         "name": "minecraft:boat",
-        "id": 793,
+        "id": 811,
         "version": 2,
         "componentBased": false
     },
@@ -1140,6 +1152,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:brown_harness",
+        "id": 754,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:brown_mushroom",
         "id": 39,
         "version": 2,
@@ -1309,7 +1327,7 @@
     },
     {
         "name": "minecraft:carpet",
-        "id": 752,
+        "id": 769,
         "version": 2,
         "componentBased": false
     },
@@ -1435,7 +1453,7 @@
     },
     {
         "name": "minecraft:chemistry_table",
-        "id": 787,
+        "id": 805,
         "version": 2,
         "componentBased": false
     },
@@ -1837,7 +1855,7 @@
     },
     {
         "name": "minecraft:colored_torch_bp",
-        "id": 791,
+        "id": 809,
         "version": 2,
         "componentBased": false
     },
@@ -1861,7 +1879,7 @@
     },
     {
         "name": "minecraft:colored_torch_rg",
-        "id": 790,
+        "id": 808,
         "version": 2,
         "componentBased": false
     },
@@ -1909,13 +1927,13 @@
     },
     {
         "name": "minecraft:concrete",
-        "id": 778,
+        "id": 795,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:concrete_powder",
-        "id": 779,
+        "id": 796,
         "version": 2,
         "componentBased": false
     },
@@ -2017,25 +2035,25 @@
     },
     {
         "name": "minecraft:coral",
-        "id": 774,
+        "id": 791,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:coral_block",
-        "id": 756,
+        "id": 773,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:coral_fan",
-        "id": 765,
+        "id": 782,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:coral_fan_dead",
-        "id": 766,
+        "id": 783,
         "version": 2,
         "componentBased": false
     },
@@ -2348,6 +2366,12 @@
     {
         "name": "minecraft:cyan_glazed_terracotta",
         "id": 229,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:cyan_harness",
+        "id": 755,
         "version": 2,
         "componentBased": false
     },
@@ -2983,31 +3007,31 @@
     },
     {
         "name": "minecraft:double_plant",
-        "id": 772,
+        "id": 789,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:double_stone_block_slab",
-        "id": 761,
+        "id": 778,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:double_stone_block_slab2",
-        "id": 762,
+        "id": 779,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:double_stone_block_slab3",
-        "id": 763,
+        "id": 780,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:double_stone_block_slab4",
-        "id": 764,
+        "id": 781,
         "version": 2,
         "componentBased": false
     },
@@ -3026,6 +3050,12 @@
     {
         "name": "minecraft:dragon_head",
         "id": -969,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:dried_ghast",
+        "id": -1027,
         "version": 2,
         "componentBased": false
     },
@@ -3067,7 +3097,7 @@
     },
     {
         "name": "minecraft:dye",
-        "id": 794,
+        "id": 812,
         "version": 2,
         "componentBased": false
     },
@@ -3871,7 +3901,7 @@
     },
     {
         "name": "minecraft:end_crystal",
-        "id": 797,
+        "id": 815,
         "version": 2,
         "componentBased": false
     },
@@ -4057,7 +4087,7 @@
     },
     {
         "name": "minecraft:fence",
-        "id": 754,
+        "id": 771,
         "version": 2,
         "componentBased": false
     },
@@ -4309,7 +4339,7 @@
     },
     {
         "name": "minecraft:glow_berries",
-        "id": 798,
+        "id": 816,
         "version": 0,
         "componentBased": false
     },
@@ -4572,6 +4602,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:gray_harness",
+        "id": 756,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:gray_shulker_box",
         "id": -619,
         "version": 2,
@@ -4650,6 +4686,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:green_harness",
+        "id": 757,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:green_shulker_box",
         "id": -625,
         "version": 2,
@@ -4712,6 +4754,12 @@
     {
         "name": "minecraft:hanging_roots",
         "id": -319,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:happy_ghast_spawn_egg",
+        "id": 751,
         "version": 2,
         "componentBased": false
     },
@@ -4897,13 +4945,13 @@
     },
     {
         "name": "minecraft:hard_stained_glass",
-        "id": 788,
+        "id": 806,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:hard_stained_glass_pane",
-        "id": 789,
+        "id": 807,
         "version": 2,
         "componentBased": false
     },
@@ -5665,13 +5713,13 @@
     },
     {
         "name": "minecraft:leaves",
-        "id": 768,
+        "id": 785,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:leaves2",
-        "id": 769,
+        "id": 786,
         "version": 2,
         "componentBased": false
     },
@@ -5689,7 +5737,7 @@
     },
     {
         "name": "minecraft:light_block",
-        "id": 792,
+        "id": 810,
         "version": 2,
         "componentBased": false
     },
@@ -5838,6 +5886,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:light_blue_harness",
+        "id": 758,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:light_blue_shulker_box",
         "id": -615,
         "version": 2,
@@ -5906,6 +5960,12 @@
     {
         "name": "minecraft:light_gray_dye",
         "id": 428,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:light_gray_harness",
+        "id": 759,
         "version": 2,
         "componentBased": false
     },
@@ -6012,6 +6072,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:lime_harness",
+        "id": 760,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:lime_shulker_box",
         "id": -617,
         "version": 2,
@@ -6109,13 +6175,13 @@
     },
     {
         "name": "minecraft:log",
-        "id": 753,
+        "id": 770,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:log2",
-        "id": 776,
+        "id": 793,
         "version": 2,
         "componentBased": false
     },
@@ -6176,6 +6242,12 @@
     {
         "name": "minecraft:magenta_glazed_terracotta",
         "id": 222,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:magenta_harness",
+        "id": 761,
         "version": 2,
         "componentBased": false
     },
@@ -6427,7 +6499,7 @@
     },
     {
         "name": "minecraft:monster_egg",
-        "id": 777,
+        "id": 794,
         "version": 2,
         "componentBased": false
     },
@@ -6619,13 +6691,13 @@
     },
     {
         "name": "minecraft:music_disc_creator",
-        "id": 784,
+        "id": 801,
         "version": 2,
         "componentBased": true
     },
     {
         "name": "minecraft:music_disc_creator_music_box",
-        "id": 785,
+        "id": 802,
         "version": 2,
         "componentBased": true
     },
@@ -6661,7 +6733,7 @@
     },
     {
         "name": "minecraft:music_disc_precipice",
-        "id": 786,
+        "id": 803,
         "version": 2,
         "componentBased": true
     },
@@ -6680,6 +6752,12 @@
     {
         "name": "minecraft:music_disc_strad",
         "id": 575,
+        "version": 2,
+        "componentBased": true
+    },
+    {
+        "name": "minecraft:music_disc_tears",
+        "id": 804,
         "version": 2,
         "componentBased": true
     },
@@ -7080,6 +7158,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:orange_harness",
+        "id": 762,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:orange_shulker_box",
         "id": -613,
         "version": 2,
@@ -7476,6 +7560,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:pink_harness",
+        "id": 763,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:pink_petals",
         "id": -549,
         "version": 2,
@@ -7549,7 +7639,7 @@
     },
     {
         "name": "minecraft:planks",
-        "id": 773,
+        "id": 790,
         "version": 2,
         "componentBased": false
     },
@@ -8028,6 +8118,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:purple_harness",
+        "id": 764,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:purple_shulker_box",
         "id": -622,
         "version": 2,
@@ -8275,13 +8371,19 @@
     },
     {
         "name": "minecraft:red_flower",
-        "id": 771,
+        "id": 788,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:red_glazed_terracotta",
         "id": 234,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:red_harness",
+        "id": 765,
         "version": 2,
         "componentBased": false
     },
@@ -8593,7 +8695,7 @@
     },
     {
         "name": "minecraft:sapling",
-        "id": 767,
+        "id": 784,
         "version": 2,
         "componentBased": false
     },
@@ -8719,7 +8821,7 @@
     },
     {
         "name": "minecraft:shulker_box",
-        "id": 782,
+        "id": 799,
         "version": 2,
         "componentBased": false
     },
@@ -9019,7 +9121,7 @@
     },
     {
         "name": "minecraft:spawn_egg",
-        "id": 796,
+        "id": 814,
         "version": 2,
         "componentBased": false
     },
@@ -9193,13 +9295,13 @@
     },
     {
         "name": "minecraft:stained_glass",
-        "id": 780,
+        "id": 797,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:stained_glass_pane",
-        "id": 781,
+        "id": 798,
         "version": 2,
         "componentBased": false
     },
@@ -9253,25 +9355,25 @@
     },
     {
         "name": "minecraft:stone_block_slab",
-        "id": 757,
+        "id": 774,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:stone_block_slab2",
-        "id": 758,
+        "id": 775,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:stone_block_slab3",
-        "id": 759,
+        "id": 776,
         "version": 2,
         "componentBased": false
     },
     {
         "name": "minecraft:stone_block_slab4",
-        "id": 760,
+        "id": 777,
         "version": 2,
         "componentBased": false
     },
@@ -9349,7 +9451,7 @@
     },
     {
         "name": "minecraft:stonebrick",
-        "id": 755,
+        "id": 772,
         "version": 2,
         "componentBased": false
     },
@@ -9607,7 +9709,7 @@
     },
     {
         "name": "minecraft:tallgrass",
-        "id": 775,
+        "id": 792,
         "version": 2,
         "componentBased": false
     },
@@ -10494,6 +10596,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:white_harness",
+        "id": 766,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:white_shulker_box",
         "id": 218,
         "version": 2,
@@ -10591,7 +10699,7 @@
     },
     {
         "name": "minecraft:wood",
-        "id": 783,
+        "id": 800,
         "version": 2,
         "componentBased": false
     },
@@ -10639,7 +10747,7 @@
     },
     {
         "name": "minecraft:wooden_slab",
-        "id": 770,
+        "id": 787,
         "version": 2,
         "componentBased": false
     },
@@ -10651,7 +10759,7 @@
     },
     {
         "name": "minecraft:wool",
-        "id": 751,
+        "id": 768,
         "version": 2,
         "componentBased": false
     },
@@ -10712,6 +10820,12 @@
     {
         "name": "minecraft:yellow_glazed_terracotta",
         "id": 224,
+        "version": 2,
+        "componentBased": false
+    },
+    {
+        "name": "minecraft:yellow_harness",
+        "id": 767,
         "version": 2,
         "componentBased": false
     },

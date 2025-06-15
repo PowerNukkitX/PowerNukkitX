@@ -617,6 +617,8 @@ public interface ItemID {
 
     String MUSIC_DISC_WARD = "minecraft:music_disc_ward";
 
+    String MUSIC_DISC_TEARS = "minecraft:music_disc_tears";
+
     String MUTTON = "minecraft:mutton";
 
     String NAME_TAG = "minecraft:name_tag";
@@ -1030,4 +1032,24 @@ public interface ItemID {
     String ZOMBIE_SPAWN_EGG = "minecraft:zombie_spawn_egg";
 
     String ZOMBIE_VILLAGER_SPAWN_EGG = "minecraft:zombie_villager_spawn_egg";
+
+    String HAPPY_GHAST_SPAWN_EGG = "minecraft:happy_ghast_spawn_egg";
+
+    String HARNESS_WHITE = "minecraft:white_harness";
+    String HARNESS_ORANGE = "minecraft:orange_harness";
+    String HARNESS_MAGENTA = "minecraft:magenta_harness";
+    String HARNESS_LIGHT_BLUE = "minecraft:light_blue_harness";
+    String HARNESS_YELLOW = "minecraft:yellow_harness";
+    String HARNESS_LIME = "minecraft:lime_harness";
+    String HARNESS_PINK = "minecraft:pink_harness";
+    String HARNESS_GRAY = "minecraft:gray_harness";
+    String HARNESS_LIGHT_GRAY = "minecraft:light_gray_harness";
+    String HARNESS_CYAN = "minecraft:cyan_harness";
+    String HARNESS_PURPLE = "minecraft:purple_harness";
+    String HARNESS_BLUE = "minecraft:blue_harness";
+    String HARNESS_BROWN = "minecraft:brown_harness";
+    String HARNESS_GREEN = "minecraft:green_harness";
+    String HARNESS_RED = "minecraft:red_harness";
+    String HARNESS_BLACK = "minecraft:black_harness";
+
 }

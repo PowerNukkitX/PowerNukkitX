@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.network.connection.util.EncryptionUtils;
 import cn.nukkit.network.protocol.LoginPacket;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
@@ -278,6 +279,15 @@ public final class ClientChainData implements LoginChainData {
         String certificateRaw = jwt.get("Certificate").getAsString();
         JsonObject certificate = JsonParser.parseString(certificateRaw).getAsJsonObject();
         JsonArray chain = certificate.get("chain").getAsJsonArray();
+
+        try {
+            xboxAuthed = verifyChain(chain.asList().stream()
+                    .map(JsonElement::getAsString)
+                    .toList());
+        } catch (Exception e) {
+            xboxAuthed = false;
+        }
+
         for(int i = 0; i < chain.size(); i++) {
             JsonObject chainMap = decodeToken(chain.get(i).getAsString());
             if (chainMap == null) continue;
