@@ -20,4 +20,9 @@ public class BlockDriedGhast extends BlockTransparent {
     public String getName() {
         return "Dried Ghast";
     }
+
+    @Override
+    public int getWaterloggingLevel() {
+        return 1;
+    }
 }
