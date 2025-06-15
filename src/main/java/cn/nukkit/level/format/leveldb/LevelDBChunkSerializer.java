@@ -66,15 +66,12 @@ public class LevelDBChunkSerializer {
                 serializeBlock(writeBatch, unsafeChunk);
                 serializeHeightAndBiome(writeBatch, unsafeChunk);
                 serializeLight(writeBatch, unsafeChunk);
+                serializeTileAndEntity(writeBatch, chunk);
                 writeBatch.put(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getDimensionData()), NBTIO.write(unsafeChunk.getExtraData()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
-        //Spawning block entities requires call the getSpawnPacket method,
-        //which is easy to call Level#getBlock, which can cause a deadlock,
-        //so handle it without locking
-        serializeTileAndEntity(writeBatch, chunk);
     }
 
     public void deserialize(DB db, IChunkBuilder builder) throws IOException {

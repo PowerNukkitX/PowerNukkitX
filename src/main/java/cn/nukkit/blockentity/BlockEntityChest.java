@@ -46,6 +46,12 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     @Override
+    protected void initBlockEntity() {
+        super.initBlockEntity();
+        this.getLevel().getScheduler().scheduleTask(this::checkPairing);
+    }
+
+    @Override
     public boolean isBlockEntityValid() {
         String blockID = this.getBlock().getId();
         return blockID.equals(Block.CHEST) || blockID.equals(Block.TRAPPED_CHEST);
@@ -57,10 +63,6 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     @Override
     public BaseInventory getInventory() {
-        if (this.doubleInventory == null && this.isPaired()) {
-            this.checkPairing();
-        }
-
         return this.doubleInventory != null ? this.doubleInventory : this.inventory;
     }
 
