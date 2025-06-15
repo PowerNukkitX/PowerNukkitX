@@ -59,7 +59,7 @@ public final class BlockTags {
 
     static {
         try {
-            try (var stream = Server.class.getClassLoader().getResourceAsStream("block_tags.json")) {
+            try (var stream = Server.class.getClassLoader().getResourceAsStream("gamedata/kaooot/block_tags.json")) {
                 TypeToken<HashMap<String, HashSet<String>>> typeToken = new TypeToken<>() {
                 };
                 assert stream != null;

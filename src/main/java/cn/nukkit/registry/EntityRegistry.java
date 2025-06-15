@@ -14,7 +14,6 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.types.camera.aimassist.CameraAimAssist;
 import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -487,7 +486,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     }
 
     public void rebuildTag() {
-        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("entity_identifiers.nbt")) {
+        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("gamedata/kaooot/entity_identifiers.nbt")) {
             if (inputStream == null) {
                 throw new AssertionError("Could not find entity_identifiers.nbt");
             }

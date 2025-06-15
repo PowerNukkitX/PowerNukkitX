@@ -17,7 +17,7 @@ public class BlockColor implements Cloneable {
     private static final CompoundTag tint_tag;
 
     static {
-        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("tint_map.nbt")) {
+        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/unknown/tint_map.nbt")) {
             tint_tag = NBTIO.readCompressed(stream);
         } catch (IOException e) {
             throw new RuntimeException(e);

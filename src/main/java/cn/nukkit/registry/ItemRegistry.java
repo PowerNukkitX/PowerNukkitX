@@ -581,7 +581,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     }
 
     private void loadItemComponents() {
-        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("item_components.nbt")) {
+        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/item_components.nbt")) {
             itemComponents = NBTIO.readCompressed(stream);
         } catch (IOException e) {
             throw new RuntimeException(e);

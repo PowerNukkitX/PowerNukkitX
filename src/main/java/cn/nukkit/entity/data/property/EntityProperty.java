@@ -30,7 +30,7 @@ public abstract class EntityProperty {
         this.identifier = identifier;
     }
     public static void init() {
-        try (var stream = EntityProperty.class.getClassLoader().getResourceAsStream("entity_properties.nbt")) {
+        try (var stream = EntityProperty.class.getClassLoader().getResourceAsStream("gamedata/proxypass/entity_properties.nbt")) {
             CompoundTag root = NBTIO.readCompressed(stream);
             root.getTags().values().forEach(uncast -> {
                 if(uncast instanceof CompoundTag tag) {
