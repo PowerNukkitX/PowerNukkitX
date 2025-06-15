@@ -27,5 +27,5 @@ public class ChunkSettings extends OkaeriConfig {
     @Comment("pnx.settings.chunk.generationqueuesize")
     int generationQueueSize = 128;
     @Comment("pnx.settings.chunk.checkfortickable")
-    boolean checkForTickable = true;
+    boolean checkForTickable = false;
 }

@@ -4,7 +4,7 @@
 
 <p align="center">
     <a href="https://powernukkitx.com">
-      <img src="https://www.powernukkitx.com/assets/image/PNX_LOGO_sm.png" width=20%>
+      <img src="https://docs.powernukkitx.org/img/PNX_LOGO_sm.png" width=20%>
     </a>
     <p align="center">
         <strong>
@@ -15,17 +15,14 @@
 
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://www.minecraft.net/en-us/article/minecraft-1-21-70-bedrock-changelog">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.70%20(Bedrock)-56383E" />
+   <a href="https://www.minecraft.net/en-us/article/minecraft-1-21-80-bedrock-changelog">
+      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.80%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
-      <img alt="Minecraft" src="https://img.shields.io/badge/protocol-786-blue" />
+      <img alt="Minecraft" src="https://img.shields.io/badge/protocol-800-blue" />
    </a>
    <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
-      <img alt="Action" src="https://github.com/PowerNukkitX/PowerNukkitX/actions/workflows/pnx.yml/badge.svg?branch=master" />
-   </a>
-   <a href="https://jitpack.io/#PowerNukkitX/PowerNukkitX" target="_blank">
-      <img alt="JitPack" src="https://jitpack.io/v/PowerNukkitX/PowerNukkitX.svg" />
+      <img alt="Action" src="https://img.shields.io/badge/action-all%20builds-FF9B21" />
    </a>
    <a href="https://discord.com/invite/XXus4FB6qf">
       <img alt="Discord" src="https://img.shields.io/discord/944227466912870410?label=discord&color=7289DA&logo=discord" />

@@ -7,10 +7,12 @@ import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.recipe.Input;
 import cn.nukkit.recipe.Recipe;
+import cn.nukkit.recipe.ShapedRecipe;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -125,9 +127,11 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
     }
 
     public Recipe getRecipe() {
-        Recipe recipe = Registries.RECIPE.findShapedRecipe(getInput());
+        Input input = getInput();
+        ShapedRecipe.tryShrinkMatrix(input);
+        Recipe recipe = Registries.RECIPE.findShapedRecipe(input);
         if(recipe != null) return recipe;
-        return Registries.RECIPE.findShapelessRecipe(getInput().getFlatItems());
+        return Registries.RECIPE.findShapelessRecipe(input.getFlatItems());
     }
 
     public int getLockedBitMask() {

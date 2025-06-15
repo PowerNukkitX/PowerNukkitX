@@ -116,26 +116,37 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
     public static class SimpleBuilder {
         protected final String identifier;
-        protected final CompoundTag nbt = new CompoundTag()
-                .putCompound("components", new CompoundTag()
-                        .putCompound("item_properties", new CompoundTag()
-                                .putCompound("minecraft:icon", new CompoundTag())));
+        protected final CompoundTag nbt = new CompoundTag();
         private final Item item;
         protected String texture;
         protected String name;
+        protected int maxStackSize = -1;
+        protected List<String> tags;
+        protected boolean makePersistent = false;
+        protected Float cooldownDuration;
+        protected String cooldownCategory;
+        protected Float useModifierMovement;
+        protected Float useModifierDuration;
 
         protected SimpleBuilder(CustomItem customItem) {
             this.item = (Item) customItem;
             this.identifier = ((Item) customItem).getId();
-            //定义最大堆叠数量
-            this.nbt.getCompound("components")
-                    .getCompound("item_properties")
-                    .putInt("max_stack_size", item.getMaxStackSize());
-            //定义在创造栏的分类
-            this.nbt.getCompound("components")
-                    .getCompound("item_properties")//1 none
-                    .putInt("creative_category", CreativeCategory.NONE.ordinal() + 1)
-                    .putString("creative_group", CreativeGroup.NONE.getGroupName());
+        }
+
+        protected CompoundTag ensureItemProperties() {
+            CompoundTag components = nbt.getCompound("components");
+            if (!nbt.contains("components")) {
+                components = new CompoundTag();
+                nbt.putCompound("components", components);
+            }
+
+            CompoundTag itemProps = components.getCompound("item_properties");
+            if (!components.contains("item_properties")) {
+                itemProps = new CompoundTag();
+                components.putCompound("item_properties", itemProps);
+            }
+
+            return itemProps;
         }
 
         public SimpleBuilder texture(String texture) {
@@ -150,16 +161,13 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             return this;
         }
 
-
         /**
          * 是否允许副手持有
          * <p>
          * Whether to allow the offHand to have
          */
         public SimpleBuilder allowOffHand(boolean allowOffHand) {
-            this.nbt.getCompound("components")
-                    .getCompound("item_properties")
-                    .putBoolean("allow_off_hand", allowOffHand);
+            ensureItemProperties().putBoolean("allow_off_hand", allowOffHand);
             return this;
         }
 
@@ -169,9 +177,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * Control how third-person handheld items are displayed
          */
         public SimpleBuilder handEquipped(boolean handEquipped) {
-            this.nbt.getCompound("components")
-                    .getCompound("item_properties")
-                    .putBoolean("hand_equipped", handEquipped);
+            ensureItemProperties().putBoolean("hand_equipped", handEquipped);
             return this;
         }
 
@@ -179,9 +185,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * @param foil 自定义物品是否带有附魔光辉效果<br>whether or not the item has an enchanted light effect
          */
         public SimpleBuilder foil(boolean foil) {
-            this.nbt.getCompound("components")
-                    .getCompound("item_properties")
-                    .putBoolean("foil", foil);
+            ensureItemProperties().putBoolean("foil", foil);
             return this;
         }
 
@@ -197,9 +201,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                 log.error("creativeGroup has an invalid value!");
                 return this;
             }
-            this.nbt.getCompound("components")
-                    .getCompound("item_properties")
-                    .putString("creative_group", creativeGroup);
+            ensureItemProperties().putString("creative_group", creativeGroup);
             return this;
         }
 
@@ -211,16 +213,12 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
          */
         public SimpleBuilder creativeGroup(CreativeGroup creativeGroup) {
-            this.nbt.getCompound("components")
-                    .getCompound("item_properties")
-                    .putString("creative_group", creativeGroup.getGroupName());
+            ensureItemProperties().putString("creative_group", creativeGroup.getGroupName());
             return this;
         }
 
         public SimpleBuilder creativeCategory(CreativeCategory creativeCategory) {
-            this.nbt.getCompound("components")
-                    .getCompound("item_properties")
-                    .putInt("creative_category", creativeCategory.ordinal() + 1);
+            ensureItemProperties().putInt("creative_category", creativeCategory.ordinal() + 1);
             return this;
         }
 
@@ -230,8 +228,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * Control rendering offsets of custom items at different viewpoints
          */
         public SimpleBuilder renderOffsets(@NotNull RenderOffsets renderOffsets) {
-            this.nbt.getCompound("components")
-                    .putCompound("minecraft:render_offsets", renderOffsets.nbt);
             return this;
         }
 
@@ -245,15 +241,16 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          */
         public SimpleBuilder tag(String... tags) {
             Arrays.stream(tags).forEach(Identifier::assertValid);
-            var list = this.nbt.getCompound("components").getList("item_tags", StringTag.class);
-            if (list == null) {
-                this.nbt.getCompound("components").putList("item_tags", new ListTag<>());
-                return this;
+            this.tags = Arrays.asList(tags);
+            CompoundTag components = nbt.getCompound("components");
+
+            ListTag<StringTag> tagList = new ListTag<>();
+            for (String tag : tags) {
+                tagList.add(new StringTag(tag));
             }
-            for (var s : tags) {
-                list.add(new StringTag(s));
-            }
-            this.nbt.getCompound("components").putList("item_tags", list);
+
+            components.putList("item_tags", tagList);
+            components.putCompound("minecraft:tags", new CompoundTag().putList("tags", tagList));
             return this;
         }
 
@@ -266,9 +263,68 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * @return the simple builder
          */
         public SimpleBuilder canDestroyInCreative(boolean value) {
-            this.nbt.getCompound("components")
-                    .getCompound("item_properties")
-                    .putBoolean("can_destroy_in_creative", value);
+            ensureItemProperties().putBoolean("can_destroy_in_creative", value);
+            return this;
+        }
+
+        public SimpleBuilder maxStackSize(int size) {
+            this.maxStackSize = size;
+            return this;
+        }
+
+        public SimpleBuilder makePersistent(boolean persistent) {
+            this.makePersistent = persistent;
+            return this;
+        }
+
+        /**
+         * Add category and cooldown to use this type of item.
+         * <p>
+         * First paramenter String categiry, second parameter float coodown duration.
+        */
+        public SimpleBuilder cooldown(String category, float duration) {
+            this.cooldownCategory = category;
+            this.cooldownDuration = duration;
+            return this;
+        }
+
+        /**
+         * Determines how long an item takes to use in combination with components such as Shooter, Throwable, or Food.
+         * <p>
+         * First paramenter Float movementModifier to scale the players movement speed when item is in use. Value must be <= 1.
+         * <p>
+         * Second paramenter Float useModifierDuration controls how long the item takes to use in seconds.
+        */
+        public SimpleBuilder useModifiers(float movementModifier, float useDuration) {
+            this.useModifierMovement = movementModifier;
+            this.useModifierDuration = useDuration;
+            return this;
+        }
+
+        /**
+         * Block Placer allow to render custom items as a block 3D, for that you need also to provide a block with your custom geometry.
+        */
+        public SimpleBuilder blockPlacer(String blockId, String... useOn) {
+            ListTag<CompoundTag> useOnList = new ListTag<>();
+            for (String s : useOn) {
+                useOnList.add(new CompoundTag()
+                        .putString("name", s)
+                        .putCompound("states", new CompoundTag())
+                        .putString("tags", ""));
+            }
+
+            CompoundTag blockPlacer = new CompoundTag()
+                    .putString("block", blockId)
+                    .putBoolean("canUseBlockAsIcon", true)
+                    .putList("use_on", useOnList);
+
+            CompoundTag components = nbt.getCompound("components");
+            if (!nbt.contains("components")) {
+                components = new CompoundTag();
+                nbt.putCompound("components", components);
+            }
+
+            components.putCompound("minecraft:block_placer", blockPlacer);
             return this;
         }
 
@@ -277,9 +333,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * <p>
          * Custom processing of the item to be sent to the client ComponentNBT, which contains all definitions for custom item. You can modify them as much as you want, under the right conditions.
          */
-        public CustomItemDefinition customBuild(Consumer<CompoundTag> nbt) {
+        public CustomItemDefinition customBuild(Consumer<CompoundTag> nbtConsumer) {
             var def = this.build();
-            nbt.accept(def.nbt);
+            nbtConsumer.accept(def.nbt);
             return def;
         }
 
@@ -287,31 +343,51 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             return calculateID();
         }
 
+        /**
+         * Block Placer and Minecraft Icon should not coexist, the calculateID now checks for
+         * <p>
+         * the fields and prioritize blockPlacer if the setting was provided, if not fallback to minecraft:icon.
+        */
         protected CustomItemDefinition calculateID() {
-            Preconditions.checkNotNull(texture, "You must define the texture through SimpleBuilder#texture method!");
-            //定义材质
-            this.nbt.getCompound("components")
-                    .getCompound("item_properties")
-                    .getCompound("minecraft:icon")
-                    .putCompound("textures", new CompoundTag()
-                            .putString("default", texture)
-                    );
+            CompoundTag components = nbt.getCompound("components");
+            CompoundTag itemProps = ensureItemProperties();
+
+            if (texture != null && !texture.isBlank() && !components.contains("minecraft:block_placer")) {
+                itemProps.putCompound("minecraft:icon", new CompoundTag()
+                        .putCompound("textures", new CompoundTag().putString("default", texture)));
+            }
 
             if (name != null) {
-                //定义显示名
-                this.nbt.getCompound("components")
-                        .putCompound("minecraft:display_name", new CompoundTag().putString("value", name));
+                components.putCompound("minecraft:display_name", new CompoundTag().putString("value", name));
+            }
+
+            int stackSize = maxStackSize > 0 ? maxStackSize : item.getMaxStackSize();
+            itemProps.putInt("max_stack_size", stackSize);
+            components.putCompound("minecraft:max_stack_size", new CompoundTag().putByte("value", (byte) stackSize));
+
+            itemProps.putBoolean("should_despawn", !makePersistent);
+
+            if (cooldownCategory != null && cooldownDuration != null) {
+                components.putCompound("minecraft:cooldown", new CompoundTag()
+                        .putString("category", cooldownCategory)
+                        .putFloat("duration", cooldownDuration));
+            }
+
+            if (useModifierMovement != null && useModifierDuration != null) {
+                components.putCompound("minecraft:use_modifiers", new CompoundTag()
+                        .putFloat("movement_modifier", useModifierMovement)
+                        .putFloat("use_duration", useModifierDuration));
             }
 
             var result = new CustomItemDefinition(identifier, nbt);
             int id;
             if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(result.identifier())) {
-                while (INTERNAL_ALLOCATION_ID_MAP.containsValue(id = nextRuntimeId.getAndIncrement())) {
-                }
+                while (INTERNAL_ALLOCATION_ID_MAP.containsValue(id = nextRuntimeId.getAndIncrement())) {}
                 INTERNAL_ALLOCATION_ID_MAP.put(result.identifier(), id);
             } else {
                 id = INTERNAL_ALLOCATION_ID_MAP.getInt(result.identifier());
             }
+
             result.nbt.putString("name", result.identifier());
             result.nbt.putInt("id", id);
             return result;
@@ -326,44 +402,35 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * @param molang          the molang
          * @return the simple builder
          */
-
         protected SimpleBuilder addRepairs(@NotNull List<String> repairItemNames, String molang) {
             if (molang.isBlank()) {
                 log.error("repairAmount has an invalid value!");
                 return this;
             }
 
-            if (this.nbt.getCompound("components").contains("minecraft:repairable")) {
-                var repair_items = this.nbt
-                        .getCompound("components")
-                        .getCompound("minecraft:repairable")
-                        .getList("repair_items", CompoundTag.class);
+            CompoundTag components = nbt.getCompound("components");
+            CompoundTag repairable = components.getCompound("minecraft:repairable");
 
-                var items = new ListTag<CompoundTag>();
-                for (var name : repairItemNames) {
-                    items.add(new CompoundTag().putString("name", name));
-                }
-
-                repair_items.add(new CompoundTag()
-                        .putList("items", items)
-                        .putCompound("repair_amount", new CompoundTag()
-                                .putString("expression", molang)
-                                .putInt("version", 1)));
-            } else {
-                var repair_items = new ListTag<CompoundTag>();
-                var items = new ListTag<CompoundTag>();
-                for (var name : repairItemNames) {
-                    items.add(new CompoundTag().putString("name", name));
-                }
-                repair_items.add(new CompoundTag()
-                        .putList("items", items)
-                        .putCompound("repair_amount", new CompoundTag()
-                                .putString("expression", molang)
-                                .putInt("version", 1)));
-                this.nbt.getCompound("components")
-                        .putCompound("minecraft:repairable", new CompoundTag()
-                                .putList("repair_items", repair_items));
+            if (!components.contains("minecraft:repairable")) {
+                repairable = new CompoundTag();
+                components.putCompound("minecraft:repairable", repairable);
             }
+
+            ListTag<CompoundTag> repairItems = repairable.getList("repair_items", CompoundTag.class);
+            if (repairItems == null) repairItems = new ListTag<>();
+
+            ListTag<CompoundTag> items = new ListTag<>();
+            for (String name : repairItemNames) {
+                items.add(new CompoundTag().putString("name", name));
+            }
+
+            repairItems.add(new CompoundTag()
+                    .putList("items", items)
+                    .putCompound("repair_amount", new CompoundTag()
+                            .putString("expression", molang)
+                            .putInt("version", 1)));
+
+            repairable.putList("repair_items", repairItems);
             return this;
         }
     }
@@ -673,10 +740,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         private ArmorBuilder(ItemCustomArmor item) {
             super(item);
             this.item = item;
-            this.nbt.getCompound("components")
-                    .getCompound("item_properties")
-                    .putInt("enchantable_value", item.getEnchantAbility())
-                    .putBoolean("can_destroy_in_creative", true);
         }
 
         public ArmorBuilder addRepairItemName(@NotNull String repairItemName, String molang) {
@@ -701,36 +764,49 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
         @Override
         public CustomItemDefinition build() {
-            this.nbt.getCompound("components")
-                    .putCompound("minecraft:armor", new CompoundTag()
-                            .putInt("protection", item.getArmorPoints()))
-                    .putCompound("minecraft:durability", new CompoundTag()
-                            .putInt("max_durability", item.getMaxDurability()));
-            if (item.isHelmet()) {
-                this.nbt.getCompound("components").getCompound("item_properties")
-                        .putString("enchantable_slot", "armor_head");
-                this.nbt.getCompound("components")
-                        .putCompound("minecraft:wearable", new CompoundTag()
-                                .putString("slot", "slot.armor.head"));
-            } else if (item.isChestplate()) {
-                this.nbt.getCompound("components").getCompound("item_properties")
-                        .putString("enchantable_slot", "armor_torso");
-                this.nbt.getCompound("components")
-                        .putCompound("minecraft:wearable", new CompoundTag()
-                                .putString("slot", "slot.armor.chest"));
-            } else if (item.isLeggings()) {
-                this.nbt.getCompound("components").getCompound("item_properties")
-                        .putString("enchantable_slot", "armor_legs");
-                this.nbt.getCompound("components")
-                        .putCompound("minecraft:wearable", new CompoundTag()
-                                .putString("slot", "slot.armor.legs"));
-            } else if (item.isBoots()) {
-                this.nbt.getCompound("components").getCompound("item_properties")
-                        .putString("enchantable_slot", "armor_feet");
-                this.nbt.getCompound("components")
-                        .putCompound("minecraft:wearable", new CompoundTag()
-                                .putString("slot", "slot.armor.feet"));
+            ensureItemProperties()
+                    .putInt("enchantable_value", item.getEnchantAbility())
+                    .putBoolean("can_destroy_in_creative", true)
+                    .putInt("max_stack_size", 1)
+                    .putInt("damage", 0)
+                    .putBoolean("should_despawn", true)
+                    .putFloat("mining_speed", 1.0f)
+                    .putBoolean("stacked_by_data", false);
+
+            CompoundTag components = nbt.getCompound("components");
+            if (item.getMaxDurability() > 0) {
+                CompoundTag durability = new CompoundTag()
+                        .putInt("max_durability", item.getMaxDurability())
+                        .putCompound("damage_chance", new CompoundTag()
+                                .putInt("min", item.getDamageChanceMin())
+                                .putInt("max", item.getDamageChanceMax()));
+                components.putCompound("minecraft:durability", durability);
             }
+
+            CompoundTag wearable = new CompoundTag().putInt("protection", item.getArmorPoints());
+            CompoundTag enchantable = new CompoundTag()
+                    .putByte("value", (byte) item.getEnchantAbility());
+
+            if (item.isHelmet()) {
+                ensureItemProperties().putString("enchantable_slot", "armor_head");
+                wearable.putString("slot", "slot.armor.head");
+                enchantable.putString("slot", "armor_head");
+            } else if (item.isChestplate()) {
+                ensureItemProperties().putString("enchantable_slot", "armor_torso");
+                wearable.putString("slot", "slot.armor.chest");
+                enchantable.putString("slot", "armor_torso");
+            } else if (item.isLeggings()) {
+                ensureItemProperties().putString("enchantable_slot", "armor_legs");
+                wearable.putString("slot", "slot.armor.legs");
+                enchantable.putString("slot", "armor_legs");
+            } else if (item.isBoots()) {
+                ensureItemProperties().putString("enchantable_slot", "armor_feet");
+                wearable.putString("slot", "slot.armor.feet");
+                enchantable.putString("slot", "armor_feet");
+            }
+
+            components.putCompound("minecraft:wearable", wearable);
+            components.putCompound("minecraft:enchantable", enchantable);
             return calculateID();
         }
     }
@@ -752,5 +828,10 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                     .putInt("use_animation", item.isDrink() ? 2 : 1)
                     .putBoolean("can_destroy_in_creative", true);
         }
+    }
+
+    // HELPER FUNCTION TO TROUBLESHOOTING THE ITEM NBT FORMAT
+    public CompoundTag getNbt() {
+        return this.nbt;
     }
 }
