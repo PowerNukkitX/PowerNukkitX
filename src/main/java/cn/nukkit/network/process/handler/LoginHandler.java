@@ -88,12 +88,14 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         //Verify if the language is valid
         if(!isValidLanguage(chainData.getLanguageCode())) {
             session.close("§cPacket handling error");
+            log.debug("disconnection due to invalid language");
             return;
         }
 
         //Verify if the GameVersion has valid format
         if(chainData.getGameVersion().split("\\.").length != 3 && !Server.getInstance().getSettings().gameplaySettings().allowBeta()) {
             session.close("§cPacket handling error");
+            log.debug("disconnection due to invalid game version");
             return;
         }
 
