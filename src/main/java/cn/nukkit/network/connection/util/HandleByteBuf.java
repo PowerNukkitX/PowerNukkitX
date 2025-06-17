@@ -15,10 +15,7 @@ import cn.nukkit.nbt.stream.LittleEndianByteBufInputStreamNBTInputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.protocol.types.EntityLink;
-import cn.nukkit.network.protocol.types.PlayerInputTick;
-import cn.nukkit.network.protocol.types.PropertySyncData;
-import cn.nukkit.network.protocol.types.ScriptDebugShapeType;
+import cn.nukkit.network.protocol.types.*;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
@@ -1892,5 +1889,12 @@ public class HandleByteBuf extends ByteBuf {
     @Override
     public boolean release(int decrement) {
         return buf.release(decrement);
+    }
+
+    public void writeExperiments(List<ExperimentEntry> experiments) {
+        for(ExperimentEntry experiment : experiments) {
+            this.writeString(experiment.name());
+            this.writeBoolean(experiment.enabled());
+        }
     }
 }

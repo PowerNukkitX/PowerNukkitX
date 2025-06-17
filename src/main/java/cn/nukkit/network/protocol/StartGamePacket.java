@@ -5,6 +5,7 @@ import cn.nukkit.level.GameRules;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.network.protocol.types.ExperimentEntry;
 import cn.nukkit.registry.Registries;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -134,6 +135,7 @@ public class StartGamePacket extends DataPacket {
      * @since v818
      */
     private String ownerIdentifier = "";
+    private List<ExperimentEntry> experiments = new ArrayList<>();
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -218,22 +220,9 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(this.isTexturePacksRequired);
         byteBuf.writeGameRules(this.gameRules);
 
-        byteBuf.writeIntLE(6); // Experiment count
-        {
-            byteBuf.writeString("data_driven_items");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("data_driven_biomes");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("upcoming_creator_features");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("gametest");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("experimental_molang_features");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("cameras");
-            byteBuf.writeBoolean(true);
-        }
-        byteBuf.writeBoolean(true); // Were experiments previously toggled
+        byteBuf.writeIntLE(experiments.size()); // Experiment count
+        byteBuf.writeExperiments(experiments); // Write experiments
+        byteBuf.writeBoolean(!experiments.isEmpty()); // Were experiments previously toggled
 
         byteBuf.writeBoolean(this.bonusChest);
         byteBuf.writeBoolean(this.hasStartWithMapEnabled);
