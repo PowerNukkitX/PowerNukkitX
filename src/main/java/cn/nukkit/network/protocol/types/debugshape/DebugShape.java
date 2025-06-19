@@ -1,9 +1,12 @@
-package cn.nukkit.network.protocol.types;
+package cn.nukkit.network.protocol.types.debugshape;
 
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.network.protocol.types.ScriptDebugShapeType;
+import lombok.Getter;
 
 import java.awt.*;
 
+@Getter
 public class DebugShape {
     public long networkId;
     public ScriptDebugShapeType shapeType;
