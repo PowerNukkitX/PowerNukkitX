@@ -9,11 +9,16 @@ import cn.nukkit.utils.SkinAnimation;
 import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.apache.commons.io.FileUtils;
 import org.jose4j.json.internal.json_simple.JSONObject;
 import org.jose4j.json.internal.json_simple.JSONValue;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +33,17 @@ import java.util.UUID;
 public class Skin {
     public static final String GEOMETRY_CUSTOM = convertLegacyGeometryName("geometry.humanoid.custom");
     public static final String GEOMETRY_CUSTOM_SLIM = convertLegacyGeometryName("geometry.humanoid.customSlim");
+    static final String GEOMETRY_HUMANOID;
+
+    static {
+        try (var stream = Skin.class.getClassLoader().getResourceAsStream("gamedata/skin_geometry.json")) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+            GEOMETRY_HUMANOID = reader.lines().reduce("", (acc, line) -> acc + line + "\n");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load skin geometry", e);
+        }
+    }
+
     private static final int PIXEL_SIZE = 4;
     public static final int SINGLE_SKIN_SIZE = 32 * 32 * PIXEL_SIZE;
     public static final int SKIN_64_32_SIZE = 64 * 32 * PIXEL_SIZE;
@@ -44,7 +60,7 @@ public class Skin {
     private String skinResourcePatch = GEOMETRY_CUSTOM;
     private SerializedImage skinData;
     private SerializedImage capeData;
-    private String geometryData;
+    private String geometryData = GEOMETRY_HUMANOID;
     private String animationData;
     private boolean premium;
     private boolean persona;
