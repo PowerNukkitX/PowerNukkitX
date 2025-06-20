@@ -1,8 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import cn.nukkit.network.protocol.types.DebugShape;
-import cn.nukkit.network.protocol.types.ScriptDebugShapeType;
+import cn.nukkit.network.protocol.types.debugshape.DebugShape;
 import cn.nukkit.utils.OptionalValue;
 import lombok.*;
 

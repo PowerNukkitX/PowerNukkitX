@@ -32,7 +32,7 @@ public class BlockStateTest {
     void BlockStateTest() {
         Registries.BLOCK.init();
         int blocks = 0;
-        try (var stream = new FileInputStream("src/main/resources/block_states.json")) {
+        try (var stream = new FileInputStream("src/main/resources/gamedata/endstone/block_states.json")) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
             JsonArray blockStateData = JsonParser.parseReader(reader).getAsJsonArray();
             for(int i = 0; i < blockStateData.size(); i++) {

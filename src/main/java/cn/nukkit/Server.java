@@ -57,6 +57,7 @@ import cn.nukkit.network.Network;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PlayerListPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.protocol.types.ExperimentEntry;
 import cn.nukkit.network.protocol.types.PlayerInfo;
 import cn.nukkit.network.protocol.types.XboxLivePlayerInfo;
 import cn.nukkit.permission.BanEntry;
@@ -236,6 +237,7 @@ public class Server {
     private Level defaultLevel = null;
     private boolean allowNether;
     private boolean allowTheEnd;
+    private List<ExperimentEntry> experiments;
     ///
 
     Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage) {
@@ -367,6 +369,10 @@ public class Server {
         if (this.getSettings().baseSettings().waterdogpe()) {
             this.checkLoginTime = false;
         }
+
+        this.experiments = new ArrayList<>();
+        for(String experiment : settings.gameplaySettings().experiments())
+            experiments.add(new ExperimentEntry(experiment, true));
 
         this.entityMetadata = new EntityMetadataStore();
         this.playerMetadata = new PlayerMetadataStore();
@@ -2728,6 +2734,10 @@ public class Server {
 
     public boolean allowVibrantVisuals() {
         return settings.gameplaySettings().allowVibrantVisuals();
+    }
+
+    public List<ExperimentEntry> getExperiments() {
+        return experiments;
     }
 
     //todo NukkitConsole 会阻塞关不掉

@@ -33,7 +33,6 @@ public interface IHuman extends InventoryHolder {
     int NETWORK_ID = 257;
 
     default void initHumanEntity(Entity human) {
-        human.setPlayerFlag(PlayerFlag.SLEEP);
         human.setDataFlag(EntityFlag.HAS_GRAVITY);
         human.setDataProperty(EntityDataTypes.BED_POSITION, new BlockVector3(0, 0, 0), false);
 

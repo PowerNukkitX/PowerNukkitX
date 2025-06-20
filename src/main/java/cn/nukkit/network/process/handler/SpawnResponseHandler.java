@@ -150,6 +150,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         // Write custom block data
         startPk.blockProperties.addAll(Registries.BLOCK.getCustomBlockDefinitionList());
         startPk.playerPropertyData = EntityProperty.getPlayerPropertyCache();
+        startPk.setExperiments(server.getExperiments());
         player.dataPacketImmediately(startPk);
     }
 
