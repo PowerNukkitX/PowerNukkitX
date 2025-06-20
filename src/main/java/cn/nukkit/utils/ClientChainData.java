@@ -274,22 +274,31 @@ public final class ClientChainData implements LoginChainData {
     }
 
     private void decodeChainData() {
-        String chainData = new String(bs.get(bs.getLInt()), StandardCharsets.UTF_8);
-        JsonObject jwt = JsonParser.parseString(chainData).getAsJsonObject();
-        String certificateRaw = jwt.get("Certificate").getAsString();
-        JsonObject certificate = JsonParser.parseString(certificateRaw).getAsJsonObject();
-        JsonArray chain = certificate.get("chain").getAsJsonArray();
+        Map<String, Object> map = JSONUtils.from(new String(bs.get(bs.getLInt()), StandardCharsets.UTF_8),
+                new TypeToken<Map<String, Object>>() {
+                }.getType());
 
+        String certificate = (String) map.get("Certificate");
+        if (certificate != null) {
+            map = JSONUtils.from(certificate,
+                    new TypeToken<Map<String, Object>>() {
+                    }.getType());
+        }
+
+        List<String> chains = (List<String>) map.get("chain");
+        if (chains == null || chains.isEmpty()) {
+            return;
+        }
+
+        // Validate keys
         try {
-            xboxAuthed = verifyChain(chain.asList().stream()
-                    .map(JsonElement::getAsString)
-                    .toList());
+            xboxAuthed = verifyChain(chains);
         } catch (Exception e) {
             xboxAuthed = false;
         }
 
-        for(int i = 0; i < chain.size(); i++) {
-            JsonObject chainMap = decodeToken(chain.get(i).getAsString());
+        for (String c : chains) {
+            JsonObject chainMap = decodeToken(c);
             if (chainMap == null) continue;
             if (chainMap.has("extraData")) {
                 JsonObject extra = chainMap.get("extraData").getAsJsonObject();
