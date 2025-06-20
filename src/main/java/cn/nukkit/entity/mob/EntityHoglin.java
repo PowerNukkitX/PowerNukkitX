@@ -42,7 +42,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -218,7 +218,7 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
             super.onStart(entity);
             entity.setDataProperty(EntityDataTypes.TARGET_EID, entity.getMemoryStorage().get(memory).getId());
             entity.setDataFlag(EntityFlag.ANGRY);
-            entity.level.addLevelSoundEvent(entity, LevelSoundEventPacket.SOUND_ANGRY, -1, Entity.HOGLIN, false, false);
+            entity.level.addLevelSoundEvent(entity, LevelSoundEvent.ANGRY, -1, Entity.HOGLIN, false, false);
         }
 
         @Override

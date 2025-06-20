@@ -9,8 +9,10 @@ import cn.nukkit.utils.PersonaPieceTint;
 import cn.nukkit.utils.SerializedImage;
 import cn.nukkit.utils.SkinAnimation;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import lombok.*;
 
@@ -63,12 +65,21 @@ public class LoginPacket extends DataPacket {
     }
 
     private void decodeChainData(BinaryStream binaryStream) {
-        Map<String, List<String>> map = JSONUtils.from(new String(binaryStream.get(binaryStream.getLInt()), StandardCharsets.UTF_8),
-                new TypeToken<Map<String, List<String>>>() {
-                });
-        if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty()) return;
-        List<String> chains = map.get("chain");
-        for (String c : chains) {
+
+        Map<String, Object> map = JSONUtils.from(new String(binaryStream.get(binaryStream.getLInt()), StandardCharsets.UTF_8),
+                new TypeToken<Map<String, Object>>() {
+                }.getType());
+        String certificate = (String) map.get("Certificate");
+        if (certificate != null) {
+            map = JSONUtils.from(certificate,
+                    new TypeToken<Map<String, Object>>() {
+                    }.getType());
+        }
+
+        List<String> chains = (List<String>) map.get("chain");
+        if (chains == null || chains.isEmpty()) {
+            return;
+        }        for (String c : chains) {
             JsonObject chainMap = decodeToken(c);
             if (chainMap == null) continue;
             if (chainMap.has("extraData")) {

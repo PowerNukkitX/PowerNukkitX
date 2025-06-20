@@ -9,7 +9,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 
 /**
  * @author CreeperFace
@@ -71,7 +71,7 @@ public abstract class ProjectileItem extends Item {
     }
 
     protected void addThrowSound(Player player) {
-        player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_THROW, -1, "minecraft:player", false, false);
+        player.getLevel().addLevelSoundEvent(player, LevelSoundEvent.THROW, -1, "minecraft:player", false, false);
     }
 
     protected Entity correctProjectile(Player player, Entity projectile) {

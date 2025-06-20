@@ -15,7 +15,7 @@ public class TrimData {
     public static List<TrimMaterial> trimMaterials;
 
     static {
-        try (var stream = TrimData.class.getClassLoader().getResourceAsStream("trim_data.json")) {
+        try (var stream = TrimData.class.getClassLoader().getResourceAsStream("gamedata/kaooot/trim_data.json")) {
             JsonObject obj = JSONUtils.from(stream, JsonObject.class);
             ArrayList<TrimPattern> l1 = new ArrayList<>();
             ArrayList<TrimMaterial> l2 = new ArrayList<>();

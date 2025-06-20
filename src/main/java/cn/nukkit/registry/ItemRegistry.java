@@ -555,6 +555,24 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(ZOMBIE_PIGMAN_SPAWN_EGG, ItemZombiePigmanSpawnEgg.class);
             register(ZOMBIE_SPAWN_EGG, ItemZombieSpawnEgg.class);
             register(ZOMBIE_VILLAGER_SPAWN_EGG, ItemZombieVillagerSpawnEgg.class);
+            register(MUSIC_DISC_TEARS, ItemDiscTears.class);
+            register(HAPPY_GHAST_SPAWN_EGG, ItemHappyGhastSpawnEgg.class);
+            register(HARNESS_BLACK, ItemHarnessBlack.class);
+            register(HARNESS_BLUE, ItemHarnessBlue.class);
+            register(HARNESS_BROWN, ItemHarnessBrown.class);
+            register(HARNESS_CYAN, ItemHarnessCyan.class);
+            register(HARNESS_GRAY, ItemHarnessGray.class);
+            register(HARNESS_GREEN, ItemHarnessGreen.class);
+            register(HARNESS_LIGHT_BLUE, ItemHarnessLightBlue.class);
+            register(HARNESS_LIGHT_GRAY, ItemHarnessLightGray.class);
+            register(HARNESS_LIME, ItemHarnessLime.class);
+            register(HARNESS_MAGENTA, ItemHarnessMagenta.class);
+            register(HARNESS_ORANGE, ItemHarnessOrange.class);
+            register(HARNESS_PINK, ItemHarnessPink.class);
+            register(HARNESS_PURPLE, ItemHarnessPurple.class);
+            register(HARNESS_RED, ItemHarnessRed.class);
+            register(HARNESS_WHITE, ItemHarnessWhite.class);
+            register(HARNESS_YELLOW, ItemHarnessYellow.class);
             registerBlockItem();
         } catch (RegisterException e) {
             throw new RuntimeException(e);
@@ -563,7 +581,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     }
 
     private void loadItemComponents() {
-        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("item_components.nbt")) {
+        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/item_components.nbt")) {
             itemComponents = NBTIO.readCompressed(stream);
         } catch (IOException e) {
             throw new RuntimeException(e);

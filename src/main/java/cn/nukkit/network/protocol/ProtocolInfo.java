@@ -11,11 +11,11 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(800);
+    int CURRENT_PROTOCOL = dynamic(818);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.21.80");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.21.90");
 
-    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 21, 8,0, 0);
+    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 21, 9,0, 0);
 
     int BLOCK_STATE_VERSION_NO_REVISION = (MINECRAFT_SEMVERSION.major() << 24) | //major
             (MINECRAFT_SEMVERSION.minor() << 16) | //minor
@@ -147,8 +147,6 @@ public interface ProtocolInfo {
     int LEVEL_SOUND_EVENT_PACKET = 0x7b;
     int LEVEL_EVENT_GENERIC_PACKET = 0x7c;
     int LECTERN_UPDATE_PACKET = 0x7d;
-    //int ADD_ENTITY_PACKET = 0x7f;
-    //int REMOVE_ENTITY_PACKET = 0x80;
     int CLIENT_CACHE_STATUS_PACKET = 0x81;
     int ON_SCREEN_TEXTURE_ANIMATION_PACKET = 0x82;
     int MAP_CREATE_LOCKED_COPY_PACKET = 0x83;
@@ -243,4 +241,5 @@ public interface ProtocolInfo {
     int PLAYER_UPDATE_ENTITY_OVERRIDES_PACKET = 325;
     int PLAYER_LOCATION_PACKET = 326;
     int CLIENTBOUND_CONTROL_SCHEME_SET_PACKET = 327;
+    int SERVER_SCRIPT_DEBUG_DRAWER_PACKET = 328;
 }

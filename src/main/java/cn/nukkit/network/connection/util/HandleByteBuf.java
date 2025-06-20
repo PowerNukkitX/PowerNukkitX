@@ -9,18 +9,13 @@ import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
-import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.Vector2f;
-import cn.nukkit.math.Vector3f;
+import cn.nukkit.math.*;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.LittleEndianByteBufInputStreamNBTInputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.protocol.types.EntityLink;
-import cn.nukkit.network.protocol.types.PlayerInputTick;
-import cn.nukkit.network.protocol.types.PropertySyncData;
+import cn.nukkit.network.protocol.types.*;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
@@ -47,6 +42,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.SneakyThrows;
 import lombok.val;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -60,6 +56,7 @@ import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -1477,6 +1474,14 @@ public class HandleByteBuf extends ByteBuf {
         this.writeVarInt(face.getIndex());
     }
 
+    public Color readColor() {
+        return new Color(this.readIntLE());
+    }
+
+    public void writeColor(Color color) {
+        this.writeIntLE(color.getRGB());
+    }
+
     public void writeEntityLink(EntityLink link) {
         writeEntityUniqueId(link.fromEntityUniqueId);
         writeEntityUniqueId(link.toEntityUniqueId);
@@ -1570,6 +1575,14 @@ public class HandleByteBuf extends ByteBuf {
         try (ByteBufInputStream is = new ByteBufInputStream(this)) {
             return NBTIO.read(is);
         }
+    }
+
+    public ScriptDebugShapeType readScriptDebugShapeType() {
+        return ScriptDebugShapeType.values()[this.readUnsignedByte()];
+    }
+
+    public void writeScriptDebugShapeType(ScriptDebugShapeType type) {
+        this.writeByte(type.ordinal());
     }
 
     @SneakyThrows(IOException.class)
@@ -1876,5 +1889,12 @@ public class HandleByteBuf extends ByteBuf {
     @Override
     public boolean release(int decrement) {
         return buf.release(decrement);
+    }
+
+    public void writeExperiments(List<ExperimentEntry> experiments) {
+        for(ExperimentEntry experiment : experiments) {
+            this.writeString(experiment.name());
+            this.writeBoolean(experiment.enabled());
+        }
     }
 }

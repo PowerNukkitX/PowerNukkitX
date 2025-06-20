@@ -27,7 +27,7 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
 
     @Override
     public void init() {
-        try (var stream = this.getClass().getClassLoader().getResourceAsStream("block_states.json")) {
+        try (var stream = this.getClass().getClassLoader().getResourceAsStream("gamedata/endstone/block_states.json")) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
             JsonArray blockStateData = JsonParser.parseReader(reader).getAsJsonArray();
             for(int i = 0; i < blockStateData.size(); i++) {

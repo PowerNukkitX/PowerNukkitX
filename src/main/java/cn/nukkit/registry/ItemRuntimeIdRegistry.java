@@ -1,6 +1,5 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.item.Item;
 import cn.nukkit.utils.BinaryStream;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -75,7 +74,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
             return;
 
         // We use ProxyPass data since protocol 776 since we need item version and componentBased now.
-        try (InputStream stream = ItemRegistry.class.getClassLoader().getResourceAsStream("runtime_item_states.json")){
+        try (InputStream stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/proxypass/runtime_item_states.json")){
             if (stream == null) {
                 throw new RuntimeException("Failed to load runtime_item_states.json");
             }

@@ -27,7 +27,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -106,7 +106,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
             this.setItemInHand(Item.get(Item.STONE_SWORD));
         }
         // 设置凋零骷髅空闲状态播放空闲声音
-        this.setDataProperty(AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT);
+        this.setDataProperty(AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT);
     }
 
     @Override
