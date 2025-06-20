@@ -1,6 +1,7 @@
 package cn.nukkit;
 
 import cn.nukkit.AdventureSettings.Type;
+import cn.nukkit.api.UnintendedClientBehaviour;
 import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBed;
@@ -25,6 +26,7 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntityRideable;
+import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.Skin;
@@ -4377,6 +4379,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return id;
     }
 
+    @UnintendedClientBehaviour
     public void updateForm(Form<?> form) {
         if (!form.isViewer(this)) {
             return;
@@ -4746,6 +4749,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
             this.removeWindow(entry.getValue());
         }
+    }
+
+    /**
+     * @Since 1.21.90 (818)
+     * The client closes inventores when the SLEEP player tag is set.
+     * Even the players inventory, which cannot be closed with the ContainerClosePacket
+     * This won't close the inventories on the server side, but the client will send us the ContainerClose which in return will close the inventory on the server side
+     * We're setting the flag manually because setPlayerFlag just flips the bit. But we need to set the bits in the correct order.
+     */
+    @UnintendedClientBehaviour
+    public void forceClientCloseInventory() {
+        setDataProperty(PLAYER_FLAGS, getDataProperty(PLAYER_FLAGS) | 0x2);
+        getLevel().getScheduler().scheduleDelayedTask(() -> setDataProperty(PLAYER_FLAGS, getDataProperty(PLAYER_FLAGS) & 0x1), 2);
     }
 
     /**
