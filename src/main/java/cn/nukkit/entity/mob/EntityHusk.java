@@ -83,9 +83,9 @@ public class EntityHusk extends EntityZombie {
         super.initEntity();
         this.setDataProperty(Entity.AMBIENT_SOUND_INTERVAL, 8);
         this.setDataProperty(Entity.AMBIENT_SOUND_INTERVAL_RANGE, 16);
-        this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT);
+        this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT.getId());
         if (this.isBaby()) {
-            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT_BABY);
+            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT_BABY.getId());
         }
     }
 
