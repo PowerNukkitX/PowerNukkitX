@@ -199,9 +199,9 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
         this.setMaxHealth(10);
         super.initEntity();
         if (this.isBaby()) {
-            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT_BABY);
+            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT_BABY.getId());
         } else {
-            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT);
+            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT.getId());
         }
         if (!hasVariant()) {
             this.setVariant(randomVariant());

@@ -178,7 +178,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
         this.setMaxHealth(500);
         super.initEntity();
         this.setDataProperty(Entity.HEARTBEAT_INTERVAL_TICKS, 40);
-        this.setDataProperty(Entity.HEARTBEAT_SOUND_EVENT, LevelSoundEvent.HEARTBEAT);
+        this.setDataProperty(Entity.HEARTBEAT_SOUND_EVENT, LevelSoundEvent.HEARTBEAT.getId());
         //空闲声音
         this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
         this.setAmbientSoundInterval(8.0f);
