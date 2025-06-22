@@ -34,6 +34,7 @@ public class FloatEntityProperty extends EntityProperty{
     @Override
     public void populateTag(CompoundTag tag) {
         tag.putInt("type", 1);
+        tag.putFloat("default", getDefaultValue());
         tag.putFloat("min", getMinValue());
         tag.putFloat("max", getMaxValue());
     }

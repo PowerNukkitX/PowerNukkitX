@@ -33,6 +33,7 @@ public class IntEntityProperty extends EntityProperty {
     @Override
     public void populateTag(CompoundTag tag) {
         tag.putInt("type", 0);
+        tag.putInt("default", getDefaultValue());
         tag.putInt("min", getMinValue());
         tag.putInt("max", getMaxValue());
     }

@@ -39,8 +39,8 @@ public abstract class EntityProperty {
                         String name = property.getString("name");
                         int type = property.getInt("type");
                         EntityProperty data = switch (type) {
-                            case 0 -> new IntEntityProperty(name, property.getInt("min"), property.getInt("max"), property.getInt("min"));
-                            case 1 -> new FloatEntityProperty(name, property.getInt("min"), property.getInt("max"), property.getInt("min"));
+                            case 0 -> new IntEntityProperty(name, property.getInt("default"), property.getInt("min"), property.getInt("max"));
+                            case 1 -> new FloatEntityProperty(name, property.getInt("default"), property.getInt("min"), property.getInt("max"));
                             case 2 -> new BooleanEntityProperty(name, false);
                             case 3 -> {
                                 List<String> enums = new ArrayList<>();
