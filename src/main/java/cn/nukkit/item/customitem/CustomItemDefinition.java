@@ -228,6 +228,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * Control rendering offsets of custom items at different viewpoints
          */
         public SimpleBuilder renderOffsets(@NotNull RenderOffsets renderOffsets) {
+            this.nbt.getCompound("components")
+                .putCompound("minecraft:render_offsets", renderOffsets.nbt);
             return this;
         }
 
