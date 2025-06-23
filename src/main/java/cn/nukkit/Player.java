@@ -130,6 +130,7 @@ import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.LoginChainData;
 import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.utils.TextFormat;
+import cn.nukkit.utils.Utils;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.base.Preconditions;
@@ -151,8 +152,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.awt.*;
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
@@ -355,6 +358,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private Pair<Location, Long> lastTeleportMessage;
     ///
 
+    private Color locatorBarColor;
     private final @NotNull PlayerInfo info;
 
     @UsedByReflection
@@ -384,6 +388,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.uuid = info.getUniqueId();
         this.rawUUID = Binary.writeUUID(info.getUniqueId());
         this.setSkin(info.getSkin());
+        this.locatorBarColor = new Color(Utils.rand(0, 256), Utils.rand(0, 256), Utils.rand(0, 256));
     }
 
     /**
@@ -1945,7 +1950,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
         if (this.spawned) {
-            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.getLoginChainData().getXUID());
+            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.getLoginChainData().getXUID(), this.getLocatorBarColor());
         }
     }
 
@@ -5514,6 +5519,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public void setFakeInventoryOpen(boolean fakeInventoryOpen) {
         this.fakeInventoryOpen = fakeInventoryOpen;
+    }
+
+    public Color getLocatorBarColor() {
+        return this.locatorBarColor;
+    }
+
+    public void setLocatorBarColor(Color color) {
+        this.locatorBarColor = color;
+        if (this.spawned) {
+            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.getLoginChainData().getXUID(), this.getLocatorBarColor());
+        }
     }
 
     /**

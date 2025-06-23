@@ -78,16 +78,21 @@ public class PlayerListPacket extends DataPacket {
         }
 
         public Entry(UUID uuid, long entityId, String name, Skin skin) {
-            this(uuid, entityId, name, skin, "");
+            this(uuid, entityId, name, skin, "", Color.WHITE);
         }
 
-        public Entry(UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
+        public Entry(UUID uuid, long entityId, String name, Skin skin, Color color) {
+            this(uuid, entityId, name, skin, "", color);
+        }
+
+        public Entry(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color) {
             this.uuid = uuid;
             this.entityId = entityId;
             this.name = name;
             this.skin = skin;
             this.trustedSkin = skin.isTrusted();
             this.xboxUserId = xboxUserId == null ? "" : xboxUserId;
+            this.color = color;
         }
     }
 
