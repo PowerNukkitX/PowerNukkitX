@@ -1418,10 +1418,14 @@ public class Server {
             ;
         }
     }
-
     /**
      * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
+
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
+        this.updatePlayerListData(uuid, entityId, name, skin, "", Color.WHITE, this.playerList.values());
+    }
+
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Color color) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", color, this.playerList.values());
     }
@@ -1431,6 +1435,13 @@ public class Server {
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, this.playerList.values());
+    }
+
+    /**
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
+     */
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player[] players) {
+        this.updatePlayerListData(uuid, entityId, name, skin, "", Color.WHITE, players);
     }
 
     /**
