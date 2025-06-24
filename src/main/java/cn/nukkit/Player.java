@@ -388,7 +388,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.uuid = info.getUniqueId();
         this.rawUUID = Binary.writeUUID(info.getUniqueId());
         this.setSkin(info.getSkin());
-        this.locatorBarColor = new Color(Utils.rand(0, 256), Utils.rand(0, 256), Utils.rand(0, 256));
+        this.locatorBarColor = new Color(Utils.rand(0, 255), Utils.rand(0, 255), Utils.rand(0, 255));
     }
 
     /**
