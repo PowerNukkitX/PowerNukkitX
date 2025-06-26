@@ -61,7 +61,8 @@ import java.util.Set;
  * @author Cool_Loong (PowerNukkitX Project)
  * todo 野生狼不会被刷新
  */
-public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor, EntityVariant, InventoryHolder, EntityLeashable {
+public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable,
+        EntityHealable, EntityColor, EntityVariant, InventoryHolder, EntityLeashable {
 
     private static final String TAG_ARMOR = "Armor";
 

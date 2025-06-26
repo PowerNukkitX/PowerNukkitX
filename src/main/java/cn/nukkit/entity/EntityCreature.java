@@ -24,7 +24,7 @@ public abstract class EntityCreature extends EntityLiving implements EntityNamea
         if (item.getId().equals(Item.NAME_TAG) && !player.isAdventure()) {
             return applyNameTag(player, item);
         }
-        return false;
+        return super.onInteract(player, item, clickedPos);
     }
 
     @Override
