@@ -1,11 +1,12 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.EntityCreature;
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
-public class EntityTraderLlama extends EntityCreature implements IEntityNPC {
+public class EntityTraderLlama extends EntityCreature implements IEntityNPC, EntityLeashable {
     @Override
     @NotNull public String getIdentifier() {
         return TRADER_LLAMA;

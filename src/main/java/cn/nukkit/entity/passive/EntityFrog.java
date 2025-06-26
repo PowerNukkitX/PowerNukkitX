@@ -1,5 +1,6 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -28,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-public class EntityFrog extends EntityAnimal implements EntityWalkable, EntityVariant {
+public class EntityFrog extends EntityAnimal implements EntityWalkable, EntityVariant, EntityLeashable {
     @Override
     @NotNull public String getIdentifier() {
         return FROG;

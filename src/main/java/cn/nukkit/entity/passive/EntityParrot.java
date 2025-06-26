@@ -1,6 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.EntityFlyable;
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author PikyCZ
  */
-public class EntityParrot extends EntityAnimal implements EntityFlyable {
+public class EntityParrot extends EntityAnimal implements EntityFlyable, EntityLeashable {
     @Override
     @NotNull public String getIdentifier() {
         return PARROT;

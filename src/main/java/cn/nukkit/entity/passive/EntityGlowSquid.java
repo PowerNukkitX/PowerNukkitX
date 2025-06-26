@@ -1,11 +1,12 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
-public class EntityGlowSquid extends EntityAnimal implements EntitySwimmable {
+public class EntityGlowSquid extends EntityAnimal implements EntitySwimmable, EntityLeashable {
 
     @Override
     @NotNull public String getIdentifier() {

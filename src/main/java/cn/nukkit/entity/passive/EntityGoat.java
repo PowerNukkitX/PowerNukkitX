@@ -1,5 +1,6 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -26,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-public class EntityGoat extends EntityAnimal implements EntityWalkable {
+public class EntityGoat extends EntityAnimal implements EntityWalkable, EntityLeashable {
 
     @Override
     @NotNull public String getIdentifier() {

@@ -1,5 +1,6 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -28,7 +29,7 @@ import java.util.Set;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityOcelot extends EntityAnimal implements EntityWalkable {
+public class EntityOcelot extends EntityAnimal implements EntityWalkable, EntityLeashable {
     @Override
     @NotNull public String getIdentifier() {
         return OCELOT;

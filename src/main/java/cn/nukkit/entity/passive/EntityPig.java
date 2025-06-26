@@ -5,6 +5,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.ClimateVariant;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -48,7 +49,7 @@ import java.util.Set;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRideable, ClimateVariant {
+public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRideable, ClimateVariant, EntityLeashable {
 
     @Override
     @NotNull public String getIdentifier() {

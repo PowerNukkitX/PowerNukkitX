@@ -2,6 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityFlyable;
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntityOwnable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -36,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-public class EntityAllay extends EntityMob implements EntityFlyable, EntityOwnable, EntityInventoryHolder {
+public class EntityAllay extends EntityMob implements EntityFlyable, EntityOwnable, EntityInventoryHolder, EntityLeashable {
 
     @Override
     @NotNull public String getIdentifier() {

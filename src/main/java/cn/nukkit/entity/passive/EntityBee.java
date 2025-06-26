@@ -7,6 +7,7 @@ import cn.nukkit.block.BlockWitherRose;
 import cn.nukkit.blockentity.BlockEntityBeehive;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFlyable;
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -34,7 +35,7 @@ import java.util.Arrays;
 import java.util.Set;
 
 
-public class EntityBee extends EntityAnimal implements EntityFlyable {
+public class EntityBee extends EntityAnimal implements EntityFlyable, EntityLeashable {
 
     @Override
     @NotNull public String getIdentifier() {

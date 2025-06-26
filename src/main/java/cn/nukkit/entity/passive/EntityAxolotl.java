@@ -5,6 +5,7 @@ import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -57,7 +58,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, EntityVariant, EntityCanAttack {
+public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, EntityVariant, EntityCanAttack, EntityLeashable {
     @Override
     @NotNull public String getIdentifier() {
         return AXOLOTL;

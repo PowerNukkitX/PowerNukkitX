@@ -1,5 +1,6 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -21,7 +22,7 @@ import java.util.Set;
 /**
  * @author PikyCZ
  */
-public class EntitySquid extends EntityAnimal implements EntitySwimmable {
+public class EntitySquid extends EntityAnimal implements EntitySwimmable, EntityLeashable {
     @Override
     @NotNull public String getIdentifier() {
         return SQUID;

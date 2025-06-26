@@ -2,6 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntityShearable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -38,7 +39,7 @@ import java.util.Set;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityMooshroom extends EntityAnimal implements EntityWalkable, EntityShearable {
+public class EntityMooshroom extends EntityAnimal implements EntityWalkable, EntityShearable, EntityLeashable {
     @Override
     @NotNull public String getIdentifier() {
         return MOOSHROOM;

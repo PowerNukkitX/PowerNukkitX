@@ -1,5 +1,6 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author PikyCZ
  */
-public class EntitySkeletonHorse extends EntityAnimal implements EntitySmite, EntityWalkable {
+public class EntitySkeletonHorse extends EntityAnimal implements EntitySmite, EntityWalkable, EntityLeashable {
     @Override
     @NotNull public String getIdentifier() {
         return SKELETON_HORSE;

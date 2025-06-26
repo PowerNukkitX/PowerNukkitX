@@ -3,15 +3,7 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityAngryable;
-import cn.nukkit.entity.EntityCanAttack;
-import cn.nukkit.entity.EntityCanSit;
-import cn.nukkit.entity.EntityColor;
-import cn.nukkit.entity.EntityHealable;
-import cn.nukkit.entity.EntityOwnable;
-import cn.nukkit.entity.EntityVariant;
-import cn.nukkit.entity.EntityWalkable;
+import cn.nukkit.entity.*;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -69,7 +61,7 @@ import java.util.Set;
  * @author Cool_Loong (PowerNukkitX Project)
  * todo 野生狼不会被刷新
  */
-public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor, EntityVariant, InventoryHolder {
+public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor, EntityVariant, InventoryHolder, EntityLeashable {
 
     private static final String TAG_ARMOR = "Armor";
 

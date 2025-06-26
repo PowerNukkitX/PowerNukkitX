@@ -2,6 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntityShearable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -43,7 +44,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityShearable {
+public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityShearable, EntityLeashable {
     @Override
     @NotNull
     public String getIdentifier() {
