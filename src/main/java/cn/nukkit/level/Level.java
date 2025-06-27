@@ -68,6 +68,7 @@ import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.SpawnPointType;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionData;
+import cn.nukkit.network.protocol.types.inventory.transaction.UseItemData;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
@@ -2730,17 +2731,21 @@ public class Level implements Metadatable {
         return entities;
     }
 
-    public Item useItemOn(Vector3 vector, Item item, BlockFace face, float fx, float fy, float fz) {
-        return this.useItemOn(vector, item, face, fx, fy, fz, null);
+    public Item useItemOn(Vector3 vector, Item item, BlockFace face, UseItemData data) {
+        return this.useItemOn(vector, item, face, data, null);
     }
 
-    public Item useItemOn(Vector3 vector, Item item, BlockFace face, float fx, float fy, float fz, Player player) {
-        return this.useItemOn(vector, item, face, fx, fy, fz, player, true);
+    public Item useItemOn(Vector3 vector, Item item, BlockFace face, UseItemData data, Player player) {
+        return this.useItemOn(vector, item, face, data, player, true);
     }
 
-    public Item useItemOn(Vector3 vector, Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound) {
+    public Item useItemOn(Vector3 vector, Item item, BlockFace face, UseItemData data, Player player, boolean playSound) {
         Block target = this.getBlock(vector);
         Block block = target.getSide(face);
+
+        float fx = data.clickPos.x;
+        float fy = data.clickPos.y;
+        float fz = data.clickPos.z;
 
         if (item.getBlock() instanceof BlockScaffolding && face == BlockFace.UP && block.getId().equals(BlockID.SCAFFOLDING)) {
             while (block instanceof BlockScaffolding) {
@@ -2759,7 +2764,10 @@ public class Level implements Metadatable {
         if (target.isAir()) {
             return null;
         }
-        if (player != null) {
+
+        boolean isPlayerInput = data.triggerType == UseItemData.TriggerType.PLAYER_INPUT;
+
+        if (player != null && isPlayerInput) {
             PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, target.isAir() ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
             //                                handle spawn protect
             if (player.getGamemode() > 2 || (!player.isOp() && isInSpawnRadius(target))) {
