@@ -583,6 +583,7 @@ public class LevelDBProvider implements LevelProvider {
             gameRules.setGameRule(GameRule.TNT_EXPLODES, d.getBoolean("tntExplodes"));
             gameRules.setGameRule(GameRule.PROJECTILES_CAN_BREAK_BLOCKS, d.getBoolean("projectilesCanBreakBlocks"));
             gameRules.setGameRule(GameRule.TNT_EXPLOSION_DROP_DECAY, d.getBoolean("tntExplosionDropDecay"));
+            gameRules.setGameRule(GameRule.LOCATOR_BAR, d.getBoolean("locatorBar"));
 
             Map<String, Boolean> experimentMap = new HashMap<>();
             for (Map.Entry<String, Tag> entry : experiments.getTags().entrySet()) {
