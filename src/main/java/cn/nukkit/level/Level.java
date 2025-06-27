@@ -264,7 +264,7 @@ public class Level implements Metadatable {
     /*
      * <ChunkIndex,<ChunkLoader ID,ChunkLoader>>
      */
-    private final Long2ObjectOpenHashMap<Map<Integer, ChunkLoader>> chunkLoaders = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectNonBlockingMap<Map<Integer, ChunkLoader>> chunkLoaders = new Long2ObjectNonBlockingMap<>();
     // Computation atomicity may be required in addChunkPacket(int, int, DataPacket)
     private final ConcurrentHashMap<Long, Deque<DataPacket>> chunkPackets = new ConcurrentHashMap<>();
     @NonComputationAtomic
@@ -932,6 +932,7 @@ public class Level implements Metadatable {
     public boolean unregisterChunkLoader(ChunkLoader loader, int chunkX, int chunkZ, boolean isSafeUnload) {
         int loaderId = loader.getLoaderId();
         long chunkHash = Level.chunkHash(chunkX, chunkZ);
+        if(chunkHash < 0) return false;
         Map<Integer, ChunkLoader> chunkLoadersIndex = this.chunkLoaders.get(chunkHash);
         if (chunkLoadersIndex != null) {
             ChunkLoader oldLoader = chunkLoadersIndex.remove(loaderId);
@@ -3660,6 +3661,7 @@ public class Level implements Metadatable {
     public CompletableFuture<IChunk> getChunkAsync(@NotNull ChunkVector2 pos) {
         return getChunkAsync(pos.getX(), pos.getZ(), false);
     }
+
 
     public CompletableFuture<IChunk> getChunkAsync(int chunkX, int chunkZ, boolean create) {
         return CompletableFuture.supplyAsync(() -> {
