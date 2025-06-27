@@ -17,7 +17,6 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ContainerClosePacket pk) {
         Player player = playerHandle.player;
         if (!player.spawned || pk.windowId == SpecialWindowId.PLAYER.getId() && !playerHandle.getInventoryOpen()) {
-            log.warn("{} tried to close his own inventory without it being open.", player.getName());
             sendClose(playerHandle, pk);
             return;
         }
