@@ -69,7 +69,7 @@ public abstract class Form<T extends Response> {
     /**
      * Internally used to accept the consumer to execute when the form was cancelled
      * @param player The player who submitted the form
-     * @param data The data submitted by the player
+     * @param data The reason why the form was cancelled
      */
     public void supplyCancelled(Player player, ModalFormCancelReason data) {
         if (this.cancelled != null)
@@ -91,6 +91,15 @@ public abstract class Form<T extends Response> {
      */
     public Form<T> onSubmit(BiConsumer<Player, T> submitted) {
         this.submitted = submitted;
+        return this;
+    }
+
+    /**
+     * @param cancel The consumer executed when form opening got cancelled
+     * @return The form
+     */
+    public Form<T> onCancel(BiConsumer<Player, ModalFormCancelReason> cancel) {
+        this.cancelled = cancel;
         return this;
     }
 
