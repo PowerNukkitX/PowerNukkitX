@@ -88,6 +88,11 @@ public class ModalForm extends Form<ModalResponse> {
     }
 
     @Override
+    public ModalForm onCancel(BiConsumer<Player, ModalFormCancelReason> cancel) {
+        return (ModalForm) super.onCancel(cancel);
+    }
+
+    @Override
     public ModalForm send(Player player) {
         return (ModalForm) super.send(player);
     }

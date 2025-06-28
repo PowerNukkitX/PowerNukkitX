@@ -131,6 +131,11 @@ public class SimpleForm extends Form<SimpleResponse> {
     }
 
     @Override
+    public SimpleForm onCancel(BiConsumer<Player, ModalFormCancelReason> cancel) {
+        return (SimpleForm) super.onCancel(cancel);
+    }
+
+    @Override
     public SimpleForm send(Player player) {
         return (SimpleForm) super.send(player);
     }

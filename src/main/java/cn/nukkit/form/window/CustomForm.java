@@ -57,6 +57,11 @@ public class CustomForm extends Form<CustomResponse> {
     }
 
     @Override
+    public CustomForm onCancel(BiConsumer<Player, ModalFormCancelReason> cancel) {
+        return (CustomForm) super.onCancel(cancel);
+    }
+
+    @Override
     public CustomForm send(Player player) {
         return (CustomForm) super.send(player);
     }
