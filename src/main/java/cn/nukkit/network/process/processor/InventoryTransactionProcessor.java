@@ -276,14 +276,14 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 if (player.canInteract(blockVector.add(0.5, 0.5, 0.5), player.isCreative() ? 13 : 7)) {
                     if (player.isCreative()) {
                         Item i = player.getInventory().getItemInHand();
-                        if (player.level.useItemOn(blockVector.asVector3(), i, face, useItemData.clickPos.x, useItemData.clickPos.y, useItemData.clickPos.z, player) != null) {
+                        if (player.level.useItemOn(blockVector.asVector3(), i, face, useItemData, player) != null) {
                             return;
                         }
                     } else if (player.getInventory().getItemInHand().equals(useItemData.itemInHand, true, false)) {
                         Item i = player.getInventory().getItemInHand();
                         Item oldItem = i.clone();
                         //TODO: Implement adventure mode checks
-                        if ((i = player.level.useItemOn(blockVector.asVector3(), i, face, useItemData.clickPos.x, useItemData.clickPos.y, useItemData.clickPos.z, player)) != null) {
+                        if ((i = player.level.useItemOn(blockVector.asVector3(), i, face, useItemData, player)) != null) {
                             if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
                                 if (Objects.equals(oldItem.getId(), i.getId()) || i.isNull()) {
                                     player.getInventory().setItem(useItemData.hotbarSlot, i);
