@@ -38,14 +38,14 @@ public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormRes
         if (playerHandle.getFormWindows().containsKey(pk.formId)) {
             Form<?> window = playerHandle.getFormWindows().remove(pk.formId);
 
-            Response response = window.respond(player, pk.data.trim());
+            Response response = window.respond(player, pk.data.trim(), pk.cancelReason);
 
             PlayerFormRespondedEvent event = new PlayerFormRespondedEvent(player, pk.formId, window, response);
             player.getServer().getPluginManager().callEvent(event);
         } else if (playerHandle.getServerSettings().containsKey(pk.formId)) {
             Form<?> window = playerHandle.getServerSettings().get(pk.formId);
 
-            Response response = window.respond(player, pk.data.trim());
+            Response response = window.respond(player, pk.data.trim(), pk.cancelReason);
 
             PlayerSettingsRespondedEvent event = new PlayerSettingsRespondedEvent(player, pk.formId, window, response);
             player.getServer().getPluginManager().callEvent(event);
