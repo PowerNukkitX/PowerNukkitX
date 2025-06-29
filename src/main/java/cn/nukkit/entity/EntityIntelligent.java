@@ -116,27 +116,29 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if (!EntityAI.checkDebugOption(EntityAI.DebugOption.MEMORY)) {
-            return super.onInteract(player, item, clickedPos);
-        } else {
-            if (player.isOp() && Objects.equals(item.getId(), ItemID.STICK)) {
-                var strBuilder = new StringBuilder();
-
-                //Build memory information
-                strBuilder.append("§eMemory:§f\n");
-                var all = getMemoryStorage().getAll();
-                all.forEach((memory, value) -> {
-                    strBuilder.append(memory.getIdentifier());
-                    strBuilder.append(" = §b");
-                    strBuilder.append(value);
-                    strBuilder.append("§f\n");
-                });
-
-                var form = new SimpleForm("§f" + getOriginalName(), strBuilder.toString());
-                form.send(player);
-                return true;
-            } else return super.onInteract(player, item, clickedPos);
+        if (EntityAI.checkDebugOption(EntityAI.DebugOption.MEMORY) && player.isOp() && Objects.equals(item.getId(), ItemID.STICK)) {
+            sendMemoryDebug(player);
+            return true;
         }
+
+        return super.onInteract(player, item, clickedPos);
+    }
+
+    private void sendMemoryDebug(Player player) {
+        var strBuilder = new StringBuilder();
+
+        //Build memory information
+        strBuilder.append("§eMemory:§f\n");
+        var all = getMemoryStorage().getAll();
+        all.forEach((memory, value) -> {
+            strBuilder.append(memory.getIdentifier());
+            strBuilder.append(" = §b");
+            strBuilder.append(value);
+            strBuilder.append("§f\n");
+        });
+
+        var form = new SimpleForm("§f" + getOriginalName(), strBuilder.toString());
+        form.send(player);
     }
 
     public IMemoryStorage getMemoryStorage() {
