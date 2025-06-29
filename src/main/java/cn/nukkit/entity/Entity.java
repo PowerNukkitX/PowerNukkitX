@@ -3119,43 +3119,109 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     private boolean validateAndSetIntProperty(String identifier, int value) {
         if (!intProperties.containsKey(identifier)) return false;
+
+        IntEntityProperty intProperty = getTypedEntityProperty(identifier, IntEntityProperty.class);
+        if (intProperty == null) return false;
+
+        if (value < intProperty.getMinValue() || value > intProperty.getMaxValue()) {
+                return false;
+        }
+
         intProperties.put(identifier, value);
         return true;
     }
 
-    public final boolean setIntEntityProperty(String identifier, int value) {
-        return validateAndSetIntProperty(identifier, value);
+    private boolean validateAndSetBooleanProperty(String identifier, boolean value) {
+        if (!intProperties.containsKey(identifier)) return false;
+
+        BooleanEntityProperty booleanProperty = getTypedEntityProperty(identifier, BooleanEntityProperty.class);
+        if (booleanProperty == null) return false;
+
+        intProperties.put(identifier, value ? 1 : 0);
+        return true;
     }
 
-
-    public final boolean setBooleanEntityProperty(String identifier, boolean value) {
-        return validateAndSetIntProperty(identifier, value ? 1 : 0);
-    }
-
-    public final boolean setFloatEntityProperty(String identifier, float value) {
+    private boolean validateAndSetFloatProperty(String identifier, float value) {
         if (!floatProperties.containsKey(identifier)) return false;
+
+        FloatEntityProperty floatProperty = getTypedEntityProperty(identifier, FloatEntityProperty.class);
+        if (floatProperty == null) return false;
+
+        if (value < floatProperty.getMinValue() || value > floatProperty.getMaxValue()) {
+                return false;
+        }
+
         floatProperties.put(identifier, value);
         return true;
     }
 
+    public final boolean setIntEntityProperty(String identifier, int value) {
+        boolean change = validateAndSetIntProperty(identifier, value);
+
+        if (change) {
+            IntEntityProperty prop = getTypedEntityProperty(identifier, IntEntityProperty.class);
+            if (prop != null && prop.isClientSync()) {
+                this.sendData(this.getViewers().values().toArray(new Player[0]));
+            }
+        }
+        return change;
+    }
+
+    public final boolean setBooleanEntityProperty(String identifier, boolean value) {
+        boolean change = validateAndSetBooleanProperty(identifier, value);
+
+        if (change) {
+            BooleanEntityProperty property = getTypedEntityProperty(identifier, BooleanEntityProperty.class);
+            if (property != null && property.isClientSync()) {
+                this.sendData(this.getViewers().values().toArray(new Player[0]));
+            }
+        }
+        return change;
+    }
+
+    public final boolean setFloatEntityProperty(String identifier, float value) {
+        boolean change = validateAndSetFloatProperty(identifier, value);
+
+        if (change) {
+            FloatEntityProperty property = getTypedEntityProperty(identifier, FloatEntityProperty.class);
+            if (property != null && property.isClientSync()) {
+                this.sendData(this.getViewers().values().toArray(new Player[0]));
+            }
+        }
+
+        return change;
+    }
+
     public final boolean setEnumEntityProperty(String identifier, String value) {
         if (!intProperties.containsKey(identifier)) return false;
-        List<EntityProperty> entityPropertyList = EntityProperty.getEntityProperty(this.getIdentifier());
 
-        for (EntityProperty property : entityPropertyList) {
-            if (!identifier.equals(property.getIdentifier()) ||
-                    !(property instanceof EnumEntityProperty enumProperty)) {
-                continue;
-            }
-            int index = enumProperty.findIndex(value);
-
+        EnumEntityProperty property = getTypedEntityProperty(identifier, EnumEntityProperty.class);
+        if (property != null) {
+            int index = property.findIndex(value);
             if (index >= 0) {
                 intProperties.put(identifier, index);
+                if (property.isClientSync()) {
+                    this.sendData(this.getViewers().values().toArray(new Player[0]));
+                }
                 return true;
             }
             return false;
         }
         return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T extends EntityProperty> T getTypedEntityProperty(String identifier, Class<T> type) {
+        List<EntityProperty> propertyList = EntityProperty.getEntityProperty(this.getIdentifier());
+        if (propertyList == null) return null;
+
+        for (EntityProperty property : propertyList) {
+            if (identifier.equals(property.getIdentifier()) && type.isInstance(property)) {
+                return (T) property;
+            }
+        }
+
+        return null;
     }
 
     public final int getIntEntityProperty(String identifier) {

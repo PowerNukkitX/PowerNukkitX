@@ -39,13 +39,13 @@ public abstract class EntityProperty {
                         String name = property.getString("name");
                         int type = property.getInt("type");
                         EntityProperty data = switch (type) {
-                            case 0 -> new IntEntityProperty(name, property.getInt("default"), property.getInt("min"), property.getInt("max"));
-                            case 1 -> new FloatEntityProperty(name, property.getInt("default"), property.getInt("min"), property.getInt("max"));
-                            case 2 -> new BooleanEntityProperty(name, false);
+                            case 0 -> new IntEntityProperty(name, property.getInt("default"), property.getInt("min"), property.getInt("max"), property.exist("clientSync") && property.getBoolean("clientSync"));
+                            case 1 -> new FloatEntityProperty(name, property.getInt("default"), property.getInt("min"), property.getInt("max"), property.exist("clientSync") && property.getBoolean("clientSync"));
+                            case 2 -> new BooleanEntityProperty(name, false, property.exist("clientSync") && property.getBoolean("clientSync"));
                             case 3 -> {
                                 List<String> enums = new ArrayList<>();
                                 for(StringTag entry : property.getList("enum", StringTag.class).getAll()) enums.add(entry.data);
-                                yield new EnumEntityProperty(name, enums.toArray(String[]::new), enums.getFirst());
+                                yield new EnumEntityProperty(name, enums.toArray(String[]::new), enums.getFirst(), property.exist("clientSync") && property.getBoolean("clientSync"));
                             }
                             default -> throw new IllegalArgumentException("Unknown EntityProperty type " + type);
                         };
