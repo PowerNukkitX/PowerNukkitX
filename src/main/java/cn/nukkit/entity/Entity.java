@@ -66,6 +66,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
@@ -506,6 +507,28 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.temporalVector = new Vector3();
         this.justCreated = true;
         this.namedTag = nbt;
+
+        // Restore entity properties from NBT (overwriting defaults)
+        if (this.namedTag.contains("IntProperties")) {
+            CompoundTag intProps = this.namedTag.getCompound("IntProperties");
+            for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : intProps.getTags().entrySet()) {
+                String key = entry.getKey();
+                if (entry.getValue() instanceof NumberTag<?> numTag) {
+                    this.intProperties.put(key, numTag.getData().intValue());
+                }
+            }
+        }
+
+        if (this.namedTag.contains("FloatProperties")) {
+            CompoundTag floatProps = this.namedTag.getCompound("FloatProperties");
+            for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : floatProps.getTags().entrySet()) {
+                String key = entry.getKey();
+                if (entry.getValue() instanceof NumberTag<?> numTag) {
+                    this.floatProperties.put(key, numTag.getData().floatValue());
+                }
+            }
+        }
+
         this.chunk = chunk;
         this.setLevel(chunk.getProvider().getLevel());
         this.server = chunk.getProvider().getLevel().getServer();
@@ -963,6 +986,20 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         } else {
             this.namedTag.remove("Attributes");
         }
+
+        // Save intProperties & boolProperties
+        CompoundTag intProps = new CompoundTag();
+        for (Map.Entry<String, Integer> entry : intProperties.entrySet()) {
+            intProps.putInt(entry.getKey(), entry.getValue());
+        }
+        this.namedTag.putCompound("IntProperties", intProps);
+
+        // Save floatProperties
+        CompoundTag floatProps = new CompoundTag();
+        for (Map.Entry<String, Float> entry : floatProperties.entrySet()) {
+            floatProps.putFloat(entry.getKey(), entry.getValue());
+        }
+        this.namedTag.putCompound("FloatProperties", floatProps);
     }
 
     /**
@@ -3257,19 +3294,30 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             final String identifier = property.getIdentifier();
 
             switch (property) {
-                case FloatEntityProperty floatProperty ->
+                case FloatEntityProperty floatProperty -> {
+                    if (!floatProperties.containsKey(identifier)) {
                         floatProperties.put(identifier, floatProperty.getDefaultValue());
-                case IntEntityProperty intProperty ->
+                    }
+                }
+                case IntEntityProperty intProperty -> {
+                    if (!intProperties.containsKey(identifier)) {
                         intProperties.put(identifier, intProperty.getDefaultValue());
-                case BooleanEntityProperty booleanProperty ->
+                    }
+                }
+                case BooleanEntityProperty booleanProperty -> {
+                    if (!intProperties.containsKey(identifier)) {
                         intProperties.put(identifier, booleanProperty.getDefaultValue() ? 1 : 0);
-                case EnumEntityProperty enumProperty ->
+                    }
+                }
+                case EnumEntityProperty enumProperty -> {
+                    if (!intProperties.containsKey(identifier)) {
                         intProperties.put(identifier, enumProperty.findIndex(enumProperty.getDefaultValue()));
+                    }
+                }
                 default -> {}
             }
         }
     }
-
 
     private PropertySyncData propertySyncData() {
         Collection<Integer> intValues = intProperties.values();
