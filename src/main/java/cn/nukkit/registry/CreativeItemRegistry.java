@@ -3,6 +3,8 @@ package cn.nukkit.registry;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.customitem.data.CreativeCategory;
+import cn.nukkit.item.customitem.data.CreativeGroup;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteOrder;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,6 +41,8 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     static final ObjectLinkedOpenHashSet<CreativeItemGroup> GROUPS = new ObjectLinkedOpenHashSet<>();
     static final ObjectLinkedOpenHashSet<CreativeItemData> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
 
+    static final Map<CreativeCategory, Map<CreativeGroup, Integer>> CATEGORY_GROUP_INDEX_MAP = new HashMap<>();
+
     @Override
     public void init() {
         if (isLoad.getAndSet(true))
@@ -46,13 +51,25 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/creative_items.json")) {
             Map data = new Gson().fromJson(new InputStreamReader(input), Map.class);
             List<Map<String, Object>> groups = (List<Map<String, Object>>) data.get("groups");
-            for (int i = 0; i < groups.size(); i++) {
-                Map<String, Object> tag = groups.get(i);
+            int index = 0;
+            for (Map<String, Object> tag : groups) {
                 int creativeCategory = ((Number) tag.getOrDefault("creative_category", 0)).intValue();
                 String name = (String) tag.get("name");
                 Map iconMap = (Map) tag.get("icon");
                 Item icon = Item.get((String) iconMap.get("id"));
-                GROUPS.add(new CreativeItemGroup(CreativeItemCategory.VALUES[creativeCategory], name, icon));
+                CreativeItemGroup group = new CreativeItemGroup(CreativeItemCategory.VALUES[creativeCategory], name, icon);
+                GROUPS.add(group);
+
+                CreativeCategory category = CreativeCategory.fromID(creativeCategory);
+                CATEGORY_GROUP_INDEX_MAP.computeIfAbsent(category, k -> new HashMap<>());
+
+                for (CreativeGroup enumGroup : CreativeGroup.values()) {
+                    if (enumGroup.getGroupName().equals(name)) {
+                        CATEGORY_GROUP_INDEX_MAP.get(category).put(enumGroup, index);
+                        break;
+                    }
+                }
+                index++;
             }
 
             List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
@@ -155,6 +172,67 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     }
 
     /**
+     * Add an item to {@link CreativeItemRegistry} with a specific group index.
+     */
+    public void addCreativeItem(Item item, int groupIndex) {
+        int i = MAP.isEmpty() ? 0 : MAP.lastIntKey() + 1;
+        try {
+            this.register(i, item.clone(), groupIndex);
+        } catch (RegisterException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Determines whether a block should be shown in the creative inventory
+     * based on its NBT "menu_category" tag.
+     */
+    public boolean shouldBeRegisteredBlock(@NotNull CompoundTag nbt) {
+        if (nbt.contains("menu_category")) {
+            CompoundTag menu = nbt.getCompound("menu_category");
+
+            if (menu.contains("category")) {
+                try {
+                    CreativeCategory category = CreativeCategory.valueOf(menu.getString("category").toUpperCase());
+                    return category != CreativeCategory.NONE;
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid creative category in NBT: {}", e.getMessage());
+                    return true;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Determines if a custom item should be registered in creative inventory.
+     * Based on the `item_properties.creative_category` component.
+     */
+    public boolean shouldBeRegisteredItem(@NotNull CompoundTag nbt) {
+        if (nbt.contains("components")) {
+            CompoundTag components = nbt.getCompound("components");
+            if (components.contains("item_properties")) {
+                CompoundTag props = components.getCompound("item_properties");
+                if (props.contains("creative_category")) {
+                    int cat = props.getInt("creative_category");
+                    return CreativeCategory.fromID(cat) != CreativeCategory.NONE;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Register a creative item and specify its group index directly.
+     */
+    public void register(Integer key, Item value, int groupIndex) throws RegisterException {
+        if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItem().equals(value))) {
+            return;
+        }
+        ITEM_DATA.add(new CreativeItemData(value, groupIndex));
+    }
+
+    /**
      * 移除一个指定的创造物品
      * <p>
      * Remove a specified created item
@@ -227,5 +305,58 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         } else {
             ITEM_DATA.add(new CreativeItemData(value, 111));
         }
+    }
+
+    public int resolveGroupIndexFromBlockDefinition(CompoundTag nbt) {
+        if (nbt != null && nbt.contains("menu_category")) {
+            CompoundTag menu = nbt.getCompound("menu_category");
+
+            if (menu.contains("category") && menu.contains("group")) {
+                try {
+                    CreativeCategory category = CreativeCategory.valueOf(menu.getString("category").toUpperCase());
+                    String groupName = menu.getString("group");
+
+                    for (Map.Entry<CreativeGroup, Integer> entry : CATEGORY_GROUP_INDEX_MAP
+                            .getOrDefault(category, Map.of())
+                            .entrySet()) {
+                        if (entry.getKey().getGroupName().equals(groupName)) {
+                            return entry.getValue();
+                        }
+                    }
+                } catch (Exception e) {
+                    log.warn("Invalid creative category/group in definition NBT: {}", e.getMessage());
+                }
+            }
+        }
+        return 111;
+    }
+
+    public int resolveGroupIndexFromItemDefinition(CompoundTag nbt) {
+        if (nbt != null && nbt.contains("components")) {
+            CompoundTag components = nbt.getCompound("components");
+
+            if (components.contains("item_properties")) {
+                CompoundTag itemProps = components.getCompound("item_properties");
+
+                if (itemProps.contains("creative_category") && itemProps.contains("creative_group")) {
+                    try {
+                        int catId = itemProps.getInt("creative_category");
+                        CreativeCategory category = CreativeCategory.fromID(catId);
+                        String groupName = itemProps.getString("creative_group");
+
+                        for (Map.Entry<CreativeGroup, Integer> entry : CATEGORY_GROUP_INDEX_MAP
+                                .getOrDefault(category, Map.of())
+                                .entrySet()) {
+                            if (entry.getKey().getGroupName().equals(groupName)) {
+                                return entry.getValue();
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.warn("Invalid creative category/group in item definition NBT: {}", e.getMessage());
+                    }
+                }
+            }
+        }
+        return 111;
     }
 }

@@ -1,7 +1,9 @@
 package cn.nukkit.command.tree.node;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 
 /**
@@ -21,6 +23,16 @@ public class BlockNode extends ParamNode<Block> {
         if (block == null) {
             this.error();
             return;
+        }
+
+        // Reject if custom and marked hidden
+        if (block instanceof CustomBlock cb) {
+            CompoundTag nbt = cb.getDefinition().nbt();
+            CompoundTag menuCategory = nbt.getCompound("menu_category");
+            if (menuCategory.getByte("is_hidden_in_commands") == 1) {
+                this.error();
+                return;
+            }
         }
         this.value = block;
     }
