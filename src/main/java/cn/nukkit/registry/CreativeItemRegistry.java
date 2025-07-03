@@ -4,7 +4,6 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.customitem.data.CreativeCategory;
-import cn.nukkit.item.customitem.data.CreativeGroup;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
@@ -40,8 +39,9 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
     static final ObjectLinkedOpenHashSet<CreativeItemGroup> GROUPS = new ObjectLinkedOpenHashSet<>();
     static final ObjectLinkedOpenHashSet<CreativeItemData> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
-
-    static final Map<CreativeCategory, Map<CreativeGroup, Integer>> CATEGORY_GROUP_INDEX_MAP = new HashMap<>();
+    public static final Map<String, String> ITEM_GROUP_MAP = new HashMap<>();
+    static final Map<CreativeCategory, Map<String, Integer>> CATEGORY_GROUP_INDEX_MAP = new HashMap<>();
+    public static int VANILLA_GROUPS_SIZE = -1;
 
     @Override
     public void init() {
@@ -62,15 +62,10 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
                 CreativeCategory category = CreativeCategory.fromID(creativeCategory);
                 CATEGORY_GROUP_INDEX_MAP.computeIfAbsent(category, k -> new HashMap<>());
-
-                for (CreativeGroup enumGroup : CreativeGroup.values()) {
-                    if (enumGroup.getGroupName().equals(name)) {
-                        CATEGORY_GROUP_INDEX_MAP.get(category).put(enumGroup, index);
-                        break;
-                    }
-                }
+                CATEGORY_GROUP_INDEX_MAP.get(category).put(name, index);
                 index++;
             }
+            CreativeItemRegistry.VANILLA_GROUPS_SIZE = index;
 
             List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
             for (int i = 0; i < items.size(); i++) {
@@ -253,6 +248,10 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         return GROUPS;
     }
 
+    public ObjectLinkedOpenHashSet<CreativeItemGroup> getGroupList() {
+        return GROUPS;
+    }
+
     public ObjectLinkedOpenHashSet<CreativeItemData> getCreativeItemData() {
         return ITEM_DATA;
     }
@@ -303,35 +302,36 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
             return;
             //throw new RegisterException("This creative item has already been registered with the identifier: " + key);
         } else {
-            ITEM_DATA.add(new CreativeItemData(value, 111));
+            ITEM_DATA.add(new CreativeItemData(value, CreativeItemRegistry.VANILLA_GROUPS_SIZE));
         }
     }
 
-    public int resolveGroupIndexFromBlockDefinition(CompoundTag nbt) {
+    public int resolveGroupIndexFromBlockDefinition(String identifier, CompoundTag nbt) {
         if (nbt != null && nbt.contains("menu_category")) {
             CompoundTag menu = nbt.getCompound("menu_category");
 
             if (menu.contains("category") && menu.contains("group")) {
                 try {
-                    CreativeCategory category = CreativeCategory.valueOf(menu.getString("category").toUpperCase());
+                    String categoryStr = menu.getString("category").toUpperCase();
                     String groupName = menu.getString("group");
+                    CreativeItemRegistry.ITEM_GROUP_MAP.put(identifier, groupName);
 
-                    for (Map.Entry<CreativeGroup, Integer> entry : CATEGORY_GROUP_INDEX_MAP
-                            .getOrDefault(category, Map.of())
-                            .entrySet()) {
-                        if (entry.getKey().getGroupName().equals(groupName)) {
-                            return entry.getValue();
-                        }
+                    CreativeCategory category = CreativeCategory.valueOf(categoryStr);
+                    Map<String, Integer> groupMap = CATEGORY_GROUP_INDEX_MAP.getOrDefault(category, Map.of());
+
+                    Integer index = groupMap.get(groupName);
+                    if (index != null) {
+                        return index;
                     }
                 } catch (Exception e) {
-                    log.warn("Invalid creative category/group in definition NBT: {}", e.getMessage());
+                    log.warn("Invalid creative category/group in block definition NBT: {}", e.getMessage());
                 }
             }
         }
-        return 111;
+        return CreativeItemRegistry.VANILLA_GROUPS_SIZE;
     }
 
-    public int resolveGroupIndexFromItemDefinition(CompoundTag nbt) {
+    public int resolveGroupIndexFromItemDefinition(String identifier, CompoundTag nbt) {
         if (nbt != null && nbt.contains("components")) {
             CompoundTag components = nbt.getCompound("components");
 
@@ -341,15 +341,15 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 if (itemProps.contains("creative_category") && itemProps.contains("creative_group")) {
                     try {
                         int catId = itemProps.getInt("creative_category");
-                        CreativeCategory category = CreativeCategory.fromID(catId);
                         String groupName = itemProps.getString("creative_group");
+                        CreativeItemRegistry.ITEM_GROUP_MAP.put(identifier, groupName);
 
-                        for (Map.Entry<CreativeGroup, Integer> entry : CATEGORY_GROUP_INDEX_MAP
-                                .getOrDefault(category, Map.of())
-                                .entrySet()) {
-                            if (entry.getKey().getGroupName().equals(groupName)) {
-                                return entry.getValue();
-                            }
+                        CreativeCategory category = CreativeCategory.fromID(catId);
+                        Map<String, Integer> groupMap = CATEGORY_GROUP_INDEX_MAP.getOrDefault(category, Map.of());
+
+                        Integer index = groupMap.get(groupName);
+                        if (index != null) {
+                            return index;
                         }
                     } catch (Exception e) {
                         log.warn("Invalid creative category/group in item definition NBT: {}", e.getMessage());
@@ -357,6 +357,6 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 }
             }
         }
-        return 111;
+        return CreativeItemRegistry.VANILLA_GROUPS_SIZE;
     }
 }

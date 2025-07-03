@@ -186,7 +186,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             if (!this.nbt.contains("menu_category")) {
                 this.nbt.putCompound("menu_category", createDefaultMenuCategory());
             }
-            this.nbt.getCompound("menu_category").putString("group", creativeGroup.toLowerCase(Locale.ENGLISH));
+            this.nbt.getCompound("menu_category").putString("group", creativeGroup);
             return this;
         }
 

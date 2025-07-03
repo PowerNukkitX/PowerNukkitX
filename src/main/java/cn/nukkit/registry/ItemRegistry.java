@@ -727,7 +727,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
                     if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
                         Item ci = (Item) customItem;
                         ci.setNetId(null);
-                        int groupIndex = Registries.CREATIVE.resolveGroupIndexFromItemDefinition(nbt);
+                        int groupIndex = Registries.CREATIVE.resolveGroupIndexFromItemDefinition(key, nbt);
                         Registries.CREATIVE.addCreativeItem(ci, groupIndex);
                     }
                 } else {

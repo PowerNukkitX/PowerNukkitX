@@ -1,11 +1,12 @@
 package cn.nukkit.item.customitem.data;
 
+import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
+
 /**
- * 控制自定义物品在创造栏的大分类,例如建材栏,材料栏
- * <br>可选值:1 CONSTRUCTOR 2 NATURE 3 EQUIPMENT 4 ITEMS 5 NONE
+ * Controls the creative tab category for custom items, such as Construction, Nature, etc.
+ * <br>Valid values: 1 CONSTRUCTION, 2 NATURE, 3 EQUIPMENT, 4 ITEMS, 6 NONE
  *
- * @return 自定义物品的在创造栏的大分类
- * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-tabs">bedrock wiki</a>
+ * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-tabs">Bedrock Wiki</a>
  */
 public enum CreativeCategory {
     CONSTRUCTION,
@@ -32,6 +33,19 @@ public enum CreativeCategory {
             case EQUIPMENT -> 3;
             case ITEMS -> 4;
             case NONE -> 6;
+        };
+    }
+
+    /**
+     * Converts to the corresponding protocol creative item category.
+     */
+    public CreativeItemCategory getItemCategory() {
+        return switch (this) {
+            case CONSTRUCTION -> CreativeItemCategory.CONSTRUCTION;
+            case NATURE -> CreativeItemCategory.NATURE;
+            case EQUIPMENT -> CreativeItemCategory.EQUIPMENT;
+            case ITEMS -> CreativeItemCategory.ITEMS;
+            case NONE -> CreativeItemCategory.UNDEFINED;
         };
     }
 }

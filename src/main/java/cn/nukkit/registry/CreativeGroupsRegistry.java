@@ -1,0 +1,180 @@
+package cn.nukkit.registry;
+
+import cn.nukkit.item.Item;
+import cn.nukkit.item.customitem.data.CreativeCategory;
+import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
+import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemGroup;
+import cn.nukkit.network.protocol.types.inventory.creative.CreativeCustomGroups;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Responsible for registering and injecting custom creative groups into the runtime group list.
+ */
+@Slf4j
+public class CreativeGroupsRegistry {
+    private static final ObjectLinkedOpenHashSet<CreativeItemGroup> INJECTED_GROUPS = new ObjectLinkedOpenHashSet<>();
+
+    /**
+     * Registers a new custom creative group. If this is the first group being registered,
+     * triggers the injection process into the existing creative registry.
+     */
+    public static void load(CreativeCustomGroups.CustomGroupDefinition def) {
+        if (def == null || def.getName() == null || def.getCategory() == null) return;
+
+        Item icon = null;
+        for (CreativeItemData data : CreativeItemRegistry.ITEM_DATA) {
+            Item candidate = data.getItem();
+            if (def.getIconId().equals(candidate.getName()) || def.getIconId().equalsIgnoreCase(candidate.getId())) {
+                icon = candidate;
+                break;
+            }
+        }
+
+        if (icon == null || icon.isNull() || (icon.isBlock() && icon.getBlockUnsafe() == null)) {
+            log.warn("Icon '{}' could not be resolved for group '{}'. Falling back to stone.", def.getIconId(), def.getName());
+            icon = Item.get("minecraft:stone");
+        }
+
+        CreativeItemGroup group = new CreativeItemGroup(def.getCategory(), def.getName(), icon);
+        INJECTED_GROUPS.add(group);
+    }
+
+
+    /**
+     * Injects all registered custom groups into the group index map and runtime list.
+     */
+    public static void register() {
+        Map<CreativeCategory, List<CreativeItemGroup>> groupedVanilla = new EnumMap<>(CreativeCategory.class);
+        Map<CreativeCategory, List<CreativeItemGroup>> groupedCustom = new EnumMap<>(CreativeCategory.class);
+
+        List<CreativeItemGroup> allOriginalGroups = new ArrayList<>(Registries.CREATIVE.getGroupList());
+        Map<CreativeItemGroup, Integer> originalGroupIndices = new HashMap<>();
+        for (int i = 0; i < allOriginalGroups.size(); i++) {
+            originalGroupIndices.put(allOriginalGroups.get(i), i);
+        }
+
+        // Split vanilla groups by category
+        for (CreativeItemGroup group : allOriginalGroups) {
+            CreativeCategory category = CreativeCategory.valueOf(group.getCategory().name());
+            groupedVanilla.computeIfAbsent(category, k -> new ArrayList<>()).add(group);
+        }
+
+        // Group custom groups by category
+        for (CreativeItemGroup group : INJECTED_GROUPS) {
+            CreativeCategory category = CreativeCategory.valueOf(group.getCategory().name());
+            groupedCustom.computeIfAbsent(category, k -> new ArrayList<>()).add(group);
+        }
+
+        List<CreativeItemGroup> rebuilt = new ArrayList<>();
+        Map<Integer, Integer> groupIndexMap = new HashMap<>();
+        int newIndex = 0;
+
+        for (CreativeCategory category : CreativeCategory.values()) {
+            List<CreativeItemGroup> vanilla = groupedVanilla.getOrDefault(category, Collections.emptyList());
+            List<CreativeItemGroup> custom = groupedCustom.getOrDefault(category, Collections.emptyList());
+
+            if (!vanilla.isEmpty()) {
+                // Split vanilla into main + wildcard
+                List<CreativeItemGroup> vanillaMain = vanilla.subList(0, vanilla.size() - 1);
+                CreativeItemGroup wildcardGroup = vanilla.get(vanilla.size() - 1);
+
+                // Add vanilla (except last)
+                for (CreativeItemGroup group : vanillaMain) {
+                    rebuilt.add(group);
+                    int originalIndex = originalGroupIndices.getOrDefault(group, -1);
+                    if (originalIndex >= 0) {
+                        groupIndexMap.put(originalIndex, newIndex);
+                    }
+                    CreativeItemRegistry.CATEGORY_GROUP_INDEX_MAP
+                            .computeIfAbsent(category, k -> new HashMap<>())
+                            .put(group.getName(), newIndex);
+                    newIndex++;
+                }
+
+                // Add custom groups
+                for (CreativeItemGroup group : custom) {
+                    rebuilt.add(group);
+                    CreativeItemRegistry.CATEGORY_GROUP_INDEX_MAP
+                            .computeIfAbsent(category, k -> new HashMap<>())
+                            .put(group.getName(), newIndex);
+                    log.debug("Injected custom creative group '{}' in category '{}' with new index {}", group.getName(), category, newIndex);
+                    newIndex++;
+                }
+
+                // Add wildcard last
+                rebuilt.add(wildcardGroup);
+                int originalIndex = originalGroupIndices.getOrDefault(wildcardGroup, -1);
+                if (originalIndex >= 0) {
+                    groupIndexMap.put(originalIndex, newIndex);
+                }
+                CreativeItemRegistry.CATEGORY_GROUP_INDEX_MAP
+                        .computeIfAbsent(category, k -> new HashMap<>())
+                        .put(wildcardGroup.getName(), newIndex);
+                newIndex++;
+            }
+        }
+
+        // Apply rebuilt group list
+        Registries.CREATIVE.getGroupList().clear();
+        Registries.CREATIVE.getGroupList().addAll(rebuilt);
+
+        // Remap items to their new group indices
+        remapCreativeItemGroups(groupIndexMap);
+    }
+
+    /**
+     * Rebuilds the creative item group assignments with updated group indices.
+     */
+    private static void remapCreativeItemGroups(Map<Integer, Integer> groupIndexMap) {
+        ObjectLinkedOpenHashSet<CreativeItemData> current = CreativeItemRegistry.ITEM_DATA;
+        ObjectLinkedOpenHashSet<CreativeItemData> rebuilt = new ObjectLinkedOpenHashSet<>();
+
+        for (CreativeItemData data : current) {
+            Item item = data.getItem();
+            int originalGroupId = data.getGroupId();
+            int newGroupId = CreativeItemRegistry.VANILLA_GROUPS_SIZE;
+
+            // Vanilla item: remap based on old group index
+            if (originalGroupId != CreativeItemRegistry.VANILLA_GROUPS_SIZE) {
+                Integer mapped = groupIndexMap.get(originalGroupId);
+                if (mapped != null) {
+                    newGroupId = mapped;
+                }
+            } else {
+                // Custom item: use mapped group names from ITEM_GROUP_MAP saved on item/block registry
+                String key = item.getIdentifier().toString();
+                String groupName = CreativeItemRegistry.ITEM_GROUP_MAP.get(key);
+
+                if (groupName != null) {
+                    Integer resolvedIndex = null;
+
+                    for (Map<String, Integer> groupMap : CreativeItemRegistry.CATEGORY_GROUP_INDEX_MAP.values()) {
+                        resolvedIndex = groupMap.get(groupName);
+                        if (resolvedIndex != null) break;
+                    }
+
+                    if (resolvedIndex != null) {
+                        newGroupId = resolvedIndex;
+                    } else {
+                        log.warn("Group '{}' not found in CATEGORY_GROUP_INDEX_MAP for item '{}'", groupName, key);
+                    }
+                } else {
+                    log.warn("Group name not saved for custom item '{}'; using fallback group {}", item.getName(), CreativeItemRegistry.VANILLA_GROUPS_SIZE);
+                }
+            }
+            rebuilt.add(new CreativeItemData(item, newGroupId));
+        }
+
+        current.clear();
+        current.addAll(rebuilt);
+        CreativeItemRegistry.ITEM_GROUP_MAP.clear();
+    }
+}

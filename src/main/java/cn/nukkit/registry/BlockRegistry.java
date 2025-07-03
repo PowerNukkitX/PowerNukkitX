@@ -1410,7 +1410,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                     if (Registries.CREATIVE.shouldBeRegisteredBlock(nbt)) {
                         ItemBlock itemBlock = new ItemBlock(customBlock.toBlock());
                         itemBlock.setNetId(null);
-                        int groupIndex = Registries.CREATIVE.resolveGroupIndexFromBlockDefinition(nbt);
+                        int groupIndex = Registries.CREATIVE.resolveGroupIndexFromBlockDefinition(key, nbt);
                         Registries.CREATIVE.addCreativeItem(itemBlock, groupIndex);
                     }
                     KEYSET.add(key);
