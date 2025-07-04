@@ -1,6 +1,7 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.utils.BinaryStream;
+import cn.nukkit.block.Block;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -142,9 +143,26 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
     public void registerCustomRuntimeItem(RuntimeEntry entry) throws RegisterException {
         if (CUSTOM_REGISTRY.putIfAbsent(entry.identifier, entry) == null) {
             ID2NAME.put(entry.runtimeId(), entry.identifier);
-            ITEMDATA.add(new ItemData(entry.identifier, entry.runtimeId, 1, entry.isComponent));
+            int version = ItemVersionResolver.resolveItemVersion(entry.isComponent, ItemVersionResolver.isBlock(entry.identifier));
+            ITEMDATA.add(new ItemData(entry.identifier, entry.runtimeId, version, entry.isComponent));
         } else {
             throw new RegisterException("The item: " + entry.identifier + " runtime id has been registered!");
+        }
+    }
+
+    public class ItemVersionResolver {
+        public static final int LEGACY = 0;
+        public static final int DATA_DRIVEN = 1;
+        public static final int NONE = 2;
+
+        public static int resolveItemVersion(boolean componentBased, boolean isBlock) {
+            if (isBlock) return NONE;
+            return componentBased ? DATA_DRIVEN : LEGACY;
+        }
+
+        public static boolean isBlock(String identifier) {
+            Block block = Registries.BLOCK.get(identifier);
+            return block != null && !block.isAir();
         }
     }
 

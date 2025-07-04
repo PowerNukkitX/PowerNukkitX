@@ -84,7 +84,7 @@ package cn.nukkit.item.customitem.data;
  * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
  */
 public enum CreativeGroup {
-    NONE("none"),
+    NONE(""),
 
     ANVIL("itemGroup.name.anvil"),
 

@@ -142,8 +142,21 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
             CompoundTag itemProps = components.getCompound("item_properties");
             if (!components.contains("item_properties")) {
-                itemProps = new CompoundTag();
+                itemProps = new CompoundTag()
+                        .putInt("creative_category", CreativeCategory.ITEMS.getId())
+                        .putString("creative_group", "")
+                        .putByte("is_hidden_in_commands", (byte) 0);
                 components.putCompound("item_properties", itemProps);
+            } else {
+                if (!itemProps.contains("creative_category")) {
+                    itemProps.putInt("creative_category", CreativeCategory.ITEMS.getId());
+                }
+                if (!itemProps.contains("creative_group")) {
+                    itemProps.putString("creative_group", "");
+                }
+                if (!itemProps.contains("is_hidden_in_commands")) {
+                    itemProps.putByte("is_hidden_in_commands", (byte) 0);
+                }
             }
 
             return itemProps;
@@ -212,15 +225,21 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          *
          * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
          */
+        public SimpleBuilder creativeCategory(CreativeCategory creativeCategory) {
+            ensureItemProperties().putInt("creative_category", creativeCategory.getId());
+            return this;
+        }
+
         public SimpleBuilder creativeGroup(CreativeGroup creativeGroup) {
             ensureItemProperties().putString("creative_group", creativeGroup.getGroupName());
             return this;
         }
 
-        public SimpleBuilder creativeCategory(CreativeCategory creativeCategory) {
-            ensureItemProperties().putInt("creative_category", creativeCategory.ordinal() + 1);
+        public SimpleBuilder isHiddenInCommands(boolean hidden) {
+            ensureItemProperties().putByte("is_hidden_in_commands", hidden ? (byte) 1 : (byte) 0);
             return this;
         }
+
 
         /**
          * 控制自定义物品在不同视角下的渲染偏移
