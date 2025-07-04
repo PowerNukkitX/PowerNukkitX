@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.terra.mappings;
+package cn.nukkit.registry.mappings;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 

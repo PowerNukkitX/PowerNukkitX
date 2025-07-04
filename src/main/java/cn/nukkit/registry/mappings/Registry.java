@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.terra.mappings;
+package cn.nukkit.registry.mappings;
 
 import java.util.function.Consumer;
 

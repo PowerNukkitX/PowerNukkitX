@@ -23,9 +23,9 @@
  * @link https://github.com/GeyserMC/Geyser
  */
 
-package cn.nukkit.level.generator.terra.mappings.loader;
+package cn.nukkit.registry.mappings.loader;
 
-import cn.nukkit.level.generator.terra.mappings.RegistryLoader;
+import cn.nukkit.registry.mappings.RegistryLoader;
 import cn.nukkit.utils.JSONUtils;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.reflect.TypeToken;

@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.terra.mappings;
+package cn.nukkit.registry.mappings;
 
 /**
  * Represents a registry loader. {@link I} is the input value, which can be anything,

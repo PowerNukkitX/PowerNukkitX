@@ -1,10 +1,10 @@
-package cn.nukkit.level.generator.terra.mappings.populator;
+package cn.nukkit.registry.mappings.populator;
 
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockFlowingLava;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.level.generator.terra.mappings.BlockMappings;
-import cn.nukkit.level.generator.terra.mappings.JeBlockState;
+import cn.nukkit.registry.mappings.BlockMappings;
+import cn.nukkit.registry.mappings.JeBlockState;
 import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.updater.block.*;
 import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;

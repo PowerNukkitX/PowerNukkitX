@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.terra.mappings;
+package cn.nukkit.registry.mappings;
 
 /**
  * Allay Project 2023/10/27

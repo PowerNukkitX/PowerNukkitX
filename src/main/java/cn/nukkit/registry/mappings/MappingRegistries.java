@@ -1,8 +1,8 @@
-package cn.nukkit.level.generator.terra.mappings;
+package cn.nukkit.registry.mappings;
 
 
-import cn.nukkit.level.generator.terra.mappings.loader.BiomeRegistryLoader;
-import cn.nukkit.level.generator.terra.mappings.populator.BlockRegistryPopulator;
+import cn.nukkit.registry.mappings.loader.BiomeRegistryLoader;
+import cn.nukkit.registry.mappings.populator.BlockRegistryPopulator;
 import com.google.common.collect.HashBiMap;
 
 public class MappingRegistries {
