@@ -52,29 +52,45 @@ public class CreativeGroupsRegistry {
      * Injects all registered custom groups into the group index map and runtime list.
      */
     public static void register() {
-        Map<CreativeCategory, List<CreativeItemGroup>> groupedVanilla = new EnumMap<>(CreativeCategory.class);
-        Map<CreativeCategory, List<CreativeItemGroup>> groupedCustom = new EnumMap<>(CreativeCategory.class);
-
         List<CreativeItemGroup> allOriginalGroups = new ArrayList<>(Registries.CREATIVE.getGroupList());
-        Map<CreativeItemGroup, Integer> originalGroupIndices = new HashMap<>();
-        for (int i = 0; i < allOriginalGroups.size(); i++) {
-            originalGroupIndices.put(allOriginalGroups.get(i), i);
-        }
+        Map<CreativeItemGroup, Integer> originalGroupIndices = extractOriginalGroupIndices(allOriginalGroups);
 
-        // Split vanilla groups by category
-        for (CreativeItemGroup group : allOriginalGroups) {
-            CreativeCategory category = CreativeCategory.valueOf(group.getCategory().name());
-            groupedVanilla.computeIfAbsent(category, k -> new ArrayList<>()).add(group);
-        }
+        Map<CreativeCategory, List<CreativeItemGroup>> groupedVanilla = groupByCategory(allOriginalGroups);
+        Map<CreativeCategory, List<CreativeItemGroup>> groupedCustom = groupByCategory(new ArrayList<>(INJECTED_GROUPS));
 
-        // Group custom groups by category
-        for (CreativeItemGroup group : INJECTED_GROUPS) {
-            CreativeCategory category = CreativeCategory.valueOf(group.getCategory().name());
-            groupedCustom.computeIfAbsent(category, k -> new ArrayList<>()).add(group);
-        }
-
-        List<CreativeItemGroup> rebuilt = new ArrayList<>();
         Map<Integer, Integer> groupIndexMap = new HashMap<>();
+        List<CreativeItemGroup> rebuilt = rebuildGroupsAndRemap(groupedVanilla, groupedCustom, originalGroupIndices, groupIndexMap);
+
+        Registries.CREATIVE.getGroupList().clear();
+        Registries.CREATIVE.getGroupList().addAll(rebuilt);
+
+        remapCreativeItemGroups(groupIndexMap);
+    }
+
+    private static Map<CreativeItemGroup, Integer> extractOriginalGroupIndices(List<CreativeItemGroup> allGroups) {
+        Map<CreativeItemGroup, Integer> indexMap = new HashMap<>();
+        for (int i = 0; i < allGroups.size(); i++) {
+            indexMap.put(allGroups.get(i), i);
+        }
+        return indexMap;
+    }
+
+    private static Map<CreativeCategory, List<CreativeItemGroup>> groupByCategory(List<CreativeItemGroup> groups) {
+        Map<CreativeCategory, List<CreativeItemGroup>> grouped = new EnumMap<>(CreativeCategory.class);
+        for (CreativeItemGroup group : groups) {
+            CreativeCategory category = CreativeCategory.valueOf(group.getCategory().name());
+            grouped.computeIfAbsent(category, k -> new ArrayList<>()).add(group);
+        }
+        return grouped;
+    }
+
+    private static List<CreativeItemGroup> rebuildGroupsAndRemap(
+            Map<CreativeCategory, List<CreativeItemGroup>> groupedVanilla,
+            Map<CreativeCategory, List<CreativeItemGroup>> groupedCustom,
+            Map<CreativeItemGroup, Integer> originalGroupIndices,
+            Map<Integer, Integer> groupIndexMap
+    ) {
+        List<CreativeItemGroup> rebuilt = new ArrayList<>();
         int newIndex = 0;
 
         for (CreativeCategory category : CreativeCategory.values()) {
@@ -82,11 +98,9 @@ public class CreativeGroupsRegistry {
             List<CreativeItemGroup> custom = groupedCustom.getOrDefault(category, Collections.emptyList());
 
             if (!vanilla.isEmpty()) {
-                // Split vanilla into main + wildcard
                 List<CreativeItemGroup> vanillaMain = vanilla.subList(0, vanilla.size() - 1);
                 CreativeItemGroup wildcardGroup = vanilla.get(vanilla.size() - 1);
 
-                // Add vanilla (except last)
                 for (CreativeItemGroup group : vanillaMain) {
                     rebuilt.add(group);
                     int originalIndex = originalGroupIndices.getOrDefault(group, -1);
@@ -99,7 +113,6 @@ public class CreativeGroupsRegistry {
                     newIndex++;
                 }
 
-                // Add custom groups
                 for (CreativeItemGroup group : custom) {
                     rebuilt.add(group);
                     CreativeItemRegistry.CATEGORY_GROUP_INDEX_MAP
@@ -109,7 +122,6 @@ public class CreativeGroupsRegistry {
                     newIndex++;
                 }
 
-                // Add wildcard last
                 rebuilt.add(wildcardGroup);
                 int originalIndex = originalGroupIndices.getOrDefault(wildcardGroup, -1);
                 if (originalIndex >= 0) {
@@ -121,13 +133,7 @@ public class CreativeGroupsRegistry {
                 newIndex++;
             }
         }
-
-        // Apply rebuilt group list
-        Registries.CREATIVE.getGroupList().clear();
-        Registries.CREATIVE.getGroupList().addAll(rebuilt);
-
-        // Remap items to their new group indices
-        remapCreativeItemGroups(groupIndexMap);
+        return rebuilt;
     }
 
     /**
