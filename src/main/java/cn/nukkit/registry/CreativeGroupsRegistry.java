@@ -27,26 +27,28 @@ public class CreativeGroupsRegistry {
      * triggers the injection process into the existing creative registry.
      */
     public static void load(CreativeCustomGroups.CustomGroupDefinition def) {
-        if (def == null || def.getName() == null || def.getCategory() == null) return;
+        if (!isValid(def)) return;
 
-        Item icon = null;
-        for (CreativeItemData data : CreativeItemRegistry.ITEM_DATA) {
-            Item candidate = data.getItem();
-            if (def.getIconId().equals(candidate.getName()) || def.getIconId().equalsIgnoreCase(candidate.getId())) {
-                icon = candidate;
-                break;
-            }
-        }
-
-        if (icon == null || icon.isNull() || (icon.isBlock() && icon.getBlockUnsafe() == null)) {
-            log.warn("Icon '{}' could not be resolved for group '{}'. Falling back to stone.", def.getIconId(), def.getName());
-            icon = Item.get("minecraft:stone");
-        }
-
+        Item icon = resolveIcon(def);
         CreativeItemGroup group = new CreativeItemGroup(def.getCategory(), def.getName(), icon);
         INJECTED_GROUPS.add(group);
     }
 
+    private static boolean isValid(CreativeCustomGroups.CustomGroupDefinition def) {
+        return def != null && def.getName() != null && def.getCategory() != null;
+    }
+
+    private static Item resolveIcon(CreativeCustomGroups.CustomGroupDefinition def) {
+        for (CreativeItemData data : CreativeItemRegistry.ITEM_DATA) {
+            Item candidate = data.getItem();
+            if (def.getIconId().equals(candidate.getName()) || def.getIconId().equalsIgnoreCase(candidate.getId())) {
+                return candidate;
+            }
+        }
+        log.warn("Icon '{}' could not be resolved for group '{}'. Falling back to stone.", def.getIconId(), def.getName());
+
+        return Item.get("minecraft:stone");
+    }
 
     /**
      * Injects all registered custom groups into the group index map and runtime list.
