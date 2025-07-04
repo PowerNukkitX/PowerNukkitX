@@ -12,6 +12,6 @@ public class ItemDiscLavaChicken extends Item {
     }
 
     public ItemDiscLavaChicken(Integer meta, int count) {
-        super(MUSIC_DISC_TEARS, 0, count, "Disc Lava Chicken");
+        super(MUSIC_DISC_LAVA_CHICKEN, 0, count, "Disc Lava Chicken");
     }
 }

@@ -619,7 +619,7 @@ public interface ItemID {
 
     String MUSIC_DISC_TEARS = "minecraft:music_disc_tears";
 
-    String MUSIC_DISC_LAVA_CHICKEN = "minecraft:music_disc_lava_chicken";
+    String MUSIC_DISC_LAVA_CHICKEN = "minecraft:record_lava_chicken";
 
     String MUTTON = "minecraft:mutton";
 
