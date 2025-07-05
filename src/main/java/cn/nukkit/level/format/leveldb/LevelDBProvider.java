@@ -579,6 +579,7 @@ public class LevelDBProvider implements LevelProvider {
             gameRules.setGameRule(GameRule.SHOW_TAGS, d.getBoolean("showtags"));
             gameRules.setGameRule(GameRule.SPAWN_RADIUS, d.getInt("spawnradius"));
             gameRules.setGameRule(GameRule.TNT_EXPLODES, d.getBoolean("tntexplodes"));
+            gameRules.setGameRule(GameRule.LOCATOR_BAR, d.getBoolean("locatorbar"));
             LevelDat.LevelDatBuilder levelDatBuilder = LevelDat.builder()
                     .biomeOverride(d.getString("BiomeOverride"))
                     .centerMapsToOrigin(d.getBoolean("CenterMapsToOrigin"))
