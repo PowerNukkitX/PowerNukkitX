@@ -53,12 +53,11 @@ public class GameplaySettings extends OkaeriConfig {
     boolean allowVibrantVisuals = true;
     @Comment("pnx.settings.gameplay.experiments")
     ArrayList<String> experiments = new ArrayList<>(List.of(
-            "data_driven_items",
-            "data_driven_blocks_and_items",
             "data_driven_biomes",
-            "upcoming_creator_features",
+            "experimental_creator_cameras",
             "gametest",
-            "experimental_molang_features",
-            "cameras"
+            "jigsaw_structures",
+            "upcoming_creator_features",
+            "villager_trades_rebalance"
     ));
 }
