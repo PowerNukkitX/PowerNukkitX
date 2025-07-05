@@ -40,6 +40,7 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTotemOfUndying;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
@@ -2025,6 +2026,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public boolean onInteract(Player player, Item item) {
         this.despawnable = false;
+
+        if (this instanceof EntityLeashable && Objects.equals(item.getId(), ItemID.LEAD) && !this.isLeashed()) {
+            return this.leash(player);
+        }
+
         return false;
     }
 
@@ -3035,6 +3041,37 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         setFreezingEffectStrength(this.freezingTicks / 140f);
     }
 
+    public long getLeashHolder() {
+        return this.entityDataMap.get(LEASH_HOLDER);
+    }
+
+    protected void setLeashHolder(Entity entity) {
+        this.entityDataMap.put(LEASH_HOLDER, entity != null ? entity.getId() : -1L);
+    }
+
+    public boolean isLeashed() {
+        return this.getDataFlag(EntityFlag.LEASHED) && this.getLeashHolder() != -1L;
+    }
+
+    public boolean leash(Entity entity) {
+        if (this.isLeashed()) {
+            return false;
+        }
+
+        this.setDataFlag(EntityFlag.LEASHED, true);
+        this.setLeashHolder(entity);
+        return true;
+    }
+
+    public boolean unleash() {
+        if (!this.isLeashed()) {
+            return false;
+        }
+
+        this.setDataFlag(EntityFlag.LEASHED, false);
+        this.setLeashHolder(null);
+        return true;
+    }
 
     public void setAmbientSoundInterval(float interval) {
         this.setDataProperty(AMBIENT_SOUND_INTERVAL, interval);
