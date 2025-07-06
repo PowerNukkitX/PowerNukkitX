@@ -14,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResourcePacksInfoPacket extends DataPacket {
+
     public boolean mustAccept;
     public boolean hasAddonPacks;
     public boolean scripting;
@@ -26,6 +27,9 @@ public class ResourcePacksInfoPacket extends DataPacket {
      * @since v766
      */
     public String worldTemplateVersion;
+
+    public boolean forceDisableVibrantVisuals;
+
 
     public ResourcePack[] resourcePackEntries = ResourcePack.EMPTY_ARRAY;
 
@@ -41,10 +45,10 @@ public class ResourcePacksInfoPacket extends DataPacket {
         byteBuf.writeBoolean(this.scripting);
         byteBuf.writeUUID(this.worldTemplateId);
         byteBuf.writeString(this.worldTemplateVersion);
-        this.encodePacks(byteBuf, this.resourcePackEntries, false);
+        this.encodePacks(byteBuf, this.resourcePackEntries);
     }
 
-    private void encodePacks(HandleByteBuf byteBuf, ResourcePack[] packs, boolean behaviour) {
+    private void encodePacks(HandleByteBuf byteBuf, ResourcePack[] packs) {
         byteBuf.writeShortLE(packs.length);
         for (ResourcePack entry : packs) {
             byteBuf.writeUUID(entry.getPackId());
@@ -53,37 +57,11 @@ public class ResourcePacksInfoPacket extends DataPacket {
             byteBuf.writeString(entry.getEncryptionKey()); // encryption key
             byteBuf.writeString(""); // sub-pack name
             byteBuf.writeString(!entry.getEncryptionKey().isEmpty() ? entry.getPackId().toString() : ""); // content identity
-            byteBuf.writeBoolean(false); // scripting
-            byteBuf.writeBoolean(false);    // isAddonPack
+            byteBuf.writeBoolean(entry.usesScript()); // scripting
+            byteBuf.writeBoolean(entry.isAddonPack());    // isAddonPack
+            byteBuf.writeBoolean(entry.isRaytracingCapable()); // raytracing capable
             byteBuf.writeString(entry.cdnUrl());    // cdnUrl
-            if (!behaviour) {
-                byteBuf.writeBoolean(false); // raytracing capable
-            }
         }
-    }
-
-    public boolean isForcedToAccept() {
-        return mustAccept;
-    }
-
-    public void setForcedToAccept(boolean mustAccept) {
-        this.mustAccept = mustAccept;
-    }
-
-    public boolean isScriptingEnabled() {
-        return scripting;
-    }
-
-    public void setScriptingEnabled(boolean scripting) {
-        this.scripting = scripting;
-    }
-
-    public ResourcePack[] getResourcePackEntries() {
-        return resourcePackEntries;
-    }
-
-    public void setResourcePackEntries(ResourcePack[] resourcePackEntries) {
-        this.resourcePackEntries = resourcePackEntries;
     }
 
     @Override
