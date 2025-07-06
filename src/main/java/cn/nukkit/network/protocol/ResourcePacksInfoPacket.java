@@ -33,9 +33,6 @@ public class ResourcePacksInfoPacket extends DataPacket {
      */
     public String worldTemplateVersion;
 
-    public boolean forceDisableVibrantVisuals;
-
-
     public ResourcePack[] resourcePackEntries = ResourcePack.EMPTY_ARRAY;
 
     @Override
