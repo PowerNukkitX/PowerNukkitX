@@ -1302,6 +1302,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(YELLOW_TERRACOTTA, BlockYellowTerracotta.class);
             register(YELLOW_WOOL, BlockYellowWool.class);
             register(ZOMBIE_HEAD, BlockZombieHead.class);
+            register(DRIED_GHAST, BlockDriedGhast.class);
         } catch (RegisterException ignore) {
         }
     }
@@ -1569,5 +1570,9 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean shouldSkip(String bid) {
+        return skipBlockSet.contains(bid);
     }
 }

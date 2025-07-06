@@ -258,4 +258,6 @@ public interface EntityID {
   String CHEST_BOAT = "minecraft:chest_boat";
 
   String PLAYER = "minecraft:player";
+
+  String HAPPY_GHAST = "minecraft:happy_ghast";
 }

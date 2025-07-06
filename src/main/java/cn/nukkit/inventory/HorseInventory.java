@@ -10,10 +10,8 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.ContainerClosePacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
-import cn.nukkit.network.protocol.UpdateEquipmentPacket;
+import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 
 import java.io.IOException;
@@ -71,7 +69,7 @@ public class HorseInventory extends BaseInventory {
                 this.getHolder().setDataFlag(EntityFlag.WASD_CONTROLLED, false);
                 this.getHolder().setDataFlag(EntityFlag.CAN_POWER_JUMP, false);
             } else {
-                this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEventPacket.SOUND_SADDLE, -1, this.getHolder().getIdentifier(), false, false);
+                this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEvent.SADDLE, -1, this.getHolder().getIdentifier(), false, false);
                 this.getHolder().setDataFlag(EntityFlag.SADDLED);
                 this.getHolder().setDataFlag(EntityFlag.WASD_CONTROLLED);
                 this.getHolder().setDataFlag(EntityFlag.CAN_POWER_JUMP);

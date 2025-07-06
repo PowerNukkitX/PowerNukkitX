@@ -38,7 +38,8 @@ public enum GameRule {
     RESPAWN_BLOCKS_EXPLODE("respawnBlocksExplode"),
     SHOW_BORDER_EFFECT("showBorderEffect"),
     RECIPES_UNLOCK("recipesUnlock"),
-    SHOW_DAYS_PLAYED("showDaysPlayed");
+    SHOW_DAYS_PLAYED("showDaysPlayed"),
+    LOCATOR_BAR("locatorBar");
 
     public static final GameRule[] EMPTY_ARRAY = new GameRule[0];
     private final String name;

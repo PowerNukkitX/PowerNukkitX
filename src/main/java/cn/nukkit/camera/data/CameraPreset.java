@@ -119,8 +119,6 @@ public final class CameraPreset {
     @NotNull
     private final OptionalValue<Boolean> playEffect;
     @NotNull
-    private final OptionalValue<Boolean> alignTargetAndCameraForward;
-    @NotNull
     private final OptionalValue<CameraPresetAimAssist> aimAssist;
 
 
@@ -150,7 +148,6 @@ public final class CameraPreset {
                 null,
                 null,
                 null,
-                null,
                 null
         );
     }
@@ -174,7 +171,6 @@ public final class CameraPreset {
             @Nullable Vector2f horizontalRotationLimit,
             @Nullable Vector2f verticalRotationLimit,
             @Nullable Boolean continueTargeting,
-            @Nullable Boolean alignTargetAndCameraForward,
             @Nullable CameraPresetAimAssist aimAssist
     ) {
         this.identifier = identifier;
@@ -195,7 +191,6 @@ public final class CameraPreset {
         this.horizontalRotationLimit = horizontalRotationLimit;
         this.verticalRotationLimit = verticalRotationLimit;
         this.continueTargeting = OptionalValue.ofNullable(continueTargeting);
-        this.alignTargetAndCameraForward = OptionalValue.ofNullable(alignTargetAndCameraForward);
         this.aimAssist = OptionalValue.ofNullable(aimAssist);
     }
 }

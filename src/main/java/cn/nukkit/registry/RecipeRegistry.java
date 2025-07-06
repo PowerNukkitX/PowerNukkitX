@@ -482,7 +482,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     private void loadRecipes() {
         //load xp config
         var furnaceXpConfig = new Config(Config.JSON);
-        try (var r = Server.class.getClassLoader().getResourceAsStream("furnace_xp.json")) {
+        try (var r = Server.class.getClassLoader().getResourceAsStream("gamedata/unknown/furnace_xp.json")) {
             furnaceXpConfig.load(r);
         } catch (IOException e) {
             log.warn("Failed to load furnace xp config");
@@ -495,7 +495,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         // We can use the original reader again, once endstone generates data again
 
         var recipeConfig = new Config(Config.JSON);
-        try (var r = Server.class.getClassLoader().getResourceAsStream("recipes.json")) {
+        try (var r = Server.class.getClassLoader().getResourceAsStream("gamedata/kaooot/recipes.json")) {
             recipeConfig.load(r);
 
             //load potionMixes

@@ -506,53 +506,94 @@ public class Chunk implements IChunk {
     @Override
     public void doMobSpawning() {
         Level level = getProvider().getLevel();
-        if(isLoaded() && isGenerated() && isLightPopulated()) {
-            if(Utils.rand(0, 50) == 0) {
-                Entity[] spawnedEntities = level.getChunkEntities(getX(), getZ()).values().stream().filter(entity -> entity.despawnable).toArray(Entity[]::new);
-                //Spawning
-                if(Utils.rand(0, 4) == 0) {
-                    if (spawnedEntities.length < Server.getInstance().getSettings().chunkSettings().spawnLimit()) {
-                        int x = Utils.rand(0, 16);
-                        int z = Utils.rand(0, 16);
-                        DimensionData data = getDimensionData();
-                        SpawnRule[] spawnRules = Registries.ENTITY.getSpawnRules().toArray(new SpawnRule[0]);
-                        var players = level.getPlayers().values().stream().map(player -> new Vector2(player.x, player.z)).toList();
-                        Vector2 planeVec = new Vector2(x + 16 * getX(), z + 16 * getZ());
-                        if(players.stream().noneMatch(player -> {
-                            double distance = player.distance(planeVec);
-                            return distance < 54 && distance > 24;
-                        })) return;
-                        for (int y = data.getMaxHeight(); y > data.getMinHeight(); y--) {
-                            Vector3 lookVec = new Vector3(x + 16 * getX(), y, z + 16 * getZ());
-                            Block block = level.getBlock(lookVec, true);
-                            SpawnRule[] rules = Arrays.stream(spawnRules).filter(spawnRule -> spawnRule.evaluate(block)).toArray(SpawnRule[]::new);
-                            if(rules.length > 0) {
-                                SpawnRule spawnRule = rules[Utils.rand(0, rules.length-1)];
-                                int herd = Utils.rand(spawnRule.getHerdMin(), spawnRule.getHerdMax());
-                                for(int i = 0; i < herd; i++) {
-                                    int difference = spawnRule.getHerdMax()-spawnRule.getHerdMin();
-                                    if(!EntityFlyable.class.isAssignableFrom(Registries.ENTITY.getEntityClass(spawnRule.getEntityId()))) {
-                                        level.getSafeSpawn(lookVec, difference, true).add(0.5, 0, 0.5);
-                                    }
-                                    Entity entity = Registries.ENTITY.provideEntity(spawnRule.getEntityId(), this, Entity.getDefaultNBT(lookVec));
-                                    if (entity == null) continue;
-                                    entity.despawnable = true;
-                                    entity.spawnToAll();
-                                }
-                            }
+        if (!isLoaded() || !isGenerated() || !isLightPopulated()) return;
+        if (Utils.rand(0, 50) != 0) return;
+
+        var chunkEntities = level.getChunkEntities(getX(), getZ());
+        Collection<Entity> spawnedEntities = chunkEntities.values().stream().filter(
+                e -> e.despawnable && e.isAlive() && !e.closed
+        ).toList();
+
+        // Spawning
+        if (Utils.rand(0, 4) == 0 && spawnedEntities.size() < Server.getInstance().getSettings().chunkSettings().spawnLimit()) {
+            int x = Utils.rand(0, 16);
+            int z = Utils.rand(0, 16);
+            int chunkX = getX(), chunkZ = getZ();
+            int absX = (chunkX << 4) + x;
+            int absZ = (chunkZ << 4) + z;
+
+            int spawnedEntityCount = spawnedEntities.size();
+            int maxEntityCount = Server.getInstance().getSettings().chunkSettings().spawnLimit();
+
+            DimensionData data = getDimensionData();
+            SpawnRule[] spawnRules = Registries.ENTITY.getSpawnRules().toArray(new SpawnRule[0]);
+            var players = level.getPlayers().values();
+
+            boolean nearPlayer = false;
+            for (Player player : players) {
+                double dx = player.x - absX;
+                double dz = player.z - absZ;
+                double distSq = dx * dx + dz * dz;
+                if (distSq < 54 * 54 && distSq > 24 * 24) {
+                    nearPlayer = true;
+                    break;
+                }
+            }
+            if (!nearPlayer) return;
+
+            Vector3 lookVec = new Vector3();
+            for (int y = data.getMaxHeight(); y > data.getMinHeight(); y--) {
+                lookVec.setComponents(absX, y, absZ);
+                Block block = level.getBlock(lookVec, true);
+
+                List<SpawnRule> applicableRules = null;
+                for (SpawnRule rule : spawnRules) {
+                    if (rule.evaluate(block)) {
+                        if (applicableRules == null) applicableRules = new ArrayList<>();
+                        applicableRules.add(rule);
+                    }
+                }
+
+                if (applicableRules != null && !applicableRules.isEmpty()) {
+                    SpawnRule spawnRule = applicableRules.get(Utils.rand(0, applicableRules.size() - 1));
+                    int herd = Utils.rand(spawnRule.getHerdMin(), spawnRule.getHerdMax());
+                    int herdSpread = spawnRule.getHerdMax() - spawnRule.getHerdMin();
+
+                    for (int i = 0; i < herd; i++) {
+                        Vector3 spawnPos = lookVec;
+                        if (!EntityFlyable.class.isAssignableFrom(Registries.ENTITY.getEntityClass(spawnRule.getEntityId()))) {
+                            spawnPos = level.getSafeSpawn(lookVec, herdSpread, true).add(0.5, 0, 0.5);
+                        }
+                        if (spawnedEntityCount >= maxEntityCount) {
+                            break;
+                        }
+
+                        Entity entity = Registries.ENTITY.provideEntity(spawnRule.getEntityId(), this, Entity.getDefaultNBT(spawnPos));
+                        if (entity != null) {
+                            spawnedEntityCount++;
+                            entity.despawnable = true;
+                            entity.spawnToAll();
                         }
                     }
                 }
-                //Despawning
-                if(spawnedEntities.length != 0) {
-                    int rand = Utils.rand(0, spawnedEntities.length-1);
+            }
+        }
+
+        // Despawning
+        if (!spawnedEntities.isEmpty()) {
+            int randIndex = Utils.rand(0, spawnedEntities.size() - 1);
+            Entity randomEntity = spawnedEntities.stream().skip(randIndex).findFirst().orElse(null);
+            if (randomEntity != null) {
+                boolean anyNear = false;
+                for (Player player : level.getPlayers().values()) {
+                    if (player.distance(randomEntity) <= 54) {
+                        anyNear = true;
+                        break;
+                    }
+                }
+                if (!anyNear && randomEntity.getAge() > 6000) {
                     try {
-                        Entity randomEntity = spawnedEntities[rand];
-                        if(level.getPlayers().values().stream().noneMatch(player -> player.distance(randomEntity) <= 54)) {
-                            if(randomEntity.getAge() > 6000) {
-                                randomEntity.close();
-                            }
-                        }
+                        randomEntity.close();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -602,7 +643,7 @@ public class Chunk implements IChunk {
         if (provider == null) {
             return true;
         }
-        if (save && this.changes.get() != 0) {
+        if (save && this.changes.get() != 0 && isInit) {
             provider.saveChunk(this.getX(), this.getZ());
         }
         if (safe) {
@@ -640,10 +681,14 @@ public class Chunk implements IChunk {
                         changed = true;
                         continue;
                     }
-                    Entity entity = Entity.createEntity(nbt.getString("identifier"), this, nbt);
-                    if (entity != null) {
-                        changed = true;
-                    }
+                   try {
+                       Entity entity = Entity.createEntity(nbt.getString("identifier"), this, nbt);
+                       if (entity != null) {
+                           changed = true;
+                       }
+                   } catch (Exception e) {
+                       log.error("Failed to spawn blockentity", e);
+                   }
                 }
                 this.entityNBT = null;
             }
@@ -653,10 +698,12 @@ public class Chunk implements IChunk {
                     if (nbt != null) {
                         if (!nbt.contains("id")) {
                             changed = true;
+                            log.warn("BlockEntity tag without id");
                             continue;
                         }
                         if ((nbt.getInt("x") >> 4) != this.getX() || ((nbt.getInt("z") >> 4) != this.getZ())) {
                             changed = true;
+                            log.warn("BlockEntity tag position does not match chunk!");
                             continue;
                         }
                         BlockEntity blockEntity = BlockEntity.createBlockEntity(nbt.getString("id"), this, nbt);
@@ -673,6 +720,11 @@ public class Chunk implements IChunk {
 
             this.isInit = true;
         }
+    }
+
+    @Override
+    public boolean isInitiated() {
+        return isInit;
     }
 
     @Override

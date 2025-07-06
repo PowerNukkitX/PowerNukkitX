@@ -3,7 +3,7 @@
 
 [versions]
 cn-powernukkitx-libdeflate-java = "0.0.2-PNX"
-cn-powernukkitx-terra-binary = "6.4.3"
+cn-powernukkitx-terra-binary = "6.6.0"
 fastreflection = "8733a599fa"
 com-github-oshi-oshi-core = "6.4.10"
 com-google-code-findbugs-jsr305 = "3.0.2"

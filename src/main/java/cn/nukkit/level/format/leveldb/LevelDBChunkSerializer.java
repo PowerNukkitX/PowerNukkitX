@@ -59,6 +59,12 @@ public class LevelDBChunkSerializer {
     }
 
     public void serialize(WriteBatch writeBatch, IChunk chunk) {
+
+        //Spawning block entities requires call the getSpawnPacket method,
+        //which is easy to call Level#getBlock, which can cause a deadlock,
+        //so handle it without locking
+        serializeTileAndEntity(writeBatch, chunk);
+
         chunk.batchProcess(unsafeChunk -> {
             try {
                 writeBatch.put(LevelDBKeyUtil.VERSION.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getProvider().getDimensionData()), new byte[]{IChunk.VERSION});
@@ -71,10 +77,7 @@ public class LevelDBChunkSerializer {
                 throw new RuntimeException(e);
             }
         });
-        //Spawning block entities requires call the getSpawnPacket method,
-        //which is easy to call Level#getBlock, which can cause a deadlock,
-        //so handle it without locking
-        serializeTileAndEntity(writeBatch, chunk);
+
     }
 
     public void deserialize(DB db, IChunkBuilder builder) throws IOException {

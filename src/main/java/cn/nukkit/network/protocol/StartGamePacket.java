@@ -5,6 +5,7 @@ import cn.nukkit.level.GameRules;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.network.protocol.types.ExperimentEntry;
 import cn.nukkit.registry.Registries;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -130,6 +131,12 @@ public class StartGamePacket extends DataPacket {
      * @since v685
      */
     private String scenarioId = "";
+    /**
+     * @since v818
+     */
+    private String ownerIdentifier = "";
+    private List<ExperimentEntry> experiments = new ArrayList<>();
+
     @Override
     public void decode(HandleByteBuf byteBuf) {
 
@@ -148,7 +155,6 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeString(this.worldName);
         byteBuf.writeString(this.premiumWorldTemplateId);
         byteBuf.writeBoolean(this.isTrial);
-        byteBuf.writeVarInt(Objects.requireNonNullElseGet(this.serverAuthoritativeMovement, () -> this.isMovementServerAuthoritative ? 1 : 0));// 2 - rewind
         byteBuf.writeVarInt(0); // RewindHistorySize
         if (this.serverAuthoritativeMovement != null) {
             byteBuf.writeBoolean(this.serverAuthoritativeMovement > 0); // isServerAuthoritativeBlockBreaking
@@ -214,22 +220,9 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(this.isTexturePacksRequired);
         byteBuf.writeGameRules(this.gameRules);
 
-        byteBuf.writeIntLE(6); // Experiment count
-        {
-            byteBuf.writeString("data_driven_items");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("data_driven_biomes");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("upcoming_creator_features");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("gametest");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("experimental_molang_features");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("cameras");
-            byteBuf.writeBoolean(true);
-        }
-        byteBuf.writeBoolean(true); // Were experiments previously toggled
+        byteBuf.writeIntLE(experiments.size()); // Experiment count
+        byteBuf.writeExperiments(experiments); // Write experiments
+        byteBuf.writeBoolean(!experiments.isEmpty()); // Were experiments previously toggled
 
         byteBuf.writeBoolean(this.bonusChest);
         byteBuf.writeBoolean(this.hasStartWithMapEnabled);
@@ -257,6 +250,7 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeString(serverId);
         byteBuf.writeString(worldId);
         byteBuf.writeString(scenarioId);
+        byteBuf.writeString(ownerIdentifier);
         /* Level settings end */
     }
 

@@ -1,13 +1,10 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockPlayerHead;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemGroup;
@@ -16,11 +13,9 @@ import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteOrder;
@@ -48,7 +43,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         if (isLoad.getAndSet(true))
             return;
 
-        try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.json")) {
+        try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/creative_items.json")) {
             Map data = new Gson().fromJson(new InputStreamReader(input), Map.class);
             List<Map<String, Object>> groups = (List<Map<String, Object>>) data.get("groups");
             for (int i = 0; i < groups.size(); i++) {

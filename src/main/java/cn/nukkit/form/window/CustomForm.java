@@ -12,6 +12,7 @@ import cn.nukkit.form.element.custom.ElementStepSlider;
 import cn.nukkit.form.element.custom.ElementToggle;
 import cn.nukkit.form.response.CustomResponse;
 import cn.nukkit.form.response.ElementResponse;
+import cn.nukkit.network.protocol.types.ModalFormCancelReason;
 import cn.nukkit.utils.JSONUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -56,6 +57,11 @@ public class CustomForm extends Form<CustomResponse> {
     }
 
     @Override
+    public CustomForm onCancel(BiConsumer<Player, ModalFormCancelReason> cancel) {
+        return (CustomForm) super.onCancel(cancel);
+    }
+
+    @Override
     public CustomForm send(Player player) {
         return (CustomForm) super.send(player);
     }
@@ -89,7 +95,13 @@ public class CustomForm extends Form<CustomResponse> {
     }
 
     @Override
-    public CustomResponse respond(Player player, String formData) {
+    public CustomResponse respond(Player player, String formData, ModalFormCancelReason cancelReason) {
+        if(cancelReason != null) {
+            if(cancelReason == ModalFormCancelReason.USER_CLOSED) this.supplyClosed(player);
+            else this.supplyCancelled(player, cancelReason);
+            return null;
+        }
+
         if (!super.handle(player, formData)) {
             this.supplyClosed(player);
             return null;
