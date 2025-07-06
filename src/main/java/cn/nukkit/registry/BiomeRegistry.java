@@ -32,7 +32,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
-        try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biomes.json")) { //From Endstone Data
+        try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/biomes.json")) { //From Endstone Data
             Gson gson = new GsonBuilder().setObjectToNumberStrategy(JsonReader::nextInt).create();
             Map<String, ?> map = gson.fromJson(new InputStreamReader(stream), Map.class);
             for (var e : map.entrySet()) {
@@ -42,7 +42,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
             throw new RuntimeException(e);
         }
 
-        try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_definitions.nbt")) {
+        try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/biome_definitions.nbt")) {
             CompoundTag root = NBTIO.readCompressed(stream);
             BIOME_STRING_LIST.addAll(root.getList("biomeStringList", StringTag.class).getAll().stream().map(tag -> tag.data).toList());
             ListTag<CompoundTag> biomeData = root.getList("biomeData", CompoundTag.class);

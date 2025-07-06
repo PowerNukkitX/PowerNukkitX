@@ -13,15 +13,22 @@ import cn.nukkit.utils.version.Version;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
 public class ResourcePackHandler extends BedrockSessionPacketHandler {
+
+    private static final int PACKET_SEND_DELAY = 4; // DELAY THE SEND OF PACKETS TO AVOID BURSTING SLOWER AND/OR HIGHER PING CLIENTS
+    private final Queue<ResourcePackChunkRequestPacket> chunkRequestQueue = new ConcurrentLinkedQueue<>();
+    private boolean sendingChunks = false;
 
     public ResourcePackHandler(BedrockSession session) {
         super(session);
         ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
         infoPacket.resourcePackEntries = session.getServer().getResourcePackManager().getResourceStack();
         infoPacket.mustAccept = session.getServer().getForceResources();
+        infoPacket.disableVibrantVisuals = !session.getServer().allowVibrantVisuals();
         infoPacket.worldTemplateId = UUID.randomUUID();
         infoPacket.worldTemplateVersion = "";
         session.sendPacket(infoPacket);
@@ -88,13 +95,28 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
 
     @Override
     public void handle(ResourcePackChunkRequestPacket pk) {
-        // TODO: Pack version check
+        chunkRequestQueue.add(pk);
+        if (!sendingChunks) {
+            sendingChunks = true;
+            processNextChunk();
+        }
+    }
+
+    private void processNextChunk() {
+        ResourcePackChunkRequestPacket pk = chunkRequestQueue.poll();
+        if (pk == null) {
+            sendingChunks = false;
+            return;
+        }
+
         var mgr = session.getServer().getResourcePackManager();
         ResourcePack resourcePack = mgr.getPackById(pk.getPackId());
         if (resourcePack == null) {
             this.session.close("disconnectionScreen.resourcePack");
+            sendingChunks = false;
             return;
         }
+
         int maxChunkSize = mgr.getMaxChunkSize();
         ResourcePackChunkDataPacket dataPacket = new ResourcePackChunkDataPacket();
         dataPacket.setPackId(resourcePack.getPackId());
@@ -102,6 +124,13 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
         dataPacket.chunkIndex = pk.chunkIndex;
         dataPacket.data = resourcePack.getPackChunk(maxChunkSize * pk.chunkIndex, maxChunkSize);
         dataPacket.progress = maxChunkSize * (long) pk.chunkIndex;
+
         session.sendPacket(dataPacket);
+        session.flushSendBuffer();
+
+        // DELAY THE SEND OF PACKETS TO AVOID BURSTING SLOWER AND/OR HIGHER PIGNS CLIENTS
+        session.getServer().getScheduler().scheduleDelayedTask(() -> {
+            processNextChunk();
+        }, PACKET_SEND_DELAY);
     }
 }

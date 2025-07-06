@@ -579,4 +579,8 @@ public interface PacketHandler {
     }
 
     default void handle(PlayerLocationPacket pk) {
-    }}
+    }
+
+    default void handle(ServerScriptDebugDrawerPacket pk) {
+    }
+}

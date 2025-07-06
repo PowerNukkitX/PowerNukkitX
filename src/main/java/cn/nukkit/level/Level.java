@@ -64,9 +64,11 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.SpawnPointType;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionData;
+import cn.nukkit.network.protocol.types.inventory.transaction.UseItemData;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
@@ -91,6 +93,7 @@ import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongArraySet;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -262,10 +265,11 @@ public class Level implements Metadatable {
     /*
      * <ChunkIndex,<ChunkLoader ID,ChunkLoader>>
      */
-    private final Long2ObjectOpenHashMap<Map<Integer, ChunkLoader>> chunkLoaders = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectNonBlockingMap<Map<Integer, ChunkLoader>> chunkLoaders = new Long2ObjectNonBlockingMap<>();
     // Computation atomicity may be required in addChunkPacket(int, int, DataPacket)
     private final ConcurrentHashMap<Long, Deque<DataPacket>> chunkPackets = new ConcurrentHashMap<>();
     @NonComputationAtomic
+    private final LongArraySet unloadingChunks = new LongArraySet();
     private final Long2ObjectNonBlockingMap<Long> unloadQueue = new Long2ObjectNonBlockingMap<>();
     private final ConcurrentHashMap<Long, TickCachedBlockStore> tickCachedBlocks = new ConcurrentHashMap<>();
     private final LongSet highLightChunks = new LongOpenHashSet();
@@ -703,17 +707,17 @@ public class Level implements Metadatable {
         this.addChunkPacket(pos.getChunkX(), pos.getChunkZ(), pk);
     }
 
-    public void addLevelSoundEvent(Vector3 pos, int type, int data, int entityType) {
+    public void addLevelSoundEvent(Vector3 pos, LevelSoundEvent type, int data, int entityType) {
         addLevelSoundEvent(pos, type, data, entityType, false, false);
     }
 
-    public void addLevelSoundEvent(Vector3 pos, int type, int data, int entityType, boolean isBaby, boolean isGlobal) {
+    public void addLevelSoundEvent(Vector3 pos, LevelSoundEvent type, int data, int entityType, boolean isBaby, boolean isGlobal) {
         String identifier = Registries.ENTITY.getEntityIdentifier(entityType);
         if (identifier == null) identifier = ":";
         addLevelSoundEvent(pos, type, data, identifier, isBaby, isGlobal);
     }
 
-    public void addLevelSoundEvent(Vector3 pos, int type) {
+    public void addLevelSoundEvent(Vector3 pos, LevelSoundEvent type) {
         this.addLevelSoundEvent(pos, type, -1);
     }
 
@@ -724,7 +728,7 @@ public class Level implements Metadatable {
      * @param type ID of the sound from {@link cn.nukkit.network.protocol.LevelSoundEventPacket}
      * @param data generic data that can affect sound
      */
-    public void addLevelSoundEvent(Vector3 pos, int type, int data) {
+    public void addLevelSoundEvent(Vector3 pos, LevelSoundEvent type, int data) {
         this.addLevelSoundEvent(pos, type, data, ":", false, false);
     }
 
@@ -738,7 +742,7 @@ public class Level implements Metadatable {
      * @param isBaby     the is baby,default false
      * @param isGlobal   the is global,default false
      */
-    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, boolean isGlobal) {
+    public void addLevelSoundEvent(Vector3 pos, LevelSoundEvent type, int data, String identifier, boolean isBaby, boolean isGlobal) {
         LevelSoundEventPacket pk = new LevelSoundEventPacket();
         pk.sound = type;
         pk.extraData = data;
@@ -929,6 +933,7 @@ public class Level implements Metadatable {
     public boolean unregisterChunkLoader(ChunkLoader loader, int chunkX, int chunkZ, boolean isSafeUnload) {
         int loaderId = loader.getLoaderId();
         long chunkHash = Level.chunkHash(chunkX, chunkZ);
+        if(chunkHash < 0) return false;
         Map<Integer, ChunkLoader> chunkLoadersIndex = this.chunkLoaders.get(chunkHash);
         if (chunkLoadersIndex != null) {
             ChunkLoader oldLoader = chunkLoadersIndex.remove(loaderId);
@@ -1288,8 +1293,8 @@ public class Level implements Metadatable {
                 bolt.setEffect(false);
             }
 
-            this.addLevelSoundEvent(vector, LevelSoundEventPacket.SOUND_THUNDER, -1, Registries.ENTITY.getEntityNetworkId(EntityID.LIGHTNING_BOLT));
-            this.addLevelSoundEvent(vector, LevelSoundEventPacket.SOUND_EXPLODE, -1, Registries.ENTITY.getEntityNetworkId(EntityID.LIGHTNING_BOLT));
+            this.addLevelSoundEvent(vector, LevelSoundEvent.THUNDER, -1, Registries.ENTITY.getEntityNetworkId(EntityID.LIGHTNING_BOLT));
+            this.addLevelSoundEvent(vector, LevelSoundEvent.EXPLODE, -1, Registries.ENTITY.getEntityNetworkId(EntityID.LIGHTNING_BOLT));
         }
     }
 
@@ -2726,17 +2731,21 @@ public class Level implements Metadatable {
         return entities;
     }
 
-    public Item useItemOn(Vector3 vector, Item item, BlockFace face, float fx, float fy, float fz) {
-        return this.useItemOn(vector, item, face, fx, fy, fz, null);
+    public Item useItemOn(Vector3 vector, Item item, BlockFace face, UseItemData data) {
+        return this.useItemOn(vector, item, face, data, null);
     }
 
-    public Item useItemOn(Vector3 vector, Item item, BlockFace face, float fx, float fy, float fz, Player player) {
-        return this.useItemOn(vector, item, face, fx, fy, fz, player, true);
+    public Item useItemOn(Vector3 vector, Item item, BlockFace face, UseItemData data, Player player) {
+        return this.useItemOn(vector, item, face, data, player, true);
     }
 
-    public Item useItemOn(Vector3 vector, Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound) {
+    public Item useItemOn(Vector3 vector, Item item, BlockFace face, UseItemData data, Player player, boolean playSound) {
         Block target = this.getBlock(vector);
         Block block = target.getSide(face);
+
+        float fx = data.clickPos.x;
+        float fy = data.clickPos.y;
+        float fz = data.clickPos.z;
 
         if (item.getBlock() instanceof BlockScaffolding && face == BlockFace.UP && block.getId().equals(BlockID.SCAFFOLDING)) {
             while (block instanceof BlockScaffolding) {
@@ -2755,7 +2764,10 @@ public class Level implements Metadatable {
         if (target.isAir()) {
             return null;
         }
-        if (player != null) {
+
+        boolean isPlayerInput = data.triggerType == UseItemData.TriggerType.PLAYER_INPUT;
+
+        if (player != null && isPlayerInput) {
             PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, target.isAir() ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
             //                                handle spawn protect
             if (player.getGamemode() > 2 || (!player.isOp() && isInSpawnRadius(target))) {
@@ -2916,7 +2928,7 @@ public class Level implements Metadatable {
         }
 
         if (playSound) {
-            this.addLevelSoundEvent(hand, LevelSoundEventPacket.SOUND_PLACE, hand.getRuntimeId());
+            this.addLevelSoundEvent(hand, LevelSoundEvent.PLACE, hand.getRuntimeId());
         }
 
         if (item.getCount() <= 0) {
@@ -3505,7 +3517,7 @@ public class Level implements Metadatable {
             processChunkRequest();
 
             if (currentTick.getTick() % 100 == 0) {
-                CompletableFuture.runAsync(() -> doLevelGarbageCollection(false));
+                doLevelGarbageCollection();
             }
         } catch (Exception e) {
             getServer().getLogger().error("Subtick Thread for level " + getFolderName() + " failed.", e);
@@ -3535,6 +3547,7 @@ public class Level implements Metadatable {
                             pk.subChunkCount = pair.right();
                             pk.data = pair.left();
                             player.sendChunk(x, z, pk);
+                            //player.refreshBlockEntity(chunk);
                         }
                     }
                     this.chunkSendQueue.remove(index);
@@ -3657,6 +3670,7 @@ public class Level implements Metadatable {
         return getChunkAsync(pos.getX(), pos.getZ(), false);
     }
 
+
     public CompletableFuture<IChunk> getChunkAsync(int chunkX, int chunkZ, boolean create) {
         return CompletableFuture.supplyAsync(() -> {
             long index = Level.chunkHash(chunkX, chunkZ);
@@ -3769,6 +3783,10 @@ public class Level implements Metadatable {
         }
 
         IChunk chunk = this.getChunk(x, z);
+
+        if(!chunk.isInitiated()) {
+            return false;
+        }
 
         if (chunk != null && chunk.getProvider() != null) {
             ChunkUnloadEvent ev = new ChunkUnloadEvent(chunk);
@@ -4030,7 +4048,7 @@ public class Level implements Metadatable {
      *
      * @return the list
      */
-    public void doLevelGarbageCollection(boolean force) {
+    public void doLevelGarbageCollection() {
         //gcBlockInventoryMetaData
         for (var entry : new HashMap<>(this.getBlockMetadata().getBlockMetadataMap()).entrySet()) {
             String key = entry.getKey();
@@ -4082,10 +4100,11 @@ public class Level implements Metadatable {
     }
 
     public void unloadChunks(int maxUnload, boolean force) {
+
         if (!this.unloadQueue.isEmpty()) {
             long now = System.currentTimeMillis();
 
-            LongList toRemove = null;
+            LongList toRemove = new LongArrayList();
             for (var entry : unloadQueue.fastEntrySet()) {
                 long index = entry.getLongKey();
                 if (isChunkInUse(index)) {
@@ -4095,26 +4114,24 @@ public class Level implements Metadatable {
                     long time = entry.getValue();
                     if (maxUnload <= 0) {
                         break;
-                    } else if (time > (now - Server.getInstance().getSettings().levelSettings().chunkUnloadDelay())) {
+                    } else if (time < (now - Server.getInstance().getSettings().levelSettings().chunkUnloadDelay())) {
                         continue;
                     }
                 }
 
-                if (toRemove == null) toRemove = new LongArrayList();
                 toRemove.add(index);
             }
 
-            if (toRemove != null) {
-                int size = toRemove.size();
-                for (int i = 0; i < size; i++) {
-                    long index = toRemove.getLong(i);
-                    int X = getHashX(index);
-                    int Z = getHashZ(index);
+            int size = toRemove.size();
 
-                    if (this.unloadChunk(X, Z, true)) {
-                        this.unloadQueue.remove(index);
-                        --maxUnload;
-                    }
+            for (int i = 0; i < size; i++) {
+                long index = toRemove.getLong(i);
+                int X = getHashX(index);
+                int Z = getHashZ(index);
+
+                if (this.unloadChunk(X, Z, true)) {
+                    this.unloadQueue.remove(index);
+                    --maxUnload;
                 }
             }
         }

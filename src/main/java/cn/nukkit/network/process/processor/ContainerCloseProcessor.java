@@ -17,11 +17,10 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ContainerClosePacket pk) {
         Player player = playerHandle.player;
         if (!player.spawned || pk.windowId == SpecialWindowId.PLAYER.getId() && !playerHandle.getInventoryOpen()) {
-            log.warn("{} tried to close his own inventory without it being open.", player.getName());
+            sendClose(playerHandle, pk);
             return;
         }
 
-        Inventory inventory = player.getWindowById(pk.windowId);
 
         if (playerHandle.getWindowIndex().containsKey(pk.windowId)) {
             if (pk.windowId == SpecialWindowId.PLAYER.getId()) {
@@ -36,16 +35,23 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
         if (pk.windowId == -1) {
             player.addWindow(player.getCraftingGrid(), SpecialWindowId.NONE.getId());
         }
+        sendClose(playerHandle, pk);
+    }
 
+    //Client always wants a response. If not sent, inventores won't open anymore.
+    private void sendClose(PlayerHandle playerHandle, ContainerClosePacket pk) {
+        Player player = playerHandle.player;
+        ContainerClosePacket pk2 = new ContainerClosePacket();
+        pk2.wasServerInitiated = false;
+        pk2.windowId = pk.windowId;
+        Inventory inventory = player.getWindowById(pk.windowId);
         if (inventory != null) {
-            ContainerClosePacket pk2 = new ContainerClosePacket();
-            pk2.wasServerInitiated = false;
-            pk2.windowId = pk.windowId;
             pk2.type = inventory.getType();
-            player.dataPacket(pk2);
             player.resetInventory();
-        } else log.warn("{} tried to close inventory {} without it being open. (null)", player.getName(), pk.windowId);
-
+        } else {
+            pk2.type = pk.type;
+        }
+        player.dataPacket(pk2);
     }
 
     @Override

@@ -8,6 +8,7 @@ import cn.nukkit.form.element.simple.ButtonImage;
 import cn.nukkit.form.element.simple.ElementButton;
 import cn.nukkit.form.element.simple.ElementSimple;
 import cn.nukkit.form.response.SimpleResponse;
+import cn.nukkit.network.protocol.types.ModalFormCancelReason;
 import com.google.gson.JsonArray;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import lombok.Getter;
@@ -130,6 +131,11 @@ public class SimpleForm extends Form<SimpleResponse> {
     }
 
     @Override
+    public SimpleForm onCancel(BiConsumer<Player, ModalFormCancelReason> cancel) {
+        return (SimpleForm) super.onCancel(cancel);
+    }
+
+    @Override
     public SimpleForm send(Player player) {
         return (SimpleForm) super.send(player);
     }
@@ -166,7 +172,13 @@ public class SimpleForm extends Form<SimpleResponse> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public SimpleResponse respond(Player player, String formData) {
+    public SimpleResponse respond(Player player, String formData, ModalFormCancelReason cancelReason) {
+        if(cancelReason != null) {
+            if(cancelReason == ModalFormCancelReason.USER_CLOSED) this.supplyClosed(player);
+            else this.supplyCancelled(player, cancelReason);
+            return null;
+        }
+
         if (!super.handle(player, formData)) {
             this.supplyClosed(player);
             return null;

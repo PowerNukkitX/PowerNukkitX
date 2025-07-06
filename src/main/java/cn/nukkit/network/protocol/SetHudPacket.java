@@ -26,8 +26,8 @@ public class SetHudPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeArray(this.elements, (buf, element) -> byteBuf.writeUnsignedVarInt(element.ordinal()));
-        byteBuf.writeByte((byte) this.visibility.ordinal());
+        byteBuf.writeArray(this.elements, (element) -> byteBuf.writeVarInt(element.ordinal()));
+        byteBuf.writeVarInt((byte) this.visibility.ordinal());
     }
 
     @Override

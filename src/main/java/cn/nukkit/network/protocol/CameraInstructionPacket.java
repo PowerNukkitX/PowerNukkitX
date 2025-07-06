@@ -9,12 +9,9 @@ import cn.nukkit.camera.instruction.impl.SetInstruction;
 import cn.nukkit.camera.instruction.impl.TargetInstruction;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.OptionalBoolean;
-import cn.nukkit.utils.OptionalValue;
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
-import java.util.Optional;
 
 @Getter
 @Setter
@@ -27,7 +24,6 @@ public class CameraInstructionPacket extends DataPacket {
     public ClearInstruction clearInstruction;
     private TargetInstruction targetInstruction;
     private OptionalBoolean removeTarget = OptionalBoolean.empty();
-
     @Override
     public void decode(HandleByteBuf byteBuf) {
     }
@@ -43,6 +39,7 @@ public class CameraInstructionPacket extends DataPacket {
             byteBuf.writeNotNull(s.getViewOffset(), byteBuf::writeVector2f);
             byteBuf.writeNotNull(s.getEntityOffset(), byteBuf::writeVector3f);
             byteBuf.writeOptional(s.getDefaultPreset(), byteBuf::writeBoolean);
+            byteBuf.writeBoolean(s.isRemoveIgnoreStartingValuesComponent());
         });
 
         if (clearInstruction == null) {

@@ -19,6 +19,11 @@ public class ResourcePacksInfoPacket extends DataPacket {
     public boolean scripting;
 
     /**
+     * @since v818
+     */
+    public boolean disableVibrantVisuals;
+
+    /**
      * @since v766
      */
     public UUID worldTemplateId;
@@ -39,6 +44,7 @@ public class ResourcePacksInfoPacket extends DataPacket {
         byteBuf.writeBoolean(this.mustAccept);
         byteBuf.writeBoolean(this.hasAddonPacks);
         byteBuf.writeBoolean(this.scripting);
+        byteBuf.writeBoolean(this.disableVibrantVisuals);
         byteBuf.writeUUID(this.worldTemplateId);
         byteBuf.writeString(this.worldTemplateVersion);
         this.encodePacks(byteBuf, this.resourcePackEntries, false);

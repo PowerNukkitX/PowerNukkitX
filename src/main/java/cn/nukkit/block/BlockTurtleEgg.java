@@ -29,7 +29,7 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
@@ -118,7 +118,7 @@ public class BlockTurtleEgg extends BlockFlowable {
             }
             Block placeBlock = placeEvent.getBlock();
             this.level.addLevelSoundEvent(this,
-                    LevelSoundEventPacket.SOUND_PLACE,
+                    LevelSoundEvent.PLACE,
                     placeBlock.getRuntimeId());
             item.setCount(item.getCount() - 1);
 
