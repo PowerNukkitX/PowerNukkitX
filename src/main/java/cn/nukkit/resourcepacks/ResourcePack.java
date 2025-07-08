@@ -3,7 +3,7 @@ package cn.nukkit.resourcepacks;
 import java.util.UUID;
 
 /**
- * 描述一个资源包的接口
+ * Interface describing a resource pack
  */
 public interface ResourcePack {
 
@@ -11,43 +11,60 @@ public interface ResourcePack {
     ResourcePack[] EMPTY_ARRAY = new ResourcePack[0];
 
     /**
-     * @return 此资源包的名称
+     * @return The name of this resource pack
      */
     String getPackName();
 
+
+    default String getSubPackName() {
+        return "";
+    }
+
     /**
-     * @return 此资源包的UUID
+     * @return The UUID of this resource pack
      */
     UUID getPackId();
 
     /**
-     * @return 此资源包的版本号
+     * @return The version number of this resource pack
      */
     String getPackVersion();
 
     /**
-     * @return 此资源包的文件大小
+     * @return The file size of this resource pack
      */
     int getPackSize();
 
     /**
-     * @return 资源包文件的SHA-256值
+     * @return The SHA-256 hash of the resource pack file
      */
     byte[] getSha256();
 
     /**
-     * @param off 偏移值
-     * @param len 长度
-     * @return 资源包文件的指定分块
+     * @param off Offset value
+     * @param len Length
+     * @return The specified chunk of the resource pack file
      */
     byte[] getPackChunk(int off, int len);
-    
-    boolean isAddonPack();
 
-    String cdnUrl();
+    default boolean isAddonPack(){
+        return false;
+    }
+
+    default String cdnUrl(){
+        return "";
+    }
+
+    default boolean isRaytracingCapable() {
+        return false;
+    }
+
+    default boolean usesScript(){
+        return false;
+    }
 
     /**
-     * @return 资源包密钥（若加密）
+     * @return Resource pack key (if encrypted)
      */
     default String getEncryptionKey() {
         return "";
