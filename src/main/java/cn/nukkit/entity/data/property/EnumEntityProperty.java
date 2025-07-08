@@ -55,6 +55,7 @@ public class EnumEntityProperty extends EntityProperty {
         tag.putBoolean("clientSync", isClientSync());
     }
 
+    @Override
     public boolean isClientSync() {
         return clientSync;
     }

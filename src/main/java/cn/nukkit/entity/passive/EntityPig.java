@@ -33,13 +33,17 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -49,6 +53,14 @@ import java.util.Set;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRideable, ClimateVariant {
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new EnumEntityProperty("minecraft:climate_variant", new String[]{
+            "temperate",
+            "warm",
+            "cold"
+        }, "temperate", true)
+    };
+    private final static String PROPERTY_STATE = "minecraft:climate_variant";
 
     @Override
     @NotNull public String getIdentifier() {
@@ -137,9 +149,14 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRid
             setSaddled(this.namedTag.getBoolean("saddled"));
         }
         if(namedTag.contains("variant")) {
+            Variant variant = Variant.get(namedTag.getString("variant"));
             setVariant(Variant.get(namedTag.getString("variant")));
-        } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
-
+            setEnumEntityProperty(PROPERTY_STATE, variant);
+        } else {
+            Variant biomeVariant = getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z));
+            setVariant(biomeVariant);
+            setEnumEntityProperty(PROPERTY_STATE, biomeVariant);
+        }
     }
 
     public void setSaddled(boolean saddled) {

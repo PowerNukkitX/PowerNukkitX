@@ -36,6 +36,9 @@ import cn.nukkit.entity.ai.sensor.EntityAttackedByOwnerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.ai.sensor.WolfNearestFeedingPlayerSensor;
+import cn.nukkit.entity.data.property.BooleanEntityProperty;
+import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.EntityArmorInventory;
@@ -70,6 +73,22 @@ import java.util.Set;
  * todo 野生狼不会被刷新
  */
 public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor, EntityVariant, InventoryHolder {
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new BooleanEntityProperty("minecraft:is_armorable", false),
+        new BooleanEntityProperty("minecraft:has_increased_max_health", false),
+        new EnumEntityProperty("minecraft:sound_variant", new String[]{
+            "default",
+            "big",
+            "cute",
+            "grumpy",
+            "mad",
+            "puglin",
+            "sad"
+        }, "default", true)
+    };
+    private final static String PROPERTY_IS_ARMORABLE = "minecraft:is_armorable";
+    private final static String PROPERTY_HAS_INCREASED_MAX_HEALTH = "minecraft:has_increased_max_health";
+    private final static String PROPERTY_SOUND_VARIANT = "minecraft:sound_variant";
 
     private static final String TAG_ARMOR = "Armor";
 

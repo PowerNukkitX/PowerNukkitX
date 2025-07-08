@@ -5,7 +5,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author Peng_Lx
  */
-public class FloatEntityProperty extends EntityProperty{
+public class FloatEntityProperty extends EntityProperty {
 
     private final float defaultValue;
     private final float maxValue;
@@ -36,6 +36,7 @@ public class FloatEntityProperty extends EntityProperty{
         return maxValue;
     }
 
+    @Override
     public boolean isClientSync() {
         return clientSync;
     }

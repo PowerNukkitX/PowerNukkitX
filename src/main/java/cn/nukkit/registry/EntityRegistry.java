@@ -4,6 +4,7 @@ import cn.nukkit.Nukkit;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.custom.CustomEntity;
+import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.mob.*;
 import cn.nukkit.entity.passive.*;
@@ -444,8 +445,21 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     private void registerInternal(EntityDefinition key, Class<? extends Entity> value) {
         try {
             register(key, value);
+
+            // Attempt to register entity properties if they exist
+            try {
+                EntityProperty[] props = (EntityProperty[]) value.getField("PROPERTIES").get(null);
+                for (EntityProperty prop : props) {
+                    EntityProperty.register(key.id(), prop);
+                }
+            } catch (NoSuchFieldException ignored) {
+                // Entity does not declare PROPERTIES
+            }
+
         } catch (RegisterException e) {
             log.error("{}", e.getCause().getMessage());
+        } catch (IllegalAccessException e) {
+            log.error("Failed to access PROPERTIES for: " + key.id(), e);
         }
     }
 

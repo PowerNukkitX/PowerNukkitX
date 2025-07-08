@@ -36,6 +36,7 @@ public class IntEntityProperty extends EntityProperty {
         return maxValue;
     }
 
+    @Override
     public boolean isClientSync() {
         return clientSync;
     }

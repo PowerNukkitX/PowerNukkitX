@@ -56,9 +56,9 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         player.dataPacket(new AvailableEntityIdentifiersPacket());
 
         // 注册实体属性
-        // Register entity attributes
+        // Register entity properties
         log.debug("Sending actor properties");
-        for (SyncEntityPropertyPacket pk : EntityProperty.getPacketCache()) {
+        for (SyncEntityPropertyPacket pk : EntityProperty.getEntityPropertyCache()) {
             player.dataPacket(pk);
         }
 

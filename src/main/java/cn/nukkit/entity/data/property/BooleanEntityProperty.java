@@ -24,6 +24,7 @@ public class BooleanEntityProperty extends EntityProperty {
         return defaultValue;
     }
 
+    @Override
     public boolean isClientSync() {
         return clientSync;
     }
