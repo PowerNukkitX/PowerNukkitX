@@ -41,7 +41,6 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
 
 import org.jetbrains.annotations.NotNull;
