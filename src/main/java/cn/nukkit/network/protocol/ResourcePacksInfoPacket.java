@@ -56,6 +56,7 @@ public class ResourcePacksInfoPacket extends DataPacket {
 
     private void encodePacks(HandleByteBuf byteBuf, ResourcePack[] packs) {
         byteBuf.writeShortLE(packs.length);
+
         for (ResourcePack entry : packs) {
             byteBuf.writeUUID(entry.getPackId());
             byteBuf.writeString(entry.getPackVersion());
