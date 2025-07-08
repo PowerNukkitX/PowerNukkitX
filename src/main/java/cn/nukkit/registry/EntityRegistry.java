@@ -434,6 +434,18 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
                 EntityDefinition entityDefinition = new EntityDefinition(key.id, key.bid, rid, key.hasSpawnegg, key.summonable);
                 DEFINITIONS.put(key.id, entityDefinition);
                 CUSTOM_ENTITY_DEFINITIONS.add(entityDefinition);
+
+                // Register entity properties if declared
+                try {
+                    EntityProperty[] props = (EntityProperty[]) value.getField("PROPERTIES").get(null);
+                    for (EntityProperty prop : props) {
+                        EntityProperty.register(key.id, prop);
+                    }
+                } catch (NoSuchFieldException ignored) {
+                    // Custom entity doesn't declare PROPERTIES
+                } catch (IllegalAccessException e) {
+                    log.error("Failed to access PROPERTIES for custom entity: " + key.id, e);
+                }
             } else {
                 throw new RegisterException("This Entity has already been registered with the identifier: " + key.id);
             }
