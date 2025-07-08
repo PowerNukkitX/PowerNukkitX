@@ -3189,22 +3189,40 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public final int getIntEntityProperty(String identifier) {
-        return intProperties.getOrDefault(identifier, 0);
+        IntEntityProperty prop = getTypedEntityProperty(identifier, IntEntityProperty.class);
+        if (prop == null) {
+            log.error("Int property '{}' is not defined for entity '{}'", identifier, this.getIdentifier());
+            return 0;
+        }
+        return intProperties.getOrDefault(identifier, prop.getDefaultValue());
     }
 
     public final boolean getBooleanEntityProperty(String identifier) {
-        return intProperties.getOrDefault(identifier, 0) == 1;
+        BooleanEntityProperty prop = getTypedEntityProperty(identifier, BooleanEntityProperty.class);
+        if (prop == null) {
+            log.error("Boolean property '{}' is not defined for entity '{}'", identifier, this.getIdentifier());
+            return false;
+        }
+        return intProperties.getOrDefault(identifier, prop.getDefaultValue() ? 1 : 0) == 1;
     }
 
     public final float getFloatEntityProperty(String identifier) {
-        return floatProperties.getOrDefault(identifier, 0f);
+        FloatEntityProperty prop = getTypedEntityProperty(identifier, FloatEntityProperty.class);
+        if (prop == null) {
+            log.error("Float property '{}' is not defined for entity '{}'", identifier, this.getIdentifier());
+            return 0f;
+        }
+        return floatProperties.getOrDefault(identifier, prop.getDefaultValue());
     }
 
     public final String getEnumEntityProperty(String identifier) {
         EnumEntityProperty prop = getTypedEntityProperty(identifier, EnumEntityProperty.class);
-        if (prop == null) return null;
+        if (prop == null) {
+            log.error("Enum property '{}' is not defined for entity '{}'", identifier, this.getIdentifier());
+            return null;
+        }
 
-        int idx = intProperties.getOrDefault(identifier, 0);
+        int idx = intProperties.getOrDefault(identifier, prop.findIndex(prop.getDefaultValue()));
         String[] enums = prop.getEnums();
         return (idx >= 0 && idx < enums.length) ? enums[idx] : prop.getDefaultValue();
     }
