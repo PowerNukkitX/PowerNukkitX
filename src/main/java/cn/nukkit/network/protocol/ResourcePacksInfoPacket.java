@@ -61,7 +61,7 @@ public class ResourcePacksInfoPacket extends DataPacket {
             byteBuf.writeString(entry.getPackVersion());
             byteBuf.writeLongLE(entry.getPackSize());
             byteBuf.writeString(entry.getEncryptionKey()); // encryption key
-            byteBuf.writeString(""); // sub-pack name
+            byteBuf.writeString(entry.getSubPackName()); // sub-pack name
             byteBuf.writeString(!entry.getEncryptionKey().isEmpty() ? entry.getPackId().toString() : ""); // content identity
             byteBuf.writeBoolean(entry.usesScript()); // scripting
             byteBuf.writeBoolean(entry.isAddonPack());    // isAddonPack

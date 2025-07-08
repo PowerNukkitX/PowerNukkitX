@@ -15,11 +15,11 @@
 
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://www.minecraft.net/en-us/article/minecraft-1-21-80-bedrock-changelog">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.80%20(Bedrock)-56383E" />
+   <a href="https://www.minecraft.net/en-us/article/minecraft-1-21-93-bedrock-changelog">
+      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.93%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
-      <img alt="Minecraft" src="https://img.shields.io/badge/protocol-800-blue" />
+      <img alt="Protocol" src="https://img.shields.io/badge/protocol-819-blue" />
    </a>
    <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
       <img alt="Action" src="https://img.shields.io/badge/action-all%20builds-FF9B21" />
@@ -45,6 +45,9 @@
       <a href="README_RU.md">
          <img src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/ru.svg">
       </a>
+    <a href="README_TR.md">
+        <img src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/tr.svg">
+    </a>
 </p>
 
 <br>

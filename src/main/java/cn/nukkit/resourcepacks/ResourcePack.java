@@ -15,6 +15,11 @@ public interface ResourcePack {
      */
     String getPackName();
 
+
+    default String getSubPackName() {
+        return "";
+    }
+
     /**
      * @return The UUID of this resource pack
      */

@@ -1,8 +1,13 @@
 package cn.nukkit.level.format.leveldb;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.protocol.types.ExperimentEntry;
 import cn.nukkit.network.protocol.types.GameType;
 import cn.nukkit.utils.SemVersion;
 import lombok.AccessLevel;
@@ -103,7 +108,7 @@ public class LevelDat {
     @Builder.Default
     boolean educationFeaturesEnabled = false;
     @Builder.Default
-    Experiments experiments = Experiments.builder().build();
+    LevelDat.Experiments experiments = LevelDat.Experiments.empty();
     @Builder.Default
     boolean hasBeenLoadedInCreative = true;
     @Builder.Default
@@ -319,27 +324,25 @@ public class LevelDat {
     }
 
     @Value
-    @Builder
     @ToString
     public static class Experiments {
-        @Builder.Default
-        boolean experimentsEverUsed = false;
-        @Builder.Default
-        boolean savedWithToggledExperiments = false;
-        @Builder.Default
-        boolean cameras = false;
-        @Builder.Default
-        boolean dataDrivenBiomes = false;
-        @Builder.Default
-        boolean dataDrivenItems = false;
-        @Builder.Default
-        boolean experimentalMolangFeatures = false;
-        @Builder.Default
-        boolean gametest = false;
-        @Builder.Default
-        boolean upcomingCreatorFeatures = false;
-        @Builder.Default
-        boolean villagerTradesRebalance = false;
+        Map<String, Boolean> entries;
+
+        public boolean isEnabled(String name) {
+            return entries.getOrDefault(name, false);
+        }
+
+        public static Experiments empty() {
+            return new Experiments(new HashMap<>());
+        }
+
+        public static Experiments fromList(List<ExperimentEntry> entries) {
+            Map<String, Boolean> map = new HashMap<>();
+            for (ExperimentEntry entry : entries) {
+                map.put(entry.name(), entry.enabled());
+            }
+            return new Experiments(map);
+        }
     }
 
     @Value
