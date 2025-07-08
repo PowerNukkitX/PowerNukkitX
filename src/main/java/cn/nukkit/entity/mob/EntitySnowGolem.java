@@ -34,7 +34,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
@@ -78,7 +78,7 @@ public class EntitySnowGolem extends EntityGolem {
         if(item instanceof ItemShears) {
             if(!isSheared()) {
                 this.setSheared(true);
-                this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_SHEAR);
+                this.level.addLevelSoundEvent(this, LevelSoundEvent.SHEAR);
                 if(player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInHand().setDamage(item.getDamage() + 1);
                 this.level.dropItem(this.add(0, this.getEyeHeight(), 0), Item.get(Block.CARVED_PUMPKIN));
             }

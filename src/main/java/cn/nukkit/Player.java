@@ -1,9 +1,9 @@
 package cn.nukkit;
 
 import cn.nukkit.AdventureSettings.Type;
+import cn.nukkit.api.UnintendedClientBehaviour;
 import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockBed;
 import cn.nukkit.block.BlockEndPortal;
 import cn.nukkit.block.BlockID;
@@ -26,6 +26,7 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntityRideable;
+import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.Skin;
@@ -54,7 +55,6 @@ import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.window.Form;
-import cn.nukkit.inventory.BundleInventory;
 import cn.nukkit.inventory.CraftTypeInventory;
 import cn.nukkit.inventory.CraftingGridInventory;
 import cn.nukkit.inventory.CreativeOutputInventory;
@@ -63,7 +63,6 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.PlayerCursorInventory;
 import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.inventory.fake.FakeInventory;
-import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemArrow;
@@ -105,12 +104,7 @@ import cn.nukkit.network.connection.BedrockDisconnectReasons;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.CommandOriginData;
-import cn.nukkit.network.protocol.types.CommandOutputType;
-import cn.nukkit.network.protocol.types.GameType;
-import cn.nukkit.network.protocol.types.PlayerBlockActionData;
-import cn.nukkit.network.protocol.types.PlayerInfo;
-import cn.nukkit.network.protocol.types.SpawnPointType;
+import cn.nukkit.network.protocol.types.*;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
@@ -136,6 +130,7 @@ import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.LoginChainData;
 import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.utils.TextFormat;
+import cn.nukkit.utils.Utils;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.base.Preconditions;
@@ -157,8 +152,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.awt.*;
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
@@ -361,6 +358,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private Pair<Location, Long> lastTeleportMessage;
     ///
 
+    private Color locatorBarColor;
     private final @NotNull PlayerInfo info;
 
     @UsedByReflection
@@ -390,6 +388,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.uuid = info.getUniqueId();
         this.rawUUID = Binary.writeUUID(info.getUniqueId());
         this.setSkin(info.getSkin());
+        this.locatorBarColor = new Color(Utils.rand(0, 255), Utils.rand(0, 255), Utils.rand(0, 255));
     }
 
     /**
@@ -473,7 +472,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         Block block = target.getSide(face);
         if (block.getId().equals(Block.FIRE) || block.getId().equals(BlockID.SOUL_FIRE)) {
             this.level.setBlock(block, Block.get(BlockID.AIR), true);
-            this.level.addLevelSoundEvent(block, LevelSoundEventPacket.SOUND_EXTINGUISH_FIRE);
+            this.level.addLevelSoundEvent(block, LevelSoundEvent.EXTINGUISH_FIRE);
             return;
         }
 
@@ -1951,7 +1950,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
         if (this.spawned) {
-            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.getLoginChainData().getXUID());
+            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.getLoginChainData().getXUID(), this.getLocatorBarColor());
         }
     }
 
@@ -3965,7 +3964,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.lastPlayerdLevelUpSoundTime = this.age;
             this.level.addLevelSoundEvent(
                     this,
-                    LevelSoundEventPacket.SOUND_LEVELUP,
+                    LevelSoundEvent.LEVEL_UP,
                     Math.min(7, level / 5) << 28,
                     "",
                     false, false
@@ -4385,6 +4384,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return id;
     }
 
+    @UnintendedClientBehaviour
     public void updateForm(Form<?> form) {
         if (!form.isViewer(this)) {
             return;
@@ -4587,6 +4587,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return The unique identifier assigned to the window if successfully added and opened; -1 if the window fails to be added.
      */
     public int addWindow(@NotNull Inventory inventory) {
+        if(getTopWindow().isPresent() || inventoryOpen) return -1;
         Preconditions.checkNotNull(inventory);
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
@@ -4754,6 +4755,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
             this.removeWindow(entry.getValue());
         }
+    }
+
+    /**
+     * @Since 1.21.90 (818)
+     * The client closes inventores when the SLEEP player tag is set.
+     * Even the players inventory, which cannot be closed with the ContainerClosePacket
+     * This won't close the inventories on the server side, but the client will send us the ContainerClose which in return will close the inventory on the server side
+     * We're setting the flag manually because setPlayerFlag just flips the bit. But we need to set the bits in the correct order.
+     */
+    @UnintendedClientBehaviour
+    public void forceClientCloseInventory() {
+        setDataProperty(PLAYER_FLAGS, getDataProperty(PLAYER_FLAGS) | 0x2);
+        getLevel().getScheduler().scheduleDelayedTask(() -> setDataProperty(PLAYER_FLAGS, getDataProperty(PLAYER_FLAGS) & 0x1), 2);
     }
 
     /**
@@ -5506,6 +5520,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public void setFakeInventoryOpen(boolean fakeInventoryOpen) {
         this.fakeInventoryOpen = fakeInventoryOpen;
+    }
+
+    public Color getLocatorBarColor() {
+        return this.locatorBarColor;
+    }
+
+    public void setLocatorBarColor(Color color) {
+        this.locatorBarColor = color;
+        if (this.spawned) {
+            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.getLoginChainData().getXUID(), this.getLocatorBarColor());
+        }
     }
 
     /**

@@ -17,6 +17,7 @@ import cn.nukkit.network.protocol.SetEntityDataPacket;
 import cn.nukkit.utils.SerializedImage;
 import com.google.common.base.Strings;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -132,7 +133,7 @@ public class FloatingTextParticle extends Particle {
 
         if (!this.invisible) {
             PlayerListPacket.Entry[] entry = {
-                    new PlayerListPacket.Entry(uuid, entityId, entityData.get(Entity.NAME), EMPTY_SKIN)
+                    new PlayerListPacket.Entry(uuid, entityId, entityData.get(Entity.NAME), EMPTY_SKIN, Color.WHITE)
             };
             PlayerListPacket playerAdd = new PlayerListPacket();
             playerAdd.entries = entry;

@@ -74,7 +74,7 @@ public final class ItemTags {
 
     static {
         try {
-            try (var stream = Server.class.getClassLoader().getResourceAsStream("item_tags.json")) {
+            try (var stream = Server.class.getClassLoader().getResourceAsStream("gamedata/kaooot/item_tags.json")) {
                 TypeToken<HashMap<String, HashSet<String>>> typeToken = new TypeToken<>() {
                 };
                 assert stream != null;

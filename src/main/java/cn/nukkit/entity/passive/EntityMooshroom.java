@@ -119,8 +119,6 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
         }
 
         if (item.getId() == Item.SHEARS && item.useOn(this)) {
-            this.close();
-            //TODO 不同颜色的牛掉落不同的蘑菇
             shear();
             return true;
         } else if (item.getId() == Item.BUCKET && item.getDamage() == 0) {
@@ -138,6 +136,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
 
     @Override
     public boolean shear() {
+        this.close();
         this.level.dropItem(this, Item.get(BlockID.RED_MUSHROOM, 0, 5));
         this.level.addSound(this, Sound.MOB_MOOSHROOM_CONVERT);
         this.level.addParticleEffect(this.add(0, this.getHeight(), 0), ParticleEffect.LARGE_EXPLOSION_LEVEL);

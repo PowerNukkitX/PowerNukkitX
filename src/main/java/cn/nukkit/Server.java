@@ -57,6 +57,7 @@ import cn.nukkit.network.Network;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PlayerListPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.protocol.types.ExperimentEntry;
 import cn.nukkit.network.protocol.types.PlayerInfo;
 import cn.nukkit.network.protocol.types.XboxLivePlayerInfo;
 import cn.nukkit.permission.BanEntry;
@@ -104,6 +105,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -117,6 +119,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
@@ -236,6 +239,7 @@ public class Server {
     private Level defaultLevel = null;
     private boolean allowNether;
     private boolean allowTheEnd;
+    private List<ExperimentEntry> experiments;
     ///
 
     Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage) {
@@ -367,6 +371,10 @@ public class Server {
         if (this.getSettings().baseSettings().waterdogpe()) {
             this.checkLoginTime = false;
         }
+
+        this.experiments = new ArrayList<>();
+        for(String experiment : settings.gameplaySettings().experiments())
+            experiments.add(new ExperimentEntry(experiment, true));
 
         this.entityMetadata = new EntityMetadataStore();
         this.playerMetadata = new PlayerMetadataStore();
@@ -1392,7 +1400,7 @@ public class Server {
     @ApiStatus.Internal
     public void addOnlinePlayer(Player player) {
         this.playerList.put(player.getUniqueId(), player);
-        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID());
+        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID(), player.getLocatorBarColor());
         this.getNetwork().getPong().playerCount(playerList.size()).update();
     }
 
@@ -1410,26 +1418,37 @@ public class Server {
             ;
         }
     }
-
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
+
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
-        this.updatePlayerListData(uuid, entityId, name, skin, "", this.playerList.values());
+        this.updatePlayerListData(uuid, entityId, name, skin, "", Color.WHITE, this.playerList.values());
+    }
+
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Color color) {
+        this.updatePlayerListData(uuid, entityId, name, skin, "", color, this.playerList.values());
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
-        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, this.playerList.values());
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color) {
+        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, this.playerList.values());
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player[] players) {
-        this.updatePlayerListData(uuid, entityId, name, skin, "", players);
+        this.updatePlayerListData(uuid, entityId, name, skin, "", Color.WHITE, players);
+    }
+
+    /**
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
+     */
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Color color, Player[] players) {
+        this.updatePlayerListData(uuid, entityId, name, skin, "", color, players);
     }
 
     /**
@@ -1444,7 +1463,7 @@ public class Server {
      * @param xboxUserId xbox用户id
      * @param players    指定接受数据包的玩家
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Player[] players) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color, Player[] players) {
         // In some circumstances, the game sends confidential data in this string,
         // so under no circumstances should it be sent to all players on the server.
         // @Zwuiix
@@ -1452,19 +1471,19 @@ public class Server {
 
         PlayerListPacket pk = new PlayerListPacket();
         pk.type = PlayerListPacket.TYPE_ADD;
-        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId)};
+        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId, color)};
         Server.broadcastPacket(players, pk);
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Collection<Player> players) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color, Collection<Player> players) {
         // In some circumstances, the game sends confidential data in this string,
         // so under no circumstances should it be sent to all players on the server.
         // @Zwuiix
         skin.setSkinId("");
-        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, players.toArray(Player.EMPTY_ARRAY));
+        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, players.toArray(Player.EMPTY_ARRAY));
     }
 
     public void removePlayerListData(UUID uuid) {
@@ -1517,7 +1536,8 @@ public class Server {
                         p.getId(),
                         p.getDisplayName(),
                         p.getSkin(),
-                        p.getLoginChainData().getXUID()))
+                        p.getLoginChainData().getXUID(),
+                        p.getLocatorBarColor()))
                 .toArray(PlayerListPacket.Entry[]::new);
 
         player.dataPacket(pk);
@@ -2724,6 +2744,14 @@ public class Server {
 
     public ForkJoinPool getComputeThreadPool() {
         return computeThreadPool;
+    }
+
+    public boolean allowVibrantVisuals() {
+        return settings.gameplaySettings().allowVibrantVisuals();
+    }
+
+    public List<ExperimentEntry> getExperiments() {
+        return experiments;
     }
 
     //todo NukkitConsole 会阻塞关不掉

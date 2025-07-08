@@ -2527,4 +2527,6 @@ public interface BlockID {
     String YELLOW_WOOL = "minecraft:yellow_wool";
 
     String ZOMBIE_HEAD = "minecraft:zombie_head";
+
+    String DRIED_GHAST = "minecraft:dried_ghast";
 }
