@@ -82,6 +82,14 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         return dieInTicks == -1;
     }
 
+    public boolean hasNectar() {
+        return this.getBooleanEntityProperty(PROPERTY_HAS_NECTAR);
+    }
+    
+    public void setNectar(boolean hasNectar) {
+        this.setBooleanEntityProperty(PROPERTY_HAS_NECTAR, hasNectar);
+    }
+
     @Override
     public float getWidth() {
         if (this.isBaby()) {
