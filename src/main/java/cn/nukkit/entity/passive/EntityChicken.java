@@ -22,6 +22,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -34,11 +36,19 @@ import java.util.Set;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityChicken extends EntityAnimal implements EntityWalkable, ClimateVariant {
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new EnumEntityProperty("minecraft:climate_variant", new String[]{
+            "temperate",
+            "warm",
+            "cold"
+        }, "temperate", true)
+    };
+    private final static String PROPERTY_STATE = "minecraft:climate_variant";
+
     @Override
     @NotNull public String getIdentifier() {
         return CHICKEN;
     }
-    
 
     public EntityChicken(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -142,8 +152,14 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
         this.setMaxHealth(4);
         super.initEntity();
         if(namedTag.contains("variant")) {
+            Variant variant = Variant.get(namedTag.getString("variant"));
             setVariant(Variant.get(namedTag.getString("variant")));
-        } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
+            setEnumEntityProperty(PROPERTY_STATE, variant);
+        } else {
+            Variant biomeVariant = getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z));
+            setVariant(biomeVariant);
+            setEnumEntityProperty(PROPERTY_STATE, biomeVariant);
+        }
     }
 
     @Override
