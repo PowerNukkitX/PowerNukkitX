@@ -132,10 +132,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
 
         public Builder materials(Materials materials) {
             CompoundTag base = createDefaultMaterialInstance(null);
-            CompoundTag custom = materials.toCompoundTag();
-
             CompoundTag baseMaterials = base.getCompound("materials");
-            CompoundTag customMaterials = custom;
+            CompoundTag customMaterials = materials.toCompoundTag();
 
             for (Map.Entry<String, Tag> customEntry : customMaterials.getTags().entrySet()) {
                 String key = customEntry.getKey();

@@ -40,13 +40,12 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
         new BooleanEntityProperty("minecraft:has_nectar", false, true)
     };
+    private final static String PROPERTY_HAS_NECTAR = "minecraft:has_nectar";
 
     @Override
     @NotNull public String getIdentifier() {
         return BEE;
     }
-
-    private boolean hasNectar = false;
 
     private boolean stayAtFlower = false;
 
@@ -83,6 +82,14 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         return dieInTicks == -1;
     }
 
+    public boolean hasNectar() {
+        return this.getBooleanEntityProperty(PROPERTY_HAS_NECTAR);
+    }
+    
+    public void setNectar(boolean hasNectar) {
+        this.setBooleanEntityProperty(PROPERTY_HAS_NECTAR, hasNectar);
+    }
+
     @Override
     public float getWidth() {
         if (this.isBaby()) {
@@ -97,14 +104,6 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
             return 0.25f;
         }
         return 0.5f;
-    }
-
-    public boolean hasNectar() {
-        return this.hasNectar;
-    }
-
-    public void setNectar(boolean hasNectar) {
-        this.hasNectar = hasNectar;
     }
 
     public boolean isAngry() {
@@ -157,7 +156,6 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                             if(flower instanceof BlockWitherRose) {
                                 this.kill();
                             } else if(stayAtFlower) {
-                                this.setNectar(true);
                                 this.setBooleanEntityProperty("minecraft:has_nectar", true);
                                 this.getLevel().addSound(this, Sound.MOB_BEE_POLLINATE);
                             }
@@ -188,7 +186,6 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     }
 
     public void nectarDelivered(BlockEntityBeehive blockEntityBeehive) {
-        this.setNectar(false);
         this.setBooleanEntityProperty("minecraft:has_nectar", false);
     }
 
@@ -197,13 +194,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     }
 
     public boolean shouldSearchBeehive() {
-        return hasNectar() || getLevel().isRaining() || !getLevel().isDay();
-    }
-
-    @Override
-    public void saveNBT() {
-        super.saveNBT();
-        super.namedTag.putBoolean("hasNectar", hasNectar);
+        return this.getBooleanEntityProperty(PROPERTY_HAS_NECTAR) || getLevel().isRaining() || !getLevel().isDay();
     }
 
     @Override

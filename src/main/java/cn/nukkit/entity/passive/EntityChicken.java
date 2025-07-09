@@ -43,7 +43,6 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
             "cold"
         }, "temperate", true)
     };
-    private final static String PROPERTY_STATE = "minecraft:climate_variant";
 
     @Override
     @NotNull public String getIdentifier() {
@@ -152,14 +151,8 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
         this.setMaxHealth(4);
         super.initEntity();
         if(namedTag.contains("variant")) {
-            Variant variant = Variant.get(namedTag.getString("variant"));
             setVariant(Variant.get(namedTag.getString("variant")));
-            setEnumEntityProperty(PROPERTY_STATE, variant);
-        } else {
-            Variant biomeVariant = getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z));
-            setVariant(biomeVariant);
-            setEnumEntityProperty(PROPERTY_STATE, biomeVariant);
-        }
+        } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
     }
 
     @Override
