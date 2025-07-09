@@ -5,6 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.data.EntityDataType;
@@ -38,7 +39,7 @@ import java.util.Set;
  * @author yescallop
  * @since 2016/2/13
  */
-public class EntityBoat extends EntityVehicle {
+public class EntityBoat extends EntityVehicle implements EntityLeashable {
 
     @Override
     @NotNull

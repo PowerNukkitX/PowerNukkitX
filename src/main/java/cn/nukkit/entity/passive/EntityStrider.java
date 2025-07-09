@@ -1,5 +1,6 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -10,7 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author Erik Miller | EinBexiii
  */
-public class EntityStrider extends EntityAnimal implements EntityWalkable {
+public class EntityStrider extends EntityAnimal implements EntityWalkable, EntityLeashable {
 
     @Override
     @NotNull public String getIdentifier() {

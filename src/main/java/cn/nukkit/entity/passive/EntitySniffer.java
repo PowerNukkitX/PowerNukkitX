@@ -1,5 +1,6 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -26,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-public class EntitySniffer extends EntityAnimal {
+public class EntitySniffer extends EntityAnimal implements EntityLeashable {
 
     public EntitySniffer(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

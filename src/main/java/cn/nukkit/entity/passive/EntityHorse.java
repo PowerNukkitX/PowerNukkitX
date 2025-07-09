@@ -7,6 +7,7 @@ import cn.nukkit.block.BlockDirt;
 import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntityMarkVariant;
 import cn.nukkit.entity.EntityOwnable;
 import cn.nukkit.entity.EntityRideable;
@@ -65,7 +66,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author PikyCZ
  */
-public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityRideable, EntityOwnable, InventoryHolder {
+public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityRideable, EntityOwnable, InventoryHolder, EntityLeashable {
     @Override
     @NotNull public String getIdentifier() {
         return HORSE;

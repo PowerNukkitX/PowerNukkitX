@@ -6,6 +6,7 @@ import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityCanSit;
 import cn.nukkit.entity.EntityColor;
 import cn.nukkit.entity.EntityHealable;
+import cn.nukkit.entity.EntityLeashable;
 import cn.nukkit.entity.EntityOwnable;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.EntityWalkable;
@@ -50,7 +51,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Set;
 
-public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanSit, EntityCanAttack, EntityHealable, EntityVariant, EntityColor {
+public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanSit, EntityCanAttack, EntityHealable, EntityVariant, EntityColor, EntityLeashable {
 
     @Override
     @NotNull

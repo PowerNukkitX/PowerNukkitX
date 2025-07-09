@@ -40,6 +40,7 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTotemOfUndying;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
@@ -68,6 +69,7 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.types.EntityInteractEventData;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.plugin.Plugin;
@@ -2025,6 +2027,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public boolean onInteract(Player player, Item item) {
         this.despawnable = false;
+
+        if (this instanceof EntityLeashable) {
+            if (this.isLeashed()) {
+                return this.unleash();
+            } else if (Objects.equals(item.getId(), ItemID.LEAD)) {
+                return this.leash(player);
+            }
+        }
+
         return false;
     }
 
@@ -3035,6 +3046,73 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         setFreezingEffectStrength(this.freezingTicks / 140f);
     }
 
+    public long getLeashHolder() {
+        return this.getDataProperty(LEASH_HOLDER);
+    }
+
+    public boolean isLeashed() {
+        return this.getDataFlag(EntityFlag.LEASHED) && this.getDataProperty(LEASH_HOLDER) != 0;
+    }
+
+    public boolean leash(Entity entity) {
+        if (Objects.equals(this, entity) || this.isLeashed()) {
+            return false;
+        }
+
+        EventPacket packet = new EventPacket();
+        packet.eid = entity.id; // Leashing entity
+        packet.usePlayerId = 1;
+
+        EntityInteractEventData eventData = new EntityInteractEventData();
+        eventData.interactedEntityID = this.id; // Entity to leash
+        eventData.interactionType = 12;
+        eventData.legacyEntityTypeId = 10;
+        eventData.variant = 0;
+        eventData.paletteColor = 0;
+
+        packet.eventData = eventData;
+
+        Server.broadcastPacket(this.hasSpawned.values(), packet);
+
+        this.setDataProperty(LEASH_HOLDER, entity.getId());
+        this.setDataFlag(EntityFlag.LEASHED, true);
+
+        this.setDataProperty(INTERACT_TEXT, "action.interact.unleash");
+        return true;
+    }
+
+    public boolean unleash() {
+        if (!this.isLeashed()) {
+            return false;
+        }
+
+        long leashHolder = this.getLeashHolder();
+
+        EventPacket packet = new EventPacket();
+        packet.eid = leashHolder; // Leashing entity
+        packet.usePlayerId = 1;
+
+        EntityInteractEventData eventData = new EntityInteractEventData();
+        eventData.interactedEntityID = this.id; // Entity to unleash
+        eventData.interactionType = 13;
+        eventData.legacyEntityTypeId = 10;
+        eventData.variant = 0;
+        eventData.paletteColor = 0;
+
+        packet.eventData = eventData;
+
+        EntityEventPacket packet2 = new EntityEventPacket();
+        packet2.eid = this.id;
+        packet2.event = EntityEventPacket.REMOVE_LEASH;
+        packet2.data = 0;
+
+        Server.broadcastPacket(this.hasSpawned.values(), packet);
+        Server.broadcastPacket(this.hasSpawned.values(), packet2);
+
+        this.setDataFlag(EntityFlag.LEASHED, false);
+        this.setDataProperty(LEASH_HOLDER, 0);
+        return true;
+    }
 
     public void setAmbientSoundInterval(float interval) {
         this.setDataProperty(AMBIENT_SOUND_INTERVAL, interval);
