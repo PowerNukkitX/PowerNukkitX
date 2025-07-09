@@ -725,9 +725,13 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
                 if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
                     CUSTOM_ITEM_DEFINITIONS.put(key, customItem.getDefinition());
                     Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, customItem.getDefinition().getRuntimeId(), true));
-                    Item ci = (Item) customItem;
-                    ci.setNetId(null);
-                    Registries.CREATIVE.addCreativeItem(ci);
+                    CompoundTag nbt = customItem.getDefinition().nbt();
+                    if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
+                        Item ci = (Item) customItem;
+                        ci.setNetId(null);
+                        int groupIndex = Registries.CREATIVE.resolveGroupIndexFromItemDefinition(key, nbt);
+                        Registries.CREATIVE.addCreativeItem(ci, groupIndex);
+                    }
                 } else {
                     throw new RegisterException("This item has already been registered with the identifier: " + key);
                 }
@@ -740,6 +744,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             throw new RuntimeException(e);
         }
     }
+
 
     private void register0(String key, Class<? extends Item> value) {
         try {
