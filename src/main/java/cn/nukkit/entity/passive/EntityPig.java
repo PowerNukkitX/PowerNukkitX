@@ -59,7 +59,6 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRid
             "cold"
         }, "temperate", true)
     };
-    private final static String PROPERTY_STATE = "minecraft:climate_variant";
 
     @Override
     @NotNull public String getIdentifier() {
@@ -148,14 +147,9 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRid
             setSaddled(this.namedTag.getBoolean("saddled"));
         }
         if(namedTag.contains("variant")) {
-            Variant variant = Variant.get(namedTag.getString("variant"));
             setVariant(Variant.get(namedTag.getString("variant")));
-            setEnumEntityProperty(PROPERTY_STATE, variant);
-        } else {
-            Variant biomeVariant = getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z));
-            setVariant(biomeVariant);
-            setEnumEntityProperty(PROPERTY_STATE, biomeVariant);
-        }
+        } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
+
     }
 
     public void setSaddled(boolean saddled) {

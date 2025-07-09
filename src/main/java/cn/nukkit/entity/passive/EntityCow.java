@@ -44,7 +44,6 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
             "cold"
         }, "temperate", true)
     };
-    private final static String PROPERTY_STATE = "minecraft:climate_variant";
 
     @Override
     @NotNull public String getIdentifier() {
@@ -114,21 +113,13 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
         return Item.EMPTY_ARRAY;
     }
 
-    
-
     @Override
     protected void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
         if(namedTag.contains("variant")) {
-            Variant variant = Variant.get(namedTag.getString("variant"));
             setVariant(Variant.get(namedTag.getString("variant")));
-            setEnumEntityProperty(PROPERTY_STATE, variant);
-        } else {
-            Variant biomeVariant = getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z));
-            setVariant(biomeVariant);
-            setEnumEntityProperty(PROPERTY_STATE, biomeVariant);
-        }
+        } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
     }
 
     @Override
