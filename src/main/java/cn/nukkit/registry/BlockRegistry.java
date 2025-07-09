@@ -1571,4 +1571,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             throw new RuntimeException(e);
         }
     }
+
+    public boolean shouldSkip(String bid) {
+        return skipBlockSet.contains(bid);
+    }
 }
