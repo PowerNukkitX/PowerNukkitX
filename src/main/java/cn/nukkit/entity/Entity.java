@@ -68,12 +68,9 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityInteractEventData;
 import cn.nukkit.network.protocol.types.EntityLink;
-import cn.nukkit.network.protocol.types.EventData;
-import cn.nukkit.network.protocol.types.EventDataType;
 import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
@@ -3064,6 +3061,22 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
         this.setDataFlag(EntityFlag.LEASHED, true);
         this.setLeashHolder(entity);
+
+
+        EventPacket packet = new EventPacket();
+        packet.eid = 5983945;
+        packet.usePlayerId = 1;
+
+        EntityInteractEventData eventData = new EntityInteractEventData();
+        eventData.interactedEntityID = this.id;
+        eventData.interactionType = 12;
+        eventData.legacyEntityTypeId = 10;
+        eventData.variant = 0;
+        eventData.paletteColor = 0;
+
+        packet.eventData = eventData;
+
+        Server.broadcastPacket(this.hasSpawned.values(), packet);
         return true;
     }
 
