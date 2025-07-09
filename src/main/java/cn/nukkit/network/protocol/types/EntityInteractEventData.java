@@ -16,10 +16,10 @@ public class EntityInteractEventData implements EventData {
 
     @Override
     public void write(HandleByteBuf byteBuf) {
-        byteBuf.writeLong(this.interactedEntityID);
-        byteBuf.writeInt(this.interactionType);
-        byteBuf.writeInt(this.legacyEntityTypeId);
-        byteBuf.writeInt(this.variant);
-        byteBuf.writeByte(this.paletteColor);
+        byteBuf.writeVarLong(this.interactedEntityID);
+        byteBuf.writeVarInt(this.interactionType);
+        byteBuf.writeVarInt(this.legacyEntityTypeId);
+        byteBuf.writeVarInt(this.variant);
+        byteBuf.writeUnsignedVarInt(this.paletteColor);
     }
 }

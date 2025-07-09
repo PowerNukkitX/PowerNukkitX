@@ -2028,8 +2028,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public boolean onInteract(Player player, Item item) {
         this.despawnable = false;
 
-        if (this instanceof EntityLeashable && Objects.equals(item.getId(), ItemID.LEAD) && !this.isLeashed()) {
-            return this.leash(player);
+        if (this instanceof EntityLeashable) {
+            if (this.isLeashed()) {
+                return this.unleash();
+            } else if (Objects.equals(item.getId(), ItemID.LEAD)) {
+                return this.leash(player);
+            }
         }
 
         return false;
@@ -3043,32 +3047,24 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public long getLeashHolder() {
-        return this.entityDataMap.get(LEASH_HOLDER);
-    }
-
-    protected void setLeashHolder(Entity entity) {
-        this.entityDataMap.put(LEASH_HOLDER, entity != null ? entity.getId() : -1L);
+        return this.getDataProperty(LEASH_HOLDER);
     }
 
     public boolean isLeashed() {
-        return this.getDataFlag(EntityFlag.LEASHED) && this.getLeashHolder() != -1L;
+        return this.getDataFlag(EntityFlag.LEASHED) && this.getDataProperty(LEASH_HOLDER) != 0;
     }
 
     public boolean leash(Entity entity) {
-        if (this.isLeashed()) {
+        if (Objects.equals(this, entity) || this.isLeashed()) {
             return false;
         }
 
-        this.setDataFlag(EntityFlag.LEASHED, true);
-        this.setLeashHolder(entity);
-
-
         EventPacket packet = new EventPacket();
-        packet.eid = 5983945;
+        packet.eid = entity.id; // Leashing entity
         packet.usePlayerId = 1;
 
         EntityInteractEventData eventData = new EntityInteractEventData();
-        eventData.interactedEntityID = this.id;
+        eventData.interactedEntityID = this.id; // Entity to leash
         eventData.interactionType = 12;
         eventData.legacyEntityTypeId = 10;
         eventData.variant = 0;
@@ -3077,6 +3073,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         packet.eventData = eventData;
 
         Server.broadcastPacket(this.hasSpawned.values(), packet);
+
+        this.setDataProperty(LEASH_HOLDER, entity.getId());
+        this.setDataFlag(EntityFlag.LEASHED, true);
+
+        this.setDataProperty(INTERACT_TEXT, "action.interact.unleash");
         return true;
     }
 
@@ -3085,8 +3086,31 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             return false;
         }
 
+        long leashHolder = this.getLeashHolder();
+
+        EventPacket packet = new EventPacket();
+        packet.eid = leashHolder; // Leashing entity
+        packet.usePlayerId = 1;
+
+        EntityInteractEventData eventData = new EntityInteractEventData();
+        eventData.interactedEntityID = this.id; // Entity to unleash
+        eventData.interactionType = 13;
+        eventData.legacyEntityTypeId = 10;
+        eventData.variant = 0;
+        eventData.paletteColor = 0;
+
+        packet.eventData = eventData;
+
+        EntityEventPacket packet2 = new EntityEventPacket();
+        packet2.eid = this.id;
+        packet2.event = EntityEventPacket.REMOVE_LEASH;
+        packet2.data = 0;
+
+        Server.broadcastPacket(this.hasSpawned.values(), packet);
+        Server.broadcastPacket(this.hasSpawned.values(), packet2);
+
         this.setDataFlag(EntityFlag.LEASHED, false);
-        this.setLeashHolder(null);
+        this.setDataProperty(LEASH_HOLDER, 0);
         return true;
     }
 
