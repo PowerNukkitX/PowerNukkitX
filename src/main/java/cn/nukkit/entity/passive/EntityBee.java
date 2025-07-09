@@ -156,7 +156,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                             if(flower instanceof BlockWitherRose) {
                                 this.kill();
                             } else if(stayAtFlower) {
-                                this.setBooleanEntityProperty("minecraft:has_nectar", true);
+                                this.setNectar(true);
                                 this.getLevel().addSound(this, Sound.MOB_BEE_POLLINATE);
                             }
                             stayAtFlower = !stayAtFlower;
@@ -186,7 +186,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     }
 
     public void nectarDelivered(BlockEntityBeehive blockEntityBeehive) {
-        this.setBooleanEntityProperty("minecraft:has_nectar", false);
+        this.setNectar(false);
     }
 
     public void leftBeehive(BlockEntityBeehive blockEntityBeehive) {
@@ -194,7 +194,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     }
 
     public boolean shouldSearchBeehive() {
-        return this.getBooleanEntityProperty(PROPERTY_HAS_NECTAR) || getLevel().isRaining() || !getLevel().isDay();
+        return this.hasNectar() || getLevel().isRaining() || !getLevel().isDay();
     }
 
     @Override
