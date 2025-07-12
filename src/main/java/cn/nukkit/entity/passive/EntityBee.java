@@ -23,6 +23,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.MemorizedBlockSensor;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.data.property.BooleanEntityProperty;
+import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
@@ -35,13 +37,15 @@ import java.util.Set;
 
 
 public class EntityBee extends EntityAnimal implements EntityFlyable {
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new BooleanEntityProperty("minecraft:has_nectar", false, true)
+    };
+    private final static String PROPERTY_HAS_NECTAR = "minecraft:has_nectar";
 
     @Override
     @NotNull public String getIdentifier() {
         return BEE;
     }
-
-    private boolean hasNectar = false;
 
     private boolean stayAtFlower = false;
 
@@ -78,6 +82,14 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         return dieInTicks == -1;
     }
 
+    public boolean hasNectar() {
+        return this.getBooleanEntityProperty(PROPERTY_HAS_NECTAR);
+    }
+    
+    public void setNectar(boolean hasNectar) {
+        this.setBooleanEntityProperty(PROPERTY_HAS_NECTAR, hasNectar);
+    }
+
     @Override
     public float getWidth() {
         if (this.isBaby()) {
@@ -92,14 +104,6 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
             return 0.25f;
         }
         return 0.5f;
-    }
-
-    public boolean hasNectar() {
-        return this.hasNectar;
-    }
-
-    public void setNectar(boolean hasNectar) {
-        this.hasNectar = hasNectar;
     }
 
     public boolean isAngry() {
@@ -190,13 +194,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     }
 
     public boolean shouldSearchBeehive() {
-        return hasNectar() || getLevel().isRaining() || !getLevel().isDay();
-    }
-
-    @Override
-    public void saveNBT() {
-        super.saveNBT();
-        super.namedTag.putBoolean("hasNectar", hasNectar);
+        return this.hasNectar() || getLevel().isRaining() || !getLevel().isDay();
     }
 
     @Override

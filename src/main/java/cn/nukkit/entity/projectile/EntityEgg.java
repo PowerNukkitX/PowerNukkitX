@@ -2,6 +2,8 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.entity.ClimateVariant;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.item.ItemEgg;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
@@ -14,6 +16,14 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityEgg extends EntityProjectile implements ClimateVariant {
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new EnumEntityProperty("minecraft:climate_variant", new String[]{
+            "temperate",
+            "warm",
+            "cold"
+        }, "temperate", true)
+    };
+    private final static String PROPERTY_STATE = "minecraft:climate_variant";
 
     @Override
     @NotNull public String getIdentifier() {

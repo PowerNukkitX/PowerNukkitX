@@ -258,7 +258,8 @@ public class CompoundTag extends Tag {
     }
 
     public boolean getBoolean(String name) {
-        return getByte(name) != 0;
+        if (!tags.containsKey(name)) return false;
+        return ((ByteTag) tags.get(name)).getData() != 0;
     }
 
     @Override

@@ -1,7 +1,9 @@
 package cn.nukkit.command.tree.node;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.utils.CommandUtils;
 import cn.nukkit.registry.Registries;
 
 /**
@@ -20,6 +22,12 @@ public class BlockNode extends ParamNode<Block> {
         block = Registries.BLOCK.get(arg);
         if (block == null) {
             this.error();
+            return;
+        }
+
+        // Reject if custom and marked hidden
+        if (block instanceof CustomBlock customBlock && CommandUtils.isHiddenInCommands(customBlock)) {
+             this.error();
             return;
         }
         this.value = block;

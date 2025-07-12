@@ -20,13 +20,17 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.nbt.tag.Tag;
+
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -72,7 +76,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             var b = (Block) customBlock;
             var components = this.nbt.getCompound("components");
 
-            //设置一些与PNX内部对应的方块属性
+            // Set some block properties corresponding to PNX internal
             components.putCompound("minecraft:friction", new CompoundTag()
                             .putFloat("value", (float) Math.min(0.9, Math.max(0, 1 - b.getFrictionFactor()))))
                     .putCompound("minecraft:destructible_by_explosion", new CompoundTag()
@@ -83,25 +87,16 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                             .putByte("emission", (byte) customBlock.getLightLevel()))
                     .putCompound("minecraft:destructible_by_mining", new CompoundTag()
                             .putFloat("value", 99999f));//default server-side mining time calculate
-            //设置材质
-            components.putCompound("minecraft:material_instances", new CompoundTag()
-                    .putCompound("mappings", new CompoundTag())
-                    .putCompound("materials", new CompoundTag()));
+            // Setting up the material
+            CompoundTag defaultMaterial = createDefaultMaterialInstance(null);
+            components.putCompound("minecraft:material_instances", defaultMaterial);
 
-            //默认单位立方体方块
-            components.putCompound("minecraft:unit_cube", new CompoundTag());
-            //设置默认单位立方体方块的几何模型
-            components.putCompound("minecraft:geometry", new CompoundTag()
-                    .putString("identifier", "minecraft:geometry.full_block")
-                    .putString("culling", "")
-                    .putCompound("bone_visibility", new CompoundTag())
-            );
+            // Sets the default geometry
+            components.putCompound("minecraft:geometry", createDefaultGeometry(null));
 
-            //设置方块在创造栏的分类
-            this.nbt.putCompound("menu_category", new CompoundTag()
-                    .putString("category", CreativeCategory.NATURE.name())
-                    .putString("group", CreativeGroup.NONE.getGroupName()));
-            //molang版本
+            // Set the category of the block in the creation column
+            this.nbt.putCompound("menu_category", createDefaultMenuCategory());
+            // Molang version
             this.nbt.putInt("molangVersion", 9);
 
             //设置方块的properties
@@ -122,11 +117,6 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                     /*.putString("material", "")*/); //todo Figure what is dirt, maybe that corresponds to https://wiki.bedrock.dev/documentation/materials.html
         }
 
-        public Builder texture(String texture) {
-            this.materials(Materials.builder().any(Materials.RenderMethod.OPAQUE, texture));
-            return this;
-        }
-
         public Builder name(String name) {
             Preconditions.checkArgument(!name.isBlank(), "name is blank");
             this.nbt.getCompound("components").putCompound("minecraft:display_name", new CompoundTag()
@@ -134,29 +124,94 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             return this;
         }
 
-        public Builder materials(Materials materials) {
-            this.nbt.getCompound("components").putCompound("minecraft:material_instances", new CompoundTag()
-                    .putCompound("mappings", new CompoundTag())
-                    .putCompound("materials", materials.toCompoundTag()));
+        public Builder texture(String texture) {
+            CompoundTag material = createDefaultMaterialInstance(texture);
+            this.nbt.getCompound("components").putCompound("minecraft:material_instances", material);
             return this;
         }
 
-        public Builder creativeGroupAndCategory(CreativeGroup creativeGroup, CreativeCategory creativeCategory) {
-            this.nbt.getCompound("menu_category")
-                    .putString("category", creativeCategory.name().toLowerCase(Locale.ENGLISH))
-                    .putString("group", creativeGroup.getGroupName());
+        public Builder materials(Materials materials) {
+            CompoundTag base = createDefaultMaterialInstance(null);
+            CompoundTag baseMaterials = base.getCompound("materials");
+            CompoundTag customMaterials = materials.toCompoundTag();
+
+            for (Map.Entry<String, Tag> customEntry : customMaterials.getTags().entrySet()) {
+                String key = customEntry.getKey();
+                CompoundTag customMat = (CompoundTag) customEntry.getValue();
+                CompoundTag baseMat = baseMaterials.contains(key)
+                        ? baseMaterials.getCompound(key)
+                        : new CompoundTag();
+
+                for (Map.Entry<String, Tag> entry : customMat.getTags().entrySet()) {
+                    baseMat.put(entry.getKey(), entry.getValue());
+                }
+
+                baseMaterials.putCompound(key, baseMat);
+            }
+
+            this.nbt.getCompound("components").putCompound("minecraft:material_instances", base);
             return this;
         }
 
         public Builder creativeCategory(String creativeCategory) {
+            if (!this.nbt.contains("menu_category")) {
+                this.nbt.putCompound("menu_category", createDefaultMenuCategory());
+            }
             this.nbt.getCompound("menu_category")
                     .putString("category", creativeCategory.toLowerCase(Locale.ENGLISH));
             return this;
         }
 
         public Builder creativeCategory(CreativeCategory creativeCategory) {
+            if (!this.nbt.contains("menu_category")) {
+                this.nbt.putCompound("menu_category", createDefaultMenuCategory());
+            }
             this.nbt.getCompound("menu_category")
                     .putString("category", creativeCategory.name().toLowerCase(Locale.ENGLISH));
+            return this;
+        }
+
+        /**
+         * Control the grouping of custom blocks in the creation inventory.
+         *
+         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
+         */
+        public Builder creativeGroup(String creativeGroup) {
+            if (creativeGroup.isBlank()) {
+                log.error("creativeGroup has an invalid value!");
+                return this;
+            }
+            if (!this.nbt.contains("menu_category")) {
+                this.nbt.putCompound("menu_category", createDefaultMenuCategory());
+            }
+            this.nbt.getCompound("menu_category").putString("group", creativeGroup);
+            return this;
+        }
+
+        /**
+         * Control the grouping of custom blocks in the creation inventory.
+         *
+         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
+         */
+        public Builder creativeGroup(CreativeGroup creativeGroup) {
+            if (!this.nbt.contains("menu_category")) {
+                this.nbt.putCompound("menu_category", createDefaultMenuCategory());
+            }
+            this.nbt.getCompound("menu_category").putString("group", creativeGroup.getGroupName());
+            return this;
+        }
+
+        /**
+         * Sets whether the item/block should be hidden from commands like /give and /replaceitem.
+         * 
+         * @param hidden true to hide, false to show (default: false)
+         * @return this builder
+         */
+        public Builder isHiddenInCommands(boolean hidden) {
+            if (!this.nbt.contains("menu_category")) {
+                this.nbt.putCompound("menu_category", createDefaultMenuCategory());
+            }
+            this.nbt.getCompound("menu_category").putByte("is_hidden_in_commands", (byte) (hidden ? 1 : 0));
             return this;
         }
 
@@ -173,34 +228,6 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:destructible_by_mining", new CompoundTag()
                             .putFloat("value", (float) second));
-            return this;
-        }
-
-        /**
-         * 控制自定义方块在创造栏中的组。
-         * <p>
-         * Control the grouping of custom blocks in the creation inventory.
-         *
-         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
-         */
-        public Builder creativeGroup(String creativeGroup) {
-            if (creativeGroup.isBlank()) {
-                log.error("creativeGroup has an invalid value!");
-                return this;
-            }
-            this.nbt.getCompound("components").getCompound("menu_category").putString("group", creativeGroup.toLowerCase(Locale.ENGLISH));
-            return this;
-        }
-
-        /**
-         * 控制自定义方块在创造栏中的组。
-         * <p>
-         * Control the grouping of custom blocks in the creation inventory.
-         *
-         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
-         */
-        public Builder creativeGroup(CreativeGroup creativeGroup) {
-            this.nbt.getCompound("components").getCompound("menu_category").putString("group", creativeGroup.getGroupName());
             return this;
         }
 
@@ -242,27 +269,27 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                 return this;
             }
             var components = this.nbt.getCompound("components");
-            //默认单位立方体方块，如果定义几何模型需要移除
-            if (components.contains("minecraft:unit_cube")) components.remove("minecraft:unit_cube");
-            //设置方块对应的几何模型
-            components.putCompound("minecraft:geometry", new CompoundTag()
-                    .putString("identifier", geometry.toLowerCase(Locale.ENGLISH)));
+            //设置方块对应的几何模型（合并默认结构）
+            CompoundTag mergedGeometry = createDefaultGeometry(geometry.toLowerCase(Locale.ENGLISH));
+            components.putCompound("minecraft:geometry", mergedGeometry);
             return this;
         }
 
         /**
          * 控制自定义方块的几何模型,如果不设置默认为单位立方体
          * <p>
-         * Control the geometric model of the custom block, if not set the default is the unit cube.<br>
+         * Control the geometric model of the custom block, if not set the default is the full_block.<br>
          * Geometry identifier from geo file in 'RP/models/blocks' folder
          */
-
         public Builder geometry(@NotNull Geometry geometry) {
             var components = this.nbt.getCompound("components");
-            //默认单位立方体方块，如果定义几何模型需要移除
-            if (components.contains("minecraft:unit_cube")) components.remove("minecraft:unit_cube");
-            //设置方块对应的几何模型
-            components.putCompound("minecraft:geometry", geometry.toCompoundTag());
+            //设置方块对应的几何模型（合并默认结构）
+            CompoundTag base = createDefaultGeometry(null);
+            CompoundTag custom = geometry.toCompoundTag();
+            for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : custom.getTags().entrySet()) {
+                base.put(entry.getKey(), entry.getValue());
+            }
+            components.putCompound("minecraft:geometry", base);
             return this;
         }
 
@@ -404,5 +431,47 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         public CustomBlockDefinition build() {
             return new CustomBlockDefinition(this.identifier, this.nbt);
         }
+    }
+
+    // Creates default geometry
+    public static CompoundTag createDefaultGeometry(String identifierOverride) {
+        CompoundTag geometry = new CompoundTag(new LinkedHashMap<>());
+        geometry.putCompound("bone_visibility", new CompoundTag());
+        geometry.putString("culling", "");
+        geometry.putString("culling_layer", "minecraft:culling_layer.undefined");
+        geometry.putString("identifier", identifierOverride != null ? identifierOverride : "minecraft:geometry.full_block");
+        geometry.putByte("ignoreGeometryForIsSolid", (byte) 1);
+        geometry.putByte("needsLegacyTopRotation", (byte) 0);
+        geometry.putByte("useLegacyBlockLightAbsorption", (byte) 0);
+        geometry.putByte("uv_lock", (byte) 0);
+        return geometry;
+    }
+
+    // Creates default materials instance
+    public static CompoundTag createDefaultMaterialInstance(String textureOverride) {
+        CompoundTag materials = new CompoundTag(new LinkedHashMap<>());
+        CompoundTag main = new CompoundTag(new LinkedHashMap<>());
+        main.putFloat("ambient_occlusion", 1.0f);
+        main.putByte("face_dimming", (byte) 1);
+        main.putByte("isotropic", (byte) 0);
+        main.putString("render_method", "opaque");
+        main.putString("texture", textureOverride != null ? textureOverride : "missing_texture");
+        main.putString("tint_method", "none");
+
+        materials.putCompound("*", main);
+
+        CompoundTag materialInstances = new CompoundTag(new LinkedHashMap<>());
+        materialInstances.putCompound("mappings", new CompoundTag());
+        materialInstances.putCompound("materials", materials);
+
+        return materialInstances;
+    }
+
+    // Creates default category
+    public static CompoundTag createDefaultMenuCategory() {
+        return new CompoundTag(new LinkedHashMap<>())
+            .putString("category", "construction")
+            .putString("group", "")
+            .putByte("is_hidden_in_commands", (byte) 0);
     }
 }
