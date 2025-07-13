@@ -449,6 +449,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * The method used to initialize the NBT and entity fields of the entity
      */
     protected void initEntity() {
+        this.initEntityDataMap();
+
         if (!(this instanceof Player)) {
             if (this.namedTag.contains("uuid")) {
                 this.entityUniqueId = UUID.fromString(this.namedTag.getString("uuid"));
@@ -488,6 +490,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 this.attributes.put(attribute.getId(), attribute);
             }
         }
+
+        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+        this.setDataFlags(EnumSet.of(EntityFlag.CAN_CLIMB, EntityFlag.BREATHING, EntityFlag.HAS_COLLISION, EntityFlag.HAS_GRAVITY));
+    }
+
+    /**
+     * Method used to initialize entitydatamap
+     */
+    protected void initEntityDataMap() {
         this.entityDataMap.getOrCreateFlags();
         this.entityDataMap.put(AIR_SUPPLY, this.namedTag.getShort("Air"));
         this.entityDataMap.put(AIR_SUPPLY_MAX, 400);
@@ -497,8 +508,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.entityDataMap.put(HEIGHT, this.getHeight());
         this.entityDataMap.put(WIDTH, this.getWidth());
         this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealth());
-        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
-        this.setDataFlags(EnumSet.of(EntityFlag.CAN_CLIMB, EntityFlag.BREATHING, EntityFlag.HAS_COLLISION, EntityFlag.HAS_GRAVITY));
     }
 
     protected final void init(IChunk chunk, CompoundTag nbt) {
