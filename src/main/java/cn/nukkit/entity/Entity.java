@@ -449,6 +449,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * The method used to initialize the NBT and entity fields of the entity
      */
     protected void initEntity() {
+        this.initEntityDataMap();
+
         if (!(this instanceof Player)) {
             if (this.namedTag.contains("uuid")) {
                 this.entityUniqueId = UUID.fromString(this.namedTag.getString("uuid"));
@@ -456,16 +458,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 this.entityUniqueId = UUID.randomUUID();
             }
         }
-
-        this.entityDataMap.getOrCreateFlags();
-        this.entityDataMap.put(AIR_SUPPLY, this.namedTag.getShort("Air"));
-        this.entityDataMap.put(AIR_SUPPLY_MAX, 400);
-        this.entityDataMap.put(NAME, "");
-        this.entityDataMap.put(LEASH_HOLDER, -1);
-        this.entityDataMap.put(SCALE, 1f);
-        this.entityDataMap.put(HEIGHT, this.getHeight());
-        this.entityDataMap.put(WIDTH, this.getWidth());
-        this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealth());
 
         if (this.namedTag.contains("ActiveEffects")) {
             ListTag<CompoundTag> effects = this.namedTag.getList("ActiveEffects", CompoundTag.class);
@@ -501,6 +493,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
         this.setDataFlags(EnumSet.of(EntityFlag.CAN_CLIMB, EntityFlag.BREATHING, EntityFlag.HAS_COLLISION, EntityFlag.HAS_GRAVITY));
+    }
+
+    /**
+     * Method used to initialize entitydatamap
+     */
+    protected void initEntityDataMap() {
+        this.entityDataMap.getOrCreateFlags();
+        this.entityDataMap.put(AIR_SUPPLY, this.namedTag.getShort("Air"));
+        this.entityDataMap.put(AIR_SUPPLY_MAX, 400);
+        this.entityDataMap.put(NAME, "");
+        this.entityDataMap.put(LEASH_HOLDER, -1);
+        this.entityDataMap.put(SCALE, 1f);
+        this.entityDataMap.put(HEIGHT, this.getHeight());
+        this.entityDataMap.put(WIDTH, this.getWidth());
+        this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealth());
     }
 
     protected final void init(IChunk chunk, CompoundTag nbt) {
