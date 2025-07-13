@@ -457,6 +457,16 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             }
         }
 
+        this.entityDataMap.getOrCreateFlags();
+        this.entityDataMap.put(AIR_SUPPLY, this.namedTag.getShort("Air"));
+        this.entityDataMap.put(AIR_SUPPLY_MAX, 400);
+        this.entityDataMap.put(NAME, "");
+        this.entityDataMap.put(LEASH_HOLDER, -1);
+        this.entityDataMap.put(SCALE, 1f);
+        this.entityDataMap.put(HEIGHT, this.getHeight());
+        this.entityDataMap.put(WIDTH, this.getWidth());
+        this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealth());
+
         if (this.namedTag.contains("ActiveEffects")) {
             ListTag<CompoundTag> effects = this.namedTag.getList("ActiveEffects", CompoundTag.class);
             for (CompoundTag e : effects.getAll()) {
@@ -488,15 +498,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 this.attributes.put(attribute.getId(), attribute);
             }
         }
-        this.entityDataMap.getOrCreateFlags();
-        this.entityDataMap.put(AIR_SUPPLY, this.namedTag.getShort("Air"));
-        this.entityDataMap.put(AIR_SUPPLY_MAX, 400);
-        this.entityDataMap.put(NAME, "");
-        this.entityDataMap.put(LEASH_HOLDER, -1);
-        this.entityDataMap.put(SCALE, 1f);
-        this.entityDataMap.put(HEIGHT, this.getHeight());
-        this.entityDataMap.put(WIDTH, this.getWidth());
-        this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealth());
+
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
         this.setDataFlags(EnumSet.of(EntityFlag.CAN_CLIMB, EntityFlag.BREATHING, EntityFlag.HAS_COLLISION, EntityFlag.HAS_GRAVITY));
     }
