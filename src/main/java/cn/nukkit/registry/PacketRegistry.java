@@ -263,6 +263,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.PLAYER_UPDATE_ENTITY_OVERRIDES_PACKET, PlayerUpdateEntityOverridesPacket.class);
         this.register0(ProtocolInfo.PLAYER_LOCATION_PACKET, PlayerLocationPacket.class);
         this.register0(ProtocolInfo.SERVER_SCRIPT_DEBUG_DRAWER_PACKET, ServerScriptDebugDrawerPacket.class);
+        this.register0(ProtocolInfo.SHOW_STORE_OFFER_PACKET, ShowStoreOfferPacket.class);
 
         this.PACKET_POOL.trim();
     }

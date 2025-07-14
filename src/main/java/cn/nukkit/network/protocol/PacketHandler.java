@@ -583,4 +583,7 @@ public interface PacketHandler {
 
     default void handle(ServerScriptDebugDrawerPacket pk) {
     }
+
+    default void handle(ShowStoreOfferPacket pk) {
+    }
 }
