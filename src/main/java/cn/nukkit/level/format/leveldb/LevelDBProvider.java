@@ -1,5 +1,6 @@
 package cn.nukkit.level.format.leveldb;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
@@ -8,6 +9,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.Chunk;
+import cn.nukkit.level.format.ChunkConversion;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelConfig;
@@ -149,6 +151,12 @@ public class LevelDBProvider implements LevelProvider {
                 putChunk(index, chunk);
             }
         } else {
+            if (Server.getInstance().getSettings().chunkSettings().convertBDSChunks() && chunk.isPopulated()) {
+                CompoundTag extra = chunk.getExtraData();
+                if (extra == null || extra.isEmpty()) {
+                    chunk = ChunkConversion.convert(chunk);
+                }
+            }
             putChunk(index, chunk);
         }
         return chunk;
