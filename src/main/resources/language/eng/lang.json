@@ -68,6 +68,7 @@
   "pnx.settings.chunk.generationqueuesize": "Maximum number of terrain generation tasks executed simultaneously",
   "pnx.settings.chunk.spawnlimit": "Limits how many entities can spawn naturally in a chunk. ",
   "pnx.settings.chunk.checkfortickable": "Check for redstone and liquids to be ticked once at chunk load.",
+  "pnx.settings.chunk.convertBDSChunks": "Enable this if your BDS imported map have invisble chests, signs, beds, etc.",
   "pnx.settings.network.queryplugins": "Whether the query protocol displays plugin information",
   "pnx.settings.network.compressionlevel": "Compression level of the compression algorithm used by the server",
   "pnx.settings.network.zlibprovider": "Zlib compression algorithm provider used by the server. 0 for Java's original algorithm\n 1 for single-threaded low memory usage algorithm\n 2 for multi-threaded caching algorithm\n 3 for hardware-accelerated algorithm",
