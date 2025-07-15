@@ -148,10 +148,10 @@ public class CreativeGroupsRegistry {
         for (CreativeItemData data : current) {
             Item item = data.getItem();
             int originalGroupId = data.getGroupId();
-            int newGroupId = CreativeItemRegistry.VANILLA_GROUPS_SIZE;
+            int newGroupId = CreativeItemRegistry.LAST_ITEMS_INDEX;
 
             // Vanilla item: remap based on old group index
-            if (originalGroupId != CreativeItemRegistry.VANILLA_GROUPS_SIZE) {
+            if (!isCategoryFallbackIndex(originalGroupId)) {
                 Integer mapped = groupIndexMap.get(originalGroupId);
                 if (mapped != null) {
                     newGroupId = mapped;
@@ -160,29 +160,56 @@ public class CreativeGroupsRegistry {
                 // Custom item: use mapped group names from ITEM_GROUP_MAP saved on item/block registry
                 String key = item.getIdentifier().toString();
                 String groupName = CreativeItemRegistry.ITEM_GROUP_MAP.get(key);
+                CreativeCategory fallbackCategory = getCategoryFromFallbackIndex(originalGroupId);
 
                 if (groupName != null) {
                     Integer resolvedIndex = null;
+                    CreativeCategory category = null;
 
-                    for (Map<String, Integer> groupMap : CreativeItemRegistry.CATEGORY_GROUP_INDEX_MAP.values()) {
-                        resolvedIndex = groupMap.get(groupName);
-                        if (resolvedIndex != null) break;
+                    for (Map.Entry<CreativeCategory, Map<String, Integer>> entry : CreativeItemRegistry.CATEGORY_GROUP_INDEX_MAP.entrySet()) {
+                        resolvedIndex = entry.getValue().get(groupName);
+                        if (resolvedIndex != null) {
+                            category = entry.getKey();
+                            break;
+                        }
                     }
 
                     if (resolvedIndex != null) {
                         newGroupId = resolvedIndex;
                     } else {
-                        log.warn("Group '{}' not found in CATEGORY_GROUP_INDEX_MAP for item '{}'", groupName, key);
+                        CreativeCategory resolvedFallback = (category != null) ? category : fallbackCategory;
+                        int fallbackIndex = CreativeItemRegistry.getLastGroupIndexFrom(resolvedFallback.name());
+                        log.debug("Group '{}' not found; falling back to last index of category '{}' -> index {}", 
+                                 groupName, resolvedFallback, fallbackIndex);
+                        newGroupId = fallbackIndex;
                     }
                 } else {
-                    log.warn("Group name not saved for custom item '{}'; using fallback group {}", item.getName(), CreativeItemRegistry.VANILLA_GROUPS_SIZE);
+                    // No group set at all, fallback to last index of original category
+                    int fallbackIndex = CreativeItemRegistry.getLastGroupIndexFrom(fallbackCategory.name());
+                    log.debug("Group name not saved for item '{}'; falling back to last index {}",
+                             item.getName(), fallbackIndex);
+                    newGroupId = fallbackIndex;
                 }
             }
             rebuilt.add(new CreativeItemData(item, newGroupId));
         }
-
         current.clear();
         current.addAll(rebuilt);
         CreativeItemRegistry.ITEM_GROUP_MAP.clear();
+    }
+
+    private static boolean isCategoryFallbackIndex(int groupId) {
+        return groupId == CreativeItemRegistry.LAST_CONSTRUCTION_INDEX
+            || groupId == CreativeItemRegistry.LAST_EQUIPMENTS_INDEX
+            || groupId == CreativeItemRegistry.LAST_ITEMS_INDEX
+            || groupId == CreativeItemRegistry.LAST_NATURE_INDEX;
+    }
+
+    public static CreativeCategory getCategoryFromFallbackIndex(int groupId) {
+        if (groupId == CreativeItemRegistry.LAST_CONSTRUCTION_INDEX) return CreativeCategory.CONSTRUCTION;
+        if (groupId == CreativeItemRegistry.LAST_EQUIPMENTS_INDEX) return CreativeCategory.EQUIPMENT;
+        if (groupId == CreativeItemRegistry.LAST_ITEMS_INDEX) return CreativeCategory.ITEMS;
+        if (groupId == CreativeItemRegistry.LAST_NATURE_INDEX) return CreativeCategory.NATURE;
+        return CreativeCategory.ITEMS;
     }
 }
