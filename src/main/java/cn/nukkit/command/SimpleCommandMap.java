@@ -363,6 +363,14 @@ public class SimpleCommandMap implements CommandMap {
         return null;
     }
 
+    @Override
+    public void unregisterCommand(String name) {
+        Command unRegistering = getCommand(name);
+        if (unRegistering != null) {
+            unRegistering.unregister(this);
+        }
+    }
+
     /**
      * 获取{@link #knownCommands}的未克隆实例
      *
