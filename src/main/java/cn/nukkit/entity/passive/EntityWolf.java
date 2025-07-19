@@ -1,7 +1,6 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAngryable;
@@ -36,10 +35,12 @@ import cn.nukkit.entity.ai.sensor.EntityAttackedByOwnerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.ai.sensor.WolfNearestFeedingPlayerSensor;
+import cn.nukkit.entity.data.property.BooleanEntityProperty;
+import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.EntityArmorInventory;
-import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
@@ -55,7 +56,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
@@ -70,6 +70,22 @@ import java.util.Set;
  * todo 野生狼不会被刷新
  */
 public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor, EntityVariant, InventoryHolder {
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new BooleanEntityProperty("minecraft:is_armorable", false),
+        new BooleanEntityProperty("minecraft:has_increased_max_health", false),
+        new EnumEntityProperty("minecraft:sound_variant", new String[]{
+            "default",
+            "big",
+            "cute",
+            "grumpy",
+            "mad",
+            "puglin",
+            "sad"
+        }, "default", true)
+    };
+    private final static String PROPERTY_IS_ARMORABLE = "minecraft:is_armorable";
+    private final static String PROPERTY_HAS_INCREASED_MAX_HEALTH = "minecraft:has_increased_max_health";
+    private final static String PROPERTY_SOUND_VARIANT = "minecraft:sound_variant";
 
     private static final String TAG_ARMOR = "Armor";
 

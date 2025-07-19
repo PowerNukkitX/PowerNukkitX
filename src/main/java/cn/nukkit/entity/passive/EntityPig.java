@@ -33,6 +33,8 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -40,6 +42,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -49,6 +52,13 @@ import java.util.Set;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRideable, ClimateVariant {
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new EnumEntityProperty("minecraft:climate_variant", new String[]{
+            "temperate",
+            "warm",
+            "cold"
+        }, "temperate", true)
+    };
 
     @Override
     @NotNull public String getIdentifier() {

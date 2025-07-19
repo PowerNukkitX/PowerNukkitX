@@ -5,7 +5,6 @@ import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.protocol.AvailableEntityIdentifiersPacket;
-import cn.nukkit.network.protocol.BiomeDefinitionListPacket;
 import cn.nukkit.network.protocol.ItemRegistryPacket;
 import cn.nukkit.network.protocol.RequestChunkRadiusPacket;
 import cn.nukkit.network.protocol.SetLocalPlayerAsInitializedPacket;
@@ -19,7 +18,6 @@ import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 @Slf4j
@@ -56,9 +54,9 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         player.dataPacket(new AvailableEntityIdentifiersPacket());
 
         // 注册实体属性
-        // Register entity attributes
+        // Register entity properties
         log.debug("Sending actor properties");
-        for (SyncEntityPropertyPacket pk : EntityProperty.getPacketCache()) {
+        for (SyncEntityPropertyPacket pk : EntityProperty.getEntityPropertyCache()) {
             player.dataPacket(pk);
         }
 

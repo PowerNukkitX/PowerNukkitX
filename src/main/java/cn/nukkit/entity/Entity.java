@@ -62,10 +62,14 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
+import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.NumberTag;
+import cn.nukkit.nbt.tag.ShortTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
@@ -445,6 +449,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * The method used to initialize the NBT and entity fields of the entity
      */
     protected void initEntity() {
+        this.initEntityDataMap();
+
         if (!(this instanceof Player)) {
             if (this.namedTag.contains("uuid")) {
                 this.entityUniqueId = UUID.fromString(this.namedTag.getString("uuid"));
@@ -484,6 +490,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 this.attributes.put(attribute.getId(), attribute);
             }
         }
+
+        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+        this.setDataFlags(EnumSet.of(EntityFlag.CAN_CLIMB, EntityFlag.BREATHING, EntityFlag.HAS_COLLISION, EntityFlag.HAS_GRAVITY));
+    }
+
+    /**
+     * Method used to initialize entitydatamap
+     */
+    protected void initEntityDataMap() {
         this.entityDataMap.getOrCreateFlags();
         this.entityDataMap.put(AIR_SUPPLY, this.namedTag.getShort("Air"));
         this.entityDataMap.put(AIR_SUPPLY_MAX, 400);
@@ -493,8 +508,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.entityDataMap.put(HEIGHT, this.getHeight());
         this.entityDataMap.put(WIDTH, this.getWidth());
         this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealth());
-        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
-        this.setDataFlags(EnumSet.of(EntityFlag.CAN_CLIMB, EntityFlag.BREATHING, EntityFlag.HAS_COLLISION, EntityFlag.HAS_GRAVITY));
     }
 
     protected final void init(IChunk chunk, CompoundTag nbt) {
@@ -506,6 +519,20 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.temporalVector = new Vector3();
         this.justCreated = true;
         this.namedTag = nbt;
+
+        if (this.namedTag.contains("properties")) {
+            CompoundTag props = this.namedTag.getCompound("properties");
+            for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : props.getTags().entrySet()) {
+                String key = entry.getKey();
+                var tag = entry.getValue();
+                if (tag instanceof IntTag || tag instanceof ShortTag || tag instanceof ByteTag) {
+                    this.intProperties.put(key, ((NumberTag<?>) tag).getData().intValue());
+                } else if (tag instanceof FloatTag || tag instanceof DoubleTag) {
+                    this.floatProperties.put(key, ((NumberTag<?>) tag).getData().floatValue());
+                }
+            }
+        }
+
         this.chunk = chunk;
         this.setLevel(chunk.getProvider().getLevel());
         this.server = chunk.getProvider().getLevel().getServer();
@@ -963,6 +990,16 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         } else {
             this.namedTag.remove("Attributes");
         }
+
+        // Save intProperties & boolProperties
+        CompoundTag properties = new CompoundTag();
+        for (Map.Entry<String, Integer> entry : intProperties.entrySet()) {
+            properties.putInt(entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<String, Float> entry : floatProperties.entrySet()) {
+            properties.putFloat(entry.getKey(), entry.getValue());
+        }
+        this.namedTag.putCompound("properties", properties);
     }
 
     /**
@@ -3117,68 +3154,97 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return getLookingAngleAt(location) <= tolerance && getLookingAngleAtPitch(location) <= tolerance && (!checkRaycast || getLevel().raycastBlocks(location, this.add(0, getEyeHeight(), 0)).isEmpty());
     }
 
-    private boolean validateAndSetIntProperty(String identifier, int value) {
-        if (!intProperties.containsKey(identifier)) return false;
+    public final boolean setIntEntityProperty(String identifier, int value) {
+        IntEntityProperty prop = getTypedEntityProperty(identifier, IntEntityProperty.class);
+        if (prop == null || value < prop.getMinValue() || value > prop.getMaxValue()) return false;
+
         intProperties.put(identifier, value);
+        if (prop.isClientSync()) this.sendData(this.getViewers().values().toArray(new Player[0]));
         return true;
     }
 
-    public final boolean setIntEntityProperty(String identifier, int value) {
-        return validateAndSetIntProperty(identifier, value);
-    }
-
-
     public final boolean setBooleanEntityProperty(String identifier, boolean value) {
-        return validateAndSetIntProperty(identifier, value ? 1 : 0);
+        BooleanEntityProperty prop = getTypedEntityProperty(identifier, BooleanEntityProperty.class);
+        if (prop == null) return false;
+
+        intProperties.put(identifier, value ? 1 : 0);
+        if (prop.isClientSync()) this.sendData(this.getViewers().values().toArray(new Player[0]));
+        return true;
     }
 
     public final boolean setFloatEntityProperty(String identifier, float value) {
-        if (!floatProperties.containsKey(identifier)) return false;
+        FloatEntityProperty prop = getTypedEntityProperty(identifier, FloatEntityProperty.class);
+        if (prop == null || value < prop.getMinValue() || value > prop.getMaxValue()) return false;
+
         floatProperties.put(identifier, value);
+        if (prop.isClientSync()) this.sendData(this.getViewers().values().toArray(new Player[0]));
         return true;
     }
 
     public final boolean setEnumEntityProperty(String identifier, String value) {
-        if (!intProperties.containsKey(identifier)) return false;
-        List<EntityProperty> entityPropertyList = EntityProperty.getEntityProperty(this.getIdentifier());
+        EnumEntityProperty prop = getTypedEntityProperty(identifier, EnumEntityProperty.class);
+        if (prop == null) return false;
 
-        for (EntityProperty property : entityPropertyList) {
-            if (!identifier.equals(property.getIdentifier()) ||
-                    !(property instanceof EnumEntityProperty enumProperty)) {
-                continue;
-            }
-            int index = enumProperty.findIndex(value);
+        int index = prop.findIndex(value);
+        if (index < 0) return false;
 
-            if (index >= 0) {
-                intProperties.put(identifier, index);
-                return true;
-            }
-            return false;
-        }
-        return false;
+        intProperties.put(identifier, index);
+        if (prop.isClientSync()) this.sendData(this.getViewers().values().toArray(new Player[0]));
+        return true;
+    }
+
+    public final <E extends Enum<E>> boolean setEnumEntityProperty(String identifier, E enumValue) {
+        return setEnumEntityProperty(identifier, enumValue.name());
     }
 
     public final int getIntEntityProperty(String identifier) {
-        return intProperties.get(identifier);
+        IntEntityProperty prop = getTypedEntityProperty(identifier, IntEntityProperty.class);
+        if (prop == null) {
+            log.error("Int property '{}' is not defined for entity '{}'", identifier, this.getIdentifier());
+            return 0;
+        }
+        return intProperties.getOrDefault(identifier, prop.getDefaultValue());
     }
 
     public final boolean getBooleanEntityProperty(String identifier) {
-        return intProperties.get(identifier) == 1;
+        BooleanEntityProperty prop = getTypedEntityProperty(identifier, BooleanEntityProperty.class);
+        if (prop == null) {
+            log.error("Boolean property '{}' is not defined for entity '{}'", identifier, this.getIdentifier());
+            return false;
+        }
+        return intProperties.getOrDefault(identifier, prop.getDefaultValue() ? 1 : 0) == 1;
     }
 
     public final float getFloatEntityProperty(String identifier) {
-        return floatProperties.get(identifier);
+        FloatEntityProperty prop = getTypedEntityProperty(identifier, FloatEntityProperty.class);
+        if (prop == null) {
+            log.error("Float property '{}' is not defined for entity '{}'", identifier, this.getIdentifier());
+            return 0f;
+        }
+        return floatProperties.getOrDefault(identifier, prop.getDefaultValue());
     }
 
     public final String getEnumEntityProperty(String identifier) {
-        List<EntityProperty> entityPropertyList = EntityProperty.getEntityProperty(this.getIdentifier());
+        EnumEntityProperty prop = getTypedEntityProperty(identifier, EnumEntityProperty.class);
+        if (prop == null) {
+            log.error("Enum property '{}' is not defined for entity '{}'", identifier, this.getIdentifier());
+            return null;
+        }
 
-        for (EntityProperty property : entityPropertyList) {
-            if (!identifier.equals(property.getIdentifier()) ||
-                    !(property instanceof EnumEntityProperty enumProperty)) {
-                continue;
+        int idx = intProperties.getOrDefault(identifier, prop.findIndex(prop.getDefaultValue()));
+        String[] enums = prop.getEnums();
+        return (idx >= 0 && idx < enums.length) ? enums[idx] : prop.getDefaultValue();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T extends EntityProperty> T getTypedEntityProperty(String identifier, Class<T> type) {
+        List<EntityProperty> propertyList = EntityProperty.getEntityProperty(this.getIdentifier());
+        if (propertyList == null) return null;
+
+        for (EntityProperty property : propertyList) {
+            if (identifier.equals(property.getIdentifier()) && type.isInstance(property)) {
+                return (T) property;
             }
-            return enumProperty.getEnums()[intProperties.get(identifier)];
         }
         return null;
     }
@@ -3188,37 +3254,38 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (entityPropertyList.isEmpty()) return;
 
         for (EntityProperty property : entityPropertyList) {
-            final String identifier = property.getIdentifier();
+            String identifier = property.getIdentifier();
 
             switch (property) {
-                case FloatEntityProperty floatProperty ->
-                        floatProperties.put(identifier, floatProperty.getDefaultValue());
-                case IntEntityProperty intProperty ->
-                        intProperties.put(identifier, intProperty.getDefaultValue());
-                case BooleanEntityProperty booleanProperty ->
-                        intProperties.put(identifier, booleanProperty.getDefaultValue() ? 1 : 0);
-                case EnumEntityProperty enumProperty ->
-                        intProperties.put(identifier, enumProperty.findIndex(enumProperty.getDefaultValue()));
+                case FloatEntityProperty floatProp -> floatProperties.putIfAbsent(identifier, floatProp.getDefaultValue());
+                case IntEntityProperty intProp -> intProperties.putIfAbsent(identifier, intProp.getDefaultValue());
+                case BooleanEntityProperty boolProp -> intProperties.putIfAbsent(identifier, boolProp.getDefaultValue() ? 1 : 0);
+                case EnumEntityProperty enumProp -> intProperties.putIfAbsent(identifier, enumProp.findIndex(enumProp.getDefaultValue()));
                 default -> {}
             }
         }
     }
 
-
     private PropertySyncData propertySyncData() {
-        Collection<Integer> intValues = intProperties.values();
-        int[] intArray = new int[intValues.size()];
-        int i = 0;
-        for (Integer value : intValues) {
-            intArray[i++] = value;
+        List<EntityProperty> ordered = EntityProperty.getEntityProperty(this.getIdentifier());
+
+        List<Integer> intList = new ArrayList<>();
+        List<Float> floatList = new ArrayList<>();
+
+        for (EntityProperty prop : ordered) {
+            if (!prop.isClientSync()) continue;
+
+            String id = prop.getIdentifier();
+            if (prop instanceof IntEntityProperty || prop instanceof BooleanEntityProperty || prop instanceof EnumEntityProperty) {
+                intList.add(intProperties.getOrDefault(id, 0));
+            } else if (prop instanceof FloatEntityProperty) {
+                floatList.add(floatProperties.getOrDefault(id, 0f));
+            }
         }
 
-        Collection<Float> floatValues = floatProperties.values();
-        float[] floatArray = new float[floatValues.size()];
-        i = 0;
-        for (Float value : floatValues) {
-            floatArray[i++] = value;
-        }
+        int[] intArray = intList.stream().mapToInt(i -> i).toArray();
+        float[] floatArray = new float[floatList.size()];
+        for (int i = 0; i < floatList.size(); i++) floatArray[i] = floatList.get(i);
 
         return new PropertySyncData(intArray, floatArray);
     }

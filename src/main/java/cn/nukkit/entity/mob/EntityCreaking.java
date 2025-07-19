@@ -25,6 +25,9 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.PlayerStaringSensor;
+import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.entity.data.property.EnumEntityProperty;
+import cn.nukkit.entity.data.property.IntEntityProperty;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
@@ -42,6 +45,18 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityCreaking extends EntityMob {
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new EnumEntityProperty("minecraft:creaking_state", new String[]{
+            "neutral",
+            "hostile_observed",
+            "hostile_unobserved",
+            "twitching",
+            "crumbling"
+        }, "neutral", true),
+        new IntEntityProperty("minecraft:creaking_swaying_ticks", 0, 0, 6, true)
+    };
+    private final static String PROPERTY_CREAKING = "minecraft:creaking_state";
+    private final static String PROPERTY_SWAYING_TICKS = "minecraft:creaking_swaying_ticks";
 
     @Override @NotNull public String getIdentifier() {
         return CREAKING;

@@ -30,6 +30,8 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
@@ -46,12 +48,20 @@ import java.util.Objects;
 import java.util.Set;
 
 public class EntityArmadillo extends EntityAnimal {
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new EnumEntityProperty("minecraft:armadillo_state", new String[]{
+            "unrolled",
+            "rolled_up",
+            "rolled_up_peeking",
+            "rolled_up_relaxing",
+            "rolled_up_unrolling"
+        }, "unrolled", true)
+    };
+    private final static String PROPERTY_STATE = "minecraft:armadillo_state";
 
     public EntityArmadillo(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    private final static String PROPERTY_STATE = "minecraft:armadillo_state";
 
     @Getter
     private RollState rollState = RollState.UNROLLED;
@@ -164,7 +174,6 @@ public class EntityArmadillo extends EntityAnimal {
     public void setRollState(RollState state) {
         this.rollState = state;
         setEnumEntityProperty(PROPERTY_STATE, state.getState());
-        sendData(getViewers().values().toArray(Player[]::new));
         setDataFlag(EntityFlag.BODY_ROTATION_BLOCKED, rollState != RollState.UNROLLED);
     }
 

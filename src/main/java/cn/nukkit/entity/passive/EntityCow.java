@@ -22,6 +22,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
@@ -35,6 +37,14 @@ import java.util.Set;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVariant {
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new EnumEntityProperty("minecraft:climate_variant", new String[]{
+            "temperate",
+            "warm",
+            "cold"
+        }, "temperate", true)
+    };
+
     @Override
     @NotNull public String getIdentifier() {
         return COW;
@@ -102,8 +112,6 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
         }
         return Item.EMPTY_ARRAY;
     }
-
-    
 
     @Override
     protected void initEntity() {
