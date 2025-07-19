@@ -33,6 +33,7 @@ public class ResourcePacksInfoPacket extends DataPacket {
      */
     public String worldTemplateVersion;
 
+
     public ResourcePack[] resourcePackEntries = ResourcePack.EMPTY_ARRAY;
 
     @Override

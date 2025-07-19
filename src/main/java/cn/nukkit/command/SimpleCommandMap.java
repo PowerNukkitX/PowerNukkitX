@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -361,6 +362,19 @@ public class SimpleCommandMap implements CommandMap {
             return this.knownCommands.get(name);
         }
         return null;
+    }
+
+    @Override
+    public void unregisterCommand(String name) {
+        Command unRegistering = getCommand(name);
+        if (unRegistering != null) {
+            unRegistering.unregister(this);
+        }
+    }
+
+    @Override
+    public void unregisterCommands(List<String> commands){
+        commands.forEach(this::unregisterCommand);
     }
 
     /**
