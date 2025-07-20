@@ -378,35 +378,24 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      *
      * @return Can chest be opened with the above space?
      */
-public boolean hasFreeSpaceAbove() {
-    Block above = this.up();
+    public boolean hasFreeSpaceAbove() {
+        Block above = this.up();
 
-    System.out.println("[Chest] Checking space above block at " + this.getLocation());
-    System.out.println("[Chest] Block above: " + above.getName() + " (ID: " + above.getId() + ")");
+        if (above.isAir()) {
+            return true;
+        }
 
-    if (above.isAir()) {
-        System.out.println("[Chest] Block above is air — allowed to open.");
-        return true;
+        AxisAlignedBB box = above.getCollisionBoundingBox();
+        if (box != null) {
+            double minY = box.getMinY();
+            double relativeMinY = minY - above.getY();
+            boolean allowed = relativeMinY >= 0.5;
+
+            return allowed;
+        }
+
+        return false;
     }
-
-    AxisAlignedBB box = above.getCollisionBoundingBox();
-    if (box != null) {
-        double minY = box.getMinY();
-        double relativeMinY = minY - above.getY();
-        double maxY = box.getMaxY();
-        double relativeMaxY = maxY - above.getY();
-
-        System.out.println("[Chest] Collision box (absolute): minY = " + minY + ", maxY = " + maxY);
-        System.out.println("[Chest] Collision box (relative): minY = " + relativeMinY + ", maxY = " + relativeMaxY);
-        boolean allowed = relativeMinY >= 0.5;
-        System.out.println("[Chest] relativeMinY >= 0.5? " + allowed);
-        return allowed;
-    } else {
-        System.out.println("[Chest] No collision box — treating as blocking.");
-    }
-
-    return false;
-}
 
 
     /**
@@ -464,16 +453,6 @@ public boolean hasFreeSpaceAbove() {
 
     return isSideFull(side); // fallback to default solid-side check
     }
-
-
-
-
-
-
-
-
-
-
 
     // https://minecraft.wiki/w/Opacity#Lighting
     public boolean diffusesSkyLight() {
