@@ -407,9 +407,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return false;
     }
 
-    //public boolean isSolid() {
-    //    return true;
-    //}
     public boolean isSolid() {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {

@@ -254,7 +254,11 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
     }
 
     public void playOpenCloseSound() {
-        if (isOpen()) playOpenSound(); else playCloseSound();
+        if (isOpen()) {
+            playOpenSound();
+        } else {
+            playCloseSound();
+        }
     }
 
     public void playOpenSound() {
