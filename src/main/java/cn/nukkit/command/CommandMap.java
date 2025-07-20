@@ -71,7 +71,7 @@ public interface CommandMap {
 
     /***
      *
-     * @param commands list of names of commands to be unregistering
+     * @param commands names of commands to unregistering
      */
     void unregister(String... commands);
 
