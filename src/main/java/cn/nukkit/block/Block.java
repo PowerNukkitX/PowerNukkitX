@@ -465,6 +465,16 @@ public boolean hasFreeSpaceAbove() {
     return isSideFull(side); // fallback to default solid-side check
     }
 
+
+
+
+
+
+
+
+
+
+
     // https://minecraft.wiki/w/Opacity#Lighting
     public boolean diffusesSkyLight() {
         return false;

@@ -36,9 +36,11 @@ public final class CustomBlockUtils {
             normSize[i] = size[i] / 16f;
         }
 
-        float[] rotation = getRotation(block);
-        float rotX = rotation[0], rotY = rotation[1];
-        Vector3f[] corners = buildAndRotateBoxCorners(normOrigin, normSize, rotX, rotY);
+        //float[] rotation = getRotation(block);
+        //float rotX = rotation[0], rotY = rotation[1];
+        //Vector3f[] corners = buildAndRotateBoxCorners(normOrigin, normSize, rotX, rotY);
+        RotationResult rotation = getRotation(block);
+        Vector3f[] corners = buildAndRotateBoxCorners(normOrigin, normSize, rotation.rotX, rotation.rotY, rotation.isVerticalRotated);
         float[] bounds = calculateBounds(corners);
 
         // Clamp bounds to [0, 1]
@@ -80,7 +82,7 @@ public final class CustomBlockUtils {
         return new float[]{ tagList.get(0).data, tagList.get(1).data, tagList.get(2).data };
     }
 
-    private static float[] getRotation(Block block) {
+    private static RotationResult getRotation(Block block) {
         BlockFace facing = BlockFace.NORTH;
         MinecraftCardinalDirection cardinal = MinecraftCardinalDirection.NORTH;
         BlockProperties props = block.getProperties();
@@ -94,6 +96,8 @@ public final class CustomBlockUtils {
         if (hasCardinal) {
             cardinal = block.getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
         }
+
+        boolean isVerticalRotated = hasFacing;
 
         float rotX = 0f;
         float rotY = 0f;
@@ -138,10 +142,20 @@ public final class CustomBlockUtils {
         }
         // else: default rotY = 0 (north)
 
-        return new float[]{ rotX, rotY };
+        return new RotationResult(rotX, rotY, isVerticalRotated);
     }
 
-    private static Vector3f[] buildAndRotateBoxCorners(float[] normOrigin, float[] normSize, float rotX, float rotY) {
+    private static class RotationResult {
+        final float rotX, rotY;
+        final boolean isVerticalRotated;
+        RotationResult(float rotX, float rotY, boolean isVerticalRotated) {
+            this.rotX = rotX;
+            this.rotY = rotY;
+            this.isVerticalRotated = isVerticalRotated;
+        }
+    }
+
+    private static Vector3f[] buildAndRotateBoxCorners(float[] normOrigin, float[] normSize, float rotX, float rotY, boolean isVerticalRotated) {
         Vector3f[] corners = new Vector3f[8];
         int idx = 0;
         // Build 8 corners relative to block center
@@ -160,6 +174,14 @@ public final class CustomBlockUtils {
                 }
             }
         }
+
+        // If NOT vertical rotated, restore original Y min
+        if (!isVerticalRotated) {
+            for (int i = 0; i < corners.length; i++) {
+                corners[i] = new Vector3f(corners[i].x, corners[i].y - 0.5f, corners[i].z);
+            }
+        }
+
         return corners;
     }
 
