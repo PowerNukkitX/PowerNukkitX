@@ -365,16 +365,16 @@ public class SimpleCommandMap implements CommandMap {
     }
 
     @Override
-    public void unregisterCommand(String name) {
-        Command unRegistering = getCommand(name);
-        if (unRegistering != null) {
-            unRegistering.unregister(this);
+    public void unregister(String name) {
+        Command command = getCommand(name);
+        if (command != null) {
+            command.unregister(this);
         }
     }
 
     @Override
-    public void unregisterCommands(List<String> commands){
-        commands.forEach(this::unregisterCommand);
+    public void unregister(String... commands){
+        Arrays.stream(commands).forEach(this::unregister);
     }
 
     /**
