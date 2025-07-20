@@ -36,9 +36,6 @@ public final class CustomBlockUtils {
             normSize[i] = size[i] / 16f;
         }
 
-        //float[] rotation = getRotation(block);
-        //float rotX = rotation[0], rotY = rotation[1];
-        //Vector3f[] corners = buildAndRotateBoxCorners(normOrigin, normSize, rotX, rotY);
         RotationResult rotation = getRotation(block);
         Vector3f[] corners = buildAndRotateBoxCorners(normOrigin, normSize, rotation.rotX, rotation.rotY, rotation.isVerticalRotated);
         float[] bounds = calculateBounds(corners);
