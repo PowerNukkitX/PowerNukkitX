@@ -6,6 +6,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.NonComputationAtomic;
 import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
+import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
@@ -2593,11 +2594,14 @@ public class Level implements Metadatable {
                 if (!player.getAdventureSettings().get(PlayerAbility.MINE))
                     return null;
 
-                //使用calculateBreakTimeNotInAir目的是获取玩家在陆地上的挖掘时间，如果挖掘时间小于这个时间才认为玩家作弊。
+                // The purpose of using calculateBreakTimeNotInAir is to obtain the player's digging time on land. If the digging time is less
+                // than this time, the player is considered cheating.
                 double breakTime = target.calculateBreakTimeNotInAir(item, player);
-                //对于自定义方块，由于用户可以自由设置客户端侧的挖掘时间，拿服务端硬度计算出来的挖掘时间来判断是否为fastBreak是不准确的。
-                if (target instanceof CustomBlock customBlock) {
-                    var comp = customBlock.getDefinition().nbt().getCompound("components");
+                // For custom blocks, since users can freely set the mining time on the client side, it is inaccurate to use the mining time
+                // calculated by the server hardness to determine whether it is a fastBreak.
+                CustomBlockDefinition def = target.getCustomDefinition();
+                if (def != null) {
+                    var comp = def.nbt().getCompound("components");
                     if (comp.containsCompound("minecraft:destructible_by_mining")) {
                         var clientBreakTime = comp.getCompound("minecraft:destructible_by_mining").getFloat("value");
                         breakTime = Math.min(breakTime, clientBreakTime);
