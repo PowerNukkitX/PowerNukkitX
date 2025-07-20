@@ -62,14 +62,11 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
-import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
-import cn.nukkit.nbt.tag.ShortTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
@@ -449,8 +446,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * The method used to initialize the NBT and entity fields of the entity
      */
     protected void initEntity() {
-        this.initEntityDataMap();
-
         if (!(this instanceof Player)) {
             if (this.namedTag.contains("uuid")) {
                 this.entityUniqueId = UUID.fromString(this.namedTag.getString("uuid"));
@@ -490,15 +485,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 this.attributes.put(attribute.getId(), attribute);
             }
         }
-
-        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
-        this.setDataFlags(EnumSet.of(EntityFlag.CAN_CLIMB, EntityFlag.BREATHING, EntityFlag.HAS_COLLISION, EntityFlag.HAS_GRAVITY));
-    }
-
-    /**
-     * Method used to initialize entitydatamap
-     */
-    protected void initEntityDataMap() {
         this.entityDataMap.getOrCreateFlags();
         this.entityDataMap.put(AIR_SUPPLY, this.namedTag.getShort("Air"));
         this.entityDataMap.put(AIR_SUPPLY_MAX, 400);
@@ -508,6 +494,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.entityDataMap.put(HEIGHT, this.getHeight());
         this.entityDataMap.put(WIDTH, this.getWidth());
         this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealth());
+        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+        this.setDataFlags(EnumSet.of(EntityFlag.CAN_CLIMB, EntityFlag.BREATHING, EntityFlag.HAS_COLLISION, EntityFlag.HAS_GRAVITY));
     }
 
     protected final void init(IChunk chunk, CompoundTag nbt) {
@@ -520,15 +508,23 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.justCreated = true;
         this.namedTag = nbt;
 
-        if (this.namedTag.contains("properties")) {
-            CompoundTag props = this.namedTag.getCompound("properties");
-            for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : props.getTags().entrySet()) {
+        // Restore entity properties from NBT (overwriting defaults)
+        if (this.namedTag.contains("IntProperties")) {
+            CompoundTag intProps = this.namedTag.getCompound("IntProperties");
+            for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : intProps.getTags().entrySet()) {
                 String key = entry.getKey();
-                var tag = entry.getValue();
-                if (tag instanceof IntTag || tag instanceof ShortTag || tag instanceof ByteTag) {
-                    this.intProperties.put(key, ((NumberTag<?>) tag).getData().intValue());
-                } else if (tag instanceof FloatTag || tag instanceof DoubleTag) {
-                    this.floatProperties.put(key, ((NumberTag<?>) tag).getData().floatValue());
+                if (entry.getValue() instanceof NumberTag<?> numTag) {
+                    this.intProperties.put(key, numTag.getData().intValue());
+                }
+            }
+        }
+
+        if (this.namedTag.contains("FloatProperties")) {
+            CompoundTag floatProps = this.namedTag.getCompound("FloatProperties");
+            for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : floatProps.getTags().entrySet()) {
+                String key = entry.getKey();
+                if (entry.getValue() instanceof NumberTag<?> numTag) {
+                    this.floatProperties.put(key, numTag.getData().floatValue());
                 }
             }
         }
@@ -992,14 +988,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
 
         // Save intProperties & boolProperties
-        CompoundTag properties = new CompoundTag();
+        CompoundTag intProps = new CompoundTag();
         for (Map.Entry<String, Integer> entry : intProperties.entrySet()) {
-            properties.putInt(entry.getKey(), entry.getValue());
+            intProps.putInt(entry.getKey(), entry.getValue());
         }
+        this.namedTag.putCompound("IntProperties", intProps);
+
+        // Save floatProperties
+        CompoundTag floatProps = new CompoundTag();
         for (Map.Entry<String, Float> entry : floatProperties.entrySet()) {
-            properties.putFloat(entry.getKey(), entry.getValue());
+            floatProps.putFloat(entry.getKey(), entry.getValue());
         }
-        this.namedTag.putCompound("properties", properties);
+        this.namedTag.putCompound("FloatProperties", floatProps);
     }
 
     /**
@@ -1571,7 +1571,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public void updateMovement() {
-        //这样做是为了向后兼容旧插件
+        // This is done for backward compatibility with older plugins.
         if (!enableHeadYaw()) {
             this.headYaw = this.yaw;
         }
@@ -2201,44 +2201,35 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     /**
      * Player do not use
      */
+    private static final float Y_SIZE_DAMPING = 0.4F;
+    private static final float Y_SIZE_THRESHOLD = 0.05F;
+    private static final float Y_SIZE_BOOST = 0.5F;
     public boolean move(double dx, double dy, double dz) {
         if (dx == 0 && dz == 0 && dy == 0) {
             this.onGround = !this.getPosition().setComponents(this.down()).getTickCachedLevelBlock().canPassThrough();
             return true;
         }
 
-
-        this.ySize *= 0.4F;
+        this.ySize *= Y_SIZE_DAMPING;
 
         double movX = dx;
         double movY = dy;
         double movZ = dz;
 
-        AxisAlignedBB axisalignedbb = this.boundingBox.clone();
+        AxisAlignedBB originalBB = this.boundingBox.clone();
 
         var list = this.noClip ? AxisAlignedBB.EMPTY_LIST : this.level.fastCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
 
-        for (AxisAlignedBB bb : list) {
-            dy = bb.calculateYOffset(this.boundingBox, dy);
-        }
-
-        this.boundingBox.offset(0, dy, 0);
+        Vec3 collisionOffsets = applyCollisionOffsets(dx, dy, dz, this.boundingBox, list);
+        dx = collisionOffsets.x;
+        dy = collisionOffsets.y;
+        dz = collisionOffsets.z;
 
         boolean fallingFlag = (this.onGround || (dy != movY && movY < 0));
 
-        for (AxisAlignedBB bb : list) {
-            dx = bb.calculateXOffset(this.boundingBox, dx);
-        }
+        boolean tryStep = this.getStepHeight() > 0 && fallingFlag && this.ySize < Y_SIZE_THRESHOLD && (movX != dx || movZ != dz);
 
-        this.boundingBox.offset(dx, 0, 0);
-
-        for (AxisAlignedBB bb : list) {
-            dz = bb.calculateZOffset(this.boundingBox, dz);
-        }
-
-        this.boundingBox.offset(0, 0, dz);
-
-        if (this.getStepHeight() > 0 && fallingFlag && this.ySize < 0.05 && (movX != dx || movZ != dz)) {
+        if (tryStep) {
             double cx = dx;
             double cy = dy;
             double cz = dz;
@@ -2246,41 +2237,26 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             dy = this.getStepHeight();
             dz = movZ;
 
-            AxisAlignedBB axisalignedbb1 = this.boundingBox.clone();
-
-            this.boundingBox.setBB(axisalignedbb);
+            AxisAlignedBB steppedBB = this.boundingBox.clone();
+            this.boundingBox.setBB(originalBB);
 
             list = this.level.fastCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
+            Vec3 stepOffsets = applyCollisionOffsets(dx, dy, dz, this.boundingBox, list);
+            dx = stepOffsets.x;
+            dy = stepOffsets.y;
+            dz = stepOffsets.z;
 
-            for (AxisAlignedBB bb : list) {
-                dy = bb.calculateYOffset(this.boundingBox, dy);
-            }
+            double movedLenOld = cx * cx + cz * cz;
+            double movedLenNew = dx * dx + dz * dz;
 
-            this.boundingBox.offset(0, dy, 0);
-
-            for (AxisAlignedBB bb : list) {
-                dx = bb.calculateXOffset(this.boundingBox, dx);
-            }
-
-            this.boundingBox.offset(dx, 0, 0);
-
-            for (AxisAlignedBB bb : list) {
-                dz = bb.calculateZOffset(this.boundingBox, dz);
-            }
-
-            this.boundingBox.offset(0, 0, dz);
-
-            this.boundingBox.offset(0, 0, dz);
-
-            if ((cx * cx + cz * cz) >= (dx * dx + dz * dz)) {
+            if (movedLenOld >= movedLenNew) {
                 dx = cx;
                 dy = cy;
                 dz = cz;
-                this.boundingBox.setBB(axisalignedbb1);
+                this.boundingBox.setBB(steppedBB);
             } else {
-                this.ySize += 0.5F;
+                this.ySize += Y_SIZE_BOOST;
             }
-
         }
 
         this.x = (this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2;
@@ -2288,7 +2264,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.z = (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2;
 
         this.checkChunks();
-
         this.checkGroundState(movX, movY, movZ, dx, dy, dz);
         this.updateFallState(this.onGround);
 
@@ -2307,6 +2282,38 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         // TODO: vehicle collision events (first we need to spawn them!)
         return true;
     }
+
+    private Vec3 applyCollisionOffsets(double dx, double dy, double dz, AxisAlignedBB box, List<AxisAlignedBB> list) {
+        for (AxisAlignedBB bb : list) {
+            dy = bb.calculateYOffset(box, dy);
+        }
+        box.offset(0, dy, 0);
+
+        for (AxisAlignedBB bb : list) {
+            dx = bb.calculateXOffset(box, dx);
+        }
+        box.offset(dx, 0, 0);
+
+        for (AxisAlignedBB bb : list) {
+            dz = bb.calculateZOffset(box, dz);
+        }
+        box.offset(0, 0, dz);
+
+        return new Vec3(dx, dy, dz);
+    }
+
+    private static class Vec3 {
+        public double x;
+        public double y;
+        public double z;
+
+        public Vec3(double x, double y, double z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+    }
+
 
     protected void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
         if (this.noClip) {
@@ -3154,86 +3161,97 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return getLookingAngleAt(location) <= tolerance && getLookingAngleAtPitch(location) <= tolerance && (!checkRaycast || getLevel().raycastBlocks(location, this.add(0, getEyeHeight(), 0)).isEmpty());
     }
 
-    public final boolean setIntEntityProperty(String identifier, int value) {
-        IntEntityProperty prop = getTypedEntityProperty(identifier, IntEntityProperty.class);
-        if (prop == null || value < prop.getMinValue() || value > prop.getMaxValue()) return false;
+    private boolean validateAndSetIntProperty(String identifier, int value) {
+        if (!intProperties.containsKey(identifier)) return false;
+
+        IntEntityProperty intProperty = getTypedEntityProperty(identifier, IntEntityProperty.class);
+        if (intProperty == null) return false;
+
+        if (value < intProperty.getMinValue() || value > intProperty.getMaxValue()) {
+                return false;
+        }
 
         intProperties.put(identifier, value);
-        if (prop.isClientSync()) this.sendData(this.getViewers().values().toArray(new Player[0]));
         return true;
+    }
+
+    private boolean validateAndSetBooleanProperty(String identifier, boolean value) {
+        if (!intProperties.containsKey(identifier)) return false;
+
+        BooleanEntityProperty booleanProperty = getTypedEntityProperty(identifier, BooleanEntityProperty.class);
+        if (booleanProperty == null) return false;
+
+        intProperties.put(identifier, value ? 1 : 0);
+        return true;
+    }
+
+    private boolean validateAndSetFloatProperty(String identifier, float value) {
+        if (!floatProperties.containsKey(identifier)) return false;
+
+        FloatEntityProperty floatProperty = getTypedEntityProperty(identifier, FloatEntityProperty.class);
+        if (floatProperty == null) return false;
+
+        if (value < floatProperty.getMinValue() || value > floatProperty.getMaxValue()) {
+                return false;
+        }
+
+        floatProperties.put(identifier, value);
+        return true;
+    }
+
+    public final boolean setIntEntityProperty(String identifier, int value) {
+        boolean change = validateAndSetIntProperty(identifier, value);
+
+        if (change) {
+            IntEntityProperty prop = getTypedEntityProperty(identifier, IntEntityProperty.class);
+            if (prop != null && prop.isClientSync()) {
+                this.sendData(this.getViewers().values().toArray(new Player[0]));
+            }
+        }
+        return change;
     }
 
     public final boolean setBooleanEntityProperty(String identifier, boolean value) {
-        BooleanEntityProperty prop = getTypedEntityProperty(identifier, BooleanEntityProperty.class);
-        if (prop == null) return false;
+        boolean change = validateAndSetBooleanProperty(identifier, value);
 
-        intProperties.put(identifier, value ? 1 : 0);
-        if (prop.isClientSync()) this.sendData(this.getViewers().values().toArray(new Player[0]));
-        return true;
+        if (change) {
+            BooleanEntityProperty property = getTypedEntityProperty(identifier, BooleanEntityProperty.class);
+            if (property != null && property.isClientSync()) {
+                this.sendData(this.getViewers().values().toArray(new Player[0]));
+            }
+        }
+        return change;
     }
 
     public final boolean setFloatEntityProperty(String identifier, float value) {
-        FloatEntityProperty prop = getTypedEntityProperty(identifier, FloatEntityProperty.class);
-        if (prop == null || value < prop.getMinValue() || value > prop.getMaxValue()) return false;
+        boolean change = validateAndSetFloatProperty(identifier, value);
 
-        floatProperties.put(identifier, value);
-        if (prop.isClientSync()) this.sendData(this.getViewers().values().toArray(new Player[0]));
-        return true;
+        if (change) {
+            FloatEntityProperty property = getTypedEntityProperty(identifier, FloatEntityProperty.class);
+            if (property != null && property.isClientSync()) {
+                this.sendData(this.getViewers().values().toArray(new Player[0]));
+            }
+        }
+
+        return change;
     }
 
     public final boolean setEnumEntityProperty(String identifier, String value) {
-        EnumEntityProperty prop = getTypedEntityProperty(identifier, EnumEntityProperty.class);
-        if (prop == null) return false;
+        if (!intProperties.containsKey(identifier)) return false;
 
-        int index = prop.findIndex(value);
-        if (index < 0) return false;
-
-        intProperties.put(identifier, index);
-        if (prop.isClientSync()) this.sendData(this.getViewers().values().toArray(new Player[0]));
-        return true;
-    }
-
-    public final <E extends Enum<E>> boolean setEnumEntityProperty(String identifier, E enumValue) {
-        return setEnumEntityProperty(identifier, enumValue.name());
-    }
-
-    public final int getIntEntityProperty(String identifier) {
-        IntEntityProperty prop = getTypedEntityProperty(identifier, IntEntityProperty.class);
-        if (prop == null) {
-            log.error("Int property '{}' is not defined for entity '{}'", identifier, this.getIdentifier());
-            return 0;
-        }
-        return intProperties.getOrDefault(identifier, prop.getDefaultValue());
-    }
-
-    public final boolean getBooleanEntityProperty(String identifier) {
-        BooleanEntityProperty prop = getTypedEntityProperty(identifier, BooleanEntityProperty.class);
-        if (prop == null) {
-            log.error("Boolean property '{}' is not defined for entity '{}'", identifier, this.getIdentifier());
+        EnumEntityProperty property = getTypedEntityProperty(identifier, EnumEntityProperty.class);
+        if (property != null) {
+            int index = property.findIndex(value);
+            if (index >= 0) {
+                intProperties.put(identifier, index);
+                if (property.isClientSync()) {
+                    this.sendData(this.getViewers().values().toArray(new Player[0]));
+                }
+                return true;
+            }
             return false;
         }
-        return intProperties.getOrDefault(identifier, prop.getDefaultValue() ? 1 : 0) == 1;
-    }
-
-    public final float getFloatEntityProperty(String identifier) {
-        FloatEntityProperty prop = getTypedEntityProperty(identifier, FloatEntityProperty.class);
-        if (prop == null) {
-            log.error("Float property '{}' is not defined for entity '{}'", identifier, this.getIdentifier());
-            return 0f;
-        }
-        return floatProperties.getOrDefault(identifier, prop.getDefaultValue());
-    }
-
-    public final String getEnumEntityProperty(String identifier) {
-        EnumEntityProperty prop = getTypedEntityProperty(identifier, EnumEntityProperty.class);
-        if (prop == null) {
-            log.error("Enum property '{}' is not defined for entity '{}'", identifier, this.getIdentifier());
-            return null;
-        }
-
-        int idx = intProperties.getOrDefault(identifier, prop.findIndex(prop.getDefaultValue()));
-        String[] enums = prop.getEnums();
-        return (idx >= 0 && idx < enums.length) ? enums[idx] : prop.getDefaultValue();
+        return false;
     }
 
     @SuppressWarnings("unchecked")
@@ -3246,6 +3264,32 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 return (T) property;
             }
         }
+
+        return null;
+    }
+
+    public final int getIntEntityProperty(String identifier) {
+        return intProperties.get(identifier);
+    }
+
+    public final boolean getBooleanEntityProperty(String identifier) {
+        return intProperties.get(identifier) == 1;
+    }
+
+    public final float getFloatEntityProperty(String identifier) {
+        return floatProperties.get(identifier);
+    }
+
+    public final String getEnumEntityProperty(String identifier) {
+        List<EntityProperty> entityPropertyList = EntityProperty.getEntityProperty(this.getIdentifier());
+
+        for (EntityProperty property : entityPropertyList) {
+            if (!identifier.equals(property.getIdentifier()) ||
+                    !(property instanceof EnumEntityProperty enumProperty)) {
+                continue;
+            }
+            return enumProperty.getEnums()[intProperties.get(identifier)];
+        }
         return null;
     }
 
@@ -3254,38 +3298,48 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (entityPropertyList.isEmpty()) return;
 
         for (EntityProperty property : entityPropertyList) {
-            String identifier = property.getIdentifier();
+            final String identifier = property.getIdentifier();
 
             switch (property) {
-                case FloatEntityProperty floatProp -> floatProperties.putIfAbsent(identifier, floatProp.getDefaultValue());
-                case IntEntityProperty intProp -> intProperties.putIfAbsent(identifier, intProp.getDefaultValue());
-                case BooleanEntityProperty boolProp -> intProperties.putIfAbsent(identifier, boolProp.getDefaultValue() ? 1 : 0);
-                case EnumEntityProperty enumProp -> intProperties.putIfAbsent(identifier, enumProp.findIndex(enumProp.getDefaultValue()));
+                case FloatEntityProperty floatProperty -> {
+                    if (!floatProperties.containsKey(identifier)) {
+                        floatProperties.put(identifier, floatProperty.getDefaultValue());
+                    }
+                }
+                case IntEntityProperty intProperty -> {
+                    if (!intProperties.containsKey(identifier)) {
+                        intProperties.put(identifier, intProperty.getDefaultValue());
+                    }
+                }
+                case BooleanEntityProperty booleanProperty -> {
+                    if (!intProperties.containsKey(identifier)) {
+                        intProperties.put(identifier, booleanProperty.getDefaultValue() ? 1 : 0);
+                    }
+                }
+                case EnumEntityProperty enumProperty -> {
+                    if (!intProperties.containsKey(identifier)) {
+                        intProperties.put(identifier, enumProperty.findIndex(enumProperty.getDefaultValue()));
+                    }
+                }
                 default -> {}
             }
         }
     }
 
     private PropertySyncData propertySyncData() {
-        List<EntityProperty> ordered = EntityProperty.getEntityProperty(this.getIdentifier());
-
-        List<Integer> intList = new ArrayList<>();
-        List<Float> floatList = new ArrayList<>();
-
-        for (EntityProperty prop : ordered) {
-            if (!prop.isClientSync()) continue;
-
-            String id = prop.getIdentifier();
-            if (prop instanceof IntEntityProperty || prop instanceof BooleanEntityProperty || prop instanceof EnumEntityProperty) {
-                intList.add(intProperties.getOrDefault(id, 0));
-            } else if (prop instanceof FloatEntityProperty) {
-                floatList.add(floatProperties.getOrDefault(id, 0f));
-            }
+        Collection<Integer> intValues = intProperties.values();
+        int[] intArray = new int[intValues.size()];
+        int i = 0;
+        for (Integer value : intValues) {
+            intArray[i++] = value;
         }
 
-        int[] intArray = intList.stream().mapToInt(i -> i).toArray();
-        float[] floatArray = new float[floatList.size()];
-        for (int i = 0; i < floatList.size(); i++) floatArray[i] = floatList.get(i);
+        Collection<Float> floatValues = floatProperties.values();
+        float[] floatArray = new float[floatValues.size()];
+        i = 0;
+        for (Float value : floatValues) {
+            floatArray[i++] = value;
+        }
 
         return new PropertySyncData(intArray, floatArray);
     }

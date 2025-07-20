@@ -17,12 +17,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.annotation.Nullable;
 
 /**
  * @author Cool_Loong | Mcayear | KoshakMineDEV | WWMB | Draglis
@@ -34,6 +37,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Block>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectOpenHashMap<String, BlockProperties> PROPERTIES = new Object2ObjectOpenHashMap<>();
     private static final Map<Plugin, List<CustomBlockDefinition>> CUSTOM_BLOCK_DEFINITIONS = new LinkedHashMap<>();
+    private static final Map<String, CustomBlockDefinition> CUSTOM_BLOCK_DEFINITION_BY_ID = new HashMap<>();
+
 
     public static final Set<String> skipBlockSet = Set.of(
             "minecraft:camera",
@@ -1403,10 +1408,12 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                 if (CustomBlock.class.isAssignableFrom(value)) {
                     CustomBlock customBlock = (CustomBlock) c.invoke((Object) null);
                     List<CustomBlockDefinition> customBlockDefinitions = CUSTOM_BLOCK_DEFINITIONS.computeIfAbsent(plugin, (p) -> new ArrayList<>());
-                    customBlockDefinitions.add(customBlock.getDefinition());
+                    CustomBlockDefinition def = customBlock.getDefinition();
+                    customBlockDefinitions.add(def);
+                    CUSTOM_BLOCK_DEFINITION_BY_ID.put(customBlock.getId(), customBlock.getDefinition());
                     int rid = 255 - CustomBlockDefinition.getRuntimeId(customBlock.getId());
                     Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(customBlock.getId(), rid, false));
-                    CompoundTag nbt = customBlock.getDefinition().nbt();
+                    CompoundTag nbt = def.nbt();
                     if (Registries.CREATIVE.shouldBeRegisteredBlock(nbt)) {
                         ItemBlock itemBlock = new ItemBlock(customBlock.toBlock());
                         itemBlock.setNetId(null);
@@ -1429,17 +1436,13 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         }
     }
 
-    private void register0(String key, Class<? extends Block> value) {
-        try {
-            register(key, value);
-        } catch (Exception e) {
-            log.error("", e);
-        }
-    }
-
     @UnmodifiableView
     public List<CustomBlockDefinition> getCustomBlockDefinitionList() {
         return CUSTOM_BLOCK_DEFINITIONS.values().stream().flatMap(List::stream).toList();
+    }
+
+    public static @Nullable CustomBlockDefinition getCustomBlockDefinitionByIdStatic(String id) {
+        return CUSTOM_BLOCK_DEFINITION_BY_ID.get(id);
     }
 
     public void reload() {

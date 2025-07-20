@@ -133,8 +133,7 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
 
-        Block top = this.up();
-        if (!top.isTransparent()) {
+        if (!this.hasFreeSpaceAbove()) {
             return false;
         }
 

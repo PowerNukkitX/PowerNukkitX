@@ -12,6 +12,7 @@ import cn.nukkit.block.property.type.EnumPropertyType;
 import cn.nukkit.block.property.type.IntPropertyType;
 import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.customitem.data.CreativeGroup;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.ByteTag;
@@ -36,9 +37,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
- * CustomBlockDefinition用于获得发送给客户端的方块行为包数据。{@link CustomBlockDefinition.Builder}中提供的方法都是控制发送给客户端数据，如果需要控制服务端部分行为，请覆写{@link Block Block}中的方法。
+ * CustomBlockDefinition is used to define and retrieve block data for both the server and the client.
  * <p>
- * CustomBlockDefinition is used to get the data of the block behavior_pack sent to the client. The methods provided in {@link CustomBlockDefinition.Builder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link Block Block}.
+ * The methods provided in {@link CustomBlockDefinition.Builder} configure how the block behaves and appears in the client
+ * (via behavior pack data), and are now also used to register the block's behavior on the server side.
+ * <p>
+ * For further customization of runtime behavior, you can still override methods in {@link Block Block}.
  */
 @Slf4j
 public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
@@ -73,21 +77,22 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         protected Builder(CustomBlock customBlock) {
             this.identifier = customBlock.getId();
             this.customBlock = customBlock;
-            var b = (Block) customBlock;
             var components = this.nbt.getCompound("components");
 
-            // Set some block properties corresponding to PNX internal
-            components.putCompound("minecraft:friction", new CompoundTag()
-                            .putFloat("value", (float) Math.min(0.9, Math.max(0, 1 - b.getFrictionFactor()))))
-                    .putCompound("minecraft:destructible_by_explosion", new CompoundTag()
-                            .putInt("explosion_resistance", (int) customBlock.getResistance()))
-                    .putCompound("minecraft:light_dampening", new CompoundTag()
-                            .putByte("lightLevel", (byte) customBlock.getLightFilter()))
-                    .putCompound("minecraft:light_emission", new CompoundTag()
-                            .putByte("emission", (byte) customBlock.getLightLevel()))
-                    .putCompound("minecraft:destructible_by_mining", new CompoundTag()
-                            .putFloat("value", 99999f));//default server-side mining time calculate
-            // Setting up the material
+            // Set default components using static default values
+            CompoundTag defaults = createDefaultComponents(
+                    0.4f,
+                    0.0f,
+                    0.0f,
+                    15,
+                    0,
+                    "#ffffff"
+            );
+            for (Map.Entry<String, Tag> entry : defaults.getTags().entrySet()) {
+                components.put(entry.getKey(), entry.getValue());
+            }
+
+            // Setting up  default material instances
             CompoundTag defaultMaterial = createDefaultMaterialInstance(null);
             components.putCompound("minecraft:material_instances", defaultMaterial);
 
@@ -99,7 +104,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             // Molang version
             this.nbt.putInt("molangVersion", 9);
 
-            //设置方块的properties
+            // Set the properties of the block
             var propertiesNBT = getPropertiesNBT();
             if (propertiesNBT != null) {
                 nbt.putList("properties", propertiesNBT);
@@ -124,6 +129,87 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             return this;
         }
 
+        /**
+         * Sets the friction value of the block. Default is 0.6f.
+         */
+        public Builder friction(float value) {
+            this.nbt.getCompound("components")
+                    .putCompound("minecraft:friction", new CompoundTag().putFloat("value", value));
+            return this;
+        }
+
+        /**
+         * Sets the explosion resistance of the block. Default is 0. Accepted values are: false or any int value 0 or greater <p>
+         * False means block can not be exploded, or any int value will make it destructible but as bigger the value more resistance.
+         */
+        public Builder destructibleByExplosion(boolean value) {
+            int resistance = value ? 0 : -1;
+            return this.destructibleByExplosion(resistance);
+        }
+        /**
+         * Sets the explosion resistance of the block. Default is 0. Accepted values are: false or any int value 0 or greater <p>
+         * False means block can not be exploded, or any int value will make it destructible but as bigger the value more resistance.
+         */
+        public Builder destructibleByExplosion(int resistance) {
+            this.nbt.getCompound("components")
+                .putCompound("minecraft:destructible_by_explosion",
+                    new CompoundTag().putInt("explosion_resistance", resistance));
+            return this;
+        }
+
+        /**
+         * Sets the mining time in seconds. Default is 0.0f. You can pass false to make it unbreakable.
+         */
+        public Builder destructibleByMining(boolean value) {
+            float time = value ? 0.0f : -1.0f;
+            return this.destructibleByMining(time);
+        }
+        /**
+         * Sets the mining time in seconds. Default is 0.0f. Use false to make the block unbreakable by mining.
+         */
+        public Builder destructibleByMining(float seconds) {
+            this.nbt.getCompound("components")
+                    .putCompound("minecraft:destructible_by_mining", new CompoundTag().putFloat("value", seconds));
+            return this;
+        }
+        /**
+         * @deprecated Use {@link #destructibleByMining(float)} or {@link #destructibleByMining(boolean)} instead.
+         */
+        @Deprecated
+        public Builder breakTime(float seconds) {
+            return destructibleByMining(seconds);
+        }
+
+        /**
+         * Sets the light dampening level. Default is 15.
+         */
+        public Builder lightDampening(int lightLevel) {
+            this.nbt.getCompound("components")
+                    .putCompound("minecraft:light_dampening", new CompoundTag().putByte("lightLevel", (byte) lightLevel));
+            return this;
+        }
+
+        /**
+         * Sets the light emission level. Default is 0.
+         */
+        public Builder lightEmission(int emission) {
+            this.nbt.getCompound("components")
+                    .putCompound("minecraft:light_emission", new CompoundTag().putByte("emission", (byte) emission));
+            return this;
+        }
+
+        /**
+         * Sets the map color used in maps. Default is #ffffff.
+         */
+        public Builder mapColor(String hexColor) {
+            this.nbt.getCompound("components")
+                    .putString("minecraft:map_color", hexColor);
+            return this;
+        }
+
+        /**
+         * Set the texture of the block.
+         */
         public Builder texture(String texture) {
             CompoundTag material = createDefaultMaterialInstance(texture);
             this.nbt.getCompound("components").putCompound("minecraft:material_instances", material);
@@ -216,22 +302,6 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * 控制自定义方块客户端侧的挖掘时间(单位秒)
-         * <p>
-         * 自定义方块的挖掘时间取决于服务端侧和客户端侧中最小的一个
-         * <p>
-         * Control the digging time (in seconds) on the client side of the custom block
-         * <p>
-         * The digging time of a custom cube depends on the smallest of the server-side and client-side
-         */
-        public Builder breakTime(double second) {
-            this.nbt.getCompound("components")
-                    .putCompound("minecraft:destructible_by_mining", new CompoundTag()
-                            .putFloat("value", (float) second));
-            return this;
-        }
-
-        /**
          * @see <a href="https://wiki.bedrock.dev/blocks/block-components.html#crafting-table">wiki.bedrock.dev</a>
          */
         public Builder craftingTable(CraftingTable craftingTable) {
@@ -248,8 +318,6 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * 以度为单位设置块围绕立方体中心的旋转,旋转顺序为 xyz.角度必须是90的倍数。
-         * <p>
          * Set the rotation of the block around the center of the block in degrees, the rotation order is xyz. The angle must be a multiple of 90.
          */
         public Builder rotation(@NotNull Vector3f rotation) {
@@ -258,10 +326,10 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * @see #geometry(Geometry)
-         * 默认不设置骨骼显示
+         * Sets the geometry identifier of the block using a string. If not set the default is the full_block.
          * <p>
-         * defalut not set boneVisibilities
+         * This does not set bone visibility; bones will be hidden by default.
+         * Use {@link #geometry(Geometry)} for advanced control.
          */
         public Builder geometry(String geometry) {
             if (geometry.isBlank()) {
@@ -269,21 +337,18 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                 return this;
             }
             var components = this.nbt.getCompound("components");
-            //设置方块对应的几何模型（合并默认结构）
             CompoundTag mergedGeometry = createDefaultGeometry(geometry.toLowerCase(Locale.ENGLISH));
             components.putCompound("minecraft:geometry", mergedGeometry);
             return this;
         }
 
         /**
-         * 控制自定义方块的几何模型,如果不设置默认为单位立方体
+         * Sets a full geometry definition with optional bone visibility. If not set the default is the full_block.
          * <p>
-         * Control the geometric model of the custom block, if not set the default is the full_block.<br>
-         * Geometry identifier from geo file in 'RP/models/blocks' folder
+         * Use this to control visible bones or other geometry properties.
          */
         public Builder geometry(@NotNull Geometry geometry) {
             var components = this.nbt.getCompound("components");
-            //设置方块对应的几何模型（合并默认结构）
             CompoundTag base = createDefaultGeometry(null);
             CompoundTag custom = geometry.toCompoundTag();
             for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : custom.getTags().entrySet()) {
@@ -294,11 +359,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * 控制自定义方块的变化特征，例如条件渲染，部分渲染等
-         * <p>
          * Control custom block permutation features such as conditional rendering, partial rendering, etc.
          */
-
         public Builder permutation(Permutation permutation) {
             if (!this.nbt.contains("permutations")) {
                 this.nbt.putList("permutations", new ListTag<CompoundTag>());
@@ -310,8 +372,6 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * 控制自定义方块的变化特征，例如条件渲染，部分渲染等
-         * <p>
          * Control custom block permutation features such as conditional rendering, partial rendering, etc.
          */
         public Builder permutations(Permutation... permutations) {
@@ -324,12 +384,10 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * 设置此方块的客户端碰撞箱。
-         * <p>
-         * Set the client collision box for this block.
+         * Set the block collision box.
          *
-         * @param origin 碰撞箱的原点 The origin of the collision box
-         * @param size   碰撞箱的大小 The size of the collision box
+         * @param origin The origin of the collision box
+         * @param size   The size of the collision box
          */
         public Builder collisionBox(@NotNull Vector3f origin, @NotNull Vector3f size) {
             this.nbt.getCompound("components")
@@ -347,12 +405,10 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * 设置此方块的客户端选择箱。
-         * <p>
-         * Set the client collision box for this block.
+         * Sets the block selection box.
          *
-         * @param origin 选择箱的原点 The origin of the collision box
-         * @param size   选择箱的大小 The size of the collision box
+         * @param origin The origin of the collision box
+         * @param size   The size of the collision box
          */
         public Builder selectionBox(@NotNull Vector3f origin, @NotNull Vector3f size) {
             this.nbt.getCompound("components")
@@ -418,8 +474,6 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * 对要发送给客户端的方块ComponentNBT进行自定义处理，这里包含了所有对自定义方块的定义。在符合条件的情况下，你可以任意修改。
-         * <p>
          * Custom processing of the block to be sent to the client ComponentNBT, which contains all definitions for custom block. You can modify them as much as you want, under the right conditions.
          */
         public CustomBlockDefinition customBuild(@NotNull Consumer<CompoundTag> nbt) {
@@ -473,5 +527,41 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             .putString("category", "construction")
             .putString("group", "")
             .putByte("is_hidden_in_commands", (byte) 0);
+    }
+
+    // Create default components
+    public static CompoundTag createDefaultComponents(
+            float frictionFactor,
+            float explosionResistance,
+            float miningTime,
+            int lightDampening,
+            int lightEmission,
+            String mapColor
+    ) {
+        CompoundTag components = new CompoundTag(new LinkedHashMap<>());
+        components.putCompound("minecraft:friction", new CompoundTag()
+                .putFloat("value", 0.4f));
+        components.putCompound("minecraft:destructible_by_explosion", new CompoundTag()
+                .putInt("explosion_resistance", 0));
+        components.putCompound("minecraft:destructible_by_mining", new CompoundTag()
+                .putFloat("value", 0.0f));
+        components.putCompound("minecraft:light_dampening", new CompoundTag()
+                .putByte("lightLevel", (byte) 15));
+        components.putCompound("minecraft:light_emission", new CompoundTag()
+                .putByte("emission", (byte) 0));
+        components.putString("minecraft:map_color", "#ffffff");
+        return components;
+    }
+
+    public CompoundTag getComponents() {
+        return this.nbt.getCompound("components");
+    }
+
+    public boolean isSolidForBlock(@NotNull Block block) {
+        return CustomBlockUtils.isSolidForBlock(this, block);
+    }
+
+    public @Nullable AxisAlignedBB getBoundingBox(Block block) {
+        return CustomBlockUtils.getBoundingBox(this, block);
     }
 }
