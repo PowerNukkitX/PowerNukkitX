@@ -1,6 +1,7 @@
 package cn.nukkit.command;
 
 import cn.nukkit.Server;
+
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.defaults.*;
 import cn.nukkit.command.simple.Arguments;
@@ -10,15 +11,20 @@ import cn.nukkit.command.simple.ForbidConsole;
 import cn.nukkit.command.simple.Parameters;
 import cn.nukkit.command.simple.SimpleCommand;
 import cn.nukkit.command.utils.CommandLogger;
+
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TranslationContainer;
+
 import cn.nukkit.plugin.InternalPlugin;
+
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
 import io.netty.util.internal.EmptyArrays;
+
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -303,7 +309,7 @@ public class SimpleCommandMap implements CommandMap {
             return -1;
         }
 
-        String sentCommandLabel = parsed.remove(0).toLowerCase(Locale.ENGLISH);//command name
+        String sentCommandLabel = parsed.removeFirst().toLowerCase(Locale.ENGLISH);//command name
         String[] args = parsed.toArray(EmptyArrays.EMPTY_STRINGS);
         Command target = this.getCommand(sentCommandLabel);
 
@@ -328,7 +334,7 @@ public class SimpleCommandMap implements CommandMap {
                     var log = new CommandLogger(target, sender, sentCommandLabel, args, plugin);
                     if (target.getPermissionMessage() == null) {
                         log.addMessage("nukkit.command.generic.permission").output();
-                    } else if (!target.getPermissionMessage().equals("")) {
+                    } else if (!target.getPermissionMessage().isEmpty()) {
                         log.addError(target.getPermissionMessage().replace("<permission>", target.getPermission())).output();
                     }
                     output = 0;
@@ -361,6 +367,16 @@ public class SimpleCommandMap implements CommandMap {
             return this.knownCommands.get(name);
         }
         return null;
+    }
+
+    @Override
+    public void unregister(String... commands){
+        for (String name : commands) {
+            Command command = getCommand(name);
+            if (command != null) {
+                command.unregister(this);
+            }
+        }
     }
 
     /**
