@@ -593,8 +593,46 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return blockstate;
     }
 
+    /**
+     * @deprecated Use {@link #hasTag(String)} instead.
+     */
+    @Deprecated
     public boolean is(final String blockTag) {
         return BlockTags.getTagSet(this.getId()).contains(blockTag);
+    }
+
+    /**
+     * @return if block has a string tag
+     */
+    public boolean hasTag(final String blockTag) {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            CompoundTag nbt = def.nbt();
+            if (nbt.contains("blockTags")) {
+                ListTag<StringTag> tagList = nbt.getList("blockTags", StringTag.class);
+                return tagList.getAll().contains(new StringTag(blockTag));
+            }
+        }
+
+        return BlockTags.getTagSet(this.getId()).contains(blockTag);
+    }
+
+    /**
+     * @return list of tags for the block
+     */
+    public String[] getTags() {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            CompoundTag nbt = def.nbt();
+            if (nbt.contains("blockTags")) {
+                ListTag<StringTag> tagList = nbt.getList("blockTags", StringTag.class);
+                return tagList.getAll().stream()
+                    .map(tag -> tag.data)
+                    .toArray(String[]::new);
+            }
+        }
+
+        return BlockTags.getTagSet(this.getId()).toArray(new String[0]);
     }
 
     public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> DATATYPE getPropertyValue(PROPERTY p) {
