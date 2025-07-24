@@ -36,6 +36,7 @@ import cn.nukkit.event.weather.LightningStrikeEvent;
 import cn.nukkit.inventory.BlockInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBucket;
+import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.ChunkState;
@@ -2814,33 +2815,42 @@ public class Level implements Metadatable {
 
     private Block beforePlaceBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
         Block hand;
+
         if (item.canBePlaced()) {
             hand = item.getBlock();
+            hand.position(block);
+        } else if (item instanceof ItemCustom customItem) {
+            Block blockToPlace = customItem.getBlockPlacerTargetBlock();
+            if (blockToPlace == null || blockToPlace.isAir()) return null;
+            hand = blockToPlace;
             hand.position(block);
         } else {
             return null;
         }
-        if (
-                !(block.canBeReplaced() ||
-                        (hand instanceof BlockSlab && hand.getId().equals(block.getId())) ||
-                        hand instanceof BlockCandle//Special for candles
-                )
-        ) {
+
+        // Check for valid placement conditions
+        if (!(block.canBeReplaced() ||
+            (hand instanceof BlockSlab && hand.getId().equals(block.getId())) ||
+            hand instanceof BlockCandle)) {
             return null;
         }
 
-        //处理放置梯子,我们应该提前给hand设置方向,这样后面计算是否碰撞实体才准确
+        // To place the ladder, we should set the direction of the hand in advance so that the calculation of whether it
+        // collides with the entity can be accurate.
         if (hand instanceof BlockLadder) {
             if (target instanceof BlockLadder) {
                 hand.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getOpposite().getIndex());
-            } else hand.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
+            } else {
+                hand.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
+            }
         }
 
-        //cause bug (eg: frog_spawn) (and I don't know what this is for)
+        // cause bug (eg: frog_spawn) (and I don't know what this is for)
         if (!(hand instanceof BlockFrogSpawn) && target.canBeReplaced()) {
             block = target;
             hand.position(block);
         }
+
         return hand;
     }
 

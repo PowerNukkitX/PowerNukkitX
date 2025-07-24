@@ -851,6 +851,32 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
     }
 
+    public record BlockPlacerData(String blockId, List<String> useOn) {}
+    @Nullable
+    public BlockPlacerData getBlockPlacerData() {
+        CompoundTag components = nbt.getCompound("components");
+        if (!components.contains("minecraft:block_placer")) {
+            return null;
+        }
+
+        CompoundTag placer = components.getCompound("minecraft:block_placer");
+        String blockId = placer.getString("block");
+        List<String> useOnList = new ArrayList<>();
+
+        ListTag<CompoundTag> useOnTag = placer.getList("use_on", CompoundTag.class);
+        if (useOnTag != null && useOnTag.size() > 0) {
+            for (int i = 0; i < useOnTag.size(); i++) {
+                CompoundTag entry = useOnTag.get(i);
+                String useOnName = entry.getString("name");
+                if (!useOnName.isEmpty()) {
+                useOnList.add(useOnName);
+                }
+            }
+        }
+
+        return new BlockPlacerData(blockId, useOnList);
+    }
+
     // HELPER FUNCTION TO TROUBLESHOOTING THE ITEM NBT FORMAT
     public CompoundTag getNbt() {
         return this.nbt;
