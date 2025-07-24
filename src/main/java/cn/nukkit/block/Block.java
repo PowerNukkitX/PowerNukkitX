@@ -381,7 +381,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public boolean hasFreeSpaceAbove() {
         Block above = this.up();
 
-        if (above.isAir()) {
+        if (above.isTransparent()) {
             return true;
         }
 
