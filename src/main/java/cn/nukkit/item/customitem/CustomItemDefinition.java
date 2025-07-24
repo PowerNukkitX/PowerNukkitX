@@ -327,17 +327,19 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         */
         public SimpleBuilder blockPlacer(String blockId, String... useOn) {
             ListTag<CompoundTag> useOnList = new ListTag<>();
-            for (String s : useOn) {
-                useOnList.add(new CompoundTag()
+            if (useOn != null && useOn.length > 0) {
+                for (String s : useOn) {
+                    useOnList.add(new CompoundTag()
                         .putString("name", s)
                         .putCompound("states", new CompoundTag())
                         .putString("tags", ""));
+                }
             }
 
             CompoundTag blockPlacer = new CompoundTag()
-                    .putString("block", blockId)
-                    .putBoolean("canUseBlockAsIcon", true)
-                    .putList("use_on", useOnList);
+                .putString("block", blockId)
+                .putBoolean("canUseBlockAsIcon", true)
+                .putList("use_on", useOnList);
 
             CompoundTag components = nbt.getCompound("components");
             if (!nbt.contains("components")) {
@@ -373,7 +375,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             CompoundTag components = nbt.getCompound("components");
             CompoundTag itemProps = ensureItemProperties();
 
-            if (texture != null && !texture.isBlank() && !components.contains("minecraft:block_placer")) {
+            if (texture != null && !texture.isBlank()) {
                 itemProps.putCompound("minecraft:icon", new CompoundTag()
                         .putCompound("textures", new CompoundTag().putString("default", texture)));
             }
