@@ -211,15 +211,28 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(isNotActivate(player)) return false;
+        if (isNotActivate(player)) return false;
         Item itemInHand = player.getInventory().getItemInHand();
         if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) return false;
 
+        // Check itself if can be opened
         if (!this.hasFreeSpaceAbove()) {
             return false;
         }
 
         BlockEntityChest chest = getOrCreateBlockEntity();
+
+        // If paired, check if the pair can be opened
+        if (chest.isPaired()) {
+            BlockEntityChest pair = chest.getPair();
+            if (pair != null) {
+                Block pairedBlock = pair.getBlock();
+                if (!pairedBlock.hasFreeSpaceAbove()) {
+                    return false;
+                }
+            }
+        }
+
         if (chest.namedTag.contains("Lock") && chest.namedTag.get("Lock") instanceof StringTag
                 && !chest.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;

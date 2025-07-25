@@ -381,7 +381,11 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public boolean hasFreeSpaceAbove() {
         Block above = this.up();
 
-        if (above.isAir()) {
+        if (above instanceof BlockSlab slab) {
+            return slab.isOnTop();
+        }
+
+        if (above.isTransparent()) {
             return true;
         }
 
@@ -389,9 +393,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         if (box != null) {
             double minY = box.getMinY();
             double relativeMinY = minY - above.getY();
-            boolean allowed = relativeMinY >= 0.5;
-
-            return allowed;
+            return relativeMinY >= 0.5;
         }
 
         return false;
