@@ -327,17 +327,19 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         */
         public SimpleBuilder blockPlacer(String blockId, String... useOn) {
             ListTag<CompoundTag> useOnList = new ListTag<>();
-            for (String s : useOn) {
-                useOnList.add(new CompoundTag()
+            if (useOn != null && useOn.length > 0) {
+                for (String s : useOn) {
+                    useOnList.add(new CompoundTag()
                         .putString("name", s)
                         .putCompound("states", new CompoundTag())
                         .putString("tags", ""));
+                }
             }
 
             CompoundTag blockPlacer = new CompoundTag()
-                    .putString("block", blockId)
-                    .putBoolean("canUseBlockAsIcon", true)
-                    .putList("use_on", useOnList);
+                .putString("block", blockId)
+                .putBoolean("canUseBlockAsIcon", true)
+                .putList("use_on", useOnList);
 
             CompoundTag components = nbt.getCompound("components");
             if (!nbt.contains("components")) {
@@ -373,7 +375,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             CompoundTag components = nbt.getCompound("components");
             CompoundTag itemProps = ensureItemProperties();
 
-            if (texture != null && !texture.isBlank() && !components.contains("minecraft:block_placer")) {
+            if (texture != null && !texture.isBlank()) {
                 itemProps.putCompound("minecraft:icon", new CompoundTag()
                         .putCompound("textures", new CompoundTag().putString("default", texture)));
             }
@@ -849,6 +851,32 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                     .putInt("use_animation", item.isDrink() ? 2 : 1)
                     .putBoolean("can_destroy_in_creative", true);
         }
+    }
+
+    public record BlockPlacerData(String blockId, List<String> useOn) {}
+    @Nullable
+    public BlockPlacerData getBlockPlacerData() {
+        CompoundTag components = nbt.getCompound("components");
+        if (!components.contains("minecraft:block_placer")) {
+            return null;
+        }
+
+        CompoundTag placer = components.getCompound("minecraft:block_placer");
+        String blockId = placer.getString("block");
+        List<String> useOnList = new ArrayList<>();
+
+        ListTag<CompoundTag> useOnTag = placer.getList("use_on", CompoundTag.class);
+        if (useOnTag != null && useOnTag.size() > 0) {
+            for (int i = 0; i < useOnTag.size(); i++) {
+                CompoundTag entry = useOnTag.get(i);
+                String useOnName = entry.getString("name");
+                if (!useOnName.isEmpty()) {
+                useOnList.add(useOnName);
+                }
+            }
+        }
+
+        return new BlockPlacerData(blockId, useOnList);
     }
 
     // HELPER FUNCTION TO TROUBLESHOOTING THE ITEM NBT FORMAT
