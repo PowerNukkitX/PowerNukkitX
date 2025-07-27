@@ -130,7 +130,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if (player != null && player.isSneaking()) {
+        if (player == null || player.isSneaking()) {
             return false;
         }
         AtomicBoolean interactionLock = playerInteractionLocks.computeIfAbsent(player, p -> new AtomicBoolean(false));
