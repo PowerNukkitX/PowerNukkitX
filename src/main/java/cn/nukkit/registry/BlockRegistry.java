@@ -1411,9 +1411,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                     CustomBlockDefinition def = customBlock.getDefinition();
                     customBlockDefinitions.add(def);
                     CUSTOM_BLOCK_DEFINITION_BY_ID.put(customBlock.getId(), customBlock.getDefinition());
-                    if (def.tickSettings() != null) {
-                        Level.setCanRandomTick(customBlock.getId(), true);
-                    }
                     int rid = 255 - CustomBlockDefinition.getRuntimeId(customBlock.getId());
                     Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(customBlock.getId(), rid, false));
                     CompoundTag nbt = def.nbt();
@@ -1583,5 +1580,9 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
 
     public boolean shouldSkip(String bid) {
         return skipBlockSet.contains(bid);
+    }
+
+    public static CustomBlockDefinition getCustomBlockDefinition(String identifier) {
+        return CUSTOM_BLOCK_DEFINITION_BY_ID.get(identifier);
     }
 }

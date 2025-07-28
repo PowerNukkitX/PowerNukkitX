@@ -230,69 +230,44 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * Can also handle custom block ticking logic for both RANDOM and SCHEDULED tick types by setting it in the block constructor via:
+     * Handles ticking logic for custom blocks using either RANDOM or SCHEDULED tick types.
+     * 
+     * To enable ticking, configure the block with:
      * <pre>{@code
      *     .blockTick(60, 60, true)
      * }</pre>
      * Where:
      * <ul>
-     *   <li><b>minTicks</b> and <b>maxTicks</b>: define the interval range (in server ticks) between each tick.</li>
-     *   <li><b>looping</b>: if set to {@code true}, ticking continues; if {@code false}, it runs once then stops.</li>
+     *   <li><b>minTicks</b> and <b>maxTicks</b>: define the tick interval range (in server ticks).</li>
+     *   <li><b>looping</b>: if {@code true}, the block will continue ticking; if {@code false}, it will tick once and stop.</li>
      * </ul>
      *
-     * <b>Important:</b> To preserve the core ticking behavior, always call {@code super.onUpdate(type)} inside any overridden
-     * {@code onUpdate(int type)} method in the custom block class.
-     * @return The update type if ticking should continue, or 0 to stop further ticking.
+     * <b>Important:</b> Always call {@code super.onUpdate(type)} in any overridden implementation to preserve base behavior.
+     *
+     * <b>Note:</b> For custom blocks, ticking logic should only be applied to {@code BLOCK_UPDATE_SCHEDULED} updates.
+     * Return early for all other tick types (like {@code BLOCK_UPDATE_RANDOM}) to avoid interfering with the core scheduling system.
+     *
+     * @return The update type to continue ticking, or 0 to stop future ticks.
      */
     public int onUpdate(int type) {
+        if (type != Level.BLOCK_UPDATE_SCHEDULED) return 0;
+
         CustomBlockDefinition def = getCustomDefinition();
-        if (def != null && (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_RANDOM)) {
-            BlockTickSettings tick = def != null ? def.tickSettings() : null;
+        if (def == null || def.tickSettings() == null) return 0;
 
-            if (tick != null) {
-                int min = tick.minTicks();
-                int max = tick.maxTicks();
-                if (min > max) {
-                    log.error("Invalid tick range for block '{}': min {} > max {}", this.getId(), min, max);
-                    Level.setCanRandomTick(this.getId(), false);
-                    return 0;
-                }
+        BlockTickSettings tick = def.tickSettings();
+        int min = tick.minTicks();
+        int max = tick.maxTicks();
 
-                if (type == Level.BLOCK_UPDATE_RANDOM) {
-                    // Run once then stops
-                    if (!tick.looping()) {
-                        Level.setCanRandomTick(this.getId(), false);
-                        log.debug("Ticked once and stopped (looping=false) for '{}'", this.getId());
-                        return 0;
-                    }
-
-                    // If min & max are not the same switch to scheduled tick, otherwise keep random
-                    if (!(min == 0 && max == 0)) {
-                        Level.setCanRandomTick(this.getId(), false);
-                        int delay = (min == max) ? max : ThreadLocalRandom.current().nextInt(min, max + 1);
-                        this.getLevel().scheduleUpdate(this, delay);
-                        return 0;
-                    }
-
-                    return Level.BLOCK_UPDATE_RANDOM;
-                }
-
-                if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-                    if (!tick.looping()) {
-                        return 0;
-                    }
-
-                    // Set the next scheduled tick
-                    int delay = (min == max) ? max : ThreadLocalRandom.current().nextInt(min, max + 1);
-                    this.getLevel().scheduleUpdate(this, delay);
-                    log.debug("Next scheduled block tick for '{}' in {} ticks", this.getId(), delay);
-                    return Level.BLOCK_UPDATE_SCHEDULED;
-                }
-
-                return Level.BLOCK_UPDATE_SCHEDULED;
-            }
+        if (tick.looping() && !this.getLevel().isChunkLoaded(this.getFloorX() >> 4, this.getFloorZ() >> 4)) {
+            int delay = (min == max) ? max : ThreadLocalRandom.current().nextInt(min, max + 1);
+            this.getLevel().scheduleUpdate(this, delay);
+            log.debug("Next scheduled block tick for '{}' in {} ticks", this.getId(), delay);
+            return Level.BLOCK_UPDATE_SCHEDULED;
+        } else {
+            this.getLevel().cancelScheduledUpdate(this, this);
+            return 0;
         }
-        return 0;
     }
 
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, @NotNull PlayerInteractEvent.Action action) {

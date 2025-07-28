@@ -155,7 +155,7 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
 
     public void executeRedstonePulse() {
         if (isActivated()) {
-            level.cancelSheduledUpdate(this, this);
+            level.cancelScheduledUpdate(this, this);
         } else {
             this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
         }

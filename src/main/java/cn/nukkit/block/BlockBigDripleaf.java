@@ -224,7 +224,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             setTilt(BigDripleafTilt.NONE);
             level.setBlock(this, this, true, false);
 
-            level.cancelSheduledUpdate(this, this);
+            level.cancelScheduledUpdate(this, this);
             return Level.BLOCK_UPDATE_SCHEDULED;
         }
 

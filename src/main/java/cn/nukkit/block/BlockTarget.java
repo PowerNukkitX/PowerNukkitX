@@ -83,7 +83,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
 
         BlockEntityTarget target = getOrCreateBlockEntity();
         int previous = target.getActivePower();
-        level.cancelSheduledUpdate(this, this);
+        level.cancelScheduledUpdate(this, this);
         level.scheduleUpdate(this, ticks);
         target.setActivePower(power);
         if (previous != power) {
