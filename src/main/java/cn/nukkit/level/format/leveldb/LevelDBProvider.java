@@ -183,37 +183,42 @@ public class LevelDBProvider implements LevelProvider {
         List<ScheduledTickInfo> scheduledList = LevelDBProvider.getScheduledTicksMap().remove(chunkKey);
         List<NormalTickInfo> normalList = LevelDBProvider.getNormalTicksMap().remove(chunkKey);
 
-        // --- Scheduled Ticks ---
-        if (scheduledList != null && !scheduledList.isEmpty()) {
-            for (ScheduledTickInfo info : scheduledList) {
-                level.getScheduler().scheduleDelayedTask(() -> {
-                    Block block = level.getBlock(info.x, info.y, info.z, info.layer);
-                    if (block.getId().equals(info.id)) {
-                        level.scheduleUpdate(block, new Vector3(info.x, info.y, info.z),
-                                Math.max(info.delay, 1), info.priority, false, info.checkBlockWhenUpdate);
-                    }
-                }, 1);
-            }
+        restoreScheduledTicks(level, scheduledList);
+        restoreNormalTicks(level, chunk, normalList);
+    }
+
+    private static void restoreScheduledTicks(Level level, List<ScheduledTickInfo> scheduledList) {
+        if (scheduledList == null || scheduledList.isEmpty()) return;
+
+        for (ScheduledTickInfo info : scheduledList) {
+            level.getScheduler().scheduleDelayedTask(() -> {
+                Block block = level.getBlock(info.x, info.y, info.z, info.layer);
+                if (block.getId().equals(info.id)) {
+                    level.scheduleUpdate(block, new Vector3(info.x, info.y, info.z),
+                            Math.max(info.delay, 1), info.priority, false, info.checkBlockWhenUpdate);
+                }
+            }, 1);
         }
+    }
 
-        // --- Normal Ticks (batched) ---
-        if (normalList != null && !normalList.isEmpty()) {
-            int batchSize = 32;
-            int total = normalList.size();
-            for (int i = 0; i < total; i += batchSize) {
-                int from = i;
-                int to = Math.min(i + batchSize, total);
-                List<NormalTickInfo> sub = normalList.subList(from, to);
+    private static void restoreNormalTicks(Level level, IChunk chunk, List<NormalTickInfo> normalList) {
+        if (normalList == null || normalList.isEmpty()) return;
 
-                level.getScheduler().scheduleDelayedTask(() -> {
-                    for (NormalTickInfo info : sub) {
-                        Block block = level.getBlock(info.x, info.y, info.z);
-                        if (block.getId().equals(info.id)) {
-                            block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
-                        }
+        int batchSize = 64;
+        int total = normalList.size();
+        for (int i = 0; i < total; i += batchSize) {
+            int from = i;
+            int to = Math.min(i + batchSize, total);
+            List<NormalTickInfo> sub = normalList.subList(from, to);
+
+            level.getScheduler().scheduleDelayedTask(() -> {
+                for (NormalTickInfo info : sub) {
+                    Block block = level.getBlock(info.x, info.y, info.z);
+                    if (block.getId().equals(info.id)) {
+                        block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
                     }
-                }, 1 + (from / batchSize));
-            }
+                }
+            }, 1 + (from / batchSize));
         }
     }
 

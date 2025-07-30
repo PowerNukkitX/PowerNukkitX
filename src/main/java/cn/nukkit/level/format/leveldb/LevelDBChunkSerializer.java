@@ -395,40 +395,8 @@ public class LevelDBChunkSerializer {
                         BlockState state = section.blockLayer()[0].get(index(x, y, z));
                         String id = state.getIdentifier();
 
-                        // 1. Custom block with tickSettings
-                        CustomBlockDefinition def = BlockRegistry.getCustomBlockDefinition(id);
-                        if (def != null && def.tickSettings() != null) {
-                            int bx = x + (cx << 4);
-                            int by = (sectionY << 4) + y;
-                            int bz = z + (cz << 4);
-
-                            CompoundTag tag = new CompoundTag()
-                                .putInt("x", bx)
-                                .putInt("y", by)
-                                .putInt("z", bz)
-                                .putString("id", id)
-                                .putInt("layer", 0)
-                                .putInt("delay", def.tickSettings().minTicks())
-                                .putInt("priority", 0)
-                                .putBoolean("checkBlockWhenUpdate", true);
-
-                            scheduledTicks.add(tag);
-                        }
-
-                        // 2. Vanilla tickable block
-                        switch (id) {
-                            case BlockID.DAYLIGHT_DETECTOR, BlockID.DAYLIGHT_DETECTOR_INVERTED,
-                                 BlockID.REDSTONE_WIRE, BlockID.REDSTONE_TORCH,
-                                 BlockID.POWERED_REPEATER, BlockID.UNPOWERED_REPEATER,
-                                 BlockID.POWERED_COMPARATOR, BlockID.UNPOWERED_COMPARATOR -> {
-                                CompoundTag tag = new CompoundTag()
-                                    .putInt("x", x + (cx << 4))
-                                    .putInt("y", (sectionY << 4) + y)
-                                    .putInt("z", z + (cz << 4))
-                                    .putString("id", id);
-                                normalTickBlocks.add(tag);
-                            }
-                        }
+                        handleCustomTickableBlock(id, x, y, z, cx, cz, sectionY, scheduledTicks);
+                        handleVanillaTickableBlock(id, x, y, z, cx, cz, sectionY, normalTickBlocks);
                     }
                 }
             }
@@ -438,6 +406,42 @@ public class LevelDBChunkSerializer {
         CompoundTag extraData = chunk.getExtraData();
         extraData.putList("pendingScheduledTicks", scheduledTicks);
         extraData.putList("pendingNormalTickBlocks", normalTickBlocks);
+    }
+
+    private void handleCustomTickableBlock(String id, int x, int y, int z, int cx, int cz, int sectionY, ListTag<CompoundTag> scheduledTicks) {
+        CustomBlockDefinition def = BlockRegistry.getCustomBlockDefinition(id);
+        if (def == null || def.tickSettings() == null) return;
+        int bx = x + (cx << 4);
+        int by = (sectionY << 4) + y;
+        int bz = z + (cz << 4);
+
+        CompoundTag tag = new CompoundTag()
+            .putInt("x", bx)
+            .putInt("y", by)
+            .putInt("z", bz)
+            .putString("id", id)
+            .putInt("layer", 0)
+            .putInt("delay", def.tickSettings().minTicks())
+            .putInt("priority", 0)
+            .putBoolean("checkBlockWhenUpdate", true);
+
+        scheduledTicks.add(tag);
+    }
+
+    private void handleVanillaTickableBlock(String id, int x, int y, int z, int cx, int cz, int sectionY, ListTag<CompoundTag> normalTickBlocks) {
+        switch (id) {
+            case BlockID.DAYLIGHT_DETECTOR, BlockID.DAYLIGHT_DETECTOR_INVERTED,
+                 BlockID.REDSTONE_WIRE, BlockID.REDSTONE_TORCH,
+                 BlockID.POWERED_REPEATER, BlockID.UNPOWERED_REPEATER,
+                 BlockID.POWERED_COMPARATOR, BlockID.UNPOWERED_COMPARATOR -> {
+                CompoundTag tag = new CompoundTag()
+                    .putInt("x", x + (cx << 4))
+                    .putInt("y", (sectionY << 4) + y)
+                    .putInt("z", z + (cz << 4))
+                    .putString("id", id);
+                normalTickBlocks.add(tag);
+            }
+        }
     }
 
     public static class ScheduledTickInfo {
