@@ -1065,20 +1065,21 @@ public class Level implements Metadatable {
 
             while (!this.normalUpdateQueue.isEmpty()) {
                 QueuedUpdate queuedUpdate = this.normalUpdateQueue.poll();
-                int x = queuedUpdate.block.getFloorX();
-                int z = queuedUpdate.block.getFloorZ();
-                if (!this.isChunkLoaded(x >> 4, z >> 4)) {
-                    continue;
-                }
-
                 Block block = getBlock(queuedUpdate.block, queuedUpdate.block.layer);
-                BlockUpdateEvent event = new BlockUpdateEvent(block);
-                this.server.getPluginManager().callEvent(event);
+                int chunkX = block.getFloorX() >> 4;
+                int chunkZ = block.getFloorZ() >> 4;
+                long hash = chunkHash(chunkX, chunkZ);
 
-                if (!event.isCancelled()) {
-                    block.onUpdate(BLOCK_UPDATE_NORMAL);
-                    if (queuedUpdate.neighbor != null) {
-                        block.onNeighborChange(queuedUpdate.neighbor.getOpposite());
+                // Only tick if the chunk is in use, helps to keep block ticks in sync when reload chunk
+                if (isChunkInUse(hash)) {
+                    BlockUpdateEvent event = new BlockUpdateEvent(block);
+                    this.server.getPluginManager().callEvent(event);
+
+                    if (!event.isCancelled()) {
+                        block.onUpdate(BLOCK_UPDATE_NORMAL);
+                        if (queuedUpdate.neighbor != null) {
+                            block.onNeighborChange(queuedUpdate.neighbor.getOpposite());
+                        }
                     }
                 }
             }

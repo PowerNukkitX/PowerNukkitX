@@ -259,10 +259,9 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         int min = tick.minTicks();
         int max = tick.maxTicks();
 
-        if (tick.looping() && !this.getLevel().isChunkLoaded(this.getFloorX() >> 4, this.getFloorZ() >> 4)) {
+        if (tick.looping() && this.getLevel().isChunkLoaded(this.getFloorX() >> 4, this.getFloorZ() >> 4)) {
             int delay = (min == max) ? max : ThreadLocalRandom.current().nextInt(min, max + 1);
             this.getLevel().scheduleUpdate(this, delay);
-            log.debug("Next scheduled block tick for '{}' in {} ticks", this.getId(), delay);
             return Level.BLOCK_UPDATE_SCHEDULED;
         } else {
             this.getLevel().cancelScheduledUpdate(this, this);

@@ -204,7 +204,7 @@ public class LevelDBProvider implements LevelProvider {
     private static void restoreNormalTicks(Level level, IChunk chunk, List<NormalTickInfo> normalList) {
         if (normalList == null || normalList.isEmpty()) return;
 
-        int batchSize = 64;
+        int batchSize = 32;
         int total = normalList.size();
         for (int i = 0; i < total; i += batchSize) {
             int from = i;
