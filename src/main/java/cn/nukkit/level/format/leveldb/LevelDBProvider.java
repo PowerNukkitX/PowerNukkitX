@@ -200,7 +200,6 @@ public class LevelDBProvider implements LevelProvider {
         if (normalList != null && !normalList.isEmpty()) {
             int batchSize = 32;
             int total = normalList.size();
-            log.info("[TickRestore] Restoring " + total + " normal tick blocks for chunk (" + chunk.getX() + "," + chunk.getZ() + ")");
             for (int i = 0; i < total; i += batchSize) {
                 int from = i;
                 int to = Math.min(i + batchSize, total);

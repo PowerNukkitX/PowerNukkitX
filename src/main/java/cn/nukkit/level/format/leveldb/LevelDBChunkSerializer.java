@@ -104,7 +104,7 @@ public class LevelDBChunkSerializer {
         deserializeTileAndEntity(db, builder, pnxExtraData);
         deserializeLight(db, builder, pnxExtraData);
         if (pnxExtraData != null) {
-            deserializeBlockTicks(pnxExtraData, builder); // No provider needed!
+            deserializeBlockTicks(pnxExtraData, builder);
         }
     }
 
