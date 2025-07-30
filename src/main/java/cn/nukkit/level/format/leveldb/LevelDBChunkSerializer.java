@@ -418,7 +418,7 @@ public class LevelDBChunkSerializer {
                         // 2. Vanilla tickable block
                         switch (id) {
                             case BlockID.DAYLIGHT_DETECTOR, BlockID.DAYLIGHT_DETECTOR_INVERTED,
-                                 BlockID.REDSTONE_WIRE,
+                                 BlockID.REDSTONE_WIRE, BlockID.REDSTONE_TORCH,
                                  BlockID.POWERED_REPEATER, BlockID.UNPOWERED_REPEATER,
                                  BlockID.POWERED_COMPARATOR, BlockID.UNPOWERED_COMPARATOR -> {
                                 CompoundTag tag = new CompoundTag()
