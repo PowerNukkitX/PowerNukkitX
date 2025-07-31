@@ -42,7 +42,7 @@ public interface EntityDataTypes {
     EntityDataType<Integer> OLD_SWELL = new EntityDataType<>(0, "OLD_SWELL", 20);
     EntityDataType<Integer> SWELL_DIRECTION = new EntityDataType<>(0, "SWELL_DIRECTION", 21);
     EntityDataType<Byte> CHARGE_AMOUNT = new EntityDataType<>((byte) 0, "CHARGE_AMOUNT", 22);
-    EntityDataType<Block> CARRY_BLOCK_STATE = new EntityDataType<>(Block.get(Block.AIR), "CARRY_BLOCK_STATE", 23, Transformers.BLOCK);
+    EntityDataType<Block> DEPRECATED_CARRY_BLOCK_STATE = new EntityDataType<>(Block.get(Block.AIR), "DEPRECATED_CARRY_BLOCK_STATE", 23, Transformers.BLOCK);
     EntityDataType<Byte> CLIENT_EVENT = new EntityDataType<>((byte) 0, "CLIENT_EVENT", 24);
     EntityDataType<Boolean> USING_ITEM = new EntityDataType<>(false, "USING_ITEM", 25, Transformers.BOOLEAN_TO_BYTE);
     EntityDataType<Byte> PLAYER_FLAGS = new EntityDataType<>((byte) 0, "PLAYER_FLAGS", 26);

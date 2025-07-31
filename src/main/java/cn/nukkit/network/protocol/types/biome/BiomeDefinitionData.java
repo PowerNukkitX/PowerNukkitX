@@ -7,7 +7,7 @@ import cn.nukkit.utils.OptionalValue;
 
 public class BiomeDefinitionData implements IBiomeDefinitionListObject {
 
-    public OptionalValue<Integer> id = OptionalValue.empty(); //Only used for custom biomes
+    public short id = -1; //Only used for custom biomes
     public float temperature;
     public float downfall;
     public float redSporeDensity;
@@ -23,7 +23,7 @@ public class BiomeDefinitionData implements IBiomeDefinitionListObject {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeOptional(id, byteBuf::writeShortLE);
+        byteBuf.writeShort(id);
         byteBuf.writeFloatLE(temperature);
         byteBuf.writeFloatLE(downfall);
         byteBuf.writeFloatLE(redSporeDensity);
@@ -40,6 +40,7 @@ public class BiomeDefinitionData implements IBiomeDefinitionListObject {
 
     @Override
     public void parse(CompoundTag tag) {
+        id = tag.getShort("id");
         temperature = tag.getFloat("temperature");
         downfall = tag.getFloat("downfall");
         redSporeDensity = tag.getFloat("redSporeDensity");
