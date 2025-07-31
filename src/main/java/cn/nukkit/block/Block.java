@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -622,7 +623,22 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> getPropertyValues() {
-        return this.blockstate.getBlockPropertyValues();
+        try {
+            return this.blockstate.getBlockPropertyValues();
+        } catch (IllegalArgumentException | NullPointerException e) {
+            log.warn("The block does not have this property.");
+            return Collections.emptyList();
+        }
+    }
+
+    @Nullable
+    public Object getPropertyValue(String name) {
+        for (BlockPropertyType.BlockPropertyValue<?, ?, ?> prop : this.getPropertyValues()) {
+            if (prop.getPropertyType().getName().equals(name)) {
+                return prop.getValue();
+            }
+        }
+        return null;
     }
 
     public boolean isAir() {
