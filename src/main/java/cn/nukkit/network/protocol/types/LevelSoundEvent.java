@@ -531,7 +531,10 @@ public enum LevelSoundEvent {
     LEAD_LEASH(557),
     LEAD_UNLEASH(558),
     LEAD_BREAK(559),
-    UNSADDLE(560);
+    UNSADDLE(560),
+    EQUIP_COPPER(561),
+    RECORD_LAVA_CHICKEN(562),
+    ;
 
     private final int id;
 

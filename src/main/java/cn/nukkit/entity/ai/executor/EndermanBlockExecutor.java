@@ -19,7 +19,7 @@ public class EndermanBlockExecutor implements IBehaviorExecutor {
                 if(optionalBlock.isPresent()) {
                     Block block = optionalBlock.get();
                     enderman.setItemInHand(block.toItem());
-                    enderman.setDataProperty(EntityDataTypes.CARRY_BLOCK_STATE, block);
+                    enderman.setDataProperty(EntityDataTypes.DEPRECATED_CARRY_BLOCK_STATE, block);
                     enderman.getLevel().setBlock(block, Block.get(Block.AIR));
                 }
             } else {
@@ -29,7 +29,7 @@ public class EndermanBlockExecutor implements IBehaviorExecutor {
                         Block block = optionalBlock.get();
                         block.getLevel().setBlock(block.up(), enderman.getItemInHand().getBlock());
                         enderman.setItemInHand(Item.AIR);
-                        enderman.setDataProperty(EntityDataTypes.CARRY_BLOCK_STATE, Item.AIR.getBlock());
+                        enderman.setDataProperty(EntityDataTypes.DEPRECATED_CARRY_BLOCK_STATE, Item.AIR.getBlock());
                     }
                 }   
             }
