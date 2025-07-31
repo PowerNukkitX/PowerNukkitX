@@ -103,9 +103,7 @@ public class LevelDBChunkSerializer {
         deserializeHeightAndBiome(db, builder, pnxExtraData);
         deserializeTileAndEntity(db, builder, pnxExtraData);
         deserializeLight(db, builder, pnxExtraData);
-        if (pnxExtraData != null) {
-            deserializeBlockTicks(pnxExtraData, builder);
-        }
+        deserializeBlockTicks(pnxExtraData, builder);
     }
 
     //serialize chunk section light
@@ -455,6 +453,7 @@ public class LevelDBChunkSerializer {
     }
 
     public static void deserializeBlockTicks(CompoundTag extraData, IChunkBuilder builder) {
+        if (extraData == null) return;
         long chunkKey = ((long) builder.getChunkX() & 0xffffffffL) << 32 | ((long) builder.getChunkZ() & 0xffffffffL);
 
         // --- Scheduled Ticks ---
