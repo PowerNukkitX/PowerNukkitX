@@ -2,6 +2,7 @@ package cn.nukkit.level.format.leveldb;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.UsedByReflection;
+import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.DimensionData;
@@ -14,6 +15,8 @@ import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.leveldb.LevelDBChunkSerializer.NormalTickInfo;
+import cn.nukkit.level.format.leveldb.LevelDBChunkSerializer.ScheduledTickInfo;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
@@ -63,6 +66,8 @@ public class LevelDBProvider implements LevelProvider {
     private static final byte[] levelDatMagic = new byte[]{10, 0, 0, 0, 68, 11, 0, 0};
     private final ThreadLocal<WeakReference<IChunk>> lastChunk = new ThreadLocal<>();
     protected final Long2ObjectNonBlockingMap<IChunk> chunks = new Long2ObjectNonBlockingMap<>();
+    private static final Map<Long, List<ScheduledTickInfo>> scheduledTicksMap = new HashMap<>();
+    private static final Map<Long, List<NormalTickInfo>> normalTicksMap = new HashMap<>();
     protected final LevelDat levelDat;
     protected final LevelDBStorage storage;
     protected final Level level;
@@ -158,8 +163,63 @@ public class LevelDBProvider implements LevelProvider {
                 }
             }
             putChunk(index, chunk);
+
+            Level level = this.getLevel();
+            restoreBlockTicks(level, chunk);
         }
         return chunk;
+    }
+
+    public static Map<Long, List<ScheduledTickInfo>> getScheduledTicksMap() {
+        return scheduledTicksMap;
+    }
+    public static Map<Long, List<NormalTickInfo>> getNormalTicksMap() {
+        return normalTicksMap;
+    }
+
+    public static void restoreBlockTicks(Level level, IChunk chunk) {
+        long chunkKey = ((long) chunk.getX() & 0xffffffffL) << 32 | ((long) chunk.getZ() & 0xffffffffL);
+
+        List<ScheduledTickInfo> scheduledList = LevelDBProvider.getScheduledTicksMap().remove(chunkKey);
+        List<NormalTickInfo> normalList = LevelDBProvider.getNormalTicksMap().remove(chunkKey);
+
+        restoreScheduledTicks(level, scheduledList);
+        restoreNormalTicks(level, chunk, normalList);
+    }
+
+    private static void restoreScheduledTicks(Level level, List<ScheduledTickInfo> scheduledList) {
+        if (scheduledList == null || scheduledList.isEmpty()) return;
+
+        for (ScheduledTickInfo info : scheduledList) {
+            level.getScheduler().scheduleDelayedTask(() -> {
+                Block block = level.getBlock(info.x, info.y, info.z, info.layer);
+                if (block.getId().equals(info.id)) {
+                    level.scheduleUpdate(block, new Vector3(info.x, info.y, info.z),
+                            Math.max(info.delay, 1), info.priority, false, info.checkBlockWhenUpdate);
+                }
+            }, 1);
+        }
+    }
+
+    private static void restoreNormalTicks(Level level, IChunk chunk, List<NormalTickInfo> normalList) {
+        if (normalList == null || normalList.isEmpty()) return;
+
+        int batchSize = 32;
+        int total = normalList.size();
+        for (int i = 0; i < total; i += batchSize) {
+            int from = i;
+            int to = Math.min(i + batchSize, total);
+            List<NormalTickInfo> sub = normalList.subList(from, to);
+
+            level.getScheduler().scheduleDelayedTask(() -> {
+                for (NormalTickInfo info : sub) {
+                    Block block = level.getBlock(info.x, info.y, info.z);
+                    if (block.getId().equals(info.id)) {
+                        block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                    }
+                }
+            }, 1 + (from / batchSize));
+        }
     }
 
     public int size() {

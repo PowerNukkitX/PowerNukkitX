@@ -1581,4 +1581,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     public boolean shouldSkip(String bid) {
         return skipBlockSet.contains(bid);
     }
+
+    public static CustomBlockDefinition getCustomBlockDefinition(String identifier) {
+        return CUSTOM_BLOCK_DEFINITION_BY_ID.get(identifier);
+    }
 }

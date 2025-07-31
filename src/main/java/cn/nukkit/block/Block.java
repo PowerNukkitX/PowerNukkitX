@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
+import cn.nukkit.block.customblock.CustomBlockDefinition.BlockTickSettings;
 import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
@@ -39,6 +40,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 /**
@@ -228,8 +230,44 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return false;
     }
 
+    /**
+     * Handles ticking logic for custom blocks using either RANDOM or SCHEDULED tick types.
+     * 
+     * To enable ticking, configure the block with:
+     * <pre>{@code
+     *     .blockTick(60, 60, true)
+     * }</pre>
+     * Where:
+     * <ul>
+     *   <li><b>minTicks</b> and <b>maxTicks</b>: define the tick interval range (in server ticks).</li>
+     *   <li><b>looping</b>: if {@code true}, the block will continue ticking; if {@code false}, it will tick once and stop.</li>
+     * </ul>
+     *
+     * <b>Important:</b> Always call {@code super.onUpdate(type)} in any overridden implementation to preserve base behavior.
+     *
+     * <b>Note:</b> For custom blocks, ticking logic should only be applied to {@code BLOCK_UPDATE_SCHEDULED} updates.
+     * Return early for all other tick types (like {@code BLOCK_UPDATE_RANDOM}) to avoid interfering with the core scheduling system.
+     *
+     * @return The update type to continue ticking, or 0 to stop future ticks.
+     */
     public int onUpdate(int type) {
-        return 0;
+        if (type != Level.BLOCK_UPDATE_SCHEDULED) return 0;
+
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def == null || def.tickSettings() == null) return 0;
+
+        BlockTickSettings tick = def.tickSettings();
+        int min = tick.minTicks();
+        int max = tick.maxTicks();
+
+        if (tick.looping() && this.getLevel().isChunkLoaded(this.getFloorX() >> 4, this.getFloorZ() >> 4)) {
+            int delay = (min == max) ? max : ThreadLocalRandom.current().nextInt(min, max + 1);
+            this.getLevel().scheduleUpdate(this, delay);
+            return Level.BLOCK_UPDATE_SCHEDULED;
+        } else {
+            this.getLevel().cancelScheduledUpdate(this, this);
+            return 0;
+        }
     }
 
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, @NotNull PlayerInteractEvent.Action action) {

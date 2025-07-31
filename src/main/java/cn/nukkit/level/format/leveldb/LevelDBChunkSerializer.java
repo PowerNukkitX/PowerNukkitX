@@ -1,17 +1,14 @@
 package cn.nukkit.level.format.leveldb;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockUnknown;
+import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
@@ -21,9 +18,10 @@ import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.level.format.palette.BlockPalette;
 import cn.nukkit.level.format.palette.Palette;
 import cn.nukkit.level.util.LevelDBKeyUtil;
-import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Predicates;
@@ -31,7 +29,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.WriteBatch;
@@ -72,6 +69,7 @@ public class LevelDBChunkSerializer {
                 serializeBlock(writeBatch, unsafeChunk);
                 serializeHeightAndBiome(writeBatch, unsafeChunk);
                 serializeLight(writeBatch, unsafeChunk);
+                serializeBlockTicks(unsafeChunk);
                 writeBatch.put(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getDimensionData()), NBTIO.write(unsafeChunk.getExtraData()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -105,35 +103,7 @@ public class LevelDBChunkSerializer {
         deserializeHeightAndBiome(db, builder, pnxExtraData);
         deserializeTileAndEntity(db, builder, pnxExtraData);
         deserializeLight(db, builder, pnxExtraData);
-        if(Server.getInstance().getSettings().chunkSettings().checkForTickable()) {
-            ObjectOpenHashSet<BlockVector3> updates = new ObjectOpenHashSet<>();
-            for(int i = 0; i < builder.getSections().length; i++) {
-                ChunkSection section = builder.getSections()[i];
-                if(section == null) continue;
-                for (int x = 15; x >= 0; x--) {
-                    for (int z = 15; z >= 0; z--) {
-                        for (int y = 15; y >= 0; y--) {
-                            BlockState blockState = section.blockLayer()[0].get(index(x, y, z));
-                            switch (blockState.getIdentifier()) {
-                                case BlockID.FLOWING_WATER, BlockID.WATER,
-                                     BlockID.FLOWING_LAVA, BlockID.LAVA,
-                                     BlockID.REDSTONE_WIRE,
-                                     BlockID.POWERED_REPEATER, BlockID.UNPOWERED_REPEATER,
-                                     BlockID.POWERED_COMPARATOR, BlockID.UNPOWERED_COMPARATOR -> {
-                                    updates.add(new BlockVector3(x + 16*builder.getChunkX(), y + (section.y() << 4), z + 16*builder.getChunkZ()));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            Level level = builder.getLevelProvider().getLevel();
-            level.getScheduler().scheduleDelayedTask(() -> {
-                for(BlockVector3 vector3 : updates) {
-                    level.getBlock(vector3.x, vector3.y, vector3.z).onUpdate(Level.BLOCK_UPDATE_NORMAL);
-                }
-            }, 20);
-        }
+        deserializeBlockTicks(pnxExtraData, builder);
     }
 
     //serialize chunk section light
@@ -406,4 +376,123 @@ public class LevelDBChunkSerializer {
             entityBuffer.release();
         }
     }
+
+    private void serializeBlockTicks(UnsafeChunk chunk) {
+        int cx = chunk.getX();
+        int cz = chunk.getZ();
+
+        ListTag<CompoundTag> scheduledTicks = new ListTag<>();
+        ListTag<CompoundTag> normalTickBlocks = new ListTag<>();
+
+        for (ChunkSection section : chunk.getSections()) {
+            if (section == null) continue;
+            int sectionY = section.y();
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    for (int y = 0; y < 16; y++) {
+                        BlockState state = section.blockLayer()[0].get(index(x, y, z));
+                        String id = state.getIdentifier();
+
+                        handleCustomTickableBlock(id, x, y, z, cx, cz, sectionY, scheduledTicks);
+                        handleVanillaTickableBlock(id, x, y, z, cx, cz, sectionY, normalTickBlocks);
+                    }
+                }
+            }
+        }
+
+        // Save both lists to extraData
+        CompoundTag extraData = chunk.getExtraData();
+        extraData.putList("pendingScheduledTicks", scheduledTicks);
+        extraData.putList("pendingNormalTickBlocks", normalTickBlocks);
+    }
+
+    private void handleCustomTickableBlock(String id, int x, int y, int z, int cx, int cz, int sectionY, ListTag<CompoundTag> scheduledTicks) {
+        CustomBlockDefinition def = BlockRegistry.getCustomBlockDefinition(id);
+        if (def == null || def.tickSettings() == null) return;
+        int bx = x + (cx << 4);
+        int by = (sectionY << 4) + y;
+        int bz = z + (cz << 4);
+
+        CompoundTag tag = new CompoundTag()
+            .putInt("x", bx)
+            .putInt("y", by)
+            .putInt("z", bz)
+            .putString("id", id)
+            .putInt("layer", 0)
+            .putInt("delay", def.tickSettings().minTicks())
+            .putInt("priority", 0)
+            .putBoolean("checkBlockWhenUpdate", true);
+
+        scheduledTicks.add(tag);
+    }
+
+    private void handleVanillaTickableBlock(String id, int x, int y, int z, int cx, int cz, int sectionY, ListTag<CompoundTag> normalTickBlocks) {
+        switch (id) {
+            case BlockID.DAYLIGHT_DETECTOR, BlockID.DAYLIGHT_DETECTOR_INVERTED,
+                 BlockID.REDSTONE_WIRE, BlockID.REDSTONE_TORCH,
+                 BlockID.POWERED_REPEATER, BlockID.UNPOWERED_REPEATER,
+                 BlockID.POWERED_COMPARATOR, BlockID.UNPOWERED_COMPARATOR -> {
+                CompoundTag tag = new CompoundTag()
+                    .putInt("x", x + (cx << 4))
+                    .putInt("y", (sectionY << 4) + y)
+                    .putInt("z", z + (cz << 4))
+                    .putString("id", id);
+                normalTickBlocks.add(tag);
+            }
+        }
+    }
+
+    public static class ScheduledTickInfo {
+        public int x, y, z, layer, delay, priority;
+        public String id;
+        public boolean checkBlockWhenUpdate;
+    }
+    public static class NormalTickInfo {
+        public int x, y, z;
+        public String id;
+    }
+
+    public static void deserializeBlockTicks(CompoundTag extraData, IChunkBuilder builder) {
+        if (extraData == null) return;
+        long chunkKey = ((long) builder.getChunkX() & 0xffffffffL) << 32 | ((long) builder.getChunkZ() & 0xffffffffL);
+
+        // --- Scheduled Ticks ---
+        if (extraData.contains("pendingScheduledTicks")) {
+            ListTag<CompoundTag> scheduledTicks = extraData.getList("pendingScheduledTicks", CompoundTag.class);
+            List<ScheduledTickInfo> scheduledList = new ArrayList<>();
+            for (CompoundTag tag : scheduledTicks.getAll()) {
+                ScheduledTickInfo info = new ScheduledTickInfo();
+                info.x = tag.getInt("x");
+                info.y = tag.getInt("y");
+                info.z = tag.getInt("z");
+                info.id = tag.getString("id");
+                info.layer = tag.getInt("layer");
+                info.delay = tag.getInt("delay");
+                info.priority = tag.getInt("priority");
+                info.checkBlockWhenUpdate = tag.getBoolean("checkBlockWhenUpdate");
+                scheduledList.add(info);
+            }
+            if (!scheduledList.isEmpty()) {
+                LevelDBProvider.getScheduledTicksMap().put(chunkKey, scheduledList);
+            }
+        }
+
+        // --- Normal Tick Blocks ---
+        if (extraData.contains("pendingNormalTickBlocks")) {
+            ListTag<CompoundTag> normalTicks = extraData.getList("pendingNormalTickBlocks", CompoundTag.class);
+            List<NormalTickInfo> normalList = new ArrayList<>();
+            for (CompoundTag tag : normalTicks.getAll()) {
+                NormalTickInfo info = new NormalTickInfo();
+                info.x = tag.getInt("x");
+                info.y = tag.getInt("y");
+                info.z = tag.getInt("z");
+                info.id = tag.getString("id");
+                normalList.add(info);
+            }
+            if (!normalList.isEmpty()) {
+                LevelDBProvider.getNormalTicksMap().put(chunkKey, normalList);
+            }
+        }
+    }
 }
+
