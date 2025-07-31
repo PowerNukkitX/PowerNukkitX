@@ -463,8 +463,24 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return false;
     }
 
+    /**
+     * Returns the level of waterlogging for this block.
+     * 0 means the block is not waterlogged; a value greater than 0 indicates the degree of waterlogging.
+     *
+     * @return the waterlogging level (0 if not waterlogged)
+     */
     public int getWaterloggingLevel() {
         return 0;
+    }
+
+    /**
+     * Checks if this block is waterlogged.
+     * Returns {@code true} if the waterlogging level is greater than 0, otherwise {@code false}.
+     *
+     * @return {@code true} if waterlogged, {@code false} otherwise
+     */
+    public boolean isWaterLogged() {
+        return getWaterloggingLevel() > 0;
     }
 
     public final boolean canWaterloggingFlowInto() {
