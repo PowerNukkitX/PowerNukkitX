@@ -464,9 +464,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * Check if blocks can be attached in the given side.
      */
-    //public boolean isSolid(BlockFace side) {
-    //    return isSideFull(side);
-    //}
     public boolean isSolid(BlockFace side) {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
@@ -481,7 +478,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                         double base = box.getMinY();
                         return base <= 0.001;
                     }
-                    // You can extend to X and Z sides too if needed.
                     default -> {
                         return true;
                     }
@@ -489,7 +485,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             }
         }
 
-    return isSideFull(side); // fallback to default solid-side check
+    return isSideFull(side);
     }
 
     // https://minecraft.wiki/w/Opacity#Lighting

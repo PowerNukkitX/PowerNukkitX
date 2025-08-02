@@ -2131,14 +2131,20 @@ public class Level implements Metadatable {
         this.addBlockLightUpdate((int) pos.x, (int) pos.y, (int) pos.z);
     }
 
+    /**
+     * Updates skylight for the entire vertical column at (x, z) by scanning from world top down,
+     * setting values according to block transparency and attenuation, stopping at the first solid block.
+     */
     public void updateBlockSkyLight(int x, int y, int z) {
         IChunk chunk = getChunkIfLoaded(x >> 4, z >> 4);
 
         if (chunk == null) return;
 
-        int height = chunk.recalculateHeightMapColumn(x & 0x0f, z & 0x0f);
+        int minY = getDimensionData().getMinHeight();
+        int maxY = getDimensionData().getMaxHeight();
         int level = 15;
-        for(int _y = height ; _y >= getDimensionData().getMinHeight(); _y--) {
+
+        for (int _y = maxY; _y >= minY; _y--) {
             Block block = getBlock(x, _y, z);
             if (!block.isTransparent()) {
                 level = 0;
@@ -2147,7 +2153,7 @@ public class Level implements Metadatable {
             } else {
                 level -= block.getLightLevel();
             }
-            if(level <= 0) level = 0;
+            if (level <= 0) level = 0;
             //if(_y != height && !block.canPassThrough() && block.up().canPassThrough()) addSkyLightUpdate(x, _y+1, z); ToDo: Light Spread
             setBlockSkyLightAt(x, _y, z, level);
         }
