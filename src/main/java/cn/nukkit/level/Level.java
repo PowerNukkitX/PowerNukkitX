@@ -2154,6 +2154,7 @@ public class Level implements Metadatable {
                 level -= block.getLightLevel();
             }
             if (level <= 0) level = 0;
+            //if(_y != height && !block.canPassThrough() && block.up().canPassThrough()) addSkyLightUpdate(x, _y+1, z); ToDo: Light Spread
             setBlockSkyLightAt(x, _y, z, level);
         }
     }
