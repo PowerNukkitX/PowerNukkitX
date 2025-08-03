@@ -2,12 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import cn.nukkit.utils.BinaryStream;
-import cn.nukkit.utils.JSONUtils;
-import cn.nukkit.utils.PersonaPiece;
-import cn.nukkit.utils.PersonaPieceTint;
-import cn.nukkit.utils.SerializedImage;
-import cn.nukkit.utils.SkinAnimation;
+import cn.nukkit.utils.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -22,7 +17,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 
 /**
  * @since on 15-10-13
@@ -65,31 +59,33 @@ public class LoginPacket extends DataPacket {
     }
 
     private void decodeChainData(BinaryStream binaryStream) {
+        int size = binaryStream.getLInt();
+        if (size > 3145728) {
+            throw new IllegalArgumentException("The chain data is too big: " + size);
+        }
 
-        Map<String, Object> map = JSONUtils.from(new String(binaryStream.get(binaryStream.getLInt()), StandardCharsets.UTF_8),
-                new TypeToken<Map<String, Object>>() {
-                }.getType());
+        String data = new String(binaryStream.get(size), StandardCharsets.UTF_8);
+
+        Map<String, Object> map = Utils.GSON.fromJson(data, new MapTypeToken());
+
         String certificate = (String) map.get("Certificate");
         if (certificate != null) {
-            map = JSONUtils.from(certificate,
-                    new TypeToken<Map<String, Object>>() {
-                    }.getType());
+            map = Utils.GSON.fromJson(certificate, new MapTypeToken());
         }
 
         List<String> chains = (List<String>) map.get("chain");
         if (chains == null || chains.isEmpty()) {
             return;
-        }        for (String c : chains) {
-            JsonObject chainMap = decodeToken(c);
+        }
+
+        for (String c : chains) {
+            JsonObject chainMap = ClientChainData.decodeToken(c);
             if (chainMap == null) continue;
+
             if (chainMap.has("extraData")) {
-                if (chainMap.has("iat")) {
-                    this.issueUnixTime = chainMap.get("iat").getAsLong() * 1000;
-                }
                 JsonObject extra = chainMap.get("extraData").getAsJsonObject();
                 if (extra.has("displayName")) this.username = extra.get("displayName").getAsString();
                 if (extra.has("identity")) this.clientUUID = UUID.fromString(extra.get("identity").getAsString());
-                if (extra.has("titleId") && extra.get("titleId").isJsonPrimitive()) this.titleId = extra.get("titleId").getAsString();
             }
         }
     }
@@ -234,5 +230,8 @@ public class LoginPacket extends DataPacket {
 
     public void handle(PacketHandler handler) {
         handler.handle(this);
+    }
+
+    private static class MapTypeToken extends TypeToken<Map<String, Object>> {
     }
 }

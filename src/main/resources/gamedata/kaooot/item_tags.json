@@ -190,6 +190,24 @@
     "minecraft:spruce_hanging_sign",
     "minecraft:warped_hanging_sign"
   ],
+  "minecraft:harness": [
+    "minecraft:black_harness",
+    "minecraft:blue_harness",
+    "minecraft:brown_harness",
+    "minecraft:cyan_harness",
+    "minecraft:gray_harness",
+    "minecraft:green_harness",
+    "minecraft:light_blue_harness",
+    "minecraft:light_gray_harness",
+    "minecraft:lime_harness",
+    "minecraft:magenta_harness",
+    "minecraft:orange_harness",
+    "minecraft:pink_harness",
+    "minecraft:purple_harness",
+    "minecraft:red_harness",
+    "minecraft:white_harness",
+    "minecraft:yellow_harness"
+  ],
   "minecraft:horse_armor": [
     "minecraft:diamond_horse_armor",
     "minecraft:golden_horse_armor",
@@ -493,6 +511,7 @@
     "minecraft:music_disc_creator",
     "minecraft:music_disc_creator_music_box",
     "minecraft:music_disc_far",
+    "minecraft:music_disc_lava_chicken",
     "minecraft:music_disc_mall",
     "minecraft:music_disc_mellohi",
     "minecraft:music_disc_otherside",
@@ -501,6 +520,7 @@
     "minecraft:music_disc_relic",
     "minecraft:music_disc_stal",
     "minecraft:music_disc_strad",
+    "minecraft:music_disc_tears",
     "minecraft:music_disc_wait",
     "minecraft:music_disc_ward"
   ],
@@ -594,6 +614,7 @@
     "minecraft:glow_squid_spawn_egg",
     "minecraft:goat_spawn_egg",
     "minecraft:guardian_spawn_egg",
+    "minecraft:happy_ghast_spawn_egg",
     "minecraft:hoglin_spawn_egg",
     "minecraft:horse_spawn_egg",
     "minecraft:husk_spawn_egg",

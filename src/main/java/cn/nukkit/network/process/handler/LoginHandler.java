@@ -80,20 +80,20 @@ public class LoginHandler extends BedrockSessionPacketHandler {
 
             /*int predictedDeviceOS = getPredictedDeviceOS(chainData);
             if(predictedDeviceOS != chainData.getDeviceOS()) {
-                session.close("§cPacket handling error");
+                session.close("§cPacket handling error: deviceOS check failed");
                 return;
             } */ //Temporary removed because of microsoft.
         }
 
         //Verify if the language is valid
         if(!isValidLanguage(chainData.getLanguageCode())) {
-            session.close("§cPacket handling error");
+            session.close("§cPacket handling error: lang check failed");
             return;
         }
 
         //Verify if the GameVersion has valid format
         if(chainData.getGameVersion().split("\\.").length != 3 && !Server.getInstance().getSettings().gameplaySettings().allowBeta()) {
-            session.close("§cPacket handling error");
+            session.close("§cPacket handling error: no beta allowed");
             return;
         }
 
@@ -104,7 +104,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
                 CurrentInputMode >= InputMode.COUNT.getOrdinal()
         ) {
             log.debug("disconnection due to invalid input mode");
-            session.close("§cPacket handling error");
+            session.close("§cPacket handling error: invalid input mode");
             return;
         }
 
@@ -115,7 +115,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
                 DefaultInputMode >= InputMode.COUNT.getOrdinal()
         ) {
             log.debug("disconnection due to invalid input mode");
-            session.close("§cPacket handling error");
+            session.close("§cPacket handling error: invalid input mode");
             return;
         }
 

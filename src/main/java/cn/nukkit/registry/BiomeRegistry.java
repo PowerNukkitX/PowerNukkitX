@@ -36,7 +36,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
             Gson gson = new GsonBuilder().setObjectToNumberStrategy(JsonReader::nextInt).create();
             Map<String, ?> map = gson.fromJson(new InputStreamReader(stream), Map.class);
             for (var e : map.entrySet()) {
-                NAME2ID.put(e.getKey(), Integer.parseInt(((Map<String, ?>) e.getValue()).get("id").toString()));
+                NAME2ID.put(e.getKey(), (Integer) e.getValue());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
