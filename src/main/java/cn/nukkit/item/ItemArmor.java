@@ -3,6 +3,7 @@ package cn.nukkit.item;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.item.ItemWearEvent;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.ByteTag;
@@ -51,6 +52,22 @@ abstract public class ItemArmor extends Item implements ItemDurable {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
+        Item currentlyEquipped = null;
+
+        if (this.isHelmet()) {
+            currentlyEquipped = player.getInventory().getHelmet();
+        } else if (this.isChestplate()) {
+            currentlyEquipped = player.getInventory().getChestplate();
+        } else if (this.isLeggings()) {
+            currentlyEquipped = player.getInventory().getLeggings();
+        } else if (this.isBoots()) {
+            currentlyEquipped = player.getInventory().getBoots();
+        }
+
+        if (currentlyEquipped != null && currentlyEquipped.getEnchantment(Enchantment.ID_BINDING_CURSE) != null) {
+            return false;
+        }
+
         boolean equip = false;
         Item oldSlotItem = Item.AIR;
         if (this.isHelmet()) {
