@@ -1671,10 +1671,18 @@ public class Level implements Metadatable {
             return;
         }
 
-        BlockUpdateEntry entry = new BlockUpdateEntry(pos.floor(), block, delay + getCurrentTick(), priority, checkBlockWhenUpdate);
+        long tick = delay + getCurrentTick();
+        BlockUpdateEntry entry = new BlockUpdateEntry(pos.floor(), block, tick, priority, checkBlockWhenUpdate);
 
-        if (!this.updateQueue.contains(entry)) {
-            this.updateQueue.add(entry);
+        boolean isRedstoneDiode = block instanceof BlockRedstoneDiode;
+        if (isRedstoneDiode) {
+            if (!this.isConcurrentSchedule(pos.floor(), block, tick, delay) && !this.isBlockTickPending(pos.floor(), block)) {
+                this.updateQueue.add(entry);
+            }
+        } else {
+            if (!this.updateQueue.contains(entry)) {
+                this.updateQueue.add(entry);
+            }
         }
     }
 
@@ -1684,6 +1692,10 @@ public class Level implements Metadatable {
 
     public boolean isUpdateScheduled(Vector3 pos, Block block) {
         return this.updateQueue.contains(new BlockUpdateEntry(pos, block));
+    }
+
+    public boolean isConcurrentSchedule(Vector3 pos, Block block, long targetTick, int delay) {
+        return this.updateQueue.isConcurrentSchedule(pos, block, targetTick, delay);
     }
 
     public boolean isBlockTickPending(Vector3 pos, Block block) {
