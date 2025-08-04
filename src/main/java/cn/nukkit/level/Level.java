@@ -2837,11 +2837,13 @@ public class Level implements Metadatable {
             }
             return item;
         }
-
-        return placeBlock(item, face, fx, fy, fz, player, playSound, block, target);
+        if (data.clientInteractPrediction == UseItemData.PredictedResult.SUCCESS) {
+            return placeBlock(item, face, fx, fy, fz, player, playSound, block, target);
+        }
+        return item;
     }
 
-    private Block beforePlaceBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
+    private Block beforePlaceBlock(Item item, BlockFace face, Block block, Block target) {
         Block hand;
 
         if (item.canBePlaced()) {
@@ -2884,7 +2886,7 @@ public class Level implements Metadatable {
 
     @Nullable
     private Item placeBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
-        final Block hand = beforePlaceBlock(item, face, fx, fy, fz, player, playSound, block, target);
+        final Block hand = beforePlaceBlock(item, face, block, target);
         if (hand == null) return null;
         if (!hand.canPassThrough() && hand.getBoundingBox() != null) {
             int realCount = 0;
@@ -2896,15 +2898,6 @@ public class Level implements Metadatable {
                     continue;
                 }
                 ++realCount;
-            }
-            if (player != null) {
-                var diff = player.getNextPosition().subtract(player.getPosition());
-                var aabb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
-                if (aabb.intersectsWith(hand.getBoundingBox())) {
-                    if(aabb.intersection(hand.getBoundingBox()).getVolume() > 0.005f) {
-                        ++realCount;
-                    }
-                }
             }
             if (realCount > 0) {
                 // Entity in block
