@@ -18,9 +18,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_
 /**
  * @author CreeperFace
  */
-
 public abstract class BlockRedstoneDiode extends BlockFlowable implements RedstoneComponent, Faceable {
-
     protected boolean isPowered = false;
 
     public BlockRedstoneDiode(BlockState blockstate) {
@@ -83,20 +81,20 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
 
                 if (this.isPowered && !shouldBePowered) {
                     this.level.setBlock(pos, this.getUnpowered(), true, true);
+                    this.isPowered = false;
 
                     Block side = this.getSide(getFacing().getOpposite());
                     side.onUpdate(Level.BLOCK_UPDATE_REDSTONE);
                     RedstoneComponent.updateAroundRedstone(side);
                 } else if (!this.isPowered) {
                     this.level.setBlock(pos, this.getPowered(), true, true);
+                    this.isPowered = true;
+
                     Block side = this.getSide(getFacing().getOpposite());
                     side.onUpdate(Level.BLOCK_UPDATE_REDSTONE);
                     RedstoneComponent.updateAroundRedstone(side);
-
-                    if (!shouldBePowered) {
-                        level.scheduleUpdate(getPowered(), this, this.getDelay());
-                    }
                 }
+                return type;
             }
         } else if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
             if (type == Level.BLOCK_UPDATE_NORMAL && !isSupportValid(down())) {
@@ -119,18 +117,11 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
 
     public void updateState() {
         if (!this.isLocked()) {
-            boolean shouldPowered = this.shouldBePowered();
+            boolean shouldBePowered = this.shouldBePowered();
+            int delay = this.getDelay();
 
-            if ((this.isPowered && !shouldPowered || !this.isPowered && shouldPowered) && !this.level.isBlockTickPending(this, this)) {
-                /*int priority = -1;
-
-                if (this.isFacingTowardsRepeater()) {
-                    priority = -3;
-                } else if (this.isPowered) {
-                    priority = -2;
-                }*/
-
-                this.level.scheduleUpdate(this, this, this.getDelay());
+            if (this.isPowered && !shouldBePowered || !this.isPowered && shouldBePowered) {
+                this.level.scheduleUpdate(this, this, delay);
             }
         }
     }
