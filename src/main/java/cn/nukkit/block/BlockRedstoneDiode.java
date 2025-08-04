@@ -94,8 +94,8 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
                     side.onUpdate(Level.BLOCK_UPDATE_REDSTONE);
                     RedstoneComponent.updateAroundRedstone(side);
                 }
+                return type;
             }
-            return type;
         } else if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
             if (type == Level.BLOCK_UPDATE_NORMAL && !isSupportValid(down())) {
                 this.level.useBreakOn(this);
