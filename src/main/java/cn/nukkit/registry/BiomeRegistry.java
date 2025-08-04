@@ -76,7 +76,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
     }
 
     public int getBiomeId(String biomeName) {
-        return NAME2ID.getInt(biomeName);
+        return NAME2ID.getInt(biomeName.split(":")[1]);
     }
 
     public BiomeDefinitionListPacket getBiomeDefinitionListPacket() {
@@ -111,7 +111,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
         if (DEFINITIONS.putIfAbsent(key, value) == null) {
             NAME2ID.put(BIOME_STRING_LIST.get(value.stringIndex), key);
         } else {
-            throw new RegisterException("This biome has already been registered with the id: " + key);
+            throw new RegisterException("This biome " + value.getName() + " has already been registered with the id: " + key);
         }
     }
 }
