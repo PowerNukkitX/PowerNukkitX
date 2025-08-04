@@ -1,17 +1,15 @@
 package cn.nukkit.item;
 
 
-public class ItemDiscLavaChicken extends Item {
+public class ItemDiscLavaChicken extends ItemMusicDisc {
 
     public ItemDiscLavaChicken() {
-        this(0, 1);
+        super(MUSIC_DISC_LAVA_CHICKEN);
     }
 
-    public ItemDiscLavaChicken(Integer meta) {
-        this(meta, 1);
+    @Override
+    public String getSoundId() {
+        return "record.lava_chicken";
     }
 
-    public ItemDiscLavaChicken(Integer meta, int count) {
-        super(MUSIC_DISC_LAVA_CHICKEN, 0, count, "Disc Lava Chicken");
-    }
 }

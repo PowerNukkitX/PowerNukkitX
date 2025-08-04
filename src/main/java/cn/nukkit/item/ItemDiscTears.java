@@ -1,17 +1,13 @@
 package cn.nukkit.item;
 
-
-public class ItemDiscTears extends Item {
+public class ItemDiscTears extends ItemMusicDisc {
 
     public ItemDiscTears() {
-        this(0, 1);
+        super(MUSIC_DISC_TEARS);
     }
 
-    public ItemDiscTears(Integer meta) {
-        this(meta, 1);
-    }
-
-    public ItemDiscTears(Integer meta, int count) {
-        super(MUSIC_DISC_TEARS, 0, count, "Disc Tears");
+    @Override
+    public String getSoundId() {
+        return "record.tears";
     }
 }
