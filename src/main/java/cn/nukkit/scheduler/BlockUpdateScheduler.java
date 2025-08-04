@@ -100,10 +100,8 @@ public class BlockUpdateScheduler {
     public boolean isConcurrentSchedule(Vector3 pos, Block block, long targetTick, int delay) {
         for (Map.Entry<Long, Set<BlockUpdateEntry>> entry : queuedUpdates.entrySet()) {
             long scheduledTick = entry.getKey();
-            if (entry.getValue().contains(new BlockUpdateEntry(pos, block))) {
-                if (targetTick <= scheduledTick + delay) {
-                    return true;
-                }
+            if (entry.getValue().contains(new BlockUpdateEntry(pos, block)) && targetTick <= scheduledTick + delay) {
+                return true;
             }
         }
         return false;
