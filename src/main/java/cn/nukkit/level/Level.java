@@ -7,6 +7,7 @@ import cn.nukkit.api.NonComputationAtomic;
 import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
+import cn.nukkit.block.customblock.CustomBlockDefinition.BlockTickSettings;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
@@ -1065,13 +1066,20 @@ public class Level implements Metadatable {
             while (!this.normalUpdateQueue.isEmpty()) {
                 QueuedUpdate queuedUpdate = this.normalUpdateQueue.poll();
                 Block block = getBlock(queuedUpdate.block, queuedUpdate.block.layer);
-                BlockUpdateEvent event = new BlockUpdateEvent(block);
-                this.server.getPluginManager().callEvent(event);
+                int chunkX = block.getFloorX() >> 4;
+                int chunkZ = block.getFloorZ() >> 4;
+                long hash = chunkHash(chunkX, chunkZ);
 
-                if (!event.isCancelled()) {
-                    block.onUpdate(BLOCK_UPDATE_NORMAL);
-                    if (queuedUpdate.neighbor != null) {
-                        block.onNeighborChange(queuedUpdate.neighbor.getOpposite());
+                // Only tick if the chunk is in use, helps to keep block ticks in sync when reload chunk
+                if (isChunkInUse(hash)) {
+                    BlockUpdateEvent event = new BlockUpdateEvent(block);
+                    this.server.getPluginManager().callEvent(event);
+
+                    if (!event.isCancelled()) {
+                        block.onUpdate(BLOCK_UPDATE_NORMAL);
+                        if (queuedUpdate.neighbor != null) {
+                            block.onNeighborChange(queuedUpdate.neighbor.getOpposite());
+                        }
                     }
                 }
             }
@@ -1670,7 +1678,7 @@ public class Level implements Metadatable {
         }
     }
 
-    public boolean cancelSheduledUpdate(Vector3 pos, Block block) {
+    public boolean cancelScheduledUpdate(Vector3 pos, Block block) {
         return this.updateQueue.remove(new BlockUpdateEntry(pos, block));
     }
 
@@ -1680,6 +1688,10 @@ public class Level implements Metadatable {
 
     public boolean isBlockTickPending(Vector3 pos, Block block) {
         return this.updateQueue.isBlockTickPending(pos, block);
+    }
+
+    public BlockUpdateScheduler getBlockUpdateScheduler() {
+        return this.updateQueue;
     }
 
     public Set<BlockUpdateEntry> getPendingBlockUpdates(IChunk chunk) {
@@ -2404,6 +2416,22 @@ public class Level implements Metadatable {
         }
 
         blockPrevious.afterRemoval(block, update);
+
+        if (block instanceof CustomBlock customBlock) {
+            CustomBlockDefinition def = customBlock.getDefinition();
+            if (def != null && def.tickSettings() != null) {
+                BlockTickSettings tick = def.tickSettings();
+                int min = tick.minTicks();
+                int max = tick.maxTicks();
+
+                if (min <= max) {
+                    int delay = (min == max) ? max : ThreadLocalRandom.current().nextInt(min, max + 1);
+                    block.getLevel().scheduleUpdate(block, delay);
+                } else {
+                    log.error("Invalid tick range for block '{}': min {} > max {}", block.getId(), min, max);
+                }
+            }
+        }
         return true;
     }
 

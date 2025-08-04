@@ -45,7 +45,7 @@ import java.util.function.Consumer;
  * For further customization of runtime behavior, you can still override methods in {@link Block Block}.
  */
 @Slf4j
-public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
+public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullable BlockTickSettings tickSettings) {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
     private static final AtomicInteger CUSTOM_BLOCK_RUNTIMEID = new AtomicInteger(10000);
 
@@ -70,6 +70,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
     public static class Builder {
         protected final String identifier;
         protected final CustomBlock customBlock;
+        private BlockTickSettings tickSettings = null;
 
         protected CompoundTag nbt = new CompoundTag()
                 .putCompound("components", new CompoundTag());
@@ -437,6 +438,22 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
+         * Defines how this custom block should tick over time.
+         *
+         * @param minTicks The minimum number of ticks before the block updates.
+         * @param maxTicks The maximum number of ticks before the block updates. Must be ≥ {@code minTicks}.
+         * @param looping  If {@code true}, the block will continue ticking; if {@code false}, it will tick only once.
+         * @return This builder instance for chaining.
+         *
+         * Example: {@code .blockTick(60, 60, true)} will schedule the block to tick every 3 seconds.
+         */
+        public Builder blockTick(int minTicks, int maxTicks, boolean looping) {
+            Preconditions.checkArgument(minTicks >= 0 && maxTicks >= minTicks, "Invalid tick interval range");
+            this.tickSettings = new BlockTickSettings(minTicks, maxTicks, looping);
+            return this;
+        }
+
+        /**
          * @return Block Properties in NBT Tag format
          */
         @Nullable
@@ -483,7 +500,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         public CustomBlockDefinition build() {
-            return new CustomBlockDefinition(this.identifier, this.nbt);
+            return new CustomBlockDefinition(this.identifier, this.nbt, this.tickSettings);
         }
     }
 
@@ -563,5 +580,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
 
     public @Nullable AxisAlignedBB getBoundingBox(Block block) {
         return CustomBlockUtils.getBoundingBox(this, block);
+    }
+
+    public record BlockTickSettings(int minTicks, int maxTicks, boolean looping) {
     }
 }
