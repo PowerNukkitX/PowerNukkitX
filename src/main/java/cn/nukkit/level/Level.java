@@ -2829,12 +2829,16 @@ public class Level implements Metadatable {
             new PlayerHandle(player).setInteract();
             if (!ev.isCancelled()) {
                 target.onTouch(vector, item, face, fx, fy, fz, player, ev.getAction());
-                if (ev.getAction() == Action.RIGHT_CLICK_BLOCK && target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {
-                    if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
-                        addSound(player, Sound.RANDOM_BREAK);
-                        item = Item.AIR;
+                if (ev.getAction() == Action.RIGHT_CLICK_BLOCK && target.canBeActivated() && !player.isSneaking()) {
+                    if (target.onActivate(item, player, face, fx, fy, fz)) {
+                        if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
+                            addSound(player, Sound.RANDOM_BREAK);
+                            item = Item.AIR;
+                            return item;
+                        } else {
+                            return null;
+                        }
                     }
-                    return item;
                 }
 
                 if (item.canBeActivated() && item.onActivate(this, player, block, target, face, fx, fy, fz)) {
