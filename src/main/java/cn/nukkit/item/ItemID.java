@@ -597,6 +597,8 @@ public interface ItemID {
 
     String MUSIC_DISC_FAR = "minecraft:music_disc_far";
 
+    String MUSIC_DISC_LAVA_CHICKEN = "minecraft:music_disc_lava_chicken";
+
     String MUSIC_DISC_MALL = "minecraft:music_disc_mall";
 
     String MUSIC_DISC_MELLOHI = "minecraft:music_disc_mellohi";
@@ -618,8 +620,6 @@ public interface ItemID {
     String MUSIC_DISC_WARD = "minecraft:music_disc_ward";
 
     String MUSIC_DISC_TEARS = "minecraft:music_disc_tears";
-
-    String MUSIC_DISC_LAVA_CHICKEN = "minecraft:record_lava_chicken";
 
     String MUTTON = "minecraft:mutton";
 
