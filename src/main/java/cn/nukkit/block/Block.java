@@ -36,7 +36,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -514,7 +513,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return {@code true} if waterlogged, {@code false} otherwise
      */
     public boolean isWaterLogged() {
-        return getWaterloggingLevel() > 0;
+        if (getWaterloggingLevel() == 0) return false;
+
+        Block fluid = this.getLevelBlockAtLayer(1);
+        return fluid instanceof BlockWater && !fluid.isAir();
     }
 
     public final boolean canWaterloggingFlowInto() {
