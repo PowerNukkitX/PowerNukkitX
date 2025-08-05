@@ -526,7 +526,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
             nbt.putList("idlist", list);
             TAG = NBTIO.write(nbt, ByteOrder.BIG_ENDIAN, true);
         } catch (Exception e) {
-            throw new AssertionError("Error whilst loading entity_identifiers.dat", e);
+            throw new AssertionError("Error whilst loading entity_identifiers.nbt", e);
         }
     }
 }

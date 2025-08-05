@@ -5,6 +5,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
+import com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -36,8 +37,7 @@ import java.util.zip.ZipOutputStream;
  */
 @Slf4j
 public class Utils {
-
-
+    public static final Gson GSON = new Gson();
     public static final Integer[] EMPTY_INTEGERS = new Integer[0];
 
 
