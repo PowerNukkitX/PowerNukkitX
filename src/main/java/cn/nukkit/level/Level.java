@@ -2831,21 +2831,22 @@ public class Level implements Metadatable {
                 target.onTouch(vector, item, face, fx, fy, fz, player, ev.getAction());
                 if (ev.getAction() == Action.RIGHT_CLICK_BLOCK && target.canBeActivated()) {
                     CustomBlockDefinition def = target.getCustomDefinition();
+
                     if (def != null) {
                         boolean isHoldingPlaceableBlock = item != null && item.getBlock() != null && item.getBlock().canBePlaced();
                         if (player.isSneaking() && isHoldingPlaceableBlock) {
-                            // Sneaking + block in hand = allow placement, don't activate
-                        } else {
-                            target.onActivate(item, player, face, fx, fy, fz);
+                            // Fall back to regular placing action
+                        } else if (target.onActivate(item, player, face, fx, fy, fz)) {
                             return null;
                         }
                     } else {
-                        target.onActivate(item, player, face, fx, fy, fz);
-                        if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
-                            addSound(player, Sound.RANDOM_BREAK);
-                            item = Item.AIR;
+                        if (target.onActivate(item, player, face, fx, fy, fz)) {
+                            if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
+                                addSound(player, Sound.RANDOM_BREAK);
+                                item = Item.AIR;
+                            }
+                            return item;
                         }
-                        return item;
                     }
                 }
 
