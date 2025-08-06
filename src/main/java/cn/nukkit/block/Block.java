@@ -529,6 +529,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return false;
     }
 
+    public boolean hasEntityStepSensor() {
+        return false;
+    }
+
     public boolean canPassThrough() {
         return false;
     }
@@ -1140,6 +1144,20 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public void onEntityCollide(Entity entity) {
+    }
+
+    /**
+     * Called when an entity steps onto this block.<p>
+     * Only triggered if hasEntityStepSensor() returns true.
+     */
+    public void onEntityStepOn(Entity entity) {
+    }
+
+    /**
+     * Called when an entity steps off this block.<p>
+     * Only triggered if hasEntityStepSensor() returns true.
+     */
+    public void onEntityStepOff(Entity entity) {
     }
 
     public void onEntityFallOn(Entity entity, float fallDistance) {

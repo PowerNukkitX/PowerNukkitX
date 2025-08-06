@@ -112,6 +112,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public IChunk chunk;
     public List<Block> blocksAround = new ArrayList<>();
     public List<Block> collisionBlocks = new ArrayList<>();
+    public List<Block> stepOnBlocks = new ArrayList<>();
+    protected Set<Vector3> lastStepOnBlocks = new HashSet<>();
     public double lastX;
     public double lastY;
     public double lastZ;
@@ -1478,6 +1480,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             this.collisionBlocks = null;
         }
         this.justCreated = false;
+        this.stepOnBlocks = null;
 
         if (riding != null && !riding.isAlive() && riding instanceof EntityRideable entityRideable) {
             entityRideable.dismountEntity(this);
@@ -1500,6 +1503,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         boolean hasUpdate = false;
 
         this.checkBlockCollision();
+        this.checkBlockStepOn();
 
         if (this.y < (level.getMinHeight() - 18) && this.isAlive()) {
             if (this instanceof Player player) {
@@ -2404,6 +2408,60 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
 
         return this.collisionBlocks;
+    }
+
+    protected List<Block> getBlocksUnderEntity() {
+        List<Block> blocks = new ArrayList<>();
+        if (!this.isOnGround()) {
+            return blocks;
+        }
+
+        double x = this.getX();
+        double y = this.getY();
+        double z = this.getZ();
+        double epsilon = 0.01;
+        int blockX = NukkitMath.floorDouble(x);
+        int blockY = NukkitMath.floorDouble(y - epsilon);
+        int blockZ = NukkitMath.floorDouble(z);
+
+        Block blockBelow = this.level.getBlock(blockX, blockY, blockZ);
+
+        if (blockBelow.hasEntityStepSensor()) {
+            blocks.add(blockBelow);
+        }
+
+        return blocks;
+    }
+
+    public List<Block> getTickCachedStepOnBlocks() {
+        if (this.stepOnBlocks == null) {
+            this.stepOnBlocks = this.getBlocksUnderEntity();
+        }
+        return this.stepOnBlocks;
+    }
+
+    protected void checkBlockStepOn() {
+        List<Block> currentStepOnBlocks = this.getTickCachedStepOnBlocks();
+        Set<Vector3> currentPositions = new HashSet<>();
+
+        // On Step ON
+        for (Block block : currentStepOnBlocks) {
+            Vector3 pos = new Vector3(block.getX(), block.getY(), block.getZ());
+            currentPositions.add(pos);
+
+            if (!lastStepOnBlocks.contains(pos)) {
+                block.onEntityStepOn(this);
+            }
+        }
+        // On Step OFF
+        for (Vector3 oldPos : lastStepOnBlocks) {
+            if (!currentPositions.contains(oldPos)) {
+                Block oldBlock = this.level.getBlock(oldPos.getFloorX(), oldPos.getFloorY(), oldPos.getFloorZ());
+                oldBlock.onEntityStepOff(this);
+            }
+        }
+
+        lastStepOnBlocks = currentPositions;
     }
 
     /**
