@@ -522,6 +522,16 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public boolean canBeActivated() {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            CompoundTag components = def.getComponents();
+            if (components != null && components.contains("minecraft:custom_components")) {
+                CompoundTag custom = components.getCompound("minecraft:custom_components");
+                if (custom.contains("hasPlayerInteract")) {
+                    return custom.getByte("hasPlayerInteract") != 0;
+                }
+            }
+        }
         return false;
     }
 

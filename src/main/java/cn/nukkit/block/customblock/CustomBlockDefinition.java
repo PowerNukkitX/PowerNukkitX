@@ -437,6 +437,28 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             return this;
         }
 
+        public Builder isPlayerInteractable(boolean value) {
+            if (!this.nbt.getCompound("components").contains("minecraft:custom_components")) {
+                this.nbt.getCompound("components")
+                    .putCompound("minecraft:custom_components", createDefaultCustomComponents());
+            }
+            this.nbt.getCompound("components")
+                .getCompound("minecraft:custom_components")
+                .putByte("hasPlayerInteract", (byte) (value ? 1 : 0));
+            return this;
+        }
+
+        public Builder hasPlayerPlacingSensor(boolean value) {
+            if (!this.nbt.getCompound("components").contains("minecraft:custom_components")) {
+                this.nbt.getCompound("components")
+                    .putCompound("minecraft:custom_components", createDefaultCustomComponents());
+            }
+            this.nbt.getCompound("components")
+                .getCompound("minecraft:custom_components")
+                .putByte("hasPlayerPlacing", (byte) (value ? 1 : 0));
+            return this;
+        }
+
         /**
          * Defines how this custom block should tick over time.
          *
@@ -568,6 +590,14 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
                 .putByte("emission", (byte) 0));
         components.putString("minecraft:map_color", "#ffffff");
         return components;
+    }
+
+    // Creates default custom_components
+    public static CompoundTag createDefaultCustomComponents() {
+        return new CompoundTag(new LinkedHashMap<>())
+            .putByte("hasPlayerInteract", (byte) 0)
+            .putByte("hasPlayerPlacing", (byte) 0)
+            .putByte("isV1Component", (byte) 1);
     }
 
     public CompoundTag getComponents() {
