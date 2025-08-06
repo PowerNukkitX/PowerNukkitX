@@ -45,7 +45,7 @@ import java.util.function.Consumer;
  * For further customization of runtime behavior, you can still override methods in {@link Block Block}.
  */
 @Slf4j
-public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullable BlockTickSettings tickSettings) {
+public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullable BlockTickSettings tickSettings, boolean isStepSensor) {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
     private static final AtomicInteger CUSTOM_BLOCK_RUNTIMEID = new AtomicInteger(10000);
 
@@ -71,6 +71,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         protected final String identifier;
         protected final CustomBlock customBlock;
         private BlockTickSettings tickSettings = null;
+        private boolean isStepSensor = false;
 
         protected CompoundTag nbt = new CompoundTag()
                 .putCompound("components", new CompoundTag());
@@ -476,6 +477,16 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         }
 
         /**
+         * Enables step sensor logic (entity step-on/off).
+         * <p>
+         * When enabled, override {@link #onEntityStepOn(Entity)} and {@link #onEntityStepOff(Entity)} for custom handling.
+         */
+        public Builder isStepSensor(boolean value) {
+            this.isStepSensor = value;
+            return this;
+        }
+
+        /**
          * @return Block Properties in NBT Tag format
          */
         @Nullable
@@ -522,7 +533,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         }
 
         public CustomBlockDefinition build() {
-            return new CustomBlockDefinition(this.identifier, this.nbt, this.tickSettings);
+            return new CustomBlockDefinition(this.identifier, this.nbt, this.tickSettings, this.isStepSensor);
         }
     }
 

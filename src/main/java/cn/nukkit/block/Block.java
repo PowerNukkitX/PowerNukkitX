@@ -547,6 +547,16 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return false;
     }
 
+    /**
+     * Returns true if this block has step-on/off sensor.
+     * <p>
+     * For custom blocks, can be set this by using the builder (isStepSensor).
+     */
+    public boolean hasEntityStepSensor() {
+        CustomBlockDefinition def = getCustomDefinition();
+        return def != null && def.isStepSensor();
+    }
+
     public boolean canPassThrough() {
         return false;
     }
@@ -1158,6 +1168,20 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public void onEntityCollide(Entity entity) {
+    }
+
+    /**
+     * Called when an entity steps onto this block.<p>
+     * Only triggered if isStepSensor() returns true on the builder.
+     */
+    public void onEntityStepOn(Entity entity) {
+    }
+
+    /**
+     * Called when an entity steps off this block.<p>
+     * Only triggered if isStepSensor() returns true on the builder.
+     */
+    public void onEntityStepOff(Entity entity) {
     }
 
     public void onEntityFallOn(Entity entity, float fallDistance) {
