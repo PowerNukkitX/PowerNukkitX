@@ -529,6 +529,9 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return false;
     }
 
+    /**
+     * Must return true to use onEntityStepOn() and onEntityStepOff.
+     */
     public boolean hasEntityStepSensor() {
         return false;
     }
