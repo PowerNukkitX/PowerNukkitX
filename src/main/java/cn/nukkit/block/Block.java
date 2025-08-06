@@ -550,7 +550,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * Returns true if this block has step-on/off sensor.
      * <p>
-     * For custom blocks, set this using the builder (isStepSensor).
+     * For custom blocks, can be set this by using the builder (isStepSensor).
      */
     public boolean hasEntityStepSensor() {
         CustomBlockDefinition def = getCustomDefinition();
