@@ -521,7 +521,23 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return canBeFlowedInto() || getWaterloggingLevel() > 1;
     }
 
+    /**
+     * Returns true if this block is interactable (can be activated).
+     * <p>
+     * For custom blocks, set interactability using the builder (isPlayerInteractable)
+     * instead of overriding this method, so it is correctly saved in NBT and synced with client.
+     */
     public boolean canBeActivated() {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            CompoundTag components = def.getComponents();
+            if (components != null && components.contains("minecraft:custom_components")) {
+                CompoundTag custom = components.getCompound("minecraft:custom_components");
+                if (custom.contains("hasPlayerInteract")) {
+                    return custom.getByte("hasPlayerInteract") != 0;
+                }
+            }
+        }
         return false;
     }
 
