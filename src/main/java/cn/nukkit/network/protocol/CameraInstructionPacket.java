@@ -3,6 +3,7 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.camera.data.Ease;
 import cn.nukkit.camera.data.Time;
 import cn.nukkit.camera.instruction.CameraInstruction;
+import cn.nukkit.camera.instruction.impl.CameraFovInstruction;
 import cn.nukkit.camera.instruction.impl.ClearInstruction;
 import cn.nukkit.camera.instruction.impl.FadeInstruction;
 import cn.nukkit.camera.instruction.impl.SetInstruction;
@@ -22,8 +23,10 @@ public class CameraInstructionPacket extends DataPacket {
     public SetInstruction setInstruction;
     public FadeInstruction fadeInstruction;
     public ClearInstruction clearInstruction;
-    private TargetInstruction targetInstruction;
-    private OptionalBoolean removeTarget = OptionalBoolean.empty();
+    public TargetInstruction targetInstruction;
+    public OptionalBoolean removeTarget = OptionalBoolean.empty();
+    public CameraFovInstruction fovInstruction;
+
     @Override
     public void decode(HandleByteBuf byteBuf) {
     }
@@ -60,6 +63,13 @@ public class CameraInstructionPacket extends DataPacket {
         });
 
         byteBuf.writeOptional(this.removeTarget.toOptionalValue(), byteBuf::writeBoolean);
+
+        byteBuf.writeNotNull(fovInstruction, target -> {
+            byteBuf.writeFloatLE(target.getFov());
+            byteBuf.writeFloatLE(target.getEaseTime());
+            byteBuf.writeByte(target.getEaseType().ordinal());
+            byteBuf.writeBoolean(target.isClear());
+        });
     }
 
     public void setInstruction(CameraInstruction instruction) {
@@ -68,6 +78,7 @@ public class CameraInstructionPacket extends DataPacket {
             case FadeInstruction fade -> this.fadeInstruction = fade;
             case ClearInstruction clear -> this.clearInstruction = clear;
             case TargetInstruction target -> this.targetInstruction = target;
+            case CameraFovInstruction fov -> this.fovInstruction = fov;
             default -> {
 
             }
