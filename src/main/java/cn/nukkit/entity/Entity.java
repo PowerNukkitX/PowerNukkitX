@@ -3322,7 +3322,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             if (prop.isClientSync()) {
                 if (prop instanceof IntEntityProperty || prop instanceof BooleanEntityProperty) {
                     Integer val = this.intProperties.get(prop.getIdentifier());
-                    if (val == null && prop instanceof BooleanEntityProperty) val = 0; // default false
+                    if (val == null && prop instanceof BooleanEntityProperty) val = 0;
                     if (val != null) intValues.add(val);
                 } else if (prop instanceof EnumEntityProperty) {
                     Integer val = this.intProperties.get(prop.getIdentifier());
