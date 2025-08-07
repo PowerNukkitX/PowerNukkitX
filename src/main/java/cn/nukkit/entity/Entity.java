@@ -1085,6 +1085,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         for (int i = 0; i < addEntity.links.length; i++) {
             addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false);
         }
+        addEntity.syncedProperties = this.getClientSyncProperties();
 
         return addEntity;
     }
@@ -3310,6 +3311,41 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             return false;
         }
         return false;
+    }
+
+    public PropertySyncData getClientSyncProperties() {
+        List<EntityProperty> propertyDefs = EntityProperty.getEntityProperty(this.getIdentifier());
+
+        // Prepare int values (booleans, ints, enums)
+        List<Integer> intValues = new ArrayList<>();
+        for (EntityProperty prop : propertyDefs) {
+            if (prop.isClientSync()) {
+                if (prop instanceof IntEntityProperty || prop instanceof BooleanEntityProperty) {
+                    Integer val = this.intProperties.get(prop.getIdentifier());
+                    if (val == null && prop instanceof BooleanEntityProperty) val = 0; // default false
+                    if (val != null) intValues.add(val);
+                } else if (prop instanceof EnumEntityProperty) {
+                    Integer val = this.intProperties.get(prop.getIdentifier());
+                    if (val != null) intValues.add(val);
+                }
+            }
+        }
+        // Prepare float values
+        List<Float> floatValues = new ArrayList<>();
+        for (EntityProperty prop : propertyDefs) {
+            if (prop.isClientSync() && prop instanceof FloatEntityProperty) {
+                Float val = this.floatProperties.get(prop.getIdentifier());
+                if (val != null) floatValues.add(val);
+            }
+        }
+        float[] floatArray = new float[floatValues.size()];
+        for (int i = 0; i < floatValues.size(); i++) {
+            floatArray[i] = floatValues.get(i);
+        }
+
+        int[] intArray = intValues.stream().mapToInt(i -> i).toArray();
+
+        return new PropertySyncData(intArray, floatArray);
     }
 
     @SuppressWarnings("unchecked")
