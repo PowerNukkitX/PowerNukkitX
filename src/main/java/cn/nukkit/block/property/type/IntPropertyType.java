@@ -25,7 +25,7 @@ public final class IntPropertyType extends BaseBlockPropertyType<Integer> {
         cachedValues = new IntPropertyValue[max - min + 1];
         for (int i = min; i <= max; i++) {
             IntPropertyValue value = new IntPropertyValue(i);
-            cachedValues[i] = value;
+            cachedValues[i - min] = value;
         }
     }
 
