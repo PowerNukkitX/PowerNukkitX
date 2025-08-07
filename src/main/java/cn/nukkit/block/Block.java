@@ -36,7 +36,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -514,19 +513,48 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return {@code true} if waterlogged, {@code false} otherwise
      */
     public boolean isWaterLogged() {
-        return getWaterloggingLevel() > 0;
+        if (getWaterloggingLevel() == 0) return false;
+
+        Block fluid = this.getLevelBlockAtLayer(1);
+        return fluid instanceof BlockWater && !fluid.isAir();
     }
 
     public final boolean canWaterloggingFlowInto() {
         return canBeFlowedInto() || getWaterloggingLevel() > 1;
     }
 
+    /**
+     * Returns true if this block is interactable (can be activated).
+     * <p>
+     * For custom blocks, set interactability using the builder (isPlayerInteractable)
+     * instead of overriding this method, so it is correctly saved in NBT and synced with client.
+     */
     public boolean canBeActivated() {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            CompoundTag components = def.getComponents();
+            if (components != null && components.contains("minecraft:custom_components")) {
+                CompoundTag custom = components.getCompound("minecraft:custom_components");
+                if (custom.contains("hasPlayerInteract")) {
+                    return custom.getByte("hasPlayerInteract") != 0;
+                }
+            }
+        }
         return false;
     }
 
     public boolean hasEntityCollision() {
         return false;
+    }
+
+    /**
+     * Returns true if this block has step-on/off sensor.
+     * <p>
+     * For custom blocks, can be set this by using the builder (isStepSensor).
+     */
+    public boolean hasEntityStepSensor() {
+        CustomBlockDefinition def = getCustomDefinition();
+        return def != null && def.isStepSensor();
     }
 
     public boolean canPassThrough() {
@@ -1140,6 +1168,20 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public void onEntityCollide(Entity entity) {
+    }
+
+    /**
+     * Called when an entity steps onto this block.<p>
+     * Only triggered if isStepSensor() returns true on the builder.
+     */
+    public void onEntityStepOn(Entity entity) {
+    }
+
+    /**
+     * Called when an entity steps off this block.<p>
+     * Only triggered if isStepSensor() returns true on the builder.
+     */
+    public void onEntityStepOff(Entity entity) {
     }
 
     public void onEntityFallOn(Entity entity, float fallDistance) {

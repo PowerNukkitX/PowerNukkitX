@@ -45,7 +45,7 @@ import java.util.function.Consumer;
  * For further customization of runtime behavior, you can still override methods in {@link Block Block}.
  */
 @Slf4j
-public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullable BlockTickSettings tickSettings) {
+public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullable BlockTickSettings tickSettings, boolean isStepSensor) {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
     private static final AtomicInteger CUSTOM_BLOCK_RUNTIMEID = new AtomicInteger(10000);
 
@@ -71,6 +71,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         protected final String identifier;
         protected final CustomBlock customBlock;
         private BlockTickSettings tickSettings = null;
+        private boolean isStepSensor = false;
 
         protected CompoundTag nbt = new CompoundTag()
                 .putCompound("components", new CompoundTag());
@@ -437,6 +438,28 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             return this;
         }
 
+        public Builder isPlayerInteractable(boolean value) {
+            if (!this.nbt.getCompound("components").contains("minecraft:custom_components")) {
+                this.nbt.getCompound("components")
+                    .putCompound("minecraft:custom_components", createDefaultCustomComponents());
+            }
+            this.nbt.getCompound("components")
+                .getCompound("minecraft:custom_components")
+                .putByte("hasPlayerInteract", (byte) (value ? 1 : 0));
+            return this;
+        }
+
+        public Builder hasPlayerPlacingSensor(boolean value) {
+            if (!this.nbt.getCompound("components").contains("minecraft:custom_components")) {
+                this.nbt.getCompound("components")
+                    .putCompound("minecraft:custom_components", createDefaultCustomComponents());
+            }
+            this.nbt.getCompound("components")
+                .getCompound("minecraft:custom_components")
+                .putByte("hasPlayerPlacing", (byte) (value ? 1 : 0));
+            return this;
+        }
+
         /**
          * Defines how this custom block should tick over time.
          *
@@ -450,6 +473,16 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         public Builder blockTick(int minTicks, int maxTicks, boolean looping) {
             Preconditions.checkArgument(minTicks >= 0 && maxTicks >= minTicks, "Invalid tick interval range");
             this.tickSettings = new BlockTickSettings(minTicks, maxTicks, looping);
+            return this;
+        }
+
+        /**
+         * Enables step sensor logic (entity step-on/off).
+         * <p>
+         * When enabled, override {@link #onEntityStepOn(Entity)} and {@link #onEntityStepOff(Entity)} for custom handling.
+         */
+        public Builder isStepSensor(boolean value) {
+            this.isStepSensor = value;
             return this;
         }
 
@@ -500,7 +533,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         }
 
         public CustomBlockDefinition build() {
-            return new CustomBlockDefinition(this.identifier, this.nbt, this.tickSettings);
+            return new CustomBlockDefinition(this.identifier, this.nbt, this.tickSettings, this.isStepSensor);
         }
     }
 
@@ -568,6 +601,14 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
                 .putByte("emission", (byte) 0));
         components.putString("minecraft:map_color", "#ffffff");
         return components;
+    }
+
+    // Creates default custom_components
+    public static CompoundTag createDefaultCustomComponents() {
+        return new CompoundTag(new LinkedHashMap<>())
+            .putByte("hasPlayerInteract", (byte) 0)
+            .putByte("hasPlayerPlacing", (byte) 0)
+            .putByte("isV1Component", (byte) 1);
     }
 
     public CompoundTag getComponents() {
