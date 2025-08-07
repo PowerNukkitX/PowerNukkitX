@@ -3316,36 +3316,47 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public PropertySyncData getClientSyncProperties() {
         List<EntityProperty> propertyDefs = EntityProperty.getEntityProperty(this.getIdentifier());
 
-        // Prepare int values (booleans, ints, enums)
-        List<Integer> intValues = new ArrayList<>();
-        for (EntityProperty prop : propertyDefs) {
-            if (prop.isClientSync()) {
-                if (prop instanceof IntEntityProperty || prop instanceof BooleanEntityProperty) {
-                    Integer val = this.intProperties.get(prop.getIdentifier());
-                    if (val == null && prop instanceof BooleanEntityProperty) val = 0;
-                    if (val != null) intValues.add(val);
-                } else if (prop instanceof EnumEntityProperty) {
-                    Integer val = this.intProperties.get(prop.getIdentifier());
-                    if (val != null) intValues.add(val);
-                }
-            }
-        }
-        // Prepare float values
-        List<Float> floatValues = new ArrayList<>();
-        for (EntityProperty prop : propertyDefs) {
-            if (prop.isClientSync() && prop instanceof FloatEntityProperty) {
-                Float val = this.floatProperties.get(prop.getIdentifier());
-                if (val != null) floatValues.add(val);
-            }
-        }
-        float[] floatArray = new float[floatValues.size()];
-        for (int i = 0; i < floatValues.size(); i++) {
-            floatArray[i] = floatValues.get(i);
-        }
+        int[] intArray = propertyDefs.stream()
+            .filter(this::shouldSyncIntProperty)
+            .map(this::getIntPropertyValue)
+            .filter(Objects::nonNull)
+            .mapToInt(Integer::intValue)
+            .toArray();
 
-        int[] intArray = intValues.stream().mapToInt(i -> i).toArray();
+        double[] doubleArray = propertyDefs.stream()
+            .filter(this::shouldSyncFloatProperty)
+            .map(this::getFloatPropertyValue)
+            .filter(Objects::nonNull)
+            .mapToDouble(Float::doubleValue)
+            .toArray();
+
+        float[] floatArray = new float[doubleArray.length];
+        for (int i = 0; i < doubleArray.length; i++) {
+            floatArray[i] = (float) doubleArray[i];
+        }
 
         return new PropertySyncData(intArray, floatArray);
+    }
+
+    private boolean shouldSyncIntProperty(EntityProperty prop) {
+        if (!prop.isClientSync()) return false;
+        return (prop instanceof IntEntityProperty)
+            || (prop instanceof BooleanEntityProperty)
+            || (prop instanceof EnumEntityProperty);
+    }
+
+    private Integer getIntPropertyValue(EntityProperty prop) {
+        Integer val = this.intProperties.get(prop.getIdentifier());
+        if (prop instanceof BooleanEntityProperty && val == null) return 0;
+        return val;
+    }
+
+    private boolean shouldSyncFloatProperty(EntityProperty prop) {
+        return prop.isClientSync() && (prop instanceof FloatEntityProperty);
+    }
+
+    private Float getFloatPropertyValue(EntityProperty prop) {
+        return this.floatProperties.get(prop.getIdentifier());
     }
 
     @SuppressWarnings("unchecked")
