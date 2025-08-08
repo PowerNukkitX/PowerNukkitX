@@ -155,7 +155,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     public static boolean isSupportValid(Block block) {
-        return block.is(BlockTags.DIRT);
+        return block.hasTag(BlockTags.DIRT);
     }
 
     @Override

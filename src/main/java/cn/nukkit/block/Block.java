@@ -694,11 +694,11 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      */
     @Deprecated
     public boolean is(final String blockTag) {
-        return BlockTags.getTagSet(this.getId()).contains(blockTag);
+        return hasTag(blockTag);
     }
 
     /**
-     * @return if block has a string tag
+     * @return true if block has a string tag
      */
     public boolean hasTag(final String blockTag) {
         CustomBlockDefinition def = getCustomDefinition();
@@ -706,7 +706,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             CompoundTag nbt = def.nbt();
             if (nbt.contains("blockTags")) {
                 ListTag<StringTag> tagList = nbt.getList("blockTags", StringTag.class);
-                return tagList.getAll().contains(new StringTag(blockTag));
+                return tagList.getAll().stream().anyMatch(t -> blockTag.equals(t.data));
             }
         }
 

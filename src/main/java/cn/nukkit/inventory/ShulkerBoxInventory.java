@@ -74,7 +74,7 @@ public class ShulkerBoxInventory extends ContainerInventory {
 
     @Override
     public boolean canAddItem(Item item) {
-        if (item.isBlock() && item.getBlockUnsafe().is(BlockTags.PNX_SHULKERBOX)) {
+        if (item.isBlock() && item.getBlockUnsafe().hasTag(BlockTags.PNX_SHULKERBOX)) {
             // Do not allow nested shulker boxes.
             return false;
         }

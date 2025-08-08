@@ -218,9 +218,9 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
             for (int iz = -1; iz <= 1; iz++) {
                 for (int iy = -1; iy <= 1; iy++) {
                     Block block = this.getLevel().getBlock(x + ix, y + iy, z + iz, 0);
-                    if (!block.is(BlockTags.WATER)) {
+                    if (!block.hasTag(BlockTags.WATER)) {
                         block = this.getLevel().getBlock(x + ix, y + iy, z + iz, 1);
-                        if (!block.is(BlockTags.WATER)) {
+                        if (!block.hasTag(BlockTags.WATER)) {
                             return false;
                         }
                     }

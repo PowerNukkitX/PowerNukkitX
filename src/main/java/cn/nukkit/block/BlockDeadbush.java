@@ -59,7 +59,7 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
     private boolean isSupportValid() {
         Block down = down();
         if(down instanceof BlockHardenedClay)  return true;
-        return down.is(BlockTags.DIRT) || down.is(BlockTags.SAND);
+        return down.hasTag(BlockTags.DIRT) || down.hasTag(BlockTags.SAND);
     }
 
     @Override

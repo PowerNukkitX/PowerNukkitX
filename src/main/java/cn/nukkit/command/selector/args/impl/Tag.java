@@ -23,7 +23,7 @@ public class Tag extends CachedSimpleSelectorArgument {
                 dontHave.add(tag);
             } else have.add(tag);
         }
-        return entity -> have.stream().allMatch(entity::containTag) && dontHave.stream().noneMatch(entity::containTag);
+        return entity -> have.stream().allMatch(entity::hasTag) && dontHave.stream().noneMatch(entity::hasTag);
     }
 
     @Override

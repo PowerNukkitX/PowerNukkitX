@@ -20,7 +20,7 @@ public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPo
     }
 
     public static boolean isSupportValid(Block block) {
-        return block.is(BlockTags.DIRT);
+        return block.hasTag(BlockTags.DIRT);
     }
 
     public boolean canPlantOn(Block block) {
