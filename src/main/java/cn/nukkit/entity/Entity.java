@@ -1085,6 +1085,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         for (int i = 0; i < addEntity.links.length; i++) {
             addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false);
         }
+        addEntity.syncedProperties = this.getClientSyncProperties();
 
         return addEntity;
     }
@@ -3310,6 +3311,52 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             return false;
         }
         return false;
+    }
+
+    public PropertySyncData getClientSyncProperties() {
+        List<EntityProperty> propertyDefs = EntityProperty.getEntityProperty(this.getIdentifier());
+
+        int[] intArray = propertyDefs.stream()
+            .filter(this::shouldSyncIntProperty)
+            .map(this::getIntPropertyValue)
+            .filter(Objects::nonNull)
+            .mapToInt(Integer::intValue)
+            .toArray();
+
+        double[] doubleArray = propertyDefs.stream()
+            .filter(this::shouldSyncFloatProperty)
+            .map(this::getFloatPropertyValue)
+            .filter(Objects::nonNull)
+            .mapToDouble(Float::doubleValue)
+            .toArray();
+
+        float[] floatArray = new float[doubleArray.length];
+        for (int i = 0; i < doubleArray.length; i++) {
+            floatArray[i] = (float) doubleArray[i];
+        }
+
+        return new PropertySyncData(intArray, floatArray);
+    }
+
+    private boolean shouldSyncIntProperty(EntityProperty prop) {
+        if (!prop.isClientSync()) return false;
+        return (prop instanceof IntEntityProperty)
+            || (prop instanceof BooleanEntityProperty)
+            || (prop instanceof EnumEntityProperty);
+    }
+
+    private Integer getIntPropertyValue(EntityProperty prop) {
+        Integer val = this.intProperties.get(prop.getIdentifier());
+        if (prop instanceof BooleanEntityProperty && val == null) return 0;
+        return val;
+    }
+
+    private boolean shouldSyncFloatProperty(EntityProperty prop) {
+        return prop.isClientSync() && (prop instanceof FloatEntityProperty);
+    }
+
+    private Float getFloatPropertyValue(EntityProperty prop) {
+        return this.floatProperties.get(prop.getIdentifier());
     }
 
     @SuppressWarnings("unchecked")
