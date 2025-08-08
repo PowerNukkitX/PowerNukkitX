@@ -14,6 +14,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.EntityQueryOptions;
 import cn.nukkit.entity.item.EntityAreaEffectCloud;
 import cn.nukkit.entity.item.EntityFireworksRocket;
 import cn.nukkit.entity.item.EntityItem;
@@ -48,6 +49,7 @@ import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.tickingarea.TickingArea;
+import cn.nukkit.level.util.EntityQueryUtils;
 import cn.nukkit.level.util.SimpleTickCachedBlockStore;
 import cn.nukkit.level.util.TickCachedBlockStore;
 import cn.nukkit.level.vibration.SimpleVibrationManager;
@@ -161,6 +163,7 @@ public class Level implements Metadatable {
     public static int COMPRESSION_LEVEL = 8;
     private static int levelIdCounter = 1;
     private static int chunkLoaderCounter = 1;
+    private static final double INV_CHUNK_SIZE = 1.0 / 16.0;
     // endregion finals - number finals
 
     private static final Set<String> randomTickBlocks = new HashSet<>(64);  // The blocks that can randomly tick
@@ -3006,8 +3009,251 @@ public class Level implements Metadatable {
         return this.entities.containsKey(entityId) ? this.entities.get(entityId) : null;
     }
 
+    /**
+     * Retrieves all entities currently in this level.
+     * <p>
+     * This method does not apply any filtering — it simply returns every entity loaded
+     * in the world. If you want to filter by type, tags, distance, or location, use
+     * {@link #getEntities(EntityQueryOptions)} with an {@link EntityQueryOptions} instance.
+     *
+     * <pre>
+     * Example: Get all entities in the world {@code
+     * Entity[] all = level.getEntities();
+     * }
+     * </pre>
+     * @return An array of all loaded entities in the level.
+     */
     public Entity[] getEntities() {
         return entities.values().toArray(Entity.EMPTY_ARRAY);
+    }
+
+    /**
+     * Retrieves a list of entities that match the given {@link EntityQueryOptions}.
+     * <p>
+     * This is the preferred method for spatial or attribute-based queries.
+     * You can filter by:
+     * <ul>
+     *     <li>Exact location or radius</li>
+     *     <li>Bounding box volume</li>
+     *     <li>Entity class</li>
+     *     <li>Name tag</li>
+     *     <li>Tags (include/exclude)</li>
+     *     <li>Custom predicates</li>
+     * </ul>
+     *
+     * <pre>
+     * Example: Find the closest zombie within 10 blocks {@code
+     * List<Entity> result = level.getEntities(
+     *     new EntityQueryOptions()
+     *         .location(player)
+     *         .maxDistance(10)
+     *         .typeClass(Zombie.class)
+     *         .closest(1)
+     * );
+     * Zombie zombie = result.isEmpty() ? null : (Zombie) result.get(0);
+     * }
+     * </pre>
+     *
+     * @param o The query options to apply.
+     * @return A list of entities matching the filters.
+     */
+    public List<Entity> getEntities(EntityQueryOptions o) {
+        return getEntities(o, new ArrayList<>(32));
+    }
+
+    /**
+     * Retrieves all entities within a spherical radius of the given location.
+     * <p>
+     * This is a shorthand for a distance-based query and is equivalent to:
+     * <pre>
+     * getEntities(new EntityQueryOptions()
+     *     .location(center)
+     *     .maxDistance(radius)
+     *     .loadChunks(loadChunks)
+     * );
+     * </pre>
+     *
+     * <pre>
+     * Example: Get all entities within 5 blocks of a position {@code
+     * List<Entity> nearby = level.getEntities(player, 5, false);
+     * }
+     * </pre>
+     *
+     * @param center     The center position for the search.
+     * @param radius     The search radius in blocks.
+     * @param loadChunks If true, loads chunks that are not already loaded.
+     * @return A list of entities within the specified radius.
+     */
+    public List<Entity> getEntities(Vector3 center, double radius, boolean loadChunks) {
+        return getEntities(new EntityQueryOptions()
+                .location(center)
+                .maxDistance(radius)
+                .loadChunks(loadChunks));
+    }
+
+    /**
+     * Retrieves entities matching the given {@link EntityQueryOptions},
+     * writing results into the provided output list.
+     *
+     * <pre>
+     * Example: Reuse an output list for performance {@code
+     * List<Entity> buffer = new ArrayList<>();
+     * EntityQueryOptions opts = new EntityQueryOptions()
+     *     .location(player)
+     *     .maxDistance(10);
+     *
+     * level.getEntities(opts, buffer);
+     * for (Entity e : buffer) {
+     *     // process entity
+     * }
+     * buffer.clear(); // ready for next query
+     * }
+     * </pre>
+     *
+     * @param o   The query options to apply.
+     * @param out The list to store matching entities in.
+     * @return The same list instance passed in {@code out}, now filled with results.
+     */
+    public List<Entity> getEntities(EntityQueryOptions o, List<Entity> out) {
+        out.clear();
+
+        if (o == null) {
+            out.addAll(this.entities.values());
+            return out;
+        }
+
+        boolean hasLocation = (o.location != null);
+        boolean hasVolume = (hasLocation && o.volume != null);
+        boolean hasRadius = (hasLocation && o.maxDistance != null);
+        boolean exactLocationMatch = (hasLocation && o.exactLocationMatch);
+
+        boolean needsLocation =
+            (o.volume != null) ||
+            (o.maxDistance != null) ||
+            (o.minDistance != null) ||
+            (o.closest != null && o.closest > 0) ||
+            (o.farthest != null && o.farthest > 0);
+
+        if (needsLocation && !hasLocation) {
+            log.error("EntityQueryOptions requires location() when using volume, minDistance, maxDistance, closest, or farthest.");
+            return out;
+        }
+
+        if (hasLocation
+                && o.volume == null
+                && o.maxDistance == null
+                && o.minDistance == null
+                && (o.closest == null || o.closest <= 0)
+                && (o.farthest == null || o.farthest <= 0)
+                && !exactLocationMatch) {
+            exactLocationMatch = true;
+        }
+
+        boolean hasNonSpatialFilters =
+            (o.tags != null && !o.tags.isEmpty()) ||
+            (o.excludeTags != null && !o.excludeTags.isEmpty()) ||
+            (o.typeClass != null) ||
+            (o.nameTagEquals != null) ||
+            (o.predicate != null);
+
+        if (exactLocationMatch) {
+            int cx = NukkitMath.floorDouble(o.location.x * INV_CHUNK_SIZE);
+            int cz = NukkitMath.floorDouble(o.location.z * INV_CHUNK_SIZE);
+
+            Map<Long, Entity> map = this.getChunkEntities(cx, cz, o.loadChunks);
+            if (map != null && !map.isEmpty()) {
+                int lx = (int) Math.floor(o.location.x);
+                int ly = (int) Math.floor(o.location.y);
+                int lz = (int) Math.floor(o.location.z);
+
+                for (Entity e : map.values()) {
+                    if (e != null
+                            && (int) Math.floor(e.x) == lx
+                            && (int) Math.floor(e.y) == ly
+                            && (int) Math.floor(e.z) == lz) {
+                        out.add(e);
+                    }
+                }
+            }
+
+            if (!out.isEmpty() && hasNonSpatialFilters) {
+                EntityQueryUtils.filterNonSpatial(out, o.location, o);
+            }
+            EntityQueryUtils.applyOrderingAndLimits(out, o.location, o);
+            return out;
+        }
+
+        if (!hasVolume && !hasRadius) {
+            out.addAll(this.entities.values());
+
+            if (hasLocation && (o.minDistance != null || o.maxDistance != null)) {
+                EntityQueryUtils.filterByDistanceBand(out, o.location, o.minDistance, o.maxDistance);
+            }
+
+            if (!out.isEmpty() && hasNonSpatialFilters) {
+                EntityQueryUtils.filterNonSpatial(out, o.location, o);
+            }
+            EntityQueryUtils.applyOrderingAndLimits(out, o.location, o);
+            return out;
+        }
+
+        double startX, startZ, endX, endZ;
+        if (hasVolume) {
+            double hx = Math.max(0.0, o.volume.x) * 0.5;
+            double hz = Math.max(0.0, o.volume.z) * 0.5;
+            startX = o.location.x - hx; endX = o.location.x + hx;
+            startZ = o.location.z - hz; endZ = o.location.z + hz;
+            startX -= o.margin; endX += o.margin;
+            startZ -= o.margin; endZ += o.margin;
+        } else {
+            double r = Math.max(0.0, o.maxDistance);
+            double scanPad = Math.min(o.margin, r);
+            startX = o.location.x - (r + scanPad);
+            endX   = o.location.x + (r + scanPad);
+            startZ = o.location.z - (r + scanPad);
+            endZ   = o.location.z + (r + scanPad);
+        }
+
+        int minCX = NukkitMath.floorDouble(startX * INV_CHUNK_SIZE);
+        int maxCX = NukkitMath.ceilDouble(endX * INV_CHUNK_SIZE);
+        int minCZ = NukkitMath.floorDouble(startZ * INV_CHUNK_SIZE);
+        int maxCZ = NukkitMath.ceilDouble(endZ * INV_CHUNK_SIZE);
+
+        double cx0 = o.location.x;
+        double cy0 = o.location.y;
+        double cz0 = o.location.z;
+
+        double minD2 = (o.minDistance != null) ? (o.minDistance * o.minDistance) : -1.0;
+        double maxD2 = (o.maxDistance != null) ? (o.maxDistance * o.maxDistance) : -1.0;
+
+        double vMinX = 0, vMaxX = 0, vMinY = 0, vMaxY = 0, vMinZ = 0, vMaxZ = 0;
+        boolean useCuboid = hasVolume;
+        if (useCuboid) {
+            vMinX = o.location.x - Math.max(0.0, o.volume.x) * 0.5;
+            vMaxX = o.location.x + Math.max(0.0, o.volume.x) * 0.5;
+            vMinY = o.location.y - Math.max(0.0, o.volume.y) * 0.5;
+            vMaxY = o.location.y + Math.max(0.0, o.volume.y) * 0.5;
+            vMinZ = o.location.z - Math.max(0.0, o.volume.z) * 0.5;
+            vMaxZ = o.location.z + Math.max(0.0, o.volume.z) * 0.5;
+        }
+
+        EntityQueryUtils.collectEntitiesInChunks(
+            this,
+            minCX, maxCX, minCZ, maxCZ,
+            o.loadChunks,
+            hasLocation,
+            cx0, cy0, cz0,
+            minD2, maxD2,
+            useCuboid,
+            vMinX, vMaxX, vMinY, vMaxY, vMinZ, vMaxZ,
+            out
+        );
+
+        if (!out.isEmpty() && hasNonSpatialFilters) {
+            EntityQueryUtils.filterNonSpatial(out, o.location, o);
+        }
+        EntityQueryUtils.applyOrderingAndLimits(out, o.location, o);
+        return out;
     }
 
     public Entity[] getCollidingEntities(AxisAlignedBB bb) {
