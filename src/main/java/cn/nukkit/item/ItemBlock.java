@@ -23,13 +23,7 @@ public class ItemBlock extends Item {
 
     @Override
     public void setDamage(int meta) {
-        if (meta != 0) {
-            int i = Registries.BLOCKSTATE_ITEMMETA.get(block.getId(), meta);
-            if (i != 0) {
-                BlockState blockState = Registries.BLOCKSTATE.get(i);
-                this.block = Registries.BLOCK.get(blockState);
-            }
-        }
+
     }
 
     @Override

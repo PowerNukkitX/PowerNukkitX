@@ -5,7 +5,6 @@ public final class Registries {
     public static final PacketRegistry PACKET = new PacketRegistry();
     public static final EntityRegistry ENTITY = new EntityRegistry();
     public static final BlockEntityRegistry BLOCKENTITY = new BlockEntityRegistry();
-    public static final BlockState2ItemMetaRegistry BLOCKSTATE_ITEMMETA = new BlockState2ItemMetaRegistry();
     public static final BlockStateRegistry BLOCKSTATE = new BlockStateRegistry();
     public static final ItemRuntimeIdRegistry ITEM_RUNTIMEID = new ItemRuntimeIdRegistry();
     public static final BlockRegistry BLOCK = new BlockRegistry();

@@ -1503,13 +1503,9 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     protected static BlockState getItemBlockState(final String id, final Integer aux) {
-        int i = Registries.BLOCKSTATE_ITEMMETA.get(id, aux);
-        if (i == 0) {
-            Block block = Registries.BLOCK.get(id);
-            if (block == null) return BlockAir.STATE;
-            return block.getProperties().getDefaultState();
-        }
-        return Registries.BLOCKSTATE.get(i);
+        Block block = Registries.BLOCK.get(id);
+        if (block == null) return BlockAir.STATE;
+        return block.getProperties().getDefaultState();
     }
 
     public static class ItemJsonComponents {
