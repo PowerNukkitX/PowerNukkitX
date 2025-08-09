@@ -5,76 +5,103 @@ import cn.nukkit.entity.EntityQueryOptions;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public final class EntityQueryUtils {
 
     private EntityQueryUtils() {}
 
-    public static void filterNonSpatial(List<Entity> list, Vector3 center, EntityQueryOptions o) {
-        Iterator<Entity> it = list.iterator();
-        while (it.hasNext()) {
-            Entity e = it.next();
+    private static boolean hasAllTags(Entity e, Collection<String> tags) {
+        for (String t : tags) {
+            if (!e.hasTag(t)) return false;
+        }
+        return true;
+    }
 
-            if (o.typeClass != null && !o.typeClass.isInstance(e)) {
-                it.remove(); continue;
-            }
+    private static boolean hasAnyExcludedTag(Entity e, Collection<String> exclude) {
+        for (String t : exclude) {
+            if (e.hasTag(t)) return true;
+        }
+        return false;
+    }
 
-            if (o.nameTagEquals != null) {
-                String nt = e.getNameTag();
-                if (nt == null || !nt.equals(o.nameTagEquals)) {
-                    it.remove(); continue;
-                }
-            }
+    public static void filterNonSpatial(List<Entity> list, EntityQueryOptions o) {
+        Predicate<Entity> p = e -> true;
 
-            if (o.tags != null && !o.tags.isEmpty()) {
-                boolean ok = true;
-                for (String t : o.tags) {
-                    if (!e.hasTag(t)) { ok = false; break; }
-                }
-                if (!ok) { it.remove(); continue; }
-            }
+        if (o.typeClass != null) {
+            p = p.and(o.typeClass::isInstance);
+        }
 
-            if (o.excludeTags != null && !o.excludeTags.isEmpty()) {
-                boolean bad = false;
-                for (String t : o.excludeTags) {
-                    if (e.hasTag(t)) { bad = true; break; }
-                }
-                if (bad) { it.remove(); continue; }
-            }
+        if (o.nameTagEquals != null) {
+            p = p.and(e -> o.nameTagEquals.equals(e.getNameTag()));
+        }
 
-            if (o.predicate != null && !o.predicate.test(e)) {
-                it.remove();
-            }
+        if (o.tags != null && !o.tags.isEmpty()) {
+            p = p.and(e -> hasAllTags(e, o.tags));
+        }
+
+        if (o.excludeTags != null && !o.excludeTags.isEmpty()) {
+            p = p.and(e -> !hasAnyExcludedTag(e, o.excludeTags));
+        }
+
+        if (o.predicate != null) {
+            p = p.and(o.predicate);
+        }
+
+        list.removeIf(p.negate());
+    }
+
+    private static void sortByDistanceAscending(List<Entity> list, Vector3 center) {
+        final double cx = center.x, cy = center.y, cz = center.z;
+        list.sort((a, b) -> {
+            double dax = a.x - cx, day = a.y - cy, daz = a.z - cz;
+            double dbx = b.x - cx, dby = b.y - cy, dbz = b.z - cz;
+            double da = dax * dax + day * day + daz * daz;
+            double db = dbx * dbx + dby * dby + dbz * dbz;
+            return Double.compare(da, db);
+        });
+    }
+
+    private static void sortByDistanceDescending(List<Entity> list, Vector3 center) {
+        final double cx = center.x, cy = center.y, cz = center.z;
+        list.sort((a, b) -> {
+            double dax = a.x - cx, day = a.y - cy, daz = a.z - cz;
+            double dbx = b.x - cx, dby = b.y - cy, dbz = b.z - cz;
+            double da = dax * dax + day * day + daz * daz;
+            double db = dbx * dbx + dby * dby + dbz * dbz;
+            return Double.compare(db, da);
+        });
+    }
+
+    private static void trimTo(List<Entity> list, int keep) {
+        if (keep >= 0 && list.size() > keep) {
+            list.subList(keep, list.size()).clear();
         }
     }
 
     public static void applyOrderingAndLimits(List<Entity> list, Vector3 center, EntityQueryOptions o) {
-        if (center != null && o != null) {
-            if (o.closest != null && o.closest > 0) {
-                list.sort((a, b) -> Double.compare(dist2(a, center), dist2(b, center)));
-                if (list.size() > o.closest) list.subList(o.closest, list.size()).clear();
-            } else if (o.farthest != null && o.farthest > 0) {
-                list.sort((a, b) -> Double.compare(dist2(b, center), dist2(a, center)));
-                if (list.size() > o.farthest) list.subList(o.farthest, list.size()).clear();
-            }
+        if (list == null || list.isEmpty() || o == null) return;
+
+        boolean hasCenter = (center != null);
+
+        if (hasCenter && o.closest != null && o.closest > 0) {
+            sortByDistanceAscending(list, center);
+            trimTo(list, o.closest);
+        } else if (hasCenter && o.farthest != null && o.farthest > 0) {
+            sortByDistanceDescending(list, center);
+            trimTo(list, o.farthest);
         }
 
-        if (o != null && o.limit != null && o.limit > 0 && list.size() > o.limit) {
-            list.subList(o.limit, list.size()).clear();
+        if (o.limit != null && o.limit > 0) {
+        trimTo(list, o.limit);
         }
-    }
-
-    public static double dist2(Entity e, Vector3 c) {
-        double dx = e.x - c.x;
-        double dy = e.y - c.y;
-        double dz = e.z - c.z;
-        return dx * dx + dy * dy + dz * dz;
     }
 
     public static boolean needsLocation(EntityQueryOptions o) {
+        if (o == null) return false;
         return (o.volume != null)
             || (o.maxDistance != null)
             || (o.minDistance != null)
@@ -99,36 +126,48 @@ public final class EntityQueryUtils {
 
     public static void filterByDistanceBand(List<Entity> list, Vector3 center, Double min, Double max) {
         if (center == null || (min == null && max == null) || list.isEmpty()) return;
+
         final double cx = center.x, cy = center.y, cz = center.z;
         final double minD2 = (min != null) ? (min * min) : -1.0;
         final double maxD2 = (max != null) ? (max * max) : -1.0;
 
-        Iterator<Entity> it = list.iterator();
-        while (it.hasNext()) {
-            Entity e = it.next();
-            double dx = e.x - cx;
-            double dy = e.y - cy;
-            double dz = e.z - cz;
-            double d2 = dx * dx + dy * dy + dz * dz;
-            if (maxD2 >= 0.0 && d2 > maxD2) { it.remove(); continue; }
-            if (minD2 >= 0.0 && d2 < minD2) { it.remove(); }
-        }
+        list.removeIf(e -> !withinDistanceBand(e, cx, cy, cz, minD2, maxD2));
+    }
+
+    private static boolean isAtBlock(Entity e, int x, int y, int z) {
+        if (e == null) return false;
+        return e.getFloorX() == x && e.getFloorY() == y && e.getFloorZ() == z;
     }
 
     public static void collectExactBlockMatches(Map<Long, Entity> map, Vector3 loc, List<Entity> out) {
         if (map == null || map.isEmpty() || loc == null) return;
+
         int lx = (int) Math.floor(loc.x);
         int ly = (int) Math.floor(loc.y);
         int lz = (int) Math.floor(loc.z);
 
         for (Entity e : map.values()) {
-            if (e == null) continue;
-            if ((int) Math.floor(e.x) == lx
-                    && (int) Math.floor(e.y) == ly
-                    && (int) Math.floor(e.z) == lz) {
+            if (isAtBlock(e, lx, ly, lz)) {
                 out.add(e);
             }
         }
+    }
+
+    private static boolean withinDistanceBand(Entity e, double cx, double cy, double cz, double minD2, double maxD2) {
+        double dx = e.x - cx;
+        double dy = e.y - cy;
+        double dz = e.z - cz;
+        double d2 = dx * dx + dy * dy + dz * dz;
+
+        if (maxD2 >= 0.0 && d2 > maxD2) return false;
+        if (minD2 >= 0.0 && d2 < minD2) return false;
+        return true;
+    }
+
+    private static boolean insideCuboid(Entity e, double minX, double maxX, double minY, double maxY, double minZ, double maxZ) {
+        return e.x >= minX && e.x <= maxX
+            && e.y >= minY && e.y <= maxY
+            && e.z >= minZ && e.z <= maxZ;
     }
 
     public static void collectEntitiesInChunks(
@@ -142,31 +181,24 @@ public final class EntityQueryUtils {
             double vMinX, double vMaxX, double vMinY, double vMaxY, double vMinZ, double vMaxZ,
             List<Entity> out
     ) {
+        Predicate<Entity> p = e -> e != null;
+
+        if (hasLocation) {
+            p = p.and(e -> withinDistanceBand(e, cx0, cy0, cz0, minD2, maxD2));
+            if (useCuboid) {
+                p = p.and(e -> insideCuboid(e, vMinX, vMaxX, vMinY, vMaxY, vMinZ, vMaxZ));
+            }
+        }
+
         for (int cX = minCX; cX <= maxCX; ++cX) {
             for (int cZ = minCZ; cZ <= maxCZ; ++cZ) {
                 Map<Long, Entity> map = level.getChunkEntities(cX, cZ, loadChunks);
                 if (map == null || map.isEmpty()) continue;
 
                 for (Entity e : map.values()) {
-                    if (e == null) continue;
-
-                    if (hasLocation) {
-                        double dx = e.x - cx0;
-                        double dy = e.y - cy0;
-                        double dz = e.z - cz0;
-                        double d2 = dx * dx + dy * dy + dz * dz;
-
-                        if (maxD2 >= 0.0 && d2 > maxD2) continue;
-                        if (minD2 >= 0.0 && d2 < minD2) continue;
-
-                        if (useCuboid) {
-                            if (e.x < vMinX || e.x > vMaxX) continue;
-                            if (e.y < vMinY || e.y > vMaxY) continue;
-                            if (e.z < vMinZ || e.z > vMaxZ) continue;
-                        }
+                    if (p.test(e)) {
+                        out.add(e);
                     }
-
-                    out.add(e);
                 }
             }
         }
