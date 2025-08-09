@@ -8,11 +8,53 @@ import cn.nukkit.math.Vector3;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public final class EntityQueryUtils {
 
     private EntityQueryUtils() {}
+
+    public static final class ChunkQuery {
+        public int minCX, maxCX, minCZ, maxCZ;
+        public boolean loadChunks;
+
+        public ChunkQuery(int minCX, int maxCX, int minCZ, int maxCZ, boolean loadChunks) {
+            this.minCX = minCX; this.maxCX = maxCX;
+            this.minCZ = minCZ; this.maxCZ = maxCZ;
+            this.loadChunks = loadChunks;
+        }
+    }
+
+    public static final class SpatialFilter {
+        public boolean hasLocation;
+        public double cx, cy, cz;
+        public double minD2 = -1.0, maxD2 = -1.0;
+        public boolean useCuboid;
+        public double vMinX, vMaxX, vMinY, vMaxY, vMinZ, vMaxZ;
+
+        public SpatialFilter withCenter(Vector3 c) {
+            if (c != null) {
+                this.hasLocation = true;
+                this.cx = c.x; this.cy = c.y; this.cz = c.z;
+            }
+            return this;
+        }
+
+        public SpatialFilter withDistanceBand(Double min, Double max) {
+            this.minD2 = (min != null) ? min * min : -1.0;
+            this.maxD2 = (max != null) ? max * max : -1.0;
+            return this;
+        }
+
+        public SpatialFilter withCuboid(double minX, double maxX, double minY, double maxY, double minZ, double maxZ) {
+            this.useCuboid = true;
+            this.vMinX = minX; this.vMaxX = maxX;
+            this.vMinY = minY; this.vMaxY = maxY;
+            this.vMinZ = minZ; this.vMaxZ = maxZ;
+            return this;
+        }
+    }
 
     private static boolean hasAllTags(Entity e, Collection<String> tags) {
         for (String t : tags) {
@@ -29,27 +71,23 @@ public final class EntityQueryUtils {
     }
 
     public static void filterNonSpatial(List<Entity> list, EntityQueryOptions o) {
+        if (o == null) return;
+
+        boolean hasAny =
+            o.typeClass != null ||
+            o.nameTagEquals != null ||
+            (o.tags != null && !o.tags.isEmpty()) ||
+            (o.excludeTags != null && !o.excludeTags.isEmpty()) ||
+            o.predicate != null;
+
+        if (!hasAny) return;
+
         Predicate<Entity> p = e -> true;
-
-        if (o.typeClass != null) {
-            p = p.and(o.typeClass::isInstance);
-        }
-
-        if (o.nameTagEquals != null) {
-            p = p.and(e -> o.nameTagEquals.equals(e.getNameTag()));
-        }
-
-        if (o.tags != null && !o.tags.isEmpty()) {
-            p = p.and(e -> hasAllTags(e, o.tags));
-        }
-
-        if (o.excludeTags != null && !o.excludeTags.isEmpty()) {
-            p = p.and(e -> !hasAnyExcludedTag(e, o.excludeTags));
-        }
-
-        if (o.predicate != null) {
-            p = p.and(o.predicate);
-        }
+        if (o.typeClass != null)                           p = p.and(o.typeClass::isInstance);
+        if (o.nameTagEquals != null)                       p = p.and(e -> o.nameTagEquals.equals(e.getNameTag()));
+        if (o.tags != null && !o.tags.isEmpty())           p = p.and(e -> hasAllTags(e, o.tags));
+        if (o.excludeTags != null && !o.excludeTags.isEmpty()) p = p.and(e -> !hasAnyExcludedTag(e, o.excludeTags));
+        if (o.predicate != null)                           p = p.and(o.predicate);
 
         list.removeIf(p.negate());
     }
@@ -82,21 +120,25 @@ public final class EntityQueryUtils {
         }
     }
 
+    private static boolean isPositive(Integer v) {
+        return v != null && v > 0;
+    }
+
     public static void applyOrderingAndLimits(List<Entity> list, Vector3 center, EntityQueryOptions o) {
         if (list == null || list.isEmpty() || o == null) return;
 
-        boolean hasCenter = (center != null);
+        int cap = isPositive(o.limit) ? o.limit : Integer.MAX_VALUE;
 
-        if (hasCenter && o.closest != null && o.closest > 0) {
+        if (isPositive(o.closest)) {
             sortByDistanceAscending(list, center);
-            trimTo(list, o.closest);
-        } else if (hasCenter && o.farthest != null && o.farthest > 0) {
+            if (o.closest < cap) cap = o.closest;
+        } else if (isPositive(o.farthest)) {
             sortByDistanceDescending(list, center);
-            trimTo(list, o.farthest);
+            if (o.farthest < cap) cap = o.farthest;
         }
 
-        if (o.limit != null && o.limit > 0) {
-        trimTo(list, o.limit);
+        if (cap != Integer.MAX_VALUE) {
+        trimTo(list, cap);
         }
     }
 
@@ -113,19 +155,22 @@ public final class EntityQueryUtils {
      * If a location is provided but no other spatial constraints, default to exactLocationMatch.
      */
     public static boolean shouldDefaultToExact(EntityQueryOptions o) {
-        if (o == null || o.location == null) return false;
-        boolean hasOthers =
-            (o.volume != null) ||
-            (o.maxDistance != null) ||
-            (o.minDistance != null) ||
-            (o.closest != null && o.closest > 0) ||
-            (o.farthest != null && o.farthest > 0) ||
-            o.exactLocationMatch;
-        return !hasOthers;
+        return o != null
+            && o.location != null
+            && !hasOtherSpatialConstraints(o);
+    }
+
+    private static boolean hasOtherSpatialConstraints(EntityQueryOptions o) {
+        return o.volume != null
+            || o.maxDistance != null
+            || o.minDistance != null
+            || (o.closest != null && o.closest > 0)
+            || (o.farthest != null && o.farthest > 0)
+            || o.exactLocationMatch;
     }
 
     public static void filterByDistanceBand(List<Entity> list, Vector3 center, Double min, Double max) {
-        if (center == null || (min == null && max == null) || list.isEmpty()) return;
+        if (list == null || list.isEmpty()) return;
 
         final double cx = center.x, cy = center.y, cz = center.z;
         final double minD2 = (min != null) ? (min * min) : -1.0;
@@ -134,17 +179,16 @@ public final class EntityQueryUtils {
         list.removeIf(e -> !withinDistanceBand(e, cx, cy, cz, minD2, maxD2));
     }
 
-    private static boolean isAtBlock(Entity e, int x, int y, int z) {
-        if (e == null) return false;
+    public static boolean isAtBlock(Entity e, int x, int y, int z) {
         return e.getFloorX() == x && e.getFloorY() == y && e.getFloorZ() == z;
     }
 
     public static void collectExactBlockMatches(Map<Long, Entity> map, Vector3 loc, List<Entity> out) {
         if (map == null || map.isEmpty() || loc == null) return;
 
-        int lx = (int) Math.floor(loc.x);
-        int ly = (int) Math.floor(loc.y);
-        int lz = (int) Math.floor(loc.z);
+        int lx = cn.nukkit.math.NukkitMath.floorDouble(loc.x);
+        int ly = cn.nukkit.math.NukkitMath.floorDouble(loc.y);
+        int lz = cn.nukkit.math.NukkitMath.floorDouble(loc.z);
 
         for (Entity e : map.values()) {
             if (isAtBlock(e, lx, ly, lz)) {
@@ -159,9 +203,7 @@ public final class EntityQueryUtils {
         double dz = e.z - cz;
         double d2 = dx * dx + dy * dy + dz * dz;
 
-        if (maxD2 >= 0.0 && d2 > maxD2) return false;
-        if (minD2 >= 0.0 && d2 < minD2) return false;
-        return true;
+        return !(maxD2 >= 0.0 && d2 > maxD2) && !(minD2 >= 0.0 && d2 < minD2);
     }
 
     private static boolean insideCuboid(Entity e, double minX, double maxX, double minY, double maxY, double minZ, double maxZ) {
@@ -172,34 +214,40 @@ public final class EntityQueryUtils {
 
     public static void collectEntitiesInChunks(
             Level level,
-            int minCX, int maxCX, int minCZ, int maxCZ,
-            boolean loadChunks,
-            boolean hasLocation,
-            double cx0, double cy0, double cz0,
-            double minD2, double maxD2,
-            boolean useCuboid,
-            double vMinX, double vMaxX, double vMinY, double vMaxY, double vMinZ, double vMaxZ,
+            ChunkQuery chunk,
+            SpatialFilter filter,
             List<Entity> out
     ) {
+        Predicate<Entity> p = buildChunkEntityPredicate(filter);
+        forEachChunk(level, chunk, map -> addFiltered(map, p, out));
+    }
+
+    private static Predicate<Entity> buildChunkEntityPredicate(SpatialFilter f) {
         Predicate<Entity> p = e -> e != null;
+        if (f == null) return p;
 
-        if (hasLocation) {
-            p = p.and(e -> withinDistanceBand(e, cx0, cy0, cz0, minD2, maxD2));
-            if (useCuboid) {
-                p = p.and(e -> insideCuboid(e, vMinX, vMaxX, vMinY, vMaxY, vMinZ, vMaxZ));
-            }
+        if (f.minD2 >= 0.0 || f.maxD2 >= 0.0) {
+            p = p.and(e -> withinDistanceBand(e, f.cx, f.cy, f.cz, f.minD2, f.maxD2));
         }
+        if (f.useCuboid) {
+            p = p.and(e -> insideCuboid(e, f.vMinX, f.vMaxX, f.vMinY, f.vMaxY, f.vMinZ, f.vMaxZ));
+        }
+        return p;
+    }
 
-        for (int cX = minCX; cX <= maxCX; ++cX) {
-            for (int cZ = minCZ; cZ <= maxCZ; ++cZ) {
-                Map<Long, Entity> map = level.getChunkEntities(cX, cZ, loadChunks);
-                if (map == null || map.isEmpty()) continue;
+    private static void addFiltered(Map<Long, Entity> map, Predicate<Entity> p, List<Entity> out) {
+        if (map == null || map.isEmpty()) return;
+        for (Entity e : map.values()) {
+            if (p.test(e)) out.add(e);
+        }
+    }
 
-                for (Entity e : map.values()) {
-                    if (p.test(e)) {
-                        out.add(e);
-                    }
-                }
+    private static void forEachChunk(Level level,
+                                     ChunkQuery chunk,
+                                     Consumer<Map<Long, Entity>> consumer) {
+        for (int cX = chunk.minCX; cX <= chunk.maxCX; ++cX) {
+            for (int cZ = chunk.minCZ; cZ <= chunk.maxCZ; ++cZ) {
+                consumer.accept(level.getChunkEntities(cX, cZ, chunk.loadChunks));
             }
         }
     }

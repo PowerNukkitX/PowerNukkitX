@@ -3162,22 +3162,19 @@ public class Level implements Metadatable {
 
             Map<Long, Entity> map = this.getChunkEntities(cx, cz, o.loadChunks);
             if (map != null && !map.isEmpty()) {
-                int lx = (int) Math.floor(o.location.x);
-                int ly = (int) Math.floor(o.location.y);
-                int lz = (int) Math.floor(o.location.z);
+                int lx = cn.nukkit.math.NukkitMath.floorDouble(o.location.x);
+                int ly = cn.nukkit.math.NukkitMath.floorDouble(o.location.y);
+                int lz = cn.nukkit.math.NukkitMath.floorDouble(o.location.z);
 
                 for (Entity e : map.values()) {
-                    if (e != null
-                            && (int) Math.floor(e.x) == lx
-                            && (int) Math.floor(e.y) == ly
-                            && (int) Math.floor(e.z) == lz) {
+                    if (EntityQueryUtils.isAtBlock(e, lx, ly, lz)) {
                         out.add(e);
                     }
                 }
             }
 
             if (!out.isEmpty() && hasNonSpatialFilters) {
-                EntityQueryUtils.filterNonSpatial(out, o.location, o);
+                EntityQueryUtils.filterNonSpatial(out, o);
             }
             EntityQueryUtils.applyOrderingAndLimits(out, o.location, o);
             return out;
@@ -3191,7 +3188,7 @@ public class Level implements Metadatable {
             }
 
             if (!out.isEmpty() && hasNonSpatialFilters) {
-                EntityQueryUtils.filterNonSpatial(out, o.location, o);
+                EntityQueryUtils.filterNonSpatial(out, o);
             }
             EntityQueryUtils.applyOrderingAndLimits(out, o.location, o);
             return out;
@@ -3219,38 +3216,28 @@ public class Level implements Metadatable {
         int minCZ = NukkitMath.floorDouble(startZ * INV_CHUNK_SIZE);
         int maxCZ = NukkitMath.ceilDouble(endZ * INV_CHUNK_SIZE);
 
-        double cx0 = o.location.x;
-        double cy0 = o.location.y;
-        double cz0 = o.location.z;
-
-        double minD2 = (o.minDistance != null) ? (o.minDistance * o.minDistance) : -1.0;
-        double maxD2 = (o.maxDistance != null) ? (o.maxDistance * o.maxDistance) : -1.0;
-
-        double vMinX = 0, vMaxX = 0, vMinY = 0, vMaxY = 0, vMinZ = 0, vMaxZ = 0;
-        boolean useCuboid = hasVolume;
-        if (useCuboid) {
-            vMinX = o.location.x - Math.max(0.0, o.volume.x) * 0.5;
-            vMaxX = o.location.x + Math.max(0.0, o.volume.x) * 0.5;
-            vMinY = o.location.y - Math.max(0.0, o.volume.y) * 0.5;
-            vMaxY = o.location.y + Math.max(0.0, o.volume.y) * 0.5;
-            vMinZ = o.location.z - Math.max(0.0, o.volume.z) * 0.5;
-            vMaxZ = o.location.z + Math.max(0.0, o.volume.z) * 0.5;
-        }
-
-        EntityQueryUtils.collectEntitiesInChunks(
-            this,
-            minCX, maxCX, minCZ, maxCZ,
-            o.loadChunks,
-            hasLocation,
-            cx0, cy0, cz0,
-            minD2, maxD2,
-            useCuboid,
-            vMinX, vMaxX, vMinY, vMaxY, vMinZ, vMaxZ,
-            out
+        EntityQueryUtils.ChunkQuery chunk = new EntityQueryUtils.ChunkQuery(
+            minCX, maxCX, minCZ, maxCZ, o.loadChunks
         );
 
+        EntityQueryUtils.SpatialFilter filter = new EntityQueryUtils.SpatialFilter()
+            .withCenter(o.location)
+            .withDistanceBand(o.minDistance, o.maxDistance);
+
+        if (hasVolume) {
+            double vMinX = o.location.x - Math.max(0.0, o.volume.x) * 0.5;
+            double vMaxX = o.location.x + Math.max(0.0, o.volume.x) * 0.5;
+            double vMinY = o.location.y - Math.max(0.0, o.volume.y) * 0.5;
+            double vMaxY = o.location.y + Math.max(0.0, o.volume.y) * 0.5;
+            double vMinZ = o.location.z - Math.max(0.0, o.volume.z) * 0.5;
+            double vMaxZ = o.location.z + Math.max(0.0, o.volume.z) * 0.5;
+            filter.withCuboid(vMinX, vMaxX, vMinY, vMaxY, vMinZ, vMaxZ);
+        }
+
+        EntityQueryUtils.collectEntitiesInChunks(this, chunk, filter, out);
+
         if (!out.isEmpty() && hasNonSpatialFilters) {
-            EntityQueryUtils.filterNonSpatial(out, o.location, o);
+            EntityQueryUtils.filterNonSpatial(out, o);
         }
         EntityQueryUtils.applyOrderingAndLimits(out, o.location, o);
         return out;
