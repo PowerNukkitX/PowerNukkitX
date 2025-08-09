@@ -354,7 +354,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected boolean fakeInventoryOpen;
     ///
 
-    ///todo hack for receive a error position after teleport
+    /// todo hack for receive a error position after teleport
     private Pair<Location, Long> lastTeleportMessage;
     ///
 
@@ -583,6 +583,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         SetTitlePacket packet = new SetTitlePacket();
         packet.text = text;
         packet.type = SetTitlePacket.TYPE_TITLE;
+        packet.fadeInTime = -1;
+        packet.stayTime = -1;
+        packet.fadeOutTime = -1;
         this.dataPacket(packet);
     }
 
@@ -851,7 +854,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     protected void checkNearEntities() {
         for (Entity entity : this.level.getNearbyEntities(this.boundingBox.grow(1, 0.5, 1), this)) {
-            if(entity == null) continue;
+            if (entity == null) continue;
             entity.scheduleUpdate();
 
             if (!entity.isAlive() || !this.isAlive()) {
@@ -2231,8 +2234,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
-        for(BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
-            if(entity instanceof BlockEntitySpawnable spawnable) {
+        for (BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
+            if (entity instanceof BlockEntitySpawnable spawnable) {
                 spawnable.spawnTo(this);
             }
         }
@@ -4344,7 +4347,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     *
      * Sends a form to a player and assigns the next ID to it
      * To open a form safely, please use {@link Form#send(Player)}
      *
@@ -4356,12 +4358,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     *
      * Sends a form to a player and assigns a given ID to it
      * To open a form safely, please use {@link Form#send(Player)}
      *
      * @param form The form to open
-     * @param id The ID to assign the form to
+     * @param id   The ID to assign the form to
      * @return The id assigned to the form
      */
     public int sendForm(Form<?> form, int id) {
@@ -4370,7 +4371,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return id;
         }
 
-        if(!form.isViewer(this)) {
+        if (!form.isViewer(this)) {
             form.viewers().add(this);
         }
 
@@ -4587,7 +4588,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return The unique identifier assigned to the window if successfully added and opened; -1 if the window fails to be added.
      */
     public int addWindow(@NotNull Inventory inventory) {
-        if(getTopWindow().isPresent() || inventoryOpen) return -1;
+        if (getTopWindow().isPresent() || inventoryOpen) return -1;
         Preconditions.checkNotNull(inventory);
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
@@ -4605,10 +4606,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.removeWindow(inventory);
             return -1;
         }
-        for(int index : inventory.getContents().keySet()) {
+        for (int index : inventory.getContents().keySet()) {
             Item item = inventory.getUnclonedItem(index);
-            if(item instanceof ItemBundle bundle) {
-                if(bundle.hasCompoundTag()) {
+            if (item instanceof ItemBundle bundle) {
+                if (bundle.hasCompoundTag()) {
                     bundle.onChange(inventory);
                     inventory.sendSlot(index, this);
                 }
