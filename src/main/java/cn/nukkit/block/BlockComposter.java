@@ -206,14 +206,8 @@ public class BlockComposter extends BlockSolid {
     }
 
     public static void registerBlock(int chance, String blockId, int meta) {
-        int i = Registries.BLOCKSTATE_ITEMMETA.get(blockId, meta);
-        BlockState blockState;
-        if (i == 0) {
-            Block block = Registries.BLOCK.get(blockId);
-            blockState = block.getProperties().getDefaultState();
-        } else {
-            blockState = Registries.BLOCKSTATE.get(i);
-        }
+        Block block = Registries.BLOCK.get(blockId);
+        BlockState blockState = block.getProperties().getDefaultState();
         compostableBlocks.put(blockState, chance);
     }
 
