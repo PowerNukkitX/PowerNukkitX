@@ -71,25 +71,29 @@ public final class EntityQueryUtils {
     }
 
     public static void filterNonSpatial(List<Entity> list, EntityQueryOptions o) {
-        if (o == null) return;
-
-        boolean hasAny =
-            o.typeClass != null ||
-            o.nameTagEquals != null ||
-            (o.tags != null && !o.tags.isEmpty()) ||
-            (o.excludeTags != null && !o.excludeTags.isEmpty()) ||
-            o.predicate != null;
-
-        if (!hasAny) return;
+        if (o == null || !hasAnyNonSpatialFilters(o)) return;
 
         Predicate<Entity> p = e -> true;
-        if (o.typeClass != null)                           p = p.and(o.typeClass::isInstance);
-        if (o.nameTagEquals != null)                       p = p.and(e -> o.nameTagEquals.equals(e.getNameTag()));
-        if (o.tags != null && !o.tags.isEmpty())           p = p.and(e -> hasAllTags(e, o.tags));
-        if (o.excludeTags != null && !o.excludeTags.isEmpty()) p = p.and(e -> !hasAnyExcludedTag(e, o.excludeTags));
-        if (o.predicate != null)                           p = p.and(o.predicate);
+
+        p = andIf(p, o.typeClass != null, o.typeClass::isInstance);
+        p = andIf(p, o.nameTagEquals != null, e -> o.nameTagEquals.equals(e.getNameTag()));
+        p = andIf(p, o.tags != null && !o.tags.isEmpty(), e -> hasAllTags(e, o.tags));
+        p = andIf(p, o.excludeTags != null && !o.excludeTags.isEmpty(), e -> !hasAnyExcludedTag(e, o.excludeTags));
+        p = andIf(p, o.predicate != null, o.predicate);
 
         list.removeIf(p.negate());
+    }
+
+    private static boolean hasAnyNonSpatialFilters(EntityQueryOptions o) {
+        return o.typeClass != null
+            || o.nameTagEquals != null
+            || (o.tags != null && !o.tags.isEmpty())
+            || (o.excludeTags != null && !o.excludeTags.isEmpty())
+            || o.predicate != null;
+    }
+
+    private static Predicate<Entity> andIf(Predicate<Entity> base, boolean cond, Predicate<Entity> extra) {
+        return cond ? base.and(extra) : base;
     }
 
     private static void sortByDistanceAscending(List<Entity> list, Vector3 center) {
@@ -120,26 +124,42 @@ public final class EntityQueryUtils {
         }
     }
 
-    private static boolean isPositive(Integer v) {
-        return v != null && v > 0;
-    }
-
     public static void applyOrderingAndLimits(List<Entity> list, Vector3 center, EntityQueryOptions o) {
         if (list == null || list.isEmpty() || o == null) return;
 
-        int cap = isPositive(o.limit) ? o.limit : Integer.MAX_VALUE;
+        int cap = initialCap(o.limit);
 
-        if (isPositive(o.closest)) {
-            sortByDistanceAscending(list, center);
-            if (o.closest < cap) cap = o.closest;
-        } else if (isPositive(o.farthest)) {
-            sortByDistanceDescending(list, center);
-            if (o.farthest < cap) cap = o.farthest;
+        if (center != null) {
+            cap = applyOrdering(list, center, o, cap);
         }
 
         if (cap != Integer.MAX_VALUE) {
-        trimTo(list, cap);
+            trimTo(list, cap);
         }
+    }
+
+    private static int initialCap(Integer limit) {
+        return (limit != null && limit > 0) ? limit : Integer.MAX_VALUE;
+    }
+
+    private static boolean orderByClosest(EntityQueryOptions o) {
+        return o.closest != null && o.closest > 0;
+    }
+
+    private static boolean orderByFarthest(EntityQueryOptions o) {
+        return o.farthest != null && o.farthest > 0;
+    }
+
+    private static int applyOrdering(List<Entity> list, Vector3 center, EntityQueryOptions o, int cap) {
+        if (orderByClosest(o)) {
+            sortByDistanceAscending(list, center);
+            return Math.min(cap, o.closest);
+        }
+        if (orderByFarthest(o)) {
+            sortByDistanceDescending(list, center);
+            return Math.min(cap, o.farthest);
+        }
+        return cap;
     }
 
     public static boolean needsLocation(EntityQueryOptions o) {

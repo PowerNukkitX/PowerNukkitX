@@ -3167,7 +3167,7 @@ public class Level implements Metadatable {
                 int lz = cn.nukkit.math.NukkitMath.floorDouble(o.location.z);
 
                 for (Entity e : map.values()) {
-                    if (EntityQueryUtils.isAtBlock(e, lx, ly, lz)) {
+                    if (e != null && e.getFloorX() == lx && e.getFloorY() == ly && e.getFloorZ() == lz) {
                         out.add(e);
                     }
                 }
@@ -3196,19 +3196,32 @@ public class Level implements Metadatable {
 
         double startX, startZ, endX, endZ;
         if (hasVolume) {
-            double hx = Math.max(0.0, o.volume.x) * 0.5;
-            double hz = Math.max(0.0, o.volume.z) * 0.5;
-            startX = o.location.x - hx; endX = o.location.x + hx;
-            startZ = o.location.z - hz; endZ = o.location.z + hz;
+            double vx = Math.max(0.0, o.volume.x);
+            double vz = Math.max(0.0, o.volume.z);
+            startX = o.location.x;
+            endX   = o.location.x + vx;
+            startZ = o.location.z;
+            endZ   = o.location.z + vz;
+
             startX -= o.margin; endX += o.margin;
             startZ -= o.margin; endZ += o.margin;
-        } else {
+        } else if (hasRadius) {
             double r = Math.max(0.0, o.maxDistance);
             double scanPad = Math.min(o.margin, r);
             startX = o.location.x - (r + scanPad);
             endX   = o.location.x + (r + scanPad);
             startZ = o.location.z - (r + scanPad);
             endZ   = o.location.z + (r + scanPad);
+        } else {
+            out.addAll(this.entities.values());
+            if (hasLocation && (o.minDistance != null || o.maxDistance != null)) {
+                EntityQueryUtils.filterByDistanceBand(out, o.location, o.minDistance, o.maxDistance);
+            }
+            if (!out.isEmpty() && hasNonSpatialFilters) {
+                EntityQueryUtils.filterNonSpatial(out, o);
+            }
+            EntityQueryUtils.applyOrderingAndLimits(out, o.location, o);
+            return out;
         }
 
         int minCX = NukkitMath.floorDouble(startX * INV_CHUNK_SIZE);
@@ -3225,12 +3238,17 @@ public class Level implements Metadatable {
             .withDistanceBand(o.minDistance, o.maxDistance);
 
         if (hasVolume) {
-            double vMinX = o.location.x - Math.max(0.0, o.volume.x) * 0.5;
-            double vMaxX = o.location.x + Math.max(0.0, o.volume.x) * 0.5;
-            double vMinY = o.location.y - Math.max(0.0, o.volume.y) * 0.5;
-            double vMaxY = o.location.y + Math.max(0.0, o.volume.y) * 0.5;
-            double vMinZ = o.location.z - Math.max(0.0, o.volume.z) * 0.5;
-            double vMaxZ = o.location.z + Math.max(0.0, o.volume.z) * 0.5;
+            double vx = Math.max(0.0, o.volume.x);
+            double vy = Math.max(0.0, o.volume.y);
+            double vz = Math.max(0.0, o.volume.z);
+
+            double vMinX = o.location.x;
+            double vMaxX = o.location.x + vx;
+            double vMinY = o.location.y;
+            double vMaxY = o.location.y + vy;
+            double vMinZ = o.location.z;
+            double vMaxZ = o.location.z + vz;
+
             filter.withCuboid(vMinX, vMaxX, vMinY, vMaxY, vMinZ, vMaxZ);
         }
 

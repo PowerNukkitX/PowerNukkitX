@@ -125,7 +125,7 @@ public final class EntityQueryOptions {
     }
 
     /**
-     * Sets a cuboid volume (width, height, depth) centered at {@link #location}.
+     * Sets a cuboid volume (width, height, depth) starting at {@link #location}, extending toward the positive axes (+X, +Y, +Z).
      * <p>
      * Example: {@code new Vector3(10, 5, 10)} scans a 10×5×10 box.
      * Requires {@link #location(Vector3)}.
