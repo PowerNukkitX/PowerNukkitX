@@ -174,7 +174,7 @@ public class BlockReeds extends BlockFlowable {
         if (downId.equals(REEDS)) {
             return true;
         }
-        if (!down.is(BlockTags.DIRT) && !down.is(BlockTags.SAND)) {
+        if (!down.hasTag(BlockTags.DIRT) && !down.hasTag(BlockTags.SAND)) {
             return false;
         }
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {

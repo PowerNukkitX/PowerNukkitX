@@ -88,7 +88,7 @@ public abstract class BlockDoublePlant extends BlockFlowable {
         if(support instanceof BlockDoublePlant plant) {
             return !plant.isTopHalf();
         }
-        return support.is(BlockTags.DIRT);
+        return support.hasTag(BlockTags.DIRT);
     }
 
     @Override
