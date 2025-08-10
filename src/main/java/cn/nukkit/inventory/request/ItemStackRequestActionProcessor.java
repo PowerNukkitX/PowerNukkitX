@@ -13,9 +13,10 @@ public interface ItemStackRequestActionProcessor<T extends ItemStackRequestActio
     ActionResponse handle(T action, Player player, ItemStackRequestContext context);
 
     default boolean validateStackNetworkId(int expectedSNID, int clientSNID) {
-        //若客户端发来的stackNetworkId小于0，说明客户端保证数据无误并要求遵从服务端的数据
-        //这通常发生在当一个ItemStackRequest中有多个action时且多个action有相同的source/destination container
-        //第一个action检查完id后后面的action就不需要重复检查了
+        // If the stackNetworkId sent by the client is less than 0, it means the client guarantees the data is correct
+        // and requests to follow the server's data.
+        // This usually happens when an ItemStackRequest contains multiple actions that share the same source/destination container.
+        // After the ID is checked in the first action, the subsequent actions don't need to check it again.
         return clientSNID > 0 && expectedSNID != clientSNID;
     }
 }
