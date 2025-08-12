@@ -4150,10 +4150,10 @@ public class Level implements Metadatable {
 
     public Position getSafeSpawn(Vector3 spawn, int horizontalMaxOffset, boolean allowWaterUnder) {
         if (spawn == null)
-            spawn = this.getFuzzySpawnLocation();
+            spawn = (horizontalMaxOffset == 0) ? this.getSpawnLocation().add(0.5, 0, 0.5) : this.getFuzzySpawnLocation();
         if (spawn == null)
             return null;
-        if (standable(spawn, true))
+        if (standable(spawn, allowWaterUnder))
             return Position.fromObject(spawn, this);
 
         int maxY = getDimensionData().getMaxHeight();
