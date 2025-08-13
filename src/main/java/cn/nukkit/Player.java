@@ -2206,7 +2206,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setSpawn(Position pos, SpawnPointType spawnPointType) {
         Preconditions.checkNotNull(pos);
         Preconditions.checkNotNull(pos.level);
-        this.spawnPoint = new Position(pos.x, pos.y, pos.z, level);
+        this.spawnPoint = new Position(pos.x, pos.y, pos.z, pos.level);
         this.spawnPointType = spawnPointType;
         SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
         pk.spawnType = SetSpawnPositionPacket.TYPE_PLAYER_SPAWN;
