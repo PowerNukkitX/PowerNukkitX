@@ -9,6 +9,7 @@ import cn.nukkit.form.element.custom.ElementDropdown;
 import cn.nukkit.form.element.custom.ElementInput;
 import cn.nukkit.form.element.custom.ElementSlider;
 import cn.nukkit.form.element.custom.ElementStepSlider;
+import cn.nukkit.form.element.custom.ElementSubmit;
 import cn.nukkit.form.element.custom.ElementToggle;
 import cn.nukkit.form.response.CustomResponse;
 import cn.nukkit.form.response.ElementResponse;
@@ -92,7 +93,7 @@ public class CustomForm extends Form<CustomResponse> {
 
         String submitText = null;
         for (ElementCustom element : this.elements()) {
-            if (element instanceof cn.nukkit.form.element.custom.ElementSubmit s) {
+            if (element instanceof ElementSubmit s) {
                 submitText = s.text();
                 continue;
             }
@@ -127,7 +128,7 @@ public class CustomForm extends Form<CustomResponse> {
 
         ArrayList<ElementCustom> effective = new ArrayList<>(this.elements.size());
         for (ElementCustom e : this.elements) {
-            if (!(e instanceof cn.nukkit.form.element.custom.ElementSubmit)) {
+            if (!(e instanceof ElementSubmit)) {
                 effective.add(e);
             }
         }
