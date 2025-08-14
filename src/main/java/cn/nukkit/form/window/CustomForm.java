@@ -37,12 +37,19 @@ public class CustomForm extends Form<CustomResponse> {
 
     protected ObjectArrayList<ElementCustom> elements = new ObjectArrayList<>();
 
+    protected String submitButton;
+
     public CustomForm(String title) {
         super(title);
     }
 
     public CustomForm addElement(ElementCustom element) {
         this.elements.add(element);
+        return this;
+    }
+
+    public CustomForm submitButton() {
+        this.submitButton = null;
         return this;
     }
 
@@ -91,6 +98,11 @@ public class CustomForm extends Form<CustomResponse> {
         this.elements().forEach(element -> elementArray.add(element.toJson()));
 
         object.add("content", elementArray);
+
+        if (this.submitButton != null && !this.submitButton.isEmpty()) {
+            object.addProperty("submit", this.submitButton);
+        }
+
         return object.toString();
     }
 

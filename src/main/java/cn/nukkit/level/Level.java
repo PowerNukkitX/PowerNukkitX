@@ -4153,7 +4153,7 @@ public class Level implements Metadatable {
             spawn = (horizontalMaxOffset == 0) ? this.getSpawnLocation().add(0.5, 0, 0.5) : this.getFuzzySpawnLocation();
         if (spawn == null)
             return null;
-        if (standable(spawn, allowWaterUnder))
+        if (standable(spawn, allowWaterUnder) || horizontalMaxOffset == 0)
             return Position.fromObject(spawn, this);
 
         int maxY = getDimensionData().getMaxHeight();
