@@ -24,6 +24,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -88,9 +89,22 @@ public class CustomForm extends Form<CustomResponse> {
         object.addProperty("title", this.title);
 
         JsonArray elementArray = new JsonArray();
-        this.elements().forEach(element -> elementArray.add(element.toJson()));
+
+        String submitText = null;
+        for (ElementCustom element : this.elements()) {
+            if (element instanceof cn.nukkit.form.element.custom.ElementSubmit s) {
+                submitText = s.text();
+                continue;
+            }
+            elementArray.add(element.toJson());
+        }
 
         object.add("content", elementArray);
+
+        if (submitText != null) {
+            object.addProperty("submit", submitText);
+        }
+
         return object.toString();
     }
 
@@ -111,13 +125,18 @@ public class CustomForm extends Form<CustomResponse> {
 
         List<String> elementResponses = JSONUtils.from(formData, LIST_STRING_TYPE);
 
-        for (int i = 0, responseSize = elementResponses.size(); i < responseSize; i++) {
-            if (i >= this.elements.size()) {
-                break;
+        ArrayList<ElementCustom> effective = new ArrayList<>(this.elements.size());
+        for (ElementCustom e : this.elements) {
+            if (!(e instanceof cn.nukkit.form.element.custom.ElementSubmit)) {
+                effective.add(e);
             }
+        }
+
+        for (int i = 0, responseSize = elementResponses.size(); i < responseSize; i++) {
+            if (i >= effective.size()) break;
 
             String responseData = elementResponses.get(i);
-            ElementCustom element = this.elements.get(i);
+            ElementCustom element = effective.get(i);
 
             Object elementResponse = null;
 
