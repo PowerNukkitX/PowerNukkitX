@@ -9,7 +9,6 @@ import cn.nukkit.form.element.custom.ElementDropdown;
 import cn.nukkit.form.element.custom.ElementInput;
 import cn.nukkit.form.element.custom.ElementSlider;
 import cn.nukkit.form.element.custom.ElementStepSlider;
-import cn.nukkit.form.element.custom.ElementSubmit;
 import cn.nukkit.form.element.custom.ElementToggle;
 import cn.nukkit.form.response.CustomResponse;
 import cn.nukkit.form.response.ElementResponse;
@@ -25,7 +24,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -39,12 +37,19 @@ public class CustomForm extends Form<CustomResponse> {
 
     protected ObjectArrayList<ElementCustom> elements = new ObjectArrayList<>();
 
+    protected String submitButton;
+
     public CustomForm(String title) {
         super(title);
     }
 
     public CustomForm addElement(ElementCustom element) {
         this.elements.add(element);
+        return this;
+    }
+
+    public CustomForm submitButton() {
+        this.submitButton = null;
         return this;
     }
 
@@ -90,20 +95,12 @@ public class CustomForm extends Form<CustomResponse> {
         object.addProperty("title", this.title);
 
         JsonArray elementArray = new JsonArray();
-
-        String submitText = null;
-        for (ElementCustom element : this.elements()) {
-            if (element instanceof ElementSubmit s) {
-                submitText = s.text();
-                continue;
-            }
-            elementArray.add(element.toJson());
-        }
+        this.elements().forEach(element -> elementArray.add(element.toJson()));
 
         object.add("content", elementArray);
 
-        if (submitText != null) {
-            object.addProperty("submit", submitText);
+        if (this.submitButton != null && !this.submitButton.isEmpty()) {
+            object.addProperty("submit", this.submitButton);
         }
 
         return object.toString();
@@ -126,18 +123,13 @@ public class CustomForm extends Form<CustomResponse> {
 
         List<String> elementResponses = JSONUtils.from(formData, LIST_STRING_TYPE);
 
-        ArrayList<ElementCustom> effective = new ArrayList<>(this.elements.size());
-        for (ElementCustom e : this.elements) {
-            if (!(e instanceof ElementSubmit)) {
-                effective.add(e);
-            }
-        }
-
         for (int i = 0, responseSize = elementResponses.size(); i < responseSize; i++) {
-            if (i >= effective.size()) break;
+            if (i >= this.elements.size()) {
+                break;
+            }
 
             String responseData = elementResponses.get(i);
-            ElementCustom element = effective.get(i);
+            ElementCustom element = this.elements.get(i);
 
             Object elementResponse = null;
 
