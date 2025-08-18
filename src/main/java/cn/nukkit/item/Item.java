@@ -818,7 +818,18 @@ public abstract class Item implements Cloneable, ItemID {
         return Objects.equals(this.id, Block.AIR) || this.count <= 0;
     }
 
+    /**
+     * @deprecated Use {@link #hasTag(String)} instead.
+     */
+    @Deprecated
     public boolean is(final String itemTag) {
+        return hasTag(itemTag);
+    }
+
+    /**
+     * @return true if item has a string tag
+     */
+    public boolean hasTag(final String itemTag) {
         boolean contains = ItemTags.getTagSet(this.getId()).contains(itemTag);
         if (contains) return true;
         return ItemTags.getTagSet(this.getBlockId()).contains(itemTag);
