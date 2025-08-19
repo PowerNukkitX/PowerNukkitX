@@ -705,27 +705,33 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Remove a DynamicProperty by key Id.
+     * Remove a DynamicProperty by key id.
      *
      * @param key the key id of the DynamicProperty
      */
     public Item removeDynamicProperty(String key) {
-        CompoundTag group = getDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
-        if (group == null) return this;
-        if (group.contains(key)) {
-            group.remove(key);
-            saveDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID(), group);
-        }
+        CompoundTag root = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
+        CompoundTag dyn  = root.getCompound(DP_ROOT);
+        if (dyn == null) return this;
+        CompoundTag group = dyn.getCompound(DP_DEFAULT_GROUP_UUID());
+        if (group == null || !group.contains(key)) return this;
+
+        group.remove(key);
+        this.setNamedTag(root);
         return this;
     }
+
 
     /**
      * Remove all DynamicProperties on the item.
      */
     public Item clearDynamicProperties() {
-        CompoundTag group = getDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
-        if (group == null) return this;
-        saveDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID(), new CompoundTag());
+        CompoundTag root = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
+        CompoundTag dyn  = root.getCompound(DP_ROOT);
+        if (dyn == null) return this;
+
+        dyn.putCompound(DP_DEFAULT_GROUP_UUID(), new CompoundTag());
+        this.setNamedTag(root);
         return this;
     }
 
@@ -812,9 +818,9 @@ public abstract class Item implements Cloneable, ItemID {
             return this;
         }
         ListTag<FloatTag> list = new ListTag<>();
-        list.add(new FloatTag("", (float) vec3.x));
-        list.add(new FloatTag("", (float) vec3.y));
-        list.add(new FloatTag("", (float) vec3.z));
+        list.add(new FloatTag((float) vec3.x));
+        list.add(new FloatTag((float) vec3.y));
+        list.add(new FloatTag((float) vec3.z));
         CompoundTag g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
         g.putList(key, list);
         saveDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID(), g);
@@ -840,9 +846,9 @@ public abstract class Item implements Cloneable, ItemID {
             return this;
         }
         ListTag<FloatTag> list = new ListTag<>();
-        list.add(new FloatTag("", (float) x));
-        list.add(new FloatTag("", (float) y));
-        list.add(new FloatTag("", (float) z));
+        list.add(new FloatTag((float) x));
+        list.add(new FloatTag((float) y));
+        list.add(new FloatTag((float) z));
         CompoundTag g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
         g.putList(key, list);
         saveDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID(), g);
@@ -858,16 +864,20 @@ public abstract class Item implements Cloneable, ItemID {
     public Double getDoubleDynamicProperty(String key) {
         Tag t = findDynamicPropertyTagInConfiguredGroup(key);
         if (t == null) return null;
-        if (t instanceof DoubleTag) return ((DoubleTag) t).data;
-        if (t instanceof FloatTag)  return (double) ((FloatTag)  t).data;
-        if (t instanceof IntTag)    return (double) ((IntTag)   t).data;
-        if (t instanceof LongTag)   return (double) ((LongTag)  t).data;
-        if (t instanceof ShortTag)  return (double) ((ShortTag) t).data;
-        if (t instanceof ByteTag)   return (double) ((ByteTag)  t).data;
-        if (t instanceof StringTag) {
-            try { return Double.parseDouble(((StringTag) t).data.trim()); } catch (NumberFormatException ignored) {}
-        }
-        return null;
+
+        return switch (t) {
+            case DoubleTag d -> d.data;
+            case FloatTag  f -> (double) f.data;
+            case IntTag    i -> (double) i.data;
+            case LongTag   l -> (double) l.data;
+            case ShortTag  s -> (double) s.data;
+            case ByteTag   b -> (double) b.data;
+            case StringTag s -> {
+                try { yield Double.parseDouble(s.data.trim()); }
+                catch (NumberFormatException ignored) { yield null; }
+            }
+            default -> null;
+        };
     }
 
     /**
@@ -971,14 +981,17 @@ public abstract class Item implements Cloneable, ItemID {
     public String getStringDynamicProperty(String key) {
         Tag t = findDynamicPropertyTagInConfiguredGroup(key);
         if (t == null) return null;
-        if (t instanceof StringTag) return ((StringTag) t).data;
-        if (t instanceof DoubleTag) return String.valueOf(((DoubleTag) t).data);
-        if (t instanceof FloatTag)  return String.valueOf(((FloatTag)  t).data);
-        if (t instanceof IntTag)    return String.valueOf(((IntTag)    t).data);
-        if (t instanceof LongTag)   return String.valueOf(((LongTag)   t).data);
-        if (t instanceof ShortTag)  return String.valueOf(((ShortTag)  t).data);
-        if (t instanceof ByteTag)   return String.valueOf(((ByteTag)   t).data);
-        return null;
+
+        return switch (t) {
+            case StringTag s -> s.data;
+            case DoubleTag d -> String.valueOf(d.data);
+            case FloatTag  f -> String.valueOf(f.data);
+            case IntTag    i -> String.valueOf(i.data);
+            case LongTag   l -> String.valueOf(l.data);
+            case ShortTag  s -> String.valueOf(s.data);
+            case ByteTag   b -> String.valueOf(b.data);
+            default -> null;
+        };
     }
 
     /**
@@ -1001,15 +1014,20 @@ public abstract class Item implements Cloneable, ItemID {
      */
     public Vector3 getVec3DynamicProperty(String key) {
         Tag t = findDynamicPropertyTagInConfiguredGroup(key);
-        if (!(t instanceof ListTag)) return null;
-        ListTag<?> list = (ListTag<?>) t;
-        if (list.size() != 3 || !(list.get(0) instanceof FloatTag) || !(list.get(1) instanceof FloatTag) || !(list.get(2) instanceof FloatTag)) {
-            return null;
+        if (t == null) return null;
+
+        if (t instanceof ListTag<?> list &&
+            list.size() == 3 &&
+            list.get(0) instanceof FloatTag fx &&
+            list.get(1) instanceof FloatTag fy &&
+            list.get(2) instanceof FloatTag fz) {
+
+            float x = fx.data;
+            float y = fy.data;
+            float z = fz.data;
+            return new Vector3(x, y, z);
         }
-        float x = ((FloatTag) list.get(0)).data;
-        float y = ((FloatTag) list.get(1)).data;
-        float z = ((FloatTag) list.get(2)).data;
-        return new Vector3(x, y, z);
+        return null;
     }
 
     // Dynamic Properties Helpers start
@@ -1024,14 +1042,17 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     private CompoundTag ensureDynamicPropertiesGroup(String groupId) {
-        CompoundTag root = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
+        CompoundTag root = this.getOrCreateNamedTag();
         CompoundTag dyn  = root.getCompound(DP_ROOT);
-        if (dyn == null) dyn = new CompoundTag();
+        if (dyn == null) {
+            dyn = new CompoundTag();
+            root.putCompound(DP_ROOT, dyn);
+        }
         CompoundTag group = dyn.getCompound(groupId);
-        if (group == null) group = new CompoundTag();
-        dyn.putCompound(groupId, group);
-        root.putCompound(DP_ROOT, dyn);
-        this.setNamedTag(root);
+        if (group == null) {
+            group = new CompoundTag();
+            dyn.putCompound(groupId, group);
+        }
         return group;
     }
 
@@ -1044,11 +1065,18 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     private void saveDynamicPropertiesGroup(String groupId, CompoundTag group) {
-        CompoundTag root = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
+        CompoundTag root = this.getOrCreateNamedTag();
         CompoundTag dyn  = root.getCompound(DP_ROOT);
-        if (dyn == null) dyn = new CompoundTag();
-        dyn.putCompound(groupId, group);
-        root.putCompound(DP_ROOT, dyn);
+        if (dyn == null) {
+            dyn = new CompoundTag();
+            root.putCompound(DP_ROOT, dyn);
+        }
+
+        CompoundTag existing = dyn.getCompound(groupId);
+        if (existing != group) {
+            dyn.putCompound(groupId, group);
+        }
+
         this.setNamedTag(root);
     }
 

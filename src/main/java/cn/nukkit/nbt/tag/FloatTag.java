@@ -14,18 +14,6 @@ public class FloatTag extends NumberTag<Float> {
         this.data = data;
     }
 
-    public FloatTag(String name) {
-        this.data = 0f;
-    }
-
-    public FloatTag(String name, float data) {
-        this.data = data;
-    }
-
-    public FloatTag(String name, double data) {
-        this.data = (float) data;
-    }
-
     @Override
     public Float getData() {
         return data;
