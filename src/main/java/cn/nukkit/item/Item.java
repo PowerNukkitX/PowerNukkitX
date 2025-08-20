@@ -710,7 +710,8 @@ public abstract class Item implements Cloneable, ItemID {
      * @param key the key id of the DynamicProperty
      */
     public Item removeDynamicProperty(String key) {
-        CompoundTag root = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
+        if (!this.hasCompoundTag()) return this;
+        CompoundTag root = this.getNamedTag();
         CompoundTag dyn  = root.getCompound(DP_ROOT);
         if (dyn == null) return this;
         CompoundTag group = dyn.getCompound(DP_DEFAULT_GROUP_UUID());
@@ -726,7 +727,8 @@ public abstract class Item implements Cloneable, ItemID {
      * Remove all DynamicProperties on the item.
      */
     public Item clearDynamicProperties() {
-        CompoundTag root = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
+        if (!this.hasCompoundTag()) return this;
+        CompoundTag root = this.getNamedTag();
         CompoundTag dyn  = root.getCompound(DP_ROOT);
         if (dyn == null) return this;
 
