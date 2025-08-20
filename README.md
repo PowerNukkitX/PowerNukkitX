@@ -15,11 +15,11 @@
 
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://www.minecraft.net/en-us/article/minecraft-1-21-93-bedrock-changelog">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.93%20(Bedrock)-56383E" />
+   <a href="https://www.minecraft.net/en-us/article/minecraft-1-21-100-bedrock-changelog">
+      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.100%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
-      <img alt="Protocol" src="https://img.shields.io/badge/protocol-819-blue" />
+      <img alt="Protocol" src="https://img.shields.io/badge/protocol-827-blue" />
    </a>
    <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
       <img alt="Action" src="https://img.shields.io/badge/action-all%20builds-FF9B21" />
