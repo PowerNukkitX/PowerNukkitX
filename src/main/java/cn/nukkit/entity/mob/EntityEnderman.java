@@ -122,6 +122,11 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("enderman", "monster", "mob");
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return this.getDataFlag(EntityFlag.ANGRY);
     }

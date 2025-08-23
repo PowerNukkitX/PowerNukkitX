@@ -31,6 +31,11 @@ public class EntityCamel extends EntityAnimal {
         return CAMEL;
     }
 
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("camel", "mob");
+    }
+
     public EntityCamel(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }

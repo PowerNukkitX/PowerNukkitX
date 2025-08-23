@@ -292,6 +292,11 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
         return "Cat";
     }
 
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("cat", "mob");
+    }
+
     /**
      * 绑定猫繁殖物品
      * WIKI了解只能使用生鲑鱼与生鳕鱼才能繁殖

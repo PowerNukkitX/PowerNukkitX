@@ -86,4 +86,9 @@ public class EntityGoat extends EntityAnimal implements EntityWalkable {
     public String getOriginalName() {
         return "Goat";
     }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("goat", "animal");
+    }
 }

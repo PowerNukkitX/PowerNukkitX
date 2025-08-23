@@ -99,6 +99,11 @@ public class EntityBlaze extends EntityMob implements EntityFlyable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("blaze", "monster", "mob");
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }

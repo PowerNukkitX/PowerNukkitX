@@ -5,6 +5,9 @@ import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,13 +18,10 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntitySmite, En
     @NotNull public String getIdentifier() {
         return SKELETON_HORSE;
     }
-    
 
     public EntitySkeletonHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    
 
     @Override
     public float getWidth() {
@@ -52,6 +52,11 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntitySmite, En
     @Override
     public String getOriginalName() {
         return "Skeleton Horse";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("skeletonhorse", "undead", "mob");
     }
 
     @Override

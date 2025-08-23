@@ -106,6 +106,11 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("vindicator", "monster", "illager", "mob");
+    }
+
+    @Override
     public Integer getExperienceDrops() {
         return Math.toIntExact(isBaby() ? 1 : 5 + (getArmorInventory().getContents().values().stream().filter(Item::isArmor).count() * ThreadLocalRandom.current().nextInt(1, 4)));
     }

@@ -4,6 +4,9 @@ import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -20,12 +23,14 @@ public class EntityParrot extends EntityAnimal implements EntityFlyable {
         super(chunk, nbt);
     }
 
-    
-
-
     @Override
     public String getOriginalName() {
         return "Parrot";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("parrot_wild", "mob");
     }
 
     @Override

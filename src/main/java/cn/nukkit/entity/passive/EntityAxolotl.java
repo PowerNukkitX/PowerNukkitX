@@ -188,6 +188,11 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("axolotl", "mob");
+    }
+
+    @Override
     public boolean isBreedingItem(Item item) {
         return item.getId().equals(Item.TROPICAL_FISH_BUCKET);
     }

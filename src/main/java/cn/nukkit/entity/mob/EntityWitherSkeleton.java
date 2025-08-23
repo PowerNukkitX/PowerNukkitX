@@ -125,6 +125,11 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("wither", "monster", "undead", "skeleton", "mob");
+    }
+
+    @Override
     public boolean isUndead() {
         return true;
     }

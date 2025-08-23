@@ -101,6 +101,12 @@ public class EntityMule extends EntityAnimal implements EntityWalkable {
     public String getOriginalName() {
         return "Mule";
     }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("mule", "mob");
+    }
+
     @Override
     public boolean isBreedingItem(Item item) {
         return item.getId().equals(Item.GOLDEN_APPLE) || item.getId().equals(Item.GOLDEN_CARROT);

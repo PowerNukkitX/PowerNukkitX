@@ -92,6 +92,11 @@ public class EntityFrog extends EntityAnimal implements EntityWalkable, EntityVa
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("frog", "mob");
+    }
+
+    @Override
     public boolean isBreedingItem(Item item) {
         return item.getId().equals(Item.SLIME_BALL);
     }

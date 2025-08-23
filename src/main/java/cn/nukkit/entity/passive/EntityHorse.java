@@ -204,6 +204,11 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("horse", "mob");
+    }
+
+    @Override
     public int randomVariant() {
         return getAllVariant()[new Random(System.currentTimeMillis()).nextInt(getAllVariant().length)];
     }

@@ -67,6 +67,11 @@ public class EntitySniffer extends EntityAnimal {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("sniffer", "mob");
+    }
+
+    @Override
     protected void initEntity() {
         this.setMaxHealth(14);
         super.initEntity();

@@ -110,6 +110,11 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("slime", "monster", "mob");
+    }
+
+    @Override
     public Item[] getDrops() {
         if(getVariant() == SIZE_SMALL) {
             if(getLastDamageCause() != null) {

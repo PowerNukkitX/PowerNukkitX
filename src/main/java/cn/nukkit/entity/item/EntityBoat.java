@@ -585,6 +585,11 @@ public class EntityBoat extends EntityVehicle {
         return "Boat";
     }
 
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("boat", "inanimate");
+    }
+
     public void onInput(Location loc) {
         this.move(loc.x - this.x, loc.y - this.y, loc.z - this.z);
         this.yaw = loc.yaw;

@@ -65,6 +65,14 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
     }
 
     @Override
+    public Set<String> typeFamily() {
+        if (this.isBaby()) {
+            return Set.of("turtle", "baby_turtle", "mob");
+        }
+        return Set.of("turtle", "mob");
+    }
+
+    @Override
     public float getWidth() {
         if (this.isBaby()) {
             return 0.6f;

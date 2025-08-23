@@ -67,6 +67,11 @@ public class EntityBat extends EntityAnimal implements EntityFlyable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("bat", "mob");
+    }
+
+    @Override
     public Integer getExperienceDrops() {
         return 0;
     }

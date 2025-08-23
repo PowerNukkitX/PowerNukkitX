@@ -5,6 +5,9 @@ import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 public class EntityZombieVillagerV2 extends EntityMob implements EntityWalkable, EntitySmite {
@@ -39,6 +42,11 @@ public class EntityZombieVillagerV2 extends EntityMob implements EntityWalkable,
     @Override
     public String getOriginalName() {
         return "Zombie VillagerV2";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("zombie", "zombie_villager", "undead", "monster", "mob");
     }
 
     @Override

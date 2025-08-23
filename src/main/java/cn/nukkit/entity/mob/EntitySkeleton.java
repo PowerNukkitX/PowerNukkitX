@@ -67,6 +67,11 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("skeleton", "undead", "monster", "mob");
+    }
+
+    @Override
     public Item[] getDrops() {
         return new Item[]{Item.get(Item.BONE), Item.get(Item.ARROW)};
     }

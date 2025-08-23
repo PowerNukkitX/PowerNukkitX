@@ -20,6 +20,7 @@ import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.utils.MinecartType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -145,6 +146,11 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     @Override
     public String getOriginalName() {
         return getType().getName();
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("minecart", "inanimate");
     }
 
     @Override

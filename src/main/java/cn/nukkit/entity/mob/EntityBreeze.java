@@ -33,6 +33,11 @@ public class EntityBreeze extends EntityMob {
         return BREEZE;
     }
 
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("breeze", "monster", "mob");
+    }
+
     public EntityBreeze(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }

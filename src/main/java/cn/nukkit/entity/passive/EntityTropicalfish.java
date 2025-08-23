@@ -7,6 +7,7 @@ import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -31,12 +32,14 @@ public class EntityTropicalfish extends EntityFish {
         super(chunk, nbt);
     }
 
-    
-
-
     @Override
     public String getOriginalName() {
         return "Tropical Fish";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("tropicalfish", "fish");
     }
 
     @Override

@@ -104,6 +104,11 @@ public class EntityAllay extends EntityMob implements EntityFlyable, EntityOwnab
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("allay", "mob");
+    }
+
+    @Override
     public Integer getExperienceDrops() {
         return 0;
     }

@@ -241,6 +241,11 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("wolf", "mob");
+    }
+
+    @Override
     public void initEntity() {
         setMaxHealth(8);
         super.initEntity();

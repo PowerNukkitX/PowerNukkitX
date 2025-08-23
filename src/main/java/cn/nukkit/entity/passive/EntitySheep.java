@@ -123,6 +123,10 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         return "Sheep";
     }
 
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("sheep", "mob");
+    }
 
     @Override
     public void initEntity() {

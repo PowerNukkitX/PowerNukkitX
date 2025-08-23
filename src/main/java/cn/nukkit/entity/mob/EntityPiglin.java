@@ -218,6 +218,11 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("piglin", "mob");
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return !this.isBaby();
     }

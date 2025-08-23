@@ -99,7 +99,12 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable {
 
     @Override
     public String getOriginalName() {
-        return "Donkey";
+        return "donkey";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("xxxxxxx", "mob");
     }
 
     @Override

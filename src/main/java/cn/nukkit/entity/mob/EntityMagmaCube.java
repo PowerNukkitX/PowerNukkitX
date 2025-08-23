@@ -115,6 +115,11 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("magmacube", "monster", "mob");
+    }
+
+    @Override
     public Item[] getDrops() {
         if(getLastDamageCause() != null) {
             if(lastDamageCause instanceof EntityDamageByEntityEvent event) {

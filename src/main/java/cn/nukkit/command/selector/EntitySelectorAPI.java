@@ -32,8 +32,8 @@ import static cn.nukkit.command.selector.SelectorType.SELF;
 import static cn.nukkit.command.selector.SelectorType.parseSelectorType;
 
 /**
- * 目标选择器API<p/>
- * 通过{@code getAPI()}方法获取API对象
+ * Target Selector API<p/>
+ * Pass{@code getAPI()} method to obtain API object
  */
 
 
@@ -47,7 +47,7 @@ public class EntitySelectorAPI {
     public static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprs]|initiator)(?:\\[(.*)])?$");
     public static final String ARGUMENT_JOINER = "=";
     /**
-     * 对目标选择器文本的预解析缓存
+     * Pre-parsed caching of target selector text
      */
     public static final Cache<String, Map<String, List<String>>> ARGS_CACHE = Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
     public static final Cache<String, Boolean> MATCHES_CACHE = Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
@@ -80,6 +80,7 @@ public class EntitySelectorAPI {
         API.registerArgument(new LM());
         API.registerArgument(new M());
         API.registerArgument(new Type());
+        API.registerArgument(new Family());
         API.registerArgument(new RX());
         API.registerArgument(new RXM());
         API.registerArgument(new RY());
@@ -88,61 +89,75 @@ public class EntitySelectorAPI {
     }
 
     /**
-     * 通过给定的命令发送者和目标选择器文本匹配实体
-     * @param sender 命令发送者
-     * @param token 目标选择器文本
-     * @return 目标实体
+     * Matches entities with the given command sender and target selector text.
+     * @param sender Command sender
+     * @param token Target selector text
+     * @return Target Entity
      */
     public List<Entity> matchEntities(CommandSender sender, String token) throws SelectorSyntaxException {
         var cachedMatches = MATCHES_CACHE.getIfPresent(token);
-        //先从缓存确认不是非法选择器
+        // First confirm from the cache that it is not an illegal selector
         if (cachedMatches != null && !cachedMatches)
             throw new SelectorSyntaxException("Malformed entity selector token");
         Matcher matcher = ENTITY_SELECTOR.matcher(token);
-        //非法目标选择器文本
+        // Illegal target selector text
         if (!matcher.matches()) {
-            //记录非法选择器到缓存
+            // Record illegal selectors to cache
             MATCHES_CACHE.put(token, false);
             throw new SelectorSyntaxException("Malformed entity selector token");
         }
-        //查询是否存在预解析结果。若不存在则解析
+        // Check if there is a pre-parsed result. If not, parse it.
         Map<String, List<String>> arguments = ARGS_CACHE.getIfPresent(token);
         if (arguments == null) {
             arguments = parseArgumentMap(matcher.group(2));
             ARGS_CACHE.put(token, arguments);
         }
-        //获取克隆过的执行者位置信息
+
+        if (arguments.containsKey("family") && !arguments.get("family").isEmpty()
+                && arguments.containsKey("type") && !arguments.get("type").isEmpty()) {
+            MATCHES_CACHE.put(token, false);
+            throw new SelectorSyntaxException("Malformed selector: 'type' and 'family' cannot be used together");
+        }
+
+        // Get the location information of the cloned executor
         var senderLocation = sender.getLocation();
-        //获取选择器类型
+        // Get the selector type
         var selectorType = parseSelectorType(matcher.group(1));
-        //根据选择器类型先确定实体检测范围
+        // Determine the entity detection scope first according to the selector type
         List<Entity> entities;
         if (selectorType != SELF) {
             entities = Lists.newArrayList(senderLocation.level.getEntities());
         } else {
             if (sender.isEntity())
                 entities = Lists.newArrayList(sender.asEntity());
-            //没有符合条件的实体
+            // No entities matching the criteria
             else return Lists.newArrayList();
         }
-        //若是NPC触发选择器，则只处理触发NPC对话的玩家
+        // If the selector is triggered by an NPC, only the player who triggered the NPC dialogue will be processed
         if (selectorType == NPC_INITIATOR) {
             if (sender instanceof NPCCommandSender npc)
                 entities = Lists.newArrayList(npc.getInitiator());
             else
                 return Lists.newArrayList();
         }
-        //对于确定的玩家类型选择器，排除掉不是玩家的实体
+        // For a specific player type selector, exclude entities that are not players.
         switch (selectorType) {
             case ALL_PLAYERS, NEAREST_PLAYER ->
                 entities.removeIf(e -> !(e instanceof Player));
             default -> {}
         }
-        //没符合条件的实体了，return
+        // There are no entities that meet the conditions, return
         if (entities.isEmpty()) return entities;
-        //参照坐标
+
+        boolean hasFamilyArg = arguments.containsKey("family") && !arguments.get("family").isEmpty();
+
+        // Reference coordinates
         for (var arg : orderedArgs) {
             try {
+                if (hasFamilyArg && "type".equals(arg.getKeyName())) {
+                    continue; // extra safety; main path now throws earlier
+                }
+
                 if (!arg.isFilter()) {
                     Predicate<Entity> predicate;
                     if (arguments.containsKey(arg.getKeyName()))
@@ -161,10 +176,10 @@ public class EntitySelectorAPI {
             } catch (Throwable t) {
                 throw new SelectorSyntaxException("Error while parsing selector argument: " + arg.getKeyName(), t);
             }
-            //没符合条件的实体了，return
+            // There are no entities that meet the conditions, return
             if (entities.isEmpty()) return entities;
         }
-        //随机选择一个
+        // Randomly select one
         if (selectorType == RANDOM_PLAYER && !entities.isEmpty()) {
             var index = ThreadLocalRandom.current().nextInt(entities.size()) + 1;
             Entity currentEntity = null;
@@ -178,7 +193,7 @@ public class EntitySelectorAPI {
             }
             return Lists.newArrayList(currentEntity);
         }
-        //选择最近玩家
+        // Select Recent Player
         if (selectorType == NEAREST_PLAYER && entities.size() != 1) {
             Entity nearest = null;
             double min = Double.MAX_VALUE;
@@ -195,18 +210,18 @@ public class EntitySelectorAPI {
     }
 
     /**
-     * 检查给定文本是否是合法目标选择器
-     * @param token 给定文本
-     * @return 是否是合法目标选择器
+     * Checks if the given text is a valid target selector
+     * @param token Given text
+     * @return Is it a valid target selector?
      */
     public boolean checkValid(String token) {
         return MATCHES_CACHE.get(token, k -> ENTITY_SELECTOR.matcher(token).matches());
     }
 
     /**
-     * 注册一个选择器参数
-     * @param argument 选择器参数对象
-     * @return 是否注册成功（若已存在相同key值的选择器参数则注册失败，返回false）
+     * Register a selector parameter
+     * @param argument Selector parameter object
+     * @return Whether the registration is successful (if a selector parameter with the same key value already exists, the registration fails and returns false)
      */
     public boolean registerArgument(ISelectorArgument argument) {
         if (!registry.containsKey(argument.getKeyName())) {

@@ -118,6 +118,11 @@ public class EntityZombieVillager extends EntityZombie implements EntityWalkable
         return "Zombie Villager";
     }
 
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("zombie", "zombie_villager", "undead", "monster", "mob");
+    }
+
     protected void transformVillager() {
         this.close();
         getArmorInventory().getContents().values().forEach(i -> getLevel().dropItem(this, i));

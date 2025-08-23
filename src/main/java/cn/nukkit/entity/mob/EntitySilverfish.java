@@ -63,6 +63,11 @@ public class EntitySilverfish extends EntityMob implements EntityWalkable, Entit
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("silverfish", "monster", "lightweight", "mob", "arthropod");
+    }
+
+    @Override
     public float getWidth() {
         return 0.4f;
     }

@@ -19,6 +19,9 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
+
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -77,6 +80,11 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Ent
     @Override
     public String getOriginalName() {
         return "Happy Ghast";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("happy_ghast", "mob");
     }
 
     @Override

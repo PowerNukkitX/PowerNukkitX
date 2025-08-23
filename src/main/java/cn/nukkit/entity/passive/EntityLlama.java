@@ -80,6 +80,11 @@ public class EntityLlama extends EntityAnimal {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("llama", "mob");
+    }
+
+    @Override
     public void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();

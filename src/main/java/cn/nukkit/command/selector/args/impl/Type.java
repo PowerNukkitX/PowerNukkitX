@@ -61,7 +61,7 @@ public class Type extends CachedSimpleSelectorArgument {
     protected String completionPrefix(String type) {
         var completed = type.contains(":") ? type : "minecraft:" + type;
         if (!ENTITY_TYPE2ID.containsKey(type) && !ENTITY_TYPE2ID.containsKey(completed)) {
-            //是自定义生物，不需要补全
+            // It is a custom creature and does not need to be completed
             return type;
         }
         return completed;
@@ -69,7 +69,7 @@ public class Type extends CachedSimpleSelectorArgument {
 
     protected boolean isType(Entity entity, String type) {
         if (entity instanceof Player)
-            //player需要特判，因为EntityHuman的getNetworkId()返回-1
+            // The player needs a special judgment because EntityHuman's getNetworkId() returns -1
             return type.equals("minecraft:player");
         else if (entity instanceof CustomEntity)
             return entity.getIdentifier().equals(type);

@@ -93,6 +93,11 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("spider", "monster", "mob", "arthropod");
+    }
+
+    @Override
     public Item[] getDrops() {
         return new Item[]{Item.get(Item.STRING),Item.get(Item.SPIDER_EYE)};
     }

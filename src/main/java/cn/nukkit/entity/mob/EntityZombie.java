@@ -116,6 +116,11 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("zombie", "undead", "monster", "mob");
+    }
+
+    @Override
     public boolean isUndead() {
         return true;
     }

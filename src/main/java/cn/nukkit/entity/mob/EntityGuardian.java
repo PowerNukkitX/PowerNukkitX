@@ -106,6 +106,11 @@ public class EntityGuardian extends EntityMob implements EntitySwimmable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("guardian", "monster", "mob");
+    }
+
+    @Override
     public float getWidth() {
         return 0.85f;
     }

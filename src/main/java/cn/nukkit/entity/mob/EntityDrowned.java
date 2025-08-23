@@ -148,6 +148,11 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("drowned", "zombie", "undead", "monster", "mob");
+    }
+
+    @Override
     public Item[] getDrops() {
         Item trident = Item.AIR;
         if(getItemInHand() instanceof ItemTrident) {
