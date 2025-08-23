@@ -3164,9 +3164,9 @@ public class Level implements Metadatable {
 
             Map<Long, Entity> map = this.getChunkEntities(cx, cz, o.loadChunks);
             if (map != null && !map.isEmpty()) {
-                int lx = cn.nukkit.math.NukkitMath.floorDouble(o.location.x);
-                int ly = cn.nukkit.math.NukkitMath.floorDouble(o.location.y);
-                int lz = cn.nukkit.math.NukkitMath.floorDouble(o.location.z);
+                int lx = NukkitMath.floorDouble(o.location.x);
+                int ly = NukkitMath.floorDouble(o.location.y);
+                int lz = NukkitMath.floorDouble(o.location.z);
 
                 for (Entity e : map.values()) {
                     if (e != null && e.getFloorX() == lx && e.getFloorY() == ly && e.getFloorZ() == lz) {

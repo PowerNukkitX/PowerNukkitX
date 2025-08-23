@@ -3,6 +3,7 @@ package cn.nukkit.entity;
 import cn.nukkit.math.Vector3;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -231,8 +232,8 @@ public final class EntityQueryOptions {
      * @param families The family to match, can be a single string or multiple string, if multiple the entity must match all of them..
      * @return This {@link EntityQueryOptions} for chaining.
      */
-    public EntityQueryOptions families(java.util.Collection<String> families) {
-        this.families = (families == null || families.isEmpty()) ? null : java.util.Set.copyOf(families);
+    public EntityQueryOptions families(Collection<String> families) {
+        this.families = (families == null || families.isEmpty()) ? null : Set.copyOf(families);
         return this;
     }
 
@@ -245,7 +246,7 @@ public final class EntityQueryOptions {
      * @return This {@link EntityQueryOptions} for chaining.
      */
     public EntityQueryOptions families(String... families) {
-        this.families = (families == null || families.length == 0) ? null : java.util.Set.of(families);
+        this.families = (families == null || families.length == 0) ? null : Set.of(families);
         return this;
     }
 
@@ -257,8 +258,8 @@ public final class EntityQueryOptions {
      * @param excludeFamilies The family to match, can be a single string or multiple string, if multiple the entity must match all of them..
      * @return This {@link EntityQueryOptions} for chaining.
      */
-    public EntityQueryOptions excludeFamilies(java.util.Collection<String> excludeFamilies) {
-        this.excludeFamilies = (excludeFamilies == null || excludeFamilies.isEmpty()) ? null : java.util.Set.copyOf(excludeFamilies);
+    public EntityQueryOptions excludeFamilies(Collection<String> excludeFamilies) {
+        this.excludeFamilies = (excludeFamilies == null || excludeFamilies.isEmpty()) ? null : Set.copyOf(excludeFamilies);
         return this;
     }
 
@@ -271,7 +272,7 @@ public final class EntityQueryOptions {
      * @return This {@link EntityQueryOptions} for chaining.
      */
     public EntityQueryOptions excludeFamilies(String... excludeFamilies) {
-        this.excludeFamilies = (excludeFamilies == null || excludeFamilies.length == 0) ? null : java.util.Set.of(excludeFamilies);
+        this.excludeFamilies = (excludeFamilies == null || excludeFamilies.length == 0) ? null : Set.of(excludeFamilies);
         return this;
     }
 

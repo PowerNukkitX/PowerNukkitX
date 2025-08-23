@@ -3,6 +3,7 @@ package cn.nukkit.level.util;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityQueryOptions;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 
 import java.util.Collection;
@@ -218,9 +219,9 @@ public final class EntityQueryUtils {
     public static void collectExactBlockMatches(Map<Long, Entity> map, Vector3 loc, List<Entity> out) {
         if (map == null || map.isEmpty() || loc == null) return;
 
-        int lx = cn.nukkit.math.NukkitMath.floorDouble(loc.x);
-        int ly = cn.nukkit.math.NukkitMath.floorDouble(loc.y);
-        int lz = cn.nukkit.math.NukkitMath.floorDouble(loc.z);
+        int lx = NukkitMath.floorDouble(loc.x);
+        int ly = NukkitMath.floorDouble(loc.y);
+        int lz = NukkitMath.floorDouble(loc.z);
 
         for (Entity e : map.values()) {
             if (isAtBlock(e, lx, ly, lz)) {
