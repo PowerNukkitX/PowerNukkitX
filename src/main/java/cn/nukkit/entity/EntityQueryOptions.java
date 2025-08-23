@@ -3,7 +3,6 @@ package cn.nukkit.entity;
 import cn.nukkit.math.Vector3;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
