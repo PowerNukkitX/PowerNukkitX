@@ -142,6 +142,11 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("chicken", "mob");
+    }
+
+    @Override
     public Item[] getDrops() {
         return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_CHICKEN : Item.CHICKEN)), Item.get(Item.FEATHER)};
     }

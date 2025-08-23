@@ -3154,7 +3154,9 @@ public class Level implements Metadatable {
             (o.excludeTags != null && !o.excludeTags.isEmpty()) ||
             (o.typeClass != null) ||
             (o.nameTagEquals != null) ||
-            (o.predicate != null);
+            (o.predicate != null) ||
+            (o.families != null && !o.families.isEmpty()) ||
+            (o.excludeFamilies != null && !o.excludeFamilies.isEmpty());
 
         if (exactLocationMatch) {
             int cx = NukkitMath.floorDouble(o.location.x * INV_CHUNK_SIZE);

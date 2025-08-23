@@ -5,6 +5,9 @@ import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -52,6 +55,11 @@ public class EntityZombieHorse extends EntityAnimal implements EntityWalkable, E
     @Override
     public String getOriginalName() {
         return "Zombie Horse";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("zombiehorse", "undead", "mob");
     }
 
     @Override

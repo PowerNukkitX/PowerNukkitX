@@ -134,6 +134,11 @@ public class EntityVex extends EntityMob implements EntityFlyable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("vex", "monster", "mob");
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }

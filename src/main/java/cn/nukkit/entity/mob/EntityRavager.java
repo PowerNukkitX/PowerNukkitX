@@ -71,6 +71,11 @@ public class EntityRavager extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("ravager", "monster", "mob");
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }

@@ -5,6 +5,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -47,6 +48,11 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     @Override
     public String getOriginalName() {
         return "Strider";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("strider", "strider_adult", "mob");
     }
 
     @Override

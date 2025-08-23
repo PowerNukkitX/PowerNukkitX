@@ -3,6 +3,7 @@ package cn.nukkit.entity;
 import cn.nukkit.math.Vector3;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -76,6 +77,8 @@ public final class EntityQueryOptions {
     public Set<String> tags;
     public Set<String> excludeTags;
     public Class<? extends Entity> typeClass;
+    public Set<String> families;
+    public Set<String> excludeFamilies;
     public String nameTagEquals;
 
     public Predicate<Entity> predicate;
@@ -218,6 +221,58 @@ public final class EntityQueryOptions {
      */
     public EntityQueryOptions nameTagEquals(String nameTagEquals) {
         this.nameTagEquals = nameTagEquals;
+        return this;
+    }
+
+    /**
+     * Matches entities by family type (ALL-of).
+     * <p>
+     * Example: {@code families("monster", "npc")}.
+     *
+     * @param families The family to match, can be a single string or multiple string, if multiple the entity must match all of them..
+     * @return This {@link EntityQueryOptions} for chaining.
+     */
+    public EntityQueryOptions families(java.util.Collection<String> families) {
+        this.families = (families == null || families.isEmpty()) ? null : java.util.Set.copyOf(families);
+        return this;
+    }
+
+    /**
+     * Matches entities by family type (ALL-of).
+     * <p>
+     * Example: {@code families("monster", "npc")}.
+     *
+     * @param families The family to match, can be a single string or multiple string, if multiple the entity must match all of them..
+     * @return This {@link EntityQueryOptions} for chaining.
+     */
+    public EntityQueryOptions families(String... families) {
+        this.families = (families == null || families.length == 0) ? null : java.util.Set.of(families);
+        return this;
+    }
+
+    /**
+     * Excludes entities by family type (ANY-of).
+     * <p>
+     * Example: {@code excludeFamilies("monster", "npc")}.
+     *
+     * @param excludeFamilies The family to match, can be a single string or multiple string, if multiple the entity must match all of them..
+     * @return This {@link EntityQueryOptions} for chaining.
+     */
+    public EntityQueryOptions excludeFamilies(java.util.Collection<String> excludeFamilies) {
+        this.excludeFamilies = (excludeFamilies == null || excludeFamilies.isEmpty()) ? null : java.util.Set.copyOf(excludeFamilies);
+        return this;
+    }
+
+    /**
+     * Excludes entities by family type (ANY-of).
+     * <p>
+     * Example: {@code excludeFamilies("monster", "npc")}.
+     *
+     * @param excludeFamilies The family to match, can be a single string or multiple string, if multiple the entity must match all of them..
+     * @return This {@link EntityQueryOptions} for chaining.
+     */
+    public EntityQueryOptions excludeFamilies(String... excludeFamilies) {
+        this.excludeFamilies = (excludeFamilies == null || excludeFamilies.length == 0) ? null : java.util.Set.of(excludeFamilies);
         return this;
     }
 

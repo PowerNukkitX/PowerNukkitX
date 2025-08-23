@@ -85,6 +85,11 @@ public class EntityPillager extends EntityIllager implements EntityWalkable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("pillager", "monster", "illager", "mob");
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }

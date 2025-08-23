@@ -100,11 +100,14 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("mushroomcow", "mob");
+    }
+
+    @Override
     public Item[] getDrops() {
         return new Item[]{Item.get(Item.LEATHER), Item.get(Item.BEEF)};
     }
-
-    
 
     @Override
     protected void initEntity() {

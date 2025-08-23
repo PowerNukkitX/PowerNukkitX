@@ -184,6 +184,11 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("evocation_illager", "monster", "illager", "mob");
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }

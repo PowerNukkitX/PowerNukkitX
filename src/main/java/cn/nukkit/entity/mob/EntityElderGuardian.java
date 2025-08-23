@@ -109,6 +109,11 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("guardian_elder", "monster", "mob");
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }

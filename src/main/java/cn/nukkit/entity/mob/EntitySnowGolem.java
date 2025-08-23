@@ -92,6 +92,11 @@ public class EntitySnowGolem extends EntityGolem {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("snowgolem", "mob");
+    }
+
+    @Override
     public float getWidth() {
         return 0.4f;
     }

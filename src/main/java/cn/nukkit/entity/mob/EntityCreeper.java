@@ -164,6 +164,11 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("creeper", "monster", "mob");
+    }
+
+    @Override
     public Item[] getDrops() {
         if (this.lastDamageCause instanceof EntityDamageByEntityEvent) {
             return new Item[]{Item.get(Item.GUNPOWDER, 0, ThreadLocalRandom.current().nextInt(2) + 1)};
