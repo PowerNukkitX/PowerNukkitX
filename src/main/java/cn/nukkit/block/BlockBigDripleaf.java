@@ -203,7 +203,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                 case UNSTABLE -> setTiltAndScheduleTick(BigDripleafTilt.PARTIAL_TILT);
                 case PARTIAL_TILT -> setTiltAndScheduleTick(BigDripleafTilt.FULL_TILT);
                 case FULL_TILT -> {
-                    level.addSound(this, Sound.TILT_UP_BIG_DRIPLEAF);
+                    level.playSound(this, Sound.TILT_UP_BIG_DRIPLEAF);
                     setTilt(BigDripleafTilt.NONE);
                     level.setBlock(this, this, true, false);
                 }
@@ -220,7 +220,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             if (!level.isBlockPowered(this))
                 return 0;
             if (tilt != BigDripleafTilt.UNSTABLE)
-                level.addSound(this, Sound.TILT_UP_BIG_DRIPLEAF);
+                level.playSound(this, Sound.TILT_UP_BIG_DRIPLEAF);
             setTilt(BigDripleafTilt.NONE);
             level.setBlock(this, this, true, false);
 
@@ -327,7 +327,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             case FULL_TILT -> level.scheduleUpdate(this, 100);
         }
 
-        level.addSound(this, Sound.TILT_DOWN_BIG_DRIPLEAF);
+        level.playSound(this, Sound.TILT_DOWN_BIG_DRIPLEAF);
         return true;
     }
 

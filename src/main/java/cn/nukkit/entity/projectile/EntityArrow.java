@@ -156,7 +156,7 @@ public class EntityArrow extends SlenderProjectile {
 
     @Override
     protected void addHitEffect() {
-        this.level.addSound(this, Sound.RANDOM_BOWHIT);
+        this.level.playSound(this, Sound.RANDOM_BOWHIT);
         EntityEventPacket packet = new EntityEventPacket();
         packet.eid = getId();
         packet.event = EntityEventPacket.ARROW_SHAKE;

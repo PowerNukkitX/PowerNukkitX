@@ -168,7 +168,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
         if (getGrowth() > 0) {
             if (entity.positionChanged && !entity.isSneaking() && ThreadLocalRandom.current().nextInt(20) == 0) {
                 if (entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.CONTACT, 1))) {
-                    getLevel().addSound(entity, Sound.BLOCK_SWEET_BERRY_BUSH_HURT);
+                    getLevel().playSound(entity, Sound.BLOCK_SWEET_BERRY_BUSH_HURT);
                 }
             }
         }

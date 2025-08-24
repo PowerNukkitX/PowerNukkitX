@@ -237,9 +237,9 @@ public class EntityCreaking extends EntityMob {
             Player after = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
             if(before != after) {
                 if(before == null) {
-                    entity.level.addSound(entity, Sound.MOB_CREAKING_ACTIVATE);
+                    entity.level.playSound(entity, Sound.MOB_CREAKING_ACTIVATE);
                 } else if(after == null) {
-                    entity.level.addSound(entity, Sound.MOB_CREAKING_DEACTIVATE);
+                    entity.level.playSound(entity, Sound.MOB_CREAKING_DEACTIVATE);
                 }
             }
         }
@@ -258,9 +258,9 @@ public class EntityCreaking extends EntityMob {
             Player after = entity.getMemoryStorage().get(CoreMemoryTypes.STARING_PLAYER);
             if(before != after) {
                 if(before == null) {
-                    entity.level.addSound(entity, Sound.MOB_CREAKING_FREEZE);
+                    entity.level.playSound(entity, Sound.MOB_CREAKING_FREEZE);
                 } else if(after == null) {
-                    entity.level.addSound(entity, Sound.MOB_CREAKING_UNFREEZE);
+                    entity.level.playSound(entity, Sound.MOB_CREAKING_UNFREEZE);
                 }
             }
         }

@@ -14,7 +14,7 @@ public class StaringAttackTargetExecutor implements IBehaviorExecutor {
         if(entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
             if(!entity.getMemoryStorage().isEmpty(CoreMemoryTypes.STARING_PLAYER) && new EntityCheckEvaluator(CoreMemoryTypes.STARING_PLAYER).evaluate(entity)) {
                 entity.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity.getMemoryStorage().get(CoreMemoryTypes.STARING_PLAYER));
-                entity.level.addSound(entity, Sound.MOB_ENDERMEN_STARE);
+                entity.level.playSound(entity, Sound.MOB_ENDERMEN_STARE);
             } else if(!entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_ENDERMITE)) {
                 entity.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_ENDERMITE));
             }

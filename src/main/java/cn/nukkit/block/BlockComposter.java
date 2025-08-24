@@ -126,7 +126,7 @@ public class BlockComposter extends BlockSolid {
                 setPropertyValue(COMPOSTER_FILL_LEVEL, event.getNewLevel());
                 this.level.setBlock(this, this, true, true);
                 this.level.dropItem(add(0.5, 0.85, 0.5), event.getDrop(), event.getMotion(), false, 10);
-                this.level.addSound(add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_EMPTY);
+                this.level.playSound(add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_EMPTY);
             }
             return true;
         }
@@ -150,12 +150,12 @@ public class BlockComposter extends BlockSolid {
 
         if (event.isSuccess()) {
             if (incrementLevel()) {
-                level.addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_READY);
+                level.playSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_READY);
             } else {
-                level.addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_FILL_SUCCESS);
+                level.playSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_FILL_SUCCESS);
             }
         } else {
-            level.addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_FILL);
+            level.playSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_FILL);
         }
 
         return true;
@@ -174,7 +174,7 @@ public class BlockComposter extends BlockSolid {
             if (item != null) {
                 this.level.dropItem(add(0.5, 0.85, 0.5), event.getDrop(), event.getMotion(), false, 10);
             }
-            this.level.addSound(add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_EMPTY);
+            this.level.playSound(add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_EMPTY);
             return event.getDrop();
         }
         return null;

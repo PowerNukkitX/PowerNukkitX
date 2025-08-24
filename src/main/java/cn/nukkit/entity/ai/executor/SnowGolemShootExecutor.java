@@ -158,7 +158,7 @@ public class SnowGolemShootExecutor implements EntityControl, IBehaviorExecutor 
             projectile.kill();
         } else {
             projectile.spawnToAll();
-            entity.level.addSound(entity, Sound.MOB_SNOWGOLEM_SHOOT);
+            entity.level.playSound(entity, Sound.MOB_SNOWGOLEM_SHOOT);
         }
     }
 

@@ -96,7 +96,7 @@ public class EntityXpBottle extends EntityProjectile {
 
     @Override
     protected void addHitEffect() {
-        this.getLevel().addSound(this, Sound.RANDOM_GLASS);
+        this.getLevel().playSound(this, Sound.RANDOM_GLASS);
     }
 
     @Override

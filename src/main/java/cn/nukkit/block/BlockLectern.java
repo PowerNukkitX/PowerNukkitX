@@ -136,7 +136,7 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
         newBook.setCount(1);
         lectern.setBook(newBook);
         lectern.spawnToAll();
-        this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.ITEM_BOOK_PUT);
+        this.getLevel().playSound(this.add(0.5, 0.5, 0.5), Sound.ITEM_BOOK_PUT);
         return true;
     }
 
@@ -163,7 +163,7 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
         level.scheduleUpdate(this, this, 4);
         setActivated(true);
         level.setBlock(this, this, true, false);
-        level.addSound(this.add(0.5, 0.5, 0.5), Sound.ITEM_BOOK_PAGE_TURN);
+        level.playSound(this.add(0.5, 0.5, 0.5), Sound.ITEM_BOOK_PAGE_TURN);
 
         updateAroundRedstone();
         RedstoneComponent.updateAroundRedstone(getSide(BlockFace.DOWN), BlockFace.UP);

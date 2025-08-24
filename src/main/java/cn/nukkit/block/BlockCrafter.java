@@ -135,7 +135,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if(isTriggered()) {
-                getLevel().addSound(this, craft() ? Sound.CRAFTER_CRAFT : Sound.CRAFTER_FAIL);
+                getLevel().playSound(this, craft() ? Sound.CRAFTER_CRAFT : Sound.CRAFTER_FAIL);
                 updateAllAroundRedstone();
                 this.setTriggered(false);
                 setCrafting(true);
@@ -200,7 +200,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
                     return false;
                 }
             } else {
-                this.level.addSound(this, Sound.RANDOM_CLICK);
+                this.level.playSound(this, Sound.RANDOM_CLICK);
                 Vector3 dispensePos = this.getDispensePosition();
 
                 if (facing.getAxis() == BlockFace.Axis.Y) {

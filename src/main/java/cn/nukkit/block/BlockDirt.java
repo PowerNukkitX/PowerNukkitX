@@ -59,14 +59,14 @@ public class BlockDirt extends BlockSolid implements Natural {
             item.useOn(this);
             this.getLevel().setBlock(this, get(FARMLAND), true);
             if (player != null) {
-                player.getLevel().addSound(player, Sound.USE_GRASS);
+                player.getLevel().playSound(player, Sound.USE_GRASS);
             }
             return true;
         } else if (item.isShovel()) {
             item.useOn(this);
             this.getLevel().setBlock(this, get(GRASS_PATH));
             if (player != null) {
-                player.getLevel().addSound(player, Sound.USE_GRASS);
+                player.getLevel().playSound(player, Sound.USE_GRASS);
             }
             return true;
         }

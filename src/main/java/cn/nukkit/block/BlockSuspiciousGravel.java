@@ -53,11 +53,11 @@ public class BlockSuspiciousGravel extends BlockFallable {
         int progress = getPropertyValue(CommonBlockProperties.BRUSHED_PROGRESS);
         if(progress < 3) {
             setPropertyValue(CommonBlockProperties.BRUSHED_PROGRESS, progress+1);
-            getLevel().addSound(this, Sound.HIT_SUSPICIOUS_GRAVEL);
+            getLevel().playSound(this, Sound.HIT_SUSPICIOUS_GRAVEL);
             getLevel().setBlock(this, this);
         } else {
             getLevel().setBlock(this, BlockGravel.PROPERTIES.getDefaultState().toBlock());
-            getLevel().addSound(this, Sound.BREAK_SUSPICIOUS_GRAVEL);
+            getLevel().playSound(this, Sound.BREAK_SUSPICIOUS_GRAVEL);
         }
         super.onTouch(vector, item, face, fx, fy, fz, player, action);
     }

@@ -304,7 +304,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
 
             if (this.crackledTime-- <= 0) {
                 this.crackledTime = ThreadLocalRandom.current().nextInt(20, 100);
-                this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_FURNACE_LIT);
+                this.getLevel().playSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_FURNACE_LIT);
             }
 
             if (smelt != null && canSmelt) {

@@ -202,7 +202,7 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
         public void onStart(EntityIntelligent entity) {
             super.onStart(entity);
             if(entity.distance(entity.getMemoryStorage().get(getMemory())) < 8) {
-                entity.getLevel().addSound(entity, Sound.MOB_HOGLIN_RETREAT);
+                entity.getLevel().playSound(entity, Sound.MOB_HOGLIN_RETREAT);
             }
         }
     }

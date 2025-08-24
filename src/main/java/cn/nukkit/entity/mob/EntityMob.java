@@ -224,7 +224,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
         }
 
         if (armor.getMaxDurability() > 0 && armor.getDamage() >= armor.getMaxDurability()) {
-            getLevel().addSound(this, Sound.RANDOM_BREAK);
+            getLevel().playSound(this, Sound.RANDOM_BREAK);
             return Item.get(BlockID.AIR, 0, 0);
         }
 

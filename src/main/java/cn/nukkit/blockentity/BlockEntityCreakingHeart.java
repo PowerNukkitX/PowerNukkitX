@@ -62,7 +62,7 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
     @Override
     public boolean onUpdate() {
         if(getLevel().getTick() % 40 == 0 && isBlockEntityValid() && getHeart().isActive()) {
-            getLevel().addSound(this, Sound.BLOCK_CREAKING_HEART_AMBIENT);
+            getLevel().playSound(this, Sound.BLOCK_CREAKING_HEART_AMBIENT);
         }
         if((getLinkedCreaking() == null || !getLinkedCreaking().isAlive()) && isBlockEntityValid() && getHeart().isActive() && (!getLevel().isDay() || getLevel().isRaining() || getLevel().isThundering())) {
             Position pos = new Position(
@@ -92,7 +92,7 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
                     ent.close();
                 } else {
                     setLinkedCreaking((EntityCreaking) ent);
-                    this.getLevel().addSound(this, Sound.BLOCK_CREAKING_HEART_MOB_SPAWN, 1, 1);
+                    this.getLevel().playSound(this, Sound.BLOCK_CREAKING_HEART_MOB_SPAWN, 1, 1);
                     ent.spawnToAll();
                 }
             }

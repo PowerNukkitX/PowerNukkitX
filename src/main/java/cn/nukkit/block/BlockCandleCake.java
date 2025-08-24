@@ -123,12 +123,12 @@ public class BlockCandleCake extends BlockTransparent {
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (getPropertyValue(CommonBlockProperties.LIT) && !Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL)) {
             setPropertyValue(CommonBlockProperties.LIT, false);
-            getLevel().addSound(this, Sound.RANDOM_FIZZ);
+            getLevel().playSound(this, Sound.RANDOM_FIZZ);
             getLevel().setBlock(this, this, true, true);
             return true;
         } else if (!getPropertyValue(CommonBlockProperties.LIT) && Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL)) {
             setPropertyValue(CommonBlockProperties.LIT, true);
-            getLevel().addSound(this, Sound.FIRE_IGNITE);
+            getLevel().playSound(this, Sound.FIRE_IGNITE);
             getLevel().setBlock(this, this, true, true);
             return true;
         } else if (player != null && (player.getFoodData().isHungry() || player.isCreative())) {

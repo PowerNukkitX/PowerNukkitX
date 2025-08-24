@@ -153,9 +153,9 @@ public class BlockEntityBeehive extends BlockEntity {
 
         entity.close();
         if (playSound) {
-            entity.level.addSound(this, Sound.BLOCK_BEEHIVE_ENTER);
+            entity.level.playSound(this, Sound.BLOCK_BEEHIVE_ENTER);
             if (entity.level != null && (entity.level != level || distanceSquared(this) >= 4)) {
-                entity.level.addSound(entity, Sound.BLOCK_BEEHIVE_ENTER);
+                entity.level.playSound(entity, Sound.BLOCK_BEEHIVE_ENTER);
             }
         }
         return occupant;
@@ -301,7 +301,7 @@ public class BlockEntityBeehive extends BlockEntity {
         Entity entity = Entity.createEntity(occupant.actorIdentifier, spawnPosition.getChunk(), saveData);
         if (entity != null) {
             removeOccupant(occupant);
-            level.addSound(this, Sound.BLOCK_BEEHIVE_EXIT);
+            level.playSound(this, Sound.BLOCK_BEEHIVE_EXIT);
         }
 
         EntityBee bee = entity instanceof EntityBee ? (EntityBee) entity : null;
@@ -369,7 +369,7 @@ public class BlockEntityBeehive extends BlockEntity {
                     occupant.ticksLeftToStay = 600;
                 }
             } else if (!occupant.isMuted() && RANDOM.nextDouble() < 0.005) {
-                level.addSound(add(0.5, 0, 0.5), occupant.workSound, 1f, occupant.workSoundPitch);
+                level.playSound(add(0.5, 0, 0.5), occupant.workSound, 1f, occupant.workSoundPitch);
             }
         }
 

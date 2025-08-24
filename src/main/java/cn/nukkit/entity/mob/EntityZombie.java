@@ -195,6 +195,6 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         drowned.setRotation(this.yaw, this.pitch);
         drowned.spawnToAll();
         drowned.namedTag.putBoolean("Transformed", true);
-        drowned.level.addSound(drowned, Sound.ENTITY_ZOMBIE_CONVERTED_TO_DROWNED);
+        drowned.level.playSound(drowned, Sound.ENTITY_ZOMBIE_CONVERTED_TO_DROWNED);
     }
 }

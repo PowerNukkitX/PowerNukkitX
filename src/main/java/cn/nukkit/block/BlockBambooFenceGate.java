@@ -29,11 +29,11 @@ public class BlockBambooFenceGate extends BlockFenceGate {
 
     @Override
     public void playOpenSound() {
-        level.addSound(this, Sound.OPEN_BAMBOO_WOOD_FENCE_GATE);
+        level.playSound(this, Sound.OPEN_BAMBOO_WOOD_FENCE_GATE);
     }
 
     @Override
     public void playCloseSound() {
-        level.addSound(this, Sound.CLOSE_BAMBOO_WOOD_FENCE_GATE);
+        level.playSound(this, Sound.CLOSE_BAMBOO_WOOD_FENCE_GATE);
     }
 }

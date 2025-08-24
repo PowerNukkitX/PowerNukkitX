@@ -82,7 +82,7 @@ public class ItemFlintAndSteel extends ItemTool {
                 player.getInventory().setItemInHand(this);
             }
         }
-        block.getLevel().addSound(block, Sound.FIRE_IGNITE);
+        block.getLevel().playSound(block, Sound.FIRE_IGNITE);
     }
 
     @Override

@@ -136,7 +136,7 @@ public class EntityIronGolem extends EntityGolem implements EntityOwnable {
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if(item instanceof ItemIronIngot && getHealth() <= getMaxHealth()*0.75f) {
-            this.level.addSound(this, Sound.MOB_IRONGOLEM_REPAIR);
+            this.level.playSound(this, Sound.MOB_IRONGOLEM_REPAIR);
             if(player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInHand().decrement(1);
             heal(25);
         }
@@ -170,7 +170,7 @@ public class EntityIronGolem extends EntityGolem implements EntityOwnable {
         if(!super.attack(source)) return false;
         for(int i : new int[] {74, 50, 25}) {
             if(health > i && getHealth() <= i) {
-                this.level.addSound(this, Sound.MOB_IRONGOLEM_CRACK);
+                this.level.playSound(this, Sound.MOB_IRONGOLEM_CRACK);
             }
         }
         return true;

@@ -225,13 +225,13 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
         pk.z = 0.5f + facing.getZOffset() * 0.7f;
 
         if (target == null) {
-            this.level.addSound(this, Sound.RANDOM_CLICK, 1.0f, 1.2f);
+            this.level.playSound(this, Sound.RANDOM_CLICK, 1.0f, 1.2f);
             getBlockEntity().setDirty();
             return;
         } else {
             if (!(getDispenseBehavior(target) instanceof DropperDispenseBehavior)
                     && !(getDispenseBehavior(target) instanceof FlintAndSteelDispenseBehavior))
-                this.level.addSound(this, Sound.RANDOM_CLICK, 1.0f, 1.0f);
+                this.level.playSound(this, Sound.RANDOM_CLICK, 1.0f, 1.0f);
         }
 
         pk.evid = LevelEventPacket.EVENT_PARTICLE_SHOOT;

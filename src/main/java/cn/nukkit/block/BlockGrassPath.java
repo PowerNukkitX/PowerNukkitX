@@ -60,7 +60,7 @@ public class BlockGrassPath extends BlockGrassBlock {
             item.useOn(this);
             this.getLevel().setBlock(this, get(FARMLAND), true);
             if (player != null) {
-                player.getLevel().addSound(player, Sound.USE_GRASS);
+                player.getLevel().playSound(player, Sound.USE_GRASS);
             }
             return true;
         }

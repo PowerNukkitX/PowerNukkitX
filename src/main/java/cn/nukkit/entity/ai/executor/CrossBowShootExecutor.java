@@ -196,7 +196,7 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
                     entityShootBowEvent.getProjectile().kill();
                 } else {
                     entityShootBowEvent.getProjectile().spawnToAll();
-                    entity.getLevel().addSound(entity, Sound.RANDOM_BOW);
+                    entity.getLevel().playSound(entity, Sound.RANDOM_BOW);
                 }
             }
         }
@@ -204,14 +204,14 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
 
     private void playBowAnimation(Entity entity, int chargeAmount) {
         if(chargeAmount == 0) {
-            entity.level.addSound(entity, Sound.CROSSBOW_LOADING_START);
+            entity.level.playSound(entity, Sound.CROSSBOW_LOADING_START);
             entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
             entity.setDataFlag(EntityFlag.USING_ITEM);
         } else entity.setDataProperty(EntityDataTypes.CHARGE_AMOUNT, chargeAmount*2);
-        if(chargeAmount == 30) entity.level.addSound(entity, Sound.CROSSBOW_LOADING_MIDDLE);
+        if(chargeAmount == 30) entity.level.playSound(entity, Sound.CROSSBOW_LOADING_MIDDLE);
         if(chargeAmount == 60) {
             entity.setDataFlag(EntityFlag.CHARGED);
-            entity.level.addSound(entity, Sound.CROSSBOW_LOADING_END);
+            entity.level.playSound(entity, Sound.CROSSBOW_LOADING_END);
         }
     }
 

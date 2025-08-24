@@ -52,7 +52,7 @@ public class HoppingController extends WalkController {
                 double diffY = entity.getScale();
                 dy += entity.getJumpingMotion(diffY);
                 Sound jumpSound = entity instanceof EntityRabbit ? Sound.MOB_RABBIT_HOP : entity instanceof EntitySlime ? Sound.JUMP_SLIME : null;
-                if(jumpSound != null) entity.getLevel().addSound(entity, jumpSound);
+                if(jumpSound != null) entity.getLevel().playSound(entity, jumpSound);
                 entity.setDataProperty(EntityDataTypes.CLIENT_EVENT, 2);
                 currentJumpCoolDown = 0;
             }

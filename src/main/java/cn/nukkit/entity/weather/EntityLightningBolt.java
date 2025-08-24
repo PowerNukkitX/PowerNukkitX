@@ -117,8 +117,8 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
         this.entityBaseTick(tickDiff);
 
         if (this.state == 2) {
-            this.level.addSound(this, Sound.AMBIENT_WEATHER_THUNDER);
-            this.level.addSound(this, Sound.RANDOM_EXPLODE);
+            this.level.playSound(this, Sound.AMBIENT_WEATHER_THUNDER);
+            this.level.playSound(this, Sound.RANDOM_EXPLODE);
 
             Block down = getLevel().getBlock(down());
             if (isVulnerableOxidizable(down)) {

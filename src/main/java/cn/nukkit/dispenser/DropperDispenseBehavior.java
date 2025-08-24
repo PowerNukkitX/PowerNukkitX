@@ -32,7 +32,7 @@ public class DropperDispenseBehavior extends DefaultDispenseBehavior {
                 return clone;
             }
         } else {
-            block.level.addSound(block, Sound.RANDOM_CLICK);
+            block.level.playSound(block, Sound.RANDOM_CLICK);
             return super.dispense(block, face, item);
         }
         return null;

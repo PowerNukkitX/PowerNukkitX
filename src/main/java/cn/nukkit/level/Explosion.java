@@ -365,7 +365,7 @@ public class Explosion {
             data.putFloat(prefix + "y", (float) pos.y);
             data.putFloat(prefix + "z", (float) pos.z);
         }
-        this.level.addSound(this.source, Sound.RANDOM_EXPLODE);
+        this.level.playSound(this.source, Sound.RANDOM_EXPLODE);
         this.level.addLevelEvent(this.source, LevelEventPacket.EVENT_PARTICLE_EXPLOSION, Math.round((float) this.size));
         this.level.addLevelEvent(this.source, LevelEventPacket.EVENT_PARTICLE_BLOCK_EXPLOSION, data);
 

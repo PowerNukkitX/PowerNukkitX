@@ -176,7 +176,7 @@ public class EntityVex extends EntityMob implements EntityFlyable {
         public void onStart(EntityIntelligent entity) {
             super.onStart(entity);
             entity.setDataFlag(EntityFlag.CHARGING);
-            entity.level.addSound(entity, Sound.MOB_VEX_CHARGE);
+            entity.level.playSound(entity, Sound.MOB_VEX_CHARGE);
         }
 
         @Override

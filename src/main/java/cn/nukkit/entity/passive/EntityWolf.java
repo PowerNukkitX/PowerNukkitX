@@ -322,7 +322,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
             }
         } else if (this.isBreedingItem(item)) {
             player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-            this.getLevel().addSound(this, Sound.RANDOM_EAT);
+            this.getLevel().playSound(this, Sound.RANDOM_EAT);
             this.getLevel().addParticle(new ItemBreakParticle(this.add(0, getHeight() * 0.75F, 0), Item.get(item.getId(), 0, 1)));
 
             if (healable != 0) {
@@ -479,7 +479,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
         armor.setDamage(armor.getDamage() + amount);
 
         if (armor.getDamage() >= armor.getMaxDurability()) {
-            getLevel().addSound(this, Sound.RANDOM_BREAK);
+            getLevel().playSound(this, Sound.RANDOM_BREAK);
             return Item.get(BlockID.AIR, 0, 0);
         }
 

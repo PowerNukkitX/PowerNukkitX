@@ -86,7 +86,7 @@ public class EntityZombieVillager extends EntityZombie implements EntityWalkable
                         this.namedTag.putString("purifyPlayer", player.getLoginChainData().getXUID());
                         player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                     }
-                    getLevel().addSound(this, Sound.MOB_ZOMBIE_REMEDY);
+                    getLevel().playSound(this, Sound.MOB_ZOMBIE_REMEDY);
                 }
             }
         }
@@ -127,7 +127,7 @@ public class EntityZombieVillager extends EntityZombie implements EntityWalkable
         villager.setPosition(this);
         villager.setRotation(this.yaw, this.pitch);
         villager.spawnToAll();
-        villager.level.addSound(villager, Sound.MOB_ZOMBIE_UNFECT);
+        villager.level.playSound(villager, Sound.MOB_ZOMBIE_UNFECT);
     }
 
 }

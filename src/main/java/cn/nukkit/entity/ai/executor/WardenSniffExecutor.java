@@ -31,7 +31,7 @@ public class WardenSniffExecutor implements IBehaviorExecutor {
         this.endTime = entity.getLevel().getTick() + this.duration;
         entity.setDataFlag(EntityFlag.SNIFFING, true);
         entity.setDataFlagExtend(EntityFlag.SNIFFING, true);
-        entity.level.addSound(entity.clone(), Sound.MOB_WARDEN_SNIFF);
+        entity.level.playSound(entity.clone(), Sound.MOB_WARDEN_SNIFF);
     }
 
     @Override

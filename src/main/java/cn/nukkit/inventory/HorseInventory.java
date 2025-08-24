@@ -76,7 +76,7 @@ public class HorseInventory extends BaseInventory {
             }
         } else if (index == 1) {
             if (!this.getHorseArmor().isNull()) {
-                this.getHolder().getLevel().addSound(this.getHolder(), Sound.MOB_HORSE_ARMOR);
+                this.getHolder().getLevel().playSound(this.getHolder(), Sound.MOB_HORSE_ARMOR);
             }
             MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
             mobArmorEquipmentPacket.eid = this.getHolder().getId();

@@ -636,24 +636,87 @@ public class Level implements Metadatable {
         this.blockMetadata = null;
     }
 
+    /**
+     * @deprecated Use {@link #playSound(Vector3, Sound)} instead.
+     */
+    @Deprecated
     public void addSound(Vector3 pos, Sound sound) {
-        this.addSound(pos, sound, 1, 1, (Player[]) null);
+        this.playSound(pos, sound, 1, 1, (Player[]) null);
     }
 
+    /**
+     * @deprecated Use {@link #playSound(Vector3, Sound, float, float)} instead.
+     */
+    @Deprecated
     public void addSound(Vector3 pos, Sound sound, float volume, float pitch) {
-        this.addSound(pos, sound, volume, pitch, (Player[]) null);
+        this.playSound(pos, sound, volume, pitch, (Player[]) null);
     }
 
+    /**
+     * @deprecated Use {@link #playSound(Vector3, Sound, float, float, Collection<Player>)} instead.
+     */
+    @Deprecated
     public void addSound(Vector3 pos, Sound sound, float volume, float pitch, Collection<Player> players) {
-        this.addSound(pos, sound, volume, pitch, players.toArray(Player.EMPTY_ARRAY));
+        this.playSound(pos, sound, volume, pitch, players != null ? players.toArray(Player.EMPTY_ARRAY) : null);
     }
 
+    /**
+     * @deprecated Use {@link #playSound(Vector3, Sound, float, float, Player...)} instead.
+     */
+    @Deprecated
     public void addSound(Vector3 pos, Sound sound, float volume, float pitch, Player... players) {
         Preconditions.checkArgument(volume >= 0 && volume <= 1, "Sound volume must be between 0 and 1");
-        Preconditions.checkArgument(pitch >= 0, "Sound pitch must be higher than 0");
+        Preconditions.checkArgument(pitch >= 0, "Sound pitch must be higher or equal to 0");
 
         PlaySoundPacket packet = new PlaySoundPacket();
         packet.name = sound.getSound();
+        packet.volume = volume;
+        packet.pitch = pitch;
+        packet.x = pos.getFloorX();
+        packet.y = pos.getFloorY();
+        packet.z = pos.getFloorZ();
+
+        if (players == null || players.length == 0) {
+            addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, packet);
+        } else {
+            Server.broadcastPacket(players, packet);
+        }
+    }
+
+    public void playSound(Vector3 pos, Sound sound) {
+        this.playSound(pos, sound.getSound(), 1, 1, (Player[]) null);
+    }
+
+    public void playSound(Vector3 pos, Sound sound, float volume, float pitch) {
+        this.playSound(pos, sound.getSound(), volume, pitch, (Player[]) null);
+    }
+
+    public void playSound(Vector3 pos, Sound sound, float volume, float pitch, Collection<Player> players) {
+        this.playSound(pos, sound.getSound(), volume, pitch, players != null ? players.toArray(Player.EMPTY_ARRAY) : null);
+    }
+
+    public void playSound(Vector3 pos, Sound sound, float volume, float pitch, Player... players) {
+        this.playSound(pos, sound.getSound(), volume, pitch, players);
+    }
+
+    public void playSound(Vector3 pos, String soundName) {
+        this.playSound(pos, soundName, 1, 1, (Player[]) null);
+    }
+
+    public void playSound(Vector3 pos, String soundName, float volume, float pitch) {
+        this.playSound(pos, soundName, volume, pitch, (Player[]) null);
+    }
+
+    public void playSound(Vector3 pos, String soundName, float volume, float pitch, Collection<Player> players) {
+        this.playSound(pos, soundName, volume, pitch, players != null ? players.toArray(Player.EMPTY_ARRAY) : null);
+    }
+
+    public void playSound(Vector3 pos, String soundName, float volume, float pitch, Player... players) {
+        Preconditions.checkArgument(volume >= 0 && volume <= 1, "Sound volume must be between 0 and 1");
+        Preconditions.checkArgument(pitch >= 0, "Sound pitch must be higher or equal to 0");
+
+        PlaySoundPacket packet = new PlaySoundPacket();
+        packet.name = soundName;
         packet.volume = volume;
         packet.pitch = pitch;
         packet.x = pos.getFloorX();
@@ -2723,7 +2786,7 @@ public class Level implements Metadatable {
         item.useOn(target);
         if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
             if (player != null) {
-                addSound(player, Sound.RANDOM_BREAK);
+                playSound(player, Sound.RANDOM_BREAK);
             }
             item = Item.AIR;
         }
@@ -2834,7 +2897,7 @@ public class Level implements Metadatable {
                 target.onTouch(vector, item, face, fx, fy, fz, player, ev.getAction());
                 if (ev.getAction() == Action.RIGHT_CLICK_BLOCK && target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {
                     if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
-                        addSound(player, Sound.RANDOM_BREAK);
+                        playSound(player, Sound.RANDOM_BREAK);
                         item = Item.AIR;
                     }
                     return item;
@@ -4917,7 +4980,7 @@ public class Level implements Metadatable {
                 }
             }
 
-            this.addSound(target, Sound.FIRE_IGNITE);
+            this.playSound(target, Sound.FIRE_IGNITE);
             return true;
         } else if (sizeZ >= 2 && sizeZ <= maxPortalSize) {
             //start scan from 1 block above base
@@ -5002,7 +5065,7 @@ public class Level implements Metadatable {
                 }
             }
 
-            this.addSound(target, Sound.FIRE_IGNITE);
+            this.playSound(target, Sound.FIRE_IGNITE);
             return true;
         }
 

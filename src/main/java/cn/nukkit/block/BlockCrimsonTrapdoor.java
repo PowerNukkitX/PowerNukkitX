@@ -37,11 +37,11 @@ public class BlockCrimsonTrapdoor extends BlockTrapdoor {
 
     @Override
     public void playOpenSound() {
-        level.addSound(this, Sound.OPEN_NETHER_WOOD_TRAPDOOR);
+        level.playSound(this, Sound.OPEN_NETHER_WOOD_TRAPDOOR);
     }
 
     @Override
     public void playCloseSound() {
-        level.addSound(this, Sound.CLOSE_NETHER_WOOD_TRAPDOOR);
+        level.playSound(this, Sound.CLOSE_NETHER_WOOD_TRAPDOOR);
     }
 }

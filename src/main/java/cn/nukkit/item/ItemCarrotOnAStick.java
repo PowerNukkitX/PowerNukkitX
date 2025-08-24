@@ -34,7 +34,7 @@ public class ItemCarrotOnAStick extends ItemTool {
                     if (!this.isUnbreakable() && !player.isCreative()) {
                         this.setDamage(getDamage() + 7);
                         if (this.getDamage() >= getMaxDurability()) {
-                            player.getLevel().addSound(player, Sound.RANDOM_BREAK);
+                            player.getLevel().playSound(player, Sound.RANDOM_BREAK);
                             player.getInventory().setItem(player.getInventory().getHeldItemIndex(), Item.get(Item.FISHING_ROD));
                         } else player.getInventory().setItemInHand(this);
                     }

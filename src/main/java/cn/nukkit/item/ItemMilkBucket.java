@@ -41,7 +41,7 @@ public class ItemMilkBucket extends ItemBucket {
             --this.count;
             player.getInventory().addItem(Item.get(ItemID.BUCKET, 0, 1));
             player.getInventory().setItemInHand(this);
-            player.getLevel().addSound(player, Sound.RANDOM_BURP);
+            player.getLevel().playSound(player, Sound.RANDOM_BURP);
         }
 
         player.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.add(0, player.getEyeHeight()), VibrationType.DRINKING));

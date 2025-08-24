@@ -209,7 +209,7 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
                     entityShootBowEvent.getProjectile().kill();
                 } else {
                     entityShootBowEvent.getProjectile().spawnToAll();
-                    entity.getLevel().addSound(entity, Sound.RANDOM_BOW);
+                    entity.getLevel().playSound(entity, Sound.RANDOM_BOW);
                 }
             }
         }

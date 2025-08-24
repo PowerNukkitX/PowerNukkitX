@@ -182,7 +182,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         if (item.getId() == Item.FLINT_AND_STEEL && (memoryStorage.isEmpty(CoreMemoryTypes.SHOULD_EXPLODE) || memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, false))) {
             memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, true);
             memoryStorage.put(CoreMemoryTypes.EXPLODE_CANCELLABLE, false);
-            this.level.addSound(this, Sound.FIRE_IGNITE);
+            this.level.playSound(this, Sound.FIRE_IGNITE);
             return true;
         }
         return super.onInteract(player, item, clickedPos);

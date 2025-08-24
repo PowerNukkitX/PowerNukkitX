@@ -59,7 +59,7 @@ public class ShulkerAttackExecutor implements IBehaviorExecutor {
                 bullet.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, target);
             }
             bulletEntity.spawnToAll();
-            entity.getLevel().addSound(entity, Sound.MOB_SHULKER_SHOOT);
+            entity.getLevel().playSound(entity, Sound.MOB_SHULKER_SHOOT);
         }
         return new AllMatchEvaluator(new EntityCheckEvaluator(this.target), new DistanceEvaluator(this.target, 16), new NotMatchEvaluator(new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 60))).evaluate(entity);
     }

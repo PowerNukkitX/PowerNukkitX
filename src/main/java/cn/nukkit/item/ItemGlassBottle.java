@@ -44,7 +44,7 @@ public class ItemGlassBottle extends Item {
         } else if (target instanceof BlockBeehive && ((BlockBeehive) target).isFull()) {
             filled = Item.get(HONEY_BOTTLE);
             ((BlockBeehive) target).honeyCollected(player);
-            level.addSound(player, Sound.BUCKET_FILL_WATER);
+            level.playSound(player, Sound.BUCKET_FILL_WATER);
         }
         
         if (filled != null) {

@@ -61,11 +61,11 @@ public class BlockIronTrapdoor extends BlockTrapdoor {
 
     @Override
     public void playOpenSound() {
-        level.addSound(this, Sound.OPEN_IRON_TRAPDOOR);
+        level.playSound(this, Sound.OPEN_IRON_TRAPDOOR);
     }
 
     @Override
     public void playCloseSound() {
-        level.addSound(this, Sound.CLOSE_IRON_TRAPDOOR);
+        level.playSound(this, Sound.CLOSE_IRON_TRAPDOOR);
     }
 }

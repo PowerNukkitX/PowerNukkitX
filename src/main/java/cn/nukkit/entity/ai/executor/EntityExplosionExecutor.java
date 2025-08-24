@@ -42,7 +42,7 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
 
         currentTick++;
         if (explodeTime > currentTick) {
-            entity.level.addSound(entity, Sound.RANDOM_FUSE);
+            entity.level.playSound(entity, Sound.RANDOM_FUSE);
             entity.setDataProperty(FUSE_TIME, currentTick);
             entity.setDataFlag(EntityFlag.IGNITED, true);
             return true;

@@ -42,7 +42,7 @@ public class TeleportExecutor implements IBehaviorExecutor {
         }
         if(entity.distance(location) > minDistance) {
             entity.teleport(location);
-            location.level.addSound(location, Sound.MOB_ENDERMEN_PORTAL);
+            location.level.playSound(location, Sound.MOB_ENDERMEN_PORTAL);
         }
         return true;
     }

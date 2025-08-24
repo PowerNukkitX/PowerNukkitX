@@ -118,7 +118,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         boolean layer1Check = (layer1 instanceof BlockFlowingWater w && w.isSourceOrFlowingDown()) || layer1 instanceof BlockFrostedIce;
         if (defaultLayerCheck || layer1Check) {
             setExtinguished(true);
-            this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
+            this.level.playSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
             this.level.setBlock(this, 1, defaultLayerCheck ? block : layer1, false, false);
         } else {
             this.level.setBlock(this, 1, Block.get(BlockID.AIR), false, false);
@@ -193,7 +193,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
                 if (layer1 instanceof BlockFlowingWater || layer1 instanceof BlockFrostedIce) {
                     setExtinguished(true);
                     this.level.setBlock(this, this, true, true);
-                    this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
+                    this.level.playSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
                 }
             }
             return type;
@@ -214,7 +214,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
             if (item.isShovel()) {
                 setExtinguished(true);
                 this.level.setBlock(this, this, true, true);
-                this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
+                this.level.playSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
                 itemUsed = true;
             }
         } else if (Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL) || item.getEnchantment(Enchantment.ID_FIRE_ASPECT) != null) {
@@ -222,7 +222,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
             setExtinguished(false);
             this.level.setBlock(this, this, true, true);
             campfire.scheduleUpdate();
-            this.level.addSound(this, Sound.FIRE_IGNITE);
+            this.level.playSound(this, Sound.FIRE_IGNITE);
             itemUsed = true;
         }
 

@@ -181,7 +181,7 @@ public class BlockTurtleEgg extends BlockFlowable {
                         BlockGrowEvent event = new BlockGrowEvent(this, newState);
                         this.level.getServer().getPluginManager().callEvent(event);
                         if (!event.isCancelled()) {
-                            level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK, 0.7f, 0.9f + random.nextFloat() * 0.2f);
+                            level.playSound(this, Sound.BLOCK_TURTLE_EGG_CRACK, 0.7f, 0.9f + random.nextFloat() * 0.2f);
                             this.level.setBlock(this, event.getNewState(), true, true);
                         }
                     } else {
@@ -209,12 +209,12 @@ public class BlockTurtleEgg extends BlockFlowable {
         this.level.getServer().getPluginManager().callEvent(turtleEggHatchEvent);
         int eggsHatching = turtleEggHatchEvent.getEggsHatching();
         if (!turtleEggHatchEvent.isCancelled()) {
-            level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
+            level.playSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
 
             boolean hasFailure = false;
             for (int i = 0; i < eggsHatching; i++) {
 
-                this.level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
+                this.level.playSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
 
                 CreatureSpawnEvent creatureSpawnEvent = new CreatureSpawnEvent(
                         Registries.ENTITY.getEntityNetworkId(EntityID.TURTLE),
@@ -287,7 +287,7 @@ public class BlockTurtleEgg extends BlockFlowable {
     public boolean onBreak(Item item) {
         TurtleEggCount eggCount = getEggCount();
         if (item.getEnchantment(Enchantment.ID_SILK_TOUCH) == null) {
-            this.level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
+            this.level.playSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
         }
         if (eggCount == TurtleEggCount.ONE_EGG) {
             return super.onBreak(item);

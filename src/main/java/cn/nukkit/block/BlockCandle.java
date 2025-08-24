@@ -75,12 +75,12 @@ public class BlockCandle extends BlockFlowable {
 
         if (getPropertyValue(LIT) && !Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL)) {
             setPropertyValue(LIT, false);
-            getLevel().addSound(this, Sound.RANDOM_FIZZ);
+            getLevel().playSound(this, Sound.RANDOM_FIZZ);
             getLevel().setBlock(this, this, true, true);
             return true;
         } else if (!getPropertyValue(LIT) && Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL)) {
             setPropertyValue(LIT, true);
-            getLevel().addSound(this, Sound.FIRE_IGNITE);
+            getLevel().playSound(this, Sound.FIRE_IGNITE);
             getLevel().setBlock(this, this, true, true);
             return true;
         }

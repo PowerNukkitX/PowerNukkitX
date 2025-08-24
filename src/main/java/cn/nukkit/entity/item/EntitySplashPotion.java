@@ -142,7 +142,7 @@ public class EntitySplashPotion extends EntityProjectile {
         Particle particle = new SpellParticle(this, r, g, b);
 
         this.getLevel().addParticle(particle);
-        this.getLevel().addSound(this, Sound.RANDOM_GLASS);
+        this.getLevel().playSound(this, Sound.RANDOM_GLASS);
 
         Entity[] entities = this.getLevel().getNearbyEntities(this.getBoundingBox().grow(4.125, 2.125, 4.125));
         for (Entity anEntity : entities) {

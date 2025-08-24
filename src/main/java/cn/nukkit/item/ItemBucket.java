@@ -244,11 +244,11 @@ public class ItemBucket extends Item {
                     }
 
                     if (target instanceof BlockFlowingLava) {
-                        level.addSound(block, Sound.BUCKET_FILL_LAVA);
+                        level.playSound(block, Sound.BUCKET_FILL_LAVA);
                     } else if (target instanceof BlockFlowingWater) {
-                        level.addSound(block, Sound.BUCKET_FILL_WATER);
+                        level.playSound(block, Sound.BUCKET_FILL_WATER);
                     } else if (target instanceof BlockPowderSnow) {
-                        level.addSound(block, Sound.BUCKET_FILL_POWDER_SNOW);
+                        level.playSound(block, Sound.BUCKET_FILL_POWDER_SNOW);
                     }
 
                     return true;
@@ -321,7 +321,7 @@ public class ItemBucket extends Item {
             PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, targetBlock, face, target, this, result);
             if (!ev.isCancelled()) {
                 target.getLevel().setBlock(target, targetBlock, true, true);
-                player.getLevel().addSound(target, Sound.BUCKET_FILL_POWDER_SNOW);
+                player.getLevel().playSound(target, Sound.BUCKET_FILL_POWDER_SNOW);
 
                 updateBucketItem(player, ev);
 
@@ -364,9 +364,9 @@ public class ItemBucket extends Item {
      */
     protected void afterUse(Level level, Block block) {
         if (isLava()) {
-            level.addSound(block, Sound.BUCKET_EMPTY_LAVA);
+            level.playSound(block, Sound.BUCKET_EMPTY_LAVA);
         } else {
-            level.addSound(block, Sound.BUCKET_EMPTY_WATER);
+            level.playSound(block, Sound.BUCKET_EMPTY_WATER);
         }
 
         spawnFishEntity(block.add(0.5, 0.5, 0.5));

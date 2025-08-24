@@ -126,6 +126,6 @@ public class EntityHusk extends EntityZombie {
         drowned.setPosition(this);
         drowned.setRotation(this.yaw, this.pitch);
         drowned.spawnToAll();
-        drowned.level.addSound(drowned, Sound.MOB_HUSK_CONVERT_TO_ZOMBIE);
+        drowned.level.playSound(drowned, Sound.MOB_HUSK_CONVERT_TO_ZOMBIE);
     }
 }

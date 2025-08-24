@@ -251,7 +251,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                             builder.nextState("r");
                             builder.blendOutTime(1);
                             Entity.playAnimationOnEntities(builder.build(), entities);
-                            entities.forEach(entity1 -> entity1.level.addSound(entity1, Sound.MOB_PIGLIN_CELEBRATE));
+                            entities.forEach(entity1 -> entity1.level.playSound(entity1, Sound.MOB_PIGLIN_CELEBRATE));
                         }
                         yield true;
                     }
@@ -319,7 +319,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
         public void onStart(EntityIntelligent entity) {
             super.onStart(entity);
             if(entity.distance(entity.getMemoryStorage().get(getMemory())) < 8) {
-                entity.getLevel().addSound(entity, Sound.MOB_PIGLIN_RETREAT);
+                entity.getLevel().playSound(entity, Sound.MOB_PIGLIN_RETREAT);
             }
         }
     }
