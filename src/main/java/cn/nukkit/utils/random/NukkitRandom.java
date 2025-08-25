@@ -10,16 +10,17 @@ import org.apache.commons.rng.simple.RandomSource;
  * @author Angelic47 (Nukkit Project)
  */
 public class NukkitRandom implements RandomSourceProvider {
+
+    final long seeds;
     final RestorableUniformRandomProvider provider;
     final ContinuousSampler sampler;
 
     public NukkitRandom() {
-        provider = RandomSource.MT.create();
-        sampler = GaussianSampler.of(ZigguratSampler.NormalizedGaussian.of(RandomSource.ISAAC.create()),
-                0, 0.33333);
+        this(System.currentTimeMillis());
     }
 
     public NukkitRandom(long seeds) {
+        this.seeds = seeds;
         provider = RandomSource.MT.create(seeds);
         sampler = GaussianSampler.of(ZigguratSampler.NormalizedGaussian.of(RandomSource.ISAAC.create()),
                 0, 0.33333);
@@ -76,5 +77,9 @@ public class NukkitRandom implements RandomSourceProvider {
 
     public boolean nextBoolean() {
         return provider.nextBoolean();
+    }
+
+    public NukkitRandom identical() {
+        return new NukkitRandom(seeds);
     }
 }

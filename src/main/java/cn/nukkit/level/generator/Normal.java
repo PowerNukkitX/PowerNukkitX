@@ -1,0 +1,35 @@
+package cn.nukkit.level.generator;
+
+import cn.nukkit.level.DimensionData;
+import cn.nukkit.level.generator.stages.flat.FinishedStage;
+import cn.nukkit.level.generator.stages.BiomeMapStage;
+import cn.nukkit.level.generator.stages.normal.NormalChunkGenDataStage;
+import cn.nukkit.level.generator.stages.normal.NormalTerrainStage;
+import cn.nukkit.level.generator.stages.normal.NormalWaterBiomeStage;
+import cn.nukkit.registry.Registries;
+
+import java.util.Map;
+
+/**
+ * @author MagicDroidX (Nukkit Project)
+ */
+public class Normal extends Generator {
+
+    public Normal(DimensionData dimensionData, Map<String, Object> options) {
+        super(dimensionData, options);
+    }
+
+    @Override
+    public void stages(GenerateStage.Builder builder) {
+        builder.start(Registries.GENERATE_STAGE.get(BiomeMapStage.NAME));
+        builder.next(Registries.GENERATE_STAGE.get(NormalTerrainStage.NAME));
+        builder.next(Registries.GENERATE_STAGE.get(NormalWaterBiomeStage.NAME));
+        builder.next(Registries.GENERATE_STAGE.get(NormalChunkGenDataStage.NAME));
+        builder.next(Registries.GENERATE_STAGE.get(FinishedStage.NAME));
+    }
+
+    @Override
+    public String getName() {
+        return "flat";
+    }
+}

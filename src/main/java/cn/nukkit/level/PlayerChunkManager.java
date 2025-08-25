@@ -49,7 +49,7 @@ public final class PlayerChunkManager {
     private final int trySendChunkCountPerTick;
     private final LongArrayPriorityQueue chunkSendQueue;
     private final Long2ObjectOpenHashMap<CompletableFuture<IChunk>> chunkLoadingQueue;
-    private final Long2ObjectOpenHashMap<IChunk> chunkReadyToSend;
+    private final LongArrayPriorityQueue chunkReadyToSend;
     private long lastLoaderChunkPosHashed = Long.MAX_VALUE;
 
     public PlayerChunkManager(Player player) {
@@ -59,7 +59,7 @@ public final class PlayerChunkManager {
         this.chunkSendQueue = new LongArrayPriorityQueue(player.getViewDistance() * player.getViewDistance(), chunkDistanceComparator);
         this.chunkLoadingQueue = new Long2ObjectOpenHashMap<>(player.getViewDistance() * player.getViewDistance());
         this.trySendChunkCountPerTick = player.getChunkSendCountPerTick();
-        this.chunkReadyToSend = new Long2ObjectOpenHashMap<>();
+        this.chunkReadyToSend = new LongArrayPriorityQueue(player.getViewDistance() * player.getViewDistance(), chunkDistanceComparator);
     }
 
     /**
@@ -154,7 +154,7 @@ public final class PlayerChunkManager {
             long chunkHash = chunkSendQueue.dequeueLong();
             int chunkX = Level.getHashX(chunkHash);
             int chunkZ = Level.getHashZ(chunkHash);
-            var chunkTask = chunkLoadingQueue.computeIfAbsent(chunkHash, (hash) -> player.getLevel().getChunkAsync(chunkX, chunkZ));
+            var chunkTask = chunkLoadingQueue.computeIfAbsent(chunkHash, (hash) -> player.getLevel().getChunkAsync(chunkX, chunkZ, true));
             if (chunkTask.isDone()) {
                 try {
                     IChunk chunk = chunkTask.get(10, TimeUnit.MICROSECONDS);
@@ -165,7 +165,7 @@ public final class PlayerChunkManager {
                     }
                     chunkLoadingQueue.remove(chunkHash);
                     player.level.registerChunkLoader(player, chunkX, chunkZ, false);
-                    chunkReadyToSend.put(chunkHash, chunk);
+                    chunkReadyToSend.enqueue(chunkHash);
                 } catch (InterruptedException | ExecutionException ignore) {
                 } catch (TimeoutException e) {
                     log.warn("read chunk timeout {} {}", chunkX, chunkZ);
@@ -182,14 +182,15 @@ public final class PlayerChunkManager {
             ncp.position = player.asBlockVector3();
             ncp.radius = player.getViewDistance() << 4;
             player.dataPacket(ncp);
-            for (var e : chunkReadyToSend.long2ObjectEntrySet()) {
-                int chunkX = Level.getHashX(e.getLongKey());
-                int chunkZ = Level.getHashZ(e.getLongKey());
+            while (!chunkReadyToSend.isEmpty()) {
+                long chunkHash = chunkReadyToSend.dequeueLong();
+                int chunkX = Level.getHashX(chunkHash);
+                int chunkZ = Level.getHashZ(chunkHash);
                 PlayerChunkRequestEvent ev = new PlayerChunkRequestEvent(player, chunkX, chunkZ);
                 player.getServer().getPluginManager().callEvent(ev);
                 player.level.requestChunk(chunkX, chunkZ, player);
+                sentChunks.add(chunkHash);
             }
-            sentChunks.addAll(chunkReadyToSend.keySet());
         }
         chunkReadyToSend.clear();
     }

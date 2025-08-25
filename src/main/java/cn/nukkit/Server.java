@@ -1467,11 +1467,6 @@ public class Server {
      * @param players    指定接受数据包的玩家
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color, Player[] players) {
-        // In some circumstances, the game sends confidential data in this string,
-        // so under no circumstances should it be sent to all players on the server.
-        // @Zwuiix
-        skin.setSkinId("");
-
         PlayerListPacket pk = new PlayerListPacket();
         pk.type = PlayerListPacket.TYPE_ADD;
         pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId, color)};
@@ -1482,10 +1477,6 @@ public class Server {
      * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color, Collection<Player> players) {
-        // In some circumstances, the game sends confidential data in this string,
-        // so under no circumstances should it be sent to all players on the server.
-        // @Zwuiix
-        skin.setSkinId("");
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, players.toArray(Player.EMPTY_ARRAY));
     }
 

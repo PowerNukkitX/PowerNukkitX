@@ -1,9 +1,13 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.GenerateStage;
-import cn.nukkit.level.generator.stages.FinishedStage;
-import cn.nukkit.level.generator.stages.FlatGenerateStage;
-import cn.nukkit.level.generator.stages.LightPopulationStage;
+import cn.nukkit.level.generator.stages.flat.FinishedStage;
+import cn.nukkit.level.generator.stages.flat.FlatGenerateStage;
+import cn.nukkit.level.generator.stages.flat.LightPopulationStage;
+import cn.nukkit.level.generator.stages.BiomeMapStage;
+import cn.nukkit.level.generator.stages.normal.NormalChunkGenDataStage;
+import cn.nukkit.level.generator.stages.normal.NormalTerrainStage;
+import cn.nukkit.level.generator.stages.normal.NormalWaterBiomeStage;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.lang.reflect.InvocationTargetException;
@@ -21,6 +25,10 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
             this.register(FinishedStage.NAME, FinishedStage.class);
             this.register(FlatGenerateStage.NAME, FlatGenerateStage.class);
             this.register(LightPopulationStage.NAME, LightPopulationStage.class);
+            this.register(BiomeMapStage.NAME, BiomeMapStage.class);
+            this.register(NormalTerrainStage.NAME, NormalTerrainStage.class);
+            this.register(NormalWaterBiomeStage.NAME, NormalWaterBiomeStage.class);
+            this.register(NormalChunkGenDataStage.NAME, NormalChunkGenDataStage.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

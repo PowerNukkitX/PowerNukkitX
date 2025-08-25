@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.stages;
+package cn.nukkit.level.generator.stages.flat;
 
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
