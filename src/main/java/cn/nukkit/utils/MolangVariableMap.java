@@ -6,10 +6,10 @@ import java.util.Objects;
 
 /**
  * MoLang variable map compatible with Bedrock's SpawnParticleEffectPacket payload.
- * Produces a JSON array of entries like:
+ * Produces a JSON array of entries like BDS:
  * [
- *   {"name":"direction_x","type":"float","value":0.25},
- *   {"name":"direction_y","type":"float","value":-5.0}
+ *   {"name":"variable.direction_x","value":{"type":"float","value":0.25}},
+ *   {"name":"variable.direction_y","value":{"type":"float","value":-5.0}}
  * ]
  */
 public final class MolangVariableMap {
@@ -81,15 +81,20 @@ public final class MolangVariableMap {
 
     public String toJson() {
         if (vars.isEmpty()) return "[]";
-        StringBuilder sb = new StringBuilder(vars.size() * 32).append('[');
+        StringBuilder sb = new StringBuilder(vars.size() * 48).append('[');
         boolean first = true;
         for (Entry e : vars.values()) {
             if (!first) sb.append(',');
             first = false;
+
+            final String nameOut = normalizeName(e.name);
+
             sb.append('{')
-              .append("\"name\":\"").append(escape(e.name)).append("\",")
+              .append("\"name\":\"").append(escape(nameOut)).append("\",")
+              .append("\"value\":{")
               .append("\"type\":\"").append(e.type).append("\",")
               .append("\"value\":");
+
             switch (e.type) {
                 case "float":
                 case "int":
@@ -104,9 +109,15 @@ public final class MolangVariableMap {
                 default:
                     sb.append('"').append(escape(String.valueOf(e.value))).append('"');
             }
-            sb.append('}');
+
+            sb.append("}}");
         }
         return sb.append(']').toString();
+    }
+
+    private static String normalizeName(String name) {
+        if (name.startsWith("variable.") || name.startsWith("context.")) return name;
+        return "variable." + name;
     }
 
     private void put(String name, String type, Object value) {
