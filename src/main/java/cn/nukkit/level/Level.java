@@ -637,23 +637,39 @@ public class Level implements Metadatable {
     }
 
     public void addSound(Vector3 pos, Sound sound) {
-        this.addSound(pos, sound, 1, 1, (Player[]) null);
+        this.addSound(pos, sound.getSound(), 1, 1, (Player[]) null);
     }
 
     public void addSound(Vector3 pos, Sound sound, float volume, float pitch) {
-        this.addSound(pos, sound, volume, pitch, (Player[]) null);
+        this.addSound(pos, sound.getSound(), volume, pitch, (Player[]) null);
     }
 
     public void addSound(Vector3 pos, Sound sound, float volume, float pitch, Collection<Player> players) {
-        this.addSound(pos, sound, volume, pitch, players.toArray(Player.EMPTY_ARRAY));
+        this.addSound(pos, sound.getSound(), volume, pitch, players != null ? players.toArray(Player.EMPTY_ARRAY) : null);
     }
 
     public void addSound(Vector3 pos, Sound sound, float volume, float pitch, Player... players) {
+        this.addSound(pos, sound.getSound(), volume, pitch, players);
+    }
+
+    public void addSound(Vector3 pos, String soundName) {
+        this.addSound(pos, soundName, 1, 1, (Player[]) null);
+    }
+
+    public void addSound(Vector3 pos, String soundName, float volume, float pitch) {
+        this.addSound(pos, soundName, volume, pitch, (Player[]) null);
+    }
+
+    public void addSound(Vector3 pos, String soundName, float volume, float pitch, Collection<Player> players) {
+        this.addSound(pos, soundName, volume, pitch, players != null ? players.toArray(Player.EMPTY_ARRAY) : null);
+    }
+
+    public void addSound(Vector3 pos, String soundName, float volume, float pitch, Player... players) {
         Preconditions.checkArgument(volume >= 0 && volume <= 1, "Sound volume must be between 0 and 1");
-        Preconditions.checkArgument(pitch >= 0, "Sound pitch must be higher than 0");
+        Preconditions.checkArgument(pitch >= 0, "Sound pitch must be higher or equal to 0");
 
         PlaySoundPacket packet = new PlaySoundPacket();
-        packet.name = sound.getSound();
+        packet.name = soundName;
         packet.volume = volume;
         packet.pitch = pitch;
         packet.x = pos.getFloorX();
