@@ -85,7 +85,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
             }
         }
         
-        getLevel().playSound(player.getPosition(), Sound.LODESTONE_COMPASS_LINK_COMPASS_TO_LODESTONE);
+        getLevel().addSound(player.getPosition(), Sound.LODESTONE_COMPASS_LINK_COMPASS_TO_LODESTONE);
         
         if (added) {
             try {

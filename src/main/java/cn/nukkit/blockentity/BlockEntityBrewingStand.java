@@ -241,7 +241,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
             this.fuelAmount--;
             this.sendFuel();
 
-            this.getLevel().playSound(this, Sound.RANDOM_POTION_BREWED);
+            this.getLevel().addSound(this, Sound.RANDOM_POTION_BREWED);
         }
 
         stopBrewing();

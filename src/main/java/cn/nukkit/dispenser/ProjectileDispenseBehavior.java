@@ -43,7 +43,7 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
 
         projectile.spawnToAll();
 
-        source.level.playSound(source, getShootingSound());
+        source.level.addSound(source, getShootingSound());
 
         return null;
     }

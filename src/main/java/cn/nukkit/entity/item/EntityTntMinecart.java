@@ -101,7 +101,7 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
 
     @Override
     public void activate(int x, int y, int z, boolean flag) {
-        level.playSound(this, Sound.FIRE_IGNITE);
+        level.addSound(this, Sound.FIRE_IGNITE);
         this.fuse = 79;
     }
 
@@ -164,7 +164,7 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         boolean interact = super.onInteract(player, item, clickedPos);
         if (item.getId().equals(Item.FLINT_AND_STEEL) || item.getId().equals(Item.FIRE_CHARGE)) {
-            level.playSound(this, Sound.FIRE_IGNITE);
+            level.addSound(this, Sound.FIRE_IGNITE);
             this.fuse = 79;
             return true;
         }

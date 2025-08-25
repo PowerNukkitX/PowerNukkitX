@@ -99,12 +99,12 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
         setBlockFace(player != null ? player.getDirection().rotateYCCW() : BlockFace.SOUTH);
         this.getLevel().setBlock(this, this, true);
         if (player == null) {
-            this.getLevel().playSound(this, Sound.RANDOM_ANVIL_LAND, 1, 0.8F);
+            this.getLevel().addSound(this, Sound.RANDOM_ANVIL_LAND, 1, 0.8F);
         } else {
             Collection<Player> players = getLevel().getChunkPlayers(getChunkX(), getChunkZ()).values();
             players.remove(player);
             if (!players.isEmpty()) {
-                getLevel().playSound(this, Sound.RANDOM_ANVIL_LAND, 1, 0.8F, players);
+                getLevel().addSound(this, Sound.RANDOM_ANVIL_LAND, 1, 0.8F, players);
             }
         }
         return true;

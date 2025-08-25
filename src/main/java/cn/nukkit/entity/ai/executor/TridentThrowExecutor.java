@@ -178,7 +178,7 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
         if (projectev.isCancelled()) {
             projectile.kill();
         } else {
-            entity.level.playSound(entity, Sound.MOB_BREEZE_SHOOT);
+            entity.level.addSound(entity, Sound.MOB_BREEZE_SHOOT);
             projectile.spawnToAll();
         }
     }

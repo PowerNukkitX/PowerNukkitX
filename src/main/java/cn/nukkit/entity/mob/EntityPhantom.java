@@ -140,7 +140,7 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
         @Override
         public void onStart(EntityIntelligent entity) {
             super.onStart(entity);
-            entity.level.playSound(entity, Sound.MOB_PHANTOM_SWOOP);
+            entity.level.addSound(entity, Sound.MOB_PHANTOM_SWOOP);
         }
     }
 }

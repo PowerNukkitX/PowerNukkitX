@@ -75,7 +75,7 @@ public class BlockHoneyBlock extends BlockSolid {
                 entity.resetFallDistance();
 
                 if (RANDOM.nextInt(10) == 0) {
-                    level.playSound(entity, Sound.LAND_HONEY_BLOCK);
+                    level.addSound(entity, Sound.LAND_HONEY_BLOCK);
                 }
             }
         }

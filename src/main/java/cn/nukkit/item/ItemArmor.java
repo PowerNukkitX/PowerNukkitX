@@ -96,25 +96,25 @@ abstract public class ItemArmor extends Item implements ItemDurable {
             final int tier = this.getTier();
             switch (tier) {
                 case TIER_CHAIN:
-                    player.getLevel().playSound(player, Sound.ARMOR_EQUIP_CHAIN);
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_CHAIN);
                     break;
                 case TIER_DIAMOND:
-                    player.getLevel().playSound(player, Sound.ARMOR_EQUIP_DIAMOND);
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_DIAMOND);
                     break;
                 case TIER_GOLD:
-                    player.getLevel().playSound(player, Sound.ARMOR_EQUIP_GOLD);
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GOLD);
                     break;
                 case TIER_IRON:
-                    player.getLevel().playSound(player, Sound.ARMOR_EQUIP_IRON);
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_IRON);
                     break;
                 case TIER_LEATHER:
-                    player.getLevel().playSound(player, Sound.ARMOR_EQUIP_LEATHER);
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_LEATHER);
                     break;
                 case TIER_NETHERITE:
-                    player.getLevel().playSound(player, Sound.ARMOR_EQUIP_NETHERITE);
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_NETHERITE);
                     break;
                 default:
-                    player.getLevel().playSound(player, Sound.ARMOR_EQUIP_GENERIC);
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GENERIC);
             }
         }
 

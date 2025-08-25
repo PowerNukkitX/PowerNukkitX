@@ -81,7 +81,7 @@ public class WitherShootExecutor implements EntityControl, IBehaviorExecutor {
             projectile.kill();
         } else {
             projectile.spawnToAll();
-            entity.level.playSound(entity, Sound.MOB_WITHER_SHOOT);
+            entity.level.addSound(entity, Sound.MOB_WITHER_SHOOT);
         }
     }
 }

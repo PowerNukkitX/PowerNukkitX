@@ -243,7 +243,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                     } else {
                         riptideSound = Sound.ITEM_TRIDENT_RIPTIDE_1;
                     }
-                    player.level.playSound(player, riptideSound);
+                    player.level.addSound(player, riptideSound);
                 }
             }
             case PlayerActionPacket.ACTION_STOP_SPIN_ATTACK -> {

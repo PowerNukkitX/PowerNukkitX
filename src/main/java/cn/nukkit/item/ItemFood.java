@@ -76,7 +76,7 @@ public abstract class ItemFood extends Item {
                 --this.count;
                 player.getInventory().setItemInHand(this);
 
-                player.getLevel().playSound(player, Sound.RANDOM_BURP);
+                player.getLevel().addSound(player, Sound.RANDOM_BURP);
             }
         }
 

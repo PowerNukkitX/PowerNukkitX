@@ -304,11 +304,11 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
     }
 
     public void playOpenSound() {
-        level.playSound(this, Sound.RANDOM_DOOR_OPEN);
+        level.addSound(this, Sound.RANDOM_DOOR_OPEN);
     }
 
     public void playCloseSound() {
-        level.playSound(this, Sound.RANDOM_DOOR_CLOSE);
+        level.addSound(this, Sound.RANDOM_DOOR_CLOSE);
     }
 
     public boolean toggle(Player player) {

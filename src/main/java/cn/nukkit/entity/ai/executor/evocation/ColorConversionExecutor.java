@@ -42,7 +42,7 @@ public class ColorConversionExecutor extends FangLineExecutor {
     @Override
     protected void startSpell(EntityIntelligent entity) {
         tick = 0;
-        entity.level.playSound(entity, Sound.MOB_EVOCATION_ILLAGER_PREPARE_WOLOLO);
+        entity.level.addSound(entity, Sound.MOB_EVOCATION_ILLAGER_PREPARE_WOLOLO);
         entity.setDataProperty(EntityDataTypes.EVOKER_SPELL_CASTING_COLOR, BlockColor.ORANGE_BLOCK_COLOR.getARGB());
         entity.getMemoryStorage().put(LAST_MAGIC, EntityEvocationIllager.SPELL.COLOR_CONVERSION);
         entity.setDataFlag(EntityFlag.CASTING);

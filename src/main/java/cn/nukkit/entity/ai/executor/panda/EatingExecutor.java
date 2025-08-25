@@ -16,7 +16,7 @@ public class EatingExecutor implements EntityControl, IBehaviorExecutor {
 
     @Override
     public boolean execute(EntityIntelligent entity) {
-        if(ticks % 10 == 0) entity.getLevel().playSound(entity, Sound.MOB_PANDA_EAT);
+        if(ticks % 10 == 0) entity.getLevel().addSound(entity, Sound.MOB_PANDA_EAT);
         return ticks-- >= 0;
     }
 

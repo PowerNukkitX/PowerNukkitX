@@ -27,11 +27,11 @@ public class BlockCherryTrapdoor extends BlockTrapdoor {
 
     @Override
     public void playOpenSound() {
-        level.playSound(this, Sound.OPEN_CHERRY_WOOD_TRAPDOOR);
+        level.addSound(this, Sound.OPEN_CHERRY_WOOD_TRAPDOOR);
     }
 
     @Override
     public void playCloseSound() {
-        level.playSound(this, Sound.CLOSE_CHERRY_WOOD_TRAPDOOR);
+        level.addSound(this, Sound.CLOSE_CHERRY_WOOD_TRAPDOOR);
     }
 }

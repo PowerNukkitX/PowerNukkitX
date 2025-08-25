@@ -106,7 +106,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
         if (!this.isEndPortalEye() && player != null && item.getId().equals(Item.ENDER_EYE)) {
             this.setEndPortalEye(true);
             this.getLevel().setBlock(this, this, true, true);
-            this.getLevel().playSound(this, Sound.BLOCK_END_PORTAL_FRAME_FILL);
+            this.getLevel().addSound(this, Sound.BLOCK_END_PORTAL_FRAME_FILL);
             this.createPortal();
             return true;
         }

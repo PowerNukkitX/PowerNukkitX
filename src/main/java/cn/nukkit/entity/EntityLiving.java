@@ -146,7 +146,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     animate.eid = getId();
 
                     this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), animate);
-                    this.getLevel().playSound(this, Sound.GAME_PLAYER_ATTACK_STRONG);
+                    this.getLevel().addSound(this, Sound.GAME_PLAYER_ATTACK_STRONG);
 
                     source.setDamage(source.getDamage() * 1.5f);
                 }
@@ -465,7 +465,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
         if (animate) {
-            getLevel().playSound(this, Sound.ITEM_SHIELD_BLOCK);
+            getLevel().addSound(this, Sound.ITEM_SHIELD_BLOCK);
         }
     }
 

@@ -260,7 +260,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
             if (this.age == 200) {
                 this.explode();
                 setHealth(getMaxHealth());
-                getLevel().playSound(this, Sound.MOB_WITHER_SPAWN);
+                getLevel().addSound(this, Sound.MOB_WITHER_SPAWN);
             } else if(age < 200) {
                 heal(getMaxHealth()/200f);
             }
@@ -321,7 +321,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         if((age%40==0 || getDataFlag(EntityFlag.CAN_DASH) && age > 200)) {
             Block[] blocks = level.getCollisionBlocks(getBoundingBox().grow(1, 1, 1));
             if(blocks.length > 0) {
-                if(blockBreakSound != null) level.playSound(this, blockBreakSound);
+                if(blockBreakSound != null) level.addSound(this, blockBreakSound);
                 for (Block collisionBlock : blocks) {
                     if(!(collisionBlock instanceof BlockBedrock)) {
                         level.breakBlock(collisionBlock);

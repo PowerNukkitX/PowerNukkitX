@@ -40,11 +40,11 @@ public class BlockWarpedFenceGate extends BlockFenceGate {
 
     @Override
     public void playOpenSound() {
-        level.playSound(this, Sound.OPEN_NETHER_WOOD_FENCE_GATE);
+        level.addSound(this, Sound.OPEN_NETHER_WOOD_FENCE_GATE);
     }
 
     @Override
     public void playCloseSound() {
-        level.playSound(this, Sound.CLOSE_NETHER_WOOD_FENCE_GATE);
+        level.addSound(this, Sound.CLOSE_NETHER_WOOD_FENCE_GATE);
     }
 }

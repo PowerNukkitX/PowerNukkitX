@@ -75,7 +75,7 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
 
         Level level = this.getHolder().getLevel();
         if (level != null) {
-            level.playSound(this.getHolder().getVector3().add(0.5, 0.5, 0.5), Sound.RANDOM_ENDERCHESTOPEN);
+            level.addSound(this.getHolder().getVector3().add(0.5, 0.5, 0.5), Sound.RANDOM_ENDERCHESTOPEN);
             level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, blockEventPacket);
         }
     }
@@ -111,7 +111,7 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
 
         Level level = this.getHolder().getLevel();
         if (level != null) {
-            level.playSound(this.getHolder().getVector3().add(0.5, 0.5, 0.5), Sound.RANDOM_ENDERCHESTCLOSED);
+            level.addSound(this.getHolder().getVector3().add(0.5, 0.5, 0.5), Sound.RANDOM_ENDERCHESTCLOSED);
             level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, blockEventPacket);
         }
         setBlockEntityEnderChest(who, null);

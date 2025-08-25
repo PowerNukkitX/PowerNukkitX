@@ -380,7 +380,7 @@ public class BlockPointedDripstone extends BlockFallable {
                     cauldron.setCauldronLiquid(event.getLiquid());
                     cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
                     cauldron.level.setBlock(cauldron, cauldron, true, true);
-                    this.getLevel().playSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_DRIP_LAVA_POINTED_DRIPSTONE);
+                    this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_DRIP_LAVA_POINTED_DRIPSTONE);
                 }
             }
             case FLOWING_WATER -> {
@@ -393,7 +393,7 @@ public class BlockPointedDripstone extends BlockFallable {
                     cauldron.setCauldronLiquid(event.getLiquid());
                     cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
                     cauldron.level.setBlock(cauldron, cauldron, true, true);
-                    this.getLevel().playSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_DRIP_WATER_POINTED_DRIPSTONE);
+                    this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_DRIP_WATER_POINTED_DRIPSTONE);
                 }
             }
         }

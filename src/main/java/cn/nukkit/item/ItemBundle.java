@@ -81,7 +81,7 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
             getInventory().remove(instance);
             player.dropItem(instance);
             getInventory().sendContents(player);
-            getLevel().playSound(getVector3(), Sound.BUNDLE_DROP_CONTENTS);
+            getLevel().addSound(getVector3(), Sound.BUNDLE_DROP_CONTENTS);
             return true;
         } else return false;
     }

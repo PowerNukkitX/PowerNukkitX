@@ -159,7 +159,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 if (target.onInteract(player, item, useItemOnEntityData.clickPos) && (player.isSurvival() || player.isAdventure())) {
                     if (item.isTool()) {
                         if (item.useOn(target) && item.getDamage() >= item.getMaxDurability()) {
-                            player.getLevel().playSound(player, Sound.RANDOM_BREAK);
+                            player.getLevel().addSound(player, Sound.RANDOM_BREAK);
                             item = new ItemBlock(Block.get(BlockID.AIR));
                         }
                     } else {
@@ -247,7 +247,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 }
                 if (item.isTool() && (player.isSurvival() || player.isAdventure())) {
                     if (item.useOn(target) && item.getDamage() >= item.getMaxDurability()) {
-                        player.getLevel().playSound(player, Sound.RANDOM_BREAK);
+                        player.getLevel().addSound(player, Sound.RANDOM_BREAK);
                         player.getInventory().setItem(useItemOnEntityData.hotbarSlot, Item.AIR);
                     } else {
                         if (item.isNull() || player.getInventory().getItemInHand().getId() == item.getId()) {

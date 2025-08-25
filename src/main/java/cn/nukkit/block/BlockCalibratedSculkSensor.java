@@ -102,8 +102,8 @@ public class BlockCalibratedSculkSensor extends BlockFlowable implements BlockEn
     }
 
     public void setPhase(int phase) {
-        if (phase == 1) this.level.playSound(this.add(0.5, 0.5, 0.5), Sound.POWER_ON_SCULK_SENSOR);
-        else this.level.playSound(this.add(0.5, 0.5, 0.5), Sound.POWER_OFF_SCULK_SENSOR);
+        if (phase == 1) this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_ON_SCULK_SENSOR);
+        else this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_OFF_SCULK_SENSOR);
         this.setPropertyValue(SCULK_SENSOR_PHASE, phase);
         this.level.setBlock(this, this, true, false);
     }

@@ -131,7 +131,7 @@ public class ItemCrossbow extends ItemTool {
                 EntityCrossbowFirework entity = new EntityCrossbowFirework(player.chunk, nbt);
                 entity.setMotion(new Vector3(mX, mY, mZ));
                 entity.spawnToAll();
-                player.getLevel().playSound(player, Sound.CROSSBOW_SHOOT);
+                player.getLevel().addSound(player, Sound.CROSSBOW_SHOOT);
                 removeChargedItem(player);
             } else {
                 EntityArrow entity = new EntityArrow(player.chunk, nbt, player, true);
@@ -152,7 +152,7 @@ public class ItemCrossbow extends ItemTool {
                             proj.close();
                         } else {
                             proj.spawnToAll();
-                            player.getLevel().playSound(player, Sound.CROSSBOW_SHOOT);
+                            player.getLevel().addSound(player, Sound.CROSSBOW_SHOOT);
                             removeChargedItem(player);
                         }
                     }
@@ -183,7 +183,7 @@ public class ItemCrossbow extends ItemTool {
             );
             this.setCompoundTag(tag);
             player.getInventory().setItemInHand(this);
-            player.getLevel().playSound(player, Sound.CROSSBOW_LOADING_END);
+            player.getLevel().addSound(player, Sound.CROSSBOW_LOADING_END);
         }
     }
 

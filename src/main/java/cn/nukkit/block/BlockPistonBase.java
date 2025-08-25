@@ -320,10 +320,10 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
 
         blockEntity.move();
         if (extending) {
-            this.getLevel().playSound(this, Sound.TILE_PISTON_OUT);
+            this.getLevel().addSound(this, Sound.TILE_PISTON_OUT);
             this.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.PISTON_EXTEND));
         } else {
-            this.getLevel().playSound(this, Sound.TILE_PISTON_IN);
+            this.getLevel().addSound(this, Sound.TILE_PISTON_IN);
             this.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.PISTON_CONTRACT));
         }
         return true;

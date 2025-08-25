@@ -225,7 +225,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
         }
         int healable = this.getHealingAmount(item);
         if (this.isBreedingItem(item)) {
-            this.getLevel().playSound(this, Sound.MOB_CAT_EAT);
+            this.getLevel().addSound(this, Sound.MOB_CAT_EAT);
             if (!this.hasOwner()) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 if (Utils.rand(1, 3) == 3) {
@@ -251,7 +251,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
                 }
             } else {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                this.getLevel().playSound(this, Sound.MOB_CAT_EAT);
+                this.getLevel().addSound(this, Sound.MOB_CAT_EAT);
                 this.getLevel().addParticle(new ItemBreakParticle(this.add(0, getHeight() * 0.75F, 0), Item.get(item.getId(), 0, 1)));
 
                 if (healable != 0) {

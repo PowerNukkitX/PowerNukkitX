@@ -218,7 +218,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
             frame = levelBlock.createBlockEntity(nbt);
         }
 
-        this.getLevel().playSound(this, Sound.BLOCK_ITEMFRAME_PLACE);
+        this.getLevel().addSound(this, Sound.BLOCK_ITEMFRAME_PLACE);
         return true;
     }
 

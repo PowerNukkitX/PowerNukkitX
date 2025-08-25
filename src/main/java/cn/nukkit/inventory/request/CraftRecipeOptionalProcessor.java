@@ -116,7 +116,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                 }
             } else {
                 if (!enchantedBook && (!Objects.equals(result.getId(), sacrifice.getId()) || result.getMaxDurability() == -1)) {//Anvil - ench
-                    player.getLevel().playSound(player, Sound.RANDOM_ANVIL_USE, 1, 1);
+                    player.getLevel().addSound(player, Sound.RANDOM_ANVIL_USE, 1, 1);
                     return null;
                 }
 
@@ -218,7 +218,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
 
         //Anvil - rename
         if (StringUtil.isNullOrEmpty(filterString)) {
-            player.getLevel().playSound(player, Sound.RANDOM_ANVIL_USE, 1, 1);
+            player.getLevel().addSound(player, Sound.RANDOM_ANVIL_USE, 1, 1);
             if (target.hasCustomName()) {
                 costHelper = 1;
                 extraCost += costHelper;

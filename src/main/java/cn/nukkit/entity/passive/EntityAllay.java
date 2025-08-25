@@ -153,7 +153,7 @@ public class EntityAllay extends EntityMob implements EntityFlyable, EntityOwnab
                             item.setCount(item.getCount() + currentItem.getCount());
                             getInventory().setItem(0, item);
                         }
-                        this.level.playSound(this, Sound.RANDOM_POP);
+                        this.level.addSound(this, Sound.RANDOM_POP);
                         nearestItem.close();
                     }
                 }

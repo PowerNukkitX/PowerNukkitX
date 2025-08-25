@@ -226,8 +226,8 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
         }
 
         if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET))
-            this.level.playSound(this, Sound.MOB_WARDEN_LISTENING_ANGRY);
-        else this.level.playSound(this, Sound.MOB_WARDEN_LISTENING);
+            this.level.addSound(this, Sound.MOB_WARDEN_LISTENING_ANGRY);
+        else this.level.addSound(this, Sound.MOB_WARDEN_LISTENING);
     }
 
     @Override

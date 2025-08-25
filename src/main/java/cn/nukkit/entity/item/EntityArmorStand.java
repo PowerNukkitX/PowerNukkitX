@@ -221,7 +221,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
 
         if (changed) {
-            level.playSound(this, Sound.MOB_ARMOR_STAND_PLACE);
+            level.addSound(this, Sound.MOB_ARMOR_STAND_PLACE);
         }
 
         return false; // Returning true would consume the item but tryChangeEquipment already manages the inventory
@@ -340,7 +340,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     public void fall(float fallDistance) {
         super.fall(fallDistance);
 
-        this.getLevel().playSound(this, Sound.MOB_ARMOR_STAND_LAND);
+        this.getLevel().addSound(this, Sound.MOB_ARMOR_STAND_LAND);
     }
 
     @Override
@@ -367,7 +367,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         level.dropItem(pos, armorInventory.getHelmet());
         armorInventory.clearAll();
 
-        level.playSound(this, Sound.MOB_ARMOR_STAND_BREAK);
+        level.addSound(this, Sound.MOB_ARMOR_STAND_BREAK);
 
         //todo: initiator should be a entity who kill it but not itself
         level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.getLastDamageCause() instanceof EntityDamageByEntityEvent byEntity ? byEntity.getDamager() : this, this.getVector3(), VibrationType.ENTITY_DIE));
@@ -379,7 +379,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         switch (source.getCause()) {
             case FALL:
                 source.setCancelled(true);
-                level.playSound(this, Sound.MOB_ARMOR_STAND_LAND);
+                level.addSound(this, Sound.MOB_ARMOR_STAND_LAND);
                 break;
             case CONTACT:
             case HUNGER:
@@ -431,7 +431,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
 
         setDataProperty(HURT_TICKS, 9, true);
-        level.playSound(this, Sound.MOB_ARMOR_STAND_HIT);
+        level.addSound(this, Sound.MOB_ARMOR_STAND_HIT);
 
         return true;
     }
@@ -503,7 +503,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             updateMovement();
             hasUpdate = true;
             if (onGround && (highestPosition - y) >= 3) {
-                level.playSound(this, Sound.MOB_ARMOR_STAND_LAND);
+                level.addSound(this, Sound.MOB_ARMOR_STAND_LAND);
             }
         }
 

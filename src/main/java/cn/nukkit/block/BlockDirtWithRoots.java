@@ -65,14 +65,14 @@ public class BlockDirtWithRoots extends BlockDirt {
             this.getLevel().setBlock(this, Block.get(DIRT), true);
             this.getLevel().dropItem(vector, new ItemBlock(Block.get(HANGING_ROOTS)));
             if (player != null) {
-                player.getLevel().playSound(player, Sound.USE_GRASS);
+                player.getLevel().addSound(player, Sound.USE_GRASS);
             }
             return true;
         } else if (item.isShovel()) {
             item.useOn(this);
             this.getLevel().setBlock(this, Block.get(GRASS_PATH));
             if (player != null) {
-                player.getLevel().playSound(player, Sound.USE_GRASS);
+                player.getLevel().addSound(player, Sound.USE_GRASS);
             }
             return true;
         }

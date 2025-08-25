@@ -29,13 +29,13 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
                 Block replace = bucket.getTargetBlock();
                 var fishEntityId = bucket.getFishEntityId();
                 if (bucket instanceof ItemLavaBucket)
-                    target.level.playSound(block, Sound.BUCKET_EMPTY_LAVA);
+                    target.level.addSound(block, Sound.BUCKET_EMPTY_LAVA);
                 else if(bucket instanceof ItemPowderSnowBucket)
-                    target.level.playSound(block, Sound.BUCKET_EMPTY_POWDER_SNOW);
+                    target.level.addSound(block, Sound.BUCKET_EMPTY_POWDER_SNOW);
                 else if (fishEntityId != null)
-                    target.level.playSound(block, Sound.BUCKET_EMPTY_FISH);
+                    target.level.addSound(block, Sound.BUCKET_EMPTY_FISH);
                 else
-                    target.level.playSound(block, Sound.BUCKET_EMPTY_WATER);
+                    target.level.addSound(block, Sound.BUCKET_EMPTY_WATER);
 
                 if (target.getId().equals(BlockID.PORTAL)) {
                     target.onBreak(null);
@@ -58,16 +58,16 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
             if (target instanceof BlockFlowingWater flowingWater && flowingWater.getLiquidDepth() == 0) {
                 target.level.setBlock(target, Block.get(BlockID.AIR));
                 target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
-                target.level.playSound(block, Sound.BUCKET_FILL_WATER);
+                target.level.addSound(block, Sound.BUCKET_FILL_WATER);
                 return Item.get(ItemID.WATER_BUCKET, 0, 1, bucket.getCompoundTag());
             } else if (target instanceof BlockFlowingLava lava && lava.getLiquidDepth() == 0) {
                 target.level.setBlock(target, Block.get(BlockID.AIR));
                 target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
-                target.level.playSound(block, Sound.BUCKET_FILL_LAVA);
+                target.level.addSound(block, Sound.BUCKET_FILL_LAVA);
                 return Item.get(ItemID.LAVA_BUCKET, 0, 1, bucket.getCompoundTag());
             } else if (target instanceof BlockPowderSnow) {
                 target.level.setBlock(target, Block.get(BlockID.AIR));
-                target.level.playSound(block, Sound.BUCKET_FILL_POWDER_SNOW);
+                target.level.addSound(block, Sound.BUCKET_FILL_POWDER_SNOW);
                 target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
                 return Item.get(ItemID.POWDER_SNOW_BUCKET, 0, 1, bucket.getCompoundTag());
             }

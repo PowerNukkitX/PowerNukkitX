@@ -183,7 +183,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         //default liquid type is water so we don't need to set it
                         cauldron.clearCustomColor();
                         this.level.setBlock(this, this, true);
-                        this.getLevel().playSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_FILLWATER);
+                        this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_FILLWATER);
                     } else if (bucket.isPowderSnow()) { // powder snow bucket
                         this.setFillLevel(FILL_LEVEL.getMax(), player);//fill
                         this.setCauldronLiquid(CauldronLiquid.POWDER_SNOW);
@@ -197,7 +197,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                             this.level.setBlock(this, this, true);
                             cauldron.clearCustomColor();
                             cauldron.setType(BlockEntityCauldron.PotionType.LAVA);
-                            this.getLevel().playSound(this.add(0.5, 1, 0.5), Sound.BUCKET_EMPTY_LAVA);
+                            this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_EMPTY_LAVA);
                         } else {
                             clearWithFizz(cauldron, player);
                         }
@@ -229,7 +229,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     );
                     cauldron.setCustomColor(mixed);
                 }
-                this.level.playSound(this.add(0.5, 0.5, 0.5), Sound.CAULDRON_ADDDYE);
+                this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.CAULDRON_ADDDYE);
 
                 break;
             case ItemID.WOLF_ARMOR:
@@ -249,7 +249,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     player.getInventory().setItemInHand(item);
                     setFillLevel(NukkitMath.clamp(getFillLevel() - 2, FILL_LEVEL.getMin(), FILL_LEVEL.getMax()), player);
                     this.level.setBlock(this, this, true, true);
-                    this.level.playSound(add(0.5, 0.5, 0.5), Sound.CAULDRON_DYEARMOR);
+                    this.level.addSound(add(0.5, 0.5, 0.5), Sound.CAULDRON_DYEARMOR);
                 } else {
                     if (!item.hasCompoundTag()) {
                         break;
@@ -266,7 +266,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
                     setFillLevel(NukkitMath.clamp(getFillLevel() - 2, FILL_LEVEL.getMin(), FILL_LEVEL.getMax()), player);
                     this.level.setBlock(this, this, true, true);
-                    this.getLevel().playSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_TAKEWATER);
+                    this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_TAKEWATER);
                 }
 
                 break;
@@ -372,7 +372,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
                 setFillLevel(NukkitMath.clamp(getFillLevel() - 2, FILL_LEVEL.getMin(), FILL_LEVEL.getMax()), player);
                 this.level.setBlock(this, this, true, true);
-                this.getLevel().playSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_TAKEWATER);
+                this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_TAKEWATER);
 
                 break;
             default:
@@ -398,7 +398,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         );
                         cauldron.setCustomColor(mixed);
                     }
-                    this.level.playSound(this.add(0.5, 0.5, 0.5), Sound.CAULDRON_ADDDYE);
+                    this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.CAULDRON_ADDDYE);
                 } else {
                     return true;
                 }
@@ -433,7 +433,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         this.setFillLevel(FILL_LEVEL.getMin(), player);//empty
                         this.level.setBlock(this, new BlockCauldron(), true);
                         cauldron.clearCustomColor();
-                        this.getLevel().playSound(this.add(0.5, 1, 0.5), Sound.BUCKET_FILL_LAVA);
+                        this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_FILL_LAVA);
                     }
                 } else if (bucket.isWater() || bucket.isLava()) { //water or lava bucket
                     if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getDamage() == 10) {
@@ -451,14 +451,14 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                             this.setFillLevel(FILL_LEVEL.getMax(), player);//fill
                             cauldron.clearCustomColor();
                             this.level.setBlock(this, this, true);
-                            this.getLevel().playSound(this.add(0.5, 1, 0.5), Sound.BUCKET_EMPTY_LAVA);
+                            this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_EMPTY_LAVA);
                         } else {
                             if (isEmpty()) {
                                 BlockCauldron blockCauldron = new BlockCauldron();
                                 blockCauldron.setFillLevel(6);
                                 this.level.setBlock(this, blockCauldron, true, true);
                                 cauldron.clearCustomColor();
-                                this.getLevel().playSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_FILLWATER);
+                                this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_FILLWATER);
                             } else {
                                 clearWithFizz(cauldron);
                             }
@@ -529,7 +529,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         cauldron.setType(BlockEntityCauldron.PotionType.NORMAL);
         cauldron.clearCustomColor();
         this.level.setBlock(this, new BlockCauldron(), true);
-        this.level.playSound(this.add(0.5, 0, 0.5), Sound.RANDOM_FIZZ);
+        this.level.addSound(this.add(0.5, 0, 0.5), Sound.RANDOM_FIZZ);
         for (int i = 0; i < 8; ++i) {
             this.getLevel().addParticle(new SmokeParticle(add(Math.random(), 1.2, Math.random())));
         }

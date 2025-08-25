@@ -1345,7 +1345,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         respawnAnchor.setCharge(charge - 1);
                         respawnAnchor.getLevel().setBlock(respawnAnchor, spawnBlock);
                         respawnAnchor.getLevel().scheduleUpdate(respawnAnchor, 10);
-                        respawnAnchor.getLevel().playSound(this, Sound.RESPAWN_ANCHOR_DEPLETE, 1, 1, this);
+                        respawnAnchor.getLevel().addSound(this, Sound.RESPAWN_ANCHOR_DEPLETE, 1, 1, this);
                     }
                 }
             } else {//block not available

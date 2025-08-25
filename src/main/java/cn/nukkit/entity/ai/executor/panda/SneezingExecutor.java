@@ -26,13 +26,13 @@ public class SneezingExecutor implements EntityControl, IBehaviorExecutor {
     @Override
     public void onStart(EntityIntelligent entity) {
         ticks = 0;
-        entity.getLevel().playSound(entity, Sound.MOB_PANDA_PRESNEEZE);
+        entity.getLevel().addSound(entity, Sound.MOB_PANDA_PRESNEEZE);
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
         entity.setDataFlag(EntityFlag.SNEEZING);
-        entity.getLevel().playSound(entity, Sound.MOB_PANDA_SNEEZE);
+        entity.getLevel().addSound(entity, Sound.MOB_PANDA_SNEEZE);
         for(Entity entity1 : Arrays.stream(entity.getLevel().getEntities()).filter(entity1 -> entity1 instanceof EntityPanda && entity1.isOnGround() && entity1.distance(entity) < 10).toList()) {
             if(entity1 != entity) ((EntityPanda) entity1).addTmpMoveMotion(new Vector3(0, ((EntityPanda) entity1).getJumpingMotion(1), 0));
         }

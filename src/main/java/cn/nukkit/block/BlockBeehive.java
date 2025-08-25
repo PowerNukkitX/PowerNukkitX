@@ -113,7 +113,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.getId().equals(ItemID.SHEARS) && isFull()) {
             honeyCollected(player);
-            level.playSound(add(0.5, 0.5, 0.5), Sound.BLOCK_BEEHIVE_SHEAR);
+            level.addSound(add(0.5, 0.5, 0.5), Sound.BLOCK_BEEHIVE_SHEAR);
             item.useOn(this);
             for (int i = 0; i < 3; ++i) {
                 level.dropItem(this, Item.get(ItemID.HONEYCOMB));

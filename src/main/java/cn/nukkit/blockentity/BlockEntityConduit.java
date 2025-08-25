@@ -96,10 +96,10 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         if (activeBeforeUpdate != active || targetBeforeUpdate != targetEntity) {
             this.spawnToAll();
             if (activeBeforeUpdate && !active) {
-                level.playSound(add(0, 0.5, 0), Sound.CONDUIT_DEACTIVATE);
+                level.addSound(add(0, 0.5, 0), Sound.CONDUIT_DEACTIVATE);
                 level.getServer().getPluginManager().callEvent(new ConduitDeactivateEvent(getBlock()));
             } else if (!activeBeforeUpdate && active) {
-                level.playSound(add(0, 0.5, 0), Sound.CONDUIT_ACTIVATE);
+                level.addSound(add(0, 0.5, 0), Sound.CONDUIT_ACTIVATE);
                 level.getServer().getPluginManager().callEvent(new ConduitActivateEvent(getBlock()));
             }
         }

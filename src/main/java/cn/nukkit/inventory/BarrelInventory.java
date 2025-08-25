@@ -43,7 +43,7 @@ public class BarrelInventory extends ContainerInventory implements BlockEntityIn
                     if (!blockBarrel.isOpen()) {
                         blockBarrel.setOpen(true);
                         level.setBlock(blockBarrel, blockBarrel, true, true);
-                        level.playSound(blockBarrel, Sound.BLOCK_BARREL_OPEN);
+                        level.addSound(blockBarrel, Sound.BLOCK_BARREL_OPEN);
                     }
                 }
             }
@@ -63,7 +63,7 @@ public class BarrelInventory extends ContainerInventory implements BlockEntityIn
                     if (blockBarrel.isOpen()) {
                         blockBarrel.setOpen(false);
                         level.setBlock(blockBarrel, blockBarrel, true, true);
-                        level.playSound(blockBarrel, Sound.BLOCK_BARREL_CLOSE);
+                        level.addSound(blockBarrel, Sound.BLOCK_BARREL_CLOSE);
                     }
                 }
             }

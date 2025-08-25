@@ -123,10 +123,10 @@ public class EntityArmadillo extends EntityAnimal {
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if(player.getInventory().getUnclonedItem(player.getInventory().getHeldItemIndex()) instanceof ItemBrush brush) {
             getLevel().dropItem(this, Item.get(Item.ARMADILLO_SCUTE));
-            getLevel().playSound(player, Sound.MOB_ARMADILLO_BRUSH);
+            getLevel().addSound(player, Sound.MOB_ARMADILLO_BRUSH);
             brush.incDamage(16);
             if(brush.getDamage() >= brush.getMaxDurability()) {
-                player.getLevel().playSound(player, Sound.RANDOM_BREAK);
+                player.getLevel().addSound(player, Sound.RANDOM_BREAK);
                 player.getInventory().clear(player.getInventory().getHeldItemIndex());
             }
         }

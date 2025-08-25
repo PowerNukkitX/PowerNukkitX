@@ -72,7 +72,7 @@ public class BlockRespawnAnchor extends Block {
 
             setCharge(charge + 1);
             getLevel().setBlock(this, this);
-            getLevel().playSound(this, Sound.RESPAWN_ANCHOR_CHARGE);
+            getLevel().addSound(this, Sound.RESPAWN_ANCHOR_CHARGE);
             return true;
         }
 
@@ -99,7 +99,7 @@ public class BlockRespawnAnchor extends Block {
             return false;
         }
         player.setSpawn(this, SpawnPointType.BLOCK);
-        getLevel().playSound(this, Sound.RESPAWN_ANCHOR_SET_SPAWN);
+        getLevel().addSound(this, Sound.RESPAWN_ANCHOR_SET_SPAWN);
         player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.respawn_anchor.respawnSet"));
         return true;
     }
@@ -161,7 +161,7 @@ public class BlockRespawnAnchor extends Block {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            getLevel().playSound(this, Sound.RESPAWN_ANCHOR_DEPLETE);
+            getLevel().addSound(this, Sound.RESPAWN_ANCHOR_DEPLETE);
             return type;
         }
         return super.onUpdate(type);

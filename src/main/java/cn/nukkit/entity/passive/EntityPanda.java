@@ -291,7 +291,7 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
                 if(variant.getVariant() != AGRESSIVE) {
                     stop(entity);
                 }
-                entity.getLevel().playSound(entity, Sound.MOB_PANDA_BITE);
+                entity.getLevel().addSound(entity, Sound.MOB_PANDA_BITE);
             }
         }
 

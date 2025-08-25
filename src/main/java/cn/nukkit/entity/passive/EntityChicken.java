@@ -97,7 +97,7 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
                         new Behavior(entity -> {
                             entity.getMemoryStorage().put(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, getLevel().getTick());
                             entity.getLevel().dropItem(entity, getEgg());
-                            entity.getLevel().playSound(entity, Sound.MOB_CHICKEN_PLOP);
+                            entity.getLevel().addSound(entity, Sound.MOB_CHICKEN_PLOP);
                             return false;
                         }, any(
                                 all(

@@ -75,7 +75,7 @@ public class FangLineExecutor implements EntityControl, IBehaviorExecutor {
 
     protected void startSpell(EntityIntelligent entity) {
         tick = 0;
-        entity.level.playSound(entity, Sound.MOB_EVOCATION_ILLAGER_PREPARE_SUMMON);
+        entity.level.addSound(entity, Sound.MOB_EVOCATION_ILLAGER_PREPARE_SUMMON);
         entity.setDataProperty(EntityDataTypes.EVOKER_SPELL_CASTING_COLOR, BlockColor.PURPLE_BLOCK_COLOR.getARGB());
         entity.getMemoryStorage().put(LAST_MAGIC, EntityEvocationIllager.SPELL.CAST_LINE);
         entity.setDataFlag(EntityFlag.CASTING);

@@ -213,7 +213,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
 
         if (this.isCollided && !this.hadCollision) {
-            this.getLevel().playSound(this, Sound.ITEM_TRIDENT_HIT_GROUND);
+            this.getLevel().addSound(this, Sound.ITEM_TRIDENT_HIT_GROUND);
         }
 
         boolean hasUpdate = super.onUpdate(currentTick);
@@ -285,7 +285,7 @@ public class EntityThrownTrident extends SlenderProjectile {
             ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage);
         }
         entity.attack(ev);
-        this.getLevel().playSound(this, Sound.ITEM_TRIDENT_HIT);
+        this.getLevel().addSound(this, Sound.ITEM_TRIDENT_HIT);
         this.hadCollision = true;
         this.alreadyCollided = true;
         this.setCollisionPos(this);
@@ -296,12 +296,12 @@ public class EntityThrownTrident extends SlenderProjectile {
                 Position pos = this.getPosition();
                 EntityLightningBolt lighting = new EntityLightningBolt(pos.getChunk(), getDefaultNBT(pos));
                 lighting.spawnToAll();
-                this.getLevel().playSound(this, Sound.ITEM_TRIDENT_THUNDER);
+                this.getLevel().addSound(this, Sound.ITEM_TRIDENT_THUNDER);
             }
         }
 
         if (this.canReturnToShooter()) {
-            this.getLevel().playSound(this, Sound.ITEM_TRIDENT_RETURN);
+            this.getLevel().addSound(this, Sound.ITEM_TRIDENT_RETURN);
             this.setNoClip(true);
             this.hadCollision = false;
             this.setTridentRope(true);
@@ -325,7 +325,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
             this.setStuckToBlockPos(new BlockVector3(collisionBlock.getFloorX(), collisionBlock.getFloorY(), collisionBlock.getFloorZ()));
             if (this.canReturnToShooter()) {
-                this.getLevel().playSound(this, Sound.ITEM_TRIDENT_RETURN);
+                this.getLevel().addSound(this, Sound.ITEM_TRIDENT_RETURN);
                 this.setNoClip(true);
                 this.setTridentRope(true);
                 return;

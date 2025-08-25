@@ -507,7 +507,7 @@ public abstract class BlockLiquid extends BlockTransparent {
         }
         this.level.setBlock(this, event.getTo(), true, true);
         this.level.setBlock(this, 1, Block.get(BlockID.AIR), true, true);
-        this.getLevel().playSound(this.add(0.5, 0.5, 0.5), Sound.RANDOM_FIZZ);
+        this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.RANDOM_FIZZ);
         return true;
     }
 

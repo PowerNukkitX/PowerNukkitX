@@ -93,7 +93,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         var pos = this.add(0.5, 0.5, 0.5);
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, pos, isPowerOn() ? VibrationType.BLOCK_ACTIVATE : VibrationType.BLOCK_DEACTIVATE));
         this.getLevel().setBlock(this, this, false, true);
-        this.getLevel().playSound(this, Sound.RANDOM_CLICK, 0.8f, isPowerOn() ? 0.58f : 0.5f);
+        this.getLevel().addSound(this, Sound.RANDOM_CLICK, 0.8f, isPowerOn() ? 0.58f : 0.5f);
 
         LeverDirection orientation = getLeverOrientation();
         BlockFace face = orientation.getFacing();

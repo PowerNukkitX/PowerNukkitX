@@ -33,7 +33,7 @@ public class WorkExecutor extends NearbyFlatRandomRoamExecutor {
                 if(site.distance(villager) < 1.5f) {
                     setLookTarget(villager, site);
                     stayTick++;
-                    if(stayTick == 40 || stayTick == 90) villager.getLevel().playSound(villager, Profession.getProfession(villager.getProfession()).getWorkSound());
+                    if(stayTick == 40 || stayTick == 90) villager.getLevel().addSound(villager, Profession.getProfession(villager.getProfession()).getWorkSound());
                 }
                 if(stayTick == 99) removeRouteTarget(villager);
             } else {

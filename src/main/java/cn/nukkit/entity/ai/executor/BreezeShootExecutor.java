@@ -165,14 +165,14 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
         if (projectev.isCancelled()) {
             projectile.kill();
         } else {
-            entity.level.playSound(entity, Sound.MOB_BREEZE_SHOOT);
+            entity.level.addSound(entity, Sound.MOB_BREEZE_SHOOT);
             projectile.spawnToAll();
         }
     }
 
     private void startShootSequence(Entity entity) {
         entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
-        entity.level.playSound(entity, Sound.MOB_BREEZE_CHARGE);
+        entity.level.addSound(entity, Sound.MOB_BREEZE_CHARGE);
     }
 
     private void endShootSequence(Entity entity) {

@@ -29,7 +29,7 @@ public class PiglinTradeExecutor implements EntityControl, IBehaviorExecutor {
         tick++;
         if(tick < 160) {
             if(tick % 30 == 0 && ThreadLocalRandom.current().nextBoolean()) {
-                entity.level.playSound(entity, Sound.MOB_PIGLIN_ADMIRING_ITEM);
+                entity.level.addSound(entity, Sound.MOB_PIGLIN_ADMIRING_ITEM);
             }
             return true;
         } else {

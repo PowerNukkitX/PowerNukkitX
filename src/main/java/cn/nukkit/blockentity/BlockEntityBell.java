@@ -63,7 +63,7 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     public boolean onUpdate() {
         if (ringing) {
             if (ticks == 0) {
-                level.playSound(this, Sound.BLOCK_BELL_HIT);
+                level.addSound(this, Sound.BLOCK_BELL_HIT);
                 spawnToAllWithExceptions();
                 spawnExceptions.clear();
             } else if (ticks >= 50) {
