@@ -14,6 +14,7 @@ public final class Registries {
     public static final FuelRegistry FUEL = new FuelRegistry();
     public static final GeneratorRegistry GENERATOR = new GeneratorRegistry();
     public static final GenerateStageRegistry GENERATE_STAGE = new GenerateStageRegistry();
+    public static final GenerateFeatureRegistry GENERATE_FEATURE = new GenerateFeatureRegistry();
     public static final EffectRegistry EFFECT = new EffectRegistry();
     public static final RecipeRegistry RECIPE = new RecipeRegistry();
 }

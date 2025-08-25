@@ -180,7 +180,7 @@ public class NewJungleTree extends TreeGenerator {
                             for (BlockFace enumfacing : BlockFace.Plane.HORIZONTAL) {
                                 if (rand.nextInt(4 - l3) == 0) {
                                     BlockFace enumfacing1 = enumfacing.getOpposite();
-                                    this.placeCocoa(level, rand.nextInt(3), position.add(enumfacing1.getXOffset(), i - 5 + l3, enumfacing1.getZOffset()), enumfacing);
+                                    this.placeCocoa(level, rand.nextInt(2), position.add(enumfacing1.getXOffset(), i - 5 + l3, enumfacing1.getZOffset()), enumfacing);
                                 }
                             }
                         }

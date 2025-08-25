@@ -420,6 +420,7 @@ public class Server {
             Registries.FUEL.init();
             Registries.GENERATOR.init();
             Registries.GENERATE_STAGE.init();
+            Registries.GENERATE_FEATURE.init();
             Registries.EFFECT.init();
             Registries.RECIPE.init();
             Profession.init();
