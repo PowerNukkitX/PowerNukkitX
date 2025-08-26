@@ -1,28 +1,29 @@
 package cn.nukkit.level.generator.feature.ore;
 
-public class LapisOreGenerationFeature extends LapisOreBuriedGenerationFeature {
 
-    public static final String NAME = "minecraft:overworld_underground_lapis_ore_feature";
+
+public class IronOreSmallGenerationFeature extends IronOreMiddleGenerationFeature {
+
+    public static final String NAME = "minecraft:overworld_underground_iron_ore_small_feature";
 
     @Override
-    public int getClusterCount() {
-        return 2;
+    public int getClusterSize() {
+        return 4;
     }
-
 
     @Override
     public int getMinHeight() {
-        return -32;
+        return -64;
     }
 
     @Override
     public int getMaxHeight() {
-        return 32;
+        return 72;
     }
 
     @Override
     public ConcentrationType getConcentration() {
-        return ConcentrationType.TRIANGLE;
+        return ConcentrationType.UNIFORM;
     }
 
     @Override

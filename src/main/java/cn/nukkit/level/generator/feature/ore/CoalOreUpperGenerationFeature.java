@@ -1,17 +1,17 @@
 package cn.nukkit.level.generator.feature.ore;
 
-import cn.nukkit.block.BlockDeepslateRedstoneOre;
+import cn.nukkit.block.BlockCoalOre;
+import cn.nukkit.block.BlockDeepslateCoalOre;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockRedstoneOre;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.generator.feature.OreGeneratorFeature;
 
-public class RedstoneOreGenerationFeature extends OreGeneratorFeature {
+public class CoalOreUpperGenerationFeature extends OreGeneratorFeature {
 
-    private static final BlockState TYPE_STONE = BlockRedstoneOre.PROPERTIES.getDefaultState();
-    private static final BlockState TYPE_DEEPSLATE = BlockDeepslateRedstoneOre.PROPERTIES.getDefaultState();
+    private static final BlockState TYPE_STONE = BlockCoalOre.PROPERTIES.getDefaultState();
+    private static final BlockState TYPE_DEEPSLATE = BlockDeepslateCoalOre.PROPERTIES.getDefaultState();
 
-    public static final String NAME = "minecraft:overworld_underground_redstone_ore_feature";
+    public static final String NAME = "minecraft:overworld_underground_coal_ore_upper_feature";
 
     @Override
     public BlockState getState(BlockState original) {
@@ -24,22 +24,22 @@ public class RedstoneOreGenerationFeature extends OreGeneratorFeature {
 
     @Override
     public int getClusterCount() {
-        return 4;
+        return 30;
     }
 
     @Override
     public int getClusterSize() {
-        return 8;
+        return 17;
     }
 
     @Override
     public int getMinHeight() {
-        return -64;
+        return 136;
     }
 
     @Override
     public int getMaxHeight() {
-        return 15;
+        return 320;
     }
 
     @Override

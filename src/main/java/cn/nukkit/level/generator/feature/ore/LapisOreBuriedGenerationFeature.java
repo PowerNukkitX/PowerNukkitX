@@ -1,17 +1,17 @@
 package cn.nukkit.level.generator.feature.ore;
 
-import cn.nukkit.block.BlockDeepslateRedstoneOre;
+import cn.nukkit.block.BlockDeepslateLapisOre;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockRedstoneOre;
+import cn.nukkit.block.BlockLapisOre;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.generator.feature.OreGeneratorFeature;
 
-public class RedstoneOreGenerationFeature extends OreGeneratorFeature {
+public class LapisOreBuriedGenerationFeature extends OreGeneratorFeature {
 
-    private static final BlockState TYPE_STONE = BlockRedstoneOre.PROPERTIES.getDefaultState();
-    private static final BlockState TYPE_DEEPSLATE = BlockDeepslateRedstoneOre.PROPERTIES.getDefaultState();
+    private static final BlockState TYPE_STONE = BlockLapisOre.PROPERTIES.getDefaultState();
+    private static final BlockState TYPE_DEEPSLATE = BlockDeepslateLapisOre.PROPERTIES.getDefaultState();
 
-    public static final String NAME = "minecraft:overworld_underground_redstone_ore_feature";
+    public static final String NAME = "minecraft:overworld_underground_lapis_ore_buried_feature";
 
     @Override
     public BlockState getState(BlockState original) {
@@ -29,7 +29,7 @@ public class RedstoneOreGenerationFeature extends OreGeneratorFeature {
 
     @Override
     public int getClusterSize() {
-        return 8;
+        return 7;
     }
 
     @Override
@@ -39,7 +39,12 @@ public class RedstoneOreGenerationFeature extends OreGeneratorFeature {
 
     @Override
     public int getMaxHeight() {
-        return 15;
+        return 64;
+    }
+
+    @Override
+    public float getSkipAir() {
+        return 1f;
     }
 
     @Override

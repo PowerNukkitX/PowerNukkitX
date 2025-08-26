@@ -1,13 +1,14 @@
 package cn.nukkit.level.generator.feature.ore;
 
-import cn.nukkit.block.BlockGravel;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.block.BlockTuff;
+import cn.nukkit.level.generator.feature.OreGeneratorFeature;
 
-public class GravelOreGenerationFeature extends AbstractOreUpperGeneratorFeature {
+public class TuffOreGenerationFeature extends OreGeneratorFeature {
 
-    private static final BlockState STATE = BlockGravel.PROPERTIES.getDefaultState();
+    private static final BlockState STATE = BlockTuff.PROPERTIES.getDefaultState();
 
-    public static final String NAME = "minecraft:overworld_underground_gravel_ore_feature";
+    public static final String NAME = "minecraft:overworld_underground_tuff_feature";
 
     @Override
     public BlockState getState(BlockState original) {
@@ -16,12 +17,12 @@ public class GravelOreGenerationFeature extends AbstractOreUpperGeneratorFeature
 
     @Override
     public int getClusterCount() {
-        return 14;
+        return 2;
     }
 
     @Override
     public int getClusterSize() {
-        return 33;
+        return 64;
     }
 
     @Override
@@ -31,7 +32,7 @@ public class GravelOreGenerationFeature extends AbstractOreUpperGeneratorFeature
 
     @Override
     public int getMaxHeight() {
-        return 320;
+        return 0;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package cn.nukkit.level.generator.stages.normal;
 
+import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockIce;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockWater;
@@ -56,14 +58,10 @@ public class NormalChunkFeatureStage extends GenerateStage {
         }
         for(var entry : features.object2IntEntrySet().stream().sorted(Map.Entry.comparingByValue()).toList()) {
             var consolidatedFeatureData = entry.getKey();
-            String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.feature);
+            String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.identifier);
             if(Registries.GENERATE_FEATURE.has(featureName)) {
                 GenerateFeature feature = Registries.GENERATE_FEATURE.get(featureName);
-                if(feature != null) {
-                    feature.apply(context);
-                }
-            } else {
-                log.warn("Missing feature: " + featureName);
+                feature.apply(context);
             }
         }
         chunk.setChunkState(ChunkState.POPULATED);

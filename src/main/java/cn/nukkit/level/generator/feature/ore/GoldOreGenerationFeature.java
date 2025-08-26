@@ -1,23 +1,32 @@
 package cn.nukkit.level.generator.feature.ore;
 
-import cn.nukkit.block.BlockDeepslateGoldOre;
-import cn.nukkit.block.BlockGoldOre;
-import cn.nukkit.block.BlockState;
-import cn.nukkit.level.generator.feature.OreGeneratorFeature;
+public class GoldOreGenerationFeature extends GoldOreMesaGenerationFeature {
 
-public class GoldOreGenerationFeature extends OreGeneratorFeature {
-
-    public static final String NAME = "minecraft:gold_ore_feature";
-    
-    private static final BlockState TYPE_STONE = BlockGoldOre.PROPERTIES.getDefaultState();
-    private static final BlockState TYPE_DEEPSLATE = BlockDeepslateGoldOre.PROPERTIES.getDefaultState();
+    public static final String NAME = "minecraft:overworld_underground_gold_ore_feature";
 
     @Override
-    public OrePopulation[] getPopulators() {
-        return new OrePopulation[] {
-                new OrePopulation(TYPE_STONE, 2, 9, 0, 32),
-                new OrePopulation(TYPE_DEEPSLATE, 2, 9, -64, 8)
-        };
+    public int getClusterCount() {
+        return 4;
+    }
+
+    @Override
+    public int getMinHeight() {
+        return -64;
+    }
+
+    @Override
+    public int getMaxHeight() {
+        return 32;
+    }
+
+    @Override
+    public ConcentrationType getConcentration() {
+        return ConcentrationType.TRIANGLE;
+    }
+
+    @Override
+    public float getSkipAir() {
+        return 0.5f;
     }
 
     @Override

@@ -54,6 +54,13 @@ public class NukkitMath {
         return start + (random.nextInt() % (end + 1 - start));
     }
 
+    public static int randomRangeTriangle(NukkitRandom random, int start, int end) {
+        int heightDiff = Math.abs(end - start);
+        int heightDiffHalf = heightDiff / 2;
+        int heightDiffHalf2 = heightDiff - heightDiffHalf;
+        return Math.min(start, end) + NukkitMath.randomRange(random.identical(), 0, heightDiffHalf2) + NukkitMath.randomRange(random.identical(), 0, heightDiffHalf);
+    }
+
     public static double round(double d) {
         return round(d, 0);
     }

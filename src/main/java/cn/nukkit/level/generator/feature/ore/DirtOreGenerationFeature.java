@@ -6,15 +6,33 @@ import cn.nukkit.level.generator.feature.OreGeneratorFeature;
 
 public class DirtOreGenerationFeature extends OreGeneratorFeature {
 
-    public static final String NAME = "minecraft:dirt_feature";
-    
     private static final BlockState STATE = BlockDirt.PROPERTIES.getDefaultState();
 
+    public static final String NAME = "minecraft:overworld_underground_dirt_feature";
+
     @Override
-    public OrePopulation[] getPopulators() {
-        return new OrePopulation[] {
-                new OrePopulation(STATE, 10, 33, 0, 128),
-        };
+    public BlockState getState(BlockState original) {
+        return STATE;
+    }
+
+    @Override
+    public int getClusterCount() {
+        return 7;
+    }
+
+    @Override
+    public int getClusterSize() {
+        return 33;
+    }
+
+    @Override
+    public int getMinHeight() {
+        return 0;
+    }
+
+    @Override
+    public int getMaxHeight() {
+        return 160;
     }
 
     @Override

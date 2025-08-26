@@ -17,18 +17,36 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
     public void init() {
         if (isLoad.getAndSet(true)) return;
         try {
-            this.register(CoalOreGenerationFeature.NAME, CoalOreGenerationFeature.class);
-            this.register(CopperOreGenerationFeature.NAME, CopperOreGenerationFeature.class);
-            this.register(IronOreGenerationFeature.NAME, IronOreGenerationFeature.class);
-            this.register(RedstoneOreGenerationFeature.NAME, RedstoneOreGenerationFeature.class);
-            this.register(LapisOreGenerationFeature.NAME, LapisOreGenerationFeature.class);
-            this.register(GoldOreGenerationFeature.NAME, GoldOreGenerationFeature.class);
-            this.register(DiamondOreGenerationFeature.NAME, DiamondOreGenerationFeature.class);
             this.register(DirtOreGenerationFeature.NAME, DirtOreGenerationFeature.class);
             this.register(GravelOreGenerationFeature.NAME, GravelOreGenerationFeature.class);
-            this.register(GraniteOreGenerationFeature.NAME, GraniteOreGenerationFeature.class);
-            this.register(DioriteOreGenerationFeature.NAME, DioriteOreGenerationFeature.class);
-            this.register(AndesiteOreGenerationFeature.NAME, AndesiteOreGenerationFeature.class);
+            this.register(GraniteOreUpperGenerationFeature.NAME, GraniteOreUpperGenerationFeature.class);
+            this.register(GraniteOreLowerGenerationFeature.NAME, GraniteOreLowerGenerationFeature.class);
+            this.register(DioriteOreUpperGenerationFeature.NAME, DioriteOreUpperGenerationFeature.class);
+            this.register(DioriteOreLowerGenerationFeature.NAME, DioriteOreLowerGenerationFeature.class);
+            this.register(AndesiteOreUpperGenerationFeature.NAME, AndesiteOreUpperGenerationFeature.class);
+            this.register(AndesiteOreLowerGenerationFeature.NAME, AndesiteOreUpperGenerationFeature.class);
+            this.register(TuffOreGenerationFeature.NAME, TuffOreGenerationFeature.class);
+            this.register(CoalOreUpperGenerationFeature.NAME, CoalOreUpperGenerationFeature.class);
+            this.register(CoalOreLowerGenerationFeature.NAME, CoalOreLowerGenerationFeature.class);
+            this.register(CoalOreMountainsGenerationFeature.NAME, CoalOreMountainsGenerationFeature.class);
+            this.register(IronOreUpperGenerationFeature.NAME, IronOreUpperGenerationFeature.class);
+            this.register(IronOreMiddleGenerationFeature.NAME, IronOreMiddleGenerationFeature.class);
+            this.register(IronOreSmallGenerationFeature.NAME, IronOreSmallGenerationFeature.class);
+            this.register(CopperOreGenerationFeature.NAME, CopperOreGenerationFeature.class);
+            this.register(CopperOreDripstoneCaveGenerationFeature.NAME, CopperOreDripstoneCaveGenerationFeature.class);
+            this.register(RedstoneOreGenerationFeature.NAME, RedstoneOreGenerationFeature.class);
+            this.register(RedstoneOreLowerGenerationFeature.NAME, RedstoneOreLowerGenerationFeature.class);
+            this.register(LapisOreBuriedGenerationFeature.NAME, LapisOreBuriedGenerationFeature.class);
+            this.register(LapisOreGenerationFeature.NAME, LapisOreGenerationFeature.class);
+            this.register(GoldOreMesaGenerationFeature.NAME, GoldOreMesaGenerationFeature.class);
+            this.register(GoldOreLowerGenerationFeature.NAME, GoldOreLowerGenerationFeature.class);
+            this.register(GoldOreGenerationFeature.NAME, GoldOreGenerationFeature.class);
+            this.register(DiamondOreSquareGenerationFeature.NAME, DiamondOreSquareGenerationFeature.class);
+            this.register(DiamondOreGenerationFeature.NAME, DiamondOreGenerationFeature.class);
+            this.register(DiamondOreBuriedGenerationFeature.NAME, DiamondOreBuriedGenerationFeature.class);
+            this.register(DiamondOreLargeGenerationFeature.NAME, DiamondOreLargeGenerationFeature.class);
+            this.register(EmeraldOreGenerationFeature.NAME, EmeraldOreGenerationFeature.class);
+            this.register(InfestedOreGenerationFeature.NAME, InfestedOreGenerationFeature.class);
             this.register(LegacyJungleTreeFeature.NAME, LegacyJungleTreeFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);

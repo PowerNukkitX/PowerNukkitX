@@ -8,24 +8,33 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
-import cn.nukkit.level.generator.noise.f.SimplexF;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.NukkitRandom;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public abstract class OreGeneratorFeature extends GenerateFeature {
 
     protected static final BlockState STONE = BlockStone.PROPERTIES.getDefaultState();
     protected static final BlockState DEEPSLATE = BlockDeepslate.PROPERTIES.getDefaultState();
 
-    public abstract OrePopulation[] getPopulators();
+    public abstract BlockState getState(BlockState original);
+    public abstract int getClusterCount();
+    public abstract int getClusterSize();
+    public abstract int getMinHeight();
+    public abstract int getMaxHeight();
+
+    public float getSkipAir() {
+        return 0;
+    }
+
+    public ConcentrationType getConcentration() {
+        return ConcentrationType.UNIFORM;
+    }
+
+    public boolean isRare() {
+        return false;
+    }
 
     public boolean canBeReplaced(BlockState state) {
         return state == STONE || state == DEEPSLATE;
@@ -43,23 +52,36 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
         int sz = chunkZ << 4;
         int ez = sz + 15;
         BlockManager manager = new BlockManager(level);
-        for(OrePopulation population : getPopulators()) {
-            for (int i = 0; i < population.clustercount(); i++) {
-                BlockManager object = new BlockManager(level);
-                int x = NukkitMath.randomRange(random, sx, ex);
-                int z = NukkitMath.randomRange(random, sz, ez);
-                int y = population.minheight + random.nextBoundedInt((population.maxheight - population.minheight) + 1);
-                BlockState original = level.getBlockStateAt(x, y, z);
-                if (!canBeReplaced(original)) {
-                    continue;
+        for (int i = 0; i < (this.isRare() ? (random.identical().nextInt(getClusterCount()) == 0 ? 1 : 0) : getClusterCount()); i++) {
+            BlockManager object = new BlockManager(level);
+            int maxY = Math.min(this.getMaxHeight(), level.getMaxHeight());
+            int minY = Math.max(this.getMinHeight(), level.getMinHeight());
+            int x = NukkitMath.randomRange(random, sx, ex);
+            int z = NukkitMath.randomRange(random, sz, ez);
+            int y = switch (getConcentration()) {
+                case TRIANGLE -> NukkitMath.randomRangeTriangle(random, minY, maxY);
+                default -> minY + random.nextBoundedInt((maxY - minY) + 1);
+            };
+
+            BlockState original = level.getBlockStateAt(x, y, z);
+            if (!canBeReplaced(original)) {
+                continue;
+            }
+            if (this.getClusterSize() == 1) {
+                object.setBlockStateAt(x, y, z, getState(original));
+            } else {
+                spawn(object, new NukkitRandom(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) ^ x + y + z), x, y, z);
+            }
+            if(object.getBlocks().stream().noneMatch(block -> !block.getChunk().isGenerated())) {
+                boolean skip = false;
+                if(getSkipAir() != 0) {
+                    boolean air = object.getBlocks().stream().anyMatch(block -> level.getBlock(block).isAir());
+                    if(air) {
+                        skip = random.identical().nextFloat() < getSkipAir();
+                    }
                 }
-                if (population.maxclustersize == 1) {
-                    object.setBlockStateAt(x, y, z, population.state);
-                } else {
-                    spawn(population, object, random.identical(), x, y, z);
-                }
-                if(object.getBlocks().stream().noneMatch(block -> !block.getChunk().isGenerated())) {
-                    for(Block block : object.getBlocks()) {
+                if(!skip) {
+                    for (Block block : object.getBlocks()) {
                         manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
                     }
                 }
@@ -68,43 +90,59 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
         manager.applySubChunkUpdate(manager.getBlocks());
     }
 
-    protected void spawn(OrePopulation population, BlockManager level, NukkitRandom rand, int cx, int cy, int cz) {
+    protected void spawn(BlockManager level, NukkitRandom rand, int x, int y, int z) {
 
-        int count = NukkitMath.randomRange(rand, 1, population.maxclustersize)+1;
+        float piScaled = rand.nextFloat() * (float) Math.PI;
+        double scaleMaxX = (float) (x + 8) + MathHelper.sin(piScaled) * (float) getClusterSize() / 8.0F;
+        double scaleMinX = (float) (x + 8) - MathHelper.sin(piScaled) * (float) getClusterSize() / 8.0F;
+        double scaleMaxZ = (float) (z + 8) + MathHelper.cos(piScaled) * (float) getClusterSize() / 8.0F;
+        double scaleMinZ = (float) (z + 8) - MathHelper.cos(piScaled) * (float) getClusterSize() / 8.0F;
+        double scaleMaxY = y + rand.nextBoundedInt(3) - 2;
+        double scaleMinY = y + rand.nextBoundedInt(3) - 2;
 
-        Map<Vector3, Double> scores = new HashMap<>();
-        List<Vector3> candidates = new ArrayList<>();
+        for (int i = 0; i < getClusterSize(); ++i) {
+            float sizeIncr = (float) i / (float) getClusterSize();
+            double scaleX = scaleMaxX + (scaleMinX - scaleMaxX) * (double) sizeIncr;
+            double scaleY = scaleMaxY + (scaleMinY - scaleMaxY) * (double) sizeIncr;
+            double scaleZ = scaleMaxZ + (scaleMinZ - scaleMaxZ) * (double) sizeIncr;
+            double randSizeOffset = rand.nextDouble() * (double) getClusterSize() / 16.0D;
+            double randVec1 = (double) (MathHelper.sin((float) Math.PI * sizeIncr) + 1.0F) * randSizeOffset + 1.0D;
+            double randVec2 = (double) (MathHelper.sin((float) Math.PI * sizeIncr) + 1.0F) * randSizeOffset + 1.0D;
+            int minX = MathHelper.floor(scaleX - randVec1 / 2.0D);
+            int minY = MathHelper.floor(scaleY - randVec2 / 2.0D);
+            int minZ = MathHelper.floor(scaleZ - randVec1 / 2.0D);
+            int maxX = MathHelper.floor(scaleX + randVec1 / 2.0D);
+            int maxY = MathHelper.floor(scaleY + randVec2 / 2.0D);
+            int maxZ = MathHelper.floor(scaleZ + randVec1 / 2.0D);
 
-        SimplexF rng = new SimplexF(rand, population.clustercount, population.clustercount);
+            for (int xSeg = minX; xSeg <= maxX; ++xSeg) {
+                double xVal = ((double) xSeg + 0.5D - scaleX) / (randVec1 / 2.0D);
 
-        int maxSize = (int) Math.ceil(Math.cbrt(count)) + 2;
+                if (xVal * xVal < 1.0D) {
+                    for (int ySeg = minY; ySeg <= maxY; ++ySeg) {
+                        double yVal = ((double) ySeg + 0.5D - scaleY) / (randVec2 / 2.0D);
 
-        for (int x = cx - maxSize; x <= cx + maxSize; x++) {
-            for (int y = cy - maxSize; y <= cy + maxSize; y++) {
-                for (int z = cz - maxSize; z <= cz + maxSize; z++) {
-                    float dx = x - cx;
-                    float dy = y - cy;
-                    float dz = z - cz;
-                    double dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                        if (xVal * xVal + yVal * yVal < 1.0D) {
+                            for (int zSeg = minZ; zSeg <= maxZ; ++zSeg) {
+                                double zVal = ((double) zSeg + 0.5D - scaleZ) / (randVec1 / 2.0D);
 
-                    double noise = rng.getNoise3D(x, y, z);
-
-                    double score = dist + noise * 1.5;
-                    candidates.add(new Vector3(x, y, z).setComponents(x, y, z).setY(y));
-                    scores.put(candidates.get(candidates.size()-1), score);
+                                if (xVal * xVal + yVal * yVal + zVal * zVal < 1.0D) {
+                                    BlockState original = level.getLevel().getBlockStateAt(xSeg, ySeg, zSeg);
+                                    if(canBeReplaced(original)) {
+                                        level.setBlockStateAt(xSeg, ySeg, zSeg, getState(original));
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-
-        candidates.sort(Comparator.comparingDouble(v -> scores.get(v)));
-
-        for (int i = 0; i < count && i < candidates.size(); i++) {
-            Vector3 pos = candidates.get(i);
-            level.setBlockStateAt(pos, population.state);
-        }
     }
 
-    public record OrePopulation(BlockState state, int clustercount, int maxclustersize, int minheight, int maxheight) {
+    public enum ConcentrationType {
+        UNIFORM,
+        TRIANGLE
     }
 
 }
