@@ -194,6 +194,7 @@ public final class PlayerChunkManager {
             }
             sentChunks.addAll(chunkReadyToSend.keySet());
         }
+        chunkReadyToSend.clear();
     }
 
     private boolean ifChunkNotInRadius(int chunkX, int chunkZ, int radius) {
