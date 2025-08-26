@@ -2,7 +2,6 @@ package cn.nukkit.level.generator.feature.ore;
 
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockTuff;
-import cn.nukkit.level.generator.feature.OreGeneratorFeature;
 
 public class TuffOreGenerationFeature extends OreGeneratorFeature {
 

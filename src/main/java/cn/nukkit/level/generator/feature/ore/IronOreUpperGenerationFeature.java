@@ -4,7 +4,6 @@ import cn.nukkit.block.BlockDeepslateIronOre;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockIronOre;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.generator.feature.OreGeneratorFeature;
 
 public class IronOreUpperGenerationFeature extends OreGeneratorFeature {
 

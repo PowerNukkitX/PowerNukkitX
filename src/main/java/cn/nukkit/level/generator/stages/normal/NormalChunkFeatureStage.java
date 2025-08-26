@@ -62,6 +62,8 @@ public class NormalChunkFeatureStage extends GenerateStage {
             if(Registries.GENERATE_FEATURE.has(featureName)) {
                 GenerateFeature feature = Registries.GENERATE_FEATURE.get(featureName);
                 feature.apply(context);
+            } else {
+                log.warn("Missing feature: " + featureName);
             }
         }
         chunk.setChunkState(ChunkState.POPULATED);

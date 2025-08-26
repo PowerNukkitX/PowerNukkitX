@@ -1,11 +1,8 @@
 package cn.nukkit.level.generator.stages.normal;
 
-import cn.nukkit.block.BlockBedrock;
-import cn.nukkit.block.BlockDeepslate;
 import cn.nukkit.block.BlockStone;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
@@ -187,25 +184,6 @@ public class NormalTerrainStage extends GenerateStage {
                         height2 += height6;
                         height3 += height7;
                         height4 += height8;
-                    }
-                }
-            }
-        }
-        NukkitRandom bedrockRandom = random.identical();
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                for(int y = level.getMinHeight(); y < 0; y++) {
-                    chunk.setBlockState(x, y, z, BlockDeepslate.PROPERTIES.getDefaultState());
-                }
-                for (int y = 0; y < 8; y++) {
-                    if (random.nextBoundedInt(y) == 0) {
-                        chunk.setBlockState(x, y, z, BlockDeepslate.PROPERTIES.getDefaultState());
-                    }
-                }
-                chunk.setBlockState(x, level.getMinHeight(), z, BlockBedrock.PROPERTIES.getDefaultState());
-                for (int i = 1; i < 5; i++) {
-                    if (bedrockRandom.nextBoundedInt(i) == 0) {
-                        chunk.setBlockState(x, level.getMinHeight() +i, z, BlockBedrock.PROPERTIES.getDefaultState());
                     }
                 }
             }

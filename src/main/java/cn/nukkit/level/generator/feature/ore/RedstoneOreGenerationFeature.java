@@ -4,7 +4,6 @@ import cn.nukkit.block.BlockDeepslateRedstoneOre;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockRedstoneOre;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.generator.feature.OreGeneratorFeature;
 
 public class RedstoneOreGenerationFeature extends OreGeneratorFeature {
 

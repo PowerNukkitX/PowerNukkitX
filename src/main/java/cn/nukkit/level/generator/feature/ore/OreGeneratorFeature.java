@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.feature;
+package cn.nukkit.level.generator.feature.ore;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDeepslate;

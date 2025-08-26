@@ -2,7 +2,6 @@ package cn.nukkit.level.generator.feature.ore;
 
 import cn.nukkit.block.BlockDirt;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.generator.feature.OreGeneratorFeature;
 
 public class DirtOreGenerationFeature extends OreGeneratorFeature {
 

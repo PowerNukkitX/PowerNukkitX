@@ -4,7 +4,6 @@ import cn.nukkit.block.BlockDeepslateDiamondOre;
 import cn.nukkit.block.BlockDiamondOre;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.generator.feature.OreGeneratorFeature;
 
 public class DiamondOreSquareGenerationFeature extends OreGeneratorFeature {
 

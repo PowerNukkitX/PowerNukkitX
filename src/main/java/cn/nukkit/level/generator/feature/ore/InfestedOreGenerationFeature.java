@@ -4,7 +4,6 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockInfestedDeepslate;
 import cn.nukkit.block.BlockInfestedStone;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.generator.feature.OreGeneratorFeature;
 
 public class InfestedOreGenerationFeature extends OreGeneratorFeature {
 

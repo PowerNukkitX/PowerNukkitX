@@ -12,7 +12,7 @@ import cn.nukkit.utils.random.NukkitRandom;
 
 public class LegacyJungleTreeFeature extends ObjectGeneratorFeature {
 
-    public static final String NAME = "minecraft:legacy:jungle_tree_feature";
+    public static final String NAME = "minecraft:jungle_surface_trees_feature";
 
     @Override
     public ObjectGenerator getGenerator(NukkitRandom random) {

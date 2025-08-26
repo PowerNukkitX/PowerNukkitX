@@ -1,12 +1,9 @@
 package cn.nukkit.level.generator.biome;
 
 import cn.nukkit.level.generator.noise.f.SimplexF;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import static cn.nukkit.level.biome.BiomeID.*;
-
 
 public class OverworldBiomePicker extends BiomePicker {
 

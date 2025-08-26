@@ -4,7 +4,6 @@ import cn.nukkit.block.BlockDeepslateEmeraldOre;
 import cn.nukkit.block.BlockEmeraldOre;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.generator.feature.OreGeneratorFeature;
 
 public class EmeraldOreGenerationFeature extends OreGeneratorFeature {
 

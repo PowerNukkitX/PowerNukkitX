@@ -4,7 +4,6 @@ import cn.nukkit.block.BlockCopperOre;
 import cn.nukkit.block.BlockDeepslateCopperOre;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.generator.feature.OreGeneratorFeature;
 
 public class CopperOreGenerationFeature extends OreGeneratorFeature {
 

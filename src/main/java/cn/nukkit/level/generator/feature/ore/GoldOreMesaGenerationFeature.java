@@ -4,7 +4,6 @@ import cn.nukkit.block.BlockDeepslateGoldOre;
 import cn.nukkit.block.BlockGoldOre;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.generator.feature.OreGeneratorFeature;
 
 public class GoldOreMesaGenerationFeature extends OreGeneratorFeature {
 
