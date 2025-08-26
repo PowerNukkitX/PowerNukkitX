@@ -1,8 +1,9 @@
-package cn.nukkit.level.generator.feature;
+package cn.nukkit.level.generator.feature.tree;
 
 import cn.nukkit.block.BlockJungleLeaves;
 import cn.nukkit.block.BlockJungleLog;
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
 import cn.nukkit.level.generator.object.NewJungleTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectJungleBigTree;

@@ -2,14 +2,17 @@ package cn.nukkit.level.generator.feature;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.level.generator.object.NewJungleTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import cn.nukkit.registry.Registries;
+import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
 public abstract class ObjectGeneratorFeature extends GenerateFeature {
@@ -43,7 +46,9 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
                 continue;
             }
             BlockManager object = new BlockManager(level);
-            getGenerator(random).generate(object, random, v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4)));
+            v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
+            if(!Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())).getTags().contains(BiomeTags.JUNGLE)) continue;
+            getGenerator(random.identical()).generate(object, random, v);
             if(object.getBlocks().stream().noneMatch(block -> !block.getChunk().isGenerated())) {
                 for(Block block : object.getBlocks()) {
                     manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());

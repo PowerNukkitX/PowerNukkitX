@@ -12,21 +12,26 @@ import cn.nukkit.network.protocol.types.biome.BiomeConsolidatedFeatureData;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionChunkGenData;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionData;
-import cn.nukkit.network.protocol.types.biome.BiomeSurfaceMaterialData;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.OptionalValue;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
 
 @Slf4j
 public class NormalChunkFeatureStage extends GenerateStage {
 
     public static final String NAME = "normal_feature";
 
-
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
+        Object2IntArrayMap<BiomeConsolidatedFeatureData> features = new Object2IntArrayMap<>();
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
                 int y = chunk.getHeightMap(x, z);
@@ -39,22 +44,26 @@ public class NormalChunkFeatureStage extends GenerateStage {
                     if(consolidatedFeatureDataOptional.isPresent()) {
                         BiomeConsolidatedFeatureData[] consolidatedFeatureDataArray = consolidatedFeatureDataOptional.get();
                         for(BiomeConsolidatedFeatureData consolidatedFeatureData : consolidatedFeatureDataArray) {
-                            String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.feature);
-                            if(Registries.GENERATE_FEATURE.has(featureName)) {
-                                GenerateFeature feature = Registries.GENERATE_FEATURE.get(featureName);
-                                if(feature != null) {
-                                    feature.apply(context);
-                                }
-                            } else {
-                                if(definition.getTags().contains(BiomeTags.JUNGLE)) {
-                                    //System.out.println(featureName);
-                                }
-                            }
+                            features.put(consolidatedFeatureData, consolidatedFeatureData.scatter.evalOrder);
                         }
                     }
                 } else {
-                    log.warn("No chunkGenData for biome " + definition.getName());
+                    if(definition.getTags().contains(BiomeTags.JUNGLE)) {
+                        log.warn("No chunkGenData for biome " + definition.getName());
+                    }
                 }
+            }
+        }
+        for(var entry : features.object2IntEntrySet().stream().sorted(Map.Entry.comparingByValue()).toList()) {
+            var consolidatedFeatureData = entry.getKey();
+            String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.feature);
+            if(Registries.GENERATE_FEATURE.has(featureName)) {
+                GenerateFeature feature = Registries.GENERATE_FEATURE.get(featureName);
+                if(feature != null) {
+                    feature.apply(context);
+                }
+            } else {
+                log.warn("Missing feature: " + featureName);
             }
         }
         chunk.setChunkState(ChunkState.POPULATED);

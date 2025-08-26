@@ -3,6 +3,7 @@ package cn.nukkit.level.generator.stages.normal;
 import cn.nukkit.block.BlockIce;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockWater;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -63,7 +64,7 @@ public class NormalSurfaceDataStage extends GenerateStage {
                 }
             }
         }
-        chunk.setChunkState(ChunkState.POPULATED);
+        chunk.setChunkState(ChunkState.GENERATED);
     }
 
     @Override

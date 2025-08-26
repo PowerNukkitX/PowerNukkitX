@@ -1,7 +1,8 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.GenerateFeature;
-import cn.nukkit.level.generator.feature.LegacyJungleTreeFeature;
+import cn.nukkit.level.generator.feature.ore.*;
+import cn.nukkit.level.generator.feature.tree.LegacyJungleTreeFeature;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.lang.reflect.InvocationTargetException;
@@ -16,6 +17,18 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
     public void init() {
         if (isLoad.getAndSet(true)) return;
         try {
+            this.register(CoalOreGenerationFeature.NAME, CoalOreGenerationFeature.class);
+            this.register(CopperOreGenerationFeature.NAME, CopperOreGenerationFeature.class);
+            this.register(IronOreGenerationFeature.NAME, IronOreGenerationFeature.class);
+            this.register(RedstoneOreGenerationFeature.NAME, RedstoneOreGenerationFeature.class);
+            this.register(LapisOreGenerationFeature.NAME, LapisOreGenerationFeature.class);
+            this.register(GoldOreGenerationFeature.NAME, GoldOreGenerationFeature.class);
+            this.register(DiamondOreGenerationFeature.NAME, DiamondOreGenerationFeature.class);
+            this.register(DirtOreGenerationFeature.NAME, DirtOreGenerationFeature.class);
+            this.register(GravelOreGenerationFeature.NAME, GravelOreGenerationFeature.class);
+            this.register(GraniteOreGenerationFeature.NAME, GraniteOreGenerationFeature.class);
+            this.register(DioriteOreGenerationFeature.NAME, DioriteOreGenerationFeature.class);
+            this.register(AndesiteOreGenerationFeature.NAME, AndesiteOreGenerationFeature.class);
             this.register(LegacyJungleTreeFeature.NAME, LegacyJungleTreeFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
