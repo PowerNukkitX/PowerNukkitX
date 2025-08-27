@@ -21,8 +21,6 @@ public class DeepslateGeneratorFeature extends GenerateFeature {
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
-        int chunkX = chunk.getX();
-        int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
         NukkitRandom random = new NukkitRandom(level.getSeed());
 

@@ -46,7 +46,6 @@ public class NormalTerrainStage extends GenerateStage {
         float[] minLimitRegion = minLimitPerlinNoiseG.generateNoiseOctaves(chunkX * 4, 0, chunkZ * 4, 5, 33, 5, 684.412f, 684.412f, 684.412f);
         float[] maxLimitRegion = maxLimitPerlinNoiseG.generateNoiseOctaves(chunkX * 4, 0, chunkZ * 4, 5, 33, 5, 684.412f, 684.412f, 684.412f);
 
-
         float[] heightMap = new float[825];
 
         //generate heightmap and smooth biome heights
@@ -188,6 +187,7 @@ public class NormalTerrainStage extends GenerateStage {
                 }
             }
         }
+        chunk.recalculateHeightMap();
     }
 
     @Override

@@ -1,10 +1,5 @@
-package cn.nukkit.level.generator.stages.normal;
+package cn.nukkit.level.generator.stages;
 
-import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockIce;
-import cn.nukkit.block.BlockState;
-import cn.nukkit.block.BlockWater;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -18,9 +13,6 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.OptionalValue;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -28,7 +20,7 @@ import java.util.Map;
 @Slf4j
 public class NormalChunkFeatureStage extends GenerateStage {
 
-    public static final String NAME = "normal_feature";
+    public static final String NAME = "feature";
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -56,12 +48,16 @@ public class NormalChunkFeatureStage extends GenerateStage {
                 }
             }
         }
-        for(var entry : features.object2IntEntrySet().stream().sorted(Map.Entry.comparingByValue()).toList()) {
+        for(var entry : features.object2IntEntrySet().stream().sorted(Map.Entry.comparingByValue()).toList().reversed()) {
             var consolidatedFeatureData = entry.getKey();
             String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.identifier);
             if(Registries.GENERATE_FEATURE.has(featureName)) {
-                GenerateFeature feature = Registries.GENERATE_FEATURE.get(featureName);
-                feature.apply(context);
+                try {
+                    GenerateFeature feature = Registries.GENERATE_FEATURE.get(featureName);
+                    feature.apply(context);
+                } catch (Exception e) {
+                    log.error("Error while applying feature " + featureName, e);
+                }
             } else {
                 log.warn("Missing feature: " + featureName);
             }

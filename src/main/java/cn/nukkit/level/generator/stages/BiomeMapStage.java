@@ -7,7 +7,7 @@ import cn.nukkit.level.generator.GenerateStage;
 
 public class BiomeMapStage extends GenerateStage {
 
-    public static final String NAME = "normal_biome";
+    public static final String NAME = "biome";
 
     @Override
     public void apply(ChunkGenerateContext context) {

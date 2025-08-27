@@ -1,26 +1,24 @@
 package cn.nukkit.level.generator.feature;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockSapling;
-import cn.nukkit.block.BlockState;
+import cn.nukkit.block.BlockSponge;
 import cn.nukkit.block.BlockSweetBerryBush;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
+import cn.nukkit.level.generator.object.legacytree.LegacyTreeGenerator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
-public abstract class ObjectGeneratorFeature extends GenerateFeature {
+public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
 
-    public abstract ObjectGenerator getGenerator(NukkitRandom random);
+    public abstract LegacyTreeGenerator getGenerator(NukkitRandom random);
 
     public int getMin() {
         return 5;
@@ -30,12 +28,12 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
         return 6;
     }
 
-    public boolean isSupportValid(Block block) {
-        return BlockSweetBerryBush.isSupportValid(block);
-    }
-
     public String getRequiredTag() {
         return BiomeTags.OVERWORLD;
+    }
+
+    public boolean isSupportValid(Block block) {
+        return BlockSweetBerryBush.isSupportValid(block);
     }
 
     @Override
@@ -60,14 +58,13 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
             v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
             if(!Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())).getTags().contains(getRequiredTag())) continue;
             if(isSupportValid(level.getBlock(v))) {
-                getGenerator(random.identical()).generate(object, random, v.add(0, 1, 0));
+                getGenerator(random.identical()).placeObject(object, v.getFloorX(), v.getFloorY() + 1, v.getFloorZ(), random);
                 if(object.getBlocks().stream().noneMatch(block -> !block.getChunk().isGenerated())) {
                     for(Block block : object.getBlocks()) {
                         manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
                     }
                 }
             }
-
         }
         manager.applySubChunkUpdate(manager.getBlocks());
     }

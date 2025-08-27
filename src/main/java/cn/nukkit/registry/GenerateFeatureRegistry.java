@@ -4,8 +4,12 @@ import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.feature.ore.*;
 import cn.nukkit.level.generator.feature.surface.jungle.JungleTallGrassGeneratorFeature;
 import cn.nukkit.level.generator.feature.surface.jungle.JungleMelonGeneratorFeature;
+import cn.nukkit.level.generator.feature.terrain.CaveGenerateFeature;
 import cn.nukkit.level.generator.feature.terrain.DeepslateGeneratorFeature;
+import cn.nukkit.level.generator.feature.tree.FlowerForestTreeFeature;
+import cn.nukkit.level.generator.feature.tree.ForestTreeFeature;
 import cn.nukkit.level.generator.feature.tree.LegacyJungleTreeFeature;
+import cn.nukkit.level.generator.feature.tree.SavannaTreeFeature;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.lang.reflect.InvocationTargetException;
@@ -50,10 +54,15 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(DiamondOreBuriedGenerationFeature.NAME, DiamondOreBuriedGenerationFeature.class);
             this.register(DiamondOreLargeGenerationFeature.NAME, DiamondOreLargeGenerationFeature.class);
             this.register(EmeraldOreGenerationFeature.NAME, EmeraldOreGenerationFeature.class);
+            this.register(EmeraldOreExtremeHillsSurfaceGenerationFeature.NAME, EmeraldOreExtremeHillsSurfaceGenerationFeature.class);
             this.register(InfestedOreGenerationFeature.NAME, InfestedOreGenerationFeature.class);
             this.register(LegacyJungleTreeFeature.NAME, LegacyJungleTreeFeature.class);
+            this.register(SavannaTreeFeature.NAME, SavannaTreeFeature.class);
+            this.register(ForestTreeFeature.NAME, ForestTreeFeature.class);
+            this.register(FlowerForestTreeFeature.NAME, FlowerForestTreeFeature.class);
             this.register(JungleMelonGeneratorFeature.NAME, JungleMelonGeneratorFeature.class);
             this.register(JungleTallGrassGeneratorFeature.NAME, JungleTallGrassGeneratorFeature.class);
+            this.register(CaveGenerateFeature.NAME, CaveGenerateFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
