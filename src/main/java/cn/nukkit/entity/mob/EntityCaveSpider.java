@@ -94,6 +94,11 @@ public class EntityCaveSpider extends EntityMob implements EntityWalkable, Entit
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("cavespider", "monster", "arthropod", "mob");
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }

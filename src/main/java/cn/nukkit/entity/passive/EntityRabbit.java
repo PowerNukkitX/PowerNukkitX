@@ -92,6 +92,11 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("rabbit", "lightweight", "mob");
+    }
+
+    @Override
     public Item[] getDrops() {
         return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_RABBIT : Item.RABBIT)), Item.get(Item.RABBIT_HIDE), Item.get(Item.RABBIT_FOOT)};
     }

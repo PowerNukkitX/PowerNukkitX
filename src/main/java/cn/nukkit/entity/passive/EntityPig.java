@@ -181,6 +181,11 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRid
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("pig", "mob");
+    }
+
+    @Override
     public Item[] getDrops() {
         return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_PORKCHOP : Item.PORKCHOP)), isSaddled() ? Item.get(Item.SADDLE) : Item.AIR};
     }

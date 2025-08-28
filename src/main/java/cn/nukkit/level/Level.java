@@ -3170,7 +3170,9 @@ public class Level implements Metadatable {
             (o.excludeTags != null && !o.excludeTags.isEmpty()) ||
             (o.typeClass != null) ||
             (o.nameTagEquals != null) ||
-            (o.predicate != null);
+            (o.predicate != null) ||
+            (o.families != null && !o.families.isEmpty()) ||
+            (o.excludeFamilies != null && !o.excludeFamilies.isEmpty());
 
         if (exactLocationMatch) {
             int cx = NukkitMath.floorDouble(o.location.x * INV_CHUNK_SIZE);
@@ -3178,9 +3180,9 @@ public class Level implements Metadatable {
 
             Map<Long, Entity> map = this.getChunkEntities(cx, cz, o.loadChunks);
             if (map != null && !map.isEmpty()) {
-                int lx = cn.nukkit.math.NukkitMath.floorDouble(o.location.x);
-                int ly = cn.nukkit.math.NukkitMath.floorDouble(o.location.y);
-                int lz = cn.nukkit.math.NukkitMath.floorDouble(o.location.z);
+                int lx = NukkitMath.floorDouble(o.location.x);
+                int ly = NukkitMath.floorDouble(o.location.y);
+                int lz = NukkitMath.floorDouble(o.location.z);
 
                 for (Entity e : map.values()) {
                     if (e != null && e.getFloorX() == lx && e.getFloorY() == ly && e.getFloorZ() == lz) {

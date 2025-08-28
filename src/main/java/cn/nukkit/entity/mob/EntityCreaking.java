@@ -62,6 +62,11 @@ public class EntityCreaking extends EntityMob {
         return CREAKING;
     }
 
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("creaking", "monster", "mob");
+    }
+
     @Setter
     protected BlockEntityCreakingHeart creakingHeart;
 

@@ -9,6 +9,9 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
+
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -29,6 +32,11 @@ public class EntityMinecart extends EntityMinecartAbstract {
     @Override
     public String getOriginalName() {
         return getType().getName();
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("minecart", "inanimate");
     }
 
     @Override

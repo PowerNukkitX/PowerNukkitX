@@ -96,6 +96,11 @@ public class EntityFox extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("fox", "lightweight", "mob");
+    }
+
+    @Override
     public boolean isBreedingItem(Item item) {
         return item.getId().equals(Item.GLOW_BERRIES) || item.getId().equals(Item.SWEET_BERRIES);
     }

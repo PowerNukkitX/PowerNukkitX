@@ -162,6 +162,14 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        if (this.isBaby()) {
+            return Set.of("hoglin", "hoglin_baby", "mob");
+        }
+        return Set.of("hoglin", "hoglin_adult", "mob");
+    }
+
+    @Override
     public Item[] getDrops() {
         return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_PORKCHOP : Item.PORKCHOP), 0, Utils.rand(1, 3))};
     }

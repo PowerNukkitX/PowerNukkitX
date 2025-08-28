@@ -3,6 +3,9 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.EntityCreature;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 public class EntityTraderLlama extends EntityCreature implements IEntityNPC {
@@ -30,7 +33,10 @@ public class EntityTraderLlama extends EntityCreature implements IEntityNPC {
         return "Wandering Trader";
     }
 
-    
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("trader_llama", "llama", "mob");
+    }
 
     @Override
     public void initEntity() {

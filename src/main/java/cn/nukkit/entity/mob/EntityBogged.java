@@ -61,6 +61,11 @@ public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmi
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("bogged", "skeleton", "monster", "mob", "undead");
+    }
+
+    @Override
     public Item[] getDrops() {
         return new Item[]{Item.get(Item.BONE), Item.get(Item.ARROW)}; //TODO: match vanilla drop
     }

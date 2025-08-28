@@ -239,6 +239,11 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("panda" , "panda_aggressive", "mob");
+    }
+
+    @Override
     public boolean isBreedingItem(Item item) {
         return item.getId().equals(Block.BAMBOO);
     }

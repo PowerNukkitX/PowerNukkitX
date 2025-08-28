@@ -15,6 +15,9 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.NPCRequestPacket;
+
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -66,6 +69,11 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
     @Override
     public String getOriginalName() {
         return "NPC";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("npc", "mob");
     }
 
     @Override

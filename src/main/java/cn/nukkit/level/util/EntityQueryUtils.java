@@ -3,6 +3,7 @@ package cn.nukkit.level.util;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityQueryOptions;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 
 import java.util.Collection;
@@ -75,7 +76,17 @@ public final class EntityQueryUtils {
 
         Predicate<Entity> p = e -> true;
 
-        p = andIf(p, o.typeClass != null, o.typeClass::isInstance);
+        boolean useFamilyInclude = (o.families != null && !o.families.isEmpty());
+        if (useFamilyInclude) {
+            p = p.and(e -> e.isAllFamilies(o.families));
+        } else {
+            p = andIf(p, o.typeClass != null, o.typeClass::isInstance);
+        }
+
+        if (o.excludeFamilies != null && !o.excludeFamilies.isEmpty()) {
+            p = p.and(e -> !e.isAnyFamily(o.excludeFamilies));
+        }
+
         p = andIf(p, o.nameTagEquals != null, e -> o.nameTagEquals.equals(e.getNameTag()));
         p = andIf(p, o.tags != null && !o.tags.isEmpty(), e -> hasAllTags(e, o.tags));
         p = andIf(p, o.excludeTags != null && !o.excludeTags.isEmpty(), e -> !hasAnyExcludedTag(e, o.excludeTags));
@@ -89,7 +100,9 @@ public final class EntityQueryUtils {
             || o.nameTagEquals != null
             || (o.tags != null && !o.tags.isEmpty())
             || (o.excludeTags != null && !o.excludeTags.isEmpty())
-            || o.predicate != null;
+            || o.predicate != null
+            || (o.families != null && !o.families.isEmpty())
+            || (o.excludeFamilies != null && !o.excludeFamilies.isEmpty());
     }
 
     private static Predicate<Entity> andIf(Predicate<Entity> base, boolean cond, Predicate<Entity> extra) {
@@ -206,9 +219,9 @@ public final class EntityQueryUtils {
     public static void collectExactBlockMatches(Map<Long, Entity> map, Vector3 loc, List<Entity> out) {
         if (map == null || map.isEmpty() || loc == null) return;
 
-        int lx = cn.nukkit.math.NukkitMath.floorDouble(loc.x);
-        int ly = cn.nukkit.math.NukkitMath.floorDouble(loc.y);
-        int lz = cn.nukkit.math.NukkitMath.floorDouble(loc.z);
+        int lx = NukkitMath.floorDouble(loc.x);
+        int ly = NukkitMath.floorDouble(loc.y);
+        int lz = NukkitMath.floorDouble(loc.z);
 
         for (Entity e : map.values()) {
             if (isAtBlock(e, lx, ly, lz)) {

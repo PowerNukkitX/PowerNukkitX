@@ -9,6 +9,9 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -52,6 +55,11 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     @Override
     public String getOriginalName() {
         return "Villager";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("villager", "peasant", "mob");
     }
 
     @Override

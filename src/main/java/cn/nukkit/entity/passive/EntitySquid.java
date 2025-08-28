@@ -73,4 +73,9 @@ public class EntitySquid extends EntityAnimal implements EntitySwimmable {
     public String getOriginalName() {
         return "Squid";
     }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("squid", "mob");
+    }
 }

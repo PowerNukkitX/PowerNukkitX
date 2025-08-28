@@ -33,6 +33,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 
 
 public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable, EntityNameable {
@@ -439,6 +440,11 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     @Override
     public String getOriginalName() {
         return "Armor Stand";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("armor_stand", "inanimate", "mob");
     }
 
     @Override

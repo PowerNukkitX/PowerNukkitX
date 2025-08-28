@@ -14,6 +14,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.utils.MinecartType;
+
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -37,6 +40,11 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
     @Override
     public String getOriginalName() {
         return getType().getName();
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("minecart", "inanimate");
     }
 
     @Override
