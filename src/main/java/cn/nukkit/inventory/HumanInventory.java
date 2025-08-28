@@ -383,7 +383,13 @@ public class HumanInventory extends BaseInventory {
             }
             item = ev.getNewItem();
         } else {
-            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent( this.getHolder().getEntity(), this.getItem(index), item, index, this.getSlotType(index), this.getHeldItemIndex());
+            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(
+                this.getHolder().getEntity(),
+                this.getItem(index),
+                item,
+                index,
+                this.getSlotType(index),
+                this.getHeldItemIndex());
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 this.sendSlot(index, this.getViewers());
