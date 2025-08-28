@@ -133,7 +133,20 @@ public abstract class BaseInventory implements Inventory {
         item = item.clone();
         InventoryHolder holder = this.getHolder();
         if (holder instanceof Entity entity) {
-            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(entity, this.getItem(index), item, index);
+            int held = -1;
+            ContainerSlotType type = ContainerSlotType.INVENTORY;
+
+
+            if (holder instanceof Player p) {
+                if (p.getOffhandInventory() == this) {
+                    type = ContainerSlotType.OFFHAND;
+                } else if (this instanceof HumanInventory) {
+                    held = ((HumanInventory) this).getHeldItemIndex();
+                    try { type = this.getSlotType(index); } catch (Throwable ignored) {}
+                }
+            }
+
+            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(entity, this.getItem(index), item, index, type, held);
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 this.sendSlot(index, this.getViewers());
@@ -368,7 +381,19 @@ public abstract class BaseInventory implements Inventory {
             Item old = this.slots.get(index);
             InventoryHolder holder = this.getHolder();
             if (holder instanceof Entity) {
-                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, old, item, index);
+                int held = -1;
+                ContainerSlotType type = ContainerSlotType.INVENTORY;
+
+                if (holder instanceof Player p) {
+                    if (p.getOffhandInventory() == this) {
+                        type = ContainerSlotType.OFFHAND;
+                    } else if (this instanceof HumanInventory) {
+                        held = ((HumanInventory) this).getHeldItemIndex();
+                        try { type = this.getSlotType(index); } catch (Throwable ignored) {}
+                    }
+                }
+
+                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent( (Entity) holder, old, item, index, type, held);
                 Server.getInstance().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     this.sendSlot(index, this.getViewers());
