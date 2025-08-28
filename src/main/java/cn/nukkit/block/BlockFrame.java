@@ -121,7 +121,25 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
         if (player != null && action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
             BlockEntityItemFrame blockEntity = getOrCreateBlockEntity();
             if (player.isCreative()) {
+                Item before = blockEntity.getItem();
+                if (before.isNull()) return;
+
+                ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, blockEntity, before, ItemFrameUseEvent.Action.REMOVE);
+                this.getLevel().getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    blockEntity.spawnTo(player);
+                    return;
+                }
+
                 blockEntity.setItem(Item.AIR);
+                blockEntity.setItemRotation(0);
+
+                if (isStoringMap()) {
+                    setStoringMap(false);
+                    this.getLevel().setBlock(this, this, true);
+                }
+
+                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_REMOVE);
             } else {
                 blockEntity.dropItem(player);
             }
