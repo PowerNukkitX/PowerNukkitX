@@ -6,6 +6,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
+import cn.nukkit.level.generator.biome.BiomePicker;
 import cn.nukkit.level.generator.noise.f.vanilla.NoiseGeneratorOctavesF;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
@@ -28,6 +29,8 @@ public class NormalTerrainStage extends GenerateStage {
 
     public static final int SEA_LEVEL = 64;
 
+    private BiomePicker picker;
+
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
@@ -36,6 +39,7 @@ public class NormalTerrainStage extends GenerateStage {
         int baseX = chunkX << 4;
         int baseZ = chunkZ << 4;
         Level level = chunk.getLevel();
+        if(picker == null) picker = level.getBiomePicker();
         NukkitRandom random = new NukkitRandom(level.getSeed());
         NoiseGeneratorOctavesF minLimitPerlinNoiseG = new NoiseGeneratorOctavesF(random.identical(), 16);
         NoiseGeneratorOctavesF maxLimitPerlinNoiseG = new NoiseGeneratorOctavesF(random.identical(), 16);
@@ -56,11 +60,11 @@ public class NormalTerrainStage extends GenerateStage {
                 float heightVariationSum = 0.0F;
                 float baseHeightSum = 0.0F;
                 float biomeWeightSum = 0.0F;
-                BiomeDefinition biome = Registries.BIOME.get(level.pickBiome(baseX + (xSeg * 4), baseZ + (zSeg * 4)));
+                BiomeDefinition biome = Registries.BIOME.get(picker.pick(baseX + (xSeg * 4), SEA_LEVEL,baseZ + (zSeg * 4)));
 
                 for (int xSmooth = -2; xSmooth <= 2; ++xSmooth) {
                     for (int zSmooth = -2; zSmooth <= 2; ++zSmooth) {
-                        BiomeDefinition biome1 = Registries.BIOME.get(level.pickBiome(baseX + (xSeg * 4) + xSmooth, baseZ + (zSeg * 4) + zSmooth));
+                        BiomeDefinition biome1 = Registries.BIOME.get(picker.pick(baseX + (xSeg * 4) + xSmooth, SEA_LEVEL,baseZ + (zSeg * 4) + zSmooth));
                         float baseHeight = biome1.data.depth;
                         float heightVariation = biome1.data.scale;
 

@@ -1,0 +1,48 @@
+package cn.nukkit.level.generator.noise.f.vanilla;
+
+import cn.nukkit.utils.random.NukkitRandom;
+
+public class NormalNoise {
+
+    private static final double INPUT_FACTOR = 1.0181268882175227;
+    private static final double TARGET_DEVIATION = 0.3333333333333333;
+    private final float valueFactor;
+    private final NoiseGeneratorPerlinF first;
+    private final NoiseGeneratorPerlinF second;
+    private final double maxValue;
+
+    private final int firstOctave;
+    private final float[] amplitudes;
+
+    public NormalNoise(NukkitRandom random, int firstOctave, float[] amplitudes) {
+        this.firstOctave = firstOctave;
+        this.amplitudes = amplitudes;
+        this.first = new NoiseGeneratorPerlinF(random, this.firstOctave, this.amplitudes);
+        this.second = new NoiseGeneratorPerlinF(random, this.firstOctave, this.amplitudes);
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+
+        for(int i = 0; i < this.amplitudes.length; i++) {
+            double amplitude = this.amplitudes[i];
+            if(amplitude != 0) {
+                min = Math.min(min, i);
+                max = Math.max(max, i);
+            }
+        }
+
+        this.valueFactor = (float) ((1/6f) / (0.1 * (1.0 + 1.0 / ((max-min) + 1))));
+        this.maxValue = (this.first.getMax() + this.second.getMax()) * this.valueFactor;
+    }
+
+    public float getValue(double x, double y, double z) {
+        double d0 = x * 1.0181268882175227;
+        double d1 = y * 1.0181268882175227;
+        double d2 = z * 1.0181268882175227;
+        return (this.first.getValue(x, y, z) + this.second.getValue(d0, d1, d2)) * this.valueFactor;
+    }
+
+    public double getMax() {
+        return maxValue;
+    }
+
+}

@@ -10,6 +10,6 @@ public abstract class BiomePicker {
         this.random = random;
     }
 
-    public abstract int pick(int x, int z);
+    public abstract int pick(int x, int y, int z);
 
 }

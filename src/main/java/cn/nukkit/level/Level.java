@@ -3579,9 +3579,12 @@ public class Level implements Metadatable {
         this.getChunk(x >> 4, z >> 4, true).setHeightMap(x & 0x0f, z & 0x0f, value & 0x0f);
     }
 
-    public int pickBiome(int x, int z) {
-        BiomePicker picker = new OverworldBiomePicker(new NukkitRandom(getSeed()));
-        return picker.pick(x, z);
+    public BiomePicker getBiomePicker() {
+        return new OverworldBiomePicker(new NukkitRandom(getSeed()));
+    }
+
+    public int pickBiome(int x, int y, int z) {
+        return getBiomePicker().pick(x, y, z);
     }
 
     public Map<Long, IChunk> getChunks() {

@@ -18,11 +18,11 @@ public class NoiseGeneratorSimplexF {
         this(new NukkitRandom(System.currentTimeMillis()));
     }
 
-    public NoiseGeneratorSimplexF(NukkitRandom p_i45471_1_) {
+    public NoiseGeneratorSimplexF(NukkitRandom random) {
         this.p = new int[512];
-        this.xo = p_i45471_1_.nextFloat() * 256.0f;
-        this.yo = p_i45471_1_.nextFloat() * 256.0f;
-        this.zo = p_i45471_1_.nextFloat() * 256.0f;
+        this.xo = random.nextFloat() * 256.0f;
+        this.yo = random.nextFloat() * 256.0f;
+        this.zo = random.nextFloat() * 256.0f;
 
         int i = 0;
         while (i < 256) {
@@ -30,7 +30,7 @@ public class NoiseGeneratorSimplexF {
         }
 
         for (int l = 0; l < 256; ++l) {
-            int j = p_i45471_1_.nextBoundedInt(256 - l) + l;
+            int j = random.nextBoundedInt(256 - l) + l;
             int k = this.p[l];
             this.p[l] = this.p[j];
             this.p[j] = k;
@@ -44,6 +44,10 @@ public class NoiseGeneratorSimplexF {
 
     private static float dot(int[] p_151604_0_, float p_151604_1_, float p_151604_3_) {
         return (float) p_151604_0_[0] * p_151604_1_ + (float) p_151604_0_[1] * p_151604_3_;
+    }
+
+    public int p(int x) {
+        return p[x];
     }
 
     public float getValue(float p_151605_1_, float p_151605_3_) {

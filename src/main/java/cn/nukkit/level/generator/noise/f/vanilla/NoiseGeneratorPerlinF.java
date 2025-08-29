@@ -2,33 +2,58 @@ package cn.nukkit.level.generator.noise.f.vanilla;
 
 import cn.nukkit.utils.random.NukkitRandom;
 
-;
-
 public class NoiseGeneratorPerlinF {
+
+    private final int firstOctave;
+    private final float[] amplitudes;
     private final NoiseGeneratorSimplexF[] noiseLevels;
     private final int levels;
 
-    public NoiseGeneratorPerlinF(NukkitRandom p_i45470_1_, int p_i45470_2_) {
-        this.levels = p_i45470_2_;
-        this.noiseLevels = new NoiseGeneratorSimplexF[p_i45470_2_];
+    private final float lowestFreqValueFactor;
+    private final float lowestFreqInputFactor;
+    private final float maxValue;
 
-        for (int i = 0; i < p_i45470_2_; ++i) {
-            this.noiseLevels[i] = new NoiseGeneratorSimplexF(p_i45470_1_);
+    public NoiseGeneratorPerlinF(NukkitRandom random, int firstOctave, float[] amplitudes) {
+        this.firstOctave = firstOctave;
+        this.amplitudes = amplitudes;
+        this.levels = amplitudes.length;
+        this.noiseLevels = new NoiseGeneratorSimplexF[this.levels];
+        this.lowestFreqInputFactor = (float) Math.pow(2, firstOctave);
+        this.lowestFreqValueFactor = (float) (Math.pow(2, this.levels - 1) / (Math.pow(2, this.levels) - 1));
+        for (int i = 0; i < this.levels; ++i) {
+            if(this.amplitudes[i] != 0.0f) {
+                this.noiseLevels[i] = new NoiseGeneratorSimplexF(new NukkitRandom(("octave_" + (this.firstOctave + i)).hashCode()));
+            }
         }
+        this.maxValue = this.edgeValue(2d);
     }
 
-    public float getValue(float p_151601_1_, float p_151601_3_) {
+    public float getValue(double x, double y, double z) {
         float d0 = 0.0f;
-        float d1 = 1.0f;
+        float d1 = this.lowestFreqInputFactor;
+        float d2 = this.lowestFreqValueFactor;
 
-        for (int i = 0; i < this.levels; ++i) {
-            d0 += this.noiseLevels[i].getValue(p_151601_1_ * d1, p_151601_3_ * d1) / d1;
-            d1 /= 2.0f;
+        for (int i = 0; i < this.noiseLevels.length; i++) {
+            NoiseGeneratorSimplexF noise = this.noiseLevels[i];
+            if (noise != null) {
+                double d3 = noise.getValue(
+                        wrap(x * d1),
+                        wrap(z * d1)
+                );
+                d0 += this.amplitudes[i] * d3 * d2;
+            }
+
+            d1 *= 2.0;
+            d2 /= 2.0;
         }
 
         return d0;
     }
 
+
+    public static float wrap(double p_75407_) {
+        return (float) (p_75407_ - Math.floor(p_75407_ / 3.3554432E7 + 0.5) * 3.3554432E7);
+    }
     public float[] getRegion(float[] p_151599_1_, float p_151599_2_, float p_151599_4_, int p_151599_6_, int p_151599_7_, float p_151599_8_, float p_151599_10_, float p_151599_12_) {
         return this.getRegion(p_151599_1_, p_151599_2_, p_151599_4_, p_151599_6_, p_151599_7_, p_151599_8_, p_151599_10_, p_151599_12_, 0.5f);
     }
@@ -52,5 +77,23 @@ public class NoiseGeneratorPerlinF {
         }
 
         return p_151600_1_;
+    }
+
+    private float edgeValue(double input) {
+        float cumulativeSum = 0f;
+        float octaveContributionFactor = this.lowestFreqValueFactor;
+
+        for (int i = 0; i < this.noiseLevels.length; i++) {
+            NoiseGeneratorSimplexF octave = this.noiseLevels[i];
+            if (octave != null) {
+                cumulativeSum += this.amplitudes[i] * input * octaveContributionFactor;
+            }
+            octaveContributionFactor /= 2f;
+        }
+        return cumulativeSum;
+    }
+
+    public float getMax() {
+        return this.maxValue;
     }
 }

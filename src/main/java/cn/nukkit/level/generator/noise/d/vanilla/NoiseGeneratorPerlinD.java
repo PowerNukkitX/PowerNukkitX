@@ -2,7 +2,6 @@ package cn.nukkit.level.generator.noise.d.vanilla;
 
 import cn.nukkit.utils.random.NukkitRandom;
 
-;
 
 public class NoiseGeneratorPerlinD {
     private final NoiseGeneratorSimplexD[] noiseLevels;
