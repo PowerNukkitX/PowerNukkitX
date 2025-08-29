@@ -39,6 +39,11 @@ public class NormalChunkFeatureStage extends GenerateStage {
                         BiomeConsolidatedFeatureData[] consolidatedFeatureDataArray = consolidatedFeatureDataOptional.get();
                         for(BiomeConsolidatedFeatureData consolidatedFeatureData : consolidatedFeatureDataArray) {
                             features.put(consolidatedFeatureData, consolidatedFeatureData.scatter.evalOrder);
+                            String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.identifier);
+                            if(!Registries.GENERATE_FEATURE.has(featureName)) {
+                                if(definition.getName().contains("river"))
+                                log.warn("Missing feature: " + definition.getName() + " - " + featureName);
+                            }
                         }
                     }
                 } else {
@@ -58,8 +63,6 @@ public class NormalChunkFeatureStage extends GenerateStage {
                 } catch (Exception e) {
                     log.error("Error while applying feature " + featureName, e);
                 }
-            } else {
-                log.warn("Missing feature: " + featureName);
             }
         }
         chunk.setChunkState(ChunkState.POPULATED);

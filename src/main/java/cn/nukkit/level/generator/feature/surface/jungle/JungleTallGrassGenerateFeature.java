@@ -3,10 +3,10 @@ package cn.nukkit.level.generator.feature.surface.jungle;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockTallGrass;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.level.generator.feature.surface.SurfaceGeneratorFeature;
+import cn.nukkit.level.generator.feature.surface.SurfaceGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 
-public class JungleTallGrassGeneratorFeature extends SurfaceGeneratorFeature {
+public class JungleTallGrassGenerateFeature extends SurfaceGenerateFeature {
 
     private static final BlockState LOWER = BlockTallGrass.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(false));
     private static final BlockState UPPER = BlockTallGrass.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));

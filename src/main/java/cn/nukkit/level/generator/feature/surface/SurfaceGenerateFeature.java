@@ -4,11 +4,11 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockGrassBlock;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
-import cn.nukkit.level.generator.feature.CountGeneratorFeature;
+import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.utils.random.NukkitRandom;
 
-public abstract class SurfaceGeneratorFeature extends CountGeneratorFeature {
+public abstract class SurfaceGenerateFeature extends CountGenerateFeature {
 
     @Override
     public void populate(ChunkGenerateContext context, NukkitRandom random) {

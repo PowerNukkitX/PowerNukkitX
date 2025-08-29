@@ -20,12 +20,12 @@ public class ForestTreeFeature extends LegacyTreeGeneratorFeature {
 
     @Override
     public int getMin() {
-        return 8;
+        return 7;
     }
 
     @Override
     public int getMax() {
-        return 10;
+        return 8;
     }
 
     @Override

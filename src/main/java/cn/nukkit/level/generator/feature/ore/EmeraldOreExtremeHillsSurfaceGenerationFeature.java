@@ -3,14 +3,12 @@ package cn.nukkit.level.generator.feature.ore;
 import cn.nukkit.block.BlockEmeraldOre;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.block.BlockStone;
-import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
-import cn.nukkit.level.generator.feature.CountGeneratorFeature;
+import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.utils.random.NukkitRandom;
 
-public class EmeraldOreExtremeHillsSurfaceGenerationFeature extends CountGeneratorFeature {
+public class EmeraldOreExtremeHillsSurfaceGenerationFeature extends CountGenerateFeature {
 
     public static final String NAME = "minecraft:extreme_hills_after_surface_emerald_ore_feature";
 

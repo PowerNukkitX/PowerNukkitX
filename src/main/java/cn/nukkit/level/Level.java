@@ -2297,6 +2297,7 @@ public class Level implements Metadatable {
             }
         } catch (Throwable e) {
             log.error("Error while updating block light", e);
+            e.printStackTrace();
         }
     }
 

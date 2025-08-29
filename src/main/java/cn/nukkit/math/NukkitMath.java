@@ -82,6 +82,14 @@ public class NukkitMath {
         return value < min ? min : (Math.min(value, max));
     }
 
+    public static float remap(float input, float inMin, float inMax, float outMin, float outMax) {
+        return outMin + ((input - inMin) / (inMax - inMin) * (outMax - outMin));
+    }
+
+    public static float remapNormalized(float input, float inMin, float inMax) {
+        return remap(input, inMin, inMax, -1, 1);
+    }
+
     public static double getDirection(double diffX, double diffZ) {
         diffX = Math.abs(diffX);
         diffZ = Math.abs(diffZ);
