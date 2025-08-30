@@ -3,6 +3,7 @@ package cn.nukkit.registry;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.feature.foliage.FlowerForestFoliageFeature;
 import cn.nukkit.level.generator.feature.foliage.SeagrassRiverGenerateFeature;
+import cn.nukkit.level.generator.feature.foliage.SugarcaneFeature;
 import cn.nukkit.level.generator.feature.ore.*;
 import cn.nukkit.level.generator.feature.river.ClayGenerateFeature;
 import cn.nukkit.level.generator.feature.river.DiscGenerateFeature;
@@ -15,6 +16,9 @@ import cn.nukkit.level.generator.feature.terrain.DeepslateGeneratorFeature;
 import cn.nukkit.level.generator.feature.tree.FlowerForestTreeFeature;
 import cn.nukkit.level.generator.feature.tree.ForestTreeFeature;
 import cn.nukkit.level.generator.feature.tree.LegacyJungleTreeFeature;
+import cn.nukkit.level.generator.feature.tree.MushroomIslandMushroomFeature;
+import cn.nukkit.level.generator.feature.tree.PlainsTreeFeature;
+import cn.nukkit.level.generator.feature.tree.RoofedForestTreeFeature;
 import cn.nukkit.level.generator.feature.tree.SavannaTreeFeature;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -74,6 +78,10 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(CaveGenerateFeature.NAME, CaveGenerateFeature.class);
             this.register(FlowerForestFoliageFeature.NAME, FlowerForestFoliageFeature.class);
             this.register(SeagrassRiverGenerateFeature.NAME, SeagrassRiverGenerateFeature.class);
+            this.register(MushroomIslandMushroomFeature.NAME, MushroomIslandMushroomFeature.class);
+            this.register(SugarcaneFeature.NAME, SugarcaneFeature.class);
+            this.register(PlainsTreeFeature.NAME, PlainsTreeFeature.class);
+            this.register(RoofedForestTreeFeature.NAME, RoofedForestTreeFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

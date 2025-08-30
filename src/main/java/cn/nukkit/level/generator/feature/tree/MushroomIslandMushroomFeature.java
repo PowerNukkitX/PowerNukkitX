@@ -1,18 +1,19 @@
 package cn.nukkit.level.generator.feature.tree;
 
 import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
+import cn.nukkit.level.generator.object.ObjectBigMushroom;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectSavannaTree;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
-public class SavannaTreeFeature extends ObjectGeneratorFeature {
+public class MushroomIslandMushroomFeature extends ObjectGeneratorFeature {
 
-    public static final String NAME = "minecraft:savanna_surface_trees_feature";
+    public static final String NAME = "minecraft:mushroom_island_surface_huge_mushroom_feature";
 
     @Override
     public ObjectGenerator getGenerator(NukkitRandom random) {
-        return new ObjectSavannaTree();
+        return new ObjectBigMushroom();
     }
 
     @Override
@@ -27,7 +28,7 @@ public class SavannaTreeFeature extends ObjectGeneratorFeature {
 
     @Override
     public String getRequiredTag() {
-        return BiomeTags.SAVANNA;
+        return BiomeTags.MOOSHROOM_ISLAND;
     }
 
     @Override

@@ -1,33 +1,34 @@
 package cn.nukkit.level.generator.feature.tree;
 
 import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
+import cn.nukkit.level.generator.object.ObjectBigMushroom;
+import cn.nukkit.level.generator.object.ObjectDarkOakTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
-import cn.nukkit.level.generator.object.ObjectSavannaTree;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
-public class SavannaTreeFeature extends ObjectGeneratorFeature {
+public class RoofedForestTreeFeature extends ObjectGeneratorFeature {
 
-    public static final String NAME = "minecraft:savanna_surface_trees_feature";
+    public static final String NAME = "minecraft:roofed_forest_surface_roofed_tree_feature_rules";
 
     @Override
     public ObjectGenerator getGenerator(NukkitRandom random) {
-        return new ObjectSavannaTree();
+        return new ObjectDarkOakTree();
     }
 
     @Override
     public int getMin() {
-        return 1;
+        return 8;
     }
 
     @Override
     public int getMax() {
-        return 2;
+        return 10;
     }
 
     @Override
     public String getRequiredTag() {
-        return BiomeTags.SAVANNA;
+        return BiomeTags.ROOFED;
     }
 
     @Override

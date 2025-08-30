@@ -58,6 +58,7 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
             v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
             if(!Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())).getTags().contains(getRequiredTag())) continue;
             if(isSupportValid(level.getBlock(v))) {
+                if(getGenerator(random.identical()) == null) return;
                 getGenerator(random.identical()).placeObject(object, v.getFloorX(), v.getFloorY() + 1, v.getFloorZ(), random);
                 if(object.getBlocks().stream().noneMatch(block -> !block.getChunk().isGenerated())) {
                     for(Block block : object.getBlocks()) {
