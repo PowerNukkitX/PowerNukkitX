@@ -5,6 +5,8 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
+import cn.nukkit.entity.data.EntityDataMap;
+import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -30,8 +32,8 @@ import cn.nukkit.utils.TickCachedBlockIterator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class EntityLiving extends Entity implements EntityDamageable {
     public final static float DEFAULT_SPEED = 0.1f;
@@ -474,7 +476,20 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public void setBlocking(boolean value) {
-        this.setDataFlagExtend(EntityFlag.BLOCKING, value);
+        EnumSet<EntityFlag> ext = this.getEntityDataMap().getOrCreateFlags2();
+        if (value) {
+            ext.add(EntityFlag.BLOCKING);
+        } else {
+            ext.remove(EntityFlag.BLOCKING);
+        }
+        this.getEntityDataMap().put(EntityDataTypes.FLAGS_2, ext);
+
+        EnumSet<EntityFlag> wire = EnumSet.copyOf(ext);
+        wire.add(EntityFlag.TRANSITION_BLOCKING);
+
+        EntityDataMap delta = new EntityDataMap();
+        delta.put(EntityDataTypes.FLAGS_2, wire);
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
     }
 
     public boolean isPersistent() {
