@@ -12,9 +12,9 @@ import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
-public class LegacyJungleTreeFeature extends ObjectGeneratorFeature {
+public class BambooJungleTreeFeature extends ObjectGeneratorFeature {
 
-    public static final String NAME = "minecraft:jungle_surface_trees_feature";
+    public static final String NAME = "minecraft:bamboo_jungle_surface_trees_feature";
 
     @Override
     public ObjectGenerator getGenerator(NukkitRandom random) {
@@ -29,17 +29,17 @@ public class LegacyJungleTreeFeature extends ObjectGeneratorFeature {
 
     @Override
     public boolean canSpawnHere(BiomeDefinition definition) {
-        return definition.getTags().contains(BiomeTags.JUNGLE);
+        return definition.getTags().contains(BiomeTags.BAMBOO);
     }
 
     @Override
     public int getMin() {
-        return 6;
+        return 0;
     }
 
     @Override
     public int getMax() {
-        return 10;
+        return 2;
     }
 
     @Override

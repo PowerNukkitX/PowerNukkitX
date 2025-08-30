@@ -1,11 +1,8 @@
 package cn.nukkit.level.generator.biome;
 
-import cn.nukkit.level.generator.noise.f.PerlinF;
 import cn.nukkit.level.generator.noise.f.vanilla.NormalNoise;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.random.NukkitRandom;
-import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 
 import static cn.nukkit.level.biome.BiomeID.*;
 
@@ -27,7 +24,7 @@ public class OverworldBiomePicker extends BiomePicker {
 
     public OverworldBiomePicker(NukkitRandom random) {
         super(random);
-        continentalNoise = new NormalNoise((NukkitRandom) random.fork(), -9, new float[]{ 1, 1, 2, 2, 2, 1, 1, 1, 1 });
+        continentalNoise = new NormalNoise((NukkitRandom) random.fork(), -10, new float[]{ 1, 1, 2, 2, 2, 1, 1, 1, 1 });
         temperatureNoise = new NormalNoise((NukkitRandom) random.fork(), -10 , new float[]{ 1.5f, 0, 1, 0, 0, 0 });
         humidityNoise = new NormalNoise((NukkitRandom) random.fork(), -8 , new float[]{ 1, 1, 0, 0, 0, 0 });
         erosionNoise = new NormalNoise((NukkitRandom) random.fork(), -9 , new float[]{ 1, 1, 0, 1, 1 });

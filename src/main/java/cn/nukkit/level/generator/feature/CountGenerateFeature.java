@@ -14,7 +14,7 @@ public abstract class CountGenerateFeature extends GenerateFeature {
     public abstract void populate(ChunkGenerateContext context, NukkitRandom random);
 
     @Override
-    public final void apply(ChunkGenerateContext context) {
+    public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

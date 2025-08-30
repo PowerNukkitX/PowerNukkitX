@@ -9,6 +9,7 @@ import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
+import cn.nukkit.level.generator.Normal;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.math.NukkitMath;
@@ -34,8 +35,8 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
         return BlockSweetBerryBush.isSupportValid(block);
     }
 
-    public String getRequiredTag() {
-        return BiomeTags.OVERWORLD;
+    public boolean canSpawnHere(BiomeDefinition definition) {
+        return true;
     }
 
     @Override
@@ -58,12 +59,16 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
             }
             BlockManager object = new BlockManager(level);
             v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
-            if(!Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())).getTags().contains(getRequiredTag())) continue;
+            if(!canSpawnHere(Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())))) continue;
             if(isSupportValid(level.getBlock(v))) {
                 getGenerator(random.identical()).generate(object, random, v.add(0, 1, 0));
-                if(object.getBlocks().stream().noneMatch(block -> !block.getChunk().isGenerated())) {
-                    for(Block block : object.getBlocks()) {
+                for(Block block : object.getBlocks()) {
+                    if(block.getChunk().isGenerated()) {
                         manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
+                    } else {
+                        IChunk nextChunk = block.getChunk();
+                        long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
+                        ((Normal) context.getGenerator()).getChunkPlacementQueue(chunkHash).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
                     }
                 }
             }

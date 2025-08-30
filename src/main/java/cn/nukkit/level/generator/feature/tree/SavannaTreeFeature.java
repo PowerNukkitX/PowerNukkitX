@@ -3,6 +3,7 @@ package cn.nukkit.level.generator.feature.tree;
 import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectSavannaTree;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
@@ -17,17 +18,17 @@ public class SavannaTreeFeature extends ObjectGeneratorFeature {
 
     @Override
     public int getMin() {
-        return 1;
-    }
-
-    @Override
-    public int getMax() {
         return 2;
     }
 
     @Override
-    public String getRequiredTag() {
-        return BiomeTags.SAVANNA;
+    public int getMax() {
+        return 4;
+    }
+
+    @Override
+    public boolean canSpawnHere(BiomeDefinition definition) {
+        return definition.getTags().contains(BiomeTags.SAVANNA);
     }
 
     @Override

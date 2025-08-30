@@ -57,6 +57,7 @@ public class CaveGenerateFeature extends GenerateFeature {
                 random = new NukkitRandom(randomX ^ randomZ ^ level.getSeed());
                 this.carveChunk(random, x, z, chunk);
             }
+        chunk.recalculateHeightMap();
     }
 
     protected void generateLargeCaveNode(RandomSourceProvider random, IChunk chunk, double x, double y, double z) {

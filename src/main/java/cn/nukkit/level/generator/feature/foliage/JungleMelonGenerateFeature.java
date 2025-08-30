@@ -1,8 +1,7 @@
-package cn.nukkit.level.generator.feature.surface.jungle;
+package cn.nukkit.level.generator.feature.foliage;
 
 import cn.nukkit.block.BlockMelonBlock;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.generator.feature.surface.SurfaceGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 
 public class JungleMelonGenerateFeature extends SurfaceGenerateFeature {

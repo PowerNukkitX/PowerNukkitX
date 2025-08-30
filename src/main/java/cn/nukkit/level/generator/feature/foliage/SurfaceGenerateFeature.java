@@ -1,9 +1,11 @@
-package cn.nukkit.level.generator.feature.surface;
+package cn.nukkit.level.generator.feature.foliage;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockGrassBlock;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
+import cn.nukkit.level.generator.Normal;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.utils.random.NukkitRandom;
@@ -19,11 +21,19 @@ public abstract class SurfaceGenerateFeature extends CountGenerateFeature {
         int z = random.nextBoundedInt(15);
         int y = context.getChunk().getHeightMap(x, z);
         if (y > 0 && isSupportValid(chunk.getBlockState(x, y, z).toBlock())) {
+            BlockManager manager = new BlockManager(chunk.getLevel());
             BlockManager object = new BlockManager(chunk.getLevel());
             place(object, (chunkX << 4) + x, y+1, (chunkZ << 4) + z);
-            if(object.getBlocks().stream().noneMatch(block -> !block.getChunk().isGenerated())) {
-                object.applySubChunkUpdate(object.getBlocks());
+            for(Block block : object.getBlocks()) {
+                if(block.getChunk().isGenerated()) {
+                    manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
+                } else {
+                    IChunk nextChunk = block.getChunk();
+                    long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
+                    ((Normal) context.getGenerator()).getChunkPlacementQueue(chunkHash).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
+                }
             }
+            manager.applySubChunkUpdate();
         }
     }
 

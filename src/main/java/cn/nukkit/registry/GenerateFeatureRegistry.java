@@ -1,25 +1,21 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.GenerateFeature;
+import cn.nukkit.level.generator.feature.foliage.DesertCactusFeature;
+import cn.nukkit.level.generator.feature.foliage.DesertDeadBushFeature;
+import cn.nukkit.level.generator.feature.foliage.DesertDryGrassGenerateFeature;
 import cn.nukkit.level.generator.feature.foliage.FlowerForestFoliageFeature;
 import cn.nukkit.level.generator.feature.foliage.SeagrassRiverGenerateFeature;
 import cn.nukkit.level.generator.feature.foliage.SugarcaneFeature;
 import cn.nukkit.level.generator.feature.ore.*;
 import cn.nukkit.level.generator.feature.river.ClayGenerateFeature;
-import cn.nukkit.level.generator.feature.river.DiscGenerateFeature;
 import cn.nukkit.level.generator.feature.river.GravelGenerateFeature;
 import cn.nukkit.level.generator.feature.river.SandGenerateFeature;
-import cn.nukkit.level.generator.feature.surface.jungle.JungleTallGrassGenerateFeature;
-import cn.nukkit.level.generator.feature.surface.jungle.JungleMelonGenerateFeature;
+import cn.nukkit.level.generator.feature.foliage.TallGrassGenerateFeature;
+import cn.nukkit.level.generator.feature.foliage.JungleMelonGenerateFeature;
 import cn.nukkit.level.generator.feature.terrain.CaveGenerateFeature;
 import cn.nukkit.level.generator.feature.terrain.DeepslateGeneratorFeature;
-import cn.nukkit.level.generator.feature.tree.FlowerForestTreeFeature;
-import cn.nukkit.level.generator.feature.tree.ForestTreeFeature;
-import cn.nukkit.level.generator.feature.tree.LegacyJungleTreeFeature;
-import cn.nukkit.level.generator.feature.tree.MushroomIslandMushroomFeature;
-import cn.nukkit.level.generator.feature.tree.PlainsTreeFeature;
-import cn.nukkit.level.generator.feature.tree.RoofedForestTreeFeature;
-import cn.nukkit.level.generator.feature.tree.SavannaTreeFeature;
+import cn.nukkit.level.generator.feature.tree.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.lang.reflect.InvocationTargetException;
@@ -67,11 +63,13 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(EmeraldOreExtremeHillsSurfaceGenerationFeature.NAME, EmeraldOreExtremeHillsSurfaceGenerationFeature.class);
             this.register(InfestedOreGenerationFeature.NAME, InfestedOreGenerationFeature.class);
             this.register(LegacyJungleTreeFeature.NAME, LegacyJungleTreeFeature.class);
+            this.register(BambooJungleTreeFeature.NAME, BambooJungleTreeFeature.class);
+            this.register(JungleEdgeTreeFeature.NAME, JungleEdgeTreeFeature.class);
             this.register(SavannaTreeFeature.NAME, SavannaTreeFeature.class);
             this.register(ForestTreeFeature.NAME, ForestTreeFeature.class);
             this.register(FlowerForestTreeFeature.NAME, FlowerForestTreeFeature.class);
             this.register(JungleMelonGenerateFeature.NAME, JungleMelonGenerateFeature.class);
-            this.register(JungleTallGrassGenerateFeature.NAME, JungleTallGrassGenerateFeature.class);
+            this.register(MangroveTreeFeature.NAME, MangroveTreeFeature.class);
             this.register(ClayGenerateFeature.NAME, ClayGenerateFeature.class);
             this.register(GravelGenerateFeature.NAME, GravelGenerateFeature.class);
             this.register(SandGenerateFeature.NAME, SandGenerateFeature.class);
@@ -82,6 +80,16 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(SugarcaneFeature.NAME, SugarcaneFeature.class);
             this.register(PlainsTreeFeature.NAME, PlainsTreeFeature.class);
             this.register(RoofedForestTreeFeature.NAME, RoofedForestTreeFeature.class);
+            this.register(DesertCactusFeature.NAME, DesertCactusFeature.class);
+            this.register(DesertDeadBushFeature.NAME, DesertDeadBushFeature.class);
+            this.register(TallGrassGenerateFeature.JUNGLE, TallGrassGenerateFeature.class);
+            this.register(TallGrassGenerateFeature.PLAINS, TallGrassGenerateFeature.class);
+            this.register(TallGrassGenerateFeature.SAVANNA, TallGrassGenerateFeature.class);
+            this.register(DesertDryGrassGenerateFeature.NAME, DesertDryGrassGenerateFeature.class);
+            this.register(MeadowTreeFeature.NAME, MeadowTreeFeature.class);
+            this.register(IceSurfaceTreeFeature.NAME, IceSurfaceTreeFeature.class);
+            this.register(MegaTaigaTreeFeature.NAME, MegaTaigaTreeFeature.class);
+            this.register(CherryTreeFeature.NAME, CherryTreeFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

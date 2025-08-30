@@ -1,18 +1,18 @@
-package cn.nukkit.level.generator.feature.surface.jungle;
+package cn.nukkit.level.generator.feature.foliage;
 
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockTallGrass;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.level.generator.feature.surface.SurfaceGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 
-public class JungleTallGrassGenerateFeature extends SurfaceGenerateFeature {
+public class TallGrassGenerateFeature extends SurfaceGenerateFeature {
 
     private static final BlockState LOWER = BlockTallGrass.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(false));
     private static final BlockState UPPER = BlockTallGrass.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));
 
-
-    public static final String NAME = "minecraft:jungle_after_surface_tall_grass_feature_rules";
+    public static final String PLAINS = "minecraft:plains_first_double_plant_grass_feature";
+    public static final String JUNGLE = "minecraft:jungle_after_surface_tall_grass_feature_rules";
+    public static final String SAVANNA = "minecraft:savanna_first_double_plant_grass_feature";
 
     @Override
     public void place(BlockManager manager, int x, int y, int z) {
@@ -32,6 +32,6 @@ public class JungleTallGrassGenerateFeature extends SurfaceGenerateFeature {
 
     @Override
     public String name() {
-        return NAME;
+        return "minecraft:tall_grass_feature";
     }
 }

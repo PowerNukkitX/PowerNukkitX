@@ -8,6 +8,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
+import cn.nukkit.level.generator.Normal;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
@@ -72,22 +73,26 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
             } else {
                 spawn(object, new NukkitRandom(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) ^ x + y + z), x, y, z);
             }
-            if(object.getBlocks().stream().noneMatch(block -> !block.getChunk().isGenerated())) {
-                boolean skip = false;
-                if(getSkipAir() != 0) {
-                    boolean air = object.getBlocks().stream().anyMatch(block -> level.getBlock(block).isAir());
-                    if(air) {
-                        skip = random.identical().nextFloat() < getSkipAir();
-                    }
+            boolean skip = false;
+            if(getSkipAir() != 0) {
+                boolean air = object.getBlocks().stream().anyMatch(block -> level.getBlock(block).isAir());
+                if(air) {
+                    skip = random.identical().nextFloat() < getSkipAir();
                 }
-                if(!skip) {
-                    for (Block block : object.getBlocks()) {
+            }
+            if(!skip) {
+                for (Block block : object.getBlocks()) {
+                    if (block.getChunk().isGenerated()) {
                         manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
+                    } else {
+                        IChunk nextChunk = block.getChunk();
+                        long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
+                        ((Normal) context.getGenerator()).getChunkPlacementQueue(chunkHash).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
                     }
                 }
             }
         }
-        manager.applySubChunkUpdate(manager.getBlocks());
+        manager.applySubChunkUpdate();
     }
 
     protected void spawn(BlockManager level, NukkitRandom rand, int x, int y, int z) {

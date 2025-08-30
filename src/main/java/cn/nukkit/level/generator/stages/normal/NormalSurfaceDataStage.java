@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator.stages.normal;
 
-import cn.nukkit.block.BlockDirt;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.level.format.ChunkState;
@@ -12,6 +11,7 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionChunkGenData;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionData;
+import cn.nukkit.network.protocol.types.biome.BiomeMesaSurfaceData;
 import cn.nukkit.network.protocol.types.biome.BiomeSurfaceMaterialAdjustmentData;
 import cn.nukkit.network.protocol.types.biome.BiomeSurfaceMaterialData;
 import cn.nukkit.registry.Registries;
@@ -19,23 +19,35 @@ import cn.nukkit.utils.OptionalValue;
 import cn.nukkit.utils.random.NukkitRandom;
 import lombok.extern.slf4j.Slf4j;
 
+
 @Slf4j
 public class NormalSurfaceDataStage extends GenerateStage {
 
     public static final String NAME = "normal_surface";
 
+    private SimplexF simplexF;
+
+
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
+        if(simplexF == null) simplexF = new SimplexF(new NukkitRandom(chunk.getLevel().getSeed()), 1f, 2 / 4f, 1 / 10f);
+        int[][] heightMap = new int[16][16];
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
-                int y = chunk.getHeightMap(x, z);
+                heightMap[x][z] = chunk.getHeightMap(x, z);
+            }
+        }
+        for(int x = 0; x < 16; x++) {
+            for(int z = 0; z < 16; z++) {
+                int y = heightMap[x][z];
                 BlockState topBlockState = chunk.getBlockState(x, y, z);
                 BiomeDefinition definition = Registries.BIOME.get(chunk.getBiomeId(x, y, z));
                 BiomeDefinitionData biome = definition.data;
                 OptionalValue<BiomeDefinitionChunkGenData> chunkGenDataOptional = biome.chunkGenData;
                 if(chunkGenDataOptional.isPresent()) {
                     BiomeDefinitionChunkGenData chunkGenData = chunkGenDataOptional.get();
+
                     OptionalValue<BiomeSurfaceMaterialData> surfaceMaterialDataOptional = chunkGenData.surfaceMaterial;
                     if(surfaceMaterialDataOptional.isPresent()) {
                         BiomeSurfaceMaterialData surfaceMaterialData = surfaceMaterialDataOptional.get();
@@ -43,11 +55,11 @@ public class NormalSurfaceDataStage extends GenerateStage {
                         int midBlock = surfaceMaterialData.midBlock;
                         int seaFloorBlock = surfaceMaterialData.seaFloorBlock;
 
+
                         OptionalValue<BiomeSurfaceMaterialAdjustmentData> biomeSurfaceMaterialAdjustmentDataOptional = chunkGenData.surfaceMaterialAdjustment;
                         if(biomeSurfaceMaterialAdjustmentDataOptional.isPresent()) {
                             BiomeSurfaceMaterialAdjustmentData biomeSurfaceMaterialAdjustmentData = biomeSurfaceMaterialAdjustmentDataOptional.get();
                             for(var element : biomeSurfaceMaterialAdjustmentData.biomeElements) {
-                                SimplexF simplexF = new SimplexF(new NukkitRandom(chunk.getLevel().getSeed()), 6f, 2 / 4f, element.noiseFrequencyScale*element.noiseFrequencyScale);
                                 float random = simplexF.noise3D((chunk.getX() << 4) + x, y, (chunk.getZ() << 4) + z, true);
                                 if(random < element.noiseUpperBound && random > element.noiseLowerBound) {
                                     int _topBlock = element.adjustedMaterials.topBlock;
@@ -61,7 +73,6 @@ public class NormalSurfaceDataStage extends GenerateStage {
                         }
                         if(topBlockState != BlockWater.PROPERTIES.getBlockState()) {
                             chunk.setBlockState(x, y, z, Registries.BLOCKSTATE.get(topBlock));
-                            SimplexF simplexF = new SimplexF(new NukkitRandom(chunk.getLevel().getSeed()), 1f, 2 / 4f, 1 / 10f);
                             for(int i = 1; i < NukkitMath.remap(simplexF.noise2D(x, z, true), -1, 1, 1, 4); i++){
                                 chunk.setBlockState(x, y-i, z, Registries.BLOCKSTATE.get(midBlock));
                             }

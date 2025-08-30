@@ -22,7 +22,7 @@ public class NoiseGeneratorPerlinF {
         this.lowestFreqValueFactor = (float) (Math.pow(2, this.levels - 1) / (Math.pow(2, this.levels) - 1));
         for (int i = 0; i < this.levels; ++i) {
             if(this.amplitudes[i] != 0.0f) {
-                this.noiseLevels[i] = new NoiseGeneratorSimplexF(new NukkitRandom(("octave_" + (this.firstOctave + i)).hashCode()));
+                this.noiseLevels[i] = new NoiseGeneratorSimplexF(new NukkitRandom(random.nextLong() + ("octave_" + (this.firstOctave + i)).hashCode()));
             }
         }
         this.maxValue = this.edgeValue(2d);

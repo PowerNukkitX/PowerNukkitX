@@ -22,7 +22,7 @@ public class LegacyBigSpruceTree extends LegacySpruceTree {
 
     @Override
     public void placeObject(BlockManager level, int x, int y, int z, RandomSourceProvider random) {
-        if (this.treeHeight == 0) {
+        if (this.treeHeight == 7) {
             this.setRandomTreeHeight(random);
         }
 

@@ -13,7 +13,7 @@ public class PlainsTreeFeature extends LegacyTreeGeneratorFeature {
 
     @Override
     public LegacyTreeGenerator getGenerator(NukkitRandom random) {
-        if(random.nextInt(40) < 1) {
+        if(random.nextInt(20) < 1) {
             return new LegacyOakTree();
         } else return null;
     }

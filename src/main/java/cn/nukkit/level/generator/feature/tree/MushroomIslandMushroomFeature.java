@@ -4,6 +4,7 @@ import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
 import cn.nukkit.level.generator.object.ObjectBigMushroom;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectSavannaTree;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
@@ -27,8 +28,8 @@ public class MushroomIslandMushroomFeature extends ObjectGeneratorFeature {
     }
 
     @Override
-    public String getRequiredTag() {
-        return BiomeTags.MOOSHROOM_ISLAND;
+    public boolean canSpawnHere(BiomeDefinition definition) {
+        return definition.getTags().contains(BiomeTags.MOOSHROOM_ISLAND);
     }
 
     @Override
