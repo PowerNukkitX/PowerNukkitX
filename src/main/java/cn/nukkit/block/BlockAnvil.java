@@ -91,7 +91,12 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
 
     @Override
     public String getName() {
-        return getAnvilDamage().name();
+        return switch (getAnvilDamage()) {
+            case UNDAMAGED -> "Anvil";
+            case SLIGHTLY_DAMAGED -> "Chipped Anvil";
+            case VERY_DAMAGED -> "Damaged Anvil";
+            case BROKEN -> "Broken Anvil";
+        };
     }
 
     @Override

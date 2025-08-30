@@ -18,6 +18,7 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author MagicDroidX
@@ -295,6 +296,11 @@ public class EntityItem extends Entity {
     @Override
     public String getOriginalName() {
         return "Item";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("item", "inanimate");
     }
 
     @Override

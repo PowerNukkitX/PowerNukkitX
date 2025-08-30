@@ -13,6 +13,9 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.nbt.tag.CompoundTag;
+
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -183,5 +186,10 @@ public class EntityTnt extends Entity implements EntityExplosive {
     @Override
     public String getOriginalName() {
         return "Block of TNT";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("tnt", "inanimate");
     }
 }

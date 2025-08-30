@@ -85,4 +85,9 @@ public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
     public String getOriginalName() {
         return "Polar Bear";
     }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("polarbear", "mob");
+    }
 }

@@ -99,6 +99,11 @@ public class EntityZoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("zoglin", "zoglin_baby", "undead", "monster", "mob");
+    }
+
+    @Override
     public boolean isUndead() {
         return true;
     }

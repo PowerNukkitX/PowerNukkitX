@@ -84,6 +84,7 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
     public enum Action {
         DROP,
         PUT,
-        ROTATION
+        ROTATION,
+        REMOVE
     }
 }

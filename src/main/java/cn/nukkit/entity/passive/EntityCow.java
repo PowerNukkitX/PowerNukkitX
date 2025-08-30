@@ -106,6 +106,11 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("cow", "mob");
+    }
+
+    @Override
     public Item[] getDrops() {
         if (!this.isBaby()) {
             return new Item[]{Item.get(Item.LEATHER, 0, Utils.rand(0, 2)), Item.get(((this.isOnFire()) ? Item.COOKED_BEEF : Item.BEEF), 0, Utils.rand(1, 3))};

@@ -78,7 +78,10 @@ public class EntityOcelot extends EntityAnimal implements EntityWalkable {
         return "Ocelot";
     }
 
-    
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("ocelot", "mob");
+    }
 
     @Override
     public void initEntity() {

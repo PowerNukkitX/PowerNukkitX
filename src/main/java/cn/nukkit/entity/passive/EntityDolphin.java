@@ -55,6 +55,11 @@ public class EntityDolphin extends EntityAnimal implements EntitySwimmable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("dolphin", "mob");
+    }
+
+    @Override
     public float getWidth() {
         return 0.9f;
     }

@@ -4,6 +4,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -26,6 +29,11 @@ public class EntityCod extends EntityFish {
     @Override
     public String getOriginalName() {
         return "Cod";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("cod", "mob");
     }
 
     @Override

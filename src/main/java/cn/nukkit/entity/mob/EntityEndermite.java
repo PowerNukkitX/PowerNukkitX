@@ -97,6 +97,11 @@ public class EntityEndermite extends EntityMob implements EntityWalkable, Entity
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("endermite", "arthropod", "monster", "lightweight", "mob");
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }

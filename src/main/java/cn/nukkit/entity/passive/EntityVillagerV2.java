@@ -414,6 +414,27 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return switch (profession) {
+            case 1 -> Set.of("villager", "peasant", "farmer", "mob");
+            case 2 -> Set.of("villager", "peasant", "fisherman", "mob");
+            case 3 -> Set.of("villager", "peasant", "shepherd", "mob");
+            case 4 -> Set.of("villager", "peasant", "fletcher", "mob");
+            case 5 -> Set.of("villager", "librarian", "mob");
+            case 6 -> Set.of("villager", "cartographer", "mob");
+            case 7 -> Set.of("villager", "priest", "cleric", "mob");
+            case 8 -> Set.of("villager", "blacksmith", "armorer", "mob");
+            case 9 -> Set.of("villager", "blacksmith", "weaponsmith", "mob");
+            case 10 -> Set.of("villager", "blacksmith", "toolsmith", "mob");
+            case 11 -> Set.of("villager", "artisan", "butcher", "mob");
+            case 12 -> Set.of("villager", "artisan", "leatherworker", "mob");
+            case 13 -> Set.of("villager", "artisan", "stone_mason", "mob");
+            case 14 -> Set.of("villager", "peasant", "nitwit", "mob");
+            default -> Set.of("villager", "peasant", "unskilled", "mob");
+        };
+    }
+
+    @Override
     public void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();
@@ -632,6 +653,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             case 11 -> "entity.villager.butcher";
             case 12 -> "entity.villager.leather";
             case 13 -> "entity.villager.mason";
+            case 14 -> "entity.villager.nitwit";
             default -> null;
         };
     }

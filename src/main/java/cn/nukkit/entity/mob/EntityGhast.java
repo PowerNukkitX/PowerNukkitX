@@ -94,6 +94,11 @@ public class EntityGhast extends EntityMob implements EntityFlyable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("ghast", "monster", "mob");
+    }
+
+    @Override
     public Item[] getDrops() {
         return new Item[]{
                 Item.get(Item.GHAST_TEAR, 0, Utils.rand(0, 1)),

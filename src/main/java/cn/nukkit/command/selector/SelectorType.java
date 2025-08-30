@@ -4,14 +4,14 @@ import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import lombok.Getter;
 
 /**
- * 所有可能的选择器类型
+ * All possible selector types
  */
 
 
 public enum SelectorType {
     ALL_PLAYERS("a"),
     ALL_ENTITIES("e"),
-    //可通过指定type选择随机非玩家实体
+    // You can select a random non-player entity by specifying the type
     //https://zh.minecraft.wiki/w/%E7%9B%AE%E6%A0%87%E9%80%89%E6%8B%A9%E5%99%A8
     RANDOM_PLAYER("r"),
     SELF("s"),

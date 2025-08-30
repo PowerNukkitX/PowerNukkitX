@@ -640,6 +640,25 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.setDataProperty(NAMETAG_ALWAYS_SHOW, value ? 1 : 0);
     }
 
+    public Set<String> typeFamily() {
+        return Set.of();
+    }
+
+    public final boolean isFamily(String family) {
+        return family != null && !family.isEmpty() && typeFamily().contains(family);
+    }
+
+    public final boolean isAnyFamily(Collection<String> families) {
+        if (families == null || families.isEmpty()) return false;
+        Set<String> mine = typeFamily();
+        for (String f : families) if (mine.contains(f)) return true;
+        return false;
+    }
+
+    public final boolean isAllFamilies(Collection<String> families) {
+        return families == null || families.isEmpty() || typeFamily().containsAll(families);
+    }
+
     public String getScoreTag() {
         return this.getDataProperty(SCORE, "");
     }

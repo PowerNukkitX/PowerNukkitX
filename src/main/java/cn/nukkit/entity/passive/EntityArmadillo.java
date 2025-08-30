@@ -72,6 +72,11 @@ public class EntityArmadillo extends EntityAnimal {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("armadillo", "mob");
+    }
+
+    @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
                 this.tickSpread,
