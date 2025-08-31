@@ -46,7 +46,7 @@ public class ParticleCommand extends VanillaCommand {
             return 0;
         }
         for (int i = 0; i < count; i++) {
-            position.level.addParticleEffect(position.asVector3f(), name, -1, position.level.getDimension(), (Player[]) null);
+            position.level.addParticleEffect(position, name);
         }
         log.addSuccess("commands.particle.success", name, String.valueOf(count));
         return 1;
