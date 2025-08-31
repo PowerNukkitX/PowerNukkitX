@@ -32,6 +32,10 @@ public class PerlinF extends NoiseF {
         }
     }
 
+    public float getValue(float x, float y, float z) {
+        return getNoise3D(x, y, z);
+    }
+
     @Override
     public float getNoise2D(float x, float y) {
         return this.getNoise3D(x, y, 0);

@@ -92,7 +92,7 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
                 }
             }
         }
-        manager.applySubChunkUpdate();
+        manager.applySubChunkUpdate(manager.getBlocks());
     }
 
     protected void spawn(BlockManager level, NukkitRandom rand, int x, int y, int z) {

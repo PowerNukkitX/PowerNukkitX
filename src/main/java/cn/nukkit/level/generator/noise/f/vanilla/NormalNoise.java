@@ -31,14 +31,14 @@ public class NormalNoise {
         }
 
         this.valueFactor = (float) ((1/6f) / (0.1 * (1.0 + 1.0 / ((max-min) + 1))));
-        this.maxValue = (this.first.getMax() + this.second.getMax()) * this.valueFactor;
+        this.maxValue = (this.first.getMax() + this.second.getMax()) / 2;
     }
 
     public float getValue(double x, double y, double z) {
         double d0 = x * 1.0181268882175227;
         double d1 = y * 1.0181268882175227;
         double d2 = z * 1.0181268882175227;
-        return (this.first.getValue(x, y, z) + this.second.getValue(d0, d1, d2)) * this.valueFactor;
+        return (this.first.getValue(x, y, z) + this.second.getValue(d0, d1, d2)) / 2;
     }
 
     public double getMax() {

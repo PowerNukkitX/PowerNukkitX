@@ -26,7 +26,7 @@ public class BiomeMapStage extends GenerateStage {
             int x = chunkX * 16 + _x;
             for(int _z = 0; _z < 16; _z++) {
                 int z = chunkZ * 16 + _z;
-                int biome = biomePicker.pick(x, 64, z);
+                int biome = biomePicker.pick(x, 64, z).getBiomeId();
                 for (int y = minHeight; y <= maxHeight; y++) {
                     chunk.setBiomeId(_x, y, _z, biome);
                 }

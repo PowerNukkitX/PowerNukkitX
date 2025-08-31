@@ -3586,7 +3586,7 @@ public class Level implements Metadatable {
     }
 
     public int pickBiome(int x, int y, int z) {
-        return getBiomePicker().pick(x, y, z);
+        return getBiomePicker().pick(x, y, z).getBiomeId();
     }
 
     public Map<Long, IChunk> getChunks() {

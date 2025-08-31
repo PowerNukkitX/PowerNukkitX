@@ -41,8 +41,7 @@ public class NormalChunkFeatureStage extends GenerateStage {
                             features.put(consolidatedFeatureData, consolidatedFeatureData.scatter.evalOrder);
                             String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.identifier);
                             if(!Registries.GENERATE_FEATURE.has(featureName)) {
-                                if(featureName.contains("tree"))
-                                log.warn("Missing feature: " + definition.getName() + " - " + featureName);
+
                             }
                         }
                     }
