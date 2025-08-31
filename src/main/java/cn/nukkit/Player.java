@@ -1700,26 +1700,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         PropertySyncData data = this.getClientSyncProperties();
         if (data == null) return;
 
-        int[]   ints   = data.intProperties();
-        float[] floats = data.floatProperties();
-        boolean emptyInts   = (ints == null   || ints.length   == 0);
-        boolean emptyFloats = (floats == null || floats.length == 0);
-        if (emptyInts && emptyFloats) return;
-
         SetEntityDataPacket pk = new SetEntityDataPacket();
         pk.eid = this.getId();
         pk.entityData = this.getEntityDataMap();
         pk.syncedProperties = data;
         pk.frame = 0L;
 
-        if (viewers == null || viewers.length == 0) {
-            for (Player v : this.getViewers().values()) {
-                v.dataPacket(pk);
-            }
-        } else {
-            for (Player v : viewers) {
-                if (v != null) v.dataPacket(pk);
-            }
+        Player[] targets = (viewers == null || viewers.length == 0)
+            ? this.getViewers().values().toArray(Player.EMPTY_ARRAY)
+            : viewers;
+
+        for (Player v : targets) {
+            if (v != null) v.dataPacket(pk);
         }
     }
 
