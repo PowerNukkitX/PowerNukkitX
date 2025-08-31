@@ -679,10 +679,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             flagsChanged = true;
         }
 
-        if (primary.remove(EntityFlag.CAN_SHOW_NAME)) {
-            flagsChanged = true;
-        }
-
         recalculateBoundingBox(false);
         float newHeight = this.getEntityDataMap().getOrDefault(EntityDataTypes.HEIGHT, getCurrentHeight());
 
