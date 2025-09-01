@@ -7,10 +7,14 @@ import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Sound;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
@@ -24,6 +28,7 @@ import cn.nukkit.nbt.tag.LongTag;
 import cn.nukkit.nbt.tag.ShortTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.protocol.CompletedUsingItemPacket;
 import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.ItemTags;
@@ -1698,10 +1703,11 @@ public abstract class Item implements Cloneable, ItemID {
      * Called before {@link #onUse},The player is right clicking use on an item
      *
      * @param player          player
-     * @param directionVector 点击的方向向量<br>The direction vector of the click
+     * @param directionVector The direction vector of the click
      * @return if false is returned, calls {@link #onUse(Player, int)} will be stopped
      */
     public boolean onClickAir(Player player, Vector3 directionVector) {
+        if (isEdible()) return foodOnClickAir(player, directionVector);
         return false;
     }
 
@@ -1709,10 +1715,11 @@ public abstract class Item implements Cloneable, ItemID {
      * The {@link #onClickAir} is called only after the command is successful
      *
      * @param player    the player
-     * @param ticksUsed 物品被使用了多久(右键持续时间)<br>How long the item has been used (right-click duration)
+     * @param ticksUsed How long the item has been used (right-click duration)
      * @return the boolean
      */
     public boolean onUse(Player player, int ticksUsed) {
+        if (isEdible()) return foodOnUse(player, ticksUsed);
         return false;
     }
 
@@ -2078,8 +2085,9 @@ public abstract class Item implements Cloneable, ItemID {
 
 
 
-
+    /////////////////////////////
     // Generic Item Components
+    /////////////////////////////
     public float useDuration() {
         return 0;
     }
@@ -2089,7 +2097,9 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
 
+    /////////////////////////////
     // Item Food Methods
+    /////////////////////////////
     public boolean isEdible() {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null) {
@@ -2099,10 +2109,10 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
 
-    public int getFoodRestore() {
-        return nutrition();
-    }
-    public int nutrition() {
+    //public int getFoodRestore() {
+    //    return getNutrition();
+    //}
+    public int getNutrition() {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null && def.getComponents().contains("minecraft:food")) {
             return def.getComponents().getCompound("minecraft:food").getInt("nutrition");
@@ -2111,25 +2121,154 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
 
-    public float getSaturationRestore() {
-        return foodSaturation();
+    //public float getSaturationRestore() {
+    //    return getSaturation();
+    //}
+    public float getSaturation() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null && def.getComponents().contains("minecraft:food")) {
+            int itemNutrition = getNutrition();
+            float itemSaturationModifier = def.getComponents().getCompound("minecraft:food").getFloat("saturation_modifier");
+            return (itemNutrition * itemSaturationModifier * 2f);
+        }
+        return 0;
     }
-    public float foodSaturation() {
+    public float getSaturationModifier() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null && def.getComponents().contains("minecraft:food")) {
+            return def.getComponents().getCompound("minecraft:food").getInt("saturation_modifier");
+        }
         return 0;
     }
 
-
-    public boolean isRequiresHunger() {
-        return !canAlwaysEat();
-    }
+    //public boolean isRequiresHunger() {
+    //    return !canAlwaysEat();
+    //}
     public boolean canAlwaysEat() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null && def.getComponents().contains("minecraft:food")) {
+            return def.getComponents().getCompound("minecraft:food").getBoolean("can_always_eat");
+        }
         return false;
     }
 
-
     public int getEatingTicks() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null && def.getComponents().contains("minecraft:use_modifiers")) {
+            float seconds = def.getComponents().getCompound("minecraft:use_modifiers").getFloat("use_duration");
+            return Math.max(0, Math.round(seconds * 20f));
+        }
         return 0;
     }
+
+    public float getUseDuration() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null && def.getComponents().contains("minecraft:use_modifiers")) {
+            return def.getComponents().getCompound("minecraft:use_modifiers").getFloat("use_duration");
+        }
+        return 0f;
+    }
+
+    public float getMovimentModifier() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null && def.getComponents().contains("minecraft:use_modifiers")) {
+            return def.getComponents().getCompound("minecraft:use_modifiers").getFloat("movement_modifier");
+        }
+        return 1f;
+    }
+
+    /*
+     * Used for additional behaviour in Food like: Chorus, Suspicious Stew and etc.
+     */
+    public boolean onEaten(Player player) {
+        return true;
+    }
+
+    public boolean foodOnClickAir(Player player, Vector3 directionVector) {
+        if (player.getFoodData().isHungry() || this.canAlwaysEat() || player.isCreative()) {
+            return true;
+        }
+        player.getFoodData().sendFood();
+        return false;
+    }
+
+    public boolean foodOnUse(Player player, int ticksUsed) {
+        if (ticksUsed < getEatingTicks()) {
+            return false;
+        }
+
+        PlayerItemConsumeEvent event = new PlayerItemConsumeEvent(player, this);
+        Server.getInstance().getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            player.getInventory().sendContents(player);
+            return false;
+        }
+
+        if (this.onEaten(player)) {
+            player.getFoodData().addFood(this);
+            player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_EAT);
+
+            if (player.isAdventure() || player.isSurvival()) {
+                --this.count;
+                player.getInventory().setItemInHand(this);
+                handleUsingConvertsTo(player);
+                player.getLevel().addSound(player, Sound.RANDOM_BURP);
+            }
+        }
+
+        player.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.add(0, player.getEyeHeight()), VibrationType.EAT));
+
+        return true;
+    }
+
+    private void handleUsingConvertsTo(Player player) {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def == null) return;
+
+        CompoundTag comps = def.getComponents();
+        if (!comps.contains("minecraft:food")) return;
+
+        CompoundTag food = comps.getCompound("minecraft:food");
+
+        Tag tag = food.get("using_converts_to");
+        if (!(tag instanceof StringTag)) return;
+
+        String id = food.getString("using_converts_to");
+        if (id == null || id.isBlank()) return;
+
+        Item container = Item.get(id);
+        if (container.isNull()) return;
+        container.setCount(1);
+
+        if (this.count <= 0) {
+            player.getInventory().setItemInHand(container);
+            return;
+        }
+        if (player.getInventory().canAddItem(container)) {
+            player.getInventory().addItem(container);
+        } else {
+            player.getLevel().dropItem(player.getPosition(), container);
+        }
+    }
+
+
+
+
+    /////////////////////////////
+    // Item Armor Methods
+    /////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
 
 
 

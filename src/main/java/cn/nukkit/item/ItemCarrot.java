@@ -22,12 +22,12 @@ public class ItemCarrot extends ItemFood {
     }
 
     @Override
-    public int getFoodRestore() {
+    public int getNutrition() {
         return 3;
     }
 
     @Override
-    public float getSaturationRestore() {
+    public float getSaturation() {
         return 4.8F;
     }
 }

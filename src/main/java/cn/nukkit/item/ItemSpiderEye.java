@@ -23,12 +23,12 @@ public class ItemSpiderEye extends ItemFood {
     }
 
     @Override
-    public int getFoodRestore() {
+    public int getNutrition() {
         return 2;
     }
 
     @Override
-    public float getSaturationRestore() {
+    public float getSaturation() {
         return 3.2F;
     }
 

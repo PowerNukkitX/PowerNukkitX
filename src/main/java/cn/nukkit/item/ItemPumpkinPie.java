@@ -18,12 +18,12 @@ public class ItemPumpkinPie extends ItemFood {
     }
 
     @Override
-    public int getFoodRestore() {
+    public int getNutrition() {
         return 8;
     }
 
     @Override
-    public float getSaturationRestore() {
+    public float getSaturation() {
         return 4.8F;
     }
 }

@@ -250,24 +250,54 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
 
         /**
-         * Simple edible item.
+         * Simple edible item. Creates a item food with nutrition 0 and saturation modifier 0.6. <p>
+         * Note: Bedrock requires {@code minecraft:use_modifiers} for eat/drink behavior.
+         * Call {@link #useModifiers(float, float)} to set the use time (seconds) and movement modifier.
+         * If you skip it, this builder will use duration as 0s and movement as 1.0 by default. <p>
+         * 
+         * nutrition defaults to 0, saturation_modifier defaults to 0.6, using_converts_to defaults to "".
+         * 
+         * @param canAlwaysEat if true, food can be always eaten even without hungry
          */
-        public SimpleBuilder food(boolean canAlwaysEat, int nutrition, float saturationModifier) {
-            Preconditions.checkArgument(nutrition >= 0, "nutrition must be >= 0");
-            Preconditions.checkArgument(saturationModifier >= 0f, "saturation_modifier must be >= 0");
-            this.foodCanAlwaysEat = canAlwaysEat;
-            this.foodNutrition = nutrition;
-            this.foodSaturation = saturationModifier;
-            return this;
+        public SimpleBuilder food(boolean canAlwaysEat) {
+            return food(canAlwaysEat, 0, 0.6f);
         }
 
         /**
-         * Edible with converts-to.
+         * Simple edible item. <p>
+         * Note: Bedrock requires {@code minecraft:use_modifiers} for eat/drink behavior.
+         * Call {@link #useModifiers(float, float)} to set the use time (seconds) and movement modifier.
+         * If you skip it, this builder will use duration as 0s and movement as 1.0 by default. <p>
+         * 
+         * using_converts_to defaults to "".
+         * 
+         * @param canAlwaysEat if true, food can be always eaten even without hungry
+         * @param nutrition nutrition level of the food as int value
+         * @param saturationModifier saturation modifier provides the saturation of the food by: (nutrition * saturation_modifier * 2), defaults is 0.6
+         */
+        public SimpleBuilder food(boolean canAlwaysEat, int nutrition, float saturationModifier) {
+            return food(canAlwaysEat, nutrition, saturationModifier, "");
+        }
+
+        /**
+         * Simple edible item. <p>
+         * Note: Bedrock requires {@code minecraft:use_modifiers} for eat/drink behavior.
+         * Call {@link #useModifiers(float, float)} to set the use time (seconds) and movement modifier.
+         * If you skip it, this builder will use duration as 0s and movement as 1.0 by default.
+         * 
+         * @param canAlwaysEat if true, food can be always eaten even without hungry
+         * @param nutrition nutrition level of the food as int value
+         * @param saturationModifier saturation modifier provides the saturation of the food by: (nutrition * saturation_modifier * 2), defaults is 0.6
+         * @param usingConvertsTo string item ID that this food will convert to after eaten, example "minecraft:bowl"
          */
         public SimpleBuilder food(boolean canAlwaysEat, int nutrition, float saturationModifier, String usingConvertsTo) {
-            this.food(canAlwaysEat, nutrition, saturationModifier);
-            Preconditions.checkArgument(usingConvertsTo != null && !usingConvertsTo.isBlank(), "using_converts_to cannot be blank");
-            this.foodUsingConvertsTo = usingConvertsTo;
+            Preconditions.checkArgument(nutrition >= 0, "nutrition must be >= 0");
+            Preconditions.checkArgument(saturationModifier >= 0f, "saturation_modifier must be >= 0");
+
+            this.foodCanAlwaysEat = canAlwaysEat;
+            this.foodNutrition = nutrition;
+            this.foodSaturation = saturationModifier;
+            this.foodUsingConvertsTo = (usingConvertsTo == null) ? "" : usingConvertsTo;
             return this;
         }
 
@@ -398,8 +428,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * Whether stacks are distinguished by item data/aux
-         * Default is false (0) if not set.
+         * Whether stacks are distinguished by item data/aux <p>
+         * Default is false (0) if not set. <p>
          */
         public SimpleBuilder stackedByData(boolean stacked) {
             this.stackedByData = stacked;
@@ -508,34 +538,35 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             itemProps.putBoolean("should_despawn", !makePersistent);
             itemProps.putBoolean("stacked_by_data", this.stackedByData != null ? this.stackedByData : false);
 
-            int legacyUseAnim = 0;
+            int animationId = 0;
             if (this.useAnimationType != null) {
                 switch (this.useAnimationType.toLowerCase(java.util.Locale.ROOT)) {
-                    case "eat": legacyUseAnim = 1; break;
-                    case "drink": legacyUseAnim = 2; break;
-                    default: legacyUseAnim = 1;
+                    case "eat": animationId = 1; break;
+                    case "drink": animationId = 2; break;
+                    case "bow": animationId = 4; break;
+                    default: animationId = 1;
                 }
             }
-            itemProps.putInt("use_animation", legacyUseAnim);
-
-            int legacyUseTicks = (this.useModifierDuration != null) ? Math.max(0, Math.round(this.useModifierDuration * 20f)) : 0;
-            itemProps.putInt("use_duration", legacyUseTicks);
+            itemProps.putInt("use_animation", animationId);
 
             if (this.useAnimationType != null) {
                 components.putCompound("minecraft:use_animation",
                         new CompoundTag().putString("value", this.useAnimationType));
             }
 
-            if (cooldownCategory != null && cooldownDuration != null) {
-                components.putCompound("minecraft:cooldown", new CompoundTag()
-                        .putString("category", cooldownCategory)
-                        .putFloat("duration", cooldownDuration));
-            }
+            int useDurationTicks = (this.useModifierDuration != null) ? Math.max(0, Math.round(this.useModifierDuration * 20f)) : 0;
+            itemProps.putInt("use_duration", useDurationTicks);
 
             if (this.useModifierMovement != null && this.useModifierDuration != null) {
                 components.putCompound("minecraft:use_modifiers", new CompoundTag()
                         .putFloat("movement_modifier", this.useModifierMovement)
                         .putFloat("use_duration", this.useModifierDuration));
+            }
+
+            if (cooldownCategory != null && cooldownDuration != null) {
+                components.putCompound("minecraft:cooldown", new CompoundTag()
+                        .putString("category", cooldownCategory)
+                        .putFloat("duration", cooldownDuration));
             }
 
             var result = new CustomItemDefinition(identifier, nbt);
@@ -579,6 +610,13 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                 if (foodUsingConvertsTo != null) food.putString("using_converts_to", foodUsingConvertsTo);
 
                 components.putCompound("minecraft:food", food);
+                if (this.useModifierMovement == null && this.useModifierDuration == null) {
+                    itemProps.putInt("use_duration", 0);
+                    components.putCompound("minecraft:use_modifiers",
+                            new CompoundTag()
+                                    .putFloat("movement_modifier", 1.0f)
+                                    .putFloat("use_duration", 0.0f));
+                }
             }
 
 
@@ -1024,8 +1062,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
 
     /**
-     * 自定义盔甲的定义构造器
-     * <p>
      * Definition builder for custom armor
      *
      * @param item the item
@@ -1154,9 +1190,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             super(item);
 
             if (this.nbt.getCompound("components").contains("minecraft:food")) {
-                this.nbt.getCompound("components").getCompound("minecraft:food").putBoolean("can_always_eat", !item.isRequiresHunger());
+                this.nbt.getCompound("components").getCompound("minecraft:food").putBoolean("can_always_eat", item.canAlwaysEat());
             } else {
-                this.nbt.getCompound("components").putCompound("minecraft:food", new CompoundTag().putBoolean("can_always_eat", !item.isRequiresHunger()));
+                this.nbt.getCompound("components").putCompound("minecraft:food", new CompoundTag().putBoolean("can_always_eat", item.canAlwaysEat()));
             }
 
             int eatingtick = item.getEatingTicks();
@@ -1254,21 +1290,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         return comps != null ? comps.getCompound("item_properties") : null;
     }
 
-
-
-
-
-
-
-
-
-
-
     public boolean isEdible() {
         return hasComponent("minecraft:food");
     }
-
-
 
     public CompoundTag getNbt() {
         return this.nbt;
