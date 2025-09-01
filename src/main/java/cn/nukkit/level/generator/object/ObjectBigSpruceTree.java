@@ -3,6 +3,7 @@ package cn.nukkit.level.generator.object;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockPodzol;
 import cn.nukkit.block.BlockSpruceLeaves;
+import cn.nukkit.block.BlockSpruceLog;
 import cn.nukkit.block.BlockSpruceWood;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
@@ -13,7 +14,7 @@ import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class ObjectBigSpruceTree extends TreeGenerator {
 
-    private final BlockState SPRUCE_LOG = BlockSpruceWood.PROPERTIES.getDefaultState();
+    private final BlockState SPRUCE_LOG = BlockSpruceLog.PROPERTIES.getDefaultState();
     private final BlockState PODZOL = BlockPodzol.PROPERTIES.getDefaultState();
 
 
@@ -104,4 +105,5 @@ public class ObjectBigSpruceTree extends TreeGenerator {
             world.setBlockStateAt(new Vector3(x, y, z), PODZOL);
         }
     }
+
 }

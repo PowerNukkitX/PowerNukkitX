@@ -11,6 +11,7 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
+import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.Set;
@@ -41,7 +42,7 @@ public class BirchForestWildflowersFeature extends GenerateFeature {
                     Set<String> tags = Registries.BIOME.get(chunk.getBiomeId(x, y, z)).getTags();
                     if(tags.contains(BiomeTags.FOREST) && tags.contains(BiomeTags.BIRCH)) {
                         Block support = chunk.getBlockState(x, y - 1, z).toBlock();
-                        if (support.isFullBlock() && !support.isTransparent()) {
+                        if (support.is(BlockTags.GRASS)) {
                             if (chunk.getBlockState(x, y, z) == BlockAir.STATE) {
                                 NukkitRandom rnd = random.fork();
                                 chunk.setBlockState(x, y, z, BlockWildflowers.PROPERTIES.getBlockState(

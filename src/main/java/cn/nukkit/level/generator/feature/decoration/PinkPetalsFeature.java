@@ -11,6 +11,7 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
+import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import static cn.nukkit.block.property.CommonBlockProperties.GROWTH;
@@ -38,7 +39,7 @@ public class PinkPetalsFeature extends GenerateFeature {
                     int y = chunk.getHeightMap(x, z) + 1;
                     if(Registries.BIOME.get(chunk.getBiomeId(x, y, z)).getTags().contains(BiomeTags.CHERRY_GROVE)) {
                         Block support = chunk.getBlockState(x, y - 1, z).toBlock();
-                        if (support.isFullBlock() && !support.isTransparent()) {
+                        if (support.is(BlockTags.GRASS)) {
                             if (chunk.getBlockState(x, y, z) == BlockAir.STATE) {
                                 NukkitRandom rnd = random.fork();
                                 chunk.setBlockState(x, y, z, BlockPinkPetals.PROPERTIES.getBlockState(

@@ -59,7 +59,12 @@ public abstract class LegacyTreeGenerator {
                  BlockID.PINK_PETALS,
                  BlockID.TALL_GRASS,
                  BlockID.BIRCH_SAPLING,
-                 BlockID.SHORT_GRASS-> true;
+                 BlockID.SHORT_GRASS,
+                 BlockID.DANDELION,
+                 BlockID.LILY_OF_THE_VALLEY,
+                 BlockID.LILAC,
+                 BlockID.PEONY,
+                 BlockID.ROSE_BUSH -> true;
             default -> false;
         };
     }

@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.feature.tree;
 
 import cn.nukkit.level.generator.feature.GriddedFeature;
-import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
 import cn.nukkit.level.generator.object.ObjectBigSpruceTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectLegacyObjectWrapper;
@@ -29,6 +28,11 @@ public class MegaTaigaTreeFeature extends GriddedFeature {
     @Override
     public int getSplit() {
         return 2;
+    }
+
+    @Override
+    public int getDistanceToNextField() {
+        return 1;
     }
 
     @Override

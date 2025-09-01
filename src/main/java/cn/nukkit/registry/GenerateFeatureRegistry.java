@@ -68,6 +68,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(SandGenerateFeature.NAME, SandGenerateFeature.class);
             this.register(CaveGenerateFeature.NAME, CaveGenerateFeature.class);
             this.register(FlowerForestFoliageFeature.NAME, FlowerForestFoliageFeature.class);
+            this.register(ForestFlowerFoliageFeature.NAME, ForestFlowerFoliageFeature.class);
             this.register(SeagrassRiverGenerateFeature.NAME, SeagrassRiverGenerateFeature.class);
             this.register(MushroomIslandMushroomFeature.NAME, MushroomIslandMushroomFeature.class);
             this.register(SugarcaneFeature.NAME, SugarcaneFeature.class);
@@ -92,6 +93,8 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(JungleGrassFeature.NAME, JungleGrassFeature.class);
             this.register(TaigaGrassFeature.NAME, TaigaGrassFeature.class);
             this.register(TallFernPatchFeature.NAME, TallFernPatchFeature.class);
+            this.register(BambooForestBambooFeature.NAME, BambooForestBambooFeature.class);
+            this.register(PumpkinGenerateFeature.NAME, PumpkinGenerateFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

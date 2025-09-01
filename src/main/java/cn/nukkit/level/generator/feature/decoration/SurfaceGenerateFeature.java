@@ -40,7 +40,7 @@ public abstract class SurfaceGenerateFeature extends CountGenerateFeature {
 
     public abstract void place(BlockManager manager, int x, int y, int z);
 
-    public boolean  isSupportValid(Block support) {
+    public boolean isSupportValid(Block support) {
         return support instanceof BlockGrassBlock;
     }
 
