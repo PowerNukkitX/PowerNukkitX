@@ -7,6 +7,8 @@ import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.item.customitem.CustomItem;
+import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -22,6 +24,7 @@ import cn.nukkit.nbt.tag.LongTag;
 import cn.nukkit.nbt.tag.ShortTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.Binary;
@@ -407,6 +410,26 @@ public abstract class Item implements Cloneable, ItemID {
         return null;
     }
 
+    public boolean canAddEnchantment(Enchantment enchantment) {
+        if (enchantment == null) return false;
+        if (!this.applyEnchantments()) return false;
+        if (!enchantment.canEnchant(this)) return false;
+
+        for (Enchantment existing : this.getEnchantments()) {
+            if (!enchantment.isCompatibleWith(existing)) {
+                return false;
+            }
+        }
+
+        if (enchantment.getIdentifier() == null) {
+            int current = this.getEnchantmentLevel(enchantment.getId());
+            return current < enchantment.getLevel();
+        } else {
+            int current = this.getCustomEnchantmentLevel(enchantment.getIdentifier().toString());
+            return current < enchantment.getLevel();
+        }
+    }
+
     public void addEnchantment(Enchantment... enchantments) {
         CompoundTag tag;
         if (!this.hasCompoundTag()) {
@@ -534,6 +557,97 @@ public abstract class Item implements Cloneable, ItemID {
      */
     public boolean hasEnchantment(int id) {
         return this.getEnchantmentLevel(id) > 0;
+    }
+
+    public boolean hasEnchantment(Enchantment enchantment) {
+        if (enchantment == null) return false;
+        if (enchantment.getIdentifier() == null) {
+            return this.hasEnchantment(enchantment.getId());
+        } else {
+            return this.hasCustomEnchantment(enchantment.getIdentifier().toString());
+        }
+    }
+
+    public void removeEnchantment(int id) {
+        if (!this.hasCompoundTag()) return;
+
+        CompoundTag tag = this.getNamedTag();
+        if (!tag.contains("ench")) {
+            this.setNamedTag(tag);
+            return;
+        }
+
+        ListTag<CompoundTag> ench = tag.getList("ench", CompoundTag.class);
+        for (int i = ench.size() - 1; i >= 0; i--) {
+            CompoundTag entry = ench.get(i);
+            if (entry.getShort("id") == (short) id) {
+                ench.remove(i);
+            }
+        }
+
+        if (ench.size() == 0) {
+            tag.remove("ench");
+        }
+
+        this.setNamedTag(tag);
+    }
+
+    public void removeEnchantment(@NotNull Identifier id) {
+        this.removeEnchantment(id.toString());
+    }
+
+    public void removeEnchantment(Enchantment enchantment) {
+        if (enchantment == null) return;
+        if (enchantment.getIdentifier() == null) {
+            this.removeEnchantment(enchantment.getId());
+        } else {
+            this.removeEnchantment(enchantment.getIdentifier());
+        }
+    }
+
+    public void removeEnchantment(@NotNull String id) {
+        if (!this.hasCompoundTag()) return;
+
+        CompoundTag tag = this.getNamedTag();
+        if (!tag.contains("custom_ench")) {
+            this.setNamedTag(tag);
+            return;
+        }
+
+        ListTag<CompoundTag> custom = tag.getList("custom_ench", CompoundTag.class);
+        boolean removed = false;
+
+        for (int i = custom.size() - 1; i >= 0; i--) {
+            CompoundTag entry = custom.get(i);
+            if (id.equals(entry.getString("id"))) {
+                custom.remove(i);
+                removed = true;
+            }
+        }
+
+        if (removed) {
+            if (custom.size() == 0) {
+                tag.remove("custom_ench");
+            } else {
+                String customName = setCustomEnchantDisplay(custom);
+                if (tag.contains("display") && tag.get("display") instanceof CompoundTag) {
+                    tag.getCompound("display").putString("Name", customName);
+                } else {
+                    tag.putCompound("display", new CompoundTag().putString("Name", customName));
+                }
+            }
+        }
+
+        this.setNamedTag(tag);
+    }
+
+    public void removeAllEnchantments() {
+        if (!this.hasCompoundTag()) return;
+
+        CompoundTag tag = this.getNamedTag();
+        tag.remove("ench");
+        tag.remove("custom_ench");
+        this.setNamedTag(tag);
     }
 
     public int getRepairCost() {
@@ -1951,5 +2065,97 @@ public abstract class Item implements Cloneable, ItemID {
         public ItemLock itemLock;
         @SerializedName(value = "minecraft:keep_on_death", alternate = {"keep_on_death"})
         public KeepOnDeath keepOnDeath;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Generic Item Components
+    public float useDuration() {
+        return 0;
+    }
+
+    public float movementModifier() {
+        return 0;
+    }
+
+
+    // Item Food Methods
+    public boolean isEdible() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) {
+            return def.isEdible();
+        }
+        return false;
+    }
+
+
+    public int getFoodRestore() {
+        return nutrition();
+    }
+    public int nutrition() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null && def.getComponents().contains("minecraft:food")) {
+            return def.getComponents().getCompound("minecraft:food").getInt("nutrition");
+        }
+        return 0;
+    }
+
+
+    public float getSaturationRestore() {
+        return foodSaturation();
+    }
+    public float foodSaturation() {
+        return 0;
+    }
+
+
+    public boolean isRequiresHunger() {
+        return !canAlwaysEat();
+    }
+    public boolean canAlwaysEat() {
+        return false;
+    }
+
+
+    public int getEatingTicks() {
+        return 0;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @Nullable
+    public CustomItemDefinition getCustomDefinition() {
+        if (this instanceof CustomItem customItem) {
+            return ItemRegistry.getCustomItemDefinitionByIdStatic(((Item) customItem).getId());
+        }
+        return null;
     }
 }

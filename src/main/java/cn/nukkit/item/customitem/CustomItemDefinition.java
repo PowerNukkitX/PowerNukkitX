@@ -6,6 +6,7 @@ import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.customitem.data.CreativeGroup;
 import cn.nukkit.item.customitem.data.DigProperty;
 import cn.nukkit.item.customitem.data.RenderOffsets;
+import cn.nukkit.item.enchantment.utils.ItemEnchantSlot;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
@@ -17,7 +18,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,9 +28,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
- * CustomBlockDefinition用于获得发送给客户端的物品行为包数据。{@link CustomItemDefinition.SimpleBuilder}中提供的方法都是控制发送给客户端数据，如果需要控制服务端部分行为，请覆写{@link cn.nukkit.item.Item Item}中的方法。
- * <p>
- * CustomBlockDefinition is used to get the data of the item behavior_pack sent to the client. The methods provided in {@link CustomItemDefinition.SimpleBuilder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.item.Item Item}.
+ * CustomItemDefinition defines custom items from behavior packs.
+ *
+ * Use {@link CustomItemDefinition.SimpleBuilder} to declare all client-facing
+ * properties and behaviors. The builder centralizes supported fields and
+ * handles serialization automatically.
+ *
+ * Override {@link cn.nukkit.item.Item Item} methods only for advanced or
+ * specialized logic not covered by the builder.
  */
 @Slf4j
 public record CustomItemDefinition(String identifier, CompoundTag nbt) implements BlockID {
@@ -38,80 +43,12 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
     private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);
 
     /**
-     * 自定义物品的定义构造器
-     * <p>
-     * Definition builder for custom simple item
-     *
-     * @param item the item
-     * @return the custom item definition . simple builder
-     */
-    public static CustomItemDefinition.SimpleBuilder customBuilder(CustomItem item) {
-        return new CustomItemDefinition.SimpleBuilder(item);
-    }
-
-    /**
-     * 简单物品的定义构造器
-     * <p>
-     * Definition builder for custom simple item
+     * Definition builder for custom items
      *
      * @param item the item
      */
     public static CustomItemDefinition.SimpleBuilder simpleBuilder(ItemCustom item) {
         return new CustomItemDefinition.SimpleBuilder(item);
-    }
-
-    /**
-     * 自定义工具的定义构造器
-     * <p>
-     * Definition builder for custom tools
-     *
-     * @param item the item
-     */
-    public static CustomItemDefinition.ToolBuilder toolBuilder(ItemCustomTool item) {
-        return new CustomItemDefinition.ToolBuilder(item);
-    }
-
-    /**
-     * 自定义盔甲的定义构造器
-     * <p>
-     * Definition builder for custom armor
-     *
-     * @param item the item
-     */
-    public static CustomItemDefinition.ArmorBuilder armorBuilder(ItemCustomArmor item) {
-        return new CustomItemDefinition.ArmorBuilder(item);
-    }
-
-    /**
-     * 自定义食物(药水)的定义构造器
-     * <p>
-     * Definition builder for custom food or potion
-     *
-     * @param item the item
-     */
-    public static CustomItemDefinition.EdibleBuilder edibleBuilder(ItemCustomFood item) {
-        return new CustomItemDefinition.EdibleBuilder(item);
-    }
-
-    public @Nullable String getDisplayName() {
-        if (!this.nbt.getCompound("components").contains("minecraft:display_name")) return null;
-        return this.nbt.getCompound("components").getCompound("minecraft:display_name").getString("value");
-    }
-
-    public String getTexture() {
-        return this.nbt.getCompound("components")
-                .getCompound("item_properties")
-                .getCompound("minecraft:icon")
-                .getCompound("textures")
-                .getString("default");
-    }
-
-    public int getRuntimeId() {
-        return CustomItemDefinition.INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
-    }
-
-    public static int getRuntimeId(String identifier) {
-        return CustomItemDefinition.INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
     }
 
     public static class SimpleBuilder {
@@ -122,11 +59,26 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         protected String name;
         protected int maxStackSize = -1;
         protected List<String> tags;
+        protected Float  miningSpeed;
         protected boolean makePersistent = false;
+        protected Boolean stackedByData;
+        protected String useAnimationType;
+        protected Float   useModifierMovement;
+        protected Float   useModifierDuration;
         protected Float cooldownDuration;
         protected String cooldownCategory;
-        protected Float useModifierMovement;
-        protected Float useModifierDuration;
+        protected Integer maxDurability;
+        protected Integer damageChanceMin;
+        protected Integer damageChanceMax;
+        protected Integer damage;
+
+        // minecraft:food fields
+        protected Boolean  foodCanAlwaysEat;
+        protected Integer  foodNutrition;
+        protected Float    foodSaturation;
+        protected String   foodUsingConvertsTo;
+
+
 
         protected SimpleBuilder(CustomItem customItem) {
             this.item = (Item) customItem;
@@ -175,18 +127,24 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * 是否允许副手持有
-         * <p>
          * Whether to allow the offHand to have
          */
         public SimpleBuilder allowOffHand(boolean allowOffHand) {
-            ensureItemProperties().putBoolean("allow_off_hand", allowOffHand);
+            CompoundTag itemProps = ensureItemProperties();
+            itemProps.putBoolean("allow_off_hand", allowOffHand);
+
+            CompoundTag components = nbt.getCompound("components");
+            if (!nbt.contains("components")) {
+                components = new CompoundTag();
+                nbt.putCompound("components", components);
+            }
+            components.putCompound("minecraft:allow_off_hand",
+                    new CompoundTag().putByte("value", allowOffHand ? (byte) 1 : (byte) 0));
+
             return this;
         }
 
         /**
-         * 控制第三人称手持物品的显示方式
-         * <p>
          * Control how third-person handheld items are displayed
          */
         public SimpleBuilder handEquipped(boolean handEquipped) {
@@ -194,17 +152,143 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             return this;
         }
 
+
+
+
+
+
         /**
-         * @param foil 自定义物品是否带有附魔光辉效果<br>whether or not the item has an enchanted light effect
+         * Set the enchantable slot and value and value to enchant
+         */
+        public SimpleBuilder enchantable(ItemEnchantSlot slot, int value) {
+            if (slot == null) return this;
+            return this.enchantable(slot.id(), value);
+        }
+
+        public SimpleBuilder enchantable(String slot, int value) {
+            if (slot == null || slot.isBlank()) return this;
+            if (value <= 0) return this;
+            if (value > 255) value = 255;
+
+            CompoundTag itemProps = ensureItemProperties();
+            itemProps.putString("enchantable_slot", slot);
+            itemProps.putInt("enchantable_value", value);
+
+            CompoundTag components = nbt.getCompound("components");
+            if (!nbt.contains("components")) {
+                components = new CompoundTag();
+                nbt.putCompound("components", components);
+            }
+            components.putCompound("minecraft:enchantable",
+                    new CompoundTag()
+                            .putString("slot", slot)
+                            .putByte("value", (byte) value));
+
+            return this;
+        }
+
+
+
+
+        /**
+         * Sets the current item damage value (default 0).
+         */
+        public SimpleBuilder damage(int damage) {
+            Preconditions.checkArgument(damage >= 0, "damage must be >= 0");
+            this.damage = damage;
+            return this;
+        }
+
+        /**
+         * Sets item durability (Bedrock "minecraft:durability").
+         */
+        public SimpleBuilder durability(int maxDurability) {
+            Preconditions.checkArgument(maxDurability > 0, "maxDurability must be > 0");
+            this.maxDurability = maxDurability;
+            return this;
+        }
+
+        /**
+         * Sets item durability with damage chance range (min/max).
+         */
+        public SimpleBuilder durability(int maxDurability, int damageChanceMin, int damageChanceMax) {
+            Preconditions.checkArgument(maxDurability > 0, "maxDurability must be > 0");
+            this.maxDurability = maxDurability;
+            this.damageChanceMin = Math.max(0, damageChanceMin);
+            this.damageChanceMax = Math.max(0, damageChanceMax);
+            return this;
+        }
+
+
+
+
+
+
+
+
+
+        /**
+         * @param glint Whether or not the item has an enchanted light effect (foil and glint are the same)
+         */
+        public SimpleBuilder glint(boolean glint) {
+            ensureItemProperties().putBoolean("foil", glint);
+            return this;
+        }
+        /**
+         * @param foil Whether or not the item has an enchanted light effect (foil and glint are the same)
          */
         public SimpleBuilder foil(boolean foil) {
             ensureItemProperties().putBoolean("foil", foil);
             return this;
         }
 
+
+
+
+
+
+
+
         /**
-         * 控制自定义物品在创造栏的分组,例如所有的附魔书是一组
-         * <p>
+         * Simple edible item.
+         */
+        public SimpleBuilder food(boolean canAlwaysEat, int nutrition, float saturationModifier) {
+            Preconditions.checkArgument(nutrition >= 0, "nutrition must be >= 0");
+            Preconditions.checkArgument(saturationModifier >= 0f, "saturation_modifier must be >= 0");
+            this.foodCanAlwaysEat = canAlwaysEat;
+            this.foodNutrition = nutrition;
+            this.foodSaturation = saturationModifier;
+            return this;
+        }
+
+        /**
+         * Edible with converts-to.
+         */
+        public SimpleBuilder food(boolean canAlwaysEat, int nutrition, float saturationModifier, String usingConvertsTo) {
+            this.food(canAlwaysEat, nutrition, saturationModifier);
+            Preconditions.checkArgument(usingConvertsTo != null && !usingConvertsTo.isBlank(), "using_converts_to cannot be blank");
+            this.foodUsingConvertsTo = usingConvertsTo;
+            return this;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /**
          * Control the grouping of custom items in the creation inventory, e.g. all enchantment books are grouped together
          *
          * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
@@ -219,8 +303,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * 控制自定义物品在创造栏的分组,例如所有的附魔书是一组
-         * <p>
          * Control the grouping of custom items in the creation inventory, e.g. all enchantment books are grouped together
          *
          * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
@@ -242,42 +324,43 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
 
         /**
-         * 控制自定义物品在不同视角下的渲染偏移
-         * <p>
          * Control rendering offsets of custom items at different viewpoints
          */
         public SimpleBuilder renderOffsets(@NotNull RenderOffsets renderOffsets) {
-            this.nbt.getCompound("components")
-                .putCompound("minecraft:render_offsets", renderOffsets.nbt);
+            CompoundTag components = nbt.getCompound("components");
+            if (!nbt.contains("components")) {
+                components = new CompoundTag();
+                nbt.putCompound("components", components);
+            }
+            components.putCompound("minecraft:render_offsets", renderOffsets.nbt);
             return this;
         }
 
         /**
-         * 向自定义物品添加一个tag，通常用于合成等
-         * <p>
          * Add a tag to a custom item, usually used for crafting, etc.
          *
          * @param tags the tags
          * @return the simple builder
          */
         public SimpleBuilder tag(String... tags) {
+            if (tags == null || tags.length == 0) return this;
             Arrays.stream(tags).forEach(Identifier::assertValid);
             this.tags = Arrays.asList(tags);
             CompoundTag components = nbt.getCompound("components");
-
+            if (!nbt.contains("components")) {
+                components = new CompoundTag();
+                nbt.putCompound("components", components);
+            }
             ListTag<StringTag> tagList = new ListTag<>();
             for (String tag : tags) {
                 tagList.add(new StringTag(tag));
             }
-
             components.putList("item_tags", tagList);
             components.putCompound("minecraft:tags", new CompoundTag().putList("tags", tagList));
             return this;
         }
 
         /**
-         * 控制拿该物品的玩家是否可以在创造模式挖掘方块
-         * <p>
          * Control whether the player with the item can dig the block in creation mode
          *
          * @param value the value
@@ -293,15 +376,62 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             return this;
         }
 
+
+
+
+
+
+
+        /**
+         * Controls base mining speed for the item
+         * Default is 1.0f if not set.
+         */
+        public SimpleBuilder miningSpeed(float speed) {
+            Preconditions.checkArgument(speed >= 0f, "miningSpeed must be >= 0");
+            this.miningSpeed = speed;
+            return this;
+        }
+
         public SimpleBuilder makePersistent(boolean persistent) {
             this.makePersistent = persistent;
             return this;
         }
 
         /**
-         * Add category and cooldown to use this type of item.
-         * <p>
-         * First paramenter String categiry, second parameter float coodown duration.
+         * Whether stacks are distinguished by item data/aux
+         * Default is false (0) if not set.
+         */
+        public SimpleBuilder stackedByData(boolean stacked) {
+            this.stackedByData = stacked;
+            return this;
+        }
+
+        /**
+         * Sets the use animation type (minecraft:use_animation).
+         * Examples: "eat", "drink", "bow".
+         */
+        public SimpleBuilder useAnimation(String animation) {
+            Preconditions.checkArgument(animation != null && !animation.isBlank(), "useAnimation cannot be blank");
+            this.useAnimationType = animation;
+            return this;
+        }
+
+        /**
+         * Determines how long an item takes to use in combination with components such as Shooter, Throwable, or Food. <p>
+         * First parameter Float movementModifier to scale the players movement speed when item is in use. Value must be <= 1. <p>
+         * Second parameter Float useModifierDuration controls how long the item takes to use in seconds.
+        */
+        public SimpleBuilder useModifiers(float movementModifier, float useDurationSeconds) {
+            Preconditions.checkArgument(movementModifier > 0f && movementModifier <= 1f, "movementModifier must be in (0,1]");
+            Preconditions.checkArgument(useDurationSeconds >= 0f, "useDurationSeconds must be >= 0");
+            this.useModifierMovement = movementModifier;
+            this.useModifierDuration = useDurationSeconds;
+            return this;
+        }
+
+        /**
+         * Add category and cooldown to use this type of item. <p>
+         * First parameter String category, second parameter float coodown duration.
         */
         public SimpleBuilder cooldown(String category, float duration) {
             this.cooldownCategory = category;
@@ -309,18 +439,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             return this;
         }
 
-        /**
-         * Determines how long an item takes to use in combination with components such as Shooter, Throwable, or Food.
-         * <p>
-         * First paramenter Float movementModifier to scale the players movement speed when item is in use. Value must be <= 1.
-         * <p>
-         * Second paramenter Float useModifierDuration controls how long the item takes to use in seconds.
-        */
-        public SimpleBuilder useModifiers(float movementModifier, float useDuration) {
-            this.useModifierMovement = movementModifier;
-            this.useModifierDuration = useDuration;
-            return this;
-        }
+
 
         /**
          * Block Placer allow to render custom items as a block 3D, for that you need also to provide a block with your custom geometry.
@@ -352,9 +471,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * 对要发送给客户端的物品ComponentNBT进行自定义处理，这里包含了所有对自定义物品的定义。在符合条件的情况下，你可以任意修改。
-         * <p>
-         * Custom processing of the item to be sent to the client ComponentNBT, which contains all definitions for custom item. You can modify them as much as you want, under the right conditions.
+         * Custom processing of the item to be sent to the client ComponentNBT, which contains all definitions for custom item.<p>
+         * You can modify them as much as you want, under the right conditions.
          */
         public CustomItemDefinition customBuild(Consumer<CompoundTag> nbtConsumer) {
             var def = this.build();
@@ -363,17 +481,15 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         public CustomItemDefinition build() {
-            return calculateID();
+            return buildDefinition();
         }
 
         /**
-         * Block Placer and Minecraft Icon should not coexist, the calculateID now checks for
-         * <p>
-         * the fields and prioritize blockPlacer if the setting was provided, if not fallback to minecraft:icon.
+         * Finalizes and assembles the complete custom item definition NBT to be sent to the client.<p>
         */
-        protected CustomItemDefinition calculateID() {
-            CompoundTag components = nbt.getCompound("components");
+        protected CustomItemDefinition buildDefinition() {
             CompoundTag itemProps = ensureItemProperties();
+            CompoundTag components = nbt.getCompound("components");
 
             if (texture != null && !texture.isBlank()) {
                 itemProps.putCompound("minecraft:icon", new CompoundTag()
@@ -388,7 +504,27 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             itemProps.putInt("max_stack_size", stackSize);
             components.putCompound("minecraft:max_stack_size", new CompoundTag().putByte("value", (byte) stackSize));
 
+            itemProps.putFloat("mining_speed", this.miningSpeed != null ? this.miningSpeed : 1.0f);
             itemProps.putBoolean("should_despawn", !makePersistent);
+            itemProps.putBoolean("stacked_by_data", this.stackedByData != null ? this.stackedByData : false);
+
+            int legacyUseAnim = 0;
+            if (this.useAnimationType != null) {
+                switch (this.useAnimationType.toLowerCase(java.util.Locale.ROOT)) {
+                    case "eat": legacyUseAnim = 1; break;
+                    case "drink": legacyUseAnim = 2; break;
+                    default: legacyUseAnim = 1;
+                }
+            }
+            itemProps.putInt("use_animation", legacyUseAnim);
+
+            int legacyUseTicks = (this.useModifierDuration != null) ? Math.max(0, Math.round(this.useModifierDuration * 20f)) : 0;
+            itemProps.putInt("use_duration", legacyUseTicks);
+
+            if (this.useAnimationType != null) {
+                components.putCompound("minecraft:use_animation",
+                        new CompoundTag().putString("value", this.useAnimationType));
+            }
 
             if (cooldownCategory != null && cooldownDuration != null) {
                 components.putCompound("minecraft:cooldown", new CompoundTag()
@@ -396,10 +532,10 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                         .putFloat("duration", cooldownDuration));
             }
 
-            if (useModifierMovement != null && useModifierDuration != null) {
+            if (this.useModifierMovement != null && this.useModifierDuration != null) {
                 components.putCompound("minecraft:use_modifiers", new CompoundTag()
-                        .putFloat("movement_modifier", useModifierMovement)
-                        .putFloat("use_duration", useModifierDuration));
+                        .putFloat("movement_modifier", this.useModifierMovement)
+                        .putFloat("use_duration", this.useModifierDuration));
             }
 
             var result = new CustomItemDefinition(identifier, nbt);
@@ -411,14 +547,46 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                 id = INTERNAL_ALLOCATION_ID_MAP.getInt(result.identifier());
             }
 
-            result.nbt.putString("name", result.identifier());
-            result.nbt.putInt("id", id);
+            if (this.maxDurability != null) {
+                CompoundTag durability = new CompoundTag().putInt("max_durability", this.maxDurability);
+                if (this.damageChanceMin != null && this.damageChanceMax != null) {
+                    durability.putCompound("damage_chance",
+                            new CompoundTag()
+                                    .putInt("min", this.damageChanceMin)
+                                    .putInt("max", this.damageChanceMax));
+                }
+                components.putCompound("minecraft:durability", durability);
+            }
+
+            if (this.damage != null) {
+                itemProps.putInt("damage", this.damage);
+            } else if (this.maxDurability != null) {
+                itemProps.putInt("damage", 0);
+            }
+
+            boolean hasFood =
+                    (foodCanAlwaysEat != null) ||
+                    (foodNutrition != null) ||
+                    (foodSaturation != null) ||
+                    (foodUsingConvertsTo != null);
+
+            if (hasFood) {
+                CompoundTag food = new CompoundTag();
+
+                if (foodCanAlwaysEat != null) food.putBoolean("can_always_eat", foodCanAlwaysEat);
+                if (foodNutrition   != null)  food.putInt("nutrition", foodNutrition);
+                if (foodSaturation  != null)  food.putFloat("saturation_modifier", foodSaturation);
+                if (foodUsingConvertsTo != null) food.putString("using_converts_to", foodUsingConvertsTo);
+
+                components.putCompound("minecraft:food", food);
+            }
+
+
+
             return result;
         }
 
         /**
-         * 添加一个可修理该物品的物品
-         * <p>
          * Add an item that can repair the item
          *
          * @param repairItemNames the repair item names
@@ -456,6 +624,67 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             repairable.putList("repair_items", repairItems);
             return this;
         }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Definition builder for custom items
+     *
+     * @param item the item
+     * @return the custom item definition . simple builder
+     */
+    public static CustomItemDefinition.SimpleBuilder customBuilder(CustomItem item) {
+        return new CustomItemDefinition.SimpleBuilder(item);
+    }
+
+    /**
+     * Definition builder for custom tools
+     *
+     * @param item the item
+     */
+    public static CustomItemDefinition.ToolBuilder toolBuilder(ItemCustomTool item) {
+        return new CustomItemDefinition.ToolBuilder(item);
     }
 
     public static class ToolBuilder extends SimpleBuilder {
@@ -753,8 +982,56 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                             .putCompound("minecraft:digger", this.diggerRoot);
                 }
             }
-            return calculateID();
+            return buildDefinition();
         }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * 自定义盔甲的定义构造器
+     * <p>
+     * Definition builder for custom armor
+     *
+     * @param item the item
+     */
+    public static CustomItemDefinition.ArmorBuilder armorBuilder(ItemCustomArmor item) {
+        return new CustomItemDefinition.ArmorBuilder(item);
     }
 
     public static class ArmorBuilder extends SimpleBuilder {
@@ -830,10 +1107,48 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
             components.putCompound("minecraft:wearable", wearable);
             components.putCompound("minecraft:enchantable", enchantable);
-            return calculateID();
+            return buildDefinition();
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Definition builder for custom food or potion.
+     * @deprecated Use {@link #simpleBuilder(ItemCustom)} together with
+     * {@link SimpleBuilder#food(boolean, int, float)},
+     * {@link SimpleBuilder#useAnimation(String)} and
+     * {@link SimpleBuilder#useModifiers(float, float)}.
+     */
+    @Deprecated
+    public static CustomItemDefinition.EdibleBuilder edibleBuilder(ItemCustomFood item) {
+        return new CustomItemDefinition.EdibleBuilder(item);
+    }
+
+    /**
+     * @deprecated Compatibility shim. Prefer {@link SimpleBuilder#food(boolean, int, float)},
+     * {@link SimpleBuilder#useAnimation(String)} and {@link SimpleBuilder#useModifiers(float, float)}.
+     */
+    @Deprecated
     public static class EdibleBuilder extends SimpleBuilder {
         private EdibleBuilder(ItemCustomFood item) {
             super(item);
@@ -853,6 +1168,26 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Helpers
     public record BlockPlacerData(String blockId, List<String> useOn) {}
     @Nullable
     public BlockPlacerData getBlockPlacerData() {
@@ -879,7 +1214,62 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         return new BlockPlacerData(blockId, useOnList);
     }
 
-    // HELPER FUNCTION TO TROUBLESHOOTING THE ITEM NBT FORMAT
+    public @Nullable String getDisplayName() {
+        if (!this.nbt.getCompound("components").contains("minecraft:display_name")) return null;
+        return this.nbt.getCompound("components").getCompound("minecraft:display_name").getString("value");
+    }
+
+    public String getTexture() {
+        return this.nbt.getCompound("components")
+                .getCompound("item_properties")
+                .getCompound("minecraft:icon")
+                .getCompound("textures")
+                .getString("default");
+    }
+
+    public int getRuntimeId() {
+        return CustomItemDefinition.INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
+    }
+
+    public static int getRuntimeId(String identifier) {
+        return CustomItemDefinition.INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
+    }
+
+    public CompoundTag getComponents() {
+        return this.nbt.getCompound("components");
+    }
+
+    public boolean hasComponent(String key) {
+        CompoundTag comps = getComponents();
+        return comps != null && comps.contains(key);
+    }
+
+    public CompoundTag getComponent(String key) {
+        CompoundTag comps = getComponents();
+        return (comps != null && comps.contains(key)) ? comps.getCompound(key) : null;
+    }
+
+    public CompoundTag getItemProperties() {
+        CompoundTag comps = getComponents();
+        return comps != null ? comps.getCompound("item_properties") : null;
+    }
+
+
+
+
+
+
+
+
+
+
+
+    public boolean isEdible() {
+        return hasComponent("minecraft:food");
+    }
+
+
+
     public CompoundTag getNbt() {
         return this.nbt;
     }

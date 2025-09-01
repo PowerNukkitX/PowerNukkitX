@@ -29,18 +29,26 @@ public abstract class ItemFood extends Item {
         super(id, meta, count, name);
     }
 
+    @Override
+    public boolean isEdible() {
+        return true;
+    }
+
     public int getFoodRestore() {
         return 0;
     }
 
+    @Override
     public float getSaturationRestore() {
         return 0;
     }
 
+    @Override
     public boolean isRequiresHunger() {
         return true;
     }
 
+    @Override
     public int getEatingTicks() {
         return 31;
     }
