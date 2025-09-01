@@ -54,6 +54,7 @@ public abstract class LegacyTreeGenerator {
                  BlockID.OAK_SAPLING,
                  BlockID.JUNGLE_SAPLING,
                  BlockID.DARK_OAK_SAPLING,
+                 BlockID.LEAF_LITTER,
                  BlockID.BIRCH_SAPLING -> true;
             default -> false;
         };

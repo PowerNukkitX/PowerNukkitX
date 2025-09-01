@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.feature.foliage;
+package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.block.BlockSeagrass;
 import cn.nukkit.block.BlockState;

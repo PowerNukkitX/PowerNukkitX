@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.feature.foliage;
+package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockReeds;
@@ -26,7 +26,7 @@ public class SugarcaneFeature extends CountGenerateFeature {
 
     @Override
     public int getBase() {
-        return 0;
+        return 1;
     }
 
     @Override
@@ -37,12 +37,14 @@ public class SugarcaneFeature extends CountGenerateFeature {
     @Override
     public void populate(ChunkGenerateContext context, NukkitRandom random) {
         IChunk chunk = context.getChunk();
-        int x = random.nextBoundedInt(15);
-        int z = random.nextBoundedInt(15);
-        int y = context.getChunk().getHeightMap(x, z);
-        if (y > 0 && canStay(x, y, z, chunk)) {
-            for(int i = 0; i < random.nextInt(1, 4); i++) {
-                chunk.setBlockState(x, y+i, z, BlockReeds.PROPERTIES.getDefaultState());
+        for(int x = 0; x < 16; x++) {
+            for(int z = 0; z < 16; z++) {
+                int y = context.getChunk().getHeightMap(x, z);
+                if (y > 0 && canStay(x, y, z, chunk)) {
+                    for(int i = 1; i < random.nextInt(1, 4); i++) {
+                        chunk.setBlockState(x, y+i, z, BlockReeds.PROPERTIES.getDefaultState());
+                    }
+                }
             }
         }
     }

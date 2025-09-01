@@ -47,7 +47,6 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
         Vector3 v = new Vector3();
         BlockManager manager = new BlockManager(level);
         for (int i = 0; i < amount; ++i) {
-
             int x = random.nextInt(15);
             int z = random.nextInt(15);
             int y = chunk.getHeightMap(x , z);
@@ -58,16 +57,22 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
             v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
             if(!Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())).getTags().contains(getRequiredTag())) continue;
             if(isSupportValid(level.getBlock(v))) {
-                NukkitRandom nextRandom = (NukkitRandom) random.fork();
+                NukkitRandom nextRandom = random.fork();
                 if(getGenerator(nextRandom.identical()) == null) return;
                 getGenerator(nextRandom).placeObject(object, v.getFloorX(), v.getFloorY() + 1, v.getFloorZ(), random);
-                if(object.getBlocks().stream().noneMatch(block -> !block.getChunk().isGenerated())) {
-                    for(Block block : object.getBlocks()) {
+                for(Block block : object.getBlocks()) {
+                    if(block.getChunk() != chunk) {
+                        IChunk nextChunk = block.getChunk();
+                        long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
+                        getChunkPlacementQueue(chunkHash, level).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
+                    }
+                    if(block.getChunk().isGenerated()) {
                         manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
                     }
                 }
             }
         }
+        writeOutsideChunkStructureData(chunk);
         manager.applySubChunkUpdate(manager.getBlocks());
     }
 }

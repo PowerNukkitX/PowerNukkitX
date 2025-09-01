@@ -1,13 +1,7 @@
-package cn.nukkit.level.generator.feature.foliage;
+package cn.nukkit.level.generator.feature.decoration;
 
-import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockDeadbush;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.format.IChunk;
-import cn.nukkit.level.generator.ChunkGenerateContext;
-import cn.nukkit.level.generator.feature.CountGenerateFeature;
-import cn.nukkit.tags.BlockTags;
-import cn.nukkit.utils.random.NukkitRandom;
 
 public class DesertDeadBushFeature extends GroupedDiscFeature {
 

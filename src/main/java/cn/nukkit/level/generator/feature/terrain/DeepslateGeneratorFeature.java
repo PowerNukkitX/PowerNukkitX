@@ -24,24 +24,6 @@ public class DeepslateGeneratorFeature extends GenerateFeature {
         Level level = chunk.getLevel();
         NukkitRandom random = new NukkitRandom(level.getSeed());
 
-        NukkitRandom bedrockRandom = random.identical();
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                for(int y = level.getMinHeight(); y < 0; y++) {
-                    chunk.setBlockState(x, y, z, BlockDeepslate.PROPERTIES.getDefaultState());
-                }
-                for (int y = 0; y < 8; y++) {
-                    if (random.nextBoundedInt(y) == 0) {
-                        chunk.setBlockState(x, y, z, BlockDeepslate.PROPERTIES.getDefaultState());
-                    }
-                }
-                chunk.setBlockState(x, level.getMinHeight(), z, BlockBedrock.PROPERTIES.getDefaultState());
-                for (int i = 1; i < 5; i++) {
-                    if (bedrockRandom.nextBoundedInt(i) == 0) {
-                        chunk.setBlockState(x, level.getMinHeight() +i, z, BlockBedrock.PROPERTIES.getDefaultState());
-                    }
-                }
-            }
-        }
+
     }
 }

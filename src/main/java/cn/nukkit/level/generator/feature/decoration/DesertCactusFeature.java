@@ -1,19 +1,14 @@
-package cn.nukkit.level.generator.feature.foliage;
+package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockCactusFlower;
-import cn.nukkit.block.BlockSeagrass;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.SeaGrassType;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.NukkitRandom;
-
-import static cn.nukkit.level.generator.feature.river.DiscGenerateFeature.STATE_STILL_WATER;
 
 public class DesertCactusFeature extends CountGenerateFeature {
 

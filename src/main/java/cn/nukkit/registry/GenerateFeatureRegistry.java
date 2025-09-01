@@ -1,18 +1,11 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.GenerateFeature;
-import cn.nukkit.level.generator.feature.foliage.DesertCactusFeature;
-import cn.nukkit.level.generator.feature.foliage.DesertDeadBushFeature;
-import cn.nukkit.level.generator.feature.foliage.DesertDryGrassGenerateFeature;
-import cn.nukkit.level.generator.feature.foliage.FlowerForestFoliageFeature;
-import cn.nukkit.level.generator.feature.foliage.SeagrassRiverGenerateFeature;
-import cn.nukkit.level.generator.feature.foliage.SugarcaneFeature;
+import cn.nukkit.level.generator.feature.decoration.*;
 import cn.nukkit.level.generator.feature.ore.*;
 import cn.nukkit.level.generator.feature.river.ClayGenerateFeature;
 import cn.nukkit.level.generator.feature.river.GravelGenerateFeature;
 import cn.nukkit.level.generator.feature.river.SandGenerateFeature;
-import cn.nukkit.level.generator.feature.foliage.TallGrassGenerateFeature;
-import cn.nukkit.level.generator.feature.foliage.JungleMelonGenerateFeature;
 import cn.nukkit.level.generator.feature.terrain.CaveGenerateFeature;
 import cn.nukkit.level.generator.feature.terrain.DeepslateGeneratorFeature;
 import cn.nukkit.level.generator.feature.tree.*;
@@ -91,6 +84,9 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(MegaTaigaTreeFeature.NAME, MegaTaigaTreeFeature.class);
             this.register(CherryTreeFeature.NAME, CherryTreeFeature.class);
             this.register(BirchForestTreeFeature.NAME, BirchForestTreeFeature.class);
+            this.register(ForestFoliageFeature.NAME, ForestFoliageFeature.class);
+            this.register(PinkPetalsFeature.NAME, PinkPetalsFeature.class);
+            this.register(AmethystGeodeFeature.NAME, AmethystGeodeFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
