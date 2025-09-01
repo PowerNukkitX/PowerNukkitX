@@ -52,7 +52,7 @@ public class NormalChunkFeatureStage extends GenerateStage {
                 }
             }
         }
-        for(var entry : features.object2IntEntrySet().stream().sorted(Map.Entry.comparingByValue()).toList().reversed()) {
+        for(var entry : features.object2IntEntrySet().stream().sorted(Map.Entry.comparingByValue()).toList()) {
             var consolidatedFeatureData = entry.getKey();
             String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.identifier);
             if(Registries.GENERATE_FEATURE.has(featureName)) {

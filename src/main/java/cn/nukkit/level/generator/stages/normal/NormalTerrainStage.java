@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator.stages.normal;
 
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockStone;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.level.Level;
@@ -43,6 +44,7 @@ public class NormalTerrainStage extends GenerateStage {
         int baseZ = chunkZ << 4;
         Level level = chunk.getLevel();
         if(picker == null) picker = (OverworldBiomePicker) level.getBiomePicker();
+
         NukkitRandom random = new NukkitRandom(level.getSeed());
         NoiseGeneratorOctavesF minLimitPerlinNoiseG = new NoiseGeneratorOctavesF(random.identical(), 16);
         NoiseGeneratorOctavesF maxLimitPerlinNoiseG = new NoiseGeneratorOctavesF(random.identical(), 16);
@@ -80,8 +82,13 @@ public class NormalTerrainStage extends GenerateStage {
                         } else if(biome.getTags().contains(BiomeTags.MOUNTAINS)) {
                             baseHeight *= 2 + biome.data.depth;
                         } else {
-                            heightVariation *= 0.3f;
-                            if(baseHeight < 0) baseHeight = 0.25f + Math.abs(baseHeight);
+                            if(continental < -0.11 && continental >= -0.19) {
+                                heightVariation = 0;
+                                baseHeight = 0.25f;
+                            } else {
+                                heightVariation *= 0.3f;
+                                if (baseHeight < 0) baseHeight = 0.25f + Math.abs(baseHeight);
+                            }
                         }
 
 

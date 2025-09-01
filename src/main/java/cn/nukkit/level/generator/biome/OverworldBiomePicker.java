@@ -40,59 +40,8 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
         weirdnessNoise = new NoiseGeneratorPerlinF((NukkitRandom) random.fork(), -10, new float[]{ 1, 2, 1, 0, 0, 0});
     }
 
-    public static boolean done = false;
-
-    static float call = 0;
-    static int ca = 0;
-    static float cmin = Float.MAX_VALUE;
-    static float cmax = Float.MIN_VALUE;
-    static float tmin = Float.MAX_VALUE;
-    static float tmax = Float.MIN_VALUE;
-    static float hmin = Float.MAX_VALUE;
-    static float hmax = Float.MIN_VALUE;
-    static float emin = Float.MAX_VALUE;
-    static float emax = Float.MIN_VALUE;
-    static float wmin = Float.MAX_VALUE;
-    static float wmax = Float.MIN_VALUE;
-    static float pmin = Float.MAX_VALUE;
-    static float pmax = Float.MIN_VALUE;
-
     @Override
     public OverworldBiomeResult pick(int x, int y, int z) {
-
-        try {
-            if(!done) {
-                Int2IntArrayMap map = new Int2IntArrayMap();
-                System.out.println("ENTRY");
-                done = true;
-                int size = 5000;
-                for(int _y = -size; _y < size; _y++) {
-                    if(_y%100 == 0) System.out.println(_y);
-                    for(int _x = -size; _x < size; _x++) {
-                        int pick = pick(2*_x << 4, 64, 2*_y <<4).getBiomeId();
-                        map.put(pick, map.getOrDefault(pick, 0) + 1);
-                    }
-                }
-                for(var v : map.int2IntEntrySet().stream().sorted(Map.Entry.comparingByValue()).toList()) {
-                    System.out.println(Registries.BIOME.get(v.getIntKey()).getName() + " - " + v.getIntValue());
-                }
-                System.out.println("C: " +cmin + " " + cmax + " " + (call/ca));
-                System.out.println("T " +tmin + " " + tmax);
-                System.out.println("H " +hmin + " " + hmax);
-                System.out.println("E " +emin + " " + emax);
-                System.out.println("W: " +wmin + " " + wmax);
-                System.out.println("p: " +pmin + " " + pmax);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-//        float continental = NukkitMath.remap(continentalNoise.getValue(x, y, z), -0.88669324f, 0.91896594f, -1.2f, 1);
-//        float temperature = NukkitMath.remapNormalized(temperatureNoise.getValue(x, y, z), -0.8296478f, 0.8451688f);
-//        float humidity = NukkitMath.remapNormalized(humidityNoise.getValue(x, y, z), -0.698837f, 0.6912341f);
-//        float erosion = NukkitMath.remapNormalized(erosionNoise.getValue(x, y, z), -0.7387603f, 0.7453054f);
-//        float weirdness = weirdnessNoise.getValue(x, y, z);
-//        float pv = NukkitMath.remapNormalized(1f-Math.abs(3*Math.abs(weirdness))-2f, -4, 0);
 
         float continental = NukkitMath.remap(continentalNoise.getValue(x, y, z), -1.1f, 1.1f, -1.2f, 1);
         float temperature = NukkitMath.remapNormalized(temperatureNoise.getValue(x, y, z), -0.9f, 0.9f);
@@ -101,36 +50,12 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
         float weirdness = NukkitMath.remapNormalized(weirdnessNoise.getValue(x, y, z), -1.1f, 1.1f);
         float pv = NukkitMath.remapNormalized(1f-Math.abs(3*Math.abs(weirdness))-2f, -4.3f, 0);
 
-        float c = continentalNoise.getValue(x, y, z);
-        float t = temperatureNoise.getValue(x, y, z);
-        float h = humidityNoise.getValue(x, y, z);
-        float e = erosionNoise.getValue(x, y, z);
-        float w = weirdnessNoise.getValue(x, y, z);
-        float p = 1f-Math.abs(3*Math.abs(weirdness))-2f;
-
-        cmin = Math.min(cmin, c);
-        cmax = Math.max(cmax, c);
-        tmin = Math.min(tmin, t);
-        tmax = Math.max(tmax, t);
-        hmin = Math.min(hmin, h);
-        hmax = Math.max(hmax, h);
-        emin = Math.min(emin, e);
-        emax = Math.max(emax, e);
-        wmin = Math.min(wmin, w);
-        wmax = Math.max(wmax, w);
-        pmin = Math.min(pmin, p);
-        pmax = Math.max(pmax, p);
-        ca++;
-        call += c;
-
         int continentalLevel = continental < -1.05f ? 0 : (continental < -0.455f ? 1 : (continental < -0.19 ? 2 : (continental < -0.11 ? 3 : (continental < 0.03 ? 4 : (continental < 0.3 ? 5 : 6)))));
         int temperatureLevel = temperature < -0.45f ? 0 : (temperature < -0.15f ? 1 : (temperature < 0.2f ? 2 : (temperature < 0.55f ? 3 : 4)));
         int humidityLevel = humidity < -0.35f ? 0 : (humidity < -0.1f ? 1 : (humidity < 0.1f ? 2 : (humidity < 0.3f ? 3 : 4)));
         int erosionLevel = erosion < -0.78f ? 0 : (erosion < -0.375f ? 1 : (erosion < -0.2225f ? 2 : (erosion < 0.05f ? 3 : (erosion < 0.45f ? 4 : (erosion < 0.55f ? 5 : 6)))));
         int pvLevel = pv < -0.85f ? 0 : (pv < -0.2f ? 1 : (pv < 0.2f ? 2 : (pv < 0.7f ? 3 : 4)));
         boolean weird = weirdness > 0;
-
-
 
         int biome = switch (continentalLevel){
             case CONTINENT_MUSHROOM -> MUSHROOM_ISLAND;

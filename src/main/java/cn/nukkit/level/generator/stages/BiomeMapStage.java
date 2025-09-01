@@ -1,10 +1,15 @@
 package cn.nukkit.level.generator.stages;
 
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.biome.BiomePicker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BiomeMapStage extends GenerateStage {
 
@@ -28,6 +33,7 @@ public class BiomeMapStage extends GenerateStage {
                 int z = chunkZ * 16 + _z;
                 int biome = biomePicker.pick(x, 64, z).getBiomeId();
                 for (int y = minHeight; y <= maxHeight; y++) {
+                    chunk.setBlockState(_x, y, _z, BlockAir.STATE);
                     chunk.setBiomeId(_x, y, _z, biome);
                 }
             }

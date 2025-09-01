@@ -470,6 +470,14 @@ public class Level implements Metadatable {
         return (((long) x & (long) 0b111111111111111111111111111) << 37) | ((long) (level.ensureY(y) + 64) << 28) | ((long) z & (long) 0xFFFFFFF);
     }
 
+    public static BlockVector3 unhashBlock(long hash) {
+        int z = (int) (hash & 0xFFFFFFF);
+        int y = (int) ((hash >>> 28) & 0x1FF) - 64;
+        int x = (int) ((hash >>> 37) & 0x7FFFFFF);
+
+        return new BlockVector3(x, y, z);
+    }
+
     public static int localBlockHash(double x, double y, double z, Level level) {
         byte hi = (byte) (((int) x & 15) + (((int) z & 15) << 4));
         short lo = (short) (level.ensureY((int) y) + 64);
@@ -4343,6 +4351,11 @@ public class Level implements Metadatable {
                 player.onChunkChanged(chunk);
             }
         }
+    }
+
+
+    public boolean isChunkGenerating(int x, int z) {
+        return this.chunkGenerationQueue.containsKey(Level.chunkHash(x, z));
     }
 
     public void generateChunk(int x, int z) {

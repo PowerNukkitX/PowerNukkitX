@@ -2,6 +2,7 @@ package cn.nukkit.level.generator.stages.normal;
 
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockWater;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -11,14 +12,12 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionChunkGenData;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionData;
-import cn.nukkit.network.protocol.types.biome.BiomeMesaSurfaceData;
 import cn.nukkit.network.protocol.types.biome.BiomeSurfaceMaterialAdjustmentData;
 import cn.nukkit.network.protocol.types.biome.BiomeSurfaceMaterialData;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.OptionalValue;
 import cn.nukkit.utils.random.NukkitRandom;
 import lombok.extern.slf4j.Slf4j;
-
 
 @Slf4j
 public class NormalSurfaceDataStage extends GenerateStage {
@@ -31,16 +30,11 @@ public class NormalSurfaceDataStage extends GenerateStage {
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
+
         if(simplexF == null) simplexF = new SimplexF(new NukkitRandom(chunk.getLevel().getSeed()), 1f, 2 / 4f, 1 / 10f);
-        int[][] heightMap = new int[16][16];
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
-                heightMap[x][z] = chunk.getHeightMap(x, z);
-            }
-        }
-        for(int x = 0; x < 16; x++) {
-            for(int z = 0; z < 16; z++) {
-                int y = heightMap[x][z];
+                int y = chunk.getHeightMap(x, z);
                 BlockState topBlockState = chunk.getBlockState(x, y, z);
                 BiomeDefinition definition = Registries.BIOME.get(chunk.getBiomeId(x, y, z));
                 BiomeDefinitionData biome = definition.data;

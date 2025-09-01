@@ -90,6 +90,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(IceSurfaceTreeFeature.NAME, IceSurfaceTreeFeature.class);
             this.register(MegaTaigaTreeFeature.NAME, MegaTaigaTreeFeature.class);
             this.register(CherryTreeFeature.NAME, CherryTreeFeature.class);
+            this.register(BirchForestTreeFeature.NAME, BirchForestTreeFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

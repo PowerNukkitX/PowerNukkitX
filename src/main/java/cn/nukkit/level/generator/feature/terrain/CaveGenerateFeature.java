@@ -116,7 +116,7 @@ public class CaveGenerateFeature extends GenerateFeature {
                 generateCaveNode(random.fork(), chunk, x, y, z, random.nextFloat() * 0.5F + 0.5F, angelOffset + 1.570796F, angel / 3.0F, angle, maxAngle, 1.0D);
                 return;
             }
-            if ((!isLargeCave) && (random.nextInt(4) == 0)) {
+            if ((!isLargeCave) && (random.fork().nextInt(4) == 0)) {
                 continue;
             }
 
@@ -195,8 +195,6 @@ public class CaveGenerateFeature extends GenerateFeature {
                                 if (material.is(BlockTags.GRASS)) {
                                     grassFound = true;
                                 }
-                                //TODO: check this
-//								if (this.isSuitableBlock(material, materialAbove, biome))
                                 {
                                     if (yy - 1 < -58) {
                                         chunk.setBlockState(xx, yy, zz, BlockFlowingLava.PROPERTIES.getDefaultState());

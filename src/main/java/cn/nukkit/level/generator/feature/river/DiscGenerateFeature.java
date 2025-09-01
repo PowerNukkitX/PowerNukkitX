@@ -84,14 +84,16 @@ public abstract class DiscGenerateFeature extends CountGenerateFeature {
             }
             BlockManager manager = new BlockManager(level);
             for(Block block : object.getBlocks()) {
-                if(block.getChunk().isGenerated()) {
-                    manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                } else {
+                if(block.getChunk() != chunk) {
                     IChunk nextChunk = block.getChunk();
                     long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
-                    ((Normal) context.getGenerator()).getChunkPlacementQueue(chunkHash).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
+                    getChunkPlacementQueue(chunkHash, level).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
+                }
+                if(block.getChunk().isGenerated()) {
+                    manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
                 }
             }
+            writeOutsideChunkStructureData(chunk);
             manager.applySubChunkUpdate();
         }
     }

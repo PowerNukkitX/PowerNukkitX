@@ -46,9 +46,10 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
         NukkitRandom random = new NukkitRandom(Level.chunkHash(chunkX, chunkZ) * level.getSeed());
-        int amount = NukkitMath.randomRange(random, getMin(), getMax());
+        int amount = NukkitMath.randomRange(random.fork(), getMin(), getMax());
         Vector3 v = new Vector3();
         BlockManager manager = new BlockManager(level);
+        BlockManager object = new BlockManager(level);
         for (int i = 0; i < amount; ++i) {
 
             int x = random.nextInt(15);
@@ -57,23 +58,23 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
             if (y < level.getMinHeight()) {
                 continue;
             }
-            BlockManager object = new BlockManager(level);
             v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
             if(!canSpawnHere(Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())))) continue;
             if(isSupportValid(level.getBlock(v))) {
-                getGenerator(random.identical()).generate(object, random, v.add(0, 1, 0));
-                for(Block block : object.getBlocks()) {
-                    if(block.getChunk().isGenerated()) {
-                        manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                    } else {
-                        IChunk nextChunk = block.getChunk();
-                        long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
-                        ((Normal) context.getGenerator()).getChunkPlacementQueue(chunkHash).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                    }
-                }
+                getGenerator(random.fork()).generate(object, random.fork(), v.add(0, 1, 0));
             }
-
         }
+        for(Block block : object.getBlocks()) {
+            if(block.getChunk() != chunk) {
+                IChunk nextChunk = block.getChunk();
+                long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
+                getChunkPlacementQueue(chunkHash, level).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
+            }
+            if(block.getChunk().isGenerated()) {
+                manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
+            }
+        }
+        writeOutsideChunkStructureData(chunk);
         manager.applySubChunkUpdate(manager.getBlocks());
     }
 }

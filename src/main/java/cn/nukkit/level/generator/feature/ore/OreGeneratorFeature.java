@@ -49,16 +49,14 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
         Level level = chunk.getLevel();
         NukkitRandom random = new NukkitRandom(Level.chunkHash(chunkX, chunkZ) * level.getSeed());
         int sx = chunkX << 4;
-        int ex = sx + 15;
         int sz = chunkZ << 4;
-        int ez = sz + 15;
         BlockManager manager = new BlockManager(level);
         for (int i = 0; i < (this.isRare() ? (random.identical().nextInt(getClusterCount()) == 0 ? 1 : 0) : getClusterCount()); i++) {
             BlockManager object = new BlockManager(level);
             int maxY = Math.min(this.getMaxHeight(), level.getMaxHeight());
             int minY = Math.max(this.getMinHeight(), level.getMinHeight());
-            int x = NukkitMath.randomRange(random, sx, ex);
-            int z = NukkitMath.randomRange(random, sz, ez);
+            int x = sx + random.nextInt(15);
+            int z = sz + random.nextInt(15);
             int y = switch (getConcentration()) {
                 case TRIANGLE -> NukkitMath.randomRangeTriangle(random, minY, maxY);
                 default -> minY + random.nextBoundedInt((maxY - minY) + 1);
@@ -75,23 +73,26 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
             }
             boolean skip = false;
             if(getSkipAir() != 0) {
-                boolean air = object.getBlocks().stream().anyMatch(block -> level.getBlock(block).isAir());
+                boolean air = object.getBlocks().stream().anyMatch(block -> level.getTickCachedBlock(block, false).isAir());
                 if(air) {
                     skip = random.identical().nextFloat() < getSkipAir();
                 }
             }
             if(!skip) {
-                for (Block block : object.getBlocks()) {
-                    if (block.getChunk().isGenerated()) {
-                        manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                    } else {
+                for(Block block : object.getBlocks()) {
+                    if(block.getChunk() != chunk) {
                         IChunk nextChunk = block.getChunk();
                         long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
-                        ((Normal) context.getGenerator()).getChunkPlacementQueue(chunkHash).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
+                        getChunkPlacementQueue(chunkHash, level).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
+                    }
+                    if(block.getChunk().isGenerated()) {
+                        manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
                     }
                 }
             }
         }
+
+        writeOutsideChunkStructureData(chunk);
         manager.applySubChunkUpdate(manager.getBlocks());
     }
 
@@ -125,6 +126,7 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
 
                 if (xVal * xVal < 1.0D) {
                     for (int ySeg = minY; ySeg <= maxY; ++ySeg) {
+                        if(ySeg < -64) continue;
                         double yVal = ((double) ySeg + 0.5D - scaleY) / (randVec2 / 2.0D);
 
                         if (xVal * xVal + yVal * yVal < 1.0D) {

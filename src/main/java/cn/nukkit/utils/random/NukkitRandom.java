@@ -27,7 +27,7 @@ public class NukkitRandom implements RandomSourceProvider {
     }
 
     @Override
-    public RandomSourceProvider fork() {
+    public NukkitRandom fork() {
         return new NukkitRandom(nextLong());
     }
 
