@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator.feature.tree;
 
+import cn.nukkit.level.generator.feature.GriddedFeature;
 import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
 import cn.nukkit.level.generator.object.ObjectBigSpruceTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
@@ -9,7 +10,7 @@ import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
-public class MegaTaigaTreeFeature extends ObjectGeneratorFeature {
+public class MegaTaigaTreeFeature extends GriddedFeature {
 
     public static final String NAME = "minecraft:mega_taiga_surface_trees_feature";
 
@@ -21,18 +22,13 @@ public class MegaTaigaTreeFeature extends ObjectGeneratorFeature {
     }
 
     @Override
-    public int getMin() {
-        return 2;
-    }
-
-    @Override
-    public int getMax() {
-        return 3;
-    }
-
-    @Override
     public boolean canSpawnHere(BiomeDefinition definition) {
         return definition.getTags().contains(BiomeTags.TAIGA);
+    }
+
+    @Override
+    public int getSplit() {
+        return 2;
     }
 
     @Override

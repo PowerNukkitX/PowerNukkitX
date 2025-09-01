@@ -40,7 +40,7 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
     }
 
     @Override
-    public final void apply(ChunkGenerateContext context) {
+    public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
