@@ -14,7 +14,7 @@ public class BirchForestTreeFeature extends LegacyTreeGeneratorFeature {
 
     @Override
     public LegacyTreeGenerator getGenerator(NukkitRandom random) {
-        if(random.nextInt(10) < 6) {
+        if(random.nextInt(10) < 1) {
             return new LegacyTallBirchTree();
         } else return new LegacyBirchTree();
     }

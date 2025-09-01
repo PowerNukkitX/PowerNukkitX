@@ -29,6 +29,10 @@ public class NoiseGeneratorPerlinF {
     }
 
     public float getValue(double x, double y, double z) {
+
+        x = x*0.25f;
+        z = z*0.25f;
+
         float d0 = 0.0f;
         float d1 = this.lowestFreqInputFactor;
         float d2 = this.lowestFreqValueFactor;

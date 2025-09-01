@@ -1,16 +1,17 @@
 package cn.nukkit.level.generator.feature.decoration;
 
+import cn.nukkit.block.BlockLargeFern;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockTallGrass;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.level.generator.object.BlockManager;
 
-public class TallGrassGenerateFeature extends SurfaceGenerateFeature {
+public class TallFernPatchFeature extends SurfaceGenerateFeature {
 
-    private static final BlockState LOWER = BlockTallGrass.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(false));
-    private static final BlockState UPPER = BlockTallGrass.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));
+    private static final BlockState LOWER = BlockLargeFern.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(false));
+    private static final BlockState UPPER = BlockLargeFern.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));
 
-    public static final String NAME = "minecraft:grass_double_plant_patch_feature";
+    public static final String NAME = "minecraft:fern_double_plant_patch_feature";
 
     @Override
     public void place(BlockManager manager, int x, int y, int z) {

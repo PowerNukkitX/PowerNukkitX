@@ -39,12 +39,6 @@ public class NormalChunkFeatureStage extends GenerateStage {
                         BiomeConsolidatedFeatureData[] consolidatedFeatureDataArray = consolidatedFeatureDataOptional.get();
                         for(BiomeConsolidatedFeatureData consolidatedFeatureData : consolidatedFeatureDataArray) {
                             features.put(consolidatedFeatureData, consolidatedFeatureData.scatter.evalOrder);
-                            String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.identifier);
-                            if(!Registries.GENERATE_FEATURE.has(featureName)) {
-                                if(definition.getName().equals("minecraft:forest")) {
-                                   // System.out.println(featureName);
-                                }
-                            }
                         }
                     }
                 } else {
@@ -56,13 +50,16 @@ public class NormalChunkFeatureStage extends GenerateStage {
         }
         for(var entry : features.object2IntEntrySet().stream().sorted(Map.Entry.comparingByValue()).toList()) {
             var consolidatedFeatureData = entry.getKey();
-            String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.identifier);
-            if(Registries.GENERATE_FEATURE.has(featureName)) {
-                try {
-                    GenerateFeature feature = Registries.GENERATE_FEATURE.get(featureName);
-                    feature.apply(context);
-                } catch (Exception e) {
-                    log.error("Error while applying feature " + featureName, e);
+            String featureIdentifier = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.identifier); //Usually more specific. Like contains biome and type.
+            String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.feature); //Usually globally usable. But not always descriptive enough to use (e.g. ores)
+            for(String key : new String[]{featureIdentifier, featureName}) {
+                if(Registries.GENERATE_FEATURE.has(key)) {
+                    try {
+                        GenerateFeature feature = Registries.GENERATE_FEATURE.get(key);
+                        feature.apply(context);
+                    } catch (Exception e) {
+                        log.error("Error while applying feature " + key, e);
+                    }
                 }
             }
         }

@@ -47,12 +47,13 @@ public class AmethystGeodeFeature extends GenerateFeature {
         int maxZ = centerZ + outerRadius;
         int minY = Math.max(-58, centerY - outerRadius);
         int maxY = Math.min(30, centerY + outerRadius);
-
         for (int lx = minX; lx <= maxX; lx++) {
             for (int lz = minZ; lz <= maxZ; lz++) {
                 for (int y = minY; y <= maxY; y++) {
                     int worldX = (chunk.getX() << 4) + lx;
                     int worldZ = (chunk.getZ() << 4) + lz;
+                    if(level.getBlock(worldX, y, worldZ) instanceof BlockFlowingWater) return;
+
                     double dx = lx - centerX + 0.5;
                     double dz = lz - centerZ + 0.5;
                     double dy = y - centerY + 0.5;

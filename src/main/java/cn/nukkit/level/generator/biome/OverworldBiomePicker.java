@@ -4,13 +4,8 @@ import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.level.generator.noise.f.vanilla.NoiseGeneratorPerlinF;
 import cn.nukkit.level.generator.noise.f.vanilla.NormalNoise;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.random.NukkitRandom;
-import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import lombok.Getter;
-
-import java.util.Map;
 
 import static cn.nukkit.level.biome.BiomeID.*;
 
@@ -25,19 +20,19 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
     public static final int CONTINENT_MID_INLAND = 5;
     public static final int CONTINENT_FAR_INLAND = 6;
 
-    private final NoiseGeneratorPerlinF continentalNoise;
-    private final NoiseGeneratorPerlinF temperatureNoise;
-    private final NoiseGeneratorPerlinF humidityNoise;
-    private final NoiseGeneratorPerlinF erosionNoise;
-    private final NoiseGeneratorPerlinF weirdnessNoise;
+    private final NormalNoise continentalNoise;
+    private final NormalNoise temperatureNoise;
+    private final NormalNoise humidityNoise;
+    private final NormalNoise erosionNoise;
+    private final NormalNoise weirdnessNoise;
 
     public OverworldBiomePicker(NukkitRandom random) {
         super(random);
-        continentalNoise = new NoiseGeneratorPerlinF((NukkitRandom) random.fork(), -10, new float[]{ 1, 1, 2, 2, 2, 1, 1, 1, 1 });
-        temperatureNoise = new NoiseGeneratorPerlinF((NukkitRandom) random.fork(), -10 , new float[]{ 1.5f, 0, 1, 0, 0, 0 });
-        humidityNoise = new NoiseGeneratorPerlinF((NukkitRandom) random.fork(), -8 , new float[]{ 1, 1, 0, 0, 0, 0 });
-        erosionNoise = new NoiseGeneratorPerlinF((NukkitRandom) random.fork(), -10, new float[]{ 1, 1, 0, 1, 1 });
-        weirdnessNoise = new NoiseGeneratorPerlinF((NukkitRandom) random.fork(), -10, new float[]{ 1, 2, 1, 0, 0, 0});
+        continentalNoise = new NormalNoise(random.fork(), -9, new float[]{ 1, 1, 2, 2, 2, 1, 1, 1, 1 });
+        temperatureNoise = new NormalNoise(random.fork(), -10 , new float[]{ 1.5f, 0, 1, 0, 0, 0 });
+        humidityNoise = new NormalNoise(random.fork(), -8 , new float[]{ 1, 1, 0, 0, 0, 0 });
+        erosionNoise = new NormalNoise(random.fork(), -9, new float[]{ 1, 1, 0, 1, 1 });
+        weirdnessNoise = new NormalNoise(random.fork(), -7, new float[]{ 1, 2, 1, 0, 0, 0});
     }
 
     @Override

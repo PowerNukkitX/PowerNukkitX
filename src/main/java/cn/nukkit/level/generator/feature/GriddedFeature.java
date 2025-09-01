@@ -12,11 +12,11 @@ import cn.nukkit.utils.random.NukkitRandom;
 public abstract class GriddedFeature extends ObjectGeneratorFeature {
 
     public int getSplit() {
-        return 3;
+        return 2;
     }
 
     public int getDistanceToNextField() {
-        return splitLength() / getSplit() * 2;
+        return splitLength() / getSplit();
     }
 
     protected int splitLength() {
@@ -34,9 +34,9 @@ public abstract class GriddedFeature extends ObjectGeneratorFeature {
         BlockManager object = new BlockManager(level);
         for (int x = 0; x < getSplit(); x++) {
             for (int z = 0; z < getSplit(); z++) {
-                NukkitRandom random = new NukkitRandom(level.getSeed() ^ chunkHash + (x ^ z));
-                int placeX = getDistanceToNextField() + random.nextInt(splitLength() - getDistanceToNextField()) + (x * splitLength()) + (chunkX << 4);
-                int placeZ = getDistanceToNextField() + random.nextInt(splitLength() - getDistanceToNextField()) + (z * splitLength()) + (chunkZ << 4);
+                NukkitRandom random = new NukkitRandom(level.getSeed() ^ chunkHash);
+                int placeX = getDistanceToNextField() + random.fork().nextInt(splitLength() - getDistanceToNextField()) + (x * splitLength()) + (chunkX << 4);
+                int placeZ = getDistanceToNextField() + random.fork().nextInt(splitLength() - getDistanceToNextField()) + (z * splitLength()) + (chunkZ << 4);
                 int placeY = level.getHeightMap(placeX, placeZ);
 
                 if(!canSpawnHere(Registries.BIOME.get(level.getBiomeId(placeX, placeY, placeZ)))) continue;
