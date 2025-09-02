@@ -34,7 +34,7 @@ public abstract class GriddedFeature extends ObjectGeneratorFeature {
         BlockManager object = new BlockManager(level);
         for (int x = 0; x < getSplit(); x++) {
             for (int z = 0; z < getSplit(); z++) {
-                NukkitRandom random = new NukkitRandom(level.getSeed() ^ chunkHash);
+                NukkitRandom random = new NukkitRandom(level.getSeed() ^ chunkHash ^ (x + z));
                 int placeX = getDistanceToNextField() + random.fork().nextInt(splitLength() - getDistanceToNextField()) + (x * splitLength()) + (chunkX << 4);
                 int placeZ = getDistanceToNextField() + random.fork().nextInt(splitLength() - getDistanceToNextField()) + (z * splitLength()) + (chunkZ << 4);
                 int placeY = level.getHeightMap(placeX, placeZ);

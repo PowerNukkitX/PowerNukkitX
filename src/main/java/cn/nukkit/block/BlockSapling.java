@@ -162,7 +162,7 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
                 }
 
                 if (!bigTree) {
-                    generator = new ObjectLegacyObjectWrapper(new LegacySpruceTree());
+                    generator = new ObjectSmallSpruceTree();
                     vector3 = this.add(0, 0, 0);
                 }
 

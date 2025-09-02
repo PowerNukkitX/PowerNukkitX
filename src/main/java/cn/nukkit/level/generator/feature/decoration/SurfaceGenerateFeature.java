@@ -3,6 +3,7 @@ package cn.nukkit.level.generator.feature.decoration;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockGrassBlock;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
@@ -19,10 +20,11 @@ public abstract class SurfaceGenerateFeature extends CountGenerateFeature {
         int x = random.nextBoundedInt(15);
         int z = random.nextBoundedInt(15);
         int y = context.getChunk().getHeightMap(x, z);
-        if (y > 0 && isSupportValid(chunk.getBlockState(x, y, z).toBlock())) {
+        Position position = new Position((chunkX << 4) + x, y+1, (chunkZ << 4) + z, chunk.getLevel());
+        if (y > 0 && isSupportValid(chunk.getBlockState(x, y, z).toBlock(position))) {
             BlockManager manager = new BlockManager(chunk.getLevel());
             BlockManager object = new BlockManager(chunk.getLevel());
-            place(object, (chunkX << 4) + x, y+1, (chunkZ << 4) + z);
+            place(object, position.getFloorX(), position.getFloorY(), position.getFloorZ());
             for(Block block : object.getBlocks()) {
                 if(block.getChunk() != chunk) {
                     IChunk nextChunk = block.getChunk();
@@ -37,7 +39,6 @@ public abstract class SurfaceGenerateFeature extends CountGenerateFeature {
             manager.applySubChunkUpdate();
         }
     }
-
     public abstract void place(BlockManager manager, int x, int y, int z);
 
     public boolean isSupportValid(Block support) {

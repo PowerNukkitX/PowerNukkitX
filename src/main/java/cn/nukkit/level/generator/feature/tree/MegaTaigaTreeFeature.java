@@ -3,8 +3,7 @@ package cn.nukkit.level.generator.feature.tree;
 import cn.nukkit.level.generator.feature.GriddedFeature;
 import cn.nukkit.level.generator.object.ObjectBigSpruceTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
-import cn.nukkit.level.generator.object.ObjectLegacyObjectWrapper;
-import cn.nukkit.level.generator.object.legacytree.LegacySpruceTree;
+import cn.nukkit.level.generator.object.ObjectSmallSpruceTree;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
@@ -15,9 +14,9 @@ public class MegaTaigaTreeFeature extends GriddedFeature {
 
     @Override
     public ObjectGenerator getGenerator(NukkitRandom random) {
-        if(random.nextInt(5) < 4) {
+        if(random.nextInt(5) < 2) {
             return new ObjectBigSpruceTree();
-        } else return new ObjectLegacyObjectWrapper(new LegacySpruceTree());
+        } else return new ObjectSmallSpruceTree();
     }
 
     @Override

@@ -31,7 +31,7 @@ public class LegacySpruceTree extends LegacyTreeGenerator {
         int radius = random.nextInt(2);
         int maxR = 1;
         int minR = 0;
-        level.setBlockStateAt(x, y, z, BlockDirt.PROPERTIES.getDefaultState());
+        level.setBlockStateAt(x, y-1, z, BlockDirt.PROPERTIES.getDefaultState());
         for (int yy = 0; yy <= topSize; ++yy) {
             int yyy = y + this.treeHeight - yy;
 

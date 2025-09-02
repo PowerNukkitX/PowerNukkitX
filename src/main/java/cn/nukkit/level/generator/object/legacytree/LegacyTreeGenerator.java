@@ -64,7 +64,9 @@ public abstract class LegacyTreeGenerator {
                  BlockID.LILY_OF_THE_VALLEY,
                  BlockID.LILAC,
                  BlockID.PEONY,
-                 BlockID.ROSE_BUSH -> true;
+                 BlockID.ROSE_BUSH,
+                 BlockID.LARGE_FERN,
+                 BlockID.FERN-> true;
             default -> false;
         };
     }

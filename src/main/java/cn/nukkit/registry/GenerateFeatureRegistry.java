@@ -95,6 +95,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(TallFernPatchFeature.NAME, TallFernPatchFeature.class);
             this.register(BambooForestBambooFeature.NAME, BambooForestBambooFeature.class);
             this.register(PumpkinGenerateFeature.NAME, PumpkinGenerateFeature.class);
+            this.register(ForestRockFeature.NAME, ForestRockFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
