@@ -19,7 +19,7 @@ public class ItemChestplateDiamond extends ItemArmor {
 
     @Override
     public int getTier() {
-        return ItemArmor.TIER_DIAMOND;
+        return Item.WEARABLE_TIER_DIAMOND;
     }
 
     @Override

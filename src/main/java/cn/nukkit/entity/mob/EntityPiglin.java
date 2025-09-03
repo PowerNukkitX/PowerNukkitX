@@ -39,7 +39,6 @@ import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.inventory.InventorySlice;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemCrossbow;
 import cn.nukkit.item.ItemGoldIngot;
 import cn.nukkit.item.ItemPorkchop;
@@ -101,7 +100,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                         ), 9, 1),
                         new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 80), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
-                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) instanceof Player player && player.getInventory() != null && !Arrays.stream(player.getInventory().getArmorContents()).anyMatch(item -> !item.isNull() && item instanceof ItemArmor armor && armor.getTier() == ItemArmor.TIER_GOLD),
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) instanceof Player player && player.getInventory() != null && !Arrays.stream(player.getInventory().getArmorContents()).anyMatch(item -> !item.isNull() && item.isWearable() && item.getTier() == Item.WEARABLE_TIER_GOLD),
                                 entity -> getItemInHand() instanceof ItemCrossbow
                         ), 8, 1),
                         new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 15, true, 30, 80), all(
@@ -118,7 +117,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                         ), 6, 1),
                         new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 40, false, 30), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
-                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) instanceof Player player && player.getInventory() != null && !Arrays.stream(player.getInventory().getArmorContents()).anyMatch(item -> !item.isNull() && item instanceof ItemArmor armor && armor.getTier() == ItemArmor.TIER_GOLD)
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) instanceof Player player && player.getInventory() != null && !Arrays.stream(player.getInventory().getArmorContents()).anyMatch(item -> !item.isNull() && item.isWearable() && item.getTier() == Item.WEARABLE_TIER_GOLD)
                         ), 5, 1),
                         new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, 40, true, 30), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
@@ -306,7 +305,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
 
     @Override
     public boolean equip(Item item) {
-         if((item.getTier() > getItemInHand().getTier() && getItemInHand().getTier() != ItemArmor.TIER_GOLD) || item.getTier() == ItemArmor.TIER_GOLD) {
+         if((item.getTier() > getItemInHand().getTier() && getItemInHand().getTier() != Item.WEARABLE_TIER_GOLD) || item.getTier() == Item.WEARABLE_TIER_GOLD) {
             this.getEquipmentInventory().addItem(getItemInHand());
             this.setItemInHand(item);
             return true;

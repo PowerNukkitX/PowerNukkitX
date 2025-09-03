@@ -7,6 +7,7 @@ import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.item.ItemWearEvent;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
@@ -29,6 +30,7 @@ import cn.nukkit.nbt.tag.ShortTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.CompletedUsingItemPacket;
+import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.ItemTags;
@@ -55,6 +57,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.StringJoiner;
 
 
@@ -85,13 +88,13 @@ public abstract class Item implements Cloneable, ItemID {
     private static final double DP_NUMBER_ABS_MAX   = Server.getDynamicPropertiesNumberAbsMax();
     private static final String DP_ROOT = "DynamicProperties";
 
-    public static final int TIER_LEATHER = 1;
-    public static final int TIER_IRON = 2;
-    public static final int TIER_CHAIN = 3;
-    public static final int TIER_GOLD = 4;
-    public static final int TIER_DIAMOND = 5;
-    public static final int TIER_NETHERITE = 6;
-    public static final int TIER_OTHER = dynamic(1000);
+    public static final int WEARABLE_TIER_LEATHER = 1;
+    public static final int WEARABLE_TIER_IRON = 2;
+    public static final int WEARABLE_TIER_CHAIN = 3;
+    public static final int WEARABLE_TIER_GOLD = 4;
+    public static final int WEARABLE_TIER_DIAMOND = 5;
+    public static final int WEARABLE_TIER_NETHERITE = 6;
+    public static final int WEARABLE_TIER_OTHER = dynamic(1000);
 
     private String idConvertToName() {
         if (this.name != null) {
@@ -1438,6 +1441,17 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public void setDamage(int damage) {
+        if (this.isTool()) {
+            toolSetDamage(damage);
+            return;
+        } else if (this.isWearable()) {
+            wearableSetDamage(damage);
+            return;
+        }
+        setDamageRaw(damage);
+    }
+
+    protected final void setDamageRaw(int damage) {
         this.meta = damage & 0xffff;
         this.hasMeta = true;
         internalAdjust();
@@ -1450,33 +1464,13 @@ public abstract class Item implements Cloneable, ItemID {
         this.hasMeta = false;
     }
 
-    /**
-     * Define the maximum number of items to be stacked
-     */
-    public int getMaxStackSize() {
-        return block == null ? 64 : block.getItemMaxStackSize();
-    }
-
-    /**
-     * 获取一个可燃烧物品的燃烧时间
-     * <p>
-     * Get the burn time of a burnable item
-     */
-    public final Integer getFuelTime() {
-        if (!Registries.FUEL.isFuel(this)) {
-            return null;
-        }
-        if (!this.id.equals(BUCKET) || this.meta == 10) {
-            return Registries.FUEL.getFuelDuration(this);
-        }
-        return null;
-    }
-
     public boolean useOn(Entity entity) {
+        if (this.isTool()) return toolUseOnEntity(entity);
         return false;
     }
 
     public boolean useOn(Block block) {
+        if (this.isTool()) return toolUseOnBlock(block);
         return false;
     }
 
@@ -1681,8 +1675,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 控制此方块（在冒险模式下）可以使用/放置在其上的方块类型。
-     * <p>
      * Controls what block types this block may be placed on.
      */
     public void addCanPlaceOn(Block block) {
@@ -1714,9 +1706,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 控制此方块（在冒险模式下）可以破坏的方块类型。此效果不会改变原本的破坏速度和破坏后掉落物。
-     * <p>
-     * Controls what block types can destroy
+     * Controls the types of blocks this block can break (in Adventure Mode). This effect does not change its normal breaking speed or loot.
      */
     public void addCanDestroy(Block block) {
         CompoundTag tag = getOrCreateNamedTag();
@@ -1747,10 +1737,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 物品锁定在玩家的物品栏
-     * LOCK_IN_SLOT 阻止该物品被从玩家物品栏的该槽位移动、移除、丢弃或用于合成
-     * LOCK_IN_INVENTORY 阻止该物品被从玩家的物品栏移除、丢弃或用于合成
-     * <p>
      * Locks the item in the player's inventory
      * LOCK_IN_SLOT Prevents the item from being removed from the player's inventory, dropped, or crafted with.
      * LOCK_IN_INVENTORY Prevents the item from being moved or removed from its slot in the player's inventory, dropped, or crafted with
@@ -1772,8 +1758,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 获取物品锁定在玩家的物品栏的模式
-     * <p>
      * Get items locked mode in the player's item inventory
      *
      * @return
@@ -1797,8 +1781,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 该物品是否死亡不掉落
-     * <p>
      * Define if the item does not drop on death
      *
      * @return
@@ -1862,6 +1844,36 @@ public abstract class Item implements Cloneable, ItemID {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null) return def.canTakeDamage();
         return false;
+    }
+
+    /**
+     * Define the maximum number of items to be stacked
+     */
+    public int getMaxStackSize() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null && def.getComponents().contains("minecraft:max_stack_size")) {
+            return def.getComponents().getCompound("minecraft:max_stack_size").getByte("value");
+        }
+        return block == null ? 64 : block.getItemMaxStackSize();
+    }
+
+    /**
+     * Get the burn time of a burnable item
+     */
+    public final Integer getFuelTime() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null && def.getComponents().contains("minecraft:fuel")) {
+            float seconds = def.getComponents().getCompound("minecraft:fuel").getFloat("duration");
+            return Math.round(seconds * 20);
+        }
+
+        if (!Registries.FUEL.isFuel(this)) {
+            return null;
+        }
+        if (!this.id.equals(BUCKET) || this.meta == 10) {
+            return Registries.FUEL.getFuelDuration(this);
+        }
+        return null;
     }
 
     /**
@@ -1941,11 +1953,51 @@ public abstract class Item implements Cloneable, ItemID {
         return false;
     }
 
+    /** 
+     * Returns the block that this item’s block_placer would place, or null if none.
+     */
+    public @Nullable Block getBlockPlacerTargetBlock() {
+        CustomItemDefinition def = getCustomDefinition(); // you already use this elsewhere
+        if (def == null) return null;
+
+        CustomItemDefinition.BlockPlacerData data = def.getBlockPlacerData();
+        if (data == null) return null;
+
+        Block b = Block.get(data.blockId());
+        return (b == null || b.isAir()) ? null : b;
+    }
+
+    /** 
+     * Convenience: whether item has minecraft:block_placer.
+     */
+    public boolean hasBlockPlacer() {
+        CustomItemDefinition def = getCustomDefinition();
+        return def != null && def.getBlockPlacerData() != null;
+    }
+
+    /**
+     * No damage to item when it's used to attack entities
+     *
+     * @return whether the item should take damage when used to attack entities
+     */
+    public boolean noDamageOnAttack() {
+        return false;
+    }
+
+    /**
+     * No damage to item when it's used to break blocks
+     *
+     * @return whether the item should take damage when used to break blocks
+     */
+    public boolean noDamageOnBreak() {
+        return false;
+    }
+
 
 
 
     /////////////////////////////
-    // Item Food Methods
+    // Item Food/Edible Methods
     /////////////////////////////
     public boolean isEdible() {
         CustomItemDefinition def = getCustomDefinition();
@@ -2228,22 +2280,22 @@ public abstract class Item implements Cloneable, ItemID {
             player.getInventory().setItem(player.getInventory().getHeldItemIndex(), oldSlotItem);
             final int tier = this.getTier();
             switch (tier) {
-                case TIER_CHAIN:
+                case WEARABLE_TIER_CHAIN:
                     player.getLevel().addSound(player, Sound.ARMOR_EQUIP_CHAIN);
                     break;
-                case TIER_DIAMOND:
+                case WEARABLE_TIER_DIAMOND:
                     player.getLevel().addSound(player, Sound.ARMOR_EQUIP_DIAMOND);
                     break;
-                case TIER_GOLD:
+                case WEARABLE_TIER_GOLD:
                     player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GOLD);
                     break;
-                case TIER_IRON:
+                case WEARABLE_TIER_IRON:
                     player.getLevel().addSound(player, Sound.ARMOR_EQUIP_IRON);
                     break;
-                case TIER_LEATHER:
+                case WEARABLE_TIER_LEATHER:
                     player.getLevel().addSound(player, Sound.ARMOR_EQUIP_LEATHER);
                     break;
-                case TIER_NETHERITE:
+                case WEARABLE_TIER_NETHERITE:
                     player.getLevel().addSound(player, Sound.ARMOR_EQUIP_NETHERITE);
                     break;
                 default:
@@ -2254,7 +2306,15 @@ public abstract class Item implements Cloneable, ItemID {
         return this.getCount() == 0;
     }
 
-
+    public void wearableSetDamage(int damage) {
+        ItemWearEvent event = new ItemWearEvent(this, damage);
+        PluginManager pluginManager = Server.getInstance().getPluginManager();
+        if(pluginManager != null) pluginManager.callEvent(event); //Method gets called on server start before plugin manager is initiated
+        if(!event.isCancelled()) {
+            setDamageRaw(event.getNewDurability());
+            this.getOrCreateNamedTag().putInt("Damage", event.getNewDurability());
+        }
+    }
 
 
     /////////////////////////////
@@ -2348,51 +2408,67 @@ public abstract class Item implements Cloneable, ItemID {
         return false;
     }
 
+    public boolean toolUseOnBlock(Block block) {
+        if (this.isUnbreakable() || this.isDurable() || this.noDamageOnBreak()) {
+            return true;
+        }
 
+        if (block.getToolType() == ItemTool.TYPE_PICKAXE && this.isPickaxe() ||
+            block.getToolType() == ItemTool.TYPE_SHOVEL && this.isShovel() ||
+            block.getToolType() == ItemTool.TYPE_AXE && this.isAxe() ||
+            block.getToolType() == ItemTool.TYPE_HOE && this.isHoe() ||
+            block.getToolType() == ItemTool.TYPE_SWORD && this.isSword() ||
+            block.getToolType() == ItemTool.TYPE_SHEARS && this.isShears()
+        ) {
+            this.incDamage(1);
+        } else if (!this.isShears() && block.calculateBreakTime(this) > 0) {
+            this.incDamage(2);
+        } else if (this.isHoe()) {
+            if (block.getId().equals(Block.GRASS_BLOCK) || block.getId().equals(Block.DIRT)) {
+                this.incDamage(1);
+            }
+        } else {
+            this.incDamage(1);
+        }
+        return true;
+    }
 
+    public void toolSetDamage(int damage) {
+        ItemWearEvent event = new ItemWearEvent(this, damage);
+        PluginManager pluginManager = Server.getInstance().getPluginManager();
+        if(pluginManager != null) pluginManager.callEvent(event); //Method gets called on server start before plugin manager is initiated
+        if(!event.isCancelled()) {
+            setDamageRaw(event.getNewDurability());
+            this.getOrCreateNamedTag().putInt("Damage", event.getNewDurability());
+        }
+    }
 
+    public boolean toolUseOnEntity(Entity entity) {
+        if (this.isUnbreakable() || this.isDurable() || this.noDamageOnAttack()) {
+            return true;
+        }
 
+        if ((entity != null) && !this.isSword()) {
+            incDamage(2);
+        } else {
+            incDamage(1);
+        }
 
+        return true;
+    }
 
+    private boolean isDurable() {
+        if (!this.hasEnchantments()) {
+            return false;
+        }
 
+        Enchantment durability = this.getEnchantment(Enchantment.ID_DURABILITY);
+        return durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= new Random().nextInt(100);
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public void incDamage(int v) {
+        setDamage(this.meta += v);
+    }
 
     @Nullable
     public CustomItemDefinition getCustomDefinition() {
