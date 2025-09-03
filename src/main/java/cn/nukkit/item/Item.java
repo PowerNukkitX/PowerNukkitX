@@ -36,6 +36,7 @@ import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.JSONUtils;
 import cn.nukkit.utils.TextFormat;
+import static cn.nukkit.utils.Utils.dynamic;
 import com.google.gson.annotations.SerializedName;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
@@ -55,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
+
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -82,6 +84,14 @@ public abstract class Item implements Cloneable, ItemID {
     private static final int    DP_MAX_STRING_BYTES = Server.getDynamicPropertiesMaxStringBytes();
     private static final double DP_NUMBER_ABS_MAX   = Server.getDynamicPropertiesNumberAbsMax();
     private static final String DP_ROOT = "DynamicProperties";
+
+    public static final int TIER_LEATHER = 1;
+    public static final int TIER_IRON = 2;
+    public static final int TIER_CHAIN = 3;
+    public static final int TIER_GOLD = 4;
+    public static final int TIER_DIAMOND = 5;
+    public static final int TIER_NETHERITE = 6;
+    public static final int TIER_OTHER = dynamic(1000);
 
     private String idConvertToName() {
         if (this.name != null) {
@@ -269,7 +279,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 该物品是否可以应用附魔效果
+     * Whether the item can be enchanted
      */
     public boolean applyEnchantments() {
         return true;
@@ -294,8 +304,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 通过附魔id来查找对应附魔的等级
-     * <p>
      * Find the enchantment level by the enchantment id.
      *
      * @param id The enchantment ID from {@link Enchantment} constants.
@@ -316,11 +324,9 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 通过附魔id来查找对应附魔的等级
-     * <p>
      * Find the enchantment level by the enchantment id.
      *
-     * @param id 要查询的附魔标识符
+     * @param id The enchantment identifier to query
      * @return {@code 0} if the item don't have that enchantment or the current level of the given enchantment.
      */
     public int getCustomEnchantmentLevel(String id) {
@@ -336,7 +342,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * @param id 要查询的附魔标识符
+     * @param id The enchantment identifier to query
      */
     public Enchantment getCustomEnchantment(String id) {
         if (!this.hasEnchantments()) {
@@ -357,40 +363,36 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 检测该物品是否有该附魔
-     * <p>
      * Detect if the item has the enchantment
      *
-     * @param id 要查询的附魔标识符
+     * @param id The enchantment identifier to query
      */
     public boolean hasCustomEnchantment(String id) {
         return this.getCustomEnchantmentLevel(id) > 0;
     }
 
     /**
-     * @param id 要查询的附魔标识符
+     * @param id The enchantment identifier to query
      */
     public int getCustomEnchantmentLevel(@NotNull Identifier id) {
         return getCustomEnchantmentLevel(id.toString());
     }
 
     /**
-     * @param id 要查询的附魔标识符
+     * @param id The enchantment identifier to query
      */
     public boolean hasCustomEnchantment(@NotNull Identifier id) {
         return hasCustomEnchantment(id.toString());
     }
 
     /**
-     * @param id 要查询的附魔标识符
+     * @param id The enchantment identifier to query
      */
     public Enchantment getCustomEnchantment(@NotNull Identifier id) {
         return getCustomEnchantment(id.toString());
     }
 
     /**
-     * 从给定的附魔id查找该物品是否存在对应的附魔效果，如果查找不到返回null
-     * <p>
      * Get the id of the enchantment
      */
     public Enchantment getEnchantment(int id) {
@@ -521,11 +523,9 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 获取该物品所带有的全部附魔
-     * <p>
      * Get all the enchantments that the item comes with
      *
-     * @return 如果没有附魔效果返回Enchantment.EMPTY_ARRAY<br>If there is no enchanting effect return Enchantment.EMPTY_ARRAY
+     * @return If there is no enchanting effect return Enchantment.EMPTY_ARRAY
      */
     public Enchantment[] getEnchantments() {
         if (!this.hasEnchantments()) {
@@ -554,8 +554,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 检测该物品是否有该附魔
-     * <p>
      * Detect if the item has the enchantment
      *
      * @param id The enchantment ID from {@link Enchantment} constants.
@@ -1446,8 +1444,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 创建一个通配配方物品,即该物品可以不限制数据值应用到配方中
-     * <p>
      * Create a wildcard recipe item,the item can be applied to a recipe without restriction on data(damage/meta) values
      */
     public void disableMeta() {
@@ -1455,8 +1451,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 定义物品堆叠的最大数量
-     * <p>
      * Define the maximum number of items to be stacked
      */
     public int getMaxStackSize() {
@@ -1487,219 +1481,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 定义物品是否为工具
-     * <p>
-     * Define if this item is a tool
-     */
-    public boolean isTool() {
-        return false;
-    }
-
-    /**
-     * 定义物品最大耐久值
-     * <p>
-     * Define the maximum durability value of the item
-     */
-    public int getMaxDurability() {
-        return -1;
-    }
-
-    /**
-     * Specifies the percentage chance of this item losing durability. Default is set to 100. Defined as an int range with min and max value.
-     * <p>
-     * getDamageChanceMin() and getDamageChanceMax()
-     */
-    public int getDamageChanceMin() {
-        return 100;
-    }
-
-    /**
-     * Specifies the percentage chance of this item losing durability. Default is set to 100. Defined as an int range with min and max value.
-     * <p>
-     * getDamageChanceMin() and getDamageChanceMax()
-     */
-    public int getDamageChanceMax() {
-        return 100;
-    }
-
-    /**
-     * 定义物品的挖掘等级
-     * <p>
-     * Define the item Tier level
-     */
-    public int getTier() {
-        return 0;
-    }
-
-    /**
-     * 定义物品是否为镐子
-     * <p>
-     * Define if the item is a Pickaxe
-     */
-    public boolean isPickaxe() {
-        return false;
-    }
-
-    /**
-     * 定义物品是否为斧子
-     * <p>
-     * Define if the item is a Axe
-     */
-    public boolean isAxe() {
-        return false;
-    }
-
-    /**
-     * 定义物品是否为剑
-     * <p>
-     * Define if the item is a Sword
-     */
-    public boolean isSword() {
-        return false;
-    }
-
-    /**
-     * 定义物品是否为铲子
-     * <p>
-     * Define if the item is a Shovel
-     */
-    public boolean isShovel() {
-        return false;
-    }
-
-    /**
-     * 定义物品是否为锄头
-     * <p>
-     * Define if the item is a Hoe
-     */
-    public boolean isHoe() {
-        return false;
-    }
-
-    /**
-     * 定义物品是否为剪刀
-     * <p>
-     * Define if the item is a Shears
-     */
-    public boolean isShears() {
-        return false;
-    }
-
-    /**
-     * 定义物品是否为盔甲
-     * <p>
-     * Define if the item is a Armor
-     */
-    public boolean isArmor() {
-        return false;
-    }
-
-    /**
-     * 定义物品是否为头盔
-     * <p>
-     * Define if the item is a Helmet
-     */
-    public boolean isHelmet() {
-        return false;
-    }
-
-    /**
-     * 定义物品是否为胸甲
-     * <p>
-     * Define if the item is a Chestplate
-     */
-    public boolean isChestplate() {
-        return false;
-    }
-
-    /**
-     * 定义物品是否为护腿
-     * <p>
-     * Define if the item is a Leggings
-     */
-    public boolean isLeggings() {
-        return false;
-    }
-
-    /**
-     * 定义物品是否为靴子
-     * <p>
-     * Define if the item is a Boots
-     */
-    public boolean isBoots() {
-        return false;
-    }
-
-    /**
-     * 定义物品的附魔
-     * <p>
-     * Define the enchantment of an item
-     */
-    public int getEnchantAbility() {
-        return 0;
-    }
-
-    /**
-     * 定义物品的攻击伤害
-     * <p>
-     * Define the attackdamage of an item
-     */
-    public int getAttackDamage() {
-        return 1;
-    }
-
-    public int getAttackDamage(Entity entity) {
-        return getAttackDamage();
-    }
-
-    /**
-     * 定义物品的护甲值
-     * <p>
-     * Define the Armour value of an item
-     */
-    public int getArmorPoints() {
-        return 0;
-    }
-
-    /**
-     * 定义物品的盔甲韧性
-     * <p>
-     * Define the Armour Toughness of an item
-     */
-    public int getToughness() {
-        return 0;
-    }
-
-    /**
-     * 定义物品是否不可损坏
-     * <p>
-     * Define if the item is Unbreakable
-     */
-    public boolean isUnbreakable() {
-        return false;
-    }
-
-    /**
-     * 物品是否抵抗熔岩和火，并且可以像在水上一样漂浮在熔岩上。
-     * <p>
-     * If the item is resistant to lava and fire and can float on lava like if it was on water.
-     *
-     * @since 1.4.0.0-PN
-     */
-    public boolean isLavaResistant() {
-        return false;
-    }
-
-    /**
-     * 定义物品是否可以打破盾牌
-     * <p>
-     * Define if the item can break the shield
-     */
-    public boolean canBreakShield() {
-        return false;
-    }
-
-    /**
      * Called before {@link #onUse},The player is right clicking use on an item
      *
      * @param player          player
@@ -1708,6 +1489,8 @@ public abstract class Item implements Cloneable, ItemID {
      */
     public boolean onClickAir(Player player, Vector3 directionVector) {
         if (isEdible()) return foodOnClickAir(player, directionVector);
+        if (isWearable()) return wearableOnClickAir(player, directionVector);
+
         return false;
     }
 
@@ -1730,13 +1513,11 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 当玩家在长时间右键物品后释放物品时，该函数被调用。
-     * <p>
      * Allows the item to execute code when the player releases the item after long clicking it.
      *
-     * @param player    The player who released the click button<br>松开按钮的玩家
-     * @param ticksUsed How many ticks the item was held.<br>这个物品被使用多少ticks时间
-     * @return If an inventory contents update should be sent to the player<br>是否要向玩家发送库存内容的更新信息
+     * @param player    The player who released the click button
+     * @param ticksUsed How many ticks the item was held.
+     * @return If an inventory contents update should be sent to the player
      */
     public boolean onRelease(Player player, int ticksUsed) {
         return false;
@@ -1752,15 +1533,13 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 玩家使用一个物品交互时会调用这个方法
-     * <p>
      * This method is called when the player interacts with an item
      *
-     * @param level  玩家所在地图 <br> Player location level
-     * @param player 玩家实例对象 <br> Player instance object
+     * @param level  Player location level
+     * @param player Player instance object
      * @param block  the block
-     * @param target 交互的目标方块 <br>Interacting target block
-     * @param face   交互的方向 <br>Direction of Interaction
+     * @param target Interacting target block
+     * @param face   Direction of Interaction
      * @param fx     the fx
      * @param fy     the fy
      * @param fz     the fz
@@ -1784,8 +1563,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 如果为true,这个物品可以如骨粉一样减少作物成长时间
-     * <p>
      * When true, this item can be used to reduce growing times like a bone meal.
      *
      * @return {@code true} if it can act like a bone meal
@@ -1796,8 +1573,6 @@ public abstract class Item implements Cloneable, ItemID {
 
 
     /**
-     * 返回物品堆叠是否与指定的物品堆叠有相同的ID,伤害,NBT和数量
-     * <p>
      * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
      *
      * @param other item
@@ -2076,25 +1851,97 @@ public abstract class Item implements Cloneable, ItemID {
 
 
 
-
-
-
-
-
-
-
-
-
     /////////////////////////////
     // Generic Item Components
     /////////////////////////////
+
+    /**
+     * Define if item can take damage
+     */
+    public boolean canTakeDamage() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.canTakeDamage();
+        return false;
+    }
+
+    /**
+     * Define the maximum durability value of the item
+     */
+    public int getMaxDurability() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.maxDurability();
+        return -1;
+    }
+
+    /**
+     * Specifies the percentage chance of this item losing durability. Default is set to 100. Defined as an int range with min and max value.
+     * <p>
+     * getDamageChanceMin() and getDamageChanceMax()
+     */
+    public int getDamageChanceMin() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.damageChanceMin();
+        return 100;
+    }
+
+    /**
+     * Specifies the percentage chance of this item losing durability. Default is set to 100. Defined as an int range with min and max value.
+     * <p>
+     * getDamageChanceMin() and getDamageChanceMax()
+     */
+    public int getDamageChanceMax() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.damageChanceMax();
+        return 100;
+    }
+
     public float useDuration() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null && def.getComponents().contains("minecraft:use_modifiers")) {
+            return def.getComponents().getCompound("minecraft:use_modifiers").getFloat("use_duration");
+        }
         return 0;
     }
 
     public float movementModifier() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null && def.getComponents().contains("minecraft:use_modifiers")) {
+            return def.getComponents().getCompound("minecraft:use_modifiers").getFloat("movement_modifier");
+        }
         return 0;
     }
+
+    /**
+     * Define if the item is Unbreakable
+     */
+    public boolean isUnbreakable() {
+        return false;
+    }
+
+    /**
+     * Define the item Tier level
+     */
+    public int getTier() {
+        return 0;
+    }
+
+    /**
+     * Define the enchantment of an item
+     */
+    public int getEnchantAbility() {
+        return 0;
+    }
+
+    /**
+     * If the item is resistant to lava and fire and can float on lava like if it was on water.
+     *
+     * @since 1.4.0.0-PN
+     */
+    public boolean isLavaResistant() {
+        return false;
+    }
+
+
 
 
     /////////////////////////////
@@ -2108,22 +1955,21 @@ public abstract class Item implements Cloneable, ItemID {
         return false;
     }
 
-
-    //public int getFoodRestore() {
-    //    return getNutrition();
-    //}
     public int getNutrition() {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null && def.getComponents().contains("minecraft:food")) {
             return def.getComponents().getCompound("minecraft:food").getInt("nutrition");
         }
+        return getFoodRestore();
+    }
+    /**
+     * @deprecated Use {@link #getNutrition()} instead.
+     */
+    @Deprecated
+    public int getFoodRestore() {
         return 0;
     }
 
-
-    //public float getSaturationRestore() {
-    //    return getSaturation();
-    //}
     public float getSaturation() {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null && def.getComponents().contains("minecraft:food")) {
@@ -2131,25 +1977,37 @@ public abstract class Item implements Cloneable, ItemID {
             float itemSaturationModifier = def.getComponents().getCompound("minecraft:food").getFloat("saturation_modifier");
             return (itemNutrition * itemSaturationModifier * 2f);
         }
+        return getSaturationRestore();
+    }
+    /**
+     * @deprecated Use {@link #getSaturation()} instead.
+     */
+    @Deprecated
+    public float getSaturationRestore() {
         return 0;
     }
+
     public float getSaturationModifier() {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null && def.getComponents().contains("minecraft:food")) {
-            return def.getComponents().getCompound("minecraft:food").getInt("saturation_modifier");
+            return def.getComponents().getCompound("minecraft:food").getFloat("saturation_modifier");
         }
         return 0;
     }
 
-    //public boolean isRequiresHunger() {
-    //    return !canAlwaysEat();
-    //}
     public boolean canAlwaysEat() {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null && def.getComponents().contains("minecraft:food")) {
             return def.getComponents().getCompound("minecraft:food").getBoolean("can_always_eat");
         }
-        return false;
+        return !isRequiresHunger();
+    }
+    /**
+     * @deprecated Use {@link #canAlwaysEat()} instead.
+     */
+    @Deprecated
+    public boolean isRequiresHunger() {
+        return true;
     }
 
     public int getEatingTicks() {
@@ -2258,6 +2116,252 @@ public abstract class Item implements Cloneable, ItemID {
     /////////////////////////////
     // Item Armor Methods
     /////////////////////////////
+
+    /**
+     * Define if the item is a Armor
+     */
+    public boolean isWearable() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isWearable();
+        return isArmor();
+    }
+
+    public boolean isArmor() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isWearable();
+        return false;
+    }
+
+    /**
+     * Define if the item is a Helmet
+     */
+    public boolean isHelmet() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isHelmet();
+        return false;
+    }
+
+    /**
+     * Define if the item is a Chestplate
+     */
+    public boolean isChestplate() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isChestplate();
+        return false;
+    }
+
+    /**
+     * Define if the item is a Leggings
+     */
+    public boolean isLeggings() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isLeggings();
+        return false;
+    }
+
+    /**
+     * Define if the item is a Boots
+     */
+    public boolean isBoots() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isBoots();
+        return false;
+    }
+
+    /**
+     * Define the Armor value of an item
+     */
+    public int getArmorPoints() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.wearableProtection();
+        return 0;
+    }
+
+    /**
+     * Define the Armor Toughness of an item
+     */
+    public int getToughness() {
+        return 0;
+    }
+
+    public boolean wearableOnClickAir(Player player, Vector3 directionVector) {
+        Item currentlyEquipped = null;
+
+        if (this.isHelmet()) {
+            currentlyEquipped = player.getInventory().getHelmet();
+        } else if (this.isChestplate()) {
+            currentlyEquipped = player.getInventory().getChestplate();
+        } else if (this.isLeggings()) {
+            currentlyEquipped = player.getInventory().getLeggings();
+        } else if (this.isBoots()) {
+            currentlyEquipped = player.getInventory().getBoots();
+        }
+
+        if (currentlyEquipped != null && currentlyEquipped.getEnchantment(Enchantment.ID_BINDING_CURSE) != null) {
+            return false;
+        }
+
+        boolean equip = false;
+        Item oldSlotItem = Item.AIR;
+        if (this.isHelmet()) {
+            oldSlotItem = player.getInventory().getHelmet();
+            if (player.getInventory().setHelmet(this)) {
+                equip = true;
+            }
+        } else if (this.isChestplate()) {
+            oldSlotItem = player.getInventory().getChestplate();
+            if (player.getInventory().setChestplate(this)) {
+                equip = true;
+            }
+        } else if (this.isLeggings()) {
+            oldSlotItem = player.getInventory().getLeggings();
+            if (player.getInventory().setLeggings(this)) {
+                equip = true;
+            }
+        } else if (this.isBoots()) {
+            oldSlotItem = player.getInventory().getBoots();
+            if (player.getInventory().setBoots(this)) {
+                equip = true;
+            }
+        }
+        if (equip) {
+            player.getInventory().setItem(player.getInventory().getHeldItemIndex(), oldSlotItem);
+            final int tier = this.getTier();
+            switch (tier) {
+                case TIER_CHAIN:
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_CHAIN);
+                    break;
+                case TIER_DIAMOND:
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_DIAMOND);
+                    break;
+                case TIER_GOLD:
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GOLD);
+                    break;
+                case TIER_IRON:
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_IRON);
+                    break;
+                case TIER_LEATHER:
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_LEATHER);
+                    break;
+                case TIER_NETHERITE:
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_NETHERITE);
+                    break;
+                default:
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GENERIC);
+            }
+        }
+
+        return this.getCount() == 0;
+    }
+
+
+
+
+    /////////////////////////////
+    // Item Tools/Weapons Methods
+    /////////////////////////////
+
+    /**
+     * Define if this item is a tool
+     */
+    public boolean isTool() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) {
+        return isPickaxe() || isAxe() || isShovel() || isHoe() || isSword() || isShears();
+        };
+        return false;
+    }
+
+    /**
+     * Define the attackdamage of an item
+     */
+    public int getAttackDamage() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null && def.getComponents().contains("item_properties")) {
+            return def.getComponents().getCompound("item_properties").getInt("damage");
+        }
+        return 1;
+    }
+
+    public int getAttackDamage(Entity entity) {
+        return getAttackDamage();
+    }
+
+    /**
+     * Define if the item is a Sword
+     */
+    public boolean isSword() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isSword();
+        return false;
+    }
+
+    /**
+     * Define if the item is a Axe
+     */
+    public boolean isAxe() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isAxe();
+        return false;
+    }
+
+    /**
+     * Define if the item is a Pickaxe
+     */
+    public boolean isPickaxe() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isPickaxe();
+        return false;
+    }
+
+    /**
+     * Define if the item is a Shovel
+     */
+    public boolean isShovel() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isShovel();
+        return false;
+    }
+
+    /**
+     * Define if the item is a Hoe
+     */
+    public boolean isHoe() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isHoe();
+        return false;
+    }
+
+    /**
+     * Define if the item can break the shield
+     */
+    public boolean canBreakShield() {
+        return false;
+    }
+
+    /**
+     * Define if the item is a Shears
+     */
+    public boolean isShears() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isShears();
+        return false;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

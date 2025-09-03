@@ -6,41 +6,49 @@ import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.customitem.data.CreativeGroup;
 import cn.nukkit.item.customitem.data.DigProperty;
 import cn.nukkit.item.customitem.data.RenderOffsets;
-import cn.nukkit.item.enchantment.utils.ItemEnchantSlot;
+import cn.nukkit.item.utils.DiggerEntry;
+import cn.nukkit.item.utils.ItemArmorType;
+import cn.nukkit.item.utils.ItemEnchantSlot;
+import cn.nukkit.item.utils.RepairEntry;
+import cn.nukkit.item.utils.ShooterAmmo;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.protocol.types.inventory.creative.CreativeCustomGroups;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.Identifier;
-import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import javax.annotation.Nullable;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.extern.slf4j.Slf4j;
+
 
 /**
  * CustomItemDefinition defines custom items from behavior packs.
  *
  * Use {@link CustomItemDefinition.SimpleBuilder} to declare all client-facing
  * properties and behaviors. The builder centralizes supported fields and
- * handles serialization automatically.
+ * handles serialization automatically. <p>
  *
- * Override {@link cn.nukkit.item.Item Item} methods only for advanced or
+ * Override {@link Item Item} methods can be used for advanced or
  * specialized logic not covered by the builder.
  */
 @Slf4j
 public record CustomItemDefinition(String identifier, CompoundTag nbt) implements BlockID {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
     private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);
+    public record BlockPlacerData(String blockId, List<String> useOn) {}
 
     /**
      * Definition builder for custom items
@@ -71,12 +79,14 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         protected Integer damageChanceMin;
         protected Integer damageChanceMax;
         protected Integer damage;
-
-        // minecraft:food fields
         protected Boolean  foodCanAlwaysEat;
         protected Integer  foodNutrition;
         protected Float    foodSaturation;
         protected String   foodUsingConvertsTo;
+        protected ItemArmorType wearableSlot;
+        protected Integer wearableProtection;
+        protected Boolean wearableHidesPlayerLocation;
+        private Boolean diggerUseEfficiency;
 
 
 
@@ -85,86 +95,415 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             this.identifier = ((Item) customItem).getId();
         }
 
-        protected CompoundTag ensureItemProperties() {
-            CompoundTag components = nbt.getCompound("components");
+        private CompoundTag ensureComponents() {
             if (!nbt.contains("components")) {
-                components = new CompoundTag();
-                nbt.putCompound("components", components);
+                nbt.putCompound("components", new CompoundTag());
             }
+            return nbt.getCompound("components");
+        }
 
+        protected CompoundTag ensureItemProperties() {
+            CompoundTag components = ensureComponents();
             CompoundTag itemProps = components.getCompound("item_properties");
             if (!components.contains("item_properties")) {
                 itemProps = new CompoundTag()
                         .putInt("creative_category", CreativeCategory.ITEMS.getId())
                         .putString("creative_group", "")
-                        .putByte("is_hidden_in_commands", (byte) 0);
+                        .putByte("is_hidden_in_commands", (byte) 0)
+                        .putString("enchantable_slot", "none")
+                        .putInt("enchantable_value", 0)
+                        .putBoolean("allow_off_hand", false)
+                        .putBoolean("can_destroy_in_creative", true)
+                        .putInt("damage", 0)
+                        .putBoolean("foil", false)
+                        .putInt("frame_count", 1)
+                        .putBoolean("hand_equipped", false)
+                        .putBoolean("liquid_clipped", false)
+                        .putInt("max_stack_size", 64)
+                        .putFloat("mining_speed", 1.0f)
+                        .putBoolean("should_despawn", true)
+                        .putBoolean("stacked_by_data", false);
                 components.putCompound("item_properties", itemProps);
-            } else {
-                if (!itemProps.contains("creative_category")) {
-                    itemProps.putInt("creative_category", CreativeCategory.ITEMS.getId());
-                }
-                if (!itemProps.contains("creative_group")) {
-                    itemProps.putString("creative_group", "");
-                }
-                if (!itemProps.contains("is_hidden_in_commands")) {
-                    itemProps.putByte("is_hidden_in_commands", (byte) 0);
-                }
             }
-
             return itemProps;
         }
 
-        public SimpleBuilder texture(String texture) {
-            Preconditions.checkArgument(!texture.isBlank(), "texture name is blank");
-            this.texture = texture;
-            return this;
+        private CompoundTag ensureRepairable() {
+            CompoundTag components = ensureComponents();
+            if (!components.containsCompound("minecraft:repairable")) {
+                components.putCompound("minecraft:repairable", new CompoundTag());
+            }
+            return components.getCompound("minecraft:repairable");
         }
 
+        private ListTag<CompoundTag> ensureRepairItemsList() {
+            CompoundTag repairable = ensureRepairable();
+            ListTag<CompoundTag> list = repairable.getList("repair_items", CompoundTag.class);
+            if (!repairable.containsList("repair_items")) {
+                repairable.putList("repair_items", list);
+            }
+            return list;
+        }
+
+        private CompoundTag ensureDigger() {
+            CompoundTag components = ensureComponents();
+            if (!components.containsCompound("minecraft:digger")) {
+                components.putCompound("minecraft:digger", new CompoundTag());
+            }
+            return components.getCompound("minecraft:digger");
+        }
+
+        private ListTag<CompoundTag> ensureDestroySpeeds() {
+            CompoundTag digger = ensureDigger();
+            ListTag<CompoundTag> list = digger.getList("destroy_speeds", CompoundTag.class);
+            if (!digger.containsList("destroy_speeds")) {
+                digger.putList("destroy_speeds", list);
+            }
+            return list;
+        }
+
+        private boolean hasTagApplied(String wanted) {
+            if (wanted == null || wanted.isBlank()) return false;
+            CompoundTag components = ensureComponents();
+
+            if (components.containsList("item_tags")) {
+                var list = components.getList("item_tags", StringTag.class);
+                for (StringTag st : list.getAll()) if (wanted.equals(st.data)) return true;
+            }
+
+            if (components.containsCompound("minecraft:tags")) {
+                CompoundTag mcTags = components.getCompound("minecraft:tags");
+                if (mcTags.containsList("tags")) {
+                    var list = mcTags.getList("tags", StringTag.class);
+                    for (StringTag st : list.getAll()) if (wanted.equals(st.data)) return true;
+                }
+            }
+            return false;
+        }
+
+        private void addTagIfAbsent(String tag) {
+            if (tag == null || tag.isBlank() || hasTagApplied(tag)) return;
+
+            CompoundTag components = ensureComponents();
+
+            ListTag<StringTag> itemTags = components.getList("item_tags", StringTag.class);
+            itemTags.add(new StringTag(tag));
+            components.putList("item_tags", itemTags);
+
+            CompoundTag mcTags = components.getCompound("minecraft:tags");
+            ListTag<StringTag> tagsList = mcTags.getList("tags", StringTag.class);
+            tagsList.add(new StringTag(tag));
+            mcTags.putList("tags", tagsList);
+            components.putCompound("minecraft:tags", mcTags);
+        }
+
+        private static String autoToolTagForSlot(String slotId) {
+            if (slotId == null) return null;
+            switch (slotId) {
+                case "pickaxe": return "minecraft:is_pickaxe";
+                case "axe":     return "minecraft:is_axe";
+                case "shovel":  return "minecraft:is_shovel";
+                case "hoe":     return "minecraft:is_hoe";
+                case "sword":   return "minecraft:is_sword";
+                case "shears":  return "minecraft:is_shears";
+                default:        return null;
+            }
+        }
+
+
+
+        //////////////////////////
+        // Builder Methods Start
+        //////////////////////////
+
+        /**
+         * Sets the name of the item, if not defined will default to language resource_packs, <p>
+         * if no translation is provided in RP, will default to the item Id.
+         * @param name string item name
+         */
         public SimpleBuilder name(String name) {
             Preconditions.checkArgument(!name.isBlank(), "name is blank");
             this.name = name;
             return this;
         }
 
+
         /**
-         * Whether to allow the offHand to have
+         * The Creative Category that includes the specified item. Accepted categories are CONSTRUCTION | EQUIPMENT | ITEMS | NATURE | NONE <p>
+         * Examples:
+         * <pre>
+         * // Specificy item to be at category tab Equipments
+         * creativeCategory(CreativeCategory.EQUIPMENT);
+         * </pre>
+         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
+         */
+        public SimpleBuilder creativeCategory(CreativeCategory creativeCategory) {
+            ensureItemProperties().putInt("creative_category", creativeCategory.getId());
+            return this;
+        }
+
+        /**
+         * The Creative Group that that includes the specified item. Vanilla accepted groups can be defined by {@link CreativeGroup}. <p>
+         * Examples:
+         * <pre>
+         * // Specificy the item to be part of chestplates group
+         * creativeGroup(CreativeGroup.CHESTPLATE);
+         * </pre>
+         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
+         */
+        public SimpleBuilder creativeGroup(CreativeGroup creativeGroup) {
+            ensureItemProperties().putString("creative_group", creativeGroup.getGroupName());
+            return this;
+        }
+
+        /**
+         * The Creative Group that that includes the specified item. Custom groups can be defined by {@link CreativeCustomGroups}. <p>
+         * Examples:
+         * <pre>
+         * // Specificy the item to be part of axes items
+         * creativeGroup("minecraft:itemGroup.name.axe");
+         * // Specificy the item to be part of a custom group (the group must be registered with {@link CreativeCustomGroups})
+         * creativeGroup("My Custom Group");
+         * </pre>
+         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
+         */
+        public SimpleBuilder creativeGroup(String creativeGroup) {
+            if (creativeGroup.isBlank()) {
+                log.error("creativeGroup has an invalid value!");
+                return this;
+            }
+            ensureItemProperties().putString("creative_group", creativeGroup);
+            return this;
+        }
+
+        /**
+         * Sets if item will be hidden from commands and not able to be called from.
+         * @param hidden boolean true/false
+         */
+        public SimpleBuilder isHiddenInCommands(boolean hidden) {
+            ensureItemProperties().putByte("is_hidden_in_commands", hidden ? (byte) 1 : (byte) 0);
+            return this;
+        }
+
+        /**
+         * Sets the texture/icon for the item, this texture must be defined on Resource Pack/Client Side.
+         * @param texture string name for the mapped texture in the resource_pack
+         */
+        public SimpleBuilder texture(String texture) {
+            Preconditions.checkArgument(!texture.isBlank(), "texture name is blank");
+            this.texture = texture;
+            return this;
+        }
+        /**
+         * Sets the texture/icon for the item, this texture must be defined on Resource Pack/Client Side.
+         * @param iconTexture string name for the mapped texture in the resource_pack
+         */
+        public SimpleBuilder icon(String iconTexture) {
+            return texture(iconTexture);
+        }
+
+        /**
+         * Sets the item as a planter item component for blocks. <p>
+         * Also allows the item to render as a 3D block, for that you need also to provide the desired block with your custom geometry.
+         * @param blockId sting name id of the desired block
+         * @param useOn set of string block Ids of blocks that this block can be placed
+        */
+        public SimpleBuilder blockPlacer(String blockId, String... useOn) {
+            ListTag<CompoundTag> useOnList = new ListTag<>();
+            if (useOn != null && useOn.length > 0) {
+                for (String s : useOn) {
+                    useOnList.add(new CompoundTag()
+                        .putString("name", s)
+                        .putCompound("states", new CompoundTag())
+                        .putString("tags", ""));
+                }
+            }
+
+            CompoundTag blockPlacer = new CompoundTag()
+                .putString("block", blockId)
+                .putBoolean("canUseBlockAsIcon", true)
+                .putList("use_on", useOnList);
+
+            CompoundTag components = ensureComponents();
+            components.putCompound("minecraft:block_placer", blockPlacer);
+            components.putCompound("minecraft:publisher_on_use_on",
+                new CompoundTag().putBoolean("autoSucceedOnClient", false));
+            return this;
+        }
+
+        /**
+         * Sets the glint/foil effect of the item as it was enchanted (foil and glint are the same).
+         * @param glint boolean true/false
+         */
+        public SimpleBuilder glint(boolean glint) {
+            ensureItemProperties().putBoolean("foil", glint);
+            ensureComponents().putCompound("minecraft:glint",
+                    new CompoundTag().putByte("value", glint ? (byte) 1 : (byte) 0));
+            return this;
+        }
+        /**
+         * @deprecated Mojang have deprecated this component, prefer to use glint instead (foil and glint are the same).
+         * @param foil boolean true/false
+         */
+        public SimpleBuilder foil(boolean foil) {
+            return glint(foil);
+        }
+
+        /**
+         * The allow_off_hand component determines whether the item can be placed in the off hand slot of the inventory.
+         * @param allowOffHand boolean true/false
          */
         public SimpleBuilder allowOffHand(boolean allowOffHand) {
             CompoundTag itemProps = ensureItemProperties();
             itemProps.putBoolean("allow_off_hand", allowOffHand);
-
-            CompoundTag components = nbt.getCompound("components");
-            if (!nbt.contains("components")) {
-                components = new CompoundTag();
-                nbt.putCompound("components", components);
-            }
-            components.putCompound("minecraft:allow_off_hand",
+            ensureComponents().putCompound("minecraft:allow_off_hand",
                     new CompoundTag().putByte("value", allowOffHand ? (byte) 1 : (byte) 0));
 
             return this;
         }
 
         /**
-         * Control how third-person handheld items are displayed
+         * The hand_equipped component determines if an item is rendered like a tool while it is in a player's hand.
+         * @param handEquipped boolean true/false
          */
         public SimpleBuilder handEquipped(boolean handEquipped) {
             ensureItemProperties().putBoolean("hand_equipped", handEquipped);
             return this;
         }
 
-
-
-
-
+        /**
+         * The can_destroy_in_creative component determines if the item can be used by a player to break blocks when in creative mode.
+         * @param value boolean true/flase
+         */
+        public SimpleBuilder canDestroyInCreative(boolean value) {
+            ensureItemProperties().putBoolean("can_destroy_in_creative", value);
+            return this;
+        }
 
         /**
-         * Set the enchantable slot and value and value to enchant
+         * Make persistent component determines if the item should eventually despawn/or not while floating in the world
+         * @param persistent boolean true/flase
+         */
+        public SimpleBuilder makePersistent(boolean persistent) {
+            this.makePersistent = persistent;
+            return this;
+        }
+
+        /**
+         * The stacked_by_data component determines whether the same items with different aux values can stack.
+         * @param stacked boolean true/flase
+         */
+        public SimpleBuilder stackedByData(boolean stacked) {
+            this.stackedByData = stacked;
+            return this;
+        }
+
+        /**
+         * Determines which tags are included on a given item.
+         * <pre>
+         * // Single tag
+         * tag("my_custom_tag");
+         * // Multiple tags
+         * tag("my_custom_tag1", "my_custom_tag2");
+         * </pre>
+         * @param tags set of string tags
+         */
+        public SimpleBuilder tag(String... tags) {
+            if (tags == null || tags.length == 0) return this;
+
+            LinkedHashSet<String> unique = new LinkedHashSet<>();
+            for (String t : tags) {
+                if (t == null || t.isBlank()) continue;
+                Identifier.assertValid(t);
+                unique.add(t);
+            }
+            if (unique.isEmpty()) return this;
+            this.tags = new ArrayList<>(unique);
+
+            var components = ensureComponents();
+
+            var itemTags = new ListTag<StringTag>();
+            for (String t : unique) itemTags.add(new StringTag(t));
+
+            components.putList("item_tags", itemTags);
+            components.putCompound("minecraft:tags", new CompoundTag().putList("tags", itemTags));
+
+            return this;
+        }
+
+        /**
+         * Determines how many of an item can be stacked together.
+         * @param size int value
+         */
+        public SimpleBuilder maxStackSize(int size) {
+            this.maxStackSize = size;
+            return this;
+        }
+
+        /**
+         * Sets the current item damage/attack power value.
+         * @param damage int value, must be >= 0.
+         */
+        public SimpleBuilder damage(int damage) {
+            Preconditions.checkArgument(damage >= 0, "damage must be >= 0");
+            this.damage = damage;
+            return this;
+        }
+
+        /**
+         * Sets item durability (Bedrock "minecraft:durability"). <p>
+         * If not set: damage_chance min & max defaults to 100.
+         * @param maxDurability int value, must be >= 0
+         */
+        public SimpleBuilder durability(int maxDurability) {
+            Preconditions.checkArgument(maxDurability > 0, "maxDurability must be > 0");
+            return durability(maxDurability, 100, 100);
+        }
+
+        /**
+         * Sets item durability (Bedrock "minecraft:durability"). <p>
+         * damage_chance will randomize between the min & max.
+         * @param maxDurability int value, must be >= 0.
+         * @param damageChanceMin int value, percentage change must be >= 0 & <=100.
+         * @param damageChanceMax int value, percentage change must be >= 0 & <=100.
+         */
+        public SimpleBuilder durability(int maxDurability, int damageChanceMin, int damageChanceMax) {
+            Preconditions.checkArgument(maxDurability >= 0, "maxDurability must be >= 0");
+            Preconditions.checkArgument(damageChanceMin >= 0 && damageChanceMin <= 100, "maxDurability must be >= 0 & <=100");
+            Preconditions.checkArgument(damageChanceMax >= 0 && damageChanceMax <= 100, "maxDurability must be >= 0 & <=100");
+            this.maxDurability = maxDurability;
+            this.damageChanceMin = Math.max(0, damageChanceMin);
+            this.damageChanceMax = Math.max(0, damageChanceMax);
+            return this;
+        }
+
+        /**
+         * Determines what enchantments can be applied to the item.
+         * <pre>
+         * // Using ItemEchantSlot
+         * builder.enchantable(ItemEnchantSlot.SWORD, 10);
+         * // Using String slot
+         * builder.enchantable("pickaxe", 20);
+         * </pre>
+         * @param slot {@link ItemEnchantSlot} slot ID of the enchantable item
+         * @param value int value, must be >= 0
          */
         public SimpleBuilder enchantable(ItemEnchantSlot slot, int value) {
             if (slot == null) return this;
             return this.enchantable(slot.id(), value);
         }
 
+        /**
+         * Determines what enchantments can be applied to the item.
+         * <pre>
+         * // Using ItemEchantSlot
+         * builder.enchantable(ItemEnchantSlot.SWORD, 10);
+         * // Using String slot
+         * builder.enchantable("pickaxe", 20);
+         * </pre>
+         * @param slot string slot ID of the enchantable item
+         * @param value int value, must be >= 0
+         */
         public SimpleBuilder enchantable(String slot, int value) {
             if (slot == null || slot.isBlank()) return this;
             if (value <= 0) return this;
@@ -174,12 +513,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             itemProps.putString("enchantable_slot", slot);
             itemProps.putInt("enchantable_value", value);
 
-            CompoundTag components = nbt.getCompound("components");
-            if (!nbt.contains("components")) {
-                components = new CompoundTag();
-                nbt.putCompound("components", components);
-            }
-            components.putCompound("minecraft:enchantable",
+            ensureComponents().putCompound("minecraft:enchantable",
                     new CompoundTag()
                             .putString("slot", slot)
                             .putByte("value", (byte) value));
@@ -187,70 +521,217 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             return this;
         }
 
-
-
-
         /**
-         * Sets the current item damage value (default 0).
+         * Add one or more {@code destroy_speeds} entries to {@code minecraft:digger}. <p>
+         * Each entry defines a mining speed and the blocks it applies to (either by a block id, a tag expression, or both).
+         *
+         * Examples:
+         * <pre>
+         * // Specific block only
+         * digger(DiggerEntry.block("minecraft:coal_ore", 2));
+         * // built-in tag group (all wooden blocks)
+         * digger(DiggerEntry.create().speed(6).addAllWooden());
+         * // Custom tag
+         * digger(DiggerEntry.create().speed(5).addTags("'my_custom_tag'"));
+         * // Mix and match
+         * digger(
+         *     DiggerEntry.create().speed(6).addTags("'wood'", "'my_custom_tag'"),
+         *     DiggerEntry.block("minecraft:coal_ore", 2)
+         * ).useEfficiency(true);
+         * </pre>
+         * @param diggerEntries {@link DiggerEntry} of entries that can be used as single block or tags for query expressions.
          */
-        public SimpleBuilder damage(int damage) {
-            Preconditions.checkArgument(damage >= 0, "damage must be >= 0");
-            this.damage = damage;
+        public SimpleBuilder digger(DiggerEntry... diggerEntries) {
+            if (diggerEntries == null || diggerEntries.length == 0) return this;
+
+            var list = ensureDestroySpeeds();
+            for (DiggerEntry e : diggerEntries) {
+                if (e != null) list.add(e.toNbt());
+            }
+
+            if (this.diggerUseEfficiency != null) {
+                ensureDigger().putBoolean("use_efficiency", this.diggerUseEfficiency);
+            }
+            return this;
+        }
+        /**
+         * Sets the {@code use_efficiency} flag for {@code minecraft:digger}. <p>
+         * This value is only written when a {@link #digger(DiggerEntry...)} call. <p>
+         * Example:
+         * <pre>
+         * digger(
+         *     DiggerEntry.block("minecraft:coal_ore", 2),
+         *     DiggerEntry.create().speed(6).addAllWooden()
+         * ).useEfficiency(true);
+         * </pre>
+         *
+         * @param useEfficiency whether efficiency enchantments should speed up mining
+         */
+        public SimpleBuilder useEfficiency(boolean useEfficiency) {
+            this.diggerUseEfficiency = useEfficiency;
             return this;
         }
 
         /**
-         * Sets item durability (Bedrock "minecraft:durability").
+         * Set Armor Item. <p>
+         * Note: Bedrock requires the max stack size is set to 1. <p>
+         * protection defaults to 0, hides_player_location defaults to false.
+         * Examples:
+         * <pre>
+         * // Set wearable with string slot ID
+         * wearable("armor_head");
+         * </pre>
+         * @param slot string slot where the item will be allowed to wear
+         * @throws IllegalArgumentException if slot is unknown
          */
-        public SimpleBuilder durability(int maxDurability) {
-            Preconditions.checkArgument(maxDurability > 0, "maxDurability must be > 0");
-            this.maxDurability = maxDurability;
+        public SimpleBuilder wearable(String slot) {
+            return wearable(slot, 0, false);
+        }
+
+        /**
+         * Set Armor Item. <p>
+         * Note: Bedrock requires the max stack size is set to 1. <p>
+         * hides_player_location defaults to false.
+         * Examples:
+         * <pre>
+         * // Set wearable with string slot ID and protection value
+         * wearable("armor_head", 7);
+         * </pre>
+         * @param slot string slot where the item will be allowed to wear
+         * @param protection protection level of the item.
+         * @throws IllegalArgumentException if slot is unknown
+         */
+        public SimpleBuilder wearable(String slot, int protection) {
+            return wearable(slot, protection, false);
+        }
+
+        /**
+         * Set Armor Item. <p>
+         * Note: Bedrock requires the max stack size is set to 1. <p>
+         * hides_player_location defaults to false.
+         * Examples:
+         * <pre>
+         * // Set wearable with string slot ID, protection value and hides_player_location true
+         * wearable("armor_head", 7, true);
+         * </pre>
+         * @param slot string slot where the item will be allowed to wear
+         * @param protection protection level of the item.
+         * @param hidesPlayerLocation if true and worn hides player on locator maps and the locator bar.
+         * @throws IllegalArgumentException if slot is unknown
+         */
+        public SimpleBuilder wearable(String slot, int protection, boolean hidesPlayerLocation) {
+            ItemArmorType typeSlot = ItemArmorType.get(slot);
+            Preconditions.checkArgument(typeSlot != null, "Unknown wearable slot: %s", slot);
+            return wearable(typeSlot, protection, hidesPlayerLocation);
+        }
+
+        /**
+         * Set Armor Item. <p>
+         * Note: Bedrock requires the max stack size is set to 1. <p>
+         * protection defaults to 0, hides_player_location defaults to false.
+         * Examples:
+         * <pre>
+         * // Set wearable with armor type ID
+         * wearable(ItemArmorType.HEAD);
+         * </pre>
+         * @param slot ItemArmorType where the item will be allowed to wear
+         */
+        public SimpleBuilder wearable(ItemArmorType slot) {
+            return wearable(slot, 0, false);
+        }
+
+        /**
+         * Set Armor Item. <p>
+         * Note: Bedrock requires the max stack size is set to 1. <p>
+         * hides_player_location defaults to false.
+         * Examples:
+         * <pre>
+         * // Set wearable with armor type ID and protection value
+         * wearable(ItemArmorType.HEAD, 7);
+         * </pre>
+         * @param slot ItemArmorType where the item will be allowed to wear
+         * @param protection protection level of the item.
+         */
+        public SimpleBuilder wearable(ItemArmorType slot, int protection) {
+            return wearable(slot, protection, false);
+        }
+
+        /**
+         * Set Armor Item. <p>
+         * Note: Bedrock requires the max stack size is set to 1. <p>
+         * hides_player_location defaults to false.
+         * Examples:
+         * <pre>
+         * // Set wearable with armor type ID, protection value and hides_player_location true
+         * wearable(ItemArmorType.HEAD, 7, true);
+         * </pre>
+         * @param slot ItemArmorType where the item will be allowed to wear
+         * @param protection protection level of the item.
+         * @param hidesPlayerLocation if true and worn hides player on locator maps and the locator bar.
+         */
+        public SimpleBuilder wearable(ItemArmorType slot, int protection, boolean hidesPlayerLocation) {
+            Preconditions.checkArgument(slot != null, "wearable slot cannot be null");
+            Preconditions.checkArgument(protection >= 0, "protection must be >= 0");
+            this.wearableSlot = slot;
+            this.wearableProtection = protection;
+            this.wearableHidesPlayerLocation = hidesPlayerLocation;
             return this;
         }
 
         /**
-         * Sets item durability with damage chance range (min/max).
+         * Defines the items that can be used to repair a defined item, and the amount of durability each item restores upon repair.
+         * Examples:
+         * <pre>
+         * // single entry with fixed durability restored
+         * repairable(RepairEntry.set("minecraft:gold_ingot").amount(80f));
+         * // multiple repairEntries at once
+         * repairable(
+         *     RepairEntry.set("minecraft:iron_ingot")
+         *         .amountExpr("context.other->q.remaining_durability + 0.25 * context.other->q.max_durability"),
+         *     RepairEntry.set("minecraft:gold_ingot", "awp:my_custom_item")
+         *         .amount(80f)
+         * );
+         * </pre>
+         * @param repairEntries one or more {@link RepairEntry} objects
          */
-        public SimpleBuilder durability(int maxDurability, int damageChanceMin, int damageChanceMax) {
-            Preconditions.checkArgument(maxDurability > 0, "maxDurability must be > 0");
-            this.maxDurability = maxDurability;
-            this.damageChanceMin = Math.max(0, damageChanceMin);
-            this.damageChanceMax = Math.max(0, damageChanceMax);
+        public SimpleBuilder repairable(RepairEntry... repairEntries) {
+            if (repairEntries == null || repairEntries.length == 0) return this;
+            var list = ensureRepairItemsList();
+            for (RepairEntry e : repairEntries) {
+                if (e != null) list.add(e.toNbt());
+            }
             return this;
         }
 
-
-
-
-
-
-
-
-
-        /**
-         * @param glint Whether or not the item has an enchanted light effect (foil and glint are the same)
-         */
-        public SimpleBuilder glint(boolean glint) {
-            ensureItemProperties().putBoolean("foil", glint);
-            return this;
-        }
-        /**
-         * @param foil Whether or not the item has an enchanted light effect (foil and glint are the same)
-         */
-        public SimpleBuilder foil(boolean foil) {
-            ensureItemProperties().putBoolean("foil", foil);
-            return this;
+        public SimpleBuilder repairable(float amount, String... itemIds) {
+            return repairable(RepairEntry.set(itemIds).amount(amount));
         }
 
+        public SimpleBuilder repairable(String expression, String... itemIds) {
+            if (expression == null || expression.isBlank()) return this;
+            return repairable(RepairEntry.set(itemIds).amountExpr(expression));
+        }
 
+        public SimpleBuilder repairable(float amount, Item... items) {
+            return repairable(RepairEntry.set(items).amount(amount));
+        }
 
+        public SimpleBuilder repairable(String expression, Item... items) {
+            if (expression == null || expression.isBlank()) return this;
+            return repairable(RepairEntry.set(items).amountExpr(expression));
+        }
 
+        public SimpleBuilder repairable(List<String> itemIds, float amount) {
+            return repairable(RepairEntry.set(itemIds != null ? itemIds.toArray(new String[0]) : new String[0]).amount(amount));
+        }
 
-
-
+        public SimpleBuilder repairable(List<String> itemIds, String expression) {
+            if (expression == null || expression.isBlank()) return this;
+            return repairable(RepairEntry.set(itemIds != null ? itemIds.toArray(new String[0]) : new String[0]).amountExpr(expression));
+        }
 
         /**
-         * Simple edible item. Creates a item food with nutrition 0 and saturation modifier 0.6. <p>
+         * Sets the item as a food component, allowing it to be edible to the player. <p>
          * Note: Bedrock requires {@code minecraft:use_modifiers} for eat/drink behavior.
          * Call {@link #useModifiers(float, float)} to set the use time (seconds) and movement modifier.
          * If you skip it, this builder will use duration as 0s and movement as 1.0 by default. <p>
@@ -264,7 +745,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * Simple edible item. <p>
+         * Sets the item as a food component, allowing it to be edible to the player. <p>
          * Note: Bedrock requires {@code minecraft:use_modifiers} for eat/drink behavior.
          * Call {@link #useModifiers(float, float)} to set the use time (seconds) and movement modifier.
          * If you skip it, this builder will use duration as 0s and movement as 1.0 by default. <p>
@@ -280,7 +761,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * Simple edible item. <p>
+         * Sets the item as a food component, allowing it to be edible to the player. <p>
          * Note: Bedrock requires {@code minecraft:use_modifiers} for eat/drink behavior.
          * Call {@link #useModifiers(float, float)} to set the use time (seconds) and movement modifier.
          * If you skip it, this builder will use duration as 0s and movement as 1.0 by default.
@@ -301,144 +782,138 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             return this;
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         /**
-         * Control the grouping of custom items in the creation inventory, e.g. all enchantment books are grouped together
-         *
-         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
+         * Compels an item to shoot projectiles, similarly to a bow or crossbow. <p>
+         * Supports optional ammunition definitions ({@link ShooterAmmo}),
+         * Example:
+         * <pre>
+         * customBuilder(myBow)
+         *     .shooter(1.0f,
+         *         ShooterAmmo.set("awp:arrow")
+         *             .useOffhand(true)
+         *             .searchInventory(true)
+         *             .useInCreative(true)
+         *     );
+         * </pre>
+         * @param maxDrawDuration          Time (in seconds) to fully draw the shooter
+         * @param scalePowerByDrawDuration If true, power scales with draw time
+         * @param chargeOnDraw             If true, consumes ammo immediately on draw
+         * @param ammunition               Optional list of allowed ammunition types
          */
-        public SimpleBuilder creativeGroup(String creativeGroup) {
-            if (creativeGroup.isBlank()) {
-                log.error("creativeGroup has an invalid value!");
-                return this;
+        public SimpleBuilder shooter(float maxDrawDuration,
+                                     boolean scalePowerByDrawDuration,
+                                     boolean chargeOnDraw,
+                                     ShooterAmmo... ammunition) {
+
+            var shooter = new CompoundTag()
+                    .putFloat("max_draw_duration", maxDrawDuration)
+                    .putByte("scale_power_by_draw_duration", (byte) (scalePowerByDrawDuration ? 1 : 0))
+                    .putByte("charge_on_draw", (byte) (chargeOnDraw ? 1 : 0));
+
+            if (ammunition != null && ammunition.length > 0) {
+                var ammoList = new ListTag<CompoundTag>();
+                for (ShooterAmmo a : ammunition) {
+                    if (a != null) ammoList.add(a.toNbt());
+                }
+                if (!ammoList.getAll().isEmpty()) shooter.putList("ammunition", ammoList);
             }
-            ensureItemProperties().putString("creative_group", creativeGroup);
+
+            ensureComponents().putCompound("minecraft:shooter", shooter);
             return this;
         }
 
         /**
-         * Control the grouping of custom items in the creation inventory, e.g. all enchantment books are grouped together
-         *
-         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
+         * Compels an item to shoot projectiles, similarly to a bow or crossbow. <p>
+         * Defaults: scalePowerByDrawDuration = true, chargeOnDraw = false.
+         * Example:
+         * <pre>
+         * customBuilder(myBow)
+         *     .shooter(1.2f, ShooterAmmo.set("awp:arrow"));
+         * </pre>
          */
-        public SimpleBuilder creativeCategory(CreativeCategory creativeCategory) {
-            ensureItemProperties().putInt("creative_category", creativeCategory.getId());
-            return this;
+        public SimpleBuilder shooter(float maxDrawDuration, ShooterAmmo... ammunition) {
+            return shooter(maxDrawDuration, true, false, ammunition);
         }
-
-        public SimpleBuilder creativeGroup(CreativeGroup creativeGroup) {
-            ensureItemProperties().putString("creative_group", creativeGroup.getGroupName());
-            return this;
-        }
-
-        public SimpleBuilder isHiddenInCommands(boolean hidden) {
-            ensureItemProperties().putByte("is_hidden_in_commands", hidden ? (byte) 1 : (byte) 0);
-            return this;
-        }
-
 
         /**
-         * Control rendering offsets of custom items at different viewpoints
+         * Compels an item to shoot projectiles, similarly to a bow or crossbow. <p>
+         * Example:
+         * <pre>
+         * customBuilder(myWand)
+         *     .shooterFlags(0.5f, true, false);
+         * </pre>
          */
-        public SimpleBuilder renderOffsets(@NotNull RenderOffsets renderOffsets) {
-            CompoundTag components = nbt.getCompound("components");
-            if (!nbt.contains("components")) {
-                components = new CompoundTag();
-                nbt.putCompound("components", components);
-            }
-            components.putCompound("minecraft:render_offsets", renderOffsets.nbt);
-            return this;
+        public SimpleBuilder shooterFlags(float maxDrawDuration,
+                                          boolean scalePowerByDrawDuration,
+                                          boolean chargeOnDraw) {
+            return shooter(maxDrawDuration, scalePowerByDrawDuration, chargeOnDraw);
         }
 
         /**
-         * Add a tag to a custom item, usually used for crafting, etc.
-         *
-         * @param tags the tags
-         * @return the simple builder
+         * Sets the throwable item component. Configures the {@code minecraft:throwable} component. <p>
+         * @param doSwingAnimation Determines whether the item should use the swing animation when thrown.
+         * @param launchPowerScale The scale at which the power of the throw increases.
+         * @param maxDrawDuration The maximum duration to draw a throwable item.
+         * @param maxLaunchPower The maximum power to launch the throwable item.
+         * @param minDrawDuration The minimum duration to draw a throwable item.
+         * @param scalePowerByDrawDuration Whether or not the power of the throw increases with duration charged.
          */
-        public SimpleBuilder tag(String... tags) {
-            if (tags == null || tags.length == 0) return this;
-            Arrays.stream(tags).forEach(Identifier::assertValid);
-            this.tags = Arrays.asList(tags);
-            CompoundTag components = nbt.getCompound("components");
-            if (!nbt.contains("components")) {
-                components = new CompoundTag();
-                nbt.putCompound("components", components);
-            }
-            ListTag<StringTag> tagList = new ListTag<>();
-            for (String tag : tags) {
-                tagList.add(new StringTag(tag));
-            }
-            components.putList("item_tags", tagList);
-            components.putCompound("minecraft:tags", new CompoundTag().putList("tags", tagList));
+        public SimpleBuilder throwable(boolean doSwingAnimation,
+                                       float launchPowerScale,
+                                       float maxDrawDuration,
+                                       float maxLaunchPower,
+                                       float minDrawDuration,
+                                       boolean scalePowerByDrawDuration) {
+
+            Preconditions.checkArgument(launchPowerScale >= 0f, "launch_power_scale must be >= 0");
+            Preconditions.checkArgument(maxLaunchPower   >= 0f, "max_launch_power must be >= 0");
+            Preconditions.checkArgument(maxDrawDuration  >= 0f, "max_draw_duration must be >= 0");
+            Preconditions.checkArgument(minDrawDuration  >= 0f, "min_draw_duration must be >= 0");
+
+            ensureComponents().putCompound("minecraft:throwable", new CompoundTag()
+                .putByte ("do_swing_animation",          (byte) (doSwingAnimation ? 1 : 0))
+                .putFloat("launch_power_scale",          launchPowerScale)
+                .putFloat("max_draw_duration",           maxDrawDuration)
+                .putFloat("max_launch_power",            maxLaunchPower)
+                .putFloat("min_draw_duration",           minDrawDuration)
+                .putByte ("scale_power_by_draw_duration",(byte) (scalePowerByDrawDuration ? 1 : 0))
+            );
+
             return this;
         }
 
         /**
-         * Control whether the player with the item can dig the block in creation mode
-         *
-         * @param value the value
-         * @return the simple builder
+         * Sets the throwable item component. Configures the {@code minecraft:throwable} component. <p>
+         * @param doSwingAnimation Determines whether the item should use the swing animation when thrown.
+         * @param launchPowerScale The scale at which the power of the throw increases.
+         * @param maxLaunchPower The maximum power to launch the throwable item.
+         * @param maxDrawDuration The maximum duration to draw a throwable item. Default is set to 0.0.
+         * @param minDrawDuration The minimum duration to draw a throwable item. Default is set to 0.0.
+         * @param scalePowerByDrawDuration Whether or not the power of the throw increases with duration charged. Default is set to false
          */
-        public SimpleBuilder canDestroyInCreative(boolean value) {
-            ensureItemProperties().putBoolean("can_destroy_in_creative", value);
-            return this;
+        public SimpleBuilder throwable(boolean doSwingAnimation,
+                                       float launchPowerScale,
+                                       float maxLaunchPower) {
+            return throwable(doSwingAnimation, launchPowerScale, 0f, maxLaunchPower, 0f, false);
         }
-
-        public SimpleBuilder maxStackSize(int size) {
-            this.maxStackSize = size;
-            return this;
-        }
-
-
-
-
-
-
 
         /**
-         * Controls base mining speed for the item
-         * Default is 1.0f if not set.
+         * Allows this item to be used as fuel in a furnace to 'cook' other items.
+         * @param duration float seconds this item burns for.
          */
-        public SimpleBuilder miningSpeed(float speed) {
-            Preconditions.checkArgument(speed >= 0f, "miningSpeed must be >= 0");
-            this.miningSpeed = speed;
-            return this;
-        }
+        public SimpleBuilder fuel(float duration) {
+            Preconditions.checkArgument(duration > 0, "Fuel duration must be > 0");
 
-        public SimpleBuilder makePersistent(boolean persistent) {
-            this.makePersistent = persistent;
-            return this;
-        }
+            ensureComponents().putCompound("minecraft:fuel",
+                    new CompoundTag().putFloat("duration", duration));
 
-        /**
-         * Whether stacks are distinguished by item data/aux <p>
-         * Default is false (0) if not set. <p>
-         */
-        public SimpleBuilder stackedByData(boolean stacked) {
-            this.stackedByData = stacked;
             return this;
         }
 
         /**
-         * Sets the use animation type (minecraft:use_animation).
+         * use_animation specifies which animation is played when the player uses the item.
          * Examples: "eat", "drink", "bow".
+         * @param animation string animation
          */
         public SimpleBuilder useAnimation(String animation) {
             Preconditions.checkArgument(animation != null && !animation.isBlank(), "useAnimation cannot be blank");
@@ -447,9 +922,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * Determines how long an item takes to use in combination with components such as Shooter, Throwable, or Food. <p>
-         * First parameter Float movementModifier to scale the players movement speed when item is in use. Value must be <= 1. <p>
-         * Second parameter Float useModifierDuration controls how long the item takes to use in seconds.
+         * Determines how long an item takes to use in combination with components such as Shooter, Throwable, or Food.
+         * @param movementModifier float moviment reduction while using this item
+         * @param useDurationSeconds float seconds to successful use this item
         */
         public SimpleBuilder useModifiers(float movementModifier, float useDurationSeconds) {
             Preconditions.checkArgument(movementModifier > 0f && movementModifier <= 1f, "movementModifier must be in (0,1]");
@@ -460,8 +935,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * Add category and cooldown to use this type of item. <p>
-         * First parameter String category, second parameter float coodown duration.
+         * The duration of time (in seconds) items with a matching category will spend cooling down before becoming usable again.
+         * @param category string category cooldown name of this item
+         * @param duration float seconds value to fully cooldown items of the same category name
         */
         public SimpleBuilder cooldown(String category, float duration) {
             this.cooldownCategory = category;
@@ -470,35 +946,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
 
+        //////////////////////////
+        // Builder Methods End
+        //////////////////////////
 
-        /**
-         * Block Placer allow to render custom items as a block 3D, for that you need also to provide a block with your custom geometry.
-        */
-        public SimpleBuilder blockPlacer(String blockId, String... useOn) {
-            ListTag<CompoundTag> useOnList = new ListTag<>();
-            if (useOn != null && useOn.length > 0) {
-                for (String s : useOn) {
-                    useOnList.add(new CompoundTag()
-                        .putString("name", s)
-                        .putCompound("states", new CompoundTag())
-                        .putString("tags", ""));
-                }
-            }
 
-            CompoundTag blockPlacer = new CompoundTag()
-                .putString("block", blockId)
-                .putBoolean("canUseBlockAsIcon", true)
-                .putList("use_on", useOnList);
-
-            CompoundTag components = nbt.getCompound("components");
-            if (!nbt.contains("components")) {
-                components = new CompoundTag();
-                nbt.putCompound("components", components);
-            }
-
-            components.putCompound("minecraft:block_placer", blockPlacer);
-            return this;
-        }
 
         /**
          * Custom processing of the item to be sent to the client ComponentNBT, which contains all definitions for custom item.<p>
@@ -531,6 +983,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             }
 
             int stackSize = maxStackSize > 0 ? maxStackSize : item.getMaxStackSize();
+            if (this.wearableSlot != null) stackSize = 1;
             itemProps.putInt("max_stack_size", stackSize);
             components.putCompound("minecraft:max_stack_size", new CompoundTag().putByte("value", (byte) stackSize));
 
@@ -543,8 +996,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                 switch (this.useAnimationType.toLowerCase(java.util.Locale.ROOT)) {
                     case "eat": animationId = 1; break;
                     case "drink": animationId = 2; break;
+                    // What is the animation id 3?
                     case "bow": animationId = 4; break;
-                    default: animationId = 1;
+                    default: animationId = 0;
                 }
             }
             itemProps.putInt("use_animation", animationId);
@@ -591,8 +1045,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
             if (this.damage != null) {
                 itemProps.putInt("damage", this.damage);
-            } else if (this.maxDurability != null) {
-                itemProps.putInt("damage", 0);
+                components.putCompound("minecraft:damage",
+                        new CompoundTag().putByte("value", this.damage.intValue() & 0xFF));
             }
 
             boolean hasFood =
@@ -619,18 +1073,45 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                 }
             }
 
+            if (this.wearableSlot != null) {
+                CompoundTag wearable = new CompoundTag()
+                        .putString("slot", this.wearableSlot.id())
+                        .putInt("protection", this.wearableProtection != null ? this.wearableProtection : 0)
+                        .putBoolean("hides_player_location",
+                                this.wearableHidesPlayerLocation != null && this.wearableHidesPlayerLocation);
+                components.putCompound("minecraft:wearable", wearable);
+            }
 
+            String slotIdForTag = itemProps.getString("enchantable_slot");
+            String autoTag = autoToolTagForSlot(slotIdForTag);
+            if (autoTag != null) {
+                addTagIfAbsent(autoTag);
+            }
 
             return result;
         }
 
+
+
+
+        //////////////////////////////////
+        // Deprecated legacy methods
+        //////////////////////////////////
+
         /**
-         * Add an item that can repair the item
-         *
-         * @param repairItemNames the repair item names
-         * @param molang          the molang
-         * @return the simple builder
+         * @deprecated Legacy method for adding repair rules.
+         * <p>
+         * This method writes {@code minecraft:repairable.repair_items} directly
+         * with a list of item names and a Molang expression for the repair amount.
+         * It only supports expression-based repair.
+         * <p>
+         * Use {@link #repairable(RepairEntry...)} instead.
+         * <ul>
+         *   <li>Support both numeric and expression-based repair amounts</li>
+         *   <li>Allow flexible argument styles (IDs, Items, Lists)</li>
+         * </ul>
          */
+        @Deprecated
         protected SimpleBuilder addRepairs(@NotNull List<String> repairItemNames, String molang) {
             if (molang.isBlank()) {
                 log.error("repairAmount has an invalid value!");
@@ -662,49 +1143,36 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             repairable.putList("repair_items", repairItems);
             return this;
         }
+
+        /**
+         * @deprecated This method was deprecated by Mojang and can suddenly stop working on Minecraft clients, prefer migrating your items to use resource_packs attachables.
+         * Control rendering offsets of custom items at different viewpoints
+         */
+        @Deprecated
+        public SimpleBuilder renderOffsets(@NotNull RenderOffsets renderOffsets) {
+            CompoundTag components = nbt.getCompound("components");
+            if (!nbt.contains("components")) {
+                components = new CompoundTag();
+                nbt.putCompound("components", components);
+            }
+            components.putCompound("minecraft:render_offsets", renderOffsets.nbt);
+            return this;
+        }
+
+        /**
+         * @deprecated Mining speed is not present in any Microsoft / Mojang docs,
+         * it might have deprecated as it also is part of item properties as most of
+         * legacy deprecated components.
+         *
+         * Prefer using {@link digger} component.
+         */
+        @Deprecated
+        public SimpleBuilder miningSpeed(float speed) {
+            Preconditions.checkArgument(speed >= 0f, "miningSpeed must be >= 0");
+            this.miningSpeed = speed;
+            return this;
+        }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Definition builder for custom items
@@ -716,15 +1184,23 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         return new CustomItemDefinition.SimpleBuilder(item);
     }
 
+
+
+    ////////////////////////
+    // Deprecated builders
+    ////////////////////////
+
     /**
      * Definition builder for custom tools
      *
      * @param item the item
      */
+    @Deprecated
     public static CustomItemDefinition.ToolBuilder toolBuilder(ItemCustomTool item) {
         return new CustomItemDefinition.ToolBuilder(item);
     }
 
+    @Deprecated
     public static class ToolBuilder extends SimpleBuilder {
         private final ItemCustomTool item;
         private final List<CompoundTag> blocks = new ArrayList<>();
@@ -813,9 +1289,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * 控制采集类工具的挖掘速度
+         * Controls the mining speed of gathering tools
          *
-         * @param speed 挖掘速度
+         * @param speed Mining speed
          */
         public ToolBuilder speed(int speed) {
             if (speed < 0) {
@@ -829,12 +1305,10 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * 给工具添加可挖掘的方块，及挖掘它的速度
-         * <p>
          * Add a diggable block to the tool and define dig speed
          *
          * @param blockName the block name
-         * @param speed     挖掘速度
+         * @param speed     Mining speed
          * @return the tool builder
          */
 
@@ -854,8 +1328,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * 给工具添加可挖掘的方块，及挖掘它的速度
-         * <p>
          * Add a diggable block to the tool and define dig speed
          *
          * @param blocks the blocks
@@ -880,8 +1352,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * 给工具添加可挖掘的方块，及挖掘它的速度
-         * <p>
          * Add a diggable block to the tool and define dig speed
          *
          * @param blockName the block name
@@ -906,11 +1376,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * 给工具添加可挖掘的一类方块，用blockTag描述，挖掘它们的速度为{@link #speed(int)}的速度，如果没定义则为工具TIER对应的速度
-         * <p>
          * Add a class of block to the tool that can be mined, described by blockTag, and the speed to mine them is the speed of {@link #speed(int)}, or the speed corresponding to the tool TIER if it is not defined
          *
-         * @param blockTags 挖掘速度
+         * @param blockTags Block tags
          * @return the tool builder
          */
 
@@ -923,7 +1391,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
         @Override
         public CustomItemDefinition build() {
-            //附加耐久 攻击伤害信息
+            // Additional durability Attack damage information
             this.nbt.getCompound("components")
                     .putCompound("minecraft:durability", new CompoundTag().putInt("max_durability", item.getMaxDurability()))
                     .getCompound("item_properties")
@@ -942,11 +1410,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             }
             String type = null;
             if (item.isPickaxe()) {
-                //添加可挖掘方块Tags
+                // Added mineable block tags
                 this.blockTags.addAll(List.of("'stone'", "'metal'", "'diamond_pick_diggable'", "'mob_spawner'", "'rail'", "'slab_block'", "'stair_block'", "'smooth stone slab'", "'sandstone slab'", "'cobblestone slab'", "'brick slab'", "'stone bricks slab'", "'quartz slab'", "'nether brick slab'"));
-                //添加可挖掘方块
+                // Added mineable blocks
                 type = ItemTags.IS_PICKAXE;
-                //附加附魔信息
+                // Additional enchantment information
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "pickaxe");
                 this.tag("minecraft:is_pickaxe");
@@ -997,7 +1465,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                         }
                 );
             }
-            //添加可挖掘的方块tags
+            // Added mineable block tags
             if (!this.blockTags.isEmpty()) {
                 var cmp = new CompoundTag();
                 cmp.putCompound("block", new CompoundTag()
@@ -1011,7 +1479,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                         .putCompound("minecraft:digger", this.diggerRoot);
             }
             if (!this.blocks.isEmpty()) {
-                //添加可挖掘的方块
+                // Added mineable blocks
                 for (var k : this.blocks) {
                     this.diggerRoot.getList("destroy_speeds", CompoundTag.class).add(k);
                 }
@@ -1026,50 +1494,17 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Definition builder for custom armor
      *
      * @param item the item
      */
+    @Deprecated
     public static CustomItemDefinition.ArmorBuilder armorBuilder(ItemCustomArmor item) {
         return new CustomItemDefinition.ArmorBuilder(item);
     }
 
+    @Deprecated
     public static class ArmorBuilder extends SimpleBuilder {
         private final ItemCustomArmor item;
 
@@ -1078,27 +1513,32 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             this.item = item;
         }
 
+        @Deprecated
         public ArmorBuilder addRepairItemName(@NotNull String repairItemName, String molang) {
             super.addRepairs(List.of(repairItemName), molang);
             return this;
         }
 
+        @Deprecated
         public ArmorBuilder addRepairItemName(@NotNull String repairItemName, int repairAmount) {
             super.addRepairs(List.of(repairItemName), String.valueOf(repairAmount));
             return this;
         }
 
+        @Deprecated
         public ArmorBuilder addRepairItems(@NotNull List<Item> repairItems, String molang) {
             super.addRepairs(repairItems.stream().map(Item::getId).toList(), molang);
             return this;
         }
 
+        @Deprecated
         public ArmorBuilder addRepairItems(@NotNull List<Item> repairItems, int repairAmount) {
             super.addRepairs(repairItems.stream().map(Item::getId).toList(), String.valueOf(repairAmount));
             return this;
         }
 
         @Override
+        @Deprecated
         public CustomItemDefinition build() {
             ensureItemProperties()
                     .putInt("enchantable_value", item.getEnchantAbility())
@@ -1149,25 +1589,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Definition builder for custom food or potion.
      * @deprecated Use {@link #simpleBuilder(ItemCustom)} together with
@@ -1207,24 +1628,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // Helpers
-    public record BlockPlacerData(String blockId, List<String> useOn) {}
     @Nullable
     public BlockPlacerData getBlockPlacerData() {
         CompoundTag components = nbt.getCompound("components");
@@ -1292,6 +1696,76 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
     public boolean isEdible() {
         return hasComponent("minecraft:food");
+    }
+
+    public boolean isWearable() {
+        return hasComponent("minecraft:wearable");
+    }
+
+    public @Nullable ItemArmorType getWearableType() {
+        if (!isWearable()) return null;
+        CompoundTag wearable = getComponent("minecraft:wearable");
+
+        String slot = wearable.getString("slot");
+        if (slot == null || slot.isBlank()) return null;
+
+        return ItemArmorType.get(slot);
+    }
+    public boolean isHelmet()     { return getWearableType() == ItemArmorType.HEAD; }
+    public boolean isChestplate() { return getWearableType() == ItemArmorType.CHEST; }
+    public boolean isLeggings()   { return getWearableType() == ItemArmorType.LEGS; }
+    public boolean isBoots()      { return getWearableType() == ItemArmorType.FEET; }
+
+    public @Nullable ItemEnchantSlot getEnchantSlot() {
+        CompoundTag itemProps = getComponent("item_properties");
+        if (itemProps == null) return null;
+
+        String slot = itemProps.getString("enchantable_slot");
+        if (slot == null || slot.isBlank()) return null;
+
+        return ItemEnchantSlot.fromId(slot);
+    }
+    public boolean isSword()     { return getEnchantSlot() == ItemEnchantSlot.SWORD; }
+    public boolean isShield()    { return getEnchantSlot() == ItemEnchantSlot.SHIELD; }
+    public boolean isPickaxe()   { return getEnchantSlot() == ItemEnchantSlot.PICKAXE; }
+    public boolean isShovel()    { return getEnchantSlot() == ItemEnchantSlot.SHOVEL; }
+    public boolean isAxe()       { return getEnchantSlot() == ItemEnchantSlot.AXE; }
+    public boolean isHoe()       { return getEnchantSlot() == ItemEnchantSlot.HOE; }
+    public boolean isShears()    { return getEnchantSlot() == ItemEnchantSlot.SHEARS; }
+    public boolean isBow()       { return getEnchantSlot() == ItemEnchantSlot.BOW; }
+    public boolean isCrossbow()  { return getEnchantSlot() == ItemEnchantSlot.CROSSBOW; }
+    public boolean isTrident()   { return getEnchantSlot() == ItemEnchantSlot.SPEAR; }
+
+    public int wearableProtection() {
+        CompoundTag wearable = getComponent("minecraft:wearable");
+        return wearable != null ? wearable.getInt("protection") : 0;
+    }
+
+    public boolean hidesPlayerLocation() {
+        CompoundTag wearable = getComponent("minecraft:wearable");
+        return wearable != null && wearable.getBoolean("hides_player_location");
+    }
+
+    public boolean canTakeDamage() {
+        return hasComponent("minecraft:durability");
+    }
+
+    public int maxDurability() {
+        return hasComponent("minecraft:durability") ?
+            getComponent("minecraft:durability").getInt("max_durability")
+            : 0;
+    }
+
+    public int damageChanceMin() {
+        return hasComponent("minecraft:durability")
+            ? getComponent("minecraft:durability").getCompound("damage_chance").getInt("min")
+            : 100;
+    }
+
+    public int damageChanceMax() {
+        return hasComponent("minecraft:durability")
+            ? getComponent("minecraft:durability").getCompound("damage_chance").getInt("max")
+            : 100;
     }
 
     public CompoundTag getNbt() {

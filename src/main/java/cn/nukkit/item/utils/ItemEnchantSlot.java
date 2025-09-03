@@ -1,4 +1,6 @@
-package cn.nukkit.item.enchantment.utils;
+package cn.nukkit.item.utils;
+
+import java.util.Locale;
 
 public enum ItemEnchantSlot {
     NONE("none"),
@@ -26,6 +28,7 @@ public enum ItemEnchantSlot {
     FISHING_ROD("fishing_rod"),
     CARROT_STICK("carrot_stick"),
 
+    // aliases for readability
     HEAD("armor_head"),
     CHESTPLATE("armor_torso"),
     LEGGINGS("armor_legs"),
@@ -46,8 +49,9 @@ public enum ItemEnchantSlot {
 
     public static ItemEnchantSlot fromId(String id) {
         if (id == null) return null;
+        String key = id.trim().toLowerCase(Locale.ROOT);
         for (ItemEnchantSlot s : values()) {
-            if (s.id.equals(id)) return s;
+            if (s.id.equals(key)) return s;
         }
         return null;
     }
