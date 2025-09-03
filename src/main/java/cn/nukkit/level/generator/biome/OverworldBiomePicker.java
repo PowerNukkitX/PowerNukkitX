@@ -2,8 +2,6 @@ package cn.nukkit.level.generator.biome;
 
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.level.generator.noise.f.vanilla.NoiseGeneratorPerlinF;
-import cn.nukkit.level.generator.noise.f.vanilla.NormalNoise;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.random.NukkitRandom;
 import lombok.Getter;
 
@@ -20,33 +18,39 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
     public static final int CONTINENT_MID_INLAND = 5;
     public static final int CONTINENT_FAR_INLAND = 6;
 
-    private final NormalNoise continentalNoise;
-    private final NormalNoise temperatureNoise;
-    private final NormalNoise humidityNoise;
-    private final NormalNoise erosionNoise;
-    private final NormalNoise weirdnessNoise;
+    private static final float XZSCALE = 0.25f;
+
+    private final NoiseGeneratorPerlinF continentalNoise;
+    private final NoiseGeneratorPerlinF temperatureNoise;
+    private final NoiseGeneratorPerlinF humidityNoise;
+    private final NoiseGeneratorPerlinF erosionNoise;
+    private final NoiseGeneratorPerlinF weirdnessNoise;
+    private final NoiseGeneratorPerlinF offsetNoise;
 
     public OverworldBiomePicker(NukkitRandom random) {
         super(random);
-        continentalNoise = new NormalNoise(random.fork(), -9, new float[]{ 1, 1, 2, 2, 2, 1, 1, 1, 1 });
-        temperatureNoise = new NormalNoise(random.fork(), -10 , new float[]{ 1.5f, 0, 1, 0, 0, 0 });
-        humidityNoise = new NormalNoise(random.fork(), -8 , new float[]{ 1, 1, 0, 0, 0, 0 });
-        erosionNoise = new NormalNoise(random.fork(), -9, new float[]{ 1, 1, 0, 1, 1 });
-        weirdnessNoise = new NormalNoise(random.fork(), -7, new float[]{ 1, 2, 1, 0, 0, 0});
+        continentalNoise = new NoiseGeneratorPerlinF(random.fork(), -9, new float[]{ 1, 1, 2, 2, 2, 1, 1, 1, 1 });
+        temperatureNoise = new NoiseGeneratorPerlinF(random.fork(), -10 , new float[]{ 1.5f, 0, 1, 0, 0, 0 });
+        humidityNoise = new NoiseGeneratorPerlinF(random.fork(), -8 , new float[]{ 1, 1, 0, 0, 0, 0 });
+        erosionNoise = new NoiseGeneratorPerlinF(random.fork(), -9, new float[]{ 1, 1, 0, 1, 1 });
+        weirdnessNoise = new NoiseGeneratorPerlinF(random.fork(), -7, new float[]{ 1, 2, 1, 0, 0, 0});
+        offsetNoise = new NoiseGeneratorPerlinF(random.fork(), -3, new float[]{ 1, 1, 1, 0 });
     }
 
     @Override
     public OverworldBiomeResult pick(int x, int y, int z) {
+        float _x = x + (offsetNoise.getValue(x/4f, y, z/4f) * 4);
+        float _z = z + (offsetNoise.getValue(z/4f, x/4f, 0) * 4);
 
-        float continental = NukkitMath.remap(continentalNoise.getValue(x, y, z), -1.1f, 1.1f, -1.2f, 1);
-        float temperature = NukkitMath.remapNormalized(temperatureNoise.getValue(x, y, z), -0.9f, 0.9f);
-        float humidity = NukkitMath.remapNormalized(humidityNoise.getValue(x, y, z), -0.75f, 0.85f);
-        float erosion = NukkitMath.remapNormalized(erosionNoise.getValue(x, y, z), -0.85f, 0.85f);
-        float weirdness = NukkitMath.remapNormalized(weirdnessNoise.getValue(x, y, z), -1.1f, 1.1f);
-        float pv = NukkitMath.remapNormalized(1f-Math.abs(3*Math.abs(weirdness))-2f, -4.3f, 0);
+        float continental = continentalNoise.getValue(_x * XZSCALE, y, _z * XZSCALE);
+        float temperature = temperatureNoise.getValue(_x, y, _z);
+        float humidity = humidityNoise.getValue(_x, y, _z);
+        float erosion = erosionNoise.getValue(_x * XZSCALE, y, _z * XZSCALE);
+        float weirdness = weirdnessNoise.getValue(_x, y, _z);
+        float pv = -3 * (-(1/3f) + Math.abs(-(2/3f) + Math.abs(weirdness)));
 
         int continentalLevel = continental < -1.05f ? 0 : (continental < -0.455f ? 1 : (continental < -0.19 ? 2 : (continental < -0.11 ? 3 : (continental < 0.03 ? 4 : (continental < 0.3 ? 5 : 6)))));
-        int temperatureLevel = temperature < -0.45f ? 0 : (temperature < -0.15f ? 1 : (temperature < 0.2f ? 2 : (temperature < 0.55f ? 3 : 4)));
+        int temperatureLevel = temperature < -0.45f ? 0 : (temperature < -0.15f ? 1 : (temperature < 0.3f ? 2 : (temperature < 0.55f ? 3 : 4)));
         int humidityLevel = humidity < -0.35f ? 0 : (humidity < -0.1f ? 1 : (humidity < 0.1f ? 2 : (humidity < 0.3f ? 3 : 4)));
         int erosionLevel = erosion < -0.78f ? 0 : (erosion < -0.375f ? 1 : (erosion < -0.2225f ? 2 : (erosion < 0.05f ? 3 : (erosion < 0.45f ? 4 : (erosion < 0.55f ? 5 : 6)))));
         int pvLevel = pv < -0.85f ? 0 : (pv < -0.2f ? 1 : (pv < 0.2f ? 2 : (pv < 0.7f ? 3 : 4)));
@@ -72,9 +76,9 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
         };
     }
 
-    protected int getInlandBiome(int pvLevel, int erosionLevel, int humidityLevel, int temperatureLevel, boolean weird, int contnentalLevel) {
+    protected int getInlandBiome(int pvLevel, int erosionLevel, int humidityLevel, int temperatureLevel, boolean weird, int continentalLevel) {
         return switch (pvLevel) {
-            case 0 -> switch (contnentalLevel) {
+            case 0 -> switch (continentalLevel) {
                 case CONTINENT_COAST -> temperatureLevel == 0 ? FROZEN_RIVER : RIVER;
                 case CONTINENT_NEAR_INLAND -> switch (erosionLevel) {
                     default -> temperatureLevel == 0 ? FROZEN_RIVER : RIVER;
@@ -94,7 +98,7 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
                     };
                 };
             };
-            case 1 -> switch (contnentalLevel) {
+            case 1 -> switch (continentalLevel) {
                 case CONTINENT_COAST -> switch (erosionLevel) {
                     case 0, 1, 2 -> STONE_BEACH;
                     case 5 -> weird && temperatureLevel < 5 && temperatureLevel > 1 && humidityLevel < 4 ? SAVANNA_MUTATED : (weird ? getMiddleBiome(temperatureLevel, humidityLevel, true) : getBeachBiome(temperatureLevel));
@@ -128,7 +132,7 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
                     };
                 };
             };
-            case 2 -> switch (contnentalLevel) {
+            case 2 -> switch (continentalLevel) {
                 case CONTINENT_COAST -> switch (erosionLevel) {
                     case 0, 1, 2 -> STONE_BEACH;
                     case 3 -> getMiddleBiome(temperatureLevel, humidityLevel, weird);
@@ -211,13 +215,13 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
                 };
             };
             case 3 -> switch (erosionLevel) {
-                case 5 -> switch (contnentalLevel) {
+                case 5 -> switch (continentalLevel) {
                     case CONTINENT_COAST,
                          CONTINENT_NEAR_INLAND -> weird && temperatureLevel < 5 && temperatureLevel > 1 && humidityLevel < 4 ? SAVANNA_MUTATED : getMiddleBiome(temperatureLevel, humidityLevel, weird);
                     default -> getShatteredBiome(temperatureLevel, humidityLevel, weird);
                 };
                 case 6 -> getMiddleBiome(temperatureLevel, humidityLevel, weird);
-                default -> switch (contnentalLevel) {
+                default -> switch (continentalLevel) {
                     case CONTINENT_COAST -> getMiddleBiome(temperatureLevel, humidityLevel, weird);
                     case CONTINENT_NEAR_INLAND -> switch (erosionLevel) {
                         case 0 -> switch (temperatureLevel) {
@@ -247,7 +251,7 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
                             case 3, 4 -> getPlateauBiome(temperatureLevel, humidityLevel, weird);
                             default -> humidityLevel > 1 ? GROVE : SNOWY_SLOPES;
                         };
-                        case 2, 3 -> switch (contnentalLevel) {
+                        case 2, 3 -> switch (continentalLevel) {
                             case CONTINENT_MID_INLAND -> erosionLevel == 2 ? getPlateauBiome(temperatureLevel, humidityLevel, weird) : (temperatureLevel == 4 ? getBadlandBiome(humidityLevel, weird) : getMiddleBiome(temperatureLevel, humidityLevel, weird));
                             default -> getPlateauBiome(temperatureLevel, humidityLevel, weird);
                         };
@@ -257,7 +261,7 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
             };
             default -> switch (erosionLevel) {
                 case 6 -> getMiddleBiome(temperatureLevel, humidityLevel, weird);
-                default -> switch (contnentalLevel) {
+                default -> switch (continentalLevel) {
                     case CONTINENT_COAST,
                          CONTINENT_NEAR_INLAND -> switch (erosionLevel) {
                         case 0 -> switch (temperatureLevel) {
@@ -279,7 +283,7 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
                             case 3 -> STONY_PEAKS;
                             default -> getBadlandBiome(humidityLevel, weird);
                         };
-                        case 2, 3 -> switch (contnentalLevel) {
+                        case 2, 3 -> switch (continentalLevel) {
                             case CONTINENT_MID_INLAND -> switch (erosionLevel) {
                                 case 2 -> getPlateauBiome(temperatureLevel, humidityLevel, weird);
                                 default -> temperatureLevel == 4 ? getBadlandBiome(humidityLevel, weird) : getMiddleBiome(temperatureLevel, humidityLevel, weird);

@@ -18,6 +18,7 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.biome.BiomePicker;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
+import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.registry.Registries;
@@ -105,22 +106,14 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 sender.sendMessage(biome.getName() + " " + Arrays.toString(biome.getTags().toArray(String[]::new)));
                 BiomePicker picker = loc.getLevel().getBiomePicker();
                 if(picker instanceof OverworldBiomePicker p) {
-                    float continental = NukkitMath.remap(p.getContinentalNoise().getValue(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()), -1, 1, -1.2f, 1);
-                    float temperature = p.getTemperatureNoise().getValue(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ());
-                    float humidity = p.getHumidityNoise().getValue(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ());
-                    float erosion = p.getErosionNoise().getValue(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ());
-                    float weirdness = p.getWeirdnessNoise().getValue(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ());
-                    float pv = NukkitMath.remapNormalized(1f-Math.abs(3*Math.abs(weirdness))-2f, -4, 0);
-                    int continentalLevel = continental < -1.05f ? 0 : (continental < -0.455f ? 1 : (continental < -0.19 ? 2 : (continental < -0.11 ? 3 : (continental < 0.03 ? 4 : (continental < 0.3 ? 5 : 6)))));
-                    int temperatureLevel = temperature < -0.45f ? 0 : (temperature < -0.15f ? 1 : (temperature < 0.2f ? 2 : (temperature < 0.55f ? 3 : 4)));
-                    int humidityLevel = humidity < -0.35f ? 0 : (humidity < -0.1f ? 1 : (humidity < 0.1f ? 2 : (humidity < 0.3f ? 3 : 4)));
-                    int erosionLevel = erosion < -0.78f ? 0 : (erosion < -0.375f ? 1 : (erosion < -0.2225f ? 2 : (erosion < 0.05f ? 3 : (erosion < 0.45f ? 4 : (erosion < 0.55f ? 5 : 6)))));
-                    int pvLevel = pv < -0.85f ? 0 : (pv < -0.2f ? 1 : (pv < 0.2f ? 2 : (pv < 0.7f ? 3 : 4)));
-                    Server.getInstance().broadcastMessage("Continental: " + continental + " " + continentalLevel);
-                    Server.getInstance().broadcastMessage("Temperature: " + temperature + " " + temperatureLevel);
-                    Server.getInstance().broadcastMessage("Humidity: " + humidity + " " + humidityLevel);
-                    Server.getInstance().broadcastMessage("Erosion: " + erosion + " " + erosionLevel);
-                    Server.getInstance().broadcastMessage("Weirdness: " + weirdness + "(PV: " + pv + " " + pvLevel + ")");
+                    OverworldBiomeResult res = p.pick(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ());
+                    sender.sendMessage("Continental: " + res.getContinental());
+                    sender.sendMessage("Temperature: " + res.getTemperature());
+                    sender.sendMessage("Humidity: " + res.getHumidity());
+                    sender.sendMessage("Erosion: " + res.getErosion());
+                    sender.sendMessage("Weirdness: " + res.getWeirdness());
+                    sender.sendMessage("Peaks: " + res.getPv());
+                    sender.sendMessage("§ePicked biome: " + Registries.BIOME.get(res.getBiomeId()).getName());
                 }
                 return 0;
             }

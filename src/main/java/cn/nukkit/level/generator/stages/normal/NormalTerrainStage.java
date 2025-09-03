@@ -72,27 +72,16 @@ public class NormalTerrainStage extends GenerateStage {
                     for (int zSmooth = -2; zSmooth <= 2; ++zSmooth) {
                         OverworldBiomeResult result1 = picker.pick(baseX + (xSeg * 4) + (int)(xSmooth*smoothScale), SEA_LEVEL,baseZ + (zSeg * 4) + (int)(zSmooth*smoothScale));
                         float continental = result1.getContinental();
-                        float baseHeight = continental*2;
-                        float heightVariation = (1 - result1.getErosion());
+                        float baseHeight = continental*1.5f;
+                        float heightVariation = Math.abs(result1.getPv());
                         BiomeDefinition biome = Registries.BIOME.get(result1.getBiomeId());
                         if(biome.getTags().contains(BiomeTags.OCEAN)) {
-                            baseHeight *= 2.3f;
-                            heightVariation = result1.getPv() * result1.getPv();
-                        } else if(biome.getTags().contains(BiomeTags.HILLS)) {
-                            baseHeight *= 1.4f;
-                            heightVariation *= 0.5f;
-                        } else if(biome.getTags().contains(BiomeTags.MOUNTAINS)) {
-                            baseHeight *= 2 + biome.data.depth;
-                        } else {
-                            if(continental < -0.11 && continental >= -0.19) {
-                                heightVariation = 0;
-                                baseHeight = 0.25f;
-                            } else {
-                                heightVariation *= 0.3f;
-                                if (baseHeight < 0) baseHeight = 0.25f + Math.abs(baseHeight);
-                            }
+                            baseHeight *= 2;
+                            heightVariation = 0.2f;
+                        }else if(biome.getTags().contains(BiomeTags.RIVER)) {
+                            baseHeight = -1f;
+                            heightVariation = 0;
                         }
-
 
                         float scaledWeight = Math.abs(result1.getWeirdness());
 
