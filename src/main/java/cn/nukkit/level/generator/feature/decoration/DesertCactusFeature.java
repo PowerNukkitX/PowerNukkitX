@@ -47,7 +47,6 @@ public class DesertCactusFeature extends CountGenerateFeature {
                     chunk.setBlockState(x, y+i, z, CACTUS);
                 }
                 if(random.nextBoolean()) chunk.setBlockState(x, y+height+1, z, CACTUSFLOWER);
-                chunk.recalculateHeightMapColumn(x, z);
             }
         }
     }

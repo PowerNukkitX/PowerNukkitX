@@ -56,7 +56,7 @@ public abstract class GriddedFeature extends ObjectGeneratorFeature {
             }
         }
         writeOutsideChunkStructureData(chunk);
-        manager.applySubChunkUpdate(manager.getBlocks());
+        manager.applySubChunkUpdate();
     }
 
     @Override

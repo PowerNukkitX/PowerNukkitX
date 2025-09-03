@@ -39,14 +39,18 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
 
     @Override
     public OverworldBiomeResult pick(int x, int y, int z) {
-        float _x = x + (offsetNoise.getValue(x/4f, y, z/4f) * 4);
-        float _z = z + (offsetNoise.getValue(z/4f, x/4f, 0) * 4);
 
-        float continental = continentalNoise.getValue(_x * XZSCALE, y, _z * XZSCALE);
-        float temperature = temperatureNoise.getValue(_x, y, _z);
-        float humidity = humidityNoise.getValue(_x, y, _z);
+        float scaledX = x * XZSCALE;
+        float scaledZ = z * XZSCALE;
+
+        float _x = scaledX + (offsetNoise.getValue(scaledX/4f, 0, scaledZ/4f) * 4);
+        float _z = scaledZ + (offsetNoise.getValue(scaledZ/4f, scaledX/4f, 0) * 4);
+
+        float continental = continentalNoise.getValue(_x, y, _z);
+        float temperature = temperatureNoise.getValue(scaledX, y, scaledZ);
+        float humidity = humidityNoise.getValue(scaledX, y, scaledZ);
         float erosion = erosionNoise.getValue(_x * XZSCALE, y, _z * XZSCALE);
-        float weirdness = weirdnessNoise.getValue(_x, y, _z);
+        float weirdness = weirdnessNoise.getValue(scaledX, y, scaledZ);
         float pv = -3 * (-(1/3f) + Math.abs(-(2/3f) + Math.abs(weirdness)));
 
         int continentalLevel = continental < -1.05f ? 0 : (continental < -0.455f ? 1 : (continental < -0.19 ? 2 : (continental < -0.11 ? 3 : (continental < 0.03 ? 4 : (continental < 0.3 ? 5 : 6)))));

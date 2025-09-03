@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator.feature.tree;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSnowLayer;
 import cn.nukkit.block.BlockSpruceLeaves;
 import cn.nukkit.block.BlockState;
@@ -48,7 +49,7 @@ public class GroveTreeFeature extends GriddedFeature {
         BlockManager object = new BlockManager(level);
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                int y = chunk.recalculateHeightMapColumn(x, z);
+                int y = chunk.getHeightMap(x, z);
                 BlockState support = chunk.getBlockState(x, y, z);
                 if(support.toBlock() instanceof BlockSpruceLeaves) {
                     object.setBlockStateAt(x + (chunk.getX() << 4), y+1, z + (chunk.getZ() << 4), SNOW_LAYER);

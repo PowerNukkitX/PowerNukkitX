@@ -14,10 +14,14 @@ import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.level.generator.noise.f.vanilla.NoiseGeneratorOctavesF;
 import cn.nukkit.math.MathHelper;
+import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import com.dfsek.terra.api.world.biome.Biome;
+
+import java.util.Set;
 
 public class NormalTerrainStage extends GenerateStage {
 
@@ -67,23 +71,39 @@ public class NormalTerrainStage extends GenerateStage {
                 float baseHeightSum = 0.0F;
                 float biomeWeightSum = 0.0F;
                 OverworldBiomeResult result = picker.pick(baseX + (xSeg * 4), SEA_LEVEL,baseZ + (zSeg * 4));
+                BiomeDefinition biome = Registries.BIOME.get(result.getBiomeId());
                 float smoothScale = 1 + (4 * (1 - Math.abs(result.getWeirdness())));
+
                 for (int xSmooth = -2; xSmooth <= 2; ++xSmooth) {
                     for (int zSmooth = -2; zSmooth <= 2; ++zSmooth) {
-                        OverworldBiomeResult result1 = picker.pick(baseX + (xSeg * 4) + (int)(xSmooth*smoothScale), SEA_LEVEL,baseZ + (zSeg * 4) + (int)(zSmooth*smoothScale));
+                        int curX = baseX + (xSeg * 4) + (int)(xSmooth*smoothScale);
+                        int curZ = baseZ + (zSeg * 4) + (int)(zSmooth*smoothScale);
+                        OverworldBiomeResult result1 = picker.pick(curX, SEA_LEVEL, curZ);
                         float continental = result1.getContinental();
                         float baseHeight = continental*1.5f;
-                        float heightVariation = Math.abs(result1.getPv());
-                        BiomeDefinition biome = Registries.BIOME.get(result1.getBiomeId());
-                        if(biome.getTags().contains(BiomeTags.OCEAN)) {
+                        BiomeDefinition biome1 = Registries.BIOME.get(result1.getBiomeId());
+
+                        float heightVariation = Math.min(1, (biome1.data.scale + 0.1f));
+                        float scaledWeight = Math.abs(result1.getWeirdness());
+                        Set<String> tags = biome1.getTags();
+                        if(tags.contains(BiomeTags.DESERT) || tags.contains(BiomeTags.BEACH)) {
+                            heightVariation = 0.2f;
+                            if(tags.contains(BiomeTags.BEACH)) {
+                                scaledWeight = 10f;
+                                heightVariation = 0.1f;
+                            }
+                        } else if(biome1.getTags().contains(BiomeTags.OCEAN)) {
                             baseHeight *= 2;
                             heightVariation = 0.2f;
-                        }else if(biome.getTags().contains(BiomeTags.RIVER)) {
-                            baseHeight = -1f;
-                            heightVariation = 0;
+                        } else if(biome1.getTags().contains(BiomeTags.RIVER)) {
+                            baseHeight = result1.getPv() + 0.2f;
+                            heightVariation = result1.getPv() * -0.8f;
+                            scaledWeight = 0.5f;
+                        } else if(biome1.getTags().contains(BiomeTags.MOUNTAINS)) {
+                            baseHeight = 2*NukkitMath.remap(result1.getPv(), 0, 1, 0, 2);
+                            heightVariation = 0.5f;
+                            scaledWeight = 0.1f;
                         }
-
-                        float scaledWeight = Math.abs(result1.getWeirdness());
 
                         heightVariationSum += heightVariation * scaledWeight;
                         baseHeightSum += baseHeight * scaledWeight;
