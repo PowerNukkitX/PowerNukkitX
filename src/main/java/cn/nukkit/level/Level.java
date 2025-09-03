@@ -83,6 +83,7 @@ import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.GameLoop;
 import cn.nukkit.utils.Hash;
 import cn.nukkit.utils.LevelException;
+import cn.nukkit.utils.MolangVariableMap;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Int2ObjectNonBlockingMap;
@@ -807,32 +808,58 @@ public class Level implements Metadatable {
         }
     }
 
-    public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect) {
-        this.addParticleEffect(pos, particleEffect, -1, this.getDimension(), (Player[]) null);
+    public void addParticleEffect(Vector3 pos, ParticleEffect effect) {
+        this.addParticleEffect(pos, effect, -1L);
     }
 
-    public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect, long uniqueEntityId) {
-        this.addParticleEffect(pos, particleEffect, uniqueEntityId, this.getDimension(), (Player[]) null);
+    public void addParticleEffect(Vector3 pos, ParticleEffect effect, long uniqueEntityId) {
+        this.addParticleEffect(pos, effect, uniqueEntityId, (MolangVariableMap) null);
     }
 
-    public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect, long uniqueEntityId, int dimensionId) {
-        this.addParticleEffect(pos, particleEffect, uniqueEntityId, dimensionId, (Player[]) null);
+    public void addParticleEffect(Vector3 pos, ParticleEffect effect, long uniqueEntityId, MolangVariableMap molangVariables) {
+        this.addParticleEffect(pos, effect, uniqueEntityId, molangVariables, (Player[]) null);
     }
 
-    public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect, long uniqueEntityId, int dimensionId, Collection<Player> players) {
-        this.addParticleEffect(pos, particleEffect, uniqueEntityId, dimensionId, players.toArray(Player.EMPTY_ARRAY));
+    public void addParticleEffect(Vector3 pos, ParticleEffect effect, long uniqueEntityId, MolangVariableMap molangVariables, Collection<Player> players) {
+        this.addParticleEffect(pos.asVector3f(), effect.getIdentifier(), uniqueEntityId, molangVariables, players != null ? players.toArray(Player.EMPTY_ARRAY) : null);
     }
 
-    public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect, long uniqueEntityId, int dimensionId, Player... players) {
-        this.addParticleEffect(pos.asVector3f(), particleEffect.getIdentifier(), uniqueEntityId, dimensionId, players);
+    public void addParticleEffect(Vector3 pos, ParticleEffect effect, long uniqueEntityId, MolangVariableMap molangVariables, Player... players) {
+        this.addParticleEffect(pos.asVector3f(), effect.getIdentifier(), uniqueEntityId, molangVariables, players);
     }
 
-    public void addParticleEffect(Vector3f pos, String identifier, long uniqueEntityId, int dimensionId, Player... players) {
+    public void addParticleEffect(Vector3 pos, String effectName) {
+        this.addParticleEffect(pos, effectName, -1L);
+    }
+
+    public void addParticleEffect(Vector3 pos, String effectName, long uniqueEntityId) {
+        this.addParticleEffect(pos, effectName, uniqueEntityId, (MolangVariableMap) null);
+    }
+
+    public void addParticleEffect(Vector3 pos, String effectName, long uniqueEntityId, MolangVariableMap molangVariables) {
+        this.addParticleEffect(pos, effectName, uniqueEntityId, molangVariables, (Player[]) null);
+    }
+
+    public void addParticleEffect(Vector3 pos, String effectName, long uniqueEntityId, MolangVariableMap molangVariables, Collection<Player> players) {
+        this.addParticleEffect(pos.asVector3f(), effectName, uniqueEntityId, molangVariables, players != null ? players.toArray(Player.EMPTY_ARRAY) : null);
+    }
+
+    public void addParticleEffect(Vector3 pos, String effectName, long uniqueEntityId, MolangVariableMap molangVariables, Player... players) {
+        this.addParticleEffect(pos.asVector3f(), effectName, uniqueEntityId, molangVariables, players);
+    }
+
+    public void addParticleEffect(Vector3f pos, String identifier, long uniqueEntityId, MolangVariableMap molangVariables, Player... players) {
         SpawnParticleEffectPacket pk = new SpawnParticleEffectPacket();
         pk.identifier = identifier;
         pk.uniqueEntityId = uniqueEntityId;
-        pk.dimensionId = dimensionId;
+        pk.dimensionId = this.getDimension();
         pk.position = pos;
+
+        if (molangVariables == null) {
+            pk.molangVariablesJson = Optional.empty();
+        } else {
+            pk.molangVariablesJson = Optional.of(molangVariables.isEmpty() ? "[]" : molangVariables.toJson());
+        }
 
         if (players == null || players.length == 0) {
             addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
