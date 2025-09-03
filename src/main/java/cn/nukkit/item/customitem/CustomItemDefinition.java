@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -58,7 +59,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
      */
     @Deprecated
     public static CustomItemDefinition.SimpleBuilder simpleBuilder(ItemCustom item) {
-        return simpleBuilder((CustomItem) item);
+        return new CustomItemDefinition.SimpleBuilder((Item) item);
     }
 
     /**
@@ -66,21 +67,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
      *
      * @param item the custom item implementing {@link CustomItem}
      */
-    public static CustomItemDefinition.SimpleBuilder simpleBuilder(CustomItem item) {
+    public static <T extends Item & CustomItem> CustomItemDefinition.SimpleBuilder simpleBuilder(T item) {
         return new CustomItemDefinition.SimpleBuilder(item);
-    }
-
-    /**
-     * Convenience overload that validates the item implements CustomItem.
-     *
-     * @param item an Item expected to implement {@link CustomItem}
-     * @throws IllegalArgumentException if the item does not implement CustomItem
-     */
-    public static CustomItemDefinition.SimpleBuilder simpleBuilder(Item item) {
-        if (!(item instanceof CustomItem ci)) {
-            throw new IllegalArgumentException("Item must implement CustomItem");
-        }
-        return new CustomItemDefinition.SimpleBuilder(ci);
     }
 
     public static class SimpleBuilder {
@@ -114,7 +102,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
 
 
-        protected SimpleBuilder(CustomItem customItem) {
+        protected SimpleBuilder(@NotNull Item customItem) {
             this.item = (Item) customItem;
             this.identifier = ((Item) customItem).getId();
         }
@@ -995,37 +983,60 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * Finalizes and assembles the complete custom item definition NBT to be sent to the client.<p>
         */
         protected CustomItemDefinition buildDefinition() {
-            CompoundTag itemProps = ensureItemProperties();
-            CompoundTag components = nbt.getCompound("components");
+            CompoundTag itemProps  = ensureItemProperties();
+            CompoundTag components = ensureComponents();
 
+            writeIcon(itemProps);
+            writeDisplayName(components);
+            writeStackSize(itemProps, components);
+            writeBaseItemProps(itemProps);
+            writeUseAnimationAndModifiers(itemProps, components);
+            writeCooldown(components);
+
+            CustomItemDefinition result = new CustomItemDefinition(identifier, nbt);
+            allocateRuntimeId(result.identifier());
+
+            writeDurability(components);
+            writeDamage(itemProps, components);
+            writeFood(components, itemProps);
+            writeWearable(components);
+            applyAutoToolTag(itemProps);
+
+            return result;
+        }
+
+        // Write Build Definition Helpers
+        private void writeIcon(CompoundTag itemProps) {
             if (texture != null && !texture.isBlank()) {
-                itemProps.putCompound("minecraft:icon", new CompoundTag()
-                        .putCompound("textures", new CompoundTag().putString("default", texture)));
+                itemProps.putCompound("minecraft:icon",
+                        new CompoundTag().putCompound("textures",
+                                new CompoundTag().putString("default", texture)));
             }
+        }
 
+        private void writeDisplayName(CompoundTag components) {
             if (name != null) {
-                components.putCompound("minecraft:display_name", new CompoundTag().putString("value", name));
+                components.putCompound("minecraft:display_name",
+                        new CompoundTag().putString("value", name));
             }
+        }
 
+        private void writeStackSize(CompoundTag itemProps, CompoundTag components) {
             int stackSize = maxStackSize > 0 ? maxStackSize : item.getMaxStackSize();
             if (this.wearableSlot != null) stackSize = 1;
             itemProps.putInt("max_stack_size", stackSize);
-            components.putCompound("minecraft:max_stack_size", new CompoundTag().putByte("value", (byte) stackSize));
+            components.putCompound("minecraft:max_stack_size",
+                    new CompoundTag().putByte("value", (byte) stackSize));
+        }
 
+        private void writeBaseItemProps(CompoundTag itemProps) {
             itemProps.putFloat("mining_speed", this.miningSpeed != null ? this.miningSpeed : 1.0f);
             itemProps.putBoolean("should_despawn", !makePersistent);
             itemProps.putBoolean("stacked_by_data", this.stackedByData != null ? this.stackedByData : false);
+        }
 
-            int animationId = 0;
-            if (this.useAnimationType != null) {
-                switch (this.useAnimationType.toLowerCase(java.util.Locale.ROOT)) {
-                    case "eat": animationId = 1; break;
-                    case "drink": animationId = 2; break;
-                    // What is the animation id 3?
-                    case "bow": animationId = 4; break;
-                    default: animationId = 0;
-                }
-            }
+        private void writeUseAnimationAndModifiers(CompoundTag itemProps, CompoundTag components) {
+            int animationId = resolveAnimationId(this.useAnimationType);
             itemProps.putInt("use_animation", animationId);
 
             if (this.useAnimationType != null) {
@@ -1033,87 +1044,109 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                         new CompoundTag().putString("value", this.useAnimationType));
             }
 
-            int useDurationTicks = (this.useModifierDuration != null) ? Math.max(0, Math.round(this.useModifierDuration * 20f)) : 0;
+            int useDurationTicks = toTicks(this.useModifierDuration);
             itemProps.putInt("use_duration", useDurationTicks);
 
             if (this.useModifierMovement != null && this.useModifierDuration != null) {
-                components.putCompound("minecraft:use_modifiers", new CompoundTag()
-                        .putFloat("movement_modifier", this.useModifierMovement)
-                        .putFloat("use_duration", this.useModifierDuration));
+                components.putCompound("minecraft:use_modifiers",
+                        new CompoundTag()
+                                .putFloat("movement_modifier", this.useModifierMovement)
+                                .putFloat("use_duration", this.useModifierDuration));
             }
+        }
 
+        private void writeCooldown(CompoundTag components) {
             if (cooldownCategory != null && cooldownDuration != null) {
                 components.putCompound("minecraft:cooldown", new CompoundTag()
                         .putString("category", cooldownCategory)
                         .putFloat("duration", cooldownDuration));
             }
+        }
 
-            var result = new CustomItemDefinition(identifier, nbt);
+        private void allocateRuntimeId(String idStr) {
             int id;
-            if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(result.identifier())) {
+            if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(idStr)) {
                 while (INTERNAL_ALLOCATION_ID_MAP.containsValue(id = nextRuntimeId.getAndIncrement())) {}
-                INTERNAL_ALLOCATION_ID_MAP.put(result.identifier(), id);
-            } else {
-                id = INTERNAL_ALLOCATION_ID_MAP.getInt(result.identifier());
+                INTERNAL_ALLOCATION_ID_MAP.put(idStr, id);
             }
+        }
 
-            if (this.maxDurability != null) {
-                CompoundTag durability = new CompoundTag().putInt("max_durability", this.maxDurability);
-                if (this.damageChanceMin != null && this.damageChanceMax != null) {
-                    durability.putCompound("damage_chance",
-                            new CompoundTag()
-                                    .putInt("min", this.damageChanceMin)
-                                    .putInt("max", this.damageChanceMax));
-                }
-                components.putCompound("minecraft:durability", durability);
+        private void writeDurability(CompoundTag components) {
+            if (this.maxDurability == null) return;
+
+            CompoundTag durability = new CompoundTag().putInt("max_durability", this.maxDurability);
+            if (this.damageChanceMin != null && this.damageChanceMax != null) {
+                durability.putCompound("damage_chance",
+                        new CompoundTag()
+                                .putInt("min", this.damageChanceMin)
+                                .putInt("max", this.damageChanceMax));
             }
+            components.putCompound("minecraft:durability", durability);
+        }
 
-            if (this.damage != null) {
-                itemProps.putInt("damage", this.damage);
-                components.putCompound("minecraft:damage",
-                        new CompoundTag().putByte("value", this.damage.intValue() & 0xFF));
-            }
+        private void writeDamage(CompoundTag itemProps, CompoundTag components) {
+            if (this.damage == null) return;
 
+            itemProps.putInt("damage", this.damage);
+            components.putCompound("minecraft:damage",
+                    new CompoundTag().putByte("value", this.damage.intValue() & 0xFF));
+        }
+
+        private void writeFood(CompoundTag components, CompoundTag itemProps) {
             boolean hasFood =
                     (foodCanAlwaysEat != null) ||
                     (foodNutrition != null) ||
                     (foodSaturation != null) ||
                     (foodUsingConvertsTo != null);
 
-            if (hasFood) {
-                CompoundTag food = new CompoundTag();
+            if (!hasFood) return;
 
-                if (foodCanAlwaysEat != null) food.putBoolean("can_always_eat", foodCanAlwaysEat);
-                if (foodNutrition   != null)  food.putInt("nutrition", foodNutrition);
-                if (foodSaturation  != null)  food.putFloat("saturation_modifier", foodSaturation);
-                if (foodUsingConvertsTo != null) food.putString("using_converts_to", foodUsingConvertsTo);
+            CompoundTag food = new CompoundTag();
+            if (foodCanAlwaysEat != null) food.putBoolean("can_always_eat", foodCanAlwaysEat);
+            if (foodNutrition != null) food.putInt("nutrition", foodNutrition);
+            if (foodSaturation != null) food.putFloat("saturation_modifier", foodSaturation);
+            if (foodUsingConvertsTo != null) food.putString("using_converts_to", foodUsingConvertsTo);
+            components.putCompound("minecraft:food", food);
 
-                components.putCompound("minecraft:food", food);
-                if (this.useModifierMovement == null && this.useModifierDuration == null) {
-                    itemProps.putInt("use_duration", 0);
-                    components.putCompound("minecraft:use_modifiers",
-                            new CompoundTag()
-                                    .putFloat("movement_modifier", 1.0f)
-                                    .putFloat("use_duration", 0.0f));
-                }
+            // Default use_modifiers for food if none provided
+            if (this.useModifierMovement == null && this.useModifierDuration == null) {
+                itemProps.putInt("use_duration", 0);
+                components.putCompound("minecraft:use_modifiers",
+                        new CompoundTag()
+                                .putFloat("movement_modifier", 1.0f)
+                                .putFloat("use_duration", 0.0f));
             }
+        }
 
-            if (this.wearableSlot != null) {
-                CompoundTag wearable = new CompoundTag()
-                        .putString("slot", this.wearableSlot.id())
-                        .putInt("protection", this.wearableProtection != null ? this.wearableProtection : 0)
-                        .putBoolean("hides_player_location",
-                                this.wearableHidesPlayerLocation != null && this.wearableHidesPlayerLocation);
-                components.putCompound("minecraft:wearable", wearable);
-            }
+        private void writeWearable(CompoundTag components) {
+            if (this.wearableSlot == null) return;
 
+            CompoundTag wearable = new CompoundTag()
+                    .putString("slot", this.wearableSlot.id())
+                    .putInt("protection", this.wearableProtection != null ? this.wearableProtection : 0)
+                    .putBoolean("hides_player_location",
+                            this.wearableHidesPlayerLocation != null && this.wearableHidesPlayerLocation);
+            components.putCompound("minecraft:wearable", wearable);
+        }
+
+        private void applyAutoToolTag(CompoundTag itemProps) {
             String slotIdForTag = itemProps.getString("enchantable_slot");
             String autoTag = autoToolTagForSlot(slotIdForTag);
-            if (autoTag != null) {
-                addTagIfAbsent(autoTag);
-            }
+            if (autoTag != null) addTagIfAbsent(autoTag);
+        }
 
-            return result;
+        private static int resolveAnimationId(String type) {
+            if (type == null) return 0;
+            switch (type.toLowerCase(Locale.ROOT)) {
+                case "eat":   return 1;
+                case "drink": return 2;
+                case "bow":   return 4;
+                default:      return 0; // unknown/none
+            }
+        }
+
+        private static int toTicks(Float seconds) {
+            return (seconds == null) ? 0 : Math.max(0, Math.round(seconds * 20f));
         }
 
 
@@ -1205,8 +1238,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
      * @param item the item
      * @return the custom item definition . simple builder
      */
-    public static CustomItemDefinition.SimpleBuilder customBuilder(CustomItem item) {
-        return new CustomItemDefinition.SimpleBuilder(item);
+    public static <T extends Item & CustomItem> CustomItemDefinition.SimpleBuilder customBuilder(T item) {
+        return simpleBuilder(item);
     }
 
 
