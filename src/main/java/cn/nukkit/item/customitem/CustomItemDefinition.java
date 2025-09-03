@@ -51,12 +51,36 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
     public record BlockPlacerData(String blockId, List<String> useOn) {}
 
     /**
-     * Definition builder for custom items
+     * Definition builder for custom items (deprecated signature).
      *
-     * @param item the item
+     * @param item deprecated ItemCustom
+     * @deprecated Extend {@link Item} and implement {@link CustomItem}; use {@link #simpleBuilder(CustomItem)} instead.
      */
+    @Deprecated
     public static CustomItemDefinition.SimpleBuilder simpleBuilder(ItemCustom item) {
+        return simpleBuilder((CustomItem) item);
+    }
+
+    /**
+     * Definition builder for custom items (Item + CustomItem).
+     *
+     * @param item the custom item implementing {@link CustomItem}
+     */
+    public static CustomItemDefinition.SimpleBuilder simpleBuilder(CustomItem item) {
         return new CustomItemDefinition.SimpleBuilder(item);
+    }
+
+    /**
+     * Convenience overload that validates the item implements CustomItem.
+     *
+     * @param item an Item expected to implement {@link CustomItem}
+     * @throws IllegalArgumentException if the item does not implement CustomItem
+     */
+    public static CustomItemDefinition.SimpleBuilder simpleBuilder(Item item) {
+        if (!(item instanceof CustomItem ci)) {
+            throw new IllegalArgumentException("Item must implement CustomItem");
+        }
+        return new CustomItemDefinition.SimpleBuilder(ci);
     }
 
     public static class SimpleBuilder {
