@@ -91,7 +91,10 @@ public abstract class Generator implements BlockID {
 
 
     private void asyncGenerate0(final ChunkGenerateContext context, final GenerateStage start, String to, final Runnable callback) {
-        if (start == null || to == null) return;
+        if (start == null || to == null) {
+            callback.run();
+            return;
+        }
         if (to.equals(start.name())) {
             start.getExecutor().execute(() -> {
                 start.apply(context);
