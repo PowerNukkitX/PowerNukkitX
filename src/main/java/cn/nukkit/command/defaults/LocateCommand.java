@@ -1,6 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParameter;
@@ -21,7 +20,8 @@ public class LocateCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("biome", new CommandParameter[]{
                 CommandParameter.newEnum("mode", new CommandEnum("LocateModeBiome", "biome")),
-                CommandParameter.newEnum("biomes", Registries.BIOME.getBiomeDefinitions().stream().map(BiomeDefinition::getName).toArray(String[]::new))
+                CommandParameter.newEnum("biomes", Registries.BIOME.getBiomeDefinitions().stream().map(BiomeDefinition::getName).toArray(String[]::new)),
+                CommandParameter.newEnum("teleport", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.enableParamTree();
     }
@@ -64,12 +64,17 @@ public class LocateCommand extends VanillaCommand {
                     z += dz;
                 }
                 if(found != null) {
-                    pos.setY(pos.getLevel().getHeightMap(pos.getFloorX(), pos.getFloorZ()) + 16);
+                    found.setY(pos.getLevel().getHeightMap(pos.getFloorX(), pos.getFloorZ()) + 16);
                     String _x = String.valueOf(found.getFloorX());
                     String _y = String.valueOf(found.getFloorY());
                     String _z = String.valueOf(found.getFloorZ());
                     String _d = String.valueOf((int) (found.distance(pos)));
                     log.addSuccess("commands.locate.biome.success", name, _x, _y, _z, _d);
+                    if(list.hasResult(2)) {
+                        if(list.getResult(2)) {
+                            sender.asPlayer().teleport(found);
+                        }
+                    }
                 } else log.addError("commands.locate.biome.fail", name);
             }
             default -> {
