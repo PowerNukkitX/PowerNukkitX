@@ -2408,6 +2408,78 @@ public abstract class Item implements Cloneable, ItemID {
         return false;
     }
 
+    /** 
+     * Returns the digger speed based on the block Id or tags it contains, also adds efficience bonus if enabled
+     */
+    @Nullable
+    public Integer getDiggerSpeed(@Nullable Block block) {
+        if (block == null) return null;
+
+        CustomItemDefinition def = getCustomDefinition();
+        if (def == null) return null;
+
+        CompoundTag comps = def.getComponents();
+        if (!comps.contains("minecraft:digger")) return null;
+
+        CompoundTag digger = comps.getCompound("minecraft:digger");
+        ListTag<CompoundTag> rules = digger.getList("destroy_speeds", CompoundTag.class);
+        if (rules == null || rules.size() == 0) return null;
+
+        final String blockId = block.getId();
+        Integer speed = null;
+
+        for (CompoundTag rule : rules.getAll()) {
+            CompoundTag blk = rule.getCompound("block");
+
+            String name = blk.contains("name") ? blk.getString("name") : "";
+            if (!name.isEmpty() && name.equals(blockId)) {
+                speed = rule.getInt("speed");
+                break;
+            }
+
+            String tagsExpr = blk.contains("tags") ? blk.getString("tags") : "";
+            if (!tagsExpr.isEmpty() && anyTagMatches(block, tagsExpr)) {
+                speed = rule.getInt("speed");
+                break;
+            }
+        }
+
+        if (speed == null) return null;
+
+        if (digger.getBoolean("use_efficiency")) {
+            int level = this.getEnchantmentLevel(Enchantment.ID_EFFICIENCY);
+            if (level > 0) {
+                speed += (level * level) + 1;
+            }
+        }
+        return speed;
+    }
+
+    /** 
+     * Supports: query.any_tag('wood') or query.any_tag('wood','logs')
+     */
+    private boolean anyTagMatches(Block block, String expr) {
+        int lp = expr.indexOf('('), rp = expr.lastIndexOf(')');
+        if (lp < 0 || rp <= lp + 1) return false;
+
+        String inner = expr.substring(lp + 1, rp);
+        String[] parts = inner.split(",");
+        for (String raw : parts) {
+            String s = raw.trim();
+            if (s.length() >= 2) {
+                char q0 = s.charAt(0), q1 = s.charAt(s.length() - 1);
+                if ((q0 == '\'' && q1 == '\'') || (q0 == '"' && q1 == '"')) {
+                    String tag = s.substring(1, s.length() - 1).trim();
+                    if (!tag.isEmpty()) {
+                        if (block.hasTag(tag)) return true;
+                        if (block.getTags() != null && java.util.Arrays.asList(block.getTags()).contains(tag)) return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean toolUseOnBlock(Block block) {
         if (this.isUnbreakable() || this.isDurable() || this.noDamageOnBreak()) {
             return true;

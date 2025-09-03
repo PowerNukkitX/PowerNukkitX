@@ -18,7 +18,7 @@ public abstract class ItemCustomBookEnchanted extends ItemEnchantedBook implemen
                 .allowOffHand(false)
                 .creativeCategory(CreativeCategory.ITEMS)
                 .creativeGroup("itemGroup.name.enchantedBook")
-                .foil(true)
+                .glint(true)
                 .customBuild(nbt -> nbt.getCompound("components")
                         .getCompound("item_properties")
                         .putString("enchantable_slot", "all")

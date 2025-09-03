@@ -770,9 +770,11 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     private double toolBreakTimeBonus0(Item item) {
-        if (item instanceof ItemCustomTool itemCustomTool && itemCustomTool.getSpeed() != null) {
-            return customToolBreakTimeBonus(customToolType(item), itemCustomTool.getSpeed());
-        } else return toolBreakTimeBonus0(toolType0(item, this), item.getTier(), getId());
+        Integer speed = item.getDiggerSpeed(this);
+        if (speed != null) {
+            return customToolBreakTimeBonus(customToolType(item), speed);
+        }
+        return toolBreakTimeBonus0(toolType0(item, this), item.getTier(), getId());
     }
 
     private double customToolBreakTimeBonus(int toolType, @Nullable Integer speed) {
