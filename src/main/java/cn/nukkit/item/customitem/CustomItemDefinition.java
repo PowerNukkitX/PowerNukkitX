@@ -369,6 +369,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * @deprecated Mojang have deprecated this component, prefer to use glint instead (foil and glint are the same).
          * @param foil boolean true/false
          */
+        @Deprecated
         public SimpleBuilder foil(boolean foil) {
             return glint(foil);
         }
