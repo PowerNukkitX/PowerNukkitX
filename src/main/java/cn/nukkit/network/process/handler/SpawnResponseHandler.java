@@ -97,8 +97,6 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         trimDataPacket.patterns.addAll(TrimData.trimPatterns);
         this.session.sendPacket(trimDataPacket);
 
-        player.setNameTagVisible(true);
-        player.setNameTagAlwaysVisible(true);
         player.setCanClimb(true);
         player.sendMovementSpeed(player.getMovementSpeed());
         log.debug("Sending player list");

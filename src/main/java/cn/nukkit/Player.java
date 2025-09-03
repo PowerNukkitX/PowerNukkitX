@@ -158,6 +158,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -1695,10 +1696,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.getAdventureSettings().get(Type.AUTO_JUMP);
     }
 
+    public void broadcastClientSyncedProperties(Player... viewers) {
+        PropertySyncData data = this.getClientSyncProperties();
+        if (data == null) return;
+
+        SetEntityDataPacket pk = new SetEntityDataPacket();
+        pk.eid = this.getId();
+        pk.entityData = this.getEntityDataMap();
+        pk.syncedProperties = data;
+        pk.frame = 0L;
+
+        Player[] targets = (viewers == null || viewers.length == 0)
+            ? this.getViewers().values().toArray(Player.EMPTY_ARRAY)
+            : viewers;
+
+        for (Player v : targets) {
+            if (v != null) v.dataPacket(pk);
+        }
+    }
+
     @Override
     public void spawnTo(Player player) {
         if (player.spawned && this.isAlive() && player.getLevel() == this.level && player.canSee(this)/* && !this.isSpectator()*/) {
             super.spawnTo(player);
+            this.broadcastClientSyncedProperties(player);
 
             if (this.isSpectator()) {
                 //发送旁观者的游戏模式给对方，使得对方客户端正确渲染玩家实体

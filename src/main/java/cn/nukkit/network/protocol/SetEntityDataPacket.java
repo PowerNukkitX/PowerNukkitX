@@ -4,9 +4,8 @@ import cn.nukkit.entity.data.EntityDataMap;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.utils.Binary;
-import lombok.ToString;
 
-import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.ToString;
 import lombok.*;
 
 @Getter
