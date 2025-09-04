@@ -174,6 +174,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                         player.sendMessage("Loaded: " + chunk.isLoaded());
                         player.sendMessage("Current Block: " + player.getLevelBlock().getId());
                         player.sendMessage("Pending block updates: " + level.getPendingBlockUpdates(chunk).size());
+                        player.sendMessage("Changes: " + chunk.getChanges());
                         int blocks = 0;
                         for(int x = 0; x < 16; x++)
                             for(int z = 0; z < 16; z++)
