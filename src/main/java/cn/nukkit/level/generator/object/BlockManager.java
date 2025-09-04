@@ -2,9 +2,11 @@ package cn.nukkit.level.generator.object;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockEntityHolder;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
@@ -44,6 +46,11 @@ public class BlockManager {
         this.places = new Long2ObjectOpenHashMap<>();
     }
 
+
+    public String getBlockIdIfCachedOrLoaded(int x, int y, int z) {
+        return getBlockIfCachedOrLoaded(x, y, z).getId();
+    }
+
     public String getBlockIdAt(int x, int y, int z) {
         return this.getBlockIdAt(x, y, z, 0);
     }
@@ -51,6 +58,25 @@ public class BlockManager {
     public String getBlockIdAt(int x, int y, int z, int layer) {
         Block block = this.caches.computeIfAbsent(hashXYZ(x, y, z, layer), k -> level.getBlock(x, y, z, layer));
         return block.getId();
+    }
+
+
+
+    public Block getBlockIfCachedOrLoaded(Vector3 vector3) {
+        return getBlockIfCachedOrLoaded(vector3.getFloorX(), vector3.getFloorY(), vector3.getFloorZ());
+    }
+
+    public Block getBlockIfCachedOrLoaded(int x, int y, int z) {
+        long hash = hashXYZ(x, y, z, 0);
+        if(caches.containsKey(hash)) {
+            return caches.get(hash);
+        }
+        int chunkX = x >> 4;
+        int chunkZ = z >> 4;
+        if(level.isChunkLoaded(chunkX, chunkZ)) {
+            return getBlockAt(x, y, z);
+        }
+        return BlockAir.STATE.toBlock(new Position(x, y, z, level));
     }
 
     public Block getBlockAt(Vector3 vector3) {
@@ -66,7 +92,7 @@ public class BlockManager {
     }
 
     public Block getCachedBlock(int x, int y, int z) {
-        return this.caches.get(hashXYZ(x, y, z, 0));
+        return this.caches.getOrDefault(hashXYZ(x, y, z, 0), BlockAir.STATE.toBlock(new Position(x, y, z, level)));
     }
 
     public void setBlockStateAt(Vector3 blockVector3, BlockState blockState) {
