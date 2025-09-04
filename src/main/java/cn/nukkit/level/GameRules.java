@@ -196,7 +196,7 @@ public class GameRules {
         INTEGER {
             @Override
             void write(HandleByteBuf pk, Value<?> value) {
-                pk.writeUnsignedVarInt(value.getValueAsInteger());
+                pk.writeIntLE(value.getValueAsInteger());
             }
         },
         FLOAT {
