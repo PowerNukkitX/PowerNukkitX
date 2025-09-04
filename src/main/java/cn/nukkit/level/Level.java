@@ -2819,7 +2819,7 @@ public class Level implements Metadatable {
 
     public Item useItemOn(Vector3 vector, Item item, BlockFace face, UseItemData data, Player player, boolean playSound) {
         Block target = this.getBlock(vector);
-        Block block = target.getSide(face);
+        Block block = target.canBeReplaced() ? target : target.getSide(face);
 
         float fx = data.clickPos.x;
         float fy = data.clickPos.y;
