@@ -15,7 +15,7 @@ public class ItemIronLeggings extends ItemArmor {
 
     @Override
     public int getTier() {
-        return ItemArmor.TIER_IRON;
+        return Item.WEARABLE_TIER_IRON;
     }
 
     @Override

@@ -24,18 +24,18 @@ public class ItemSuspiciousStew extends ItemFood {
     }
 
     @Override
-    public int getFoodRestore() {
+    public int getNutrition() {
         return 6;
     }
 
     @Override
-    public float getSaturationRestore() {
+    public float getSaturation() {
         return 7.2F;
     }
 
     @Override
-    public boolean isRequiresHunger() {
-        return false;
+    public boolean canAlwaysEat() {
+        return true;
     }
 
     @Override
