@@ -3,11 +3,14 @@ package cn.nukkit.level.generator.feature.decoration;
 import cn.nukkit.block.*;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.registry.Registries;
+import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
 public class ForestFlowerFoliageFeature extends CountGenerateFeature {
@@ -41,7 +44,7 @@ public class ForestFlowerFoliageFeature extends CountGenerateFeature {
                         while (topBlockState.toBlock() instanceof BlockLeaves || topBlockState == BlockAir.STATE) {
                             topBlockState = level.getBlockStateAt(x, height - (++depth), z);
                         }
-                        if(isSupportValid(topBlockState.toBlock())) {
+                        if(isSupportValid(topBlockState.toBlock(new Position(x, (height - depth), z, level)))) {
                             populateFlower(flower, object, x, (height - depth) + 1, z);
                         }
                     }
@@ -84,7 +87,11 @@ public class ForestFlowerFoliageFeature extends CountGenerateFeature {
     }
 
     public boolean isSupportValid(Block support) {
-        return support instanceof BlockGrassBlock;
+        return support instanceof BlockGrassBlock &&
+                Registries.BIOME.get(support.getLevel().getBiomeId(
+                        support.getFloorX(),
+                        support.getFloorY(),
+                        support.getFloorZ())).getTags().contains(BiomeTags.FOREST);
     }
 
     @Override

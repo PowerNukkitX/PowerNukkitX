@@ -37,7 +37,11 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        return this.getBlock().getId().equals(Block.CREAKING_HEART);
+        try {
+            return this.getBlock().getId().equals(Block.CREAKING_HEART);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override

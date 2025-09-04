@@ -79,6 +79,10 @@ public class NukkitRandom implements RandomSourceProvider {
         return provider.nextBoolean();
     }
 
+    public long getSeed() {
+        return seeds;
+    }
+
     public NukkitRandom identical() {
         return new NukkitRandom(seeds);
     }

@@ -2,6 +2,7 @@ package cn.nukkit.level.generator.object;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockEntityHolder;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
@@ -186,6 +187,11 @@ public class BlockManager {
             }
             key.reObfuscateChunk();
         });
+        for (var b : blockList) {
+            if(b instanceof BlockEntityHolder<?> holder) {
+                holder.getOrCreateBlockEntity();
+            }
+        }
         for (var p : batchs.values()) {
             Server.broadcastPacket(level.getPlayers().values(), p);
         }

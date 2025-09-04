@@ -16,7 +16,7 @@ public abstract class GriddedFeature extends ObjectGeneratorFeature {
     }
 
     public int getDistanceToNextField() {
-        return splitLength() / getSplit();
+        return getSplit() > splitLength() ? splitLength() / 2 : getSplit();
     }
 
     protected int splitLength() {

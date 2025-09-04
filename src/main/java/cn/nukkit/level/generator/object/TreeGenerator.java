@@ -41,7 +41,12 @@ public abstract class TreeGenerator extends ObjectGenerator {
                  BlockID.DARK_OAK_SAPLING,
                  BlockID.PALE_OAK_SAPLING,
                  BlockID.BIRCH_SAPLING,
-                 BlockID.FERN -> true;
+                 BlockID.FERN,
+                 BlockID.SHORT_GRASS,
+                 BlockID.TALL_GRASS,
+                 BlockID.PALE_HANGING_MOSS,
+                 BlockID.CLOSED_EYEBLOSSOM,
+                 BlockID.OPEN_EYEBLOSSOM -> true;
             default -> false;
         };
     }

@@ -45,15 +45,15 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        NukkitRandom random = new NukkitRandom(Level.chunkHash(chunkX, chunkZ) * level.getSeed());
+        NukkitRandom random = new NukkitRandom(Level.chunkHash(chunkX, chunkZ) ^ level.getSeed());
         int amount = NukkitMath.randomRange(random.fork(), getMin(), getMax());
         Vector3 v = new Vector3();
         BlockManager manager = new BlockManager(level);
         BlockManager object = new BlockManager(level);
         for (int i = 0; i < amount; ++i) {
-
-            int x = random.nextInt(15);
-            int z = random.nextInt(15);
+            NukkitRandom random1 = new NukkitRandom(random.getSeed() + i);
+            int x = random1.nextInt(15);
+            int z = random1.nextInt(15);
             int y = chunk.getHeightMap(x , z);
             if (y < level.getMinHeight()) {
                 continue;
@@ -61,7 +61,7 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
             v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
             if(!canSpawnHere(Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())))) continue;
             if(isSupportValid(level.getBlock(v))) {
-                getGenerator(random.fork()).generate(object, random.fork(), v.add(0, 1, 0));
+                getGenerator(random1.fork()).generate(object, random1.fork(), v.add(0, 1, 0));
             }
         }
         for(Block block : object.getBlocks()) {

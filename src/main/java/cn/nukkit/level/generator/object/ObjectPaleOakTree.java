@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockCreakingHeart;
 import cn.nukkit.block.BlockLeaves;
 import cn.nukkit.block.BlockPaleHangingMoss;
 import cn.nukkit.block.BlockPaleOakLeaves;
@@ -17,18 +18,21 @@ public class ObjectPaleOakTree extends TreeGenerator {
      * The metadata value of the wood to use in tree generation.
      */
     private final BlockState PALE_OAK_LOG = BlockPaleOakLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y);
+    private final BlockState CREAKING_HEART = BlockCreakingHeart.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y);
 
     /**
      * The metadata value of the leaves to use in tree generation.
      */
     private final BlockState PALE_OAK_LEAVES = BlockPaleOakLeaves.PROPERTIES.getDefaultState();
 
+    public boolean tryCreakingHeart = false;
+
     /**
      * The metadata value of the leaves to use in tree generation.
      */
     @Override
     public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
-        int i = rand.nextInt(3) + rand.nextInt(2) + 6;
+        int i = rand.nextInt(1) + rand.nextInt(1) + 6;
         int j = position.getFloorX();
         int k = position.getFloorY();
         int l = position.getFloorZ();
@@ -64,11 +68,18 @@ public class ObjectPaleOakTree extends TreeGenerator {
                     Vector3 blockpos1 = new Vector3(k1, k2, l1);
                     Block material = level.getBlockAt(blockpos1.getFloorX(), blockpos1.getFloorY(), blockpos1.getFloorZ());
 
-                    if (material.isAir() || material instanceof BlockLeaves) {
-                        this.placeLogAt(level, blockpos1);
-                        this.placeLogAt(level, blockpos1.east());
-                        this.placeLogAt(level, blockpos1.south());
-                        this.placeLogAt(level, blockpos1.east().south());
+                    if (canGrowInto(material.getId())) {
+                        int creaking = -1;
+                        if(tryCreakingHeart && blockpos1.getY() > k) {
+                            if(rand.nextInt(i) == 0) {
+                                tryCreakingHeart = false;
+                                creaking = rand.nextInt(3);
+                            }
+                        }
+                        this.placeLogAt(level, blockpos1, creaking == 0);
+                        this.placeLogAt(level, blockpos1.east(), creaking == 1);
+                        this.placeLogAt(level, blockpos1.south(), creaking == 2);
+                        this.placeLogAt(level, blockpos1.east().south(), creaking == 3);
                     }
                 }
 
@@ -111,7 +122,7 @@ public class ObjectPaleOakTree extends TreeGenerator {
                             int l4 = rand.nextInt(3) + 2;
 
                             for (int i5 = 0; i5 < l4; ++i5) {
-                                this.placeLogAt(level, new Vector3(j + k3, i2 - i5 - 1, l + j4));
+                                this.placeLogAt(level, new Vector3(j + k3, i2 - i5 - 1, l + j4), false);
                             }
 
                             for (int j5 = -1; j5 <= 1; ++j5) {
@@ -168,9 +179,9 @@ public class ObjectPaleOakTree extends TreeGenerator {
         return true;
     }
 
-    private void placeLogAt(BlockManager worldIn, Vector3 pos) {
+    private void placeLogAt(BlockManager worldIn, Vector3 pos, boolean creaking) {
         if (this.canGrowInto(worldIn.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()))) {
-            worldIn.setBlockStateAt(pos, PALE_OAK_LOG);
+            worldIn.setBlockStateAt(pos, creaking ? CREAKING_HEART : PALE_OAK_LOG);
         }
     }
 

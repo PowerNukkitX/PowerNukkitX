@@ -7,7 +7,6 @@ import cn.nukkit.level.generator.feature.river.ClayGenerateFeature;
 import cn.nukkit.level.generator.feature.river.GravelGenerateFeature;
 import cn.nukkit.level.generator.feature.river.SandGenerateFeature;
 import cn.nukkit.level.generator.feature.terrain.CaveGenerateFeature;
-import cn.nukkit.level.generator.feature.terrain.DeepslateGeneratorFeature;
 import cn.nukkit.level.generator.feature.tree.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -23,7 +22,6 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
     public void init() {
         if (isLoad.getAndSet(true)) return;
         try {
-            this.register(DeepslateGeneratorFeature.NAME, DeepslateGeneratorFeature.class);
             this.register(DirtOreGenerationFeature.NAME, DirtOreGenerationFeature.class);
             this.register(GravelOreGenerationFeature.NAME, GravelOreGenerationFeature.class);
             this.register(GraniteOreUpperGenerationFeature.NAME, GraniteOreUpperGenerationFeature.class);
@@ -96,6 +94,9 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(BambooForestBambooFeature.NAME, BambooForestBambooFeature.class);
             this.register(PumpkinGenerateFeature.NAME, PumpkinGenerateFeature.class);
             this.register(ForestRockFeature.NAME, ForestRockFeature.class);
+            this.register(PaleGardenTreeFeature.NAME, PaleGardenTreeFeature.class);
+            this.register(PaleMossPatchFeature.NAME, PaleMossPatchFeature.class);
+            this.register(EyeBlossomFeature.NAME, EyeBlossomFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
