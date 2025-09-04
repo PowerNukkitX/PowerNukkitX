@@ -25,7 +25,6 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
             return false;
         } else {
             this.createCrown(level, position.up(height), 2);
-
             for (int j = (int) position.getY() + height - 2 - rand.nextInt(4); j > position.getY() + (double) height / 2; j -= 2 + rand.nextInt(4)) {
                 float f = rand.nextFloat() * ((float) Math.PI * 2F);
                 int k = (int) (position.getX() + (0.5F + MathHelper.cos(f) * 4.0F));

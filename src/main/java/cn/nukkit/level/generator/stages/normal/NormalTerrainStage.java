@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator.stages.normal;
 
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockBedrock;
 import cn.nukkit.block.BlockDeepslate;
 import cn.nukkit.block.BlockStone;
@@ -9,7 +8,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
-import cn.nukkit.level.generator.biome.BiomePicker;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.level.generator.noise.f.vanilla.NoiseGeneratorOctavesF;
@@ -19,7 +17,6 @@ import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
-import com.dfsek.terra.api.world.biome.Biome;
 
 import java.util.Set;
 
@@ -37,7 +34,7 @@ public class NormalTerrainStage extends GenerateStage {
     }
 
 
-    public static final int SEA_LEVEL = 64;
+    public static final int SEA_LEVEL = 62;
 
     private OverworldBiomePicker picker;
 
@@ -103,6 +100,8 @@ public class NormalTerrainStage extends GenerateStage {
                             baseHeight = 2*NukkitMath.remap(result1.getPv(), 0, 1, 0, 2);
                             heightVariation = 0.5f;
                             scaledWeight = 0.1f;
+                        } else if(biome1.getTags().contains(BiomeTags.JUNGLE))  {
+                            heightVariation = 0.3f;
                         }
 
                         heightVariationSum += heightVariation * scaledWeight;

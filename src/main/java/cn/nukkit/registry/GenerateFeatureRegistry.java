@@ -2,6 +2,7 @@ package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.feature.decoration.*;
+import cn.nukkit.level.generator.feature.multi.JunglePlantFeature;
 import cn.nukkit.level.generator.feature.multi.RandomRoofedForestFeatureWithDecorationFeature;
 import cn.nukkit.level.generator.feature.ore.*;
 import cn.nukkit.level.generator.feature.river.ClayGenerateFeature;
@@ -54,7 +55,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(EmeraldOreGenerationFeature.NAME, EmeraldOreGenerationFeature.class);
             this.register(EmeraldOreExtremeHillsSurfaceGenerationFeature.NAME, EmeraldOreExtremeHillsSurfaceGenerationFeature.class);
             this.register(InfestedOreGenerationFeature.NAME, InfestedOreGenerationFeature.class);
-            this.register(LegacyJungleTreeFeature.NAME, LegacyJungleTreeFeature.class);
+            this.register(JungleTreeFeature.NAME, JungleTreeFeature.class);
             this.register(BambooJungleTreeFeature.NAME, BambooJungleTreeFeature.class);
             this.register(JungleEdgeTreeFeature.NAME, JungleEdgeTreeFeature.class);
             this.register(SavannaTreeFeature.NAME, SavannaTreeFeature.class);
@@ -70,7 +71,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(ForestFlowerFoliageFeature.NAME, ForestFlowerFoliageFeature.class);
             this.register(SeagrassRiverGenerateFeature.NAME, SeagrassRiverGenerateFeature.class);
             this.register(MushroomIslandMushroomFeature.NAME, MushroomIslandMushroomFeature.class);
-            this.register(SugarcaneFeature.NAME, SugarcaneFeature.class);
+            this.register(ReedsFeature.NAME, ReedsFeature.class);
             this.register(PlainsTreeFeature.NAME, PlainsTreeFeature.class);
             this.register(RoofedForestTreeFeature.NAME, RoofedForestTreeFeature.class);
             this.register(DesertCactusFeature.NAME, DesertCactusFeature.class);
@@ -100,6 +101,9 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(EyeBlossomFeature.NAME, EyeBlossomFeature.class);
             this.register(HugeMushroomFeature.NAME, HugeMushroomFeature.class);
             this.register(RandomRoofedForestFeatureWithDecorationFeature.NAME, RandomRoofedForestFeatureWithDecorationFeature.class);
+            this.register(BushFeature.NAME, BushFeature.class);
+            this.register(JungleBushFeature.NAME, JungleBushFeature.class);
+            this.register(JunglePlantFeature.NAME, JunglePlantFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

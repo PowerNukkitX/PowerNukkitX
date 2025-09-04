@@ -1,8 +1,6 @@
 package cn.nukkit.level.generator.feature.decoration;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBamboo;
-import cn.nukkit.block.BlockLargeFern;
 import cn.nukkit.block.BlockPodzol;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;

@@ -46,7 +46,8 @@ public abstract class TreeGenerator extends ObjectGenerator {
                  BlockID.PALE_HANGING_MOSS,
                  BlockID.CLOSED_EYEBLOSSOM,
                  BlockID.OPEN_EYEBLOSSOM,
-                 BlockID.LEAF_LITTER -> true;
+                 BlockID.LEAF_LITTER,
+                 BlockID.BAMBOO-> true;
             default -> false;
         };
     }

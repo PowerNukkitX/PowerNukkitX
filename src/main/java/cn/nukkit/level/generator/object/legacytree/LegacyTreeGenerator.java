@@ -66,7 +66,7 @@ public abstract class LegacyTreeGenerator {
                  BlockID.PEONY,
                  BlockID.ROSE_BUSH,
                  BlockID.LARGE_FERN,
-                 BlockID.FERN-> true;
+                 BlockID.FERN -> true;
             default -> false;
         };
     }

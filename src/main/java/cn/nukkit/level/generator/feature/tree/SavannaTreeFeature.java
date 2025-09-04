@@ -2,7 +2,9 @@ package cn.nukkit.level.generator.feature.tree;
 
 import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
 import cn.nukkit.level.generator.object.ObjectGenerator;
+import cn.nukkit.level.generator.object.ObjectLegacyObjectWrapper;
 import cn.nukkit.level.generator.object.ObjectSavannaTree;
+import cn.nukkit.level.generator.object.legacytree.LegacyOakTree;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
@@ -13,7 +15,7 @@ public class SavannaTreeFeature extends ObjectGeneratorFeature {
 
     @Override
     public ObjectGenerator getGenerator(NukkitRandom random) {
-        return new ObjectSavannaTree();
+        return random.nextInt(3) == 0 ? new ObjectLegacyObjectWrapper(new LegacyOakTree()) : new ObjectSavannaTree();
     }
 
     @Override

@@ -15,8 +15,10 @@ public class TallFernPatchFeature extends SurfaceGenerateFeature {
 
     @Override
     public void place(BlockManager manager, int x, int y, int z) {
-        manager.setBlockStateAt(x, y, z, LOWER);
-        manager.setBlockStateAt(x, y+1, z, UPPER);
+        if(manager.getBlockAt(x, y+1, z).isAir()) {
+            manager.setBlockStateAt(x, y, z, LOWER);
+            manager.setBlockStateAt(x, y + 1, z, UPPER);
+        }
     }
 
     @Override
