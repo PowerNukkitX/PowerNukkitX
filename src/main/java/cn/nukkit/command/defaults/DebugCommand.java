@@ -52,7 +52,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         });
         this.commandParameters.put("item", new CommandParameter[]{
                 CommandParameter.newEnum("item", new String[]{"item"}),
-                CommandParameter.newEnum("values", new String[]{"nbt", "bundle"})
+                CommandParameter.newEnum("values", new String[]{"nbt", "bundle", "meta"})
         });
         this.enableParamTree();
     }
@@ -167,6 +167,11 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                         if(item instanceof ItemBundle bundle) {
                             for(Item item1 : bundle.getInventory().getContents().values()) player.sendMessage(item1.toString());
                         }
+                        return 0;
+                    }
+                    case "meta" -> {
+                        Item item = player.getInventory().getItemInHand();
+                        player.sendMessage(item.getId() + "#" + item.getDamage());
                         return 0;
                     }
                 }
