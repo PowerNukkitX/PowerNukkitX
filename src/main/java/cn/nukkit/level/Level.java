@@ -4194,6 +4194,10 @@ public class Level implements Metadatable {
     }
 
     public Position getSafeSpawn(Vector3 spawn, int horizontalMaxOffset, boolean allowWaterUnder) {
+        return getSafeSpawn(spawn, horizontalMaxOffset, allowWaterUnder, true);
+    }
+
+    public Position getSafeSpawn(Vector3 spawn, int horizontalMaxOffset, boolean allowWaterUnder, boolean checkHighest) {
         if (spawn == null)
             spawn = (horizontalMaxOffset == 0) ? this.getSpawnLocation().add(0.5, 0, 0.5) : this.getFuzzySpawnLocation();
         if (spawn == null)
@@ -4217,7 +4221,11 @@ public class Level implements Metadatable {
                         count++;
                         if(count > 10000) {
                             log.warn("cannot find a safe spawn around " + spawn.asBlockVector3() + ". Too many attempts!");
-                            return Position.fromObject(spawn, this);
+
+                            if(checkHighest)
+                                return getSafeSpawn(spawn.setY(getHighestBlockAt((int) spawn.getX(), (int) spawn.getZ())), horizontalMaxOffset, allowWaterUnder, false);
+                            else
+                                return Position.fromObject(spawn, this);
                         }
                         if(standable(checkLoc, allowWaterUnder)) return checkLoc;
                     }
