@@ -2,6 +2,7 @@ package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.feature.decoration.*;
+import cn.nukkit.level.generator.feature.multi.RandomRoofedForestFeatureWithDecorationFeature;
 import cn.nukkit.level.generator.feature.ore.*;
 import cn.nukkit.level.generator.feature.river.ClayGenerateFeature;
 import cn.nukkit.level.generator.feature.river.GravelGenerateFeature;
@@ -97,6 +98,8 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(PaleGardenTreeFeature.NAME, PaleGardenTreeFeature.class);
             this.register(PaleMossPatchFeature.NAME, PaleMossPatchFeature.class);
             this.register(EyeBlossomFeature.NAME, EyeBlossomFeature.class);
+            this.register(HugeMushroomFeature.NAME, HugeMushroomFeature.class);
+            this.register(RandomRoofedForestFeatureWithDecorationFeature.NAME, RandomRoofedForestFeatureWithDecorationFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

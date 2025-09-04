@@ -60,6 +60,9 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
             }
             v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
             if(!canSpawnHere(Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())))) continue;
+            while(level.getBlock(v).canBeReplaced()) {
+                v.y--;
+            }
             if(isSupportValid(level.getBlock(v))) {
                 getGenerator(random1.fork()).generate(object, random1.fork(), v.add(0, 1, 0));
             }

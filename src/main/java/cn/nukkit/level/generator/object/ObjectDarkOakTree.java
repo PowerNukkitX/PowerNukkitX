@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDarkOakLeaves;
-import cn.nukkit.block.BlockDarkOakWood;
+import cn.nukkit.block.BlockDarkOakLog;
 import cn.nukkit.block.BlockLeaves;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
@@ -18,7 +18,7 @@ public class ObjectDarkOakTree extends TreeGenerator {
     /**
      * The metadata value of the wood to use in tree generation.
      */
-    private final BlockState DARK_OAK_WOOD = BlockDarkOakWood.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y);
+    private final BlockState DARK_OAK_WOOD = BlockDarkOakLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y);
 
     /**
      * The metadata value of the leaves to use in tree generation.
@@ -36,7 +36,7 @@ public class ObjectDarkOakTree extends TreeGenerator {
             Vector3 blockpos = position.down();
             String block = level.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
 
-            if (!block.equals(Block.GRASS_BLOCK) && !block.equals(Block.DIRT)) {
+            if (!canGrowInto(block)) {
                 return false;
             } else if (!this.placeTreeOfHeight(level, position, i)) {
                 return false;
@@ -63,7 +63,7 @@ public class ObjectDarkOakTree extends TreeGenerator {
                     Vector3 blockpos1 = new Vector3(k1, k2, l1);
                     Block material = level.getBlockAt(blockpos1.getFloorX(), blockpos1.getFloorY(), blockpos1.getFloorZ());
 
-                    if (material.isAir() || material instanceof BlockLeaves) {
+                    if (canGrowInto(material.getId()) || material instanceof BlockLeaves) {
                         this.placeLogAt(level, blockpos1);
                         this.placeLogAt(level, blockpos1.east());
                         this.placeLogAt(level, blockpos1.south());

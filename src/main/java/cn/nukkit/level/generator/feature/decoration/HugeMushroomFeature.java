@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.feature.tree;
+package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
 import cn.nukkit.level.generator.object.ObjectBigMushroom;
@@ -8,28 +8,23 @@ import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
-public class RoofedForestTreeFeature extends ObjectGeneratorFeature {
+public class HugeMushroomFeature extends ObjectGeneratorFeature {
 
-    public static final String NAME = "minecraft:roofed_forest_tree_feature_rules";
+    public static final String NAME = "minecraft:huge_mushroom_feature";
 
     @Override
     public ObjectGenerator getGenerator(NukkitRandom random) {
-        return new ObjectDarkOakTree();
+        return new ObjectBigMushroom();
     }
 
     @Override
     public int getMin() {
-        return 8;
+        return -4;
     }
 
     @Override
     public int getMax() {
-        return 10;
-    }
-
-    @Override
-    public boolean canSpawnHere(BiomeDefinition definition) {
-        return definition.getTags().contains(BiomeTags.ROOFED);
+        return 1;
     }
 
     @Override

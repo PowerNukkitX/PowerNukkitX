@@ -68,7 +68,7 @@ public class ObjectBigMushroom extends ObjectGenerator {
                             pos.setComponents(l, j, i1);
                             Block material = level.getBlockAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
 
-                            if (!material.getId().equals(Block.AIR) && !(material instanceof BlockLeaves)) {
+                            if (!material.canBeReplaced() && !(material instanceof BlockLeaves)) {
                                 flag = false;
                             }
                         } else {
