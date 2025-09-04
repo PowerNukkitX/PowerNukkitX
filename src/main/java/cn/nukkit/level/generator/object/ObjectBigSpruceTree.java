@@ -51,7 +51,7 @@ public class ObjectBigSpruceTree extends TreeGenerator {
         }
 
         Vector3 below = position.down();
-        String ground = level.getBlockIdAt(below.getFloorX(), below.getFloorY(), below.getFloorZ());
+        String ground = level.getBlockIdIfCachedOrLoaded(below.getFloorX(), below.getFloorY(), below.getFloorZ());
         if (!ground.equals(Block.GRASS_BLOCK) && !ground.equals(Block.DIRT) && !ground.equals(Block.PODZOL)) {
             return false;
         }
@@ -87,13 +87,13 @@ public class ObjectBigSpruceTree extends TreeGenerator {
 
 
     private void placeLogAt(BlockManager world, Vector3 pos) {
-        if (this.canGrowInto(world.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()))) {
+        if (this.canGrowInto(world.getBlockIdIfCachedOrLoaded(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()))) {
             world.setBlockStateAt(pos, SPRUCE_LOG);
         }
     }
 
     private void placeLeafAt(BlockManager world, int x, int y, int z) {
-        String material = world.getBlockIdAt(x, y, z);
+        String material = world.getBlockIdIfCachedOrLoaded(x, y, z);
         if (material.equals(Block.AIR) || material.equals(Block.SNOW_LAYER)) {
             world.setBlockStateAt(new Vector3(x, y, z), SPRUCE_LEAVES);
         }
@@ -101,7 +101,7 @@ public class ObjectBigSpruceTree extends TreeGenerator {
 
 
     private void placePodzolAt(BlockManager world, int x, int y, int z) {
-        if (world.getBlockAt(x, y, z).is(BlockTags.DIRT)) {
+        if (world.getBlockIfCachedOrLoaded(x, y, z).is(BlockTags.DIRT)) {
             world.setBlockStateAt(new Vector3(x, y, z), PODZOL);
         }
     }

@@ -30,7 +30,7 @@ public class ObjectJungleBush extends TreeGenerator {
                 for (int z = -radius; z <= radius; z++) {
                     if (x * x + z * z <= radius * radius) {
                         BlockVector3 leafPos = pos.add(x, y, z);
-                        Block existing = level.getBlockAt(leafPos.x, leafPos.y, leafPos.z);
+                        Block existing = level.getBlockIfCachedOrLoaded(leafPos.x, leafPos.y, leafPos.z);
                         if (existing.isAir() || existing.canBeReplaced() || existing instanceof BlockLeaves) {
                             level.setBlockStateAt(leafPos, metaLeaves);
                         }

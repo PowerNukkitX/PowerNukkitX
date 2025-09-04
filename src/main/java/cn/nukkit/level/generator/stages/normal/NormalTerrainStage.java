@@ -71,6 +71,16 @@ public class NormalTerrainStage extends GenerateStage {
                 BiomeDefinition biome = Registries.BIOME.get(result.getBiomeId());
                 float smoothScale = 1 + (4 * (1 - Math.abs(result.getWeirdness())));
 
+                boolean river = false;
+                for (int xSmooth = -2; xSmooth <= 2; ++xSmooth) {
+                    for (int zSmooth = -2; zSmooth <= 2; ++zSmooth) {
+                        int curX = baseX + (xSeg * 4) + (int) (xSmooth * smoothScale);
+                        int curZ = baseZ + (zSeg * 4) + (int) (zSmooth * smoothScale);
+                        OverworldBiomeResult result1 = picker.pick(curX, SEA_LEVEL, curZ);
+                        BiomeDefinition biome1 = Registries.BIOME.get(result1.getBiomeId());
+                        if(biome1.getTags().contains(BiomeTags.RIVER)) river = true;
+                    }
+                }
                 for (int xSmooth = -2; xSmooth <= 2; ++xSmooth) {
                     for (int zSmooth = -2; zSmooth <= 2; ++zSmooth) {
                         int curX = baseX + (xSeg * 4) + (int)(xSmooth*smoothScale);

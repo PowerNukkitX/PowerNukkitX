@@ -42,7 +42,7 @@ public class LegacySpruceTree extends LegacyTreeGenerator {
                     if (xOff == radius && zOff == radius && radius > 0) {
                         continue;
                     }
-                    Block blockAt = level.getBlockAt(xx, yyy, zz);
+                    Block blockAt = level.getBlockIfCachedOrLoaded(xx, yyy, zz);
                     if (!blockAt.isSolid()) {
                         level.setBlockStateAt(xx, yyy, zz, getLeafBlockState());
                     }

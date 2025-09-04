@@ -67,7 +67,7 @@ public class BambooForestBambooFeature extends SurfaceGenerateFeature {
     }
 
     private void placePodzolAt(BlockManager world, int x, int y, int z) {
-        if (world.getBlockAt(x, y, z).is(BlockTags.DIRT)) {
+        if (world.getBlockIfCachedOrLoaded(x, y, z).is(BlockTags.DIRT)) {
             world.setBlockStateAt(new Vector3(x, y, z), PODZOL);
         }
     }

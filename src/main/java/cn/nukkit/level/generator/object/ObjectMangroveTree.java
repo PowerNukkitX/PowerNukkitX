@@ -55,7 +55,7 @@ public class ObjectMangroveTree extends TreeGenerator {
                 int cy = (int) Math.round(position.y + trunkBase + i * dy);
                 int cz = (int) Math.round(position.z + i * dz);
 
-                Block currentBlock = level.getLevel().getBlock(cx, cy, cz);
+                Block currentBlock = level.getBlockIfCachedOrLoaded(cx, cy, cz);
 
                 if (currentBlock.getId().equals(Block.STONE)) {
                     break;
@@ -138,7 +138,7 @@ public class ObjectMangroveTree extends TreeGenerator {
                     withBeenest = false;
                     int faceIdx = rand.nextInt(BlockFace.getHorizontals().length-1);
                     BlockFace face = BlockFace.getHorizontals()[faceIdx];
-                    Block target = level.getLevel().getBlock(bx, by-1, bz).getSide(face);
+                    Block target = level.getBlockIfCachedOrLoaded(bx, by-1, bz).getSide(face);
                     level.setBlockStateAt(target, BlockBeeNest.PROPERTIES.getBlockState(CommonBlockProperties.DIRECTION.createValue(faceIdx), CommonBlockProperties.HONEY_LEVEL.createValue(rand.nextInt(0, 4))));
                     if(level.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
                         Registries.ENTITY.provideEntity(EntityID.BEE, level.getLevel().getChunk(bx >> 4, bz >> 4), Entity.getDefaultNBT(new Vector3(bx, by-2, bz)));
@@ -157,7 +157,7 @@ public class ObjectMangroveTree extends TreeGenerator {
 
         if (random.nextInt(15) == 0) {
             Vector3 p = pos.add(0, -1, 0);
-            if(level.getBlockAt(p).isAir()) {
+            if(level.getBlockIfCachedOrLoaded(p).isAir()) {
                 level.setBlockStateAt(p, PROPAGULE);
             }
         }
@@ -170,7 +170,7 @@ public class ObjectMangroveTree extends TreeGenerator {
 
             for (int[] o : offsets) {
                 Vector3 p = pos.add(o[0], o[1], o[2]);
-                if(level.getBlockAt(p).isAir()) {
+                if(level.getBlockIfCachedOrLoaded(p).isAir()) {
                     level.setBlockStateAt(p, MANGROVE_LEAVES);
                 }
             }

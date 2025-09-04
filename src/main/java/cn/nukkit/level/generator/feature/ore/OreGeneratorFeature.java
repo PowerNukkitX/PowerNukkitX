@@ -134,7 +134,7 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
                                 double zVal = ((double) zSeg + 0.5D - scaleZ) / (randVec1 / 2.0D);
 
                                 if (xVal * xVal + yVal * yVal + zVal * zVal < 1.0D) {
-                                    BlockState original = level.getLevel().getBlockStateAt(xSeg, ySeg, zSeg);
+                                    BlockState original = level.getBlockIfCachedOrLoaded(xSeg, ySeg, zSeg).getBlockState();
                                     if(canBeReplaced(original)) {
                                         level.setBlockStateAt(xSeg, ySeg, zSeg, getState(original));
                                     }

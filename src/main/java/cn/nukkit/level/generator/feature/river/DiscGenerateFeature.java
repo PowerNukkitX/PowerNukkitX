@@ -74,7 +74,7 @@ public abstract class DiscGenerateFeature extends CountGenerateFeature {
                     if ((x - sourceX) * (x - sourceX) + (z - sourceZ) * (z - sourceZ) <= radius * radius) {
                         for (int y = sourceY - getRadiusY(); y <= sourceY + getRadiusY(); y++) {
                             for (BlockState replaceBlockState : getReplacementBlocks()) {
-                                if (level.getBlockStateAt(x, y, z).equals(replaceBlockState)) {
+                                if (object.getBlockIfCachedOrLoaded(x, y, z).equals(replaceBlockState)) {
                                     object.setBlockStateAt(x, y, z, getSourceBlock());
                                 }
                             }

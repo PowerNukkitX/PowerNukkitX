@@ -110,7 +110,7 @@ public class AmethystGeodeFeature extends GenerateFeature {
     private boolean isAmethystShell(BlockManager level, int x, int y, int z) {
         if (y < level.getMinHeight() || y > level.getMaxHeight()) return false;
 
-        BlockState state = level.getBlockAt(x, y, z).getBlockState();
+        BlockState state = level.getBlockIfCachedOrLoaded(x, y, z).getBlockState();
         return state == AMETHYST_BLOCK || state == AMETHYST_BUDDING;
     }
 

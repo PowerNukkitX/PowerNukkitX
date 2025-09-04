@@ -26,7 +26,7 @@ public class ObjectSmallSpruceTree extends TreeGenerator {
         if (baseY < 1 || baseY + height + 2 >= 256) return false;
 
         Vector3 below = position.down();
-        String ground = level.getBlockIdAt(below.getFloorX(), below.getFloorY(), below.getFloorZ());
+        String ground = level.getBlockIdIfCachedOrLoaded(below.getFloorX(), below.getFloorY(), below.getFloorZ());
         if (!ground.equals(Block.GRASS_BLOCK) && !ground.equals(Block.DIRT) && !ground.equals(Block.PODZOL)) {
             return false;
         }
@@ -56,7 +56,7 @@ public class ObjectSmallSpruceTree extends TreeGenerator {
                         continue;
                     }
 
-                    if (!level.getBlockIdAt(xx, yyy, zz).equals(Block.AIR)) {
+                    if (!level.getBlockIdIfCachedOrLoaded(xx, yyy, zz).equals(Block.AIR)) {
                         continue;
                     }
 
@@ -89,7 +89,7 @@ public class ObjectSmallSpruceTree extends TreeGenerator {
             for (int dx = -r; dx <= r; dx++) {
                 for (int dz = -r; dz <= r; dz++) {
                     tmp.setComponents(i + dx, j + y, k + dz);
-                    if (!this.canGrowInto(world.getBlockIdAt(tmp.getFloorX(), tmp.getFloorY(), tmp.getFloorZ()))) {
+                    if (!this.canGrowInto(world.getBlockIdIfCachedOrLoaded(tmp.getFloorX(), tmp.getFloorY(), tmp.getFloorZ()))) {
                         return false;
                     }
                 }
@@ -99,13 +99,13 @@ public class ObjectSmallSpruceTree extends TreeGenerator {
     }
 
     private void placeLogAt(BlockManager world, Vector3 pos) {
-        if (this.canGrowInto(world.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()))) {
+        if (this.canGrowInto(world.getBlockIdIfCachedOrLoaded(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()))) {
             world.setBlockStateAt(pos, SPRUCE_LOG);
         }
     }
 
     private void placeLeafAt(BlockManager world, int x, int y, int z) {
-        String material = world.getBlockIdAt(x, y, z);
+        String material = world.getBlockIdIfCachedOrLoaded(x, y, z);
         if (material.equals(Block.AIR) || material.equals(Block.SNOW_LAYER)) {
             world.setBlockStateAt(new Vector3(x, y, z), SPRUCE_LEAVES);
         }
