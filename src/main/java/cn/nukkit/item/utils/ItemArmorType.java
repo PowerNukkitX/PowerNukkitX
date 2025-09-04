@@ -1,5 +1,7 @@
 package cn.nukkit.item.utils;
 
+import java.util.Locale;
+
 public enum ItemArmorType {
     HEAD("slot.armor.head"),
     CHEST("slot.armor.chest"),
@@ -25,24 +27,14 @@ public enum ItemArmorType {
     }
 
     public static ItemArmorType fromEnchantSlot(ItemEnchantSlot slot) {
-        if (slot == null) return null;
-        switch (slot) {
-            case ARMOR_HEAD:
-            case HEAD:
-            case COSMETIC_HEAD:
-                return HEAD;
-            case ARMOR_TORSO:
-            case CHESTPLATE:
-                return CHEST;
-            case ARMOR_LEGS:
-            case LEGGINGS:
-                return LEGS;
-            case ARMOR_FEET:
-            case BOOTS:
-                return FEET;
-            default:
-                return null;
-        }
+        if (slot == null || slot == ItemEnchantSlot.NONE) return null;
+        return switch (slot) {
+            case ARMOR_HEAD, HEAD, COSMETIC_HEAD -> HEAD;
+            case ARMOR_TORSO, CHESTPLATE         -> CHEST;
+            case ARMOR_LEGS,  LEGGINGS           -> LEGS;
+            case ARMOR_FEET,  BOOTS              -> FEET;
+            default                              -> null;
+        };
     }
 
     @Override
@@ -52,15 +44,19 @@ public enum ItemArmorType {
 
     public static ItemArmorType get(String s) {
         if (s == null || s.isBlank()) return null;
-        String t = s.trim().toLowerCase(java.util.Locale.ROOT);
-        switch (t) {
-            case "slot.armor.head": case "armor_head": case "head": case "helmet": return HEAD;
-            case "slot.armor.chest": case "armor_torso": case "chest": case "torso": case "chestplate": return CHEST;
-            case "slot.armor.legs": case "armor_legs": case "legs": case "leggings": return LEGS;
-            case "slot.armor.feet": case "armor_feet": case "feet": case "boots": return FEET;
-            default:
-                try { return ItemArmorType.valueOf(s.toUpperCase(java.util.Locale.ROOT)); }
-                catch (IllegalArgumentException ignore) { return null; }
-        }
+        String t = s.trim().toLowerCase(Locale.ROOT);
+        return switch (t) {
+            case "slot.armor.head", "armor_head", "head", "helmet"                  -> HEAD;
+            case "slot.armor.chest", "armor_torso", "chest", "torso", "chestplate"  -> CHEST;
+            case "slot.armor.legs", "armor_legs", "legs", "leggings"                -> LEGS;
+            case "slot.armor.feet", "armor_feet", "feet", "boots"                   -> FEET;
+            default ->  {
+            try {
+                    yield ItemArmorType.valueOf(s.trim().toUpperCase(java.util.Locale.ROOT));
+                } catch (IllegalArgumentException ignore) {
+                    yield null;
+                }
+            }
+        };
     }
 }

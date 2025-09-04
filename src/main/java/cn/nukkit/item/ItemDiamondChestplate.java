@@ -2,7 +2,15 @@ package cn.nukkit.item;
 
 public class ItemDiamondChestplate extends ItemArmor {
     public ItemDiamondChestplate() {
-        super(DIAMOND_CHESTPLATE);
+        this(0, 1);
+    }
+
+    public ItemDiamondChestplate(Integer meta) {
+        this(meta, 1);
+    }
+
+    public ItemDiamondChestplate(Integer meta, int count) {
+        super(DIAMOND_CHESTPLATE, meta, count, "Diamond Chestplate");
     }
 
     @Override

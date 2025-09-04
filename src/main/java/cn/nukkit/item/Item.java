@@ -9,6 +9,7 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.item.ItemWearEvent;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
+import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -1593,15 +1594,15 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
-        if (!Objects.equals(this.getId(), item.getId())) {
-            return false;
+        if (!Objects.equals(this.getId(), item.getId())) return false;
+
+        if (checkDamage) {
+            if (!equalItemBlock(item)) return false;
+            int d1 = this.hasMeta() ? this.getDamage() : 0;
+            int d2 = item.hasMeta() ? item.getDamage() : 0;
+            if (d1 != d2) return false;
         }
-        if (checkDamage && this.hasMeta() && item.hasMeta() && this.getDamage() != item.getDamage()) {
-            return false;
-        }
-        if (checkDamage && !equalItemBlock(item)) {
-            return false;
-        }
+
         if (checkCompound && (this.hasCompoundTag() || item.hasCompoundTag())) {
             return Objects.equals(this.getNamedTag(), item.getNamedTag());
         }
@@ -1850,20 +1851,21 @@ public abstract class Item implements Cloneable, ItemID {
      * Define the maximum number of items to be stacked
      */
     public int getMaxStackSize() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null && def.getComponents().contains("minecraft:max_stack_size")) {
-            return def.getComponents().getCompound("minecraft:max_stack_size").getByte("value");
+        CompoundTag c = getCustomItemComponent("minecraft:max_stack_size");
+        if (c != null) {
+            return c.getByte("value") & 0xFF;
         }
         return block == null ? 64 : block.getItemMaxStackSize();
     }
+
 
     /**
      * Get the burn time of a burnable item
      */
     public final Integer getFuelTime() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null && def.getComponents().contains("minecraft:fuel")) {
-            float seconds = def.getComponents().getCompound("minecraft:fuel").getFloat("duration");
+        CompoundTag c = getCustomItemComponent("minecraft:fuel");
+        if (c != null) {
+            float seconds = c.getFloat("duration");
             return Math.round(seconds * 20);
         }
 
@@ -1907,20 +1909,20 @@ public abstract class Item implements Cloneable, ItemID {
         return 100;
     }
 
-    public float useDuration() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null && def.getComponents().contains("minecraft:use_modifiers")) {
-            return def.getComponents().getCompound("minecraft:use_modifiers").getFloat("use_duration");
+    public float getUseDuration() {
+        CompoundTag c = getCustomItemComponent("minecraft:use_modifiers");
+        if (c != null) {
+            return c.getFloat("use_duration");
         }
-        return 0;
+        return 0f;
     }
 
-    public float movementModifier() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null && def.getComponents().contains("minecraft:use_modifiers")) {
-            return def.getComponents().getCompound("minecraft:use_modifiers").getFloat("movement_modifier");
+    public float getMovimentModifier() {
+        CompoundTag c = getCustomItemComponent("minecraft:use_modifiers");
+        if (c != null) {
+            return c.getFloat("movement_modifier");
         }
-        return 0;
+        return 1f;
     }
 
     /**
@@ -1957,7 +1959,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Returns the block that this item’s block_placer would place, or null if none.
      */
     public @Nullable Block getBlockPlacerTargetBlock() {
-        CustomItemDefinition def = getCustomDefinition(); // you already use this elsewhere
+        CustomItemDefinition def = getCustomDefinition();
         if (def == null) return null;
 
         CustomItemDefinition.BlockPlacerData data = def.getBlockPlacerData();
@@ -2008,9 +2010,9 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public int getNutrition() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null && def.getComponents().contains("minecraft:food")) {
-            return def.getComponents().getCompound("minecraft:food").getInt("nutrition");
+        CompoundTag c = getCustomItemComponent("minecraft:food");
+        if (c != null) {
+            return c.getInt("nutrition");
         }
         return getFoodRestore();
     }
@@ -2023,10 +2025,10 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public float getSaturation() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null && def.getComponents().contains("minecraft:food")) {
+        CompoundTag c = getCustomItemComponent("minecraft:food");
+        if (c != null) {
             int itemNutrition = getNutrition();
-            float itemSaturationModifier = def.getComponents().getCompound("minecraft:food").getFloat("saturation_modifier");
+            float itemSaturationModifier = c.getFloat("saturation_modifier");
             return (itemNutrition * itemSaturationModifier * 2f);
         }
         return getSaturationRestore();
@@ -2040,17 +2042,17 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public float getSaturationModifier() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null && def.getComponents().contains("minecraft:food")) {
-            return def.getComponents().getCompound("minecraft:food").getFloat("saturation_modifier");
+        CompoundTag c = getCustomItemComponent("minecraft:food");
+        if (c != null) {
+            return c.getFloat("saturation_modifier");
         }
         return 0;
     }
 
     public boolean canAlwaysEat() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null && def.getComponents().contains("minecraft:food")) {
-            return def.getComponents().getCompound("minecraft:food").getBoolean("can_always_eat");
+        CompoundTag c = getCustomItemComponent("minecraft:food");
+        if (c != null) {
+            return c.getBoolean("can_always_eat");
         }
         return !isRequiresHunger();
     }
@@ -2063,28 +2065,12 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public int getEatingTicks() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null && def.getComponents().contains("minecraft:use_modifiers")) {
-            float seconds = def.getComponents().getCompound("minecraft:use_modifiers").getFloat("use_duration");
+        CompoundTag c = getCustomItemComponent("minecraft:use_modifiers");
+        if (c != null) {
+            float seconds = c.getFloat("use_duration");
             return Math.max(0, Math.round(seconds * 20f));
         }
         return 0;
-    }
-
-    public float getUseDuration() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null && def.getComponents().contains("minecraft:use_modifiers")) {
-            return def.getComponents().getCompound("minecraft:use_modifiers").getFloat("use_duration");
-        }
-        return 0f;
-    }
-
-    public float getMovimentModifier() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null && def.getComponents().contains("minecraft:use_modifiers")) {
-            return def.getComponents().getCompound("minecraft:use_modifiers").getFloat("movement_modifier");
-        }
-        return 1f;
     }
 
     /*
@@ -2133,18 +2119,13 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     private void handleUsingConvertsTo(Player player) {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def == null) return;
+        CompoundTag c = getCustomItemComponent("minecraft:food");
+        if (c == null) return;
 
-        CompoundTag comps = def.getComponents();
-        if (!comps.contains("minecraft:food")) return;
-
-        CompoundTag food = comps.getCompound("minecraft:food");
-
-        Tag tag = food.get("using_converts_to");
+        Tag tag = c.get("using_converts_to");
         if (!(tag instanceof StringTag)) return;
 
-        String id = food.getString("using_converts_to");
+        String id = c.getString("using_converts_to");
         if (id == null || id.isBlank()) return;
 
         Item container = Item.get(id);
@@ -2237,73 +2218,45 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public boolean wearableOnClickAir(Player player, Vector3 directionVector) {
-        Item currentlyEquipped = null;
+        Level level = player.getLevel();
+        HumanInventory inv = player.getInventory();
 
-        if (this.isHelmet()) {
-            currentlyEquipped = player.getInventory().getHelmet();
-        } else if (this.isChestplate()) {
-            currentlyEquipped = player.getInventory().getChestplate();
-        } else if (this.isLeggings()) {
-            currentlyEquipped = player.getInventory().getLeggings();
-        } else if (this.isBoots()) {
-            currentlyEquipped = player.getInventory().getBoots();
-        }
-
-        if (currentlyEquipped != null && currentlyEquipped.getEnchantment(Enchantment.ID_BINDING_CURSE) != null) {
+        Item old = getEquipped(inv);
+        if (!old.isNull() && old.hasEnchantment(Enchantment.ID_BINDING_CURSE) && !player.isCreative()) {
             return false;
         }
 
-        boolean equip = false;
-        Item oldSlotItem = Item.AIR;
-        if (this.isHelmet()) {
-            oldSlotItem = player.getInventory().getHelmet();
-            if (player.getInventory().setHelmet(this)) {
-                equip = true;
-            }
-        } else if (this.isChestplate()) {
-            oldSlotItem = player.getInventory().getChestplate();
-            if (player.getInventory().setChestplate(this)) {
-                equip = true;
-            }
-        } else if (this.isLeggings()) {
-            oldSlotItem = player.getInventory().getLeggings();
-            if (player.getInventory().setLeggings(this)) {
-                equip = true;
-            }
-        } else if (this.isBoots()) {
-            oldSlotItem = player.getInventory().getBoots();
-            if (player.getInventory().setBoots(this)) {
-                equip = true;
-            }
-        }
-        if (equip) {
-            player.getInventory().setItem(player.getInventory().getHeldItemIndex(), oldSlotItem);
-            final int tier = this.getTier();
-            switch (tier) {
-                case WEARABLE_TIER_CHAIN:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_CHAIN);
-                    break;
-                case WEARABLE_TIER_DIAMOND:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_DIAMOND);
-                    break;
-                case WEARABLE_TIER_GOLD:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GOLD);
-                    break;
-                case WEARABLE_TIER_IRON:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_IRON);
-                    break;
-                case WEARABLE_TIER_LEATHER:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_LEATHER);
-                    break;
-                case WEARABLE_TIER_NETHERITE:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_NETHERITE);
-                    break;
-                default:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GENERIC);
-            }
+        if (setEquipped(inv, this)) {
+            inv.setItem(inv.getHeldItemIndex(), old);
+            Sound s = switch (getTier()) {
+                case WEARABLE_TIER_CHAIN     -> Sound.ARMOR_EQUIP_CHAIN;
+                case WEARABLE_TIER_DIAMOND   -> Sound.ARMOR_EQUIP_DIAMOND;
+                case WEARABLE_TIER_GOLD      -> Sound.ARMOR_EQUIP_GOLD;
+                case WEARABLE_TIER_IRON      -> Sound.ARMOR_EQUIP_IRON;
+                case WEARABLE_TIER_LEATHER   -> Sound.ARMOR_EQUIP_LEATHER;
+                case WEARABLE_TIER_NETHERITE -> Sound.ARMOR_EQUIP_NETHERITE;
+                default                      -> Sound.ARMOR_EQUIP_GENERIC;
+            };
+            level.addSound(player, s);
         }
 
         return this.getCount() == 0;
+    }
+
+    private Item getEquipped(HumanInventory inv) {
+        if (isHelmet()) return inv.getHelmet();
+        if (isChestplate()) return inv.getChestplate();
+        if (isLeggings()) return inv.getLeggings();
+        if (isBoots()) return inv.getBoots();
+        return Item.AIR;
+    }
+
+    private boolean setEquipped(HumanInventory inv, Item item) {
+        if (isHelmet()) return inv.setHelmet(item);
+        if (isChestplate()) return inv.setChestplate(item);
+        if (isLeggings()) return inv.setLeggings(item);
+        if (isBoots()) return inv.setBoots(item);
+        return false;
     }
 
     public void wearableSetDamage(int damage) {
@@ -2336,9 +2289,13 @@ public abstract class Item implements Cloneable, ItemID {
      * Define the attackdamage of an item
      */
     public int getAttackDamage() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null && def.getComponents().contains("item_properties")) {
-            return def.getComponents().getCompound("item_properties").getInt("damage");
+        CompoundTag c = getCustomItemComponent("minecraft:damage");
+        if (c != null && c.contains("value")) {
+            return c.getByte("value") & 0xFF;
+        }
+        CompoundTag p = getCustomItemProperties();
+        if (p != null && p.contains("damage")) {
+            return p.getInt("damage");
         }
         return 1;
     }
@@ -2415,13 +2372,9 @@ public abstract class Item implements Cloneable, ItemID {
     public Integer getDiggerSpeed(@Nullable Block block) {
         if (block == null) return null;
 
-        CustomItemDefinition def = getCustomDefinition();
-        if (def == null) return null;
+        CompoundTag digger = getCustomItemComponent("minecraft:digger");
+        if (digger == null) return null;
 
-        CompoundTag comps = def.getComponents();
-        if (!comps.contains("minecraft:digger")) return null;
-
-        CompoundTag digger = comps.getCompound("minecraft:digger");
         ListTag<CompoundTag> rules = digger.getList("destroy_speeds", CompoundTag.class);
         if (rules == null || rules.size() == 0) return null;
 
@@ -2449,7 +2402,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (digger.getBoolean("use_efficiency")) {
             int level = this.getEnchantmentLevel(Enchantment.ID_EFFICIENCY);
             if (level > 0) {
-                speed += (level * level) + 1;
+                speed += (level * level) + 1; // Efficiency bonus
             }
         }
         return speed;
@@ -2540,6 +2493,31 @@ public abstract class Item implements Cloneable, ItemID {
 
     public void incDamage(int v) {
         setDamage(this.meta += v);
+    }
+
+    public boolean isCustomItem() {
+        if (this instanceof CustomItem) return true;
+        return false;
+    }
+
+    private CompoundTag customComponents() {
+        CustomItemDefinition def = getCustomDefinition();
+        return def == null ? null : def.getComponents();
+    }
+
+    private CompoundTag getCustomItemProperties() {
+        CompoundTag comps = customComponents();
+        if (comps == null) return null;
+        return comps.contains("item_properties") ? comps.getCompound("item_properties") : null;
+    }
+
+    private CompoundTag getCustomItemComponent(String key) {
+        CompoundTag comps = customComponents();
+        if (comps == null) return null;
+        if (comps.contains(key)) {
+            return comps.getCompound(key);
+        }
+        return null;
     }
 
     @Nullable

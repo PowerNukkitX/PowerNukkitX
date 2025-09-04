@@ -211,15 +211,15 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
         private static String autoToolTagForSlot(String slotId) {
             if (slotId == null) return null;
-            switch (slotId) {
-                case "pickaxe": return "minecraft:is_pickaxe";
-                case "axe":     return "minecraft:is_axe";
-                case "shovel":  return "minecraft:is_shovel";
-                case "hoe":     return "minecraft:is_hoe";
-                case "sword":   return "minecraft:is_sword";
-                case "shears":  return "minecraft:is_shears";
-                default:        return null;
-            }
+            return switch (slotId) {
+                case "pickaxe"  -> "minecraft:is_pickaxe";
+                case "axe"      -> "minecraft:is_axe";
+                case "shovel"   -> "minecraft:is_shovel";
+                case "hoe"      -> "minecraft:is_hoe";
+                case "sword"    -> "minecraft:is_sword";
+                case "shears"   -> "minecraft:is_shears";
+                default -> null;
+            };
         }
 
 
@@ -281,7 +281,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          */
         public SimpleBuilder creativeGroup(String creativeGroup) {
             if (creativeGroup.isBlank()) {
-                log.error("creativeGroup has an invalid value!");
+                log.error("creativeGroup has an empty value!");
                 return this;
             }
             ensureItemProperties().putString("creative_group", creativeGroup);
@@ -502,7 +502,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * @param value int value, must be >= 0
          */
         public SimpleBuilder enchantable(ItemEnchantSlot slot, int value) {
-            if (slot == null) return this;
+            if (value < 0) value = 0;
+            if (slot == ItemEnchantSlot.NONE) return this;
             return this.enchantable(slot.id(), value);
         }
 
@@ -1137,12 +1138,12 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
         private static int resolveAnimationId(String type) {
             if (type == null) return 0;
-            switch (type.toLowerCase(Locale.ROOT)) {
-                case "eat":   return 1;
-                case "drink": return 2;
-                case "bow":   return 4;
-                default:      return 0; // unknown/none
-            }
+            return switch (type.toLowerCase(Locale.ROOT)) {
+                case "eat"    -> 1;
+                case "drink"  -> 2;
+                case "bow"    -> 4;
+                default       -> 0; // unknown/none
+            };
         }
 
         private static int toTicks(Float seconds) {

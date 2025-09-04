@@ -84,10 +84,6 @@ public class PlayerFood {
         this.addFood(item.getNutrition(), item.getSaturation());
     }
 
-    public void addFood(ItemFood food) {
-        this.addFood((Item) food);
-    }
-
     public void setFood(int food) {
         this.setFood(food, -1);
     }

@@ -73,32 +73,23 @@ public final class DiggerEntry {
     }
 
     public DiggerEntry state(String key, int value) {
-        if (key != null && !key.isBlank()) states.putInt(key, value);
+        putState(key, value);
         return this;
     }
 
     public DiggerEntry state(String key, boolean value) {
-        if (key != null && !key.isBlank()) states.putBoolean(key, value);
+        putState(key, value);
         return this;
     }
 
     public DiggerEntry state(String key, String value) {
-        if (key != null && !key.isBlank() && value != null) states.putString(key, value);
+        putState(key, value);
         return this;
     }
 
     public DiggerEntry states(Map<String, ?> map) {
         if (map == null) return this;
-        map.forEach((k, v) -> {
-            if (k == null || k.isBlank() || v == null) return;
-            if (v instanceof Number n) {
-                states.putInt(k, n.intValue());
-            } else if (v instanceof Boolean b) {
-                states.putBoolean(k, b);
-            } else if (v instanceof String s) {
-                states.putString(k, s);
-            }
-        });
+        map.forEach(this::putState);
         return this;
     }
 
@@ -122,5 +113,25 @@ public final class DiggerEntry {
         if (tags.isEmpty()) return "";
         String joined = String.join(", ", tags);
         return "query.any_tag( " + joined + " )";
+    }
+
+    // Helpers
+    private static boolean validKey(String key) {
+        return key != null && !key.isBlank();
+    }
+
+    private static boolean validKV(String key, Object value) {
+        return validKey(key) && value != null;
+    }
+
+    private void putState(String key, Object v) {
+        if (!validKV(key, v)) return;
+        if (v instanceof Number n) {
+            states.putInt(key, n.intValue());
+        } else if (v instanceof Boolean b) {
+            states.putBoolean(key, b);
+        } else if (v instanceof String s) {
+            states.putString(key, s);
+        }
     }
 }

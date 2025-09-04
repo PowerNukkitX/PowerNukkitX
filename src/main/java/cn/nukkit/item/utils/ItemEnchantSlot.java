@@ -30,9 +30,13 @@ public enum ItemEnchantSlot {
 
     // aliases for readability
     HEAD("armor_head"),
+    HELMET("armor_head"),
     CHESTPLATE("armor_torso"),
+    CHEST("armor_torso"),
     LEGGINGS("armor_legs"),
+    LEGS("armor_legs"),
     BOOTS("armor_feet"),
+    FEET("armor_feet"),
     TRIDENT("spear"),
     FLINT_AND_STEEL("flintsteel"),
     CARROT_ON_A_STICK("carrot_stick");
@@ -48,11 +52,11 @@ public enum ItemEnchantSlot {
     }
 
     public static ItemEnchantSlot fromId(String id) {
-        if (id == null) return null;
+        if (id == null || id.isBlank()) return NONE;
         String key = id.trim().toLowerCase(Locale.ROOT);
         for (ItemEnchantSlot s : values()) {
             if (s.id.equals(key)) return s;
         }
-        return null;
+        return NONE;
     }
 }
