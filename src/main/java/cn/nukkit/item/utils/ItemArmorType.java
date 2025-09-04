@@ -1,8 +1,8 @@
 package cn.nukkit.item.utils;
 
-import java.util.Locale;
 
 public enum ItemArmorType {
+    NONE(""),
     HEAD("slot.armor.head"),
     CHEST("slot.armor.chest"),
     LEGS("slot.armor.legs"),
@@ -19,21 +19,21 @@ public enum ItemArmorType {
     }
 
     public static ItemArmorType fromId(String id) {
-        if (id == null) return null;
+        if (id == null || id.isBlank()) return NONE;
         for (ItemArmorType t : values()) {
             if (t.id.equals(id)) return t;
         }
-        return null;
+        return NONE;
     }
 
     public static ItemArmorType fromEnchantSlot(ItemEnchantSlot slot) {
-        if (slot == null || slot == ItemEnchantSlot.NONE) return null;
+        if (slot == null || slot == ItemEnchantSlot.NONE) return NONE;
         return switch (slot) {
             case ARMOR_HEAD, HEAD, COSMETIC_HEAD -> HEAD;
             case ARMOR_TORSO, CHESTPLATE         -> CHEST;
             case ARMOR_LEGS,  LEGGINGS           -> LEGS;
             case ARMOR_FEET,  BOOTS              -> FEET;
-            default                              -> null;
+            default                              -> NONE;
         };
     }
 
@@ -43,19 +43,16 @@ public enum ItemArmorType {
     }
 
     public static ItemArmorType get(String s) {
-        if (s == null || s.isBlank()) return null;
-        String t = s.trim().toLowerCase(Locale.ROOT);
+        if (s == null || s.isBlank()) return NONE;
+        String t = s.trim().toLowerCase(java.util.Locale.ROOT);
         return switch (t) {
             case "slot.armor.head", "armor_head", "head", "helmet"                  -> HEAD;
             case "slot.armor.chest", "armor_torso", "chest", "torso", "chestplate"  -> CHEST;
             case "slot.armor.legs", "armor_legs", "legs", "leggings"                -> LEGS;
             case "slot.armor.feet", "armor_feet", "feet", "boots"                   -> FEET;
-            default ->  {
-            try {
-                    yield ItemArmorType.valueOf(s.trim().toUpperCase(java.util.Locale.ROOT));
-                } catch (IllegalArgumentException ignore) {
-                    yield null;
-                }
+            default -> {
+                try { yield ItemArmorType.valueOf(s.trim().toUpperCase(java.util.Locale.ROOT)); }
+                catch (IllegalArgumentException ignore) { yield NONE; }
             }
         };
     }

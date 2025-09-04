@@ -635,7 +635,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          */
         public SimpleBuilder wearable(String slot, int protection, boolean hidesPlayerLocation) {
             ItemArmorType typeSlot = ItemArmorType.get(slot);
-            Preconditions.checkArgument(typeSlot != null, "Unknown wearable slot: %s", slot);
+            Preconditions.checkArgument(typeSlot != ItemArmorType.NONE, "Unknown wearable slot: %s", slot);
             return wearable(typeSlot, protection, hidesPlayerLocation);
         }
 
@@ -684,7 +684,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * @param hidesPlayerLocation if true and worn hides player on locator maps and the locator bar.
          */
         public SimpleBuilder wearable(ItemArmorType slot, int protection, boolean hidesPlayerLocation) {
-            Preconditions.checkArgument(slot != null, "wearable slot cannot be null");
+            Preconditions.checkArgument(slot != ItemArmorType.NONE, "wearable slot cannot be null");
             Preconditions.checkArgument(protection >= 0, "protection must be >= 0");
             this.wearableSlot = slot;
             this.wearableProtection = protection;
@@ -1758,16 +1758,14 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
     }
 
     public boolean isWearable() {
-        return hasComponent("minecraft:wearable");
+        return getWearableType() != ItemArmorType.NONE;
     }
 
-    public @Nullable ItemArmorType getWearableType() {
-        if (!isWearable()) return null;
+    public @NotNull ItemArmorType getWearableType() {
         CompoundTag wearable = getComponent("minecraft:wearable");
+        if (wearable == null) return ItemArmorType.NONE;
 
         String slot = wearable.getString("slot");
-        if (slot == null || slot.isBlank()) return null;
-
         return ItemArmorType.get(slot);
     }
     public boolean isHelmet()     { return getWearableType() == ItemArmorType.HEAD; }

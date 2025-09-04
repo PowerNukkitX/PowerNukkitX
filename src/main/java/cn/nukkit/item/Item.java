@@ -13,6 +13,7 @@ import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.utils.ItemArmorType;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -2154,15 +2155,24 @@ public abstract class Item implements Cloneable, ItemID {
      * Define if the item is a Armor
      */
     public boolean isWearable() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isWearable();
-        return isArmor();
+        return getWearableType() != ItemArmorType.NONE;
     }
 
     public boolean isArmor() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isWearable();
-        return false;
+        return isWearable();
+    }
+
+    public @NotNull ItemArmorType getWearableType() {
+        CompoundTag c = getCustomItemComponent("minecraft:wearable");
+        if (c != null) {
+            ItemArmorType t = ItemArmorType.get(c.getString("slot"));
+            return t != null ? t : ItemArmorType.NONE;
+        }
+        if (this.isHelmet())     return ItemArmorType.HEAD;
+        if (this.isChestplate()) return ItemArmorType.CHEST;
+        if (this.isLeggings())   return ItemArmorType.LEGS;
+        if (this.isBoots())      return ItemArmorType.FEET;
+        return ItemArmorType.NONE;
     }
 
     /**
@@ -2244,19 +2254,23 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     private Item getEquipped(HumanInventory inv) {
-        if (isHelmet()) return inv.getHelmet();
-        if (isChestplate()) return inv.getChestplate();
-        if (isLeggings()) return inv.getLeggings();
-        if (isBoots()) return inv.getBoots();
-        return Item.AIR;
+        return switch (getWearableType()) {
+            case HEAD  -> inv.getHelmet();
+            case CHEST -> inv.getChestplate();
+            case LEGS  -> inv.getLeggings();
+            case FEET  -> inv.getBoots();
+            case NONE  -> Item.AIR;
+        };
     }
 
     private boolean setEquipped(HumanInventory inv, Item item) {
-        if (isHelmet()) return inv.setHelmet(item);
-        if (isChestplate()) return inv.setChestplate(item);
-        if (isLeggings()) return inv.setLeggings(item);
-        if (isBoots()) return inv.setBoots(item);
-        return false;
+        return switch (getWearableType()) {
+            case HEAD  -> inv.setHelmet(item);
+            case CHEST -> inv.setChestplate(item);
+            case LEGS  -> inv.setLeggings(item);
+            case FEET  -> inv.setBoots(item);
+            case NONE  -> false;
+        };
     }
 
     public void wearableSetDamage(int damage) {
