@@ -10,33 +10,22 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
-import cn.nukkit.level.generator.noise.f.vanilla.NoiseGeneratorOctavesF;
-import cn.nukkit.math.MathHelper;
+import cn.nukkit.level.generator.noise.f.vanilla.NormalNoise;
+import cn.nukkit.level.generator.noise.spline.Spline;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
-
-import java.util.Set;
 
 public class NormalTerrainStage extends GenerateStage {
 
     public static final String NAME = "normal_terrain";
-    private static final float[] biomeWeights = new float[25];
-
-    static {
-        for (int i = -2; i <= 2; ++i) {
-            for (int j = -2; j <= 2; ++j) {
-                biomeWeights[i + 2 + (j + 2) * 5] = (float) (10.0F / Math.sqrt((float) (i * i + j * j) + 0.2F));
-            }
-        }
-    }
-
 
     public static final int SEA_LEVEL = 62;
 
     private OverworldBiomePicker picker;
+    private NormalNoise surfaceNoise;
+
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -46,188 +35,43 @@ public class NormalTerrainStage extends GenerateStage {
         int baseX = chunkX << 4;
         int baseZ = chunkZ << 4;
         Level level = chunk.getLevel();
-        if(picker == null) picker = (OverworldBiomePicker) level.getBiomePicker();
-
         NukkitRandom random = new NukkitRandom(level.getSeed());
-        NoiseGeneratorOctavesF minLimitPerlinNoiseG = new NoiseGeneratorOctavesF(random.identical(), 16);
-        NoiseGeneratorOctavesF maxLimitPerlinNoiseG = new NoiseGeneratorOctavesF(random.identical(), 16);
-        NoiseGeneratorOctavesF mainPerlinNoiseG = new NoiseGeneratorOctavesF(random.identical(), 8);
-        NoiseGeneratorOctavesF depthNoiseG = new NoiseGeneratorOctavesF(random.identical(), 16);
-        float[] depthRegion = depthNoiseG.generateNoiseOctaves(chunkX * 4, chunkZ * 4, 5, 5, 200f, 200f);
-        float[] mainNoiseRegion = mainPerlinNoiseG.generateNoiseOctaves(chunkX * 4, 0, chunkZ * 4, 5, 33, 5, 684.412f / 60f, 684.412f / 160f, 684.412f / 60f);
-        float[] minLimitRegion = minLimitPerlinNoiseG.generateNoiseOctaves(chunkX * 4, 0, chunkZ * 4, 5, 33, 5, 684.412f, 684.412f, 684.412f);
-        float[] maxLimitRegion = maxLimitPerlinNoiseG.generateNoiseOctaves(chunkX * 4, 0, chunkZ * 4, 5, 33, 5, 684.412f, 684.412f, 684.412f);
-        float[] heightMap = new float[825];
+        if(picker == null) picker = (OverworldBiomePicker) level.getBiomePicker();
+        if(surfaceNoise == null) surfaceNoise = new NormalNoise(random.identical(), -6, new float[]{1f, 1f, 1f});
+        for(int x = 0; x < 16; x++) {
+            for(int z = 0; z < 16; z++) {
+                OverworldBiomeResult result = picker.pick(x + baseX, SEA_LEVEL, z+ baseZ);
+                float continental = result.getContinental();
+                float erosion = result.getErosion();
+                float pv = result.getPv();
+                BiomeDefinition biome = Registries.BIOME.get(result.getBiomeId());
 
-        //generate heightmap and smooth biome heights
-        int horizCounter = 0;
-        int vertCounter = 0;
-        for (int xSeg = 0; xSeg < 5; ++xSeg) {
-            for (int zSeg = 0; zSeg < 5; ++zSeg) {
-                float heightVariationSum = 0.0F;
                 float baseHeightSum = 0.0F;
                 float biomeWeightSum = 0.0F;
-                OverworldBiomeResult result = picker.pick(baseX + (xSeg * 4), SEA_LEVEL,baseZ + (zSeg * 4));
-                BiomeDefinition biome = Registries.BIOME.get(result.getBiomeId());
-                float smoothScale = 1 + (4 * (1 - Math.abs(result.getWeirdness())));
-
-                boolean river = false;
-                for (int xSmooth = -2; xSmooth <= 2; ++xSmooth) {
-                    for (int zSmooth = -2; zSmooth <= 2; ++zSmooth) {
-                        int curX = baseX + (xSeg * 4) + (int) (xSmooth * smoothScale);
-                        int curZ = baseZ + (zSeg * 4) + (int) (zSmooth * smoothScale);
-                        OverworldBiomeResult result1 = picker.pick(curX, SEA_LEVEL, curZ);
-                        BiomeDefinition biome1 = Registries.BIOME.get(result1.getBiomeId());
-                        if(biome1.getTags().contains(BiomeTags.RIVER)) river = true;
-                    }
-                }
-                for (int xSmooth = -2; xSmooth <= 2; ++xSmooth) {
-                    for (int zSmooth = -2; zSmooth <= 2; ++zSmooth) {
-                        int curX = baseX + (xSeg * 4) + (int)(xSmooth*smoothScale);
-                        int curZ = baseZ + (zSeg * 4) + (int)(zSmooth*smoothScale);
-                        OverworldBiomeResult result1 = picker.pick(curX, SEA_LEVEL, curZ);
-                        float continental = result1.getContinental();
-                        float baseHeight = continental*1.5f;
-                        BiomeDefinition biome1 = Registries.BIOME.get(result1.getBiomeId());
-
-                        float heightVariation = Math.min(1, (biome1.data.scale + 0.1f));
-                        float scaledWeight = Math.abs(result1.getWeirdness());
-                        Set<String> tags = biome1.getTags();
-                        if(tags.contains(BiomeTags.DESERT) || tags.contains(BiomeTags.BEACH)) {
-                            heightVariation = 0.2f;
-                            if(tags.contains(BiomeTags.BEACH)) {
-                                scaledWeight = 10f;
-                                heightVariation = 0.1f;
-                            }
-                        } else if(biome1.getTags().contains(BiomeTags.OCEAN)) {
-                            baseHeight *= 2;
-                            heightVariation = 0.2f;
-                        } else if(biome1.getTags().contains(BiomeTags.RIVER)) {
-                            baseHeight = result1.getPv() + 0.2f;
-                            heightVariation = result1.getPv() * -0.8f;
-                            scaledWeight = 0.5f;
-                        } else if(biome1.getTags().contains(BiomeTags.MOUNTAINS)) {
-                            baseHeight = 2*NukkitMath.remap(result1.getPv(), 0, 1, 0, 2);
-                            heightVariation = 0.5f;
-                            scaledWeight = 0.1f;
-                        } else if(biome1.getTags().contains(BiomeTags.JUNGLE))  {
-                            heightVariation = 0.3f;
-                        }
-
-                        heightVariationSum += heightVariation * scaledWeight;
-                        baseHeightSum += baseHeight * scaledWeight;
-                        biomeWeightSum += scaledWeight;
+                int smoothFactor = 5;
+                for (int xSmooth = -smoothFactor; xSmooth <= smoothFactor; ++xSmooth) {
+                    for (int zSmooth = -smoothFactor; zSmooth <= smoothFactor; ++zSmooth) {
+                        int cx = x + baseX + xSmooth;
+                        int cz = z + baseZ + zSmooth;
+                        OverworldBiomeResult result1 = picker.pick(cx, SEA_LEVEL, cz);
+                        BiomeDefinition definition = Registries.BIOME.get(result1.getBiomeId());
+                        float weight = 1 - definition.data.scale;
+                        float d0 = this.surfaceNoise.getValue(cx, SEA_LEVEL, cz);
+                        float depth = (Spline.getDepth(result1.getContinental(), result1.getErosion(), result1.getPv()) + (d0 * Math.clamp(result1.getErosion(), 0.1f, 0.3f)));
+                        baseHeightSum += depth * weight;
+                        biomeWeightSum += weight;
                     }
                 }
 
-                heightVariationSum = heightVariationSum / biomeWeightSum;
-                baseHeightSum = baseHeightSum / biomeWeightSum;
-                heightVariationSum = heightVariationSum * 0.9F + 0.1F;
-                baseHeightSum = (baseHeightSum * 4.0F - 1.0F) / 8.0F;
-                float depthNoise = depthRegion[vertCounter] / 8000.0f;
+                baseHeightSum = baseHeightSum / Math.max(biomeWeightSum, 1);
+                float originalHeight = NukkitMath.remap(baseHeightSum, -1.5f, 1.5f, level.getMinHeight(), level.getMaxHeight());
 
-                if (depthNoise < 0.0f) {
-                    depthNoise = -depthNoise * 0.3f;
+                float height = NukkitMath.clamp(originalHeight, level.getMinHeight(), level.getMaxHeight());
+                for(int y = 0; y < height; y++) {
+                    chunk.setBlockState(x, y, z, BlockStone.PROPERTIES.getDefaultState());
                 }
-
-                depthNoise = depthNoise * 3.0f - 2.0f;
-
-                if (depthNoise < 0.0f) {
-                    depthNoise = depthNoise / 2.0f;
-
-                    if (depthNoise < -1.0f) {
-                        depthNoise = -1.0f;
-                    }
-
-                    depthNoise = depthNoise / 1.4f;
-                    depthNoise = depthNoise / 2.0f;
-                } else {
-                    if (depthNoise > 1.0f) {
-                        depthNoise = 1.0f;
-                    }
-
-                    depthNoise = depthNoise / 8.0f;
-                }
-
-                ++vertCounter;
-                float baseHeightClone = baseHeightSum;
-                float heightVariationClone = heightVariationSum;
-                baseHeightClone = baseHeightClone + depthNoise * 0.2f;
-                baseHeightClone = baseHeightClone * 8.5f / 8.0f;
-                float baseHeightFactor = 8.5f + baseHeightClone * 4.0f;
-
-                for (int ySeg = 0; ySeg < 33; ++ySeg) {
-                    float baseScale = ((float) ySeg - baseHeightFactor) * 12f * 128.0f / 256.0f / heightVariationClone;
-
-                    if (baseScale < 0.0f) {
-                        baseScale *= 4.0f;
-                    }
-
-                    float minScaled = minLimitRegion[horizCounter] / 512f;
-                    float maxScaled = maxLimitRegion[horizCounter] / 512f;
-                    float noiseScaled = (mainNoiseRegion[horizCounter] / 10.0f + 1.0f) / 2.0f;
-                    float clamp = MathHelper.denormalizeClamp(minScaled, maxScaled, noiseScaled) - baseScale;
-
-                    if (ySeg > 29) {
-                        float yScaled = ((float) (ySeg - 29) / 3.0F);
-                        clamp = clamp * (1.0f - yScaled) + -10.0f * yScaled;
-                    }
-
-                    heightMap[horizCounter] = clamp;
-                    ++horizCounter;
-                }
-            }
-        }
-
-        //place blocks
-        for (int xSeg = 0; xSeg < 4; ++xSeg) {
-            int xScale = xSeg * 5;
-            int xScaleEnd = (xSeg + 1) * 5;
-
-            for (int zSeg = 0; zSeg < 4; ++zSeg) {
-                int zScale1 = (xScale + zSeg) * 33;
-                int zScaleEnd1 = (xScale + zSeg + 1) * 33;
-                int zScale2 = (xScaleEnd + zSeg) * 33;
-                int zScaleEnd2 = (xScaleEnd + zSeg + 1) * 33;
-
-                for (int ySeg = 0; ySeg < 32; ++ySeg) {
-                    double height1 = heightMap[zScale1 + ySeg];
-                    double height2 = heightMap[zScaleEnd1 + ySeg];
-                    double height3 = heightMap[zScale2 + ySeg];
-                    double height4 = heightMap[zScaleEnd2 + ySeg];
-                    double height5 = (heightMap[zScale1 + ySeg + 1] - height1) * 0.125f;
-                    double height6 = (heightMap[zScaleEnd1 + ySeg + 1] - height2) * 0.125f;
-                    double height7 = (heightMap[zScale2 + ySeg + 1] - height3) * 0.125f;
-                    double height8 = (heightMap[zScaleEnd2 + ySeg + 1] - height4) * 0.125f;
-
-                    for (int yIn = 0; yIn < 8; ++yIn) {
-                        double baseIncr = height1;
-                        double baseIncr2 = height2;
-                        double scaleY = (height3 - height1) * 0.25f;
-                        double scaleY2 = (height4 - height2) * 0.25f;
-
-                        for (int zIn = 0; zIn < 4; ++zIn) {
-                            double scaleZ = (baseIncr2 - baseIncr) * 0.25f;
-                            double scaleZ2 = baseIncr - scaleZ;
-
-                            for (int xIn = 0; xIn < 4; ++xIn) {
-                                if ((scaleZ2 += scaleZ) > 0.0f) {
-                                    int y = ySeg * 8 + yIn;
-                                    chunk.setBlockState(xSeg * 4 + zIn, y, zSeg * 4 + xIn, BlockStone.PROPERTIES.getDefaultState());
-                                } else if (ySeg * 8 + yIn <= SEA_LEVEL) {
-                                    chunk.setBlockState(xSeg * 4 + zIn, ySeg * 8 + yIn, zSeg * 4 + xIn, BlockWater.PROPERTIES.getDefaultState());
-                                }
-                            }
-
-                            baseIncr += scaleY;
-                            baseIncr2 += scaleY2;
-                        }
-
-                        height1 += height5;
-                        height2 += height6;
-                        height3 += height7;
-                        height4 += height8;
-                    }
+                for(int y = SEA_LEVEL; y > height; y--) {
+                    chunk.setBlockState(x, y, z, BlockWater.PROPERTIES.getDefaultState());
                 }
             }
         }
@@ -252,6 +96,7 @@ public class NormalTerrainStage extends GenerateStage {
         }
         chunk.recalculateHeightMap();
     }
+
 
     @Override
     public String name() {

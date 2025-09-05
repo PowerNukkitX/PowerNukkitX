@@ -21,6 +21,8 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
+import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
+
 public abstract class ObjectGeneratorFeature extends GenerateFeature {
 
     public abstract ObjectGenerator getGenerator(NukkitRandom random);
@@ -56,13 +58,13 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
             NukkitRandom random1 = new NukkitRandom(random.getSeed() + i);
             int x = random1.nextInt(15);
             int z = random1.nextInt(15);
-            int y = chunk.getHeightMap(x , z);
+            int y = chunk.getHeightMap(x, z);
             if (y < level.getMinHeight()) {
                 continue;
             }
             v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
             if(!canSpawnHere(Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())))) continue;
-            while(checkBlock(level.getBlock(v))) {
+            while(checkBlock(level.getBlock(v)) && v.getY() > SEA_LEVEL) {
                 v.y--;
             }
             if(isSupportValid(level.getBlock(v))) {

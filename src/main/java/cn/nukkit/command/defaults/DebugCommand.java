@@ -53,7 +53,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         });
         this.commandParameters.put("biome", new CommandParameter[]{
                 CommandParameter.newEnum("biome", new String[]{"biome"}),
-                CommandParameter.newEnum("features", true, new String[]{"pick", "features"})
+                CommandParameter.newEnum("features", true, new String[]{"pick", "features", "parameter"})
         });
         this.commandParameters.put("light", new CommandParameter[]{
                 CommandParameter.newEnum("light", new String[]{"light"})
@@ -114,6 +114,11 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     sender.sendMessage(biome.getName() + " " + Arrays.toString(biome.getTags().toArray(String[]::new)));
                 } else {
                     switch (list.getResult(1).toString()) {
+                        case "parameter" -> {
+                            BiomeDefinition biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+                            sender.sendMessage("Scale: " + biome.data.scale);
+                            sender.sendMessage("Depth: " + biome.data.depth);
+                        }
                         case "pick" -> {
                             BiomePicker picker = loc.getLevel().getBiomePicker();
                             if(picker instanceof OverworldBiomePicker p) {

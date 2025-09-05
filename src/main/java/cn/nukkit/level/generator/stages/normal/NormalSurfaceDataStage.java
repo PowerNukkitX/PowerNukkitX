@@ -54,7 +54,7 @@ public class NormalSurfaceDataStage extends GenerateStage {
                         if(biomeSurfaceMaterialAdjustmentDataOptional.isPresent()) {
                             BiomeSurfaceMaterialAdjustmentData biomeSurfaceMaterialAdjustmentData = biomeSurfaceMaterialAdjustmentDataOptional.get();
                             for(var element : biomeSurfaceMaterialAdjustmentData.biomeElements) {
-                                float random = simplexF.noise3D((chunk.getX() << 4) + x, y, (chunk.getZ() << 4) + z, true);
+                                float random = simplexF.noise2D((chunk.getX() << 4) + x, (chunk.getZ() << 4) + z, true);
                                 if(random < element.noiseUpperBound && random > element.noiseLowerBound) {
                                     int _topBlock = element.adjustedMaterials.topBlock;
                                     int _midBlock = element.adjustedMaterials.midBlock;
@@ -63,6 +63,7 @@ public class NormalSurfaceDataStage extends GenerateStage {
                                     if(_midBlock != -1) midBlock = _midBlock;
                                     if(_seaFloorBlock != -1) seaFloorBlock = _seaFloorBlock;
                                 }
+
                             }
                         }
                         if(topBlockState != BlockWater.PROPERTIES.getBlockState()) {
