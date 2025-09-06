@@ -4,8 +4,6 @@ import cn.nukkit.utils.random.NukkitRandom;
 
 public class NormalNoise {
 
-    private static final double INPUT_FACTOR = 1.0181268882175227;
-    private static final double TARGET_DEVIATION = 0.3333333333333333;
     private final float valueFactor;
     private final NoiseGeneratorPerlinF first;
     private final NoiseGeneratorPerlinF second;

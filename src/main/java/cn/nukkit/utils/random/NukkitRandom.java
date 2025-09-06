@@ -11,8 +11,8 @@ import org.apache.commons.rng.simple.RandomSource;
  */
 public class NukkitRandom implements RandomSourceProvider {
 
-    final long seeds;
-    final RestorableUniformRandomProvider provider;
+    long seeds;
+    RestorableUniformRandomProvider provider;
     final ContinuousSampler sampler;
 
     public NukkitRandom() {
@@ -20,10 +20,14 @@ public class NukkitRandom implements RandomSourceProvider {
     }
 
     public NukkitRandom(long seeds) {
-        this.seeds = seeds;
-        provider = RandomSource.MT.create(seeds);
+        setSeed(seeds);
         sampler = GaussianSampler.of(ZigguratSampler.NormalizedGaussian.of(RandomSource.ISAAC.create()),
                 0, 0.33333);
+    }
+
+    public void setSeed(long seed) {
+        this.seeds = seed;
+        provider = RandomSource.MT.create(seeds);
     }
 
     @Override
