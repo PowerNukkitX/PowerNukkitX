@@ -54,7 +54,7 @@ public class NormalSurfaceDataStage extends GenerateStage {
                         if(biomeSurfaceMaterialAdjustmentDataOptional.isPresent()) {
                             BiomeSurfaceMaterialAdjustmentData biomeSurfaceMaterialAdjustmentData = biomeSurfaceMaterialAdjustmentDataOptional.get();
                             for(var element : biomeSurfaceMaterialAdjustmentData.biomeElements) {
-                                float random = simplexF.noise2D((chunk.getX() << 4) + x, (chunk.getZ() << 4) + z, true);
+                                float random = simplexF.noise2D(((chunk.getX() << 4) + x) * 0.25f, ((chunk.getZ() << 4) + z) * 0.25f, true);
                                 if(random < element.noiseUpperBound && random > element.noiseLowerBound) {
                                     int _topBlock = element.adjustedMaterials.topBlock;
                                     int _midBlock = element.adjustedMaterials.midBlock;

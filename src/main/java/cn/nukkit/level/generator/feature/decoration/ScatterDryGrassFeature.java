@@ -6,12 +6,12 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockTallDryGrass;
 import cn.nukkit.utils.random.NukkitRandom;
 
-public class DesertDryGrassGenerateFeature extends GroupedDiscFeature {
+public class ScatterDryGrassFeature extends GroupedDiscFeature {
 
     private static final BlockState SHORT_DRY_GRASS = BlockShortDryGrass.PROPERTIES.getDefaultState();
     private static final BlockState DRY_GRASS = BlockTallDryGrass.PROPERTIES.getDefaultState();
 
-    public static final String NAME = "minecraft:desert_after_surface_dry_grass_feature_rules";
+    public static final String NAME = "minecraft:scatter_dry_grass_feature";
 
     @Override
     public String name() {

@@ -79,7 +79,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(DeadBushFeature.NAME, DeadBushFeature.class);
             this.register(TallGrassGenerateFeature.NAME, TallGrassGenerateFeature.class);
             this.register(TallGrassPatchFeature.NAME, TallGrassPatchFeature.class);
-            this.register(DesertDryGrassGenerateFeature.NAME, DesertDryGrassGenerateFeature.class);
+            this.register(ScatterDryGrassFeature.NAME, ScatterDryGrassFeature.class);
             this.register(MeadowTreeFeature.NAME, MeadowTreeFeature.class);
             this.register(IceSurfaceTreeFeature.NAME, IceSurfaceTreeFeature.class);
             this.register(MegaTaigaTreeFeature.NAME, MegaTaigaTreeFeature.class);
@@ -116,6 +116,12 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(ScatterBrownMushroomFeature.NAME, ScatterBrownMushroomFeature.class);
             this.register(ScatterPlainsFlowerFeature.NAME, ScatterPlainsFlowerFeature.class);
             this.register(SunflowerDouplePlantPatchFeature.NAME, SunflowerDouplePlantPatchFeature.class);
+            this.register(SavannaMutatedTreeFeature.NAME, SavannaMutatedTreeFeature.class);
+            this.register(KelpFeature.NAME, KelpFeature.class);
+            this.register(WarmOceanSeagrassFeature.NAME, WarmOceanSeagrassFeature.class);
+            this.register(MesaPlateauStoneTreeFeature.NAME, MesaPlateauStoneTreeFeature.class);
+            this.register(MesaTreeFeature.NAME, MesaTreeFeature.class);
+            this.register(MesaFoliageFeature.NAME, MesaFoliageFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

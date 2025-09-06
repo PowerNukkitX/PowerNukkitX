@@ -23,7 +23,7 @@ public class LocateCommand extends VanillaCommand {
                 CommandParameter.newEnum("mode", new CommandEnum("LocateModeBiome", "biome")),
                 CommandParameter.newEnum("biomes", Registries.BIOME.getBiomeDefinitions().stream().map(BiomeDefinition::getName).toArray(String[]::new)),
                 CommandParameter.newEnum("teleport", true, CommandEnum.ENUM_BOOLEAN),
-                CommandParameter.newType("radius", CommandParamType.INT),
+                CommandParameter.newType("radius", true, CommandParamType.INT),
                 CommandParameter.newEnum("search", true, new String[]{"spiral", "xaxis"})
         });
         this.enableParamTree();
