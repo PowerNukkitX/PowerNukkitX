@@ -11,17 +11,12 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
-import cn.nukkit.level.generator.noise.f.vanilla.NoiseGeneratorPerlinF;
 import cn.nukkit.level.generator.noise.f.vanilla.NormalNoise;
 import cn.nukkit.level.generator.noise.spline.JaggednessSpline;
 import cn.nukkit.level.generator.noise.spline.OffsetSpline;
-import cn.nukkit.level.generator.noise.spline.SplineGenerator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.utils.CleanerHandle;
-import cn.nukkit.utils.PNXLibInflater;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.HashMap;
@@ -31,7 +26,7 @@ public class NormalTerrainStage extends GenerateStage {
 
     public static final String NAME = "normal_terrain";
 
-    public static final int SEA_LEVEL = 62;
+    public static final int SEA_LEVEL = 63;
 
     private OverworldBiomePicker picker;
     private NormalNoise surfaceNoise;

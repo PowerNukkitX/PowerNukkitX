@@ -4,6 +4,7 @@ import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.feature.decoration.*;
 import cn.nukkit.level.generator.feature.multi.JunglePlantFeature;
 import cn.nukkit.level.generator.feature.multi.RandomRoofedForestFeatureWithDecorationFeature;
+import cn.nukkit.level.generator.feature.multi.SwampFoliageFeature;
 import cn.nukkit.level.generator.feature.ore.*;
 import cn.nukkit.level.generator.feature.river.ClayGenerateFeature;
 import cn.nukkit.level.generator.feature.river.GravelGenerateFeature;
@@ -75,7 +76,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(PlainsTreeFeature.NAME, PlainsTreeFeature.class);
             this.register(RoofedForestTreeFeature.NAME, RoofedForestTreeFeature.class);
             this.register(DesertCactusFeature.NAME, DesertCactusFeature.class);
-            this.register(DesertDeadBushFeature.NAME, DesertDeadBushFeature.class);
+            this.register(DeadBushFeature.NAME, DeadBushFeature.class);
             this.register(TallGrassGenerateFeature.NAME, TallGrassGenerateFeature.class);
             this.register(TallGrassPatchFeature.NAME, TallGrassPatchFeature.class);
             this.register(DesertDryGrassGenerateFeature.NAME, DesertDryGrassGenerateFeature.class);
@@ -104,6 +105,15 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(BushFeature.NAME, BushFeature.class);
             this.register(JungleBushFeature.NAME, JungleBushFeature.class);
             this.register(JunglePlantFeature.NAME, JunglePlantFeature.class);
+            this.register(SwampTreeFeature.NAME, SwampTreeFeature.class);
+            this.register(SwampFoliageFeature.NAME, SwampFoliageFeature.class);
+            this.register(SwampSeagrassFeature.NAME, SwampSeagrassFeature.class);
+            this.register(OceanSeagrassFeature.NAME, OceanSeagrassFeature.class);
+            this.register(WaterlilyFeature.NAME, WaterlilyFeature.class);
+            this.register(FireflyBushClusterFeature.NAME, FireflyBushClusterFeature.class);
+            this.register(SwampFlowerFeature.NAME, SwampFlowerFeature.class);
+            this.register(ScatterRedMushroomFeature.NAME, ScatterRedMushroomFeature.class);
+            this.register(ScatterBrownMushroomFeature.NAME, ScatterBrownMushroomFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

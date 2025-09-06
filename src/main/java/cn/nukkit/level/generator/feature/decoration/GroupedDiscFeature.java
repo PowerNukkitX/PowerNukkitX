@@ -10,6 +10,7 @@ import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
 public abstract class GroupedDiscFeature extends CountGenerateFeature {
@@ -40,7 +41,7 @@ public abstract class GroupedDiscFeature extends CountGenerateFeature {
         Level level = chunk.getLevel();
         int randomX = random.nextInt(15);
         int randomZ = random.nextInt(15);
-        int height = chunk.getHeightMap(randomX, randomZ);
+        int height = getY(chunk, randomX, randomZ);
         int sourceX = (chunkX << 4) + randomX;
         int sourceZ = (chunkZ << 4) + randomZ;
         BlockState topBlockState = chunk.getBlockState(randomX, height+1, randomZ);
@@ -54,7 +55,7 @@ public abstract class GroupedDiscFeature extends CountGenerateFeature {
                             continue;
                         }
                         Vector3 p = new Vector3(x, level.getHeightMap(x, z)+1, z);
-                        if(level.getBlock(p.down()).isSolid()) {
+                        if(isSupportValid(level.getBlock(p.down()))) {
                             object.setBlockStateAt(p, getSourceBlock());
                         }
                     }
@@ -74,6 +75,14 @@ public abstract class GroupedDiscFeature extends CountGenerateFeature {
             writeOutsideChunkStructureData(chunk);
             manager.applySubChunkUpdate();
         }
+    }
+
+    public boolean isSupportValid(Block block) {
+        return block.is(BlockTags.DIRT) || block.is(BlockTags.SAND);
+    }
+
+    public int getY(IChunk chunk, int x, int z) {
+        return chunk.getHeightMap(x, z);
     }
 
 }

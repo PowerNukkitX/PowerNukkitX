@@ -22,6 +22,7 @@ import cn.nukkit.network.protocol.UpdateSubChunkBlocksPacket;
 import cn.nukkit.network.protocol.types.BlockChangeEntry;
 import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import org.apache.logging.log4j.util.InternalApi;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

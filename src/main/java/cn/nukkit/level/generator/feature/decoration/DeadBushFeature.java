@@ -3,11 +3,11 @@ package cn.nukkit.level.generator.feature.decoration;
 import cn.nukkit.block.BlockDeadbush;
 import cn.nukkit.block.BlockState;
 
-public class DesertDeadBushFeature extends GroupedDiscFeature {
+public class DeadBushFeature extends GroupedDiscFeature {
 
     protected final static BlockState DEAD_BUSH = BlockDeadbush.PROPERTIES.getDefaultState();
 
-    public static final String NAME = "minecraft:desert_after_surface_dead_bush_feature_rules";
+    public static final String NAME = "minecraft:dead_bush_feature";
 
     @Override
     public BlockState getSourceBlock() {
@@ -26,17 +26,17 @@ public class DesertDeadBushFeature extends GroupedDiscFeature {
 
     @Override
     public double getProbability() {
-        return 0.1f;
+        return 0.2f;
     }
 
     @Override
     public int getBase() {
-        return -19;
+        return -10;
     }
 
     @Override
     public int getRandom() {
-        return 20;
+        return 12;
     }
 
     @Override

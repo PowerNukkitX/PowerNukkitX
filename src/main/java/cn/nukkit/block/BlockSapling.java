@@ -7,8 +7,6 @@ import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.*;
-import cn.nukkit.level.generator.object.legacytree.LegacyBigSpruceTree;
-import cn.nukkit.level.generator.object.legacytree.LegacySpruceTree;
 import cn.nukkit.level.generator.object.legacytree.LegacyTreeGenerator;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -123,7 +121,7 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
                 }
 
                 if (!bigTree) {
-                    generator = new NewJungleTree(4, 7);
+                    generator = new ObjectJungleTree(4, 7);
                     vector3 = this.add(0, 0, 0);
                 }
                 break;

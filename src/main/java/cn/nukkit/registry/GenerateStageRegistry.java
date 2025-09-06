@@ -8,6 +8,7 @@ import cn.nukkit.level.generator.stages.BiomeMapStage;
 import cn.nukkit.level.generator.stages.NormalChunkFeatureStage;
 import cn.nukkit.level.generator.stages.normal.NormalChunkPlacementQueueStage;
 import cn.nukkit.level.generator.stages.normal.NormalSurfaceDataStage;
+import cn.nukkit.level.generator.stages.normal.NormalSurfaceOverwriteStage;
 import cn.nukkit.level.generator.stages.normal.NormalTerrainStage;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -29,6 +30,7 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
             this.register(BiomeMapStage.NAME, BiomeMapStage.class);
             this.register(NormalTerrainStage.NAME, NormalTerrainStage.class);
             this.register(NormalSurfaceDataStage.NAME, NormalSurfaceDataStage.class);
+            this.register(NormalSurfaceOverwriteStage.NAME, NormalSurfaceOverwriteStage.class);
             this.register(NormalChunkFeatureStage.NAME, NormalChunkFeatureStage.class);
             this.register(NormalChunkPlacementQueueStage.NAME, NormalChunkPlacementQueueStage.class);
 

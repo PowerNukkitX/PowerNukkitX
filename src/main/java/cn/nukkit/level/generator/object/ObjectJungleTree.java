@@ -18,7 +18,7 @@ import cn.nukkit.utils.random.RandomSourceProvider;
  * @author CreeperFace
  * @since 26. 10. 2016
  */
-public class NewJungleTree extends TreeGenerator {
+public class ObjectJungleTree extends TreeGenerator {
 
     /**
      * The minimum height of a generated tree.
@@ -37,7 +37,7 @@ public class NewJungleTree extends TreeGenerator {
      */
     private final BlockState metaLeaves = BlockJungleLeaves.PROPERTIES.getDefaultState();
 
-    public NewJungleTree(int minTreeHeight, int maxTreeHeight) {
+    public ObjectJungleTree(int minTreeHeight, int maxTreeHeight) {
         this.minTreeHeight = minTreeHeight;
         this.maxTreeHeight = maxTreeHeight;
     }

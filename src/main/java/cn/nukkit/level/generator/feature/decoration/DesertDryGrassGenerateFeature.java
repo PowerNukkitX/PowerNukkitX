@@ -40,12 +40,12 @@ public class DesertDryGrassGenerateFeature extends GroupedDiscFeature {
 
     @Override
     public int getBase() {
-        return -19;
+        return -10;
     }
 
     @Override
     public int getRandom() {
-        return 20;
+        return 12;
     }
 
 }

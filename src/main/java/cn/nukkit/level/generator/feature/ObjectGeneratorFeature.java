@@ -64,7 +64,7 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
             }
             v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
             if(!canSpawnHere(Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())))) continue;
-            while(checkBlock(level.getBlock(v)) && v.getY() > SEA_LEVEL) {
+            while(checkBlock(level.getBlock(v))) {
                 v.y--;
             }
             if(isSupportValid(level.getBlock(v))) {
@@ -87,6 +87,6 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
     }
 
     protected boolean checkBlock(Block bl) {
-        return (bl.canBeReplaced() || !bl.isFullBlock()) && !(bl instanceof BlockLiquid);
+        return (bl.canBeReplaced() || !bl.isFullBlock()) && !(bl instanceof BlockLiquid) && bl.getY() > SEA_LEVEL;
     }
 }
