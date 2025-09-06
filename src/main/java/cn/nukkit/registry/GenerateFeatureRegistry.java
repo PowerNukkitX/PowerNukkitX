@@ -114,6 +114,8 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(SwampFlowerFeature.NAME, SwampFlowerFeature.class);
             this.register(ScatterRedMushroomFeature.NAME, ScatterRedMushroomFeature.class);
             this.register(ScatterBrownMushroomFeature.NAME, ScatterBrownMushroomFeature.class);
+            this.register(ScatterPlainsFlowerFeature.NAME, ScatterPlainsFlowerFeature.class);
+            this.register(SunflowerDouplePlantPatchFeature.NAME, SunflowerDouplePlantPatchFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
