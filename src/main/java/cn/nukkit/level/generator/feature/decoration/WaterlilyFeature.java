@@ -14,7 +14,7 @@ public class WaterlilyFeature extends CountGenerateFeature {
 
     protected final static BlockState WATERLILY = BlockWaterlily.PROPERTIES.getDefaultState();
 
-    public static final String NAME = "powernukkitx:waterlily_feature";
+    public static final String NAME = "minecraft:fixup_waterlily_position_feature";
 
 
     @Override

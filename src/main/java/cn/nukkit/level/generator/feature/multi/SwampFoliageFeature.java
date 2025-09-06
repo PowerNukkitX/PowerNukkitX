@@ -3,7 +3,6 @@ package cn.nukkit.level.generator.feature.multi;
 import cn.nukkit.level.generator.feature.MultiFeatureWrapper;
 import cn.nukkit.level.generator.feature.decoration.HugeMushroomFeature;
 import cn.nukkit.level.generator.feature.decoration.ReedsFeature;
-import cn.nukkit.level.generator.feature.decoration.WaterlilyFeature;
 import cn.nukkit.level.generator.feature.tree.SwampTreeFeature;
 
 public class SwampFoliageFeature extends MultiFeatureWrapper {
@@ -15,8 +14,7 @@ public class SwampFoliageFeature extends MultiFeatureWrapper {
         return new String[] {
                 ReedsFeature.NAME,
                 HugeMushroomFeature.NAME,
-                SwampTreeFeature.NAME,
-                WaterlilyFeature.NAME
+                SwampTreeFeature.NAME
         };
     }
 

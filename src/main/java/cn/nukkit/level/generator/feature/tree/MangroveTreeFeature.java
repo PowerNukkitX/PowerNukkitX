@@ -25,12 +25,12 @@ public class MangroveTreeFeature extends ObjectGeneratorFeature {
 
     @Override
     public int getMin() {
-        return 3;
+        return 4;
     }
 
     @Override
     public int getMax() {
-        return 4;
+        return 7;
     }
 
     @Override

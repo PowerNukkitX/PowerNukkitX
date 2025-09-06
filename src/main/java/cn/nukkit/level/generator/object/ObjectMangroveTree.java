@@ -17,7 +17,11 @@ public class ObjectMangroveTree extends TreeGenerator {
     private static final BlockState ROOTS = BlockMangroveRoots.PROPERTIES.getDefaultState();
     private static final BlockState MUDDY_ROOTS = BlockMuddyMangroveRoots.PROPERTIES.getDefaultState();
     private static final BlockState MANGROVE_LEAVES = BlockMangroveLeaves.PROPERTIES.getDefaultState();
-    private static final BlockState PROPAGULE = BlockMangrovePropagule.PROPERTIES.getBlockState(CommonBlockProperties.HANGING.createValue(true), CommonBlockProperties.PROPAGULE_STAGE.createValue(4));
+    private static final BlockState MOSS_CARPET = BlockMossCarpet.PROPERTIES.getDefaultState();
+    private static final BlockState PROPAGULE = BlockMangrovePropagule.PROPERTIES.getBlockState(
+            CommonBlockProperties.HANGING.createValue(true),
+            CommonBlockProperties.PROPAGULE_STAGE.createValue(4)
+    );
 
     private static final double GOLDEN_ANGLE = 2.39996;
 
@@ -61,9 +65,10 @@ public class ObjectMangroveTree extends TreeGenerator {
                     break;
                 } else if (currentBlock.getId().equals(Block.MUD)) {
                     level.setBlockStateAt(currentBlock, MUDDY_ROOTS);
+                    maybePlaceMossCarpet(level, currentBlock, rand);
                 } else {
                     level.setBlockStateAt(currentBlock, ROOTS);
-                    level.setBlockStateAt(cy, cy, cz, 1, BlockWater.PROPERTIES.getDefaultState());
+                    maybePlaceMossCarpet(level, currentBlock, rand);
                 }
 
                 dy -= rootDroop;
@@ -105,7 +110,6 @@ public class ObjectMangroveTree extends TreeGenerator {
                 }
 
                 branchAngle += GOLDEN_ANGLE;
-
             }
         }
 
@@ -134,15 +138,21 @@ public class ObjectMangroveTree extends TreeGenerator {
 
                 placeLeafCluster(level, new Vector3(bx, by, bz), rand);
                 level.setBlockStateAt(new Vector3(bx, by, bz), LOG);
-                if(withBeenest) {
+
+                if (withBeenest) {
                     withBeenest = false;
-                    int faceIdx = rand.nextInt(BlockFace.getHorizontals().length-1);
+                    int faceIdx = rand.nextInt(BlockFace.getHorizontals().length - 1);
                     BlockFace face = BlockFace.getHorizontals()[faceIdx];
-                    Block target = level.getBlockIfCachedOrLoaded(bx, by-1, bz).getSide(face);
-                    level.setBlockStateAt(target, BlockBeeNest.PROPERTIES.getBlockState(CommonBlockProperties.DIRECTION.createValue(faceIdx), CommonBlockProperties.HONEY_LEVEL.createValue(rand.nextInt(0, 4))));
-                    if(level.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
-                        Registries.ENTITY.provideEntity(EntityID.BEE, level.getLevel().getChunk(bx >> 4, bz >> 4), Entity.getDefaultNBT(new Vector3(bx, by-2, bz)));
-                        Registries.ENTITY.provideEntity(EntityID.BEE, level.getLevel().getChunk(bx >> 4, bz >> 4), Entity.getDefaultNBT(new Vector3(bx, by-2, bz)));
+                    Block target = level.getBlockIfCachedOrLoaded(bx, by - 1, bz).getSide(face);
+                    level.setBlockStateAt(target, BlockBeeNest.PROPERTIES.getBlockState(
+                            CommonBlockProperties.DIRECTION.createValue(faceIdx),
+                            CommonBlockProperties.HONEY_LEVEL.createValue(rand.nextInt(0, 4)))
+                    );
+                    if (level.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+                        Registries.ENTITY.provideEntity(EntityID.BEE, level.getLevel().getChunk(bx >> 4, bz >> 4),
+                                Entity.getDefaultNBT(new Vector3(bx, by - 2, bz)));
+                        Registries.ENTITY.provideEntity(EntityID.BEE, level.getLevel().getChunk(bx >> 4, bz >> 4),
+                                Entity.getDefaultNBT(new Vector3(bx, by - 2, bz)));
                     }
                 }
             }
@@ -157,7 +167,7 @@ public class ObjectMangroveTree extends TreeGenerator {
 
         if (random.nextInt(15) == 0) {
             Vector3 p = pos.add(0, -1, 0);
-            if(level.getBlockIfCachedOrLoaded(p).isAir()) {
+            if (level.getBlockIfCachedOrLoaded(p).isAir()) {
                 level.setBlockStateAt(p, PROPAGULE);
             }
         }
@@ -170,9 +180,57 @@ public class ObjectMangroveTree extends TreeGenerator {
 
             for (int[] o : offsets) {
                 Vector3 p = pos.add(o[0], o[1], o[2]);
-                if(level.getBlockIfCachedOrLoaded(p).isAir()) {
+                if (level.getBlockIfCachedOrLoaded(p).isAir()) {
                     level.setBlockStateAt(p, MANGROVE_LEAVES);
                 }
+            }
+        }
+
+        for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
+            if (random.nextInt(5) == 0) {
+                Vector3 vinePos = pos.getSide(face);
+                if (level.getBlockIfCachedOrLoaded(vinePos).isAir()) {
+                    addVine(level, vinePos, face);
+                    addHangingVine(level, vinePos, face, random);
+                }
+            }
+        }
+    }
+
+    private void maybePlaceMossCarpet(BlockManager level, Block rootBlock, RandomSourceProvider rand) {
+        if (rand.nextInt(6) == 0) {
+            Vector3 above = rootBlock.add(0, 1, 0);
+            if (level.getBlockIfCachedOrLoaded(above).isAir()) {
+                level.setBlockStateAt(above, MOSS_CARPET);
+            }
+        }
+    }
+
+    private void addVine(BlockManager level, Vector3 pos, BlockFace face) {
+        int meta = switch (face) {
+            case NORTH -> 1;
+            case EAST -> 2;
+            case SOUTH -> 4;
+            case WEST -> 8;
+            default -> 0;
+        };
+        if (meta == 0) return;
+
+        BlockState vineState = BlockVine.PROPERTIES.getBlockState(
+                CommonBlockProperties.VINE_DIRECTION_BITS.createValue(meta)
+        );
+        level.setBlockStateAt(pos, vineState);
+    }
+
+    private void addHangingVine(BlockManager level, Vector3 pos, BlockFace face, RandomSourceProvider rand) {
+        Vector3 down = pos.clone();
+        int length = 1 + rand.nextInt(3);
+        for (int i = 0; i < length; i++) {
+            down = down.add(0, -1, 0);
+            if (level.getBlockIfCachedOrLoaded(down).isAir()) {
+                addVine(level, down, face);
+            } else {
+                break;
             }
         }
     }

@@ -49,7 +49,7 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
                     }
                     case BiomeID.MANGROVE_SWAMP -> {
                         if(swampNoise.getValue(lx, y, lz) > 0)
-                            if(y >= SEA_LEVEL - 1 && y <= SEA_LEVEL + 1) chunk.setBlockState(x, y, z, WATER);
+                            if(y >= SEA_LEVEL -2 && y <= SEA_LEVEL) chunk.setBlockState(x, y, z, WATER);
                     }
                 }
             }
