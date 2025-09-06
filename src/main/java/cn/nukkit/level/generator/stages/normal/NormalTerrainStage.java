@@ -5,6 +5,7 @@ import cn.nukkit.block.BlockDeepslate;
 import cn.nukkit.block.BlockStone;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
@@ -60,11 +61,14 @@ public class NormalTerrainStage extends GenerateStage {
                 float continental = result.getContinental();
                 float erosion = result.getErosion();
                 float pv = result.getPv();
-                BiomeDefinition biome = Registries.BIOME.get(result.getBiomeId());
+                int biomeId = result.getBiomeId();
+                BiomeDefinition biome = Registries.BIOME.get(biomeId);
 
                 float baseHeightSum = 0.0F;
                 float biomeWeightSum = 0.0F;
                 int smoothFactor = 2;
+                if(biomeId == BiomeID.RIVER) smoothFactor = 5;
+                if(biomeId == BiomeID.OCEAN) smoothFactor = 5;
                 for (int xSmooth = -smoothFactor; xSmooth <= smoothFactor; ++xSmooth) {
                     for (int zSmooth = -smoothFactor; zSmooth <= smoothFactor; ++zSmooth) {
                         int cx = x + baseX + xSmooth;
@@ -83,7 +87,9 @@ public class NormalTerrainStage extends GenerateStage {
                         float jaggedness = (float) (JaggednessSpline.CACHED_SPLINE.evaluate(depthSplineMap) * jaggedValue * 4);
                         float depth = (float) (OffsetSpline.CACHED_SPLINE.evaluate(depthSplineMap) - 0.5037500262260437f);
                         float finalDensity = jaggedness + depth;
-                        baseHeightSum += finalDensity * weight;
+                        float roughness = (d0 * NukkitMath.remap(result1.getErosion() + result1.getPv(), -2, 2, -0.1f, 0.1f));
+                        float finalDensityRoughed = finalDensity + roughness;
+                        baseHeightSum += finalDensityRoughed * weight;
                         biomeWeightSum += weight;
                     }
                 }
