@@ -13,9 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import me.sunlan.fastreflection.FastConstructor;
 import me.sunlan.fastreflection.FastMemberLoader;
+
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -744,12 +747,16 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         }
     }
 
+    @UnmodifiableView
+    public static Collection<CustomItemDefinition> getCustomItemDefinitionList() {
+        return Collections.unmodifiableCollection(CUSTOM_ITEM_DEFINITIONS.values());
+    }
 
-    private void register0(String key, Class<? extends Item> value) {
-        try {
-            register(key, value);
-        } catch (RegisterException e) {
-            throw new RuntimeException(e);
-        }
+    public static @Nullable CustomItemDefinition getCustomItemDefinitionByIdStatic(String id) {
+        return CUSTOM_ITEM_DEFINITIONS.get(id);
+    }
+
+    public static cn.nukkit.item.customitem.CustomItemDefinition getCustomItemDefinition(String identifier) {
+        return CUSTOM_ITEM_DEFINITIONS.get(identifier);
     }
 }

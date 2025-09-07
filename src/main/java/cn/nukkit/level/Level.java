@@ -38,7 +38,6 @@ import cn.nukkit.event.weather.LightningStrikeEvent;
 import cn.nukkit.inventory.BlockInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBucket;
-import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.ChunkState;
@@ -2913,13 +2912,11 @@ public class Level implements Metadatable {
         if (item.canBePlaced()) {
             hand = item.getBlock();
             hand.position(block);
-        } else if (item instanceof ItemCustom customItem) {
-            Block blockToPlace = customItem.getBlockPlacerTargetBlock();
-            if (blockToPlace == null || blockToPlace.isAir()) return null;
+        } else {
+            Block blockToPlace = item.getBlockPlacerTargetBlock();
+            if (blockToPlace == null) return null;
             hand = blockToPlace;
             hand.position(block);
-        } else {
-            return null;
         }
 
         // Check for valid placement conditions

@@ -16,12 +16,12 @@ public class ItemGoldenApple extends ItemFood {
     }
 
     @Override
-    public int getFoodRestore() {
+    public int getNutrition() {
         return 4;
     }
 
     @Override
-    public float getSaturationRestore() {
+    public float getSaturation() {
         return 9.6F;
     }
 

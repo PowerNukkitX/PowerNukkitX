@@ -5,6 +5,7 @@ import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.event.player.PlayerFoodLevelChangeEvent;
+import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFood;
 
 /**
@@ -79,8 +80,8 @@ public class PlayerFood {
         }
     }
 
-    public void addFood(ItemFood food) {
-        this.addFood(food.getFoodRestore(), food.getSaturationRestore());
+    public void addFood(Item item) {
+        this.addFood(item.getNutrition(), item.getSaturation());
     }
 
     public void setFood(int food) {
