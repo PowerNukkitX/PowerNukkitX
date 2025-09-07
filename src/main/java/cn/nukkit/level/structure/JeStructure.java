@@ -70,7 +70,6 @@ public class JeStructure {
                         String key = keys.get(i);
                         reversedProperties.put(key, properties.get(key));
                     }
-                    properties = reversedProperties;
                 }
 
                 String propertiesString = properties != null ? reversedProperties.toSNBT().replace("\"", "").replace(':', '=').replace('{', '[').replace('}', ']') : "";
