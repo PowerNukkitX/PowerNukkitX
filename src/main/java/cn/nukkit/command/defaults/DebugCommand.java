@@ -15,9 +15,14 @@ import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.structure.Structure;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
+import com.sun.jna.platform.unix.solaris.LibKstat;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -54,6 +59,11 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 CommandParameter.newEnum("item", new String[]{"item"}),
                 CommandParameter.newEnum("values", new String[]{"nbt", "bundle", "meta"})
         });
+        this.commandParameters.put("str", new CommandParameter[]{
+                CommandParameter.newEnum("str", new String[]{"str"}),
+                CommandParameter.newEnum("values", new String[]{"place"}),
+                CommandParameter.newType("file", CommandParamType.STRING)
+        });
         this.enableParamTree();
     }
 
@@ -61,6 +71,32 @@ public class DebugCommand extends TestCommand implements CoreCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         switch (result.getKey()) {
+            case "str" -> {
+                if (!sender.isPlayer())
+                    return 0;
+                Player player = sender.asPlayer();
+                switch (list.getResult(1).toString()) {
+                    case "place" -> {
+                        String structureName = list.getResult(2);
+                        Location loc = player.getLocation();
+
+                        try (var stream = DebugCommand.class.getClassLoader().getResourceAsStream("structures/" + structureName + ".nbt")) {
+                            CompoundTag root = NBTIO.readCompressed(stream);
+
+                            Structure structure = Structure.fromNbt(root);
+                            structure.place(loc);
+                            log.addSuccess("Placed structure " + structureName + " at " + loc).output();
+
+                        } catch (Exception e) {
+                            sender.sendMessage(e.getMessage());
+                            e.printStackTrace();
+                        }
+
+                        return 1;
+                    }
+                }
+                return 0;
+            }
             case "entity" -> {
                 String str = list.getResult(1);
                 var option = EntityAI.DebugOption.valueOf(str.toUpperCase(Locale.ENGLISH));
