@@ -122,6 +122,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(MesaPlateauStoneTreeFeature.NAME, MesaPlateauStoneTreeFeature.class);
             this.register(MesaTreeFeature.NAME, MesaTreeFeature.class);
             this.register(MesaFoliageFeature.NAME, MesaFoliageFeature.class);
+            this.register(TaigaTreeFeature.NAME, TaigaTreeFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

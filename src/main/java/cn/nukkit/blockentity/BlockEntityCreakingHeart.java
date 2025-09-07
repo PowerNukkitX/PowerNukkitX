@@ -88,6 +88,8 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
                 }
             }
 
+            if(!pos.getLevelBlock().isAir()) return true;
+
             Entity ent = Entity.createEntity(Entity.CREAKING, pos);
             if(ent != null) {
                 CreatureSpawnEvent ev = new CreatureSpawnEvent(ent.getNetworkId(), pos, new CompoundTag(), CreatureSpawnEvent.SpawnReason.CREAKING_HEART);

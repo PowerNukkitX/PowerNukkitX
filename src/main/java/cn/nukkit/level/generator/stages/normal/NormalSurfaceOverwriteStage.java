@@ -35,6 +35,8 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
     protected static final BlockState BROWN_TERRACOTTA = BlockBrownTerracotta.PROPERTIES.getDefaultState();
     protected static final BlockState RED_TERRACOTTA = BlockRedTerracotta.PROPERTIES.getDefaultState();
     protected static final BlockState LIGHT_GRAY_TERRACOTTA = BlockLightGrayTerracotta.PROPERTIES.getDefaultState();
+    protected static final BlockState SNOW_LAYER = BlockSnowLayer.PROPERTIES.getDefaultState();
+    protected static final BlockState ICE = BlockIce.PROPERTIES.getDefaultState();
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -85,6 +87,17 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
                             if (isInRange(noise)) {
                                 chunk.setBlockState(x, y, z, COARSE_DIRT);
                             } else chunk.setBlockState(x, y, z, GRASS);
+                        }
+                    }
+                    case ICE_PLAINS -> {
+                        Block support = chunk.getBlockState(x, y, z).toBlock();
+                        if(support.isSolid()) {
+                            BlockState state = chunk.getBlockState(x, y+1, z);
+                            if(state.equals(BlockAir.STATE)) {
+                                chunk.setBlockState(x, y+1, z, SNOW_LAYER);
+                            } else {
+                                chunk.getAndSetBlockState(x, y+1, z, SNOW_LAYER, 1);
+                            }
                         }
                     }
                 }
