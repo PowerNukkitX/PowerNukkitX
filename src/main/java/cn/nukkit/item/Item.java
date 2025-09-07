@@ -1351,8 +1351,14 @@ public abstract class Item implements Cloneable, ItemID {
      * @return true if item has a string tag
      */
     public boolean hasTag(final String itemTag) {
-        boolean contains = ItemTags.getTagSet(this.getId()).contains(itemTag);
-        if (contains) return true;
+        CompoundTag customTags = getCustomItemComponent("minecraft:tags");
+        if (customTags != null) {
+            ListTag<StringTag> list = customTags.getList("tags", StringTag.class);
+            if (list != null && list.getAll().stream().anyMatch(s -> itemTag.equals(s.data))) {
+                return true;
+            }
+        }
+        if (ItemTags.getTagSet(this.getId()).contains(itemTag)) return true;
         return ItemTags.getTagSet(this.getBlockId()).contains(itemTag);
     }
 
