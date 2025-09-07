@@ -1,6 +1,6 @@
 package cn.nukkit.level.structure;
 
-Implimport cn.nukkit.block.BlockState;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockStructureVoid;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
