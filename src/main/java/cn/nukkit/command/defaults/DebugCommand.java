@@ -15,16 +15,16 @@ import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.structure.JeStructure;
 import cn.nukkit.level.structure.Structure;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.InternalPlugin;
-import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
-import com.sun.jna.platform.unix.solaris.LibKstat;
 
 import java.lang.reflect.Field;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
@@ -61,7 +61,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         });
         this.commandParameters.put("str", new CommandParameter[]{
                 CommandParameter.newEnum("str", new String[]{"str"}),
-                CommandParameter.newEnum("values", new String[]{"place"}),
+                CommandParameter.newEnum("values", new String[]{"placejava", "place"}),
                 CommandParameter.newType("file", CommandParamType.STRING)
         });
         this.enableParamTree();
@@ -76,19 +76,38 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     return 0;
                 Player player = sender.asPlayer();
                 switch (list.getResult(1).toString()) {
-                    case "place" -> {
+                    case "placejava" -> {
                         String structureName = list.getResult(2);
                         Location loc = player.getLocation();
 
                         try (var stream = DebugCommand.class.getClassLoader().getResourceAsStream("structures/" + structureName + ".nbt")) {
                             CompoundTag root = NBTIO.readCompressed(stream);
 
-                            Structure structure = Structure.fromNbt(root);
+                            JeStructure structure = JeStructure.fromNbt(root);
                             structure.place(loc);
                             log.addSuccess("Placed structure " + structureName + " at " + loc).output();
 
                         } catch (Exception e) {
                             sender.sendMessage(e.getMessage());
+                            e.printStackTrace();
+                        }
+
+                        return 1;
+                    }
+
+                    case "place" -> {
+                        String structureName = list.getResult(2);
+                        Location loc = player.getLocation();
+
+                        try (var stream = DebugCommand.class.getClassLoader().getResourceAsStream("structures/" + structureName + ".mcstructure")) {
+                            CompoundTag root = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
+
+                            Structure structure = Structure.fromNbt(root);
+                            structure.place(loc);
+                            log.addSuccess("Placed structure " + structureName + " at " + loc).output();
+
+                        } catch (Exception e) {
+                            sender.sendMessage("Error: " + e.getMessage());
                             e.printStackTrace();
                         }
 
