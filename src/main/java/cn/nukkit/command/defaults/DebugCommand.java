@@ -36,6 +36,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
+
 public class DebugCommand extends TestCommand implements CoreCommand {
     public DebugCommand(String name) {
         super(name, "commands.debug.description");
@@ -122,7 +124,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                         case "pick" -> {
                             BiomePicker picker = loc.getLevel().getBiomePicker();
                             if(picker instanceof OverworldBiomePicker p) {
-                                OverworldBiomeResult res = p.pick(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ());
+                                OverworldBiomeResult res = p.pick(loc.getFloorX(), SEA_LEVEL, loc.getFloorZ());
                                 sender.sendMessage("Continental: " + res.getContinental());
                                 sender.sendMessage("Temperature: " + res.getTemperature());
                                 sender.sendMessage("Humidity: " + res.getHumidity());
@@ -133,7 +135,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                             }
                         }
                         case "features" -> {
-                            BiomeDefinition definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+                            BiomeDefinition definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), SEA_LEVEL, loc.getFloorZ()));
                             BiomeDefinitionData biome = definition.data;
                             OptionalValue<BiomeDefinitionChunkGenData> chunkGenDataOptional = biome.chunkGenData;
                             if(chunkGenDataOptional.isPresent()) {

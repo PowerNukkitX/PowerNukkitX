@@ -13,6 +13,8 @@ import cn.nukkit.registry.Registries;
 
 import java.util.Map;
 
+import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
+
 public class LocateCommand extends VanillaCommand {
 
     public LocateCommand(String name) {
@@ -64,7 +66,7 @@ public class LocateCommand extends VanillaCommand {
 
                     for (int step = 0; step < maxSteps; step++) {
                         Vector3 check = new Vector3(centerX + (x << 4), pos.y, centerZ + (z << 4));
-                        if(pos.getLevel().pickBiome(check.getFloorX(), 64, check.getFloorZ()) == biomeId) {
+                        if(pos.getLevel().pickBiome(check.getFloorX(), SEA_LEVEL, check.getFloorZ()) == biomeId) {
                             found = check;
                             break;
                         }
@@ -82,7 +84,7 @@ public class LocateCommand extends VanillaCommand {
                     for(int x = 0; x <= maxRadius; x++) {
                         for(int i = 0; i < 2; i++) {
                             Vector3 check = new Vector3(pos.getFloorX() + ((x * (i == 0 ? 1 : -1)) << 4), pos.y, pos.getFloorZ());
-                            if (pos.getLevel().pickBiome(check.getFloorX(), check.getFloorY(), check.getFloorZ()) == biomeId) {
+                            if (pos.getLevel().pickBiome(check.getFloorX(), SEA_LEVEL, check.getFloorZ()) == biomeId) {
                                 found = check;
                                 break u;
                             }

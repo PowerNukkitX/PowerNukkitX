@@ -39,6 +39,7 @@ public class NoiseGeneratorPerlinF {
             if (noise != null) {
                 double d3 = noise.getValue(
                         wrap(x * d1),
+                        wrap(y * d1),
                         wrap(z * d1)
                 );
                 d0 += this.amplitudes[i] * d3 * d2;
@@ -72,7 +73,19 @@ public class NoiseGeneratorPerlinF {
         float d0 = 1.0f;
 
         for (int j = 0; j < this.levels; ++j) {
-            this.noiseLevels[j].add(p_151600_1_, p_151600_2_, p_151600_4_, p_151600_6_, p_151600_7_, p_151600_8_ * d0 * d1, p_151600_10_ * d0 * d1, 0.55f / d1);
+            this.noiseLevels[j].add(
+                    p_151600_1_,                 // buffer
+                    p_151600_2_,                 // x
+                    0.0f,                        // z fest auf 0
+                    p_151600_4_,                 // y
+                    p_151600_6_,                 // sizeX
+                    p_151600_7_,                 // sizeY
+                    1,                           // sizeZ = 1 → nur eine Schicht
+                    p_151600_8_ * d0 * d1,       // scaleX
+                    p_151600_10_ * d0 * d1,      // scaleY
+                    1.0f,                        // scaleZ = 1.0f → neutral
+                    0.55f / d1                   // amplitude
+            );
             d0 *= p_151600_12_;
             d1 *= p_151600_14_;
         }

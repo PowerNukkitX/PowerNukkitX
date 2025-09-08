@@ -11,6 +11,8 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
+import cn.nukkit.level.generator.noise.f.SimplexF;
+import cn.nukkit.level.generator.noise.f.vanilla.NoiseGeneratorPerlinF;
 import cn.nukkit.level.generator.noise.f.vanilla.NormalNoise;
 import cn.nukkit.level.generator.noise.spline.JaggednessSpline;
 import cn.nukkit.level.generator.noise.spline.OffsetSpline;
@@ -29,8 +31,8 @@ public class NormalTerrainStage extends GenerateStage {
     public static final int SEA_LEVEL = 63;
 
     private OverworldBiomePicker picker;
-    private NormalNoise surfaceNoise;
-    private NormalNoise jagged;
+    private NoiseGeneratorPerlinF surfaceNoise;
+    private NoiseGeneratorPerlinF jagged;
 
 
     private final ThreadLocal<Map<String, Double>> depthSplineMap = ThreadLocal.withInitial(HashMap::new);
@@ -48,20 +50,18 @@ public class NormalTerrainStage extends GenerateStage {
         NukkitRandom random = this.random.get();
         random.setSeed(level.getSeed());
         if(picker == null) picker = (OverworldBiomePicker) level.getBiomePicker();
-        if(surfaceNoise == null) surfaceNoise = new NormalNoise(random.identical(), -6, new float[]{1f, 1f, 1f});
-        if(jagged == null) jagged = new NormalNoise(random.identical(), -16, new float[]{1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f});
+        if(surfaceNoise == null) surfaceNoise = new NoiseGeneratorPerlinF(random.identical(), -6, new float[]{1f, 1f, 1f});
+        if(jagged == null) jagged = new NoiseGeneratorPerlinF(random.identical(), -16, new float[]{1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f});
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
-                OverworldBiomeResult result = picker.pick(x + baseX, SEA_LEVEL, z+ baseZ);
-                float continental = result.getContinental();
-                float erosion = result.getErosion();
-                float pv = result.getPv();
+
+                OverworldBiomeResult result = picker.pick(baseX + x, SEA_LEVEL, baseZ + z);
                 int biomeId = result.getBiomeId();
                 BiomeDefinition biome = Registries.BIOME.get(biomeId);
 
                 float baseHeightSum = 0.0F;
                 float biomeWeightSum = 0.0F;
-                int smoothFactor = 2;
+                int smoothFactor = 0;
                 if(biomeId == BiomeID.RIVER) smoothFactor = 5;
                 if(biomeId == BiomeID.OCEAN) smoothFactor = 5;
                 for (int xSmooth = -smoothFactor; xSmooth <= smoothFactor; ++xSmooth) {
@@ -77,27 +77,25 @@ public class NormalTerrainStage extends GenerateStage {
                         depthSplineMap.put("minecraft:overworld/erosion", (double) result1.getErosion());
                         depthSplineMap.put("minecraft:overworld/ridges_folded", (double) result1.getPv());
                         depthSplineMap.put("minecraft:overworld/ridges", (double) result1.getWeirdness());
-                        float jaggedValue = jagged.getValue(cx * 1500, SEA_LEVEL, cz * 1500 );
-                        if(jaggedValue < 0) jaggedValue /= 2;
+                        float jaggedValue = jagged.getValue(cx * 1500, SEA_LEVEL, cz * 1500);
+                        if (jaggedValue < 0) jaggedValue /= 2;
                         float jaggedness = (float) (JaggednessSpline.CACHED_SPLINE.evaluate(depthSplineMap) * jaggedValue * 4);
                         float depth = (float) (OffsetSpline.CACHED_SPLINE.evaluate(depthSplineMap) - 0.5037500262260437f);
                         float finalDensity = jaggedness + depth;
-                        float roughness = (d0 * NukkitMath.remap(result1.getErosion() + result1.getPv(), -2, 2, -0.1f, 0.1f));
-                        float finalDensityRoughed = finalDensity + roughness;
+                        float finalDensityRoughed = finalDensity;
                         baseHeightSum += finalDensityRoughed * weight;
                         biomeWeightSum += weight;
                     }
                 }
                 baseHeightSum = baseHeightSum / Math.max(biomeWeightSum, 1);
-
-                float originalHeight = NukkitMath.remap(baseHeightSum, -1.5f, 1.5f, level.getMinHeight(), level.getMaxHeight());
-
-                float height = NukkitMath.clamp(originalHeight, level.getMinHeight(), level.getMaxHeight());
-                for(int y = 0; y < height; y++) {
-                    chunk.setBlockState(x, y, z, BlockStone.PROPERTIES.getDefaultState());
-                }
-                for(int y = SEA_LEVEL; y > height; y--) {
-                    chunk.setBlockState(x, y, z, BlockWater.PROPERTIES.getDefaultState());
+                for(int y = level.getMinHeight(); y < level.getMaxHeight(); y++) {
+                    float density = surfaceNoise.getValue((x + baseX), y,z + baseZ);
+                    float densityMod = ((baseHeightSum + 0.18f) - NukkitMath.remapNormalized(y, level.getMinHeight(), level.getMaxHeight())) * 24;
+                    if(density + densityMod > 0) {
+                        chunk.setBlockState(x, y, z, BlockStone.PROPERTIES.getDefaultState());
+                    } else {
+                        if(y <= SEA_LEVEL)chunk.setBlockState(x, y, z, BlockWater.PROPERTIES.getDefaultState());
+                    }
                 }
             }
         }

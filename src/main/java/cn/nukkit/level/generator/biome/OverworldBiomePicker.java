@@ -6,6 +6,7 @@ import cn.nukkit.utils.random.NukkitRandom;
 import lombok.Getter;
 
 import static cn.nukkit.level.biome.BiomeID.*;
+import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 @Getter
 public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {

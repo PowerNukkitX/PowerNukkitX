@@ -21,10 +21,10 @@ public class PerlinF extends NoiseF {
         this.offsetZ = random.nextFloat() * 256;
         this.perm = new int[512];
         for (int i = 0; i < 256; ++i) {
-            this.perm[i] = random.nextBoundedInt(256);
+            this.perm[i] = random.nextBoundedInt(255);
         }
         for (int i = 0; i < 256; ++i) {
-            int pos = random.nextBoundedInt(256 - i) + i;
+            int pos = random.nextBoundedInt((255 - i)) + i;
             int old = this.perm[i];
             this.perm[i] = this.perm[pos];
             this.perm[pos] = old;
