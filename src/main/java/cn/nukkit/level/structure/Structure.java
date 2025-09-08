@@ -13,6 +13,8 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.types.StructureMirror;
+import cn.nukkit.network.protocol.types.StructureRotation;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -346,6 +348,153 @@ public record Structure(
 
         return nbt;
     }
+
+    /**
+     * Rotate this structure around the Y-axis by 90, 180, or 270 degrees.
+     *
+     * @param rotation the rotation to apply
+     * @return a new rotated Structure instance
+     */
+    public Structure rotate(StructureRotation rotation) {
+        if (rotation == StructureRotation.NONE) {
+            return this;
+        }
+
+        int newSizeX = (rotation == StructureRotation.ROTATE_180) ? sizeX : sizeZ;
+        int newSizeZ = (rotation == StructureRotation.ROTATE_180) ? sizeZ : sizeX;
+
+        BlockState[][][][] rotatedStates = new BlockState[2][newSizeX][sizeY][newSizeZ];
+        Map<Vector3, CompoundTag> rotatedBlockEntities = new HashMap<>();
+
+        for (int layer = 0; layer < 2; layer++) {
+            for (int x = 0; x < sizeX; x++) {
+                for (int y = 0; y < sizeY; y++) {
+                    for (int z = 0; z < sizeZ; z++) {
+                        BlockState state = blockStates[layer][x][y][z];
+                        if (state == null) continue;
+
+                        int rx = x, rz = z;
+                        switch (rotation) {
+                            case ROTATE_90 -> {
+                                rx = z;
+                                rz = sizeX - 1 - x;
+                            }
+                            case ROTATE_180 -> {
+                                rx = sizeX - 1 - x;
+                                rz = sizeZ - 1 - z;
+                            }
+                            case ROTATE_270 -> {
+                                rx = sizeZ - 1 - z;
+                                rz = x;
+                            }
+                        }
+
+                        rotatedStates[layer][rx][y][rz] = state;
+                    }
+                }
+            }
+        }
+
+        // Rotate blockEntities
+        for (var entry : blockEntities.entrySet()) {
+            Vector3 pos = entry.getKey();
+            int x = (int) pos.x;
+            int y = (int) pos.y;
+            int z = (int) pos.z;
+
+            int rx = x, rz = z;
+            switch (rotation) {
+                case ROTATE_90 -> {
+                    rx = z;
+                    rz = sizeX - 1 - x;
+                }
+                case ROTATE_180 -> {
+                    rx = sizeX - 1 - x;
+                    rz = sizeZ - 1 - z;
+                }
+                case ROTATE_270 -> {
+                    rx = sizeZ - 1 - z;
+                    rz = x;
+                }
+            }
+
+            rotatedBlockEntities.put(new Vector3(rx, y, rz), entry.getValue());
+        }
+
+        List<CompoundTag> rotatedEntities = new ArrayList<>(entities);
+
+        return new Structure(rotatedStates, rotatedBlockEntities, rotatedEntities,
+                newSizeX, sizeY, newSizeZ, x, y, z);
+    }
+
+    /**
+     * Mirror this structure along the X-axis, Z-axis, or both.
+     *
+     * @param mirror the mirror operation to apply
+     * @return a new mirrored Structure instance
+     */
+    public Structure mirror(StructureMirror mirror) {
+        if (mirror == StructureMirror.NONE) {
+            return this;
+        }
+
+        BlockState[][][][] mirroredStates = new BlockState[2][sizeX][sizeY][sizeZ];
+        Map<Vector3, CompoundTag> mirroredBlockEntities = new HashMap<>();
+
+        for (int layer = 0; layer < 2; layer++) {
+            for (int x = 0; x < sizeX; x++) {
+                for (int y = 0; y < sizeY; y++) {
+                    for (int z = 0; z < sizeZ; z++) {
+                        BlockState state = blockStates[layer][x][y][z];
+                        if (state == null) continue;
+
+                        int mx = x;
+                        int mz = z;
+
+                        switch (mirror) {
+                            case X -> mx = sizeX - 1 - x;
+                            case Z -> mz = sizeZ - 1 - z;
+                            case XZ -> {
+                                mx = sizeX - 1 - x;
+                                mz = sizeZ - 1 - z;
+                            }
+                        }
+
+                        mirroredStates[layer][mx][y][mz] = state;
+                    }
+                }
+            }
+        }
+
+        // Mirror blockEntities
+        for (var entry : blockEntities.entrySet()) {
+            Vector3 pos = entry.getKey();
+            int x = (int) pos.x;
+            int y = (int) pos.y;
+            int z = (int) pos.z;
+
+            int mx = x;
+            int mz = z;
+
+            switch (mirror) {
+                case X -> mx = sizeX - 1 - x;
+                case Z -> mz = sizeZ - 1 - z;
+                case XZ -> {
+                    mx = sizeX - 1 - x;
+                    mz = sizeZ - 1 - z;
+                }
+            }
+
+            mirroredBlockEntities.put(new Vector3(mx, y, mz), entry.getValue());
+        }
+
+        List<CompoundTag> mirroredEntities = new ArrayList<>(entities);
+
+        return new Structure(mirroredStates, mirroredBlockEntities, mirroredEntities,
+                sizeX, sizeY, sizeZ, x, y, z);
+    }
+
+
 
     private static class BlockStatePalette {
         @Getter

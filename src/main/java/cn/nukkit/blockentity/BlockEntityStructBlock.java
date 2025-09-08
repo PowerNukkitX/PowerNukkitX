@@ -264,6 +264,12 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
 
         if (structure == null) return;
 
+        if(rotation != StructureRotation.NONE)
+            structure = structure.rotate(rotation);
+
+        if(mirror != StructureMirror.NONE)
+            structure = structure.mirror(mirror);
+
         BlockVector3 pos = this.getBlock().asBlockVector3().add(offset);
         structure.place(Position.fromObject(pos.asVector3(), this.getLevel()));
     }
