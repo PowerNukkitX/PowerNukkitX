@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author harry-xi | daoge_cmd
@@ -171,6 +172,10 @@ public record Structure(
         );
     }
 
+    public static CompletableFuture<Structure> fromNbtAsync(CompoundTag nbt) {
+        return CompletableFuture.supplyAsync(() -> fromNbt(nbt));
+    }
+
     private static int indexFormPos(int sizeX, int sizeY, int sizeZ, int x, int y, int z) {
         // sizeX is kept for better looking
         return x * sizeY * sizeZ + y * sizeZ + z;
@@ -228,6 +233,10 @@ public record Structure(
             //TODO: spawn entity from nbt
             //Entity e = Entity.createEntity(nbt.getString("identifier"), new Position());
         }
+    }
+
+    public CompletableFuture<Void> placeAsync(Position pos) {
+        return CompletableFuture.runAsync(() -> place(pos));
     }
 
     /**

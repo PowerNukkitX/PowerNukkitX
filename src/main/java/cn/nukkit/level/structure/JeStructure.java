@@ -17,6 +17,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Getter
 @Setter
@@ -103,6 +104,10 @@ public class JeStructure {
         }
 
         return new JeStructure(sizeX, sizeY, sizeZ, structureStates);
+    }
+
+    public static CompletableFuture<JeStructure> fromNbtAsync(CompoundTag nbt) {
+        return CompletableFuture.supplyAsync(() -> fromNbt(nbt));
     }
 
     public void place(Position position) {

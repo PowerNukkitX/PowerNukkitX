@@ -271,7 +271,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
             structure = structure.mirror(mirror);
 
         BlockVector3 pos = this.getBlock().asBlockVector3().add(offset);
-        structure.place(Position.fromObject(pos.asVector3(), this.getLevel()));
+        structure.placeAsync(Position.fromObject(pos.asVector3(), this.getLevel()));
     }
 
     public void saveStructure() {

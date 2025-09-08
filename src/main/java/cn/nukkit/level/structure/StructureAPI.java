@@ -15,7 +15,7 @@ public class StructureAPI {
         try (var stream = new FileInputStream(new File(Server.getInstance().structurePath + name + ".mcstructure"))) {
             CompoundTag root = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
 
-            return Structure.fromNbt(root);
+            return Structure.fromNbtAsync(root).join();
         } catch (Exception e) {
             log.debug("Cannot load structure " + name);
             return null;
