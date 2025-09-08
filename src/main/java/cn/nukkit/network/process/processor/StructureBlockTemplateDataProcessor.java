@@ -18,7 +18,7 @@ public class StructureBlockTemplateDataProcessor extends DataPacketProcessor<Str
         resp.name = pk.getName();
         Structure structure = StructureAPI.load(pk.getName());
 
-        if(structure == null) {
+        if (structure == null) {
             resp.success = false;
             resp.responseType = StructureTemplateResponseType.FAILURE;
 
@@ -26,14 +26,16 @@ public class StructureBlockTemplateDataProcessor extends DataPacketProcessor<Str
             return;
         }
 
-        if(pk.operation == StructureTemplateRequestOperation.QUERY_SAVED_STRUCTURE) {
-            resp.data = structure.toNBT();
-            resp.success = true;
-            resp.responseType = StructureTemplateResponseType.QUERY;
+        resp.data = structure.toNBT();
+        resp.success = true;
+        resp.responseType = switch(pk.operation) {
+            case QUERY_SAVED_STRUCTURE -> StructureTemplateResponseType.QUERY;
+            case EXPORT_FROM_SAVE_MODE -> StructureTemplateResponseType.EXPORT;
+            case EXPORT_FROM_LOAD_MODE -> StructureTemplateResponseType.EXPORT;
+            case NONE -> StructureTemplateResponseType.FAILURE;
+        };
 
-            playerHandle.player.dataPacket(resp);
-        }
-
+        playerHandle.player.dataPacket(resp);
     }
 
     @Override

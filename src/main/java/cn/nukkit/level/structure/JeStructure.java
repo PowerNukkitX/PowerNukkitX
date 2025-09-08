@@ -2,14 +2,18 @@ package cn.nukkit.level.structure;
 
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.level.Position;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.types.StructureMirror;
+import cn.nukkit.network.protocol.types.StructureRotation;
 import cn.nukkit.registry.mappings.JeBlockState;
 import cn.nukkit.registry.mappings.MappingRegistries;
 import com.google.common.base.Preconditions;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +23,7 @@ import java.util.List;
 //TODO: blockentities, entities
 public class JeStructure {
     private static BlockState blockAir = new BlockAir().getBlockState();
+    private static final BlockState STATE_UNKNOWN = BlockUnknown.PROPERTIES.getDefaultState();
 
     private int sizeX;
     private int sizeY;
@@ -56,13 +61,13 @@ public class JeStructure {
 
         List<BlockState> palette = new ArrayList<>();
 
-        //parse palette
+        // parse palette
         ListTag<CompoundTag> paletteNbt = nbt.getList("palette", CompoundTag.class);
         if (paletteNbt != null) {
             for (CompoundTag blockStateNbt : paletteNbt.getAll()) {
                 String jeName = blockStateNbt.getString("Name");
                 CompoundTag properties = blockStateNbt.getCompound("Properties");
-                //reverse property order to match mapping
+                // reverse property order to match mapping
                 CompoundTag reversedProperties = new CompoundTag();
                 if (properties != null) {
                     List<String> keys = new ArrayList<>(properties.getTags().keySet());
@@ -72,17 +77,22 @@ public class JeStructure {
                     }
                 }
 
-                String propertiesString = properties != null ? reversedProperties.toSNBT().replace("\"", "").replace(':', '=').replace('{', '[').replace('}', ']') : "";
+                String propertiesString = properties != null
+                        ? reversedProperties.toSNBT().replace("\"", "")
+                        .replace(':', '=')
+                        .replace('{', '[')
+                        .replace('}', ']')
+                        : "";
 
                 BlockState block = MappingRegistries.BLOCKS.getPNXBlock(new JeBlockState(jeName + propertiesString));
-                if(block == null) {
-                    block = blockAir;
+                if (block == null) {
+                    block = STATE_UNKNOWN;
                 }
                 palette.add(block);
             }
         }
 
-        //parse blocks
+        // parse blocks
         for (CompoundTag blockNbt : blocksNbt.getAll()) {
             ListTag<IntTag> location = blockNbt.getList("pos", IntTag.class);
             int x = location.get(0).getData();
@@ -103,8 +113,74 @@ public class JeStructure {
             int y = position.getFloorY() + block.y;
             int z = position.getFloorZ() + block.z;
 
-            position.getLevel().setBlockStateAt(x,y,z, block.state);
+            position.getLevel().setBlockStateAt(x, y, z, block.state);
         }
+    }
+
+    /**
+     * Rotate structure around Y axis.
+     */
+    public JeStructure rotate(StructureRotation rotation) {
+        if (rotation == StructureRotation.NONE) {
+            return this;
+        }
+
+        int newSizeX = (rotation == StructureRotation.ROTATE_180) ? sizeX : sizeZ;
+        int newSizeZ = (rotation == StructureRotation.ROTATE_180) ? sizeZ : sizeX;
+
+        List<StructureBlocks> rotatedBlocks = new ArrayList<>();
+
+        for (StructureBlocks b : this.blocks) {
+            int x = b.x, y = b.y, z = b.z;
+            int rx = x, rz = z;
+
+            switch (rotation) {
+                case ROTATE_90 -> {
+                    rx = z;
+                    rz = sizeX - 1 - x;
+                }
+                case ROTATE_180 -> {
+                    rx = sizeX - 1 - x;
+                    rz = sizeZ - 1 - z;
+                }
+                case ROTATE_270 -> {
+                    rx = sizeZ - 1 - z;
+                    rz = x;
+                }
+            }
+            rotatedBlocks.add(new StructureBlocks(rx, y, rz, b.state));
+        }
+
+        return new JeStructure(newSizeX, sizeY, newSizeZ, rotatedBlocks);
+    }
+
+    /**
+     * Mirror structure along X/Z axes.
+     */
+    public JeStructure mirror(StructureMirror mirror) {
+        if (mirror == StructureMirror.NONE) {
+            return this;
+        }
+
+        List<StructureBlocks> mirroredBlocks = new ArrayList<>();
+
+        for (StructureBlocks b : this.blocks) {
+            int x = b.x, y = b.y, z = b.z;
+            int mx = x, mz = z;
+
+            switch (mirror) {
+                case X -> mx = sizeX - 1 - x;
+                case Z -> mz = sizeZ - 1 - z;
+                case XZ -> {
+                    mx = sizeX - 1 - x;
+                    mz = sizeZ - 1 - z;
+                }
+            }
+
+            mirroredBlocks.add(new StructureBlocks(mx, y, mz, b.state));
+        }
+
+        return new JeStructure(sizeX, sizeY, sizeZ, mirroredBlocks);
     }
 
     public record StructureBlocks(int x, int y, int z, BlockState state) {}

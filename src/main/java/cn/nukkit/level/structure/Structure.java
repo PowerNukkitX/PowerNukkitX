@@ -1,9 +1,10 @@
 package cn.nukkit.level.structure;
 
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockStructureVoid;
+import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
@@ -36,6 +37,8 @@ public record Structure(
         int x, int y, int z
 ) {
     private static final int FORMAT_VERSION = 1;
+    private static final BlockState STATE_AIR = BlockAir.PROPERTIES.getDefaultState();
+    private static final BlockState STATE_UNKNOWN = BlockUnknown.PROPERTIES.getDefaultState();
     private static final BlockState STRUCTURE_VOID_DEFAULT_STATE = BlockStructureVoid.PROPERTIES.getDefaultState();
 
     /**
@@ -75,7 +78,7 @@ public record Structure(
                         // the old position data is not useful anymore. However, we still save it
                         // to follow the vanilla behavior for best compatibility.
                         blockEntity.saveNBT();
-                        blockEntities.put(new Vector3(lx, ly, lz), blockEntity.namedTag);
+                        blockEntities.put(new Vector3(lx, ly, lz), blockEntity.getCleanedNBT().putString("id", blockEntity.getSaveId()));
                     }
                 }
             }
@@ -128,18 +131,20 @@ public record Structure(
         CompoundTag palette = structureNBT.getCompound("palette").getCompound("default");
         CompoundTag blockEntityNBT = palette.getCompound("block_position_data");
         List<BlockState> blockPalette = palette.getList("block_palette", CompoundTag.class).getAll().stream().map(NBTIO::getBlockStateHelper).toList();
+        //replace null block states with unknown state
+        blockPalette = blockPalette.stream().map(bs -> bs == null ? STATE_UNKNOWN : bs).toList();
 
         BlockState[][][][] blockStates = new BlockState[2][sizeX][sizeY][sizeZ];
         for (int lx = 0; lx < sizeX; lx++) {
             for (int ly = 0; ly < sizeY; ly++) {
                 for (int lz = 0; lz < sizeZ; lz++) {
                     if (layer0.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData() == -1) {
-                        blockStates[0][lx][ly][lz] = STRUCTURE_VOID_DEFAULT_STATE;
+                        blockStates[0][lx][ly][lz] = STATE_AIR;
                     } else {
                         blockStates[0][lx][ly][lz] = blockPalette.get(layer0.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData());
                     }
                     if (layer1.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData() == -1) {
-                        blockStates[1][lx][ly][lz] = STRUCTURE_VOID_DEFAULT_STATE;
+                        blockStates[1][lx][ly][lz] = STATE_AIR;
                     } else {
                         blockStates[1][lx][ly][lz] = blockPalette.get(layer1.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData());
                     }
@@ -193,37 +198,35 @@ public record Structure(
                 for (int lz = 0; lz < sizeZ; lz++) {
                     if (!blockStates[0][lx][ly][lz].equals(STRUCTURE_VOID_DEFAULT_STATE)) {
                         pos.getLevel().setBlockStateAt(x + lx, y + ly, z + lz, 0, blockStates[0][lx][ly][lz]);
+                    } else {
+                        pos.getLevel().setBlockStateAt(x + lx, y + ly, z + lz, 0, STATE_AIR);
                     }
                     if (!blockStates[1][lx][ly][lz].equals(STRUCTURE_VOID_DEFAULT_STATE)) {
                         pos.getLevel().setBlockStateAt(x + lx, y + ly, z + lz, 1, blockStates[1][lx][ly][lz]);
+                    } else {
+                        pos.getLevel().setBlockStateAt(x + lx, y + ly, z + lz, 1, STATE_AIR);
                     }
                 }
             }
         }
 
         for (var entry : blockEntities.entrySet()) {
-            // Block entity should also being spawned when placing block
-            // if the block entity is implemented
             BlockEntity blockEntity = pos.getLevel().getBlockEntity(new Vector3(entry.getKey().x + x, entry.getKey().y + y, entry.getKey().z + z));
-            if (blockEntity == null) {
-                // Block entity not implemented maybe
-                continue;
+            if (blockEntity != null) {
+                log.warn("Overwriting existing block entity at {}, {}, {}", entry.getKey().x + x, entry.getKey().y + y, entry.getKey().z + z);
+                blockEntity.getLevel().removeBlockEntity(blockEntity);
             }
-            // No need to put the new position data into the nbt, as
-            // the block entity have spawned and already have the new
-            // position data, so just remove the old position data.
-            CompoundTag oldNbt = entry.getValue();
-            oldNbt.remove("x");
-            oldNbt.remove("y");
-            oldNbt.remove("z");
-            blockEntity.namedTag = oldNbt;
-            blockEntity.saveNBT();
 
-            if(blockEntity instanceof BlockEntitySpawnable bsp) bsp.spawnToAll();
+            CompoundTag oldNbt = entry.getValue();
+            oldNbt.putInt("x", (int) (entry.getKey().x + x));
+            oldNbt.putInt("y", (int) (entry.getKey().y + y));
+            oldNbt.putInt("z", (int) (entry.getKey().z + z));
+
+            BlockEntity.createBlockEntity(oldNbt.getString("id"), new Position(entry.getKey().x + x, entry.getKey().y + y, entry.getKey().z + z, pos.getLevel()), oldNbt);
         }
         for (var nbt : entities) {
             //TODO: spawn entity from nbt
-            log.warn("Spawning entity from structure is not implemented yet. Entity NBT: {}", nbt);
+            //Entity e = Entity.createEntity(nbt.getString("identifier"), new Position());
         }
     }
 
@@ -492,25 +495,5 @@ public record Structure(
 
         return new Structure(mirroredStates, mirroredBlockEntities, mirroredEntities,
                 sizeX, sizeY, sizeZ, x, y, z);
-    }
-
-
-
-    private static class BlockStatePalette {
-        @Getter
-        private final List<BlockState> palette = new ArrayList<>();
-
-        public int getIndexOf(BlockState block) {
-            if (block.equals(STRUCTURE_VOID_DEFAULT_STATE)) {
-                return -1;
-            }
-            if (palette.contains(block)) {
-                return palette.indexOf(block);
-            } else {
-                int index = palette.size();
-                palette.add(block);
-                return index;
-            }
-        }
     }
 }

@@ -4,13 +4,18 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;
+import cn.nukkit.blockentity.BlockEntityStructBlock;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 import static cn.nukkit.block.property.CommonBlockProperties.CONDITIONAL_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
@@ -83,7 +88,18 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
         } else {
             this.setBlockFace(BlockFace.DOWN);
         }
-        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true) != null;
+
+        CompoundTag nbt = new CompoundTag();
+
+        if (item.hasCustomBlockData()) {
+            Map<String, Tag> customData = item.getCustomBlockData().getTags();
+            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
+                nbt.put(tag.getKey(), tag.getValue());
+            }
+        }
+
+        BlockEntityCommandBlock blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt);
+        return blockEntity != null;
     }
 
     @Override
