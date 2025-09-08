@@ -17,6 +17,7 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.structure.JeStructure;
 import cn.nukkit.level.structure.Structure;
+import cn.nukkit.level.structure.StructureAPI;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.InternalPlugin;
@@ -99,17 +100,14 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                         String structureName = list.getResult(2);
                         Location loc = player.getLocation();
 
-                        try (var stream = DebugCommand.class.getClassLoader().getResourceAsStream("structures/" + structureName + ".mcstructure")) {
-                            CompoundTag root = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
-
-                            Structure structure = Structure.fromNbt(root);
-                            structure.place(loc);
-                            log.addSuccess("Placed structure " + structureName + " at " + loc).output();
-
-                        } catch (Exception e) {
-                            sender.sendMessage("Error: " + e.getMessage());
-                            e.printStackTrace();
+                        Structure structure = StructureAPI.load(structureName);
+                        if (structure == null) {
+                            log.addError("Structure " + structureName + " not found").output();
+                            return 0;
                         }
+
+                        structure.place(loc);
+                        log.addSuccess("Placed structure " + structureName + " at " + loc).output();
 
                         return 1;
                     }

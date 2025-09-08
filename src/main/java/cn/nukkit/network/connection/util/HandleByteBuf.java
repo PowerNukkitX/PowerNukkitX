@@ -1586,9 +1586,8 @@ public class HandleByteBuf extends ByteBuf {
 
     @SneakyThrows(IOException.class)
     public void writeTag(CompoundTag tag) {
-        writeBytes(NBTIO.write(tag));
+        writeBytes(NBTIO.writeNetwork(tag));
     }
-
 
     public ItemStackRequest readItemStackRequest() {
         int requestId = readVarInt();

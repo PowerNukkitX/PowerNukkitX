@@ -37,10 +37,10 @@ public record Structure(
     private static final BlockState STRUCTURE_VOID_DEFAULT_STATE = BlockStructureVoid.PROPERTIES.getDefaultState();
 
     /**
-     * @see #pick(Level, int, int, int, int, int, int, boolean)
+     * @see #create(Level, int, int, int, int, int, int, boolean)
      */
-    public static Structure pick(Level dimension, int x, int y, int z, int sizeX, int sizeY, int sizeZ) {
-        return pick(dimension, x, y, z, sizeX, sizeY, sizeZ, true);
+    public static Structure create(Level dimension, int x, int y, int z, int sizeX, int sizeY, int sizeZ) {
+        return create(dimension, x, y, z, sizeX, sizeY, sizeZ, true);
     }
 
     /**
@@ -56,7 +56,7 @@ public record Structure(
      * @param saveEntities whether to save the entities in the structure
      * @return the picked structure
      */
-    public static Structure pick(Level dimension, int x, int y, int z, int sizeX, int sizeY, int sizeZ, boolean saveEntities) {
+    public static Structure create(Level dimension, int x, int y, int z, int sizeX, int sizeY, int sizeZ, boolean saveEntities) {
         BlockState[][][][] blockStates = new BlockState[2][sizeX][sizeY][sizeZ];
         Map<Vector3, CompoundTag> blockEntities = new HashMap<>();
         List<CompoundTag> entities = new ArrayList<>();
@@ -231,55 +231,120 @@ public record Structure(
      * @return the nbt data of the structure
      */
     public CompoundTag toNBT() {
-        int capacity = sizeX * sizeY * sizeZ;
-        Integer[] layer0 = new Integer[capacity];
-        Integer[] layer1 = new Integer[capacity];
-        BlockStatePalette palette = new BlockStatePalette();
-        for (int x = 0; x < sizeX; x++) {
-            for (int y = 0; y < sizeY; y++) {
-                for (int z = 0; z < sizeZ; z++) {
-                    layer0[indexFormPos(sizeX, sizeY, sizeZ, x, y, z)] = palette.getIndexOf(blockStates[0][x][y][z]);
-                    layer1[indexFormPos(sizeX, sizeY, sizeZ, x, y, z)] = palette.getIndexOf(blockStates[1][x][y][z]);
+        CompoundTag nbt = new CompoundTag();
+
+        // Set format version
+        nbt.putInt("format_version", FORMAT_VERSION);
+
+        // Set size
+        ListTag<IntTag> sizeList = new ListTag<>();
+        sizeList.add(new IntTag(this.sizeX));
+        sizeList.add(new IntTag(this.sizeY));
+        sizeList.add(new IntTag(this.sizeZ));
+        nbt.putList("size", sizeList);
+
+        // Create structure NBT
+        CompoundTag structureNBT = new CompoundTag();
+
+        // Create block palette from blockStates
+        Map<BlockState, Integer> blockStateToIndex = new HashMap<>();
+        List<BlockState> uniqueBlockStates = new ArrayList<>();
+        int paletteIndex = 0;
+
+        // Collect unique block states
+        for (int layer = 0; layer < 2; layer++) {
+            for (int x = 0; x < this.sizeX; x++) {
+                for (int y = 0; y < this.sizeY; y++) {
+                    for (int z = 0; z < this.sizeZ; z++) {
+                        BlockState state = this.blockStates[layer][x][y][z];
+                        if (state != null && !state.equals(STRUCTURE_VOID_DEFAULT_STATE) && !blockStateToIndex.containsKey(state)) {
+                            blockStateToIndex.put(state, paletteIndex++);
+                            uniqueBlockStates.add(state);
+                        }
+                    }
                 }
             }
         }
-        CompoundTag blockEntityNBT = new CompoundTag();
-        for (var index : blockEntities.entrySet()) {
-            var pos = index.getKey();
-            blockEntityNBT.putCompound(
-                    Integer.toString(indexFormPos(sizeX, sizeY, sizeZ, (int) pos.x, (int) pos.y, (int) pos.z)),
-                    index.getValue()
-            );
+
+        // Create block_indices
+        ListTag<ListTag> blockIndices = new ListTag<>();
+
+        // Layer 0
+        ListTag<IntTag> layer0List = new ListTag<>();
+        for (int x = 0; x < this.sizeX; x++) {
+            for (int y = 0; y < this.sizeY; y++) {
+                for (int z = 0; z < this.sizeZ; z++) {
+                    BlockState state = this.blockStates[0][x][y][z];
+                    if (state == null || state.equals(STRUCTURE_VOID_DEFAULT_STATE)) {
+                        layer0List.add(new IntTag(-1));
+                    } else {
+                        layer0List.add(new IntTag(blockStateToIndex.get(state)));
+                    }
+                }
+            }
         }
+        blockIndices.add(layer0List);
 
-        ListTag layer0Tag = new ListTag();
-        layer0Tag.setAll(Arrays.asList(layer0));
+        // Layer 1
+        ListTag<IntTag> layer1List = new ListTag<>();
+        for (int x = 0; x < this.sizeX; x++) {
+            for (int y = 0; y < this.sizeY; y++) {
+                for (int z = 0; z < this.sizeZ; z++) {
+                    BlockState state = this.blockStates[1][x][y][z];
+                    if (state == null || state.equals(STRUCTURE_VOID_DEFAULT_STATE)) {
+                        layer1List.add(new IntTag(-1));
+                    } else {
+                        layer1List.add(new IntTag(blockStateToIndex.get(state)));
+                    }
+                }
+            }
+        }
+        blockIndices.add(layer1List);
 
-        ListTag layer1Tag = new ListTag();
-        layer1Tag.setAll(Arrays.asList(layer1));
+        structureNBT.putList("block_indices", blockIndices);
 
-        return new CompoundTag()
-                .putInt("format_version", FORMAT_VERSION)
-                .putList("size", new ListTag().add(new IntTag(sizeX)).add(new IntTag(sizeY)).add(new IntTag(sizeZ)))
-                .putCompound("structure",
-                        new CompoundTag()
-                                .putList(
-                                        "block_indices",
-                                        new ListTag().add(layer0Tag).add(layer1Tag))
-                                .putList("entities", new ListTag(entities))
-                                .putCompound("palette", new CompoundTag().putCompound(
-                                        "default", new CompoundTag()
-                                                .putList(
-                                                        "block_palette",
-                                                        new ListTag(palette.getPalette()
-                                                                .stream()
-                                                                .map(BlockState::getBlockStateTag)
-                                                                .toList()))
-                                                .putCompound("block_position_data", blockEntityNBT)
+        // Create palette
+        CompoundTag paletteCompound = new CompoundTag();
+        CompoundTag defaultPalette = new CompoundTag();
 
-                                ))
-                )
-                .putList("structure_world_origin", new ListTag().add(new IntTag(x)).add(new IntTag(y)).add(new IntTag(z)));
+        // Create block_palette
+        ListTag<CompoundTag> blockPaletteList = new ListTag<>();
+        for (BlockState state : uniqueBlockStates) {
+            CompoundTag blockStateTag = new CompoundTag(new HashMap(state.getBlockStateTag().getTags()));            // Remove version field if it exists to match expected format
+            blockStateTag.remove("version");
+            blockPaletteList.add(blockStateTag);
+        }
+        defaultPalette.putList("block_palette", blockPaletteList);
+
+        // Create block_position_data for block entities
+        CompoundTag blockEntityNBT = new CompoundTag();
+        for (Map.Entry<Vector3, CompoundTag> entry : this.blockEntities.entrySet()) {
+            Vector3 pos = entry.getKey();
+            int index = indexFormPos(this.sizeX, this.sizeY, this.sizeZ, (int) pos.x, (int) pos.y, (int) pos.z);
+            blockEntityNBT.putCompound(String.valueOf(index), entry.getValue());
+        }
+        defaultPalette.putCompound("block_position_data", blockEntityNBT);
+
+        paletteCompound.putCompound("default", defaultPalette);
+        structureNBT.putCompound("palette", paletteCompound);
+
+        // Add entities
+        ListTag<CompoundTag> entitiesList = new ListTag<>();
+        for (CompoundTag entity : this.entities) {
+            entitiesList.add(entity);
+        }
+        structureNBT.putList("entities", entitiesList);
+
+        nbt.putCompound("structure", structureNBT);
+
+        // Set structure_world_origin (using 0, 0, 0)
+        ListTag<IntTag> originList = new ListTag<>();
+        originList.add(new IntTag(0));
+        originList.add(new IntTag(0));
+        originList.add(new IntTag(0));
+        nbt.putList("structure_world_origin", originList);
+
+        return nbt;
     }
 
     private static class BlockStatePalette {
