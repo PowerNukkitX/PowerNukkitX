@@ -212,7 +212,7 @@ public class Structure extends AbstractStructure {
      *
      * @param pos the position to place the structure at (level cannot be null)
      */
-    public void place(Position pos) {
+    public void place(Position pos, boolean includeEntities) {
         Preconditions.checkArgument(pos.getLevel() != null, "position level cannot be null");
 
         int x = pos.getFloorX();
@@ -254,6 +254,11 @@ public class Structure extends AbstractStructure {
 
             BlockEntity.createBlockEntity(oldNbt.getString("id"), new Position(entry.getKey().x + x, entry.getKey().y + y, entry.getKey().z + z, pos.getLevel()), oldNbt);
         }
+
+        if(!includeEntities) {
+            return;
+        }
+
         for (var nbt : entities) {
             CompoundTag entityNbt = new CompoundTag(new HashMap<>(nbt.getTags()));
 
@@ -310,7 +315,7 @@ public class Structure extends AbstractStructure {
         }
     }
 
-    public CompletableFuture<Void> placeAsync(Position pos) {
+    public CompletableFuture<Void> placeAsync(Position pos, boolean includeEntities) {
         return CompletableFuture.runAsync(() -> place(pos));
     }
 

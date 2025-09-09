@@ -109,7 +109,7 @@ public class JeStructure extends AbstractStructure {
         return CompletableFuture.supplyAsync(() -> fromNbt(nbt));
     }
 
-    public void place(Position position) {
+    public void place(Position position, boolean includeEntities) {
         Preconditions.checkArgument(position.getLevel() != null, "Position level cannot be null");
 
         BlockManager blockManager = new BlockManager(position.getLevel());
@@ -125,7 +125,7 @@ public class JeStructure extends AbstractStructure {
         blockManager.applySubChunkUpdate();
     }
 
-    public CompletableFuture<Void> placeAsync(Position position) {
+    public CompletableFuture<Void> placeAsync(Position position, boolean includeEntities) {
         return CompletableFuture.runAsync(() -> place(position));
     }
 

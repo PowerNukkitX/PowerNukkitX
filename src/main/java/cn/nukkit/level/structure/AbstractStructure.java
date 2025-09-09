@@ -22,8 +22,16 @@ public abstract class AbstractStructure {
     }
 
     public abstract CompoundTag toNBT();
-    public abstract void place(Position pos);
-    public abstract CompletableFuture<Void> placeAsync(Position pos);
+    public abstract void place(Position pos, boolean includeEntities);
+    public abstract CompletableFuture<Void> placeAsync(Position pos, boolean includeEntities);
     public abstract AbstractStructure rotate(StructureRotation rotation);
     public abstract AbstractStructure mirror(StructureMirror mirror);
+
+    public void place(Position pos) {
+        this.place(pos, true);
+    }
+
+    public CompletableFuture<Void> placeAsync(Position pos) {
+        return this.placeAsync(pos, true);
+    }
 }
