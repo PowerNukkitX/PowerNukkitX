@@ -1,9 +1,7 @@
 package cn.nukkit.level.structure;
 
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockStructureVoid;
-import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
@@ -212,14 +210,12 @@ public class Structure extends AbstractStructure {
      *
      * @param pos the position to place the structure at (level cannot be null)
      */
-    public void place(Position pos, boolean includeEntities) {
+    public void place(Position pos, boolean includeEntities, BlockManager blockManager) {
         Preconditions.checkArgument(pos.getLevel() != null, "position level cannot be null");
 
         int x = pos.getFloorX();
         int y = pos.getFloorY();
         int z = pos.getFloorZ();
-
-        BlockManager blockManager = new BlockManager(pos.getLevel());
 
         for (int lx = 0; lx < sizeX; lx++) {
             for (int ly = 0; ly < sizeY; ly++) {
@@ -313,10 +309,6 @@ public class Structure extends AbstractStructure {
                 e.spawnToAll();
             }
         }
-    }
-
-    public CompletableFuture<Void> placeAsync(Position pos, boolean includeEntities) {
-        return CompletableFuture.runAsync(() -> place(pos));
     }
 
     /**

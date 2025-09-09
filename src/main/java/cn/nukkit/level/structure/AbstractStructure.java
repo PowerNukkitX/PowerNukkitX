@@ -4,6 +4,7 @@ import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.StructureMirror;
 import cn.nukkit.network.protocol.types.StructureRotation;
@@ -22,8 +23,7 @@ public abstract class AbstractStructure {
     }
 
     public abstract CompoundTag toNBT();
-    public abstract void place(Position pos, boolean includeEntities);
-    public abstract CompletableFuture<Void> placeAsync(Position pos, boolean includeEntities);
+    public abstract void place(Position pos, boolean includeEntities, BlockManager blockManager);
     public abstract AbstractStructure rotate(StructureRotation rotation);
     public abstract AbstractStructure mirror(StructureMirror mirror);
 
@@ -31,7 +31,7 @@ public abstract class AbstractStructure {
         this.place(pos, true);
     }
 
-    public CompletableFuture<Void> placeAsync(Position pos) {
-        return this.placeAsync(pos, true);
+    public void place(Position pos, boolean includeEntities) {
+        this.place(pos, includeEntities, new BlockManager(pos.getLevel()));
     }
 }

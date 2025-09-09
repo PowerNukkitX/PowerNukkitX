@@ -106,7 +106,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                             return 0;
                         }
 
-                        structure.placeAsync(loc);
+                        structure.place(loc);
                         log.addSuccess("Placed structure " + structureName + " at " + loc).output();
 
                         return 1;

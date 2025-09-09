@@ -239,7 +239,6 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
         this.ignoreEntities = editorData.getSettings().isIgnoringEntities();
         this.includePlayers = editorData.isIncludingPlayers();
         this.integrity = editorData.getSettings().getIntegrityValue();
-        //this.isPowered = packet.powered;
         this.mirror = editorData.getSettings().getMirror();
         this.redstoneSaveMode = editorData.getRedstoneSaveMode();
         this.removeBlocks = editorData.getSettings().isIgnoringBlocks();
@@ -271,7 +270,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
             structure = structure.mirror(mirror);
 
         BlockVector3 pos = this.getBlock().asBlockVector3().add(offset);
-        structure.placeAsync(Position.fromObject(pos.asVector3(), this.getLevel()), !ignoreEntities);
+        structure.place(Position.fromObject(pos.asVector3(), this.getLevel()), !ignoreEntities);
     }
 
     public void saveStructure() {
