@@ -4,6 +4,7 @@ import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -111,13 +112,17 @@ public class JeStructure extends AbstractStructure {
     public void place(Position position) {
         Preconditions.checkArgument(position.getLevel() != null, "Position level cannot be null");
 
+        BlockManager blockManager = new BlockManager(position.getLevel());
+
         for (StructureBlocks block : this.blocks) {
             int x = position.getFloorX() + block.x;
             int y = position.getFloorY() + block.y;
             int z = position.getFloorZ() + block.z;
 
-            position.getLevel().setBlockStateAt(x, y, z, block.state);
+            blockManager.setBlockStateAt(x, y, z, block.state);
         }
+
+        blockManager.applySubChunkUpdate();
     }
 
     public CompletableFuture<Void> placeAsync(Position position) {

@@ -10,12 +10,10 @@ import cn.nukkit.entity.EntityID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.*;
 import cn.nukkit.network.protocol.types.StructureMirror;
 import cn.nukkit.network.protocol.types.StructureRotation;
 import com.google.common.base.Preconditions;
@@ -221,22 +219,26 @@ public class Structure extends AbstractStructure {
         int y = pos.getFloorY();
         int z = pos.getFloorZ();
 
+        BlockManager blockManager = new BlockManager(pos.getLevel());
+
         for (int lx = 0; lx < sizeX; lx++) {
             for (int ly = 0; ly < sizeY; ly++) {
                 for (int lz = 0; lz < sizeZ; lz++) {
                     if (!blockStates[0][lx][ly][lz].equals(STRUCTURE_VOID_DEFAULT_STATE)) {
-                        pos.getLevel().setBlockStateAt(x + lx, y + ly, z + lz, 0, blockStates[0][lx][ly][lz]);
+                        blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 0, blockStates[0][lx][ly][lz]);
                     } else {
-                        pos.getLevel().setBlockStateAt(x + lx, y + ly, z + lz, 0, STATE_AIR);
+                        blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 0, STATE_AIR);
                     }
                     if (!blockStates[1][lx][ly][lz].equals(STRUCTURE_VOID_DEFAULT_STATE)) {
-                        pos.getLevel().setBlockStateAt(x + lx, y + ly, z + lz, 1, blockStates[1][lx][ly][lz]);
-                    } else {
-                        pos.getLevel().setBlockStateAt(x + lx, y + ly, z + lz, 1, STATE_AIR);
+                        blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, blockStates[1][lx][ly][lz]);
+                    } else if(blockManager.getBlockAt(x + lx, y + ly, z + lz).isWaterLogged()) {
+                        blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, STATE_AIR);
                     }
                 }
             }
         }
+
+        blockManager.applySubChunkUpdate(blockManager.getBlocks());
 
         for (var entry : blockEntities.entrySet()) {
             BlockEntity blockEntity = pos.getLevel().getBlockEntity(new Vector3(entry.getKey().x + x, entry.getKey().y + y, entry.getKey().z + z));
@@ -255,9 +257,24 @@ public class Structure extends AbstractStructure {
         for (var nbt : entities) {
             CompoundTag entityNbt = new CompoundTag(new HashMap<>(nbt.getTags()));
 
-            double origX = entityNbt.getList("Pos", DoubleTag.class).get(0).getData();
-            double origY = entityNbt.getList("Pos", DoubleTag.class).get(1).getData();
-            double origZ = entityNbt.getList("Pos", DoubleTag.class).get(2).getData();
+            List<Double> posList = new ArrayList<>();
+
+            if(entityNbt.getList("Pos").get(0).getId() == Tag.TAG_Double) {
+                posList.add(entityNbt.getList("Pos", DoubleTag.class).get(0).getData());
+                posList.add(entityNbt.getList("Pos", DoubleTag.class).get(1).getData());
+                posList.add(entityNbt.getList("Pos", DoubleTag.class).get(2).getData());
+            } else if(entityNbt.getList("Pos").get(0).getId() == Tag.TAG_Float) {
+                posList.add((double) entityNbt.getList("Pos", FloatTag.class).get(0).getData());
+                posList.add((double) entityNbt.getList("Pos", FloatTag.class).get(1).getData());
+                posList.add((double) entityNbt.getList("Pos", FloatTag.class).get(2).getData());
+            } else {
+                log.error("Unknown Pos tag type: {}", entityNbt.getList("Pos").get(0).getId());
+                continue;
+            }
+
+            double origX = posList.get(0);
+            double origY = posList.get(1);
+            double origZ = posList.get(2);
 
             double relX = origX - this.x;
             double relY = origY - this.y;
@@ -271,7 +288,16 @@ public class Structure extends AbstractStructure {
                     .add(new DoubleTag(newX))
                     .add(new DoubleTag(newY))
                     .add(new DoubleTag(newZ))
-            );
+            ).putList("Motion", new ListTag<DoubleTag>()
+                    .add(new DoubleTag(0))
+                    .add(new DoubleTag(0))
+                    .add(new DoubleTag(0)));
+
+            if(!entityNbt.contains("Rotation")) {
+                entityNbt.putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0)));
+            }
 
             Entity e = Entity.createEntity(
                     entityNbt.getString("identifier"),
