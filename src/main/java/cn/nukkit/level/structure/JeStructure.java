@@ -120,6 +120,10 @@ public class JeStructure extends AbstractStructure {
         }
     }
 
+    public CompletableFuture<Void> placeAsync(Position position) {
+        return CompletableFuture.runAsync(() -> place(position));
+    }
+
     /**
      * Rotate structure around Y axis.
      */
