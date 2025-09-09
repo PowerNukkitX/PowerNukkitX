@@ -22,9 +22,7 @@ import java.util.concurrent.CompletableFuture;
 @Getter
 @Setter
 //TODO: blockentities, entities
-public class JeStructure {
-    private static BlockState blockAir = new BlockAir().getBlockState();
-    private static final BlockState STATE_UNKNOWN = BlockUnknown.PROPERTIES.getDefaultState();
+public class JeStructure extends AbstractStructure {
 
     private int sizeX;
     private int sizeY;
@@ -100,7 +98,7 @@ public class JeStructure {
             int y = location.get(1).getData();
             int z = location.get(2).getData();
             int state = blockNbt.getInt("state");
-            structureStates.add(new StructureBlocks(x, y, z, palette.size() > state ? palette.get(state) : blockAir));
+            structureStates.add(new StructureBlocks(x, y, z, palette.size() > state ? palette.get(state) : STATE_AIR));
         }
 
         return new JeStructure(sizeX, sizeY, sizeZ, structureStates);
@@ -186,6 +184,11 @@ public class JeStructure {
         }
 
         return new JeStructure(sizeX, sizeY, sizeZ, mirroredBlocks);
+    }
+
+    @Override
+    public CompoundTag toNBT() {
+        return null; // Not implemented
     }
 
     public record StructureBlocks(int x, int y, int z, BlockState state) {}

@@ -19,7 +19,9 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.types.StructureMirror;
 import cn.nukkit.network.protocol.types.StructureRotation;
 import com.google.common.base.Preconditions;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -31,19 +33,38 @@ import java.util.concurrent.CompletableFuture;
  */
 
 @Slf4j
-public record Structure(
-        // layer-x-y-z
-        BlockState[][][][] blockStates,
-        Map<Vector3, CompoundTag> blockEntities,
-        List<CompoundTag> entities,
-        int sizeX, int sizeY, int sizeZ,
-        int x, int y, int z
-) {
+@Getter
+@EqualsAndHashCode
+@ToString
+public class Structure extends AbstractStructure {
     private static final int FORMAT_VERSION = 1;
-    private static final BlockState STATE_AIR = BlockAir.PROPERTIES.getDefaultState();
-    private static final BlockState STATE_UNKNOWN = BlockUnknown.PROPERTIES.getDefaultState();
     private static final BlockState STRUCTURE_VOID_DEFAULT_STATE = BlockStructureVoid.PROPERTIES.getDefaultState();
 
+    private final BlockState[][][][] blockStates;
+    private final Map<Vector3, CompoundTag> blockEntities;
+    private final List<CompoundTag> entities;
+    private final int sizeX;
+    private final int sizeY;
+    private final int sizeZ;
+    private final int x;
+    private final int y;
+    private final int z;
+
+    public Structure(BlockState[][][][] blockStates,
+                     Map<Vector3, CompoundTag> blockEntities,
+                     List<CompoundTag> entities,
+                     int sizeX, int sizeY, int sizeZ,
+                     int x, int y, int z) {
+        this.blockStates = blockStates;
+        this.blockEntities = blockEntities;
+        this.entities = entities;
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
+        this.sizeZ = sizeZ;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
     /**
      * @see #create(Level, int, int, int, int, int, int, boolean)
      */
