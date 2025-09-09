@@ -11,12 +11,14 @@ import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.UpdateSubChunkBlocksPacket;
 import cn.nukkit.network.protocol.types.BlockChangeEntry;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
 
+@Getter
 public class BlockManager {
     private final Level level;
     private final Long2ObjectOpenHashMap<Block> caches;

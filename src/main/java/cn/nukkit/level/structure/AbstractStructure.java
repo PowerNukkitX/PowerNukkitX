@@ -8,6 +8,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.StructureMirror;
 import cn.nukkit.network.protocol.types.StructureRotation;
 
+import java.util.concurrent.CompletableFuture;
+
 public abstract class AbstractStructure {
     protected static final BlockState STATE_AIR = BlockAir.PROPERTIES.getDefaultState();
     protected static final BlockState STATE_UNKNOWN = BlockUnknown.PROPERTIES.getDefaultState();
@@ -21,6 +23,7 @@ public abstract class AbstractStructure {
 
     public abstract CompoundTag toNBT();
     public abstract void place(Position pos);
+    public abstract CompletableFuture<Void> placeAsync(Position pos);
     public abstract AbstractStructure rotate(StructureRotation rotation);
     public abstract AbstractStructure mirror(StructureMirror mirror);
 }
