@@ -5,6 +5,7 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockStructureVoid;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
@@ -12,6 +13,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.types.StructureMirror;
@@ -230,8 +232,34 @@ public record Structure(
             BlockEntity.createBlockEntity(oldNbt.getString("id"), new Position(entry.getKey().x + x, entry.getKey().y + y, entry.getKey().z + z, pos.getLevel()), oldNbt);
         }
         for (var nbt : entities) {
-            //TODO: spawn entity from nbt
-            //Entity e = Entity.createEntity(nbt.getString("identifier"), new Position());
+            CompoundTag entityNbt = new CompoundTag(new HashMap<>(nbt.getTags()));
+
+            double origX = entityNbt.getList("Pos", DoubleTag.class).get(0).getData();
+            double origY = entityNbt.getList("Pos", DoubleTag.class).get(1).getData();
+            double origZ = entityNbt.getList("Pos", DoubleTag.class).get(2).getData();
+
+            double relX = origX - this.x;
+            double relY = origY - this.y;
+            double relZ = origZ - this.z;
+
+            double newX = relX + x;
+            double newY = relY + y;
+            double newZ = relZ + z;
+
+            entityNbt.putList("Pos", new ListTag<DoubleTag>()
+                    .add(new DoubleTag(newX))
+                    .add(new DoubleTag(newY))
+                    .add(new DoubleTag(newZ))
+            );
+
+            Entity e = Entity.createEntity(
+                    entityNbt.getString("identifier"),
+                    new Position(newX, newY, newZ, pos.getLevel()).getChunk(),
+                    entityNbt
+            );
+            if (e != null) {
+                e.spawnToAll();
+            }
         }
     }
 
