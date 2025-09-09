@@ -2263,7 +2263,7 @@ public class Level implements Metadatable {
                 int chunkZ = Level.getHashZ(index);
                 int bx = chunkX << 4;
                 int bz = chunkZ << 4;
-                for (int blockHash : blocks) {
+                for (int blockHash : blocks.clone()) {
                     int hi = (byte) (blockHash >>> 16);
                     int lo = (short) blockHash;
                     int y = ensureY(lo - 64);
@@ -2326,6 +2326,7 @@ public class Level implements Metadatable {
             }
         } catch (Throwable e) {
             log.error("Error while updating block light", e);
+            e.printStackTrace();
         }
     }
 

@@ -23,8 +23,12 @@ public class BlockManager {
     private final Long2ObjectOpenHashMap<Block> places;
 
     private long hashXYZ(int x, int y, int z, int layer) {
-        long v = layer == 1 ? 0xFFFFFFF : 0x7FFFFFF;
-        return (((long) x & v) << 37) | ((long) (level.ensureY(y) + 64) << 28) | ((long) z & (long) 0xFFFFFFF);
+        //generate unique hash for x,y,z,layer: +- 30M for x,z and +-400 for y, layer 0-1
+        return
+                (((long) (x + 30000000)) & 0x3FFFFFFL) << 38 |
+                        (((long) (z + 30000000)) & 0x3FFFFFFL) << 12 |
+                        (((long) (y + 400)) & 0xFFF) << 1 |
+                        ((long) layer & 0x1);
     }
 
     public BlockManager(Level level) {

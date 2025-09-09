@@ -586,4 +586,10 @@ public interface PacketHandler {
 
     default void handle(ShowStoreOfferPacket pk) {
     }
+
+    default void handle(StructureTemplateDataRequestPacket pk) {
+    }
+
+    default void handle(StructureTemplateDataResponsePacket pk) {
+    }
 }

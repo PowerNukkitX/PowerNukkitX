@@ -60,4 +60,6 @@ public class GameplaySettings extends OkaeriConfig {
             "upcoming_creator_features",
             "villager_trades_rebalance"
     ));
+    @Comment("pnx.settings.gameplay.cacheStructures")
+    boolean cacheStructures = false;
 }
