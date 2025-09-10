@@ -1,28 +1,13 @@
 package cn.nukkit.item;
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
-import cn.nukkit.event.item.ItemWearEvent;
-import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Sound;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.plugin.PluginManager;
 
-import static cn.nukkit.utils.Utils.dynamic;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-abstract public class ItemArmor extends Item implements ItemDurable {
-    public static final int TIER_LEATHER = 1;
-    public static final int TIER_IRON = 2;
-    public static final int TIER_CHAIN = 3;
-    public static final int TIER_GOLD = 4;
-    public static final int TIER_DIAMOND = 5;
-    public static final int TIER_NETHERITE = 6;
-    public static final int TIER_OTHER = dynamic(1000);
+abstract public class ItemArmor extends Item {
 
     public ItemArmor(String id) {
         super(id);
@@ -51,98 +36,20 @@ abstract public class ItemArmor extends Item implements ItemDurable {
     }
 
     @Override
-    public boolean onClickAir(Player player, Vector3 directionVector) {
-        Item currentlyEquipped = null;
-
-        if (this.isHelmet()) {
-            currentlyEquipped = player.getInventory().getHelmet();
-        } else if (this.isChestplate()) {
-            currentlyEquipped = player.getInventory().getChestplate();
-        } else if (this.isLeggings()) {
-            currentlyEquipped = player.getInventory().getLeggings();
-        } else if (this.isBoots()) {
-            currentlyEquipped = player.getInventory().getBoots();
-        }
-
-        if (currentlyEquipped != null && currentlyEquipped.getEnchantment(Enchantment.ID_BINDING_CURSE) != null) {
-            return false;
-        }
-
-        boolean equip = false;
-        Item oldSlotItem = Item.AIR;
-        if (this.isHelmet()) {
-            oldSlotItem = player.getInventory().getHelmet();
-            if (player.getInventory().setHelmet(this)) {
-                equip = true;
-            }
-        } else if (this.isChestplate()) {
-            oldSlotItem = player.getInventory().getChestplate();
-            if (player.getInventory().setChestplate(this)) {
-                equip = true;
-            }
-        } else if (this.isLeggings()) {
-            oldSlotItem = player.getInventory().getLeggings();
-            if (player.getInventory().setLeggings(this)) {
-                equip = true;
-            }
-        } else if (this.isBoots()) {
-            oldSlotItem = player.getInventory().getBoots();
-            if (player.getInventory().setBoots(this)) {
-                equip = true;
-            }
-        }
-        if (equip) {
-            player.getInventory().setItem(player.getInventory().getHeldItemIndex(), oldSlotItem);
-            final int tier = this.getTier();
-            switch (tier) {
-                case TIER_CHAIN:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_CHAIN);
-                    break;
-                case TIER_DIAMOND:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_DIAMOND);
-                    break;
-                case TIER_GOLD:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GOLD);
-                    break;
-                case TIER_IRON:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_IRON);
-                    break;
-                case TIER_LEATHER:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_LEATHER);
-                    break;
-                case TIER_NETHERITE:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_NETHERITE);
-                    break;
-                default:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GENERIC);
-            }
-        }
-
-        return this.getCount() == 0;
-    }
-
-    @Override
-    public void setDamage(int damage) {
-        ItemWearEvent event = new ItemWearEvent(this, damage);
-        PluginManager pluginManager = Server.getInstance().getPluginManager();
-        if(pluginManager != null) pluginManager.callEvent(event); //Method gets called on server start before plugin manager is initiated
-        if(!event.isCancelled()) {
-            super.setDamage(event.getNewDurability());
-            this.getOrCreateNamedTag().putInt("Damage", event.getNewDurability());
-        }
+    public boolean canTakeDamage() {
+        return true;
     }
 
     @Override
     public int getEnchantAbility() {
         return switch (this.getTier()) {
-            case TIER_CHAIN -> 12;
-            case TIER_LEATHER, TIER_NETHERITE -> 15;
-            case TIER_DIAMOND -> 10;
-            case TIER_GOLD -> 25;
-            case TIER_IRON -> 9;
+            case WEARABLE_TIER_CHAIN -> 12;
+            case WEARABLE_TIER_LEATHER, WEARABLE_TIER_NETHERITE -> 15;
+            case WEARABLE_TIER_DIAMOND -> 10;
+            case WEARABLE_TIER_GOLD -> 25;
+            case WEARABLE_TIER_IRON -> 9;
             default -> 0;
         };
-
     }
 
     @Override

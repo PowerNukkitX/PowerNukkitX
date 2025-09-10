@@ -15,7 +15,7 @@ public class ItemLeatherLeggings extends ItemColorArmor {
 
     @Override
     public int getTier() {
-        return ItemArmor.TIER_LEATHER;
+        return Item.WEARABLE_TIER_LEATHER;
     }
 
     @Override

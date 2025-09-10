@@ -1,18 +1,16 @@
 package cn.nukkit.item.customitem;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.customitem.CustomItemDefinition.BlockPlacerData;
-
-import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
 
 /**
- * Inherit this class to implement a custom item, override the methods in the {@link Item} to control the feature of the item.
- *
+ * @deprecated Extend Item directly and implement CustomItem; custom-item hooks are now in Item and <p>
+ * definitions use CustomItemDefinition.SimpleBuilder, so this wrapper is no longer needed. <p>
+ * Prefer to extend Item class {@link Item} while implementing {@link CustomItem} for customized items.
  * @author lt_name
  */
+@Deprecated
 public abstract class ItemCustom extends Item implements CustomItem {
     public ItemCustom(@NotNull String id) {
         super(id);
@@ -26,11 +24,5 @@ public abstract class ItemCustom extends Item implements CustomItem {
     @Override
     public ItemCustom clone() {
         return (ItemCustom) super.clone();
-    }
-
-    @Nullable
-    public Block getBlockPlacerTargetBlock() {
-        BlockPlacerData data = this.getDefinition().getBlockPlacerData();
-        return data != null ? Block.get(data.blockId()) : null;
     }
 }

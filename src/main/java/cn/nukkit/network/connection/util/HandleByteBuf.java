@@ -5,7 +5,6 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
@@ -1236,7 +1235,7 @@ public class HandleByteBuf extends ByteBuf {
         try (LittleEndianByteBufOutputStream stream = new LittleEndianByteBufOutputStream(userDataBuf)) {
 
             int data = item.getDamage();
-            if (item instanceof ItemDurable && data != 0) {
+            if (item.canTakeDamage() && data != 0) {
                 byte[] nbt = item.getCompoundTag();
                 CompoundTag tag;
                 if (nbt == null || nbt.length == 0) {
@@ -1587,9 +1586,8 @@ public class HandleByteBuf extends ByteBuf {
 
     @SneakyThrows(IOException.class)
     public void writeTag(CompoundTag tag) {
-        writeBytes(NBTIO.write(tag));
+        writeBytes(NBTIO.writeNetwork(tag));
     }
-
 
     public ItemStackRequest readItemStackRequest() {
         int requestId = readVarInt();

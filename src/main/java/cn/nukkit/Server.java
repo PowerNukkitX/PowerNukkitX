@@ -197,6 +197,7 @@ public class Server {
     private final String filePath;
     private final String dataPath;
     private final String pluginPath;
+    public final String structurePath;
     private final Set<UUID> uniquePlayers = new HashSet<>();
     private final Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
     private final Map<UUID, Player> playerList = new ConcurrentHashMap<>();
@@ -263,11 +264,16 @@ public class Server {
         if (!new File(dataPath + "players/").exists()) {
             new File(dataPath + "players/").mkdirs();
         }
+        if (!new File(dataPath + "structures/").exists()) {
+            new File(dataPath + "structures/").mkdirs();
+        }
         if (!new File(pluginPath).exists()) {
             new File(pluginPath).mkdirs();
         }
+
         this.dataPath = new File(dataPath).getAbsolutePath() + "/";
         this.pluginPath = new File(pluginPath).getAbsolutePath() + "/";
+        this.structurePath = new File(dataPath).getAbsolutePath() + "/structures/";
         String commandDataPath = new File(dataPath).getAbsolutePath() + "/command_data";
         if (!new File(commandDataPath).exists()) {
             new File(commandDataPath).mkdirs();

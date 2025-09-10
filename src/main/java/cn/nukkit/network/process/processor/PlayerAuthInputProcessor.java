@@ -97,6 +97,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.sendData(player);
             } else {
                 player.setSneaking(true);
+                player.setBlocking(true);
             }
         }
         if (pk.inputData.contains(AuthInputAction.STOP_SNEAKING)) {
@@ -106,6 +107,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.sendData(player);
             } else {
                 player.setSneaking(false);
+                player.setBlocking(false);
             }
         }
         if (player.getAdventureSettings().get(AdventureSettings.Type.FLYING)) {
