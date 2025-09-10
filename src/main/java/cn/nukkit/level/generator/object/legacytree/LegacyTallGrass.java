@@ -35,7 +35,7 @@ public class LegacyTallGrass {
             for (int z = minz; z <= maxz; z++) {
                 int newY = y + random.nextInt(2) * (random.nextBoolean() ? -1 : 1);
                 if (random.nextBoolean()) {
-                    if (Objects.equals(level.getBlockIdAt(x, newY, z), Block.AIR) && Objects.equals(level.getBlockIdAt(x, newY - 1, z), Block.GRASS_BLOCK)) {
+                    if (Objects.equals(level.getBlockIdIfCachedOrLoaded(x, newY, z), Block.AIR) && Objects.equals(level.getBlockIdIfCachedOrLoaded(x, newY - 1, z), Block.GRASS_BLOCK)) {
                         int ranNumber = (int) Math.round(random.nextGaussian() * 1000);
                         int absRn = Math.abs(ranNumber);
                         if (-300 <= ranNumber && ranNumber <= 300) {
@@ -44,7 +44,7 @@ public class LegacyTallGrass {
                             level.setBlockStateAt(x, newY, z, places[1]);
                             BlockTallGrass block = new BlockTallGrass();
                             block.setTopHalf(true);
-                            level.getLevel().setBlock(x, newY + 1, z, block, false, false);
+                            level.setBlockStateAt(x, newY + 1, z, block.getBlockState());
                         } else if (500 <= ranNumber && ranNumber < 600) {
                             level.setBlockStateAt(x, newY, z, places[2]);
                         } else if (-600 <= ranNumber && ranNumber <= -500) {

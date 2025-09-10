@@ -20,9 +20,20 @@ import cn.nukkit.level.structure.Structure;
 import cn.nukkit.level.structure.StructureAPI;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.level.generator.biome.BiomePicker;
+import cn.nukkit.level.generator.biome.OverworldBiomePicker;
+import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
+import cn.nukkit.network.protocol.types.biome.BiomeConsolidatedFeatureData;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinitionChunkGenData;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinitionData;
 import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
+import cn.nukkit.tags.BiomeTags;
+import cn.nukkit.utils.OptionalValue;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 
 import java.lang.reflect.Field;
 import java.nio.ByteOrder;
@@ -30,6 +41,8 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 public class DebugCommand extends TestCommand implements CoreCommand {
     public DebugCommand(String name) {
@@ -47,7 +60,8 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 CommandParameter.newType("zoom", CommandParamType.INT)
         });
         this.commandParameters.put("biome", new CommandParameter[]{
-                CommandParameter.newEnum("biome", new String[]{"biome"})
+                CommandParameter.newEnum("biome", new String[]{"biome"}),
+                CommandParameter.newEnum("features", true, new String[]{"pick", "features", "parameter"})
         });
         this.commandParameters.put("light", new CommandParameter[]{
                 CommandParameter.newEnum("light", new String[]{"light"})
@@ -150,8 +164,54 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 if (!sender.isPlayer())
                     return 0;
                 Location loc = sender.getLocation();
-                var biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
-                sender.sendMessage(biome.getName() + " " + Arrays.toString(biome.getTags().toArray(String[]::new)));
+                if(!list.hasResult(1)) {
+                    var biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+                    sender.sendMessage(biome.getName() + " " + Arrays.toString(biome.getTags().toArray(String[]::new)));
+                } else {
+                    switch (list.getResult(1).toString()) {
+                        case "parameter" -> {
+                            BiomeDefinition biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+                            sender.sendMessage("Scale: " + biome.data.scale);
+                            sender.sendMessage("Depth: " + biome.data.depth);
+                        }
+                        case "pick" -> {
+                            BiomePicker picker = loc.getLevel().getBiomePicker();
+                            if(picker instanceof OverworldBiomePicker p) {
+                                OverworldBiomeResult res = p.pick(loc.getFloorX(), SEA_LEVEL, loc.getFloorZ());
+                                sender.sendMessage("Continental: " + res.getContinental());
+                                sender.sendMessage("Temperature: " + res.getTemperature());
+                                sender.sendMessage("Humidity: " + res.getHumidity());
+                                sender.sendMessage("Erosion: " + res.getErosion());
+                                sender.sendMessage("Weirdness: " + res.getWeirdness());
+                                sender.sendMessage("Peaks: " + res.getPv());
+                                sender.sendMessage("§ePicked biome: " + Registries.BIOME.get(res.getBiomeId()).getName());
+                            }
+                        }
+                        case "features" -> {
+                            BiomeDefinition definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), SEA_LEVEL, loc.getFloorZ()));
+                            BiomeDefinitionData biome = definition.data;
+                            OptionalValue<BiomeDefinitionChunkGenData> chunkGenDataOptional = biome.chunkGenData;
+                            if(chunkGenDataOptional.isPresent()) {
+                                BiomeDefinitionChunkGenData chunkGenData = chunkGenDataOptional.get();
+                                OptionalValue<BiomeConsolidatedFeatureData[]> consolidatedFeatureDataOptional = chunkGenData.consolidatedFeatures;
+                                if(consolidatedFeatureDataOptional.isPresent()) {
+                                    BiomeConsolidatedFeatureData[] consolidatedFeatureDataArray = consolidatedFeatureDataOptional.get();
+                                    sender.sendMessage("§eFeatures of " + definition.getName() + " [" + consolidatedFeatureDataArray.length + "]");
+                                    for(BiomeConsolidatedFeatureData consolidatedFeatureData : consolidatedFeatureDataArray) {
+                                        String featureIdentifier = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.identifier);
+                                        String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.feature);
+                                        int evalOrder = consolidatedFeatureData.scatter.evalOrder;
+                                        boolean registered = Registries.GENERATE_FEATURE.has(featureName) || Registries.GENERATE_FEATURE.has(featureIdentifier);
+                                        sender.sendMessage((registered ? "§a" : "§c") + featureName + " (" + featureIdentifier + ") §e[" + evalOrder + "]");
+                                    }
+                                }
+                            }
+                        }
+                        default -> {
+                            return 0;
+                        }
+                    }
+                }
                 return 0;
             }
             case "light" -> {
@@ -174,6 +234,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                         player.sendMessage("Loaded: " + chunk.isLoaded());
                         player.sendMessage("Current Block: " + player.getLevelBlock().getId());
                         player.sendMessage("Pending block updates: " + level.getPendingBlockUpdates(chunk).size());
+                        player.sendMessage("Changes: " + chunk.getChanges());
                         int blocks = 0;
                         for(int x = 0; x < 16; x++)
                             for(int z = 0; z < 16; z++)

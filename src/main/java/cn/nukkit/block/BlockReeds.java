@@ -109,14 +109,14 @@ public class BlockReeds extends BlockFlowable {
         }
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (!isSupportValid()) {
+            if (!isSupportValid(this.down())) {
                 level.useBreakOn(this);
             }
             return type;
         }
 
         if (type == Level.BLOCK_UPDATE_RANDOM) {
-            if (!isSupportValid()) {
+            if (!isSupportValid(this.down())) {
                 level.scheduleUpdate(this, 0);
                 return type;
             }
@@ -161,15 +161,14 @@ public class BlockReeds extends BlockFlowable {
         if (!block.isAir()) {
             return false;
         }
-        if (isSupportValid()) {
+        if (isSupportValid(this.down())) {
             this.getLevel().setBlock(block, this, true);
             return true;
         }
         return false;
     }
 
-    private boolean isSupportValid() {
-        Block down = this.down();
+    public static boolean isSupportValid(Block down) {
         String downId = down.getId();
         if (downId.equals(REEDS)) {
             return true;
@@ -179,7 +178,7 @@ public class BlockReeds extends BlockFlowable {
         }
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
             Block possibleWater = down.getSide(face);
-            if (possibleWater instanceof BlockFlowingWater
+            if (possibleWater instanceof BlockWater
                     || possibleWater instanceof BlockFrostedIce
                     || possibleWater.getLevelBlockAtLayer(1) instanceof BlockFlowingWater) {
                 return true;

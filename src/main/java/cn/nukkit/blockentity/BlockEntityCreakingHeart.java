@@ -37,7 +37,11 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        return this.getBlock().getId().equals(Block.CREAKING_HEART);
+        try {
+            return this.getBlock().getId().equals(Block.CREAKING_HEART);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
@@ -83,6 +87,8 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
                     break;
                 }
             }
+
+            if(!pos.getLevelBlock().isAir()) return true;
 
             Entity ent = Entity.createEntity(Entity.CREAKING, pos);
             if(ent != null) {

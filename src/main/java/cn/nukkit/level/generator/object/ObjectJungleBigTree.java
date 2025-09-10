@@ -25,7 +25,6 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
             return false;
         } else {
             this.createCrown(level, position.up(height), 2);
-
             for (int j = (int) position.getY() + height - 2 - rand.nextInt(4); j > position.getY() + (double) height / 2; j -= 2 + rand.nextInt(4)) {
                 float f = rand.nextFloat() * ((float) Math.PI * 2F);
                 int k = (int) (position.getX() + (0.5F + MathHelper.cos(f) * 4.0F));
@@ -48,7 +47,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
             for (int i2 = 0; i2 < height; ++i2) {
                 Vector3 blockpos = position.up(i2);
 
-                if (this.canGrowInto(level.getBlockIdAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z))) {
+                if (this.canGrowInto(level.getBlockIdIfCachedOrLoaded((int) blockpos.x, (int) blockpos.y, (int) blockpos.z))) {
                     level.setBlockStateAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z, this.woodMetadata);
                     if (i2 > 0) {
                         this.placeVine(level, rand, blockpos.west(), 8);
@@ -59,7 +58,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
                 if (i2 < height - 1) {
                     Vector3 blockpos1 = blockpos.east();
 
-                    if (this.canGrowInto(level.getBlockIdAt((int) blockpos1.x, (int) blockpos1.y, (int) blockpos1.z))) {
+                    if (this.canGrowInto(level.getBlockIdIfCachedOrLoaded((int) blockpos1.x, (int) blockpos1.y, (int) blockpos1.z))) {
                         level.setBlockStateAt((int) blockpos1.x, (int) blockpos1.y, (int) blockpos1.z, this.woodMetadata);
 
                         if (i2 > 0) {
@@ -70,7 +69,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
 
                     Vector3 blockpos2 = blockpos.south().east();
 
-                    if (this.canGrowInto(level.getBlockIdAt((int) blockpos2.x, (int) blockpos2.y, (int) blockpos2.z))) {
+                    if (this.canGrowInto(level.getBlockIdIfCachedOrLoaded((int) blockpos2.x, (int) blockpos2.y, (int) blockpos2.z))) {
                         level.setBlockStateAt((int) blockpos2.x, (int) blockpos2.y, (int) blockpos2.z, this.woodMetadata);
 
                         if (i2 > 0) {
@@ -81,7 +80,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
 
                     Vector3 blockpos3 = blockpos.south();
 
-                    if (this.canGrowInto(level.getBlockIdAt((int) blockpos3.x, (int) blockpos3.y, (int) blockpos3.z))) {
+                    if (this.canGrowInto(level.getBlockIdIfCachedOrLoaded((int) blockpos3.x, (int) blockpos3.y, (int) blockpos3.z))) {
                         level.setBlockStateAt((int) blockpos3.x, (int) blockpos3.y, (int) blockpos3.z, this.woodMetadata);
 
                         if (i2 > 0) {
@@ -97,7 +96,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
     }
 
     private void placeVine(BlockManager level, RandomSourceProvider random, Vector3 pos, int meta) {
-        if (random.nextInt(3) > 0 && Objects.equals(level.getBlockIdAt((int) pos.x, (int) pos.y, (int) pos.z), Block.AIR)) {
+        if (random.nextInt(3) > 0 && Objects.equals(level.getBlockIdIfCachedOrLoaded((int) pos.x, (int) pos.y, (int) pos.z), Block.AIR)) {
             BlockState block = BlockVine.PROPERTIES.getBlockState(VINE_DIRECTION_BITS, meta);
             level.setBlockStateAt(pos, block);
         }

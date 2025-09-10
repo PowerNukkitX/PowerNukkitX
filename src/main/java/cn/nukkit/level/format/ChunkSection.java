@@ -4,6 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.level.format.palette.BlockPalette;

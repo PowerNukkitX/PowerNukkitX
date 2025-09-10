@@ -2,6 +2,7 @@ package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.Flat;
 import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.generator.Normal;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.Locale;
@@ -17,7 +18,7 @@ public class GeneratorRegistry implements IRegistry<String, Class<? extends Gene
         if (isLoad.getAndSet(true)) return;
         try {
             register("flat", Flat.class);
-            register("normal", Flat.class);
+            register("normal", Normal.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.stages;
+package cn.nukkit.level.generator.stages.flat;
 
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
@@ -14,6 +14,7 @@ public class FinishedStage extends GenerateStage {
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
         chunk.setChunkState(ChunkState.FINISHED);
+        chunk.setChanged(false);
     }
 
     @Override
