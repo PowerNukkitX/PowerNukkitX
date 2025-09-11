@@ -1501,6 +1501,12 @@ public abstract class Item implements Cloneable, ItemID {
      * Called after {@link #onUse(Player, int)},It will only be called when onUse returns true
      */
     public void afterUse(Player player) {
+        CompoundTag c = getCustomItemComponent("minecraft:cooldown");
+        if (c != null) {
+            String categoryId = c.getString("category");
+            int duration = Math.max(0, Math.round(c.getFloat("duration") * 20f));
+            player.setItemCoolDown(duration, categoryId);
+        }
     }
 
     /**
