@@ -6,10 +6,7 @@ import cn.nukkit.level.generator.stages.flat.FlatGenerateStage;
 import cn.nukkit.level.generator.stages.LightPopulationStage;
 import cn.nukkit.level.generator.stages.BiomeMapStage;
 import cn.nukkit.level.generator.stages.NormalChunkFeatureStage;
-import cn.nukkit.level.generator.stages.normal.NormalChunkPlacementQueueStage;
-import cn.nukkit.level.generator.stages.normal.NormalSurfaceDataStage;
-import cn.nukkit.level.generator.stages.normal.NormalSurfaceOverwriteStage;
-import cn.nukkit.level.generator.stages.normal.NormalTerrainStage;
+import cn.nukkit.level.generator.stages.normal.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.lang.reflect.InvocationTargetException;
@@ -33,6 +30,7 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
             this.register(NormalSurfaceOverwriteStage.NAME, NormalSurfaceOverwriteStage.class);
             this.register(NormalChunkFeatureStage.NAME, NormalChunkFeatureStage.class);
             this.register(NormalChunkPlacementQueueStage.NAME, NormalChunkPlacementQueueStage.class);
+            this.register(NormalStructureStage.NAME, NormalStructureStage.class);
 
         } catch (RegisterException e) {
             throw new RuntimeException(e);

@@ -5,10 +5,7 @@ import cn.nukkit.level.generator.stages.LightPopulationStage;
 import cn.nukkit.level.generator.stages.flat.FinishedStage;
 import cn.nukkit.level.generator.stages.BiomeMapStage;
 import cn.nukkit.level.generator.stages.NormalChunkFeatureStage;
-import cn.nukkit.level.generator.stages.normal.NormalChunkPlacementQueueStage;
-import cn.nukkit.level.generator.stages.normal.NormalSurfaceDataStage;
-import cn.nukkit.level.generator.stages.normal.NormalSurfaceOverwriteStage;
-import cn.nukkit.level.generator.stages.normal.NormalTerrainStage;
+import cn.nukkit.level.generator.stages.normal.*;
 import cn.nukkit.registry.Registries;
 
 import java.util.Map;
@@ -20,6 +17,7 @@ public class Normal extends Generator {
 
     public Normal(DimensionData dimensionData, Map<String, Object> options) {
         super(dimensionData, options);
+        Registries.GENERATE_STRUCTURE.init();
     }
 
     @Override
@@ -29,6 +27,7 @@ public class Normal extends Generator {
         builder.next(Registries.GENERATE_STAGE.get(NormalSurfaceDataStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NormalSurfaceOverwriteStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NormalChunkFeatureStage.NAME));
+        builder.next(Registries.GENERATE_STAGE.get(NormalStructureStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NormalChunkPlacementQueueStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(LightPopulationStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(FinishedStage.NAME));
