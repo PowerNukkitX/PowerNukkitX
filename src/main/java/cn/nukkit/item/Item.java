@@ -1166,17 +1166,10 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     private CompoundTag ensureDynamicPropertiesGroup(String groupId) {
-        CompoundTag root = this.getOrCreateNamedTag();
-        CompoundTag dyn  = root.getCompound(DP_ROOT);
-        if (dyn == null) {
-            dyn = new CompoundTag();
-            root.putCompound(DP_ROOT, dyn);
-        }
-        CompoundTag group = dyn.getCompound(groupId);
-        if (group == null) {
-            group = new CompoundTag();
-            dyn.putCompound(groupId, group);
-        }
+        CompoundTag root  = this.getOrCreateNamedTag();
+        CompoundTag dyn   = root.getCompound(DP_ROOT);
+        CompoundTag group = (dyn != null) ? dyn.getCompound(groupId) : null;
+        if (group == null) group = new CompoundTag();
         return group;
     }
 
@@ -1191,16 +1184,12 @@ public abstract class Item implements Cloneable, ItemID {
     private void saveDynamicPropertiesGroup(String groupId, CompoundTag group) {
         CompoundTag root = this.getOrCreateNamedTag();
         CompoundTag dyn  = root.getCompound(DP_ROOT);
-        if (dyn == null) {
+        if (!root.contains(DP_ROOT) || dyn == null) {
             dyn = new CompoundTag();
             root.putCompound(DP_ROOT, dyn);
         }
 
-        CompoundTag existing = dyn.getCompound(groupId);
-        if (existing != group) {
-            dyn.putCompound(groupId, group);
-        }
-
+        dyn.putCompound(groupId, group);
         this.setNamedTag(root);
     }
 
