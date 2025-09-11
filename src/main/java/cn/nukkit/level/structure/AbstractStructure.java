@@ -18,8 +18,8 @@ public abstract class AbstractStructure {
 
     public static AbstractStructure fromNbt(CompoundTag tag) {
         if(tag.contains("format_version")) return Structure.fromNbtAsync(tag).join();
-        if(tag.contains("DataVersion")) return JeStructure.fromNbt(tag);
-
+        if(tag.contains("PNX")) return PNXStructure.fromNbtAsync(tag).join();
+        if(tag.contains("DataVersion")) return JeStructure.fromNbtAsync(tag).join();
         return null;
     }
 
