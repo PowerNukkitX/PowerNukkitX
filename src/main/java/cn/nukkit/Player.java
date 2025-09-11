@@ -2097,49 +2097,51 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Sets the cooldown time for the specified item to use
+     * the cooldown of specified item is end
      *
-     * @param coolDownTick the cool down tick
-     * @param itemId       the item id
+     * @param itemId the item identifier
+     * @return the boolean
      */
-    public void setItemCoolDown(int coolDownTick, Identifier itemId) {
-        var pk = new PlayerStartItemCoolDownPacket();
-        pk.setCoolDownDuration(coolDownTick);
-        pk.setItemCategory(itemId.toString());
-        this.cooldownTickMap.put(itemId.toString(), this.level.getTick() + coolDownTick);
-        this.dataPacket(pk);
+    public boolean isItemCoolDownEnd(Identifier itemId) {
+        return isItemCoolDownEnd(itemId.toString());
     }
 
     /**
      * the cooldown of specified item is end
      *
-     * @param itemId the item
+     * @param category a string category
      * @return the boolean
      */
-    public boolean isItemCoolDownEnd(Identifier itemId) {
-        Integer tick = this.cooldownTickMap.getOrDefault(itemId.toString(), 0);
-        boolean result = this.getLevel().getTick() - tick > 0;
-        if (result) {
-            cooldownTickMap.remove(itemId.toString());
-        }
-        return result;
+    public boolean isItemCoolDownEnd(String category) {
+        int now  = this.getLevel().getTick();
+        int end  = this.cooldownTickMap.getOrDefault(category, 0);
+        boolean done = now - end >= 0;
+        if (done) this.cooldownTickMap.remove(category);
+        return done;
     }
 
+    /**
+     * Sets the cooldown time for the specified item to use
+     *
+     * @param coolDownTick the cool down tick
+     * @param itemId       the item id
+     */
+    public void setItemCoolDown(int coolDown, Identifier itemId) {
+        setItemCoolDown(coolDown, itemId.toString());
+    }
+
+    /**
+     * Sets the cooldown time for the specified item to use
+     *
+     * @param coolDownTick the cool down tick
+     * @param itemId       a string category
+     */
     public void setItemCoolDown(int coolDown, String category) {
         var pk = new PlayerStartItemCoolDownPacket();
         pk.setCoolDownDuration(coolDown);
         pk.setItemCategory(category);
         this.cooldownTickMap.put(category, this.getLevel().getTick() + coolDown);
         this.dataPacket(pk);
-    }
-
-    public boolean isItemCoolDownEnd(String category) {
-        Integer tick = this.cooldownTickMap.getOrDefault(category, 0);
-        boolean result = this.getLevel().getTick() - tick > 0;
-        if (result) {
-            cooldownTickMap.remove(category);
-        }
-        return result;
     }
 
     /**
