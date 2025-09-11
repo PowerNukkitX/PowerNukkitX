@@ -1919,6 +1919,10 @@ public abstract class Item implements Cloneable, ItemID {
         return 0f;
     }
 
+    public int getUsingTicks() {
+        return Math.max(0, (int) Math.ceil(getUseDuration() * 20f));
+    }
+
     public float getMovimentModifier() {
         CompoundTag c = getCustomItemComponent("minecraft:use_modifiers");
         if (c != null) {
@@ -2067,12 +2071,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public int getEatingTicks() {
-        CompoundTag c = getCustomItemComponent("minecraft:use_modifiers");
-        if (c != null) {
-            float seconds = c.getFloat("use_duration");
-            return Math.max(0, Math.round(seconds * 20f));
-        }
-        return 0;
+        return getUsingTicks();
     }
 
     /*
