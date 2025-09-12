@@ -163,9 +163,12 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     @Override
     public boolean onBreak(Item item) {
         if (isActivated()) {
-            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+            if (level.getServer().getSettings().gameplaySettings().enableRedstone()) {
+                BlockFace face = this.getFacing();
+                this.level.updateAround(this.getLocation().getSide(face.getOpposite()));
+                this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+            }
         }
-
         return super.onBreak(item);
     }
 
