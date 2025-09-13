@@ -27,7 +27,7 @@ public abstract class ItemFood extends Item {
     }
 
     @Override
-    public int getEatingTicks() {
+    public int getUsingTicks() {
         return 31;
     }
 }

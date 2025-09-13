@@ -1675,7 +1675,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                 this.nbt.getCompound("components").putCompound("minecraft:food", new CompoundTag().putBoolean("can_always_eat", item.canAlwaysEat()));
             }
 
-            int eatingtick = item.getEatingTicks();
+            int eatingtick = item.getUsingTicks();
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .putInt("use_duration", eatingtick)
