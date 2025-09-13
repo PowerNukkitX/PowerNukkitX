@@ -80,7 +80,7 @@ public final class LegacyServerSettings extends OkaeriConfig {
         @Comment("nukkit.server.settings.networkSettings.compressionBufferSize")
         int compressionBufferSize = 1048576;
         @Comment("nukkit.server.settings.networkSettings.maxDecompressSize")
-        int maxDecompressSize = 536870912;
+        int maxDecompressSize = 268435456;
         @Comment("nukkit.server.settings.networkSettings.packetLimit")
         int packetLimit = 240;
     }
