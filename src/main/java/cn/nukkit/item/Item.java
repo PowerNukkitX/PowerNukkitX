@@ -2070,10 +2070,6 @@ public abstract class Item implements Cloneable, ItemID {
         return true;
     }
 
-    public int getEatingTicks() {
-        return getUsingTicks();
-    }
-
     /*
      * Used for additional behaviour in Food like: Chorus, Suspicious Stew and etc.
      */
@@ -2090,7 +2086,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public boolean foodOnUse(Player player, int ticksUsed) {
-        if (ticksUsed < getEatingTicks()) {
+        if (ticksUsed < getUsingTicks()) {
             return false;
         }
 
