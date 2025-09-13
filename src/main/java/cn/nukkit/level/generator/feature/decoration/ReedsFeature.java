@@ -17,7 +17,7 @@ public class ReedsFeature extends GenerateFeature {
 
     private final static BlockState STATE = BlockReeds.PROPERTIES.getBlockState(AGE_16.createValue(AGE_16.getMax()));
 
-    public static final String NAME = "minecraft:overworld_after_surface_reeds_feature_rules";
+    public static final String NAME = "minecraft:reeds_feature";
 
     @Override
     public void apply(ChunkGenerateContext context) {
