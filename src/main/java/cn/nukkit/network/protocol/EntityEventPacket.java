@@ -43,7 +43,10 @@ public class EntityEventPacket extends DataPacket {
     public static final int MINECART_TNT_PRIME_FUSE = 31;
     public static final int PRIME_CREEPER = 32;
     public static final int AIR_SUPPLY = 33;
-    public static final int ENCHANT = 34;
+    @Deprecated
+    public static final int DEPRECATED_ADD_PLAYER_LEVELS = 34;
+    @Deprecated
+    public static final int ENCHANT = DEPRECATED_ADD_PLAYER_LEVELS;
     public static final int ELDER_GUARDIAN_CURSE = 35;
     public static final int AGENT_ARM_SWING = 36;
     public static final int ENDER_DRAGON_DEATH = 37;

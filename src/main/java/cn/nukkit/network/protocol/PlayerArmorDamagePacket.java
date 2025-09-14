@@ -1,15 +1,11 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.event.weather.LightningStrikeEvent;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import cn.nukkit.network.protocol.types.camera.aimassist.CameraAimAssistCategories;
 import cn.nukkit.network.protocol.types.inventory.ArmorSlotAndDamagePair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.*;
 
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
