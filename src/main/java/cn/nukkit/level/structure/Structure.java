@@ -30,7 +30,6 @@ import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Getter
-@EqualsAndHashCode
 @ToString
 public class Structure extends AbstractStructure {
     private static final int FORMAT_VERSION = 1;

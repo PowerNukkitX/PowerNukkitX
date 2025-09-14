@@ -47,6 +47,7 @@ import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.biome.BiomePicker;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
+import cn.nukkit.level.generator.biome.TheEndBiomePicker;
 import cn.nukkit.level.generator.noise.f.SimplexF;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.particle.Particle;
@@ -754,7 +755,7 @@ public class Level implements Metadatable {
      * Broadcasts sound to players
      *
      * @param pos  position where sound should be played
-     * @param type ID of the sound from {@link cn.nukkit.network.protocol.LevelSoundEventPacket}
+     * @param type ID of the sound from {@link LevelSoundEventPacket}
      * @param data generic data that can affect sound
      */
     public void addLevelSoundEvent(Vector3 pos, LevelSoundEvent type, int data) {
@@ -2554,8 +2555,8 @@ public class Level implements Metadatable {
 
                 motion = new Vector3(-MathHelper.sin(f1) * f, 0.20000000298023224, MathHelper.cos(f1) * f);
             } else {
-                motion = new Vector3(new java.util.Random().nextDouble() * 0.2 - 0.1, 0.2,
-                        new java.util.Random().nextDouble() * 0.2 - 0.1);
+                motion = new Vector3(new Random().nextDouble() * 0.2 - 0.1, 0.2,
+                        new Random().nextDouble() * 0.2 - 0.1);
             }
         }
 
@@ -2597,8 +2598,8 @@ public class Level implements Metadatable {
 
                 motion = new Vector3(-MathHelper.sin(f1) * f, 0.20000000298023224, MathHelper.cos(f1) * f);
             } else {
-                motion = new Vector3(new java.util.Random().nextDouble() * 0.2 - 0.1, 0.2,
-                        new java.util.Random().nextDouble() * 0.2 - 0.1);
+                motion = new Vector3(new Random().nextDouble() * 0.2 - 0.1, 0.2,
+                        new Random().nextDouble() * 0.2 - 0.1);
             }
         }
 
@@ -3616,7 +3617,12 @@ public class Level implements Metadatable {
     }
 
     public BiomePicker getBiomePicker() {
-        return new OverworldBiomePicker(new NukkitRandom(getSeed()));
+        NukkitRandom random = new NukkitRandom(getSeed());
+        return switch (getDimension()) {
+            case DIMENSION_OVERWORLD -> new OverworldBiomePicker(random);
+            case DIMENSION_THE_END -> new TheEndBiomePicker();
+            default -> throw new IllegalStateException("Unexpected value: " + getDimension());
+        };
     }
 
     public int pickBiome(int x, int y, int z) {

@@ -1,7 +1,5 @@
-package cn.nukkit.level.generator.stages.normal;
+package cn.nukkit.level.generator.stages;
 
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -10,9 +8,9 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntArrayTag;
 
-public class NormalChunkPlacementQueueStage extends GenerateStage {
+public class ChunkPlacementQueueStage extends GenerateStage {
 
-    public static final String NAME = "normal_chunkplacementqueue";
+    public static final String NAME = "chunkplacementqueue";
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -40,11 +38,6 @@ public class NormalChunkPlacementQueueStage extends GenerateStage {
                     }
                 }
             }
-        }
-        for(Block b : temp.getBlocks()) {
-            if((b.getChunkX() == chunkX) && (b.getChunkZ() == chunkZ)) {
-
-            } else System.out.println(b);
         }
         temp.applySubChunkUpdate(temp.getBlocks());
     }

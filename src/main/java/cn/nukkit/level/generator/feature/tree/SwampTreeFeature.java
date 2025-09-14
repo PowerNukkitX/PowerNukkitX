@@ -1,10 +1,8 @@
 package cn.nukkit.level.generator.feature.tree;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
 import cn.nukkit.level.generator.object.ObjectGenerator;
-import cn.nukkit.level.generator.object.ObjectMangroveTree;
 import cn.nukkit.level.generator.object.ObjectSwampOakTree;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;

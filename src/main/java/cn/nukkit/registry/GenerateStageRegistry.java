@@ -1,12 +1,15 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.GenerateStage;
+import cn.nukkit.level.generator.stages.NormalChunkFeatureStage;
+import cn.nukkit.level.generator.stages.end.TheEndPopulatorStage;
+import cn.nukkit.level.generator.stages.end.TheEndTerrainStage;
 import cn.nukkit.level.generator.stages.flat.FinishedStage;
 import cn.nukkit.level.generator.stages.flat.FlatGenerateStage;
 import cn.nukkit.level.generator.stages.LightPopulationStage;
 import cn.nukkit.level.generator.stages.BiomeMapStage;
-import cn.nukkit.level.generator.stages.NormalChunkFeatureStage;
-import cn.nukkit.level.generator.stages.normal.NormalChunkPlacementQueueStage;
+import cn.nukkit.level.generator.stages.ChunkPlacementQueueStage;
+import cn.nukkit.level.generator.stages.normal.NormalPopulatorStage;
 import cn.nukkit.level.generator.stages.normal.NormalSurfaceDataStage;
 import cn.nukkit.level.generator.stages.normal.NormalSurfaceOverwriteStage;
 import cn.nukkit.level.generator.stages.normal.NormalTerrainStage;
@@ -31,8 +34,11 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
             this.register(NormalTerrainStage.NAME, NormalTerrainStage.class);
             this.register(NormalSurfaceDataStage.NAME, NormalSurfaceDataStage.class);
             this.register(NormalSurfaceOverwriteStage.NAME, NormalSurfaceOverwriteStage.class);
+            this.register(NormalPopulatorStage.NAME, NormalPopulatorStage.class);
             this.register(NormalChunkFeatureStage.NAME, NormalChunkFeatureStage.class);
-            this.register(NormalChunkPlacementQueueStage.NAME, NormalChunkPlacementQueueStage.class);
+            this.register(ChunkPlacementQueueStage.NAME, ChunkPlacementQueueStage.class);
+            this.register(TheEndTerrainStage.NAME, TheEndTerrainStage.class);
+            this.register(TheEndPopulatorStage.NAME, TheEndPopulatorStage.class);
 
         } catch (RegisterException e) {
             throw new RuntimeException(e);
