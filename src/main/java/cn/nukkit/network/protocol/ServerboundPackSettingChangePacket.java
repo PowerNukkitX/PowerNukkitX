@@ -17,6 +17,7 @@ public class ServerboundPackSettingChangePacket extends DataPacket {
         this.packId = byteBuf.readUUID();
         this.dataType = byteBuf.readByte();
         this.name = byteBuf.readString();
+
         this.boolValue = byteBuf.readBoolean();
         this.floatValue = byteBuf.readFloat();
         this.strValue = byteBuf.readString();
@@ -27,6 +28,7 @@ public class ServerboundPackSettingChangePacket extends DataPacket {
         byteBuf.writeUUID(this.packId);
         byteBuf.writeByte(this.dataType);
         byteBuf.writeString(this.name);
+
         byteBuf.writeBoolean(this.boolValue);
         byteBuf.writeFloat(this.floatValue);
         byteBuf.writeString(this.strValue);
