@@ -343,7 +343,7 @@ public class Level implements Metadatable {
     private boolean thundering = false;
     private int thunderTime = 0;
     private Object2IntOpenHashMap<String> playerWeatherShowMap = new Object2IntOpenHashMap<String>();
-    ///
+    private BiomePicker biomePicker;
 
     public Level(Server server, String name, String path, int dimSum, Class<? extends LevelProvider> provider, LevelConfig.GeneratorConfig generatorConfig) {
         this.levelId = levelIdCounter++;
@@ -447,6 +447,8 @@ public class Level implements Metadatable {
                 subTickGameLoop.startLoop();
             }
         };
+
+        biomePicker = new OverworldBiomePicker(new NukkitRandom(getSeed()));
     }
 
     public static boolean canRandomTick(String blockId) {
@@ -3616,7 +3618,7 @@ public class Level implements Metadatable {
     }
 
     public BiomePicker getBiomePicker() {
-        return new OverworldBiomePicker(new NukkitRandom(getSeed()));
+        return biomePicker;
     }
 
     public int pickBiome(int x, int y, int z) {

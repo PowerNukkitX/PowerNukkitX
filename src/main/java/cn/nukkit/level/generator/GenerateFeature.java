@@ -50,6 +50,8 @@ public abstract class GenerateFeature {
             outsideChunkStructureData.put(targetChunkKey, temp.toTag());
         }
 
+        PLACEMENT_QUEUE.clear();
+
     }
 
 }

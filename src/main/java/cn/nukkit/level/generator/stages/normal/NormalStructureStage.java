@@ -41,14 +41,12 @@ public class NormalStructureStage extends GenerateStage {
         NukkitRandom random = this.random.get();
         random.setSeed(level.getSeed());
 
-        //if(random.nextInt(1,10) == 1) {
-        if(true) {
+        if(random.nextBoolean()) {
             BlockManager temp = new BlockManager(chunk.getLevel());
             Object2ObjectOpenHashMap<String, AbstractStructure> structures = Registries.GENERATE_STRUCTURE.get(chunk.getBiomeId(0,67,0));
             //if present, pick a random structure
             if(structures != null && !structures.isEmpty()) {
-                int index = random.nextInt(0, structures.size() - 1);
-                AbstractStructure structure = (AbstractStructure) structures.values().toArray()[index];
+                AbstractStructure structure = (AbstractStructure) structures.values().toArray()[(int) (Math.random() * structures.size())];
 
                 structure.preparePlace(new Position(baseX, chunk.getHeightMap(0, 0), baseZ, level), temp);
             }

@@ -44,6 +44,24 @@ public class GenerateStructureRegistry implements IRegistry<Integer, Object2Obje
         register(BiomeID.DESERT, "village.desert.town_centers.desert_meeting_point_1", data);
         register(BiomeID.DESERT, "village.desert.town_centers.desert_meeting_point_2", data);
         register(BiomeID.DESERT, "village.desert.town_centers.desert_meeting_point_3", data);
+
+        register(BiomeID.DESERT, "village.desert.houses.desert_armorer_1", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_temple_2", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_library_1", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_temple_1", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_farm_1", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_farm_2", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_large_farm_1", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_fisher_1", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_tool_smith_1", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_small_house_1", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_small_house_2", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_small_house_3", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_small_house_4", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_small_house_5", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_small_house_6", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_small_house_7", data);
+        register(BiomeID.DESERT, "village.desert.houses.desert_small_house_8", data);
         data = null;
     }
 
