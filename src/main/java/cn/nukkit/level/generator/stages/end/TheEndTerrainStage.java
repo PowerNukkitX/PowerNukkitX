@@ -28,18 +28,20 @@ public class TheEndTerrainStage extends GenerateStage {
     private NoiseGeneratorOctavesD detailNoiseOctaves;
     private NoiseGeneratorSimplexD islandNoise;
 
+    private NukkitRandom random;
+
     @Override
     public void apply(ChunkGenerateContext context) {
         Level level = context.getLevel();
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        NukkitRandom random = new NukkitRandom(level.getSeed());
 
-        if(roughnessNoiseOctaves == null) roughnessNoiseOctaves = new NoiseGeneratorOctavesD(random, 16);
-        if(roughnessNoiseOctaves2 == null) roughnessNoiseOctaves2 = new NoiseGeneratorOctavesD(random, 16);
-        if(detailNoise == null) detailNoiseOctaves = new NoiseGeneratorOctavesD(random, 8);
-        if(islandNoise == null) islandNoise = new NoiseGeneratorSimplexD(random);
+        if(random == null) random = new NukkitRandom(level.getSeed());
+        if(roughnessNoiseOctaves == null) roughnessNoiseOctaves = new NoiseGeneratorOctavesD(random.identical(), 16);
+        if(roughnessNoiseOctaves2 == null) roughnessNoiseOctaves2 = new NoiseGeneratorOctavesD(random.identical(), 16);
+        if(detailNoise == null) detailNoiseOctaves = new NoiseGeneratorOctavesD(random.identical(), 8);
+        if(islandNoise == null) islandNoise = new NoiseGeneratorSimplexD(random.identical());
 
         int densityX = chunkX << 1;
         int densityZ = chunkZ << 1;
@@ -119,7 +121,7 @@ public class TheEndTerrainStage extends GenerateStage {
             }
         }
         chunk.recalculateHeightMap();
-        chunk.setChunkState(ChunkState.FINISHED);
+        chunk.setChunkState(ChunkState.GENERATED);
     }
 
     public static float getIslandHeight(int chunkX, int chunkZ, int x, int z, NoiseGeneratorSimplexD islandNoise) {

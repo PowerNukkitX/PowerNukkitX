@@ -18,7 +18,8 @@ public class SpawnRuleEnderman extends MultiSpawnRule {
                                 new ConditionAll(
                                         new ConditionSpawnOnSurface(),
                                         new ConditionPopulationControl(EntityMob.class, new int[]{8, 0, 10})
-                                )
+                                ),
+                                new ConditionBiomeFilter(BiomeTags.THE_END)
                         )
         },
                 new SpawnRuleEndermanOverworld(),

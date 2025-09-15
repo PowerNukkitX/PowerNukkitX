@@ -12,7 +12,7 @@ import cn.nukkit.math.Vector3;
 
 public class ObsidianPillarPopulator extends Populator {
 
-    public static final String NAME = "the_end_mainisland";
+    public static final String NAME = "the_end_obsidian_pillar";
 
     private Vector2[] pillarPos;
 

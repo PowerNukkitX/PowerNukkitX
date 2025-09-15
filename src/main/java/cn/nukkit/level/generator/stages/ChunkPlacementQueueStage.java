@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.stages;
 
 import cn.nukkit.level.Level;
+import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
@@ -40,6 +41,7 @@ public class ChunkPlacementQueueStage extends GenerateStage {
             }
         }
         temp.applySubChunkUpdate(temp.getBlocks());
+        chunk.setChunkState(ChunkState.POPULATED);
     }
 
     @Override

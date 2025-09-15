@@ -1,7 +1,11 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.populator.Populator;
+import cn.nukkit.level.generator.populator.the_end.ChorusFlowerPopulator;
+import cn.nukkit.level.generator.populator.the_end.EndGatewayPopulator;
+import cn.nukkit.level.generator.populator.the_end.EndIslandPopulator;
 import cn.nukkit.level.generator.populator.the_end.EnderDragonPopulator;
+import cn.nukkit.level.generator.populator.the_end.ExitPortalPopulator;
 import cn.nukkit.level.generator.populator.the_end.ObsidianPillarPopulator;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -19,6 +23,10 @@ public class PopulatorRegistry implements IRegistry<String, Populator, Class<? e
         try {
             this.register(ObsidianPillarPopulator.NAME, ObsidianPillarPopulator.class);
             this.register(EnderDragonPopulator.NAME, EnderDragonPopulator.class);
+            this.register(ExitPortalPopulator.NAME, ExitPortalPopulator.class);
+            this.register(ChorusFlowerPopulator.NAME, ChorusFlowerPopulator.class);
+            this.register(EndGatewayPopulator.NAME, EndGatewayPopulator.class);
+            this.register(EndIslandPopulator.NAME, EndIslandPopulator.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
