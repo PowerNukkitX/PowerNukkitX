@@ -32,6 +32,7 @@ public abstract class WaterFoliageFeature extends CountGenerateFeature {
             }
             int y = (height - depth) + 1;
             if (y > 0 && canStay(randomX, y, randomZ, chunk)) {
+                random.setSeed(random.getSeed());
                 placeBlock(randomX, y, randomZ, chunk, random);
             }
         }

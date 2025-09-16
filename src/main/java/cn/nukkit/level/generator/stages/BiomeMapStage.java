@@ -11,6 +11,8 @@ import cn.nukkit.level.generator.biome.BiomePicker;
 import java.util.ArrayList;
 import java.util.List;
 
+import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
+
 public class BiomeMapStage extends GenerateStage {
 
     public static final String NAME = "biome";
@@ -31,7 +33,7 @@ public class BiomeMapStage extends GenerateStage {
             int x = chunkX * 16 + _x;
             for(int _z = 0; _z < 16; _z++) {
                 int z = chunkZ * 16 + _z;
-                int biome = biomePicker.pick(x, 64, z).getBiomeId();
+                int biome = biomePicker.pick(x, SEA_LEVEL, z).getBiomeId();
                 for (int y = minHeight; y <= maxHeight; y++) {
                     chunk.setBlockState(_x, y, _z, BlockAir.STATE);
                     chunk.setBiomeId(_x, y, _z, biome);

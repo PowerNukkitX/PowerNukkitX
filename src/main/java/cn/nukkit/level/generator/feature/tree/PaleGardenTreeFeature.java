@@ -15,7 +15,7 @@ public class PaleGardenTreeFeature extends ObjectGeneratorFeature {
     @Override
     public ObjectGenerator getGenerator(NukkitRandom random) {
         ObjectPaleOakTree object = new ObjectPaleOakTree();
-        object.tryCreakingHeart = random.fork().nextInt(4) == 0;
+        object.tryCreakingHeart = random.nextInt(4) == 0;
         return object;
     }
 

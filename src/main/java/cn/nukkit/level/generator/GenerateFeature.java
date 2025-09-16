@@ -11,6 +11,8 @@ import java.util.HashMap;
 
 public abstract class GenerateFeature {
 
+    protected final NukkitRandom random = new NukkitRandom();
+
     protected final HashMap<Long, BlockManager> PLACEMENT_QUEUE = new HashMap<>();
 
     public BlockManager getChunkPlacementQueue(Long chunkHash, Level level) {

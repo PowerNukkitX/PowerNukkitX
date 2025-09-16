@@ -19,7 +19,7 @@ public abstract class CountGenerateFeature extends GenerateFeature {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        NukkitRandom random = new NukkitRandom(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) ^ name().hashCode());
+        this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) ^ name().hashCode());
         int count = getBase() + random.nextBoundedInt(getRandom());
         for (int i = 0; i < count; i++) {
             populate(context, random);

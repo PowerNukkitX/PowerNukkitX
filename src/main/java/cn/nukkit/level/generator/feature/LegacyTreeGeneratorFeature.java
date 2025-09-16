@@ -42,7 +42,7 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        NukkitRandom random = new NukkitRandom(Level.chunkHash(chunkX, chunkZ) * level.getSeed());
+        this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         int amount = NukkitMath.randomRange(random, getMin(), getMax());
         Vector3 v = new Vector3();
         BlockManager manager = new BlockManager(level);
@@ -57,9 +57,9 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
             v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
             if(!Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())).getTags().contains(getRequiredTag())) continue;
             if(isSupportValid(level.getBlock(v))) {
-                NukkitRandom nextRandom = random.fork();
-                if(getGenerator(nextRandom.identical()) == null) return;
-                getGenerator(nextRandom).placeObject(object, v.getFloorX(), v.getFloorY() + 1, v.getFloorZ(), random);
+                LegacyTreeGenerator generator = getGenerator(random);
+                if(generator == null) return;
+                generator.placeObject(object, v.getFloorX(), v.getFloorY() + 1, v.getFloorZ(), random);
                 for(Block block : object.getBlocks()) {
                     if(block.getChunk() != chunk) {
                         IChunk nextChunk = block.getChunk();

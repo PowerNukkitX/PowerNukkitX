@@ -34,14 +34,15 @@ public abstract class GriddedFeature extends ObjectGeneratorFeature {
         BlockManager object = new BlockManager(level);
         for (int x = 0; x < getSplit(); x++) {
             for (int z = 0; z < getSplit(); z++) {
-                NukkitRandom random = new NukkitRandom(level.getSeed() ^ chunkHash ^ (x + z));
-                int placeX = getDistanceToNextField() + random.fork().nextInt(splitLength() - getDistanceToNextField()) + (x * splitLength()) + (chunkX << 4);
-                int placeZ = getDistanceToNextField() + random.fork().nextInt(splitLength() - getDistanceToNextField()) + (z * splitLength()) + (chunkZ << 4);
+                this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ)^ (x + z));
+
+                int placeX = getDistanceToNextField() + random.nextInt(splitLength() - getDistanceToNextField()) + (x * splitLength()) + (chunkX << 4);
+                int placeZ = getDistanceToNextField() + random.nextInt(splitLength() - getDistanceToNextField()) + (z * splitLength()) + (chunkZ << 4);
                 int placeY = level.getHeightMap(placeX, placeZ);
 
                 if(!canSpawnHere(Registries.BIOME.get(level.getBiomeId(placeX, placeY, placeZ)))) continue;
                 if(isSupportValid(level.getBlock(placeX, placeY, placeZ))) {
-                    getGenerator(random.fork()).generate(object, random.fork(), new Vector3(placeX, placeY + 1, placeZ));
+                    getGenerator(random).generate(object, random, new Vector3(placeX, placeY + 1, placeZ));
                 }
             }
         }

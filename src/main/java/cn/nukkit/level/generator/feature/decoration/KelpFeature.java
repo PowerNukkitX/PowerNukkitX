@@ -35,7 +35,7 @@ public class KelpFeature extends WaterFoliageFeature {
     @Override
     protected void placeBlock(int x, int y, int z, IChunk chunk, NukkitRandom random) {
 
-        if(noise == null) noise = new NoiseGeneratorPerlinF(random.identical(), -7, new float[]{ 1 });
+        if(noise == null) noise = new NoiseGeneratorPerlinF(random, -7, new float[]{ 1 });
 
         if(noise.getValue(x, 0, z) < 0) return;
 

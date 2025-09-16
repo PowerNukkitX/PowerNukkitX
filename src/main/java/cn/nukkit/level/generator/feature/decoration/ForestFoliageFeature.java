@@ -32,22 +32,21 @@ public class ForestFoliageFeature extends GenerateFeature {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        NukkitRandom random = new NukkitRandom(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                if(random.fork().nextInt(10) < 6) {
+                if(random.nextInt(10) < 6) {
                     int y = chunk.getHeightMap(x, z) + 1;
                     Set<String> tags = Registries.BIOME.get(chunk.getBiomeId(x, y, z)).getTags();
                     if((tags.contains(BiomeTags.FOREST) || tags.contains(BiomeTags.STONE) && !tags.contains(BiomeTags.BIRCH))) {
                         Block support = chunk.getBlockState(x, y - 1, z).toBlock();
                         if (support.isFullBlock() && !support.isTransparent()) {
                             if (chunk.getBlockState(x, y, z) == BlockAir.STATE) {
-                                NukkitRandom rnd = random.fork();
                                 chunk.setBlockState(x, y, z, BlockLeafLitter.PROPERTIES.getBlockState(
                                         MINECRAFT_CARDINAL_DIRECTION.createValue(
-                                                MinecraftCardinalDirection.values()[rnd.nextInt(MinecraftCardinalDirection.values().length - 1)]
+                                                MinecraftCardinalDirection.values()[random.nextInt(MinecraftCardinalDirection.values().length - 1)]
                                         ),
-                                        GROWTH.createValue(rnd.nextInt(3))
+                                        GROWTH.createValue(random.nextInt(3))
                                 ));
                             }
                         }

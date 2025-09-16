@@ -67,7 +67,6 @@ public class NormalTerrainStage extends GenerateStage {
                         int cx = x + baseX + xSmooth;
                         int cz = z + baseZ + zSmooth;
                         OverworldBiomeResult result1 = picker.pick(cx, SEA_LEVEL, cz);
-                        BiomeDefinition definition = Registries.BIOME.get(result1.getBiomeId());
                         float weight = 1;
                         float d0 = this.surfaceNoise.getValue(cx, SEA_LEVEL, cz);
                         Map<String, Double> depthSplineMap = this.depthSplineMap.get();
@@ -92,12 +91,11 @@ public class NormalTerrainStage extends GenerateStage {
                     if(density + densityMod > 0) {
                         chunk.setBlockState(x, y, z, BlockStone.PROPERTIES.getDefaultState());
                     } else {
-                        if(y <= SEA_LEVEL)chunk.setBlockState(x, y, z, BlockWater.PROPERTIES.getDefaultState());
+                        if(y <= SEA_LEVEL) chunk.setBlockState(x, y, z, BlockWater.PROPERTIES.getDefaultState());
                     }
                 }
             }
         }
-        NukkitRandom bedrockRandom = random.identical();
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 for(int y = level.getMinHeight(); y < 0; y++) {
@@ -110,7 +108,7 @@ public class NormalTerrainStage extends GenerateStage {
                 }
                 chunk.setBlockState(x, level.getMinHeight(), z, BlockBedrock.PROPERTIES.getDefaultState());
                 for (int i = 1; i < 5; i++) {
-                    if (bedrockRandom.nextBoundedInt(i) == 0) {
+                    if (random.nextBoundedInt(i) == 0) {
                         chunk.setBlockState(x, level.getMinHeight() +i, z, BlockBedrock.PROPERTIES.getDefaultState());
                     }
                 }

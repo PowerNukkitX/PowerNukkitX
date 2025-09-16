@@ -6,6 +6,8 @@ import org.apache.commons.rng.sampling.distribution.GaussianSampler;
 import org.apache.commons.rng.sampling.distribution.ZigguratSampler;
 import org.apache.commons.rng.simple.RandomSource;
 
+import java.util.Random;
+
 /**
  * @author Angelic47 (Nukkit Project)
  */
@@ -25,9 +27,10 @@ public class NukkitRandom implements RandomSourceProvider {
                 0, 0.33333);
     }
 
-    public void setSeed(long seed) {
+    public NukkitRandom setSeed(long seed) {
         this.seeds = seed;
         provider = RandomSource.MT.create(seeds);
+        return this;
     }
 
     @Override

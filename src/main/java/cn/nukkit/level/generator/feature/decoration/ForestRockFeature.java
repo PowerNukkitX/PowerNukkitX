@@ -4,6 +4,7 @@ package cn.nukkit.level.generator.feature.decoration;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockMossyCobblestone;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
@@ -28,7 +29,7 @@ public class ForestRockFeature extends SurfaceGenerateFeature {
 
     @Override
     public void place(BlockManager manager, int x, int y, int z) {
-        NukkitRandom random = new NukkitRandom(x + y + z);
+        this.random.setSeed(x + y + z);
         int sizeX = 3 + random.nextInt(1);
         int sizeZ = 3 + random.nextInt(1);
         for(int _x = 0; _x < sizeX; _x++) {

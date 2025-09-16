@@ -29,19 +29,18 @@ public class PaleMossPatchFeature extends GenerateFeature {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        NukkitRandom random = new NukkitRandom(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
                 if(Registries.BIOME.get(chunk.getBiomeId(x, SEA_LEVEL, z)).getTags().contains(BiomeTags.PALE_GARDEN)) {
-                    NukkitRandom fork = random.fork();
-                    if(fork.nextInt(9) < 7) {
+                    if(random.nextInt(9) < 7) {
                         int y = chunk.getHeightMap(x, z);
                         while(chunk.getBlockState(x, y, z) != GRASS_BLOCK && y > SEA_LEVEL) {
                             y--;
                         }
                         if(y > SEA_LEVEL) {
                             chunk.setBlockState(x, y, z, PALE_MOSS_BLOCK);
-                            if(random.fork().nextInt(9) < 2) {
+                            if(random.nextInt(9) < 2) {
                                 chunk.setBlockState(x, y+1, z, PALE_MOSS_CARPET);
                             }
                         }

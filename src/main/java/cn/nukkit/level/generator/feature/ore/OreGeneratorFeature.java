@@ -37,6 +37,7 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
         return false;
     }
 
+
     public boolean canBeReplaced(BlockState state) {
         return state == STONE || state == DEEPSLATE;
     }
@@ -47,11 +48,11 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        NukkitRandom random = new NukkitRandom(Level.chunkHash(chunkX, chunkZ) * level.getSeed());
+        this.random.setSeed(Level.chunkHash(chunkX, chunkZ) * level.getSeed());
         int sx = chunkX << 4;
         int sz = chunkZ << 4;
         BlockManager manager = new BlockManager(level);
-        for (int i = 0; i < (this.isRare() ? (random.identical().nextInt(getClusterCount()) == 0 ? 1 : 0) : getClusterCount()); i++) {
+        for (int i = 0; i < (this.isRare() ? (random.nextInt(getClusterCount()) == 0 ? 1 : 0) : getClusterCount()); i++) {
             BlockManager object = new BlockManager(level);
             int maxY = Math.min(this.getMaxHeight(), level.getMaxHeight());
             int minY = Math.max(this.getMinHeight(), level.getMinHeight());
@@ -69,13 +70,15 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
             if (this.getClusterSize() == 1) {
                 object.setBlockStateAt(x, y, z, getState(original));
             } else {
-                spawn(object, new NukkitRandom(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) ^ x + y + z), x, y, z);
+                spawn(object, random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) ^ x + y + z), x, y, z);
+                this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+
             }
             boolean skip = false;
             if(getSkipAir() != 0) {
                 boolean air = object.getBlocks().stream().anyMatch(block -> level.getTickCachedBlock(block, false).isAir());
                 if(air) {
-                    skip = random.identical().nextFloat() < getSkipAir();
+                    skip = random.nextFloat() < getSkipAir();
                 }
             }
             if(!skip) {

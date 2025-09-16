@@ -32,21 +32,20 @@ public class PinkPetalsFeature extends GenerateFeature {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        NukkitRandom random = new NukkitRandom(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                if(random.fork().nextBoolean()) {
+                if(random.nextBoolean()) {
                     int y = chunk.getHeightMap(x, z) + 1;
                     if(Registries.BIOME.get(chunk.getBiomeId(x, y, z)).getTags().contains(BiomeTags.CHERRY_GROVE)) {
                         Block support = chunk.getBlockState(x, y - 1, z).toBlock();
                         if (support.is(BlockTags.GRASS)) {
                             if (chunk.getBlockState(x, y, z) == BlockAir.STATE) {
-                                NukkitRandom rnd = random.fork();
                                 chunk.setBlockState(x, y, z, BlockPinkPetals.PROPERTIES.getBlockState(
                                         MINECRAFT_CARDINAL_DIRECTION.createValue(
-                                                MinecraftCardinalDirection.values()[rnd.nextInt(MinecraftCardinalDirection.values().length - 1)]
+                                                MinecraftCardinalDirection.values()[random.nextInt(MinecraftCardinalDirection.values().length - 1)]
                                         ),
-                                        GROWTH.createValue(rnd.nextInt(3))
+                                        GROWTH.createValue(random.nextInt(3))
                                 ));
                             }
                         }

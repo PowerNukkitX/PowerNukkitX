@@ -25,18 +25,18 @@ public class AmethystGeodeFeature extends GenerateFeature {
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
         Level level = chunk.getLevel();
-        NukkitRandom rand = new NukkitRandom(level.getSeed() ^ ((chunk.getX() << 8) ^ chunk.getZ()));
+        this.random.setSeed(level.getSeed() ^ ((chunk.getX() << 8) ^ chunk.getZ()));
         BlockManager manager = new BlockManager(level);
         BlockManager object = new BlockManager(level);
-        if (rand.nextBoundedInt(100) > 4) {
+        if (random.nextBoundedInt(100) > 4) {
             return;
         }
 
-        int centerX = rand.nextBoundedInt(16);
-        int centerZ = rand.nextBoundedInt(16);
-        int centerY = 12 + rand.nextBoundedInt(36);
+        int centerX = random.nextBoundedInt(16);
+        int centerZ = random.nextBoundedInt(16);
+        int centerY = 12 + random.nextBoundedInt(36);
 
-        int outerRadius = 4 + rand.nextBoundedInt(5);
+        int outerRadius = 4 + random.nextBoundedInt(5);
         int calciteThickness = 1;
         int amethystThickness = 1;
         double outerRadiusSq = outerRadius * outerRadius;
@@ -70,7 +70,7 @@ public class AmethystGeodeFeature extends GenerateFeature {
                         object.setBlockStateAt(worldX, y, worldZ, CALCITE);
                     } else if (distFromOuter <= 0.5 + calciteThickness + amethystThickness) {
                         object.setBlockStateAt(worldX, y, worldZ, AMETHYST_BLOCK);
-                        if (rand.nextBoundedInt(100) < 6) {
+                        if (random.nextBoundedInt(100) < 6) {
                             object.setBlockStateAt(worldX, y, worldZ, AMETHYST_BUDDING);
                         }
                     } else {
@@ -85,7 +85,7 @@ public class AmethystGeodeFeature extends GenerateFeature {
                         if (isAmethystShell(object, worldX, y, worldZ - 1)) touchesAmethystShell = BlockFace.SOUTH;
 
                         if (touchesAmethystShell != null) {
-                            if (rand.nextBoundedInt(100) < 18) {
+                            if (random.nextBoundedInt(100) < 18) {
                                 object.setBlockStateAt(worldX, y, worldZ, AMETHYST_CLUSTER.getBlockState(MINECRAFT_BLOCK_FACE.createValue(touchesAmethystShell)));
                             }
                         }

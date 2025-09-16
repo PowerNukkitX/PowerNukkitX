@@ -25,7 +25,7 @@ public class ReedsFeature extends GenerateFeature {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        NukkitRandom random = new NukkitRandom(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) * name().hashCode());
+        this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         if(random.nextInt(20) != 0) return;
         int maxReed = random.nextInt(3);
         for(int x = 0; x < 16; x++) {

@@ -58,7 +58,7 @@ public class NukkitMath {
         int heightDiff = Math.abs(end - start);
         int heightDiffHalf = heightDiff / 2;
         int heightDiffHalf2 = heightDiff - heightDiffHalf;
-        return Math.min(start, end) + NukkitMath.randomRange(random.identical(), 0, heightDiffHalf2) + NukkitMath.randomRange(random.identical(), 0, heightDiffHalf);
+        return Math.min(start, end) + NukkitMath.randomRange(random, 0, heightDiffHalf2) + NukkitMath.randomRange(random, 0, heightDiffHalf);
     }
 
     public static double round(double d) {

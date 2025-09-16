@@ -15,7 +15,7 @@ public class TaigaGrassFeature extends SurfaceGenerateFeature {
 
     @Override
     public void place(BlockManager manager, int x, int y, int z) {
-        manager.setBlockStateAt(x, y, z, new NukkitRandom(x + y + z).nextInt(7) == 0 ? SHORT_GRASS : FERN);
+        manager.setBlockStateAt(x, y, z, random.setSeed(x + y + z).nextInt(7) == 0 ? SHORT_GRASS : FERN);
     }
 
     @Override

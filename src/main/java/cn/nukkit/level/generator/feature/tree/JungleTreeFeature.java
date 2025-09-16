@@ -22,7 +22,7 @@ public class JungleTreeFeature extends GriddedFeature {
             case 0, 1, 3, 4, 5 -> new ObjectJungleBigTree(10, 20,
                     BlockJungleLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y),
                     BlockJungleLeaves.PROPERTIES.getDefaultState());
-            case 6 -> new ObjectJungleTree(4 + random.identical().nextBoundedInt(7), 3);
+            case 6 -> new ObjectJungleTree(4 + random.nextBoundedInt(7), 3);
             default -> new ObjectJungleTree(7, 8);
         };
     }

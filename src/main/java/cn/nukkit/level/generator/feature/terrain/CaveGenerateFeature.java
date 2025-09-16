@@ -44,7 +44,7 @@ public class CaveGenerateFeature extends GenerateFeature {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        NukkitRandom random = new NukkitRandom(level.getSeed());
+        this.random.setSeed(level.getSeed());
         long worldLong1 = random.nextLong();
         long worldLong2 = random.nextLong();
 
@@ -54,7 +54,7 @@ public class CaveGenerateFeature extends GenerateFeature {
             for (int z = chunkZ - size; z <= chunkZ + size; z++) {
                 long randomX = x * worldLong1;
                 long randomZ = z * worldLong2;
-                random = new NukkitRandom(randomX ^ randomZ ^ level.getSeed());
+                random.setSeed(randomX ^ randomZ ^ level.getSeed());
                 this.carveChunk(random, x, z, chunk);
             }
         chunk.recalculateHeightMap();
@@ -112,11 +112,11 @@ public class CaveGenerateFeature extends GenerateFeature {
             f1 += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 4.0F;
 
             if ((!isLargeCave) && (angle == randomAngel) && (radius > 1.0F) && (maxAngle > 0)) {
-                generateCaveNode(random.fork(), chunk, x, y, z, random.nextFloat() * 0.5F + 0.5F, angelOffset - 1.570796F, angel / 3.0F, angle, maxAngle, 1.0D);
-                generateCaveNode(random.fork(), chunk, x, y, z, random.nextFloat() * 0.5F + 0.5F, angelOffset + 1.570796F, angel / 3.0F, angle, maxAngle, 1.0D);
+                generateCaveNode(random, chunk, x, y, z, random.nextFloat() * 0.5F + 0.5F, angelOffset - 1.570796F, angel / 3.0F, angle, maxAngle, 1.0D);
+                generateCaveNode(random, chunk, x, y, z, random.nextFloat() * 0.5F + 0.5F, angelOffset + 1.570796F, angel / 3.0F, angle, maxAngle, 1.0D);
                 return;
             }
-            if ((!isLargeCave) && (random.fork().nextInt(4) == 0)) {
+            if ((!isLargeCave) && (random.nextInt(4) == 0)) {
                 continue;
             }
 
@@ -241,7 +241,7 @@ public class CaveGenerateFeature extends GenerateFeature {
             int count = caveSystemFrequency;
             boolean largeCaveSpawned = false;
             if (random.nextInt(100) <= individualCaveRarity) {
-                generateLargeCaveNode(random.fork(), generatingChunkBuffer, x, y, z);
+                generateLargeCaveNode(random, generatingChunkBuffer, x, y, z);
                 largeCaveSpawned = true;
             }
 
@@ -254,7 +254,7 @@ public class CaveGenerateFeature extends GenerateFeature {
                 float f2 = (random.nextFloat() - 0.5F) * 2.0F / 8.0F;
                 float f3 = random.nextFloat() * 2.0F + random.nextFloat();
 
-                generateCaveNode(random.fork(), generatingChunkBuffer, x, y, z, f3, f1, f2, 0, 0, 1.0D);
+                generateCaveNode(random, generatingChunkBuffer, x, y, z, f3, f1, f2, 0, 0, 1.0D);
             }
         }
     }
