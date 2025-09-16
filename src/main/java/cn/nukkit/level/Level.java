@@ -44,6 +44,7 @@ import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.generator.BiomedGenerator;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.biome.BiomePicker;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
@@ -321,6 +322,7 @@ public class Level implements Metadatable {
     private final boolean clearChunksOnTick;
     private final Generator generator;
     private final Class<? extends Generator> generatorClass;
+    private BiomePicker biomePicker;
     private int updateLCG = ThreadLocalRandom.current().nextInt();
     private int tickRate;
     private long levelCurrentTick = 0;
@@ -375,7 +377,9 @@ public class Level implements Metadatable {
         //to be changed later as the Dim0 will be deleted to be put in a config.json file of the world
         log.info(this.server.getLanguage().tr("nukkit.level.preparing", TextFormat.GREEN + levelProvider.getName() + TextFormat.RESET));
         levelProvider.updateLevelName(name);
-
+        if (this.generator instanceof BiomedGenerator biomedGenerator) {
+            this.biomePicker = biomedGenerator.createBiomePicker(this);
+        }
         if (generatorConfig.enableAntiXray()) {
             this.setAntiXrayEnabled(true);
             antiXraySystem.reinitAntiXray(false);
@@ -3617,12 +3621,7 @@ public class Level implements Metadatable {
     }
 
     public BiomePicker getBiomePicker() {
-        NukkitRandom random = new NukkitRandom(getSeed());
-        return switch (getDimension()) {
-            case DIMENSION_OVERWORLD -> new OverworldBiomePicker(random);
-            case DIMENSION_THE_END -> new TheEndBiomePicker();
-            default -> throw new IllegalStateException("Unexpected value: " + getDimension());
-        };
+        return this.biomePicker;
     }
 
     public int pickBiome(int x, int y, int z) {
