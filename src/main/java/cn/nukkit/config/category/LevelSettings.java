@@ -24,4 +24,6 @@ public class LevelSettings extends OkaeriConfig {
     int chunkUnloadDelay = 15000;
     @Comment("pnx.settings.level.entityspawncap")
     int entitySpawnCap = 512;
+    @Comment("pnx.settings.level.fieldofview")
+    int fieldOfView = 100;
 }

@@ -59,6 +59,7 @@
   "pnx.settings.level.alwaystickplayers": "Whether to tick players",
   "pnx.settings.level.chunkunloaddelay": "Chunk unload tick cycle",
   "pnx.settings.level.entityspawncap": "Limits how many entites can spawn in a world",
+  "pnx.settings.level.fieldofview": "Defines the FOV used by the server to prioritize chunk generation",
   "pnx.settings.chunk.perticksend": "Maximum number of chunks sent to players per tick",
   "pnx.settings.chunk.spawnthreshold": "Number of chunks a player needs to receive upon first spawn",
   "pnx.settings.chunk.chunksperticks": "Tick cycle of chunks",

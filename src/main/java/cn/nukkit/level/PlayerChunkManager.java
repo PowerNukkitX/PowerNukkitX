@@ -24,23 +24,54 @@ import java.util.concurrent.TimeoutException;
 
 @Slf4j
 public final class PlayerChunkManager {
-    private final LongComparator chunkDistanceComparator = new LongComparator() {
+
+    private final LongComparator chunkDistanceAndFovComparator = new LongComparator() {
         @Override
         public int compare(long chunkHash1, long chunkHash2) {
             BlockVector3 floor = player.getPosition().asBlockVector3();
-            var loaderChunkX = floor.x >> 4;
-            var loaderChunkZ = floor.z >> 4;
-            var chunkDX1 = loaderChunkX - Level.getHashX(chunkHash1);
-            var chunkDZ1 = loaderChunkZ - Level.getHashZ(chunkHash1);
-            var chunkDX2 = loaderChunkX - Level.getHashX(chunkHash2);
-            var chunkDZ2 = loaderChunkZ - Level.getHashZ(chunkHash2);
-            //Compare distance to loader
-            return Integer.compare(
-                    chunkDX1 * chunkDX1 + chunkDZ1 * chunkDZ1,
-                    chunkDX2 * chunkDX2 + chunkDZ2 * chunkDZ2
-            );
+            int loaderChunkX = floor.x >> 4;
+            int loaderChunkZ = floor.z >> 4;
+
+            int chunkX1 = Level.getHashX(chunkHash1);
+            int chunkZ1 = Level.getHashZ(chunkHash1);
+            int chunkX2 = Level.getHashX(chunkHash2);
+            int chunkZ2 = Level.getHashZ(chunkHash2);
+
+            int dx1 = chunkX1 - loaderChunkX;
+            int dz1 = chunkZ1 - loaderChunkZ;
+            int dx2 = chunkX2 - loaderChunkX;
+            int dz2 = chunkZ2 - loaderChunkZ;
+
+            int dist1 = dx1 * dx1 + dz1 * dz1;
+            int dist2 = dx2 * dx2 + dz2 * dz2;
+
+            boolean inFov1 = isInPlayerFov(dx1, dz1);
+            boolean inFov2 = isInPlayerFov(dx2, dz2);
+
+            if (inFov1 && !inFov2) return -1;
+            if (!inFov1 && inFov2) return 1;
+
+            return Integer.compare(dist1, dist2);
+        }
+
+        private boolean isInPlayerFov(int dx, int dz) {
+            double yaw = player.getYaw();
+            double dirX = -Math.sin(Math.toRadians(yaw));
+            double dirZ = Math.cos(Math.toRadians(yaw));
+
+            double len = Math.sqrt(dx * dx + dz * dz);
+            if (len < 4) return true;
+
+            double toChunkX = dx / len;
+            double toChunkZ = dz / len;
+
+            double dot = dirX * toChunkX + dirZ * toChunkZ;
+
+            double cosFov = Math.cos(Math.toRadians(player.getServer().getSettings().levelSettings().fieldOfView()));
+            return dot >= cosFov;
         }
     };
+
     private final Player player;
     //保存着上tick已经发送的全部区块hash值
     private final @NotNull LongOpenHashSet sentChunks;
@@ -56,10 +87,10 @@ public final class PlayerChunkManager {
         this.player = player;
         this.sentChunks = new LongOpenHashSet();
         this.inRadiusChunks = new LongOpenHashSet();
-        this.chunkSendQueue = new LongArrayPriorityQueue(player.getViewDistance() * player.getViewDistance(), chunkDistanceComparator);
+        this.chunkSendQueue = new LongArrayPriorityQueue(player.getViewDistance() * player.getViewDistance(), chunkDistanceAndFovComparator);
         this.chunkLoadingQueue = new Long2ObjectOpenHashMap<>(player.getViewDistance() * player.getViewDistance());
         this.trySendChunkCountPerTick = player.getChunkSendCountPerTick();
-        this.chunkReadyToSend = new LongArrayPriorityQueue(player.getViewDistance() * player.getViewDistance(), chunkDistanceComparator);
+        this.chunkReadyToSend = new LongArrayPriorityQueue(player.getViewDistance() * player.getViewDistance(), chunkDistanceAndFovComparator);
     }
 
     /**
