@@ -5,6 +5,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntArrayTag;
+import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.HashMap;
@@ -13,7 +14,7 @@ public abstract class GenerateFeature {
 
     protected final NukkitRandom random = new NukkitRandom();
 
-    protected final HashMap<Long, BlockManager> PLACEMENT_QUEUE = new HashMap<>();
+    protected final Long2ObjectNonBlockingMap<BlockManager> PLACEMENT_QUEUE = new Long2ObjectNonBlockingMap<>();
 
     public BlockManager getChunkPlacementQueue(Long chunkHash, Level level) {
         if(!PLACEMENT_QUEUE.containsKey(chunkHash)) PLACEMENT_QUEUE.put(chunkHash, new BlockManager(level));

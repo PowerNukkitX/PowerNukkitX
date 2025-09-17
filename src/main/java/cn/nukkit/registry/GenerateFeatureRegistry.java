@@ -12,13 +12,15 @@ import cn.nukkit.level.generator.feature.river.SandGenerateFeature;
 import cn.nukkit.level.generator.feature.terrain.CaveGenerateFeature;
 import cn.nukkit.level.generator.feature.tree.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.SneakyThrows;
+import me.sunlan.fastreflection.FastConstructor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeature, Class<? extends GenerateFeature>> {
-    private static final Object2ObjectOpenHashMap<String, Class<? extends GenerateFeature>> REGISTRY = new Object2ObjectOpenHashMap<>();
+    private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends GenerateFeature>> REGISTRY = new Object2ObjectOpenHashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
     @Override
@@ -130,11 +132,12 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
         }
     }
 
+    @SneakyThrows
     public GenerateFeature get(Class<? extends GenerateFeature> c) {
         for (var entry : REGISTRY.entrySet()) {
             if (entry.getValue().equals(c)) {
                 try {
-                    return entry.getValue().getConstructor().newInstance();
+                    return (GenerateFeature) entry.getValue().invoke();
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException e) {
                     throw new RuntimeException(e);
@@ -148,16 +151,17 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
         return REGISTRY.containsKey(key.toLowerCase(Locale.ENGLISH));
     }
 
+    @SneakyThrows
     @Override
     public GenerateFeature get(String key) {
         try {
-            return REGISTRY.get(key.toLowerCase(Locale.ENGLISH)).getConstructor().newInstance();
+            return (GenerateFeature) REGISTRY.get(key.toLowerCase(Locale.ENGLISH)).invoke();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Class<? extends GenerateFeature> getStageByName(String key) {
+    public FastConstructor<? extends GenerateFeature> getStageByName(String key) {
         return REGISTRY.get(key.toLowerCase(Locale.ENGLISH));
     }
 
@@ -173,9 +177,10 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
         init();
     }
 
+    @SneakyThrows
     @Override
     public void register(String key, Class<? extends GenerateFeature> value) throws RegisterException {
-        if (REGISTRY.putIfAbsent(key.toLowerCase(Locale.ENGLISH), value) != null) {
+        if (REGISTRY.putIfAbsent(key.toLowerCase(Locale.ENGLISH), FastConstructor.create(value.getConstructor())) != null) {
             throw new RegisterException("This generator has already been registered with the key: " + key);
         }
     }
