@@ -353,23 +353,40 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                         int catId = itemProps.getInt("creative_category");
                         CreativeCategory category = CreativeCategory.fromID(catId);
                         Map<String, Integer> groupMap = CATEGORY_GROUP_INDEX_MAP.getOrDefault(category, Map.of());
+                        String groupName = itemProps.contains("creative_group") ? itemProps.getString("creative_group") : "";
+                        boolean noGroup = groupName == null || groupName.isBlank() || "NONE".equalsIgnoreCase(groupName);
 
-                        if (itemProps.contains("creative_group")) {
-                            String groupName = itemProps.getString("creative_group");
+                        if (!noGroup) {
                             CreativeItemRegistry.ITEM_GROUP_MAP.put(identifier, groupName);
-
-                            Integer index = groupMap.get(groupName);
-                            if (index != null) {
-                                return index;
-                            }
+                            Integer idx = groupMap.get(groupName);
+                            if (idx != null) return idx;
+                        } else {
+                            CreativeItemRegistry.ITEM_GROUP_MAP.remove(identifier);
                         }
-                        return getLastGroupIndexFrom(category.name());
+
+                        int catTail = lastIndexForCategory(groupMap);
+                        return catTail >= 0 ? catTail : getPerCategoryFallback(category);
+
                     } catch (Exception e) {
                         log.warn("Invalid creative category/group in item definition NBT for '{}': {}", identifier, e.getMessage());
                     }
                 }
             }
         }
+        return CreativeItemRegistry.LAST_ITEMS_INDEX;
+    }
+
+    private static int lastIndexForCategory(Map<String, Integer> groupMap) {
+        if (groupMap == null || groupMap.isEmpty()) return -1;
+        int max = Integer.MIN_VALUE;
+        for (int v : groupMap.values()) {
+            if (v > max) max = v;
+        }
+        return max;
+    }
+
+    private static int getPerCategoryFallback(CreativeCategory category) {
+        log.debug("Category {} has no registered groups yet; falling back to global last index.", category);
         return CreativeItemRegistry.LAST_ITEMS_INDEX;
     }
 
