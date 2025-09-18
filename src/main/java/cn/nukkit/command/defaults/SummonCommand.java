@@ -15,6 +15,7 @@ import cn.nukkit.registry.Registries;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 public class SummonCommand extends VanillaCommand {
@@ -65,10 +66,7 @@ public class SummonCommand extends VanillaCommand {
         }
 
         // ---- block non-summonable entities BEFORE creating the instance ----
-        String fullId = (entityId != null)
-                ? Registries.ENTITY.getEntityIdentifier(entityId)
-                : entityType;
-        if (fullId == null) fullId = entityType;
+        String fullId = Optional.ofNullable(entityId).map(Registries.ENTITY::getEntityIdentifier).orElse(entityType);
         EntityRegistry.EntityDefinition def = Registries.ENTITY.getEntityDefinition(fullId);
 
         if (def == null || !def.summonable()) {
