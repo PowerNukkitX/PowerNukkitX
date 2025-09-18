@@ -5,7 +5,6 @@ import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.command.utils.CommandUtils;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.item.ItemCustomEntitySpawnEgg;
 import cn.nukkit.item.customitem.CustomItem;
 
 /**
@@ -40,12 +39,6 @@ public class ItemNode extends ParamNode<Item> {
             }
         }
 
-        if (item instanceof ItemCustomEntitySpawnEgg egg) {
-             // Resolve custom entity spawn egg
-            egg.resolveSpawnEgg(arg);
-            this.value = egg;
-        } else {
-            this.value = item;
-        }
+        this.value = item;
     }
 }

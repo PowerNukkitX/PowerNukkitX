@@ -195,6 +195,11 @@ public abstract class Item implements Cloneable, ItemID {
     public static Item get(String id, int meta, int count, byte[] tags, boolean autoAssignStackNetworkId) {
         id = id.contains(":") ? id : "minecraft:" + id;
         Item item = Registries.ITEM.get(id, meta, count, tags);
+
+        if (item instanceof ItemCustomEntitySpawnEgg egg) {
+            egg.resolveSpawnEgg(id);
+        }
+
         if (item == null) {
             BlockState itemBlockState = getItemBlockState(id, meta);
             if (itemBlockState == null || itemBlockState == BlockAir.STATE) {
@@ -205,14 +210,8 @@ public abstract class Item implements Cloneable, ItemID {
             if (tags != null) {
                 item.setCompoundTag(tags);
             }
-        } else {
-            if (item instanceof ItemCustomEntitySpawnEgg egg) {
-                egg.resolveSpawnEgg(id);
-            }
-
-            if (autoAssignStackNetworkId) {
-                item.autoAssignStackNetworkId();
-            }
+        } else if (autoAssignStackNetworkId) {
+            item.autoAssignStackNetworkId();
         }
         return item;
     }

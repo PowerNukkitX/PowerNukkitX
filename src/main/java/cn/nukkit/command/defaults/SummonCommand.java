@@ -65,13 +65,12 @@ public class SummonCommand extends VanillaCommand {
         }
 
         // ---- block non-summonable entities BEFORE creating the instance ----
-        EntityRegistry.EntityDefinition def;
-        if (entityId != null) {
-            String fullId = Registries.ENTITY.getEntityIdentifier(entityId);
-            def = Registries.ENTITY.getEntityDefinition(fullId);
-        } else {
-            def = Registries.ENTITY.getEntityDefinition(entityType);
-        }
+        String fullId = (entityId != null)
+                ? Registries.ENTITY.getEntityIdentifier(entityId)
+                : entityType;
+        if (fullId == null) fullId = entityType;
+        EntityRegistry.EntityDefinition def = Registries.ENTITY.getEntityDefinition(fullId);
+
         if (def == null || !def.summonable()) {
             log.addError("commands.summon.failed").output();
             return 0;

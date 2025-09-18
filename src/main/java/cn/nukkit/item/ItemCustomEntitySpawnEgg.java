@@ -7,19 +7,17 @@ import cn.nukkit.event.entity.CreatureSpawnEvent;
 import cn.nukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.registry.Registries;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ItemCustomEntitySpawnEgg extends Item {
     private static final String SUFFIX = "_spawn_egg";
@@ -77,7 +75,6 @@ public class ItemCustomEntitySpawnEgg extends Item {
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player != null && player.isAdventure()) return false;
-
         selfHealIdentifierFromNamedTag();
 
         String entityId = entityIdFromEggId(this.getId());
@@ -89,18 +86,10 @@ public class ItemCustomEntitySpawnEgg extends Item {
         IChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
         if (chunk == null) return false;
 
-        CompoundTag nbt = new CompoundTag()
-            .putList("Pos", new ListTag<DoubleTag>()
-                .add(new DoubleTag(block.getX() + 0.5))
-                .add(new DoubleTag(target.getBoundingBox() == null ? block.getY() : target.getBoundingBox().getMaxY() + 0.0001f))
-                .add(new DoubleTag(block.getZ() + 0.5)))
-            .putList("Motion", new ListTag<DoubleTag>()
-                .add(new DoubleTag(0))
-                .add(new DoubleTag(0))
-                .add(new DoubleTag(0)))
-            .putList("Rotation", new ListTag<FloatTag>()
-                .add(new FloatTag(new Random().nextFloat() * 360))
-                .add(new FloatTag(0)));
+        double spawnY = (target.getBoundingBox() == null) ? block.getY() : target.getBoundingBox().getMaxY() + 0.0001d;
+        float yaw = ThreadLocalRandom.current().nextFloat() * 360f;
+        Location loc = new Location(block.getX() + 0.5, spawnY, block.getZ() + 0.5, yaw, 0f, level);
+        CompoundTag nbt = Entity.getDefaultNBT(loc);
 
         if (this.hasCustomName()) {
             nbt.putString("CustomName", this.getCustomName());
@@ -124,9 +113,10 @@ public class ItemCustomEntitySpawnEgg extends Item {
         entity.spawnToAll();
 
         if (player != null) {
-            level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, entity.clone(), VibrationType.ENTITY_PLACE));
+            level.getVibrationManager().callVibrationEvent(
+                    new VibrationEvent(player, entity.clone(), VibrationType.ENTITY_PLACE)
+            );
         }
-
         return true;
     }
 
