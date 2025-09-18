@@ -206,8 +206,6 @@ public abstract class Item implements Cloneable, ItemID {
                 item.setCompoundTag(tags);
             }
         } else {
-            item = item.clone();
-
             if (item instanceof ItemCustomEntitySpawnEgg egg) {
                 egg.resolveSpawnEgg(id);
             }
