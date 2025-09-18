@@ -206,10 +206,8 @@ public abstract class Item implements Cloneable, ItemID {
                 item.setCompoundTag(tags);
             }
         } else {
-            // IMPORTANT: don’t mutate a registry template instance
             item = item.clone();
 
-            // Bind spawn-egg to the requested id (sets Item.id + seeds pnx_extra_data)
             if (item instanceof ItemCustomEntitySpawnEgg egg) {
                 egg.resolveSpawnEgg(id);
             }
