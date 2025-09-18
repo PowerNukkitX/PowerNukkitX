@@ -9,6 +9,7 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Position;
+import cn.nukkit.registry.EntityRegistry;
 import cn.nukkit.registry.Registries;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class SummonCommand extends VanillaCommand {
             return 0;
         }
         Integer entityId = Type.ENTITY_TYPE2ID.get(entityType);
+
         Position pos = sender.getPosition();
         if (list.hasResult(1)) {
             pos = list.getResult(1);
@@ -52,6 +54,7 @@ public class SummonCommand extends VanillaCommand {
             log.addError("commands.summon.outOfWorld").output();
             return 0;
         }
+
         String nameTag = null;
         if (list.hasResult(2)) {
             nameTag = list.getResult(2);
@@ -60,18 +63,34 @@ public class SummonCommand extends VanillaCommand {
         if (list.hasResult(3)) {
             nameTagAlwaysVisible = list.getResult(3);
         }
+
+        // ---- block non-summonable entities BEFORE creating the instance ----
+        EntityRegistry.EntityDefinition def;
+        if (entityId != null) {
+            String fullId = Registries.ENTITY.getEntityIdentifier(entityId);
+            def = Registries.ENTITY.getEntityDefinition(fullId);
+        } else {
+            def = Registries.ENTITY.getEntityDefinition(entityType);
+        }
+        if (def == null || !def.summonable()) {
+            log.addError("commands.summon.failed").output();
+            return 0;
+        }
+        // -------------------------------------------------------------------
+
         Entity entity;
         if (entityId != null) {
-            //原版生物
+            // Vanilla Entities
             entity = Entity.createEntity(entityId, pos);
         } else {
-            //自定义生物
+            // Custom Entities
             entity = Entity.createEntity(entityType, pos);
         }
         if (entity == null) {
             log.addError("commands.summon.failed").output();
             return 0;
         }
+
         if (nameTag != null) {
             entity.setNameTag(nameTag);
             entity.setNameTagAlwaysVisible(nameTagAlwaysVisible);
@@ -84,7 +103,7 @@ public class SummonCommand extends VanillaCommand {
     protected String completionPrefix(String type) {
         var completed = type.contains(":") ? type : "minecraft:" + type;
         if (!Type.ENTITY_TYPE2ID.containsKey(type) && !Type.ENTITY_TYPE2ID.containsKey(completed)) {
-            //是自定义生物，不需要补全
+            // It is a custom creature and does not need to be completed
             return type;
         }
         return completed;

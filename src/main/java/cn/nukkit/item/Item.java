@@ -205,8 +205,18 @@ public abstract class Item implements Cloneable, ItemID {
             if (tags != null) {
                 item.setCompoundTag(tags);
             }
-        } else if (autoAssignStackNetworkId) {
-            item.autoAssignStackNetworkId();
+        } else {
+            // IMPORTANT: don’t mutate a registry template instance
+            item = item.clone();
+
+            // Bind spawn-egg to the requested id (sets Item.id + seeds pnx_extra_data)
+            if (item instanceof ItemCustomEntitySpawnEgg egg) {
+                egg.resolveSpawnEgg(id);
+            }
+
+            if (autoAssignStackNetworkId) {
+                item.autoAssignStackNetworkId();
+            }
         }
         return item;
     }
@@ -1406,12 +1416,13 @@ public abstract class Item implements Cloneable, ItemID {
 
     public final int getRuntimeId() {
         if (this.isNull()) return getAirRuntimeId();
+
         int i = Registries.ITEM_RUNTIMEID.getInt(this.getId());
         if (i == Integer.MAX_VALUE) {
             i = Registries.ITEM_RUNTIMEID.getInt(this.getBlockId());
         }
         if (i == Integer.MAX_VALUE) {
-            log.warn("Can't find runtimeId for item {}, will return unknown itemblock!", getId());
+            log.warn("Can't find runtimeId for item {}, will return unknown itemblock!", this.getId());
             return getUnknownRuntimeId();// Can't find runtimeId
         }
         return i;

@@ -4,10 +4,13 @@ import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityMobSpawner;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemCustomEntitySpawnEgg;
 import cn.nukkit.item.ItemSpawnEgg;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.registry.Registries;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -105,10 +108,23 @@ public class BlockMobSpawner extends BlockSolid {
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(!(item instanceof ItemSpawnEgg egg)) return false;
-        if(player == null) return false;
-        if (player.isAdventure()) return false;
-        if(setType(egg.getEntityNetworkId())) {
+        if (player == null || player.isAdventure()) return false;
+        int networkId = -1;
+
+        if (item instanceof ItemSpawnEgg egg) {
+            networkId = egg.getEntityNetworkId();
+        } else if (item instanceof ItemCustomEntitySpawnEgg) {
+            String eggId = item.getId();
+            String entityId = ItemCustomEntitySpawnEgg.entityIdFromEggId(eggId);
+            if (entityId != null) {
+                int rid = Registries.ENTITY.getEntityNetworkId(entityId);
+                if (rid != 0) networkId = rid;
+            }
+        }
+
+        if (networkId <= 0) return false;
+
+        if (setType(networkId)) {
             if (!player.isCreative()) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
             }
