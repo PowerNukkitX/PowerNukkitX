@@ -12,13 +12,14 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class BambooJungleTreeFeature extends ObjectGeneratorFeature {
 
     public static final String NAME = "minecraft:bamboo_jungle_surface_trees_feature";
 
     @Override
-    public ObjectGenerator getGenerator(NukkitRandom random) {
+    public ObjectGenerator getGenerator(RandomSourceProvider random) {
         return new ObjectJungleBigTree(10, 20,
                 BlockJungleLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y),
                 BlockJungleLeaves.PROPERTIES.getDefaultState());

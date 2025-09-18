@@ -6,13 +6,14 @@ import cn.nukkit.level.generator.object.ObjectMangroveTree;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class MangroveTreeFeature extends ObjectGeneratorFeature {
 
     public static final String NAME = "minecraft:mangrove_swamp_mangrove_tree_feature";
 
     @Override
-    public ObjectGenerator getGenerator(NukkitRandom random) {
+    public ObjectGenerator getGenerator(RandomSourceProvider random) {
         ObjectMangroveTree tree = new ObjectMangroveTree();
         tree.setWithBeenest(random.nextInt(15) == 0);
         return tree;

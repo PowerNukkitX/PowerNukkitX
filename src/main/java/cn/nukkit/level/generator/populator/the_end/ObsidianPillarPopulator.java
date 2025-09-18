@@ -30,7 +30,6 @@ public class ObsidianPillarPopulator extends Populator {
                 pillarPos[i] = new Vector2(x, z);
             }
         }
-        BlockManager manager = new BlockManager(level);
         BlockManager object = new BlockManager(level);
         for(int i = 0; i < pillarPos.length; i++) {
             Vector2 p = pillarPos[i];
@@ -40,18 +39,7 @@ public class ObsidianPillarPopulator extends Populator {
                 pillar.generate(object, null, new Vector3(p.x, level.getHeightMap(p.getFloorX(), p.getFloorY()), p.y));
             }
         }
-        for(Block block : object.getBlocks()) {
-            if(block.getChunk() != chunk) {
-                IChunk nextChunk = block.getChunk();
-                long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
-                getChunkPlacementQueue(chunkHash, level).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-            }
-            if(block.getChunk().isGenerated()) {
-                manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-            }
-        }
-        writeOutsideChunkStructureData(chunk);
-        manager.applySubChunkUpdate(manager.getBlocks());
+        queueObject(chunk, object);
     }
 
     @Override

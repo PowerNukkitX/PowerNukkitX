@@ -55,8 +55,6 @@ public class NormalTerrainStage extends GenerateStage {
 
                 OverworldBiomeResult result = picker.pick(baseX + x, SEA_LEVEL, baseZ + z);
                 int biomeId = result.getBiomeId();
-                BiomeDefinition biome = Registries.BIOME.get(biomeId);
-
                 float baseHeightSum = 0.0F;
                 float biomeWeightSum = 0.0F;
                 int smoothFactor = 0;
@@ -68,7 +66,6 @@ public class NormalTerrainStage extends GenerateStage {
                         int cz = z + baseZ + zSmooth;
                         OverworldBiomeResult result1 = picker.pick(cx, SEA_LEVEL, cz);
                         float weight = 1;
-                        float d0 = this.surfaceNoise.getValue(cx, SEA_LEVEL, cz);
                         Map<String, Double> depthSplineMap = this.depthSplineMap.get();
                         depthSplineMap.put("minecraft:overworld/continents", (double) result1.getContinental());
                         depthSplineMap.put("minecraft:overworld/erosion", (double) result1.getErosion());

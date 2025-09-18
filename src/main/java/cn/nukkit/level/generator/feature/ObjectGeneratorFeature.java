@@ -20,12 +20,13 @@ import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 public abstract class ObjectGeneratorFeature extends GenerateFeature {
 
-    public abstract ObjectGenerator getGenerator(NukkitRandom random);
+    public abstract ObjectGenerator getGenerator(RandomSourceProvider random);
 
     public int getMin() {
         return 5;
@@ -52,7 +53,6 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
         this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ)+ name().hashCode());
         int amount = NukkitMath.randomRange(random, getMin(), getMax());
         Vector3 v = new Vector3();
-        BlockManager manager = new BlockManager(level);
         BlockManager object = new BlockManager(level);
         for (int i = 0; i < amount; ++i) {
             int x = random.nextInt(15);
@@ -70,19 +70,7 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
                 getGenerator(random).generate(object, random, v.add(0, 1, 0));
             }
         }
-        
-        for(Block block : object.getBlocks()) {
-            if(block.getChunk() != chunk) {
-                IChunk nextChunk = block.getChunk();
-                long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
-                getChunkPlacementQueue(chunkHash, level).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-            }
-            if(block.getChunk().isGenerated()) {
-                manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-            }
-        }
-        writeOutsideChunkStructureData(chunk);
-        manager.applySubChunkUpdate(manager.getBlocks());
+        queueObject(chunk, object);
     }
 
     protected boolean checkBlock(Block bl) {

@@ -15,10 +15,11 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
 
-    public abstract LegacyTreeGenerator getGenerator(NukkitRandom random);
+    public abstract LegacyTreeGenerator getGenerator(RandomSourceProvider random);
 
     public int getMin() {
         return 5;

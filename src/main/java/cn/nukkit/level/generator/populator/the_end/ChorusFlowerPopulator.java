@@ -46,21 +46,9 @@ public class ChorusFlowerPopulator extends Populator {
                 int y = level.getHeightMap(x, z);
                 if (y > 0) {
                     if (level.getBlockStateAt(x, y + 1, z).equals(BlockAir.STATE) && level.getBlockStateAt(x, y, z).equals(END_STONE)) {
-                        BlockManager manager = new BlockManager(level);
                         BlockManager object = new BlockManager(level);
                         objectChorusTree.generate(object, random, new Vector3(x, y + 1, z), 8);
-                        for(Block block : object.getBlocks()) {
-                            if(block.getChunk() != chunk) {
-                                IChunk nextChunk = block.getChunk();
-                                long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
-                                getChunkPlacementQueue(chunkHash, level).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                            }
-                            if(block.getChunk().isGenerated()) {
-                                manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                            }
-                        }
-                        writeOutsideChunkStructureData(chunk);
-                        manager.applySubChunkUpdate(manager.getBlocks());
+                        queueObject(chunk, object);
                     }
                 }
             }

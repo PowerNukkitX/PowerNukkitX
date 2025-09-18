@@ -12,13 +12,14 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class ForestFlowerFoliageFeature extends CountGenerateFeature {
 
     public static final String NAME = "minecraft:forest_first_foliage_feature";
 
     @Override
-    public void populate(ChunkGenerateContext context, NukkitRandom random) {
+    public void populate(ChunkGenerateContext context, RandomSourceProvider random) {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

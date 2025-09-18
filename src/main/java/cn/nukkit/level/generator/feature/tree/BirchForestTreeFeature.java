@@ -7,13 +7,14 @@ import cn.nukkit.level.generator.object.legacytree.LegacyTallBirchTree;
 import cn.nukkit.level.generator.object.legacytree.LegacyTreeGenerator;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class BirchForestTreeFeature extends LegacyTreeGeneratorFeature {
 
     public static final String NAME = "minecraft:birch_forest_surface_trees_feature";
 
     @Override
-    public LegacyTreeGenerator getGenerator(NukkitRandom random) {
+    public LegacyTreeGenerator getGenerator(RandomSourceProvider random) {
         if(random.nextInt(10) < 1) {
             return new LegacyTallBirchTree();
         } else return new LegacyBirchTree();

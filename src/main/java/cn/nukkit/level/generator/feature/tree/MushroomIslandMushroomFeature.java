@@ -7,13 +7,14 @@ import cn.nukkit.level.generator.object.ObjectSavannaTree;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class MushroomIslandMushroomFeature extends ObjectGeneratorFeature {
 
     public static final String NAME = "minecraft:mushroom_island_surface_huge_mushroom_feature";
 
     @Override
-    public ObjectGenerator getGenerator(NukkitRandom random) {
+    public ObjectGenerator getGenerator(RandomSourceProvider random) {
         return new ObjectBigMushroom();
     }
 

@@ -8,13 +8,14 @@ import cn.nukkit.level.generator.object.legacytree.LegacyOakTree;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class SavannaTreeFeature extends ObjectGeneratorFeature {
 
     public static final String NAME = "minecraft:savanna_surface_trees_feature";
 
     @Override
-    public ObjectGenerator getGenerator(NukkitRandom random) {
+    public ObjectGenerator getGenerator(RandomSourceProvider random) {
         return random.nextInt(3) == 0 ? new ObjectLegacyObjectWrapper(new LegacyOakTree()) : new ObjectSavannaTree();
     }
 

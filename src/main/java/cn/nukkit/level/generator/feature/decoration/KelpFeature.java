@@ -7,6 +7,7 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.noise.f.vanilla.NoiseGeneratorPerlinF;
     import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 import java.util.Objects;
 
@@ -33,7 +34,7 @@ public class KelpFeature extends WaterFoliageFeature {
     }
 
     @Override
-    protected void placeBlock(int x, int y, int z, IChunk chunk, NukkitRandom random) {
+    protected void placeBlock(int x, int y, int z, IChunk chunk, RandomSourceProvider random) {
 
         if(noise == null) noise = new NoiseGeneratorPerlinF(random, -7, new float[]{ 1 });
 

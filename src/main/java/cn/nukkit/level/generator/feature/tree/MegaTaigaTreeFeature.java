@@ -7,13 +7,14 @@ import cn.nukkit.level.generator.object.ObjectSmallSpruceTree;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class MegaTaigaTreeFeature extends GriddedFeature {
 
     public static final String NAME = "minecraft:mega_taiga_surface_trees_feature";
 
     @Override
-    public ObjectGenerator getGenerator(NukkitRandom random) {
+    public ObjectGenerator getGenerator(RandomSourceProvider random) {
         if(random.nextInt(5) < 2) {
             return new ObjectBigSpruceTree();
         } else return new ObjectSmallSpruceTree();

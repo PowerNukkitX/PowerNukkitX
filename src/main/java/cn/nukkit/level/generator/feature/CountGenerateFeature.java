@@ -5,13 +5,14 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public abstract class CountGenerateFeature extends GenerateFeature {
 
     public abstract int getBase();
     public abstract int getRandom();
 
-    public abstract void populate(ChunkGenerateContext context, NukkitRandom random);
+    public abstract void populate(ChunkGenerateContext context, RandomSourceProvider random);
 
     @Override
     public void apply(ChunkGenerateContext context) {

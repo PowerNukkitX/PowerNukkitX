@@ -1,6 +1,16 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.populator.Populator;
+import cn.nukkit.level.generator.populator.nether.*;
+import cn.nukkit.level.generator.populator.nether.basalt_delta.BasaltDeltaLavaPopulator;
+import cn.nukkit.level.generator.populator.nether.basalt_delta.BasaltDeltaMagmaPopulator;
+import cn.nukkit.level.generator.populator.nether.basalt_delta.BasaltDeltaPillarPopulator;
+import cn.nukkit.level.generator.populator.nether.crimson.CrimsonFungiTreePopulator;
+import cn.nukkit.level.generator.populator.nether.crimson.CrimsonGrassesPopulator;
+import cn.nukkit.level.generator.populator.nether.crimson.CrimsonWeepingVinesPopulator;
+import cn.nukkit.level.generator.populator.nether.warped.WarpedFungiTreePopulator;
+import cn.nukkit.level.generator.populator.nether.warped.WarpedGrassesPopulator;
+import cn.nukkit.level.generator.populator.nether.warped.WarpedTwistingVinesPopulator;
 import cn.nukkit.level.generator.populator.the_end.ChorusFlowerPopulator;
 import cn.nukkit.level.generator.populator.the_end.EndGatewayPopulator;
 import cn.nukkit.level.generator.populator.the_end.EndIslandPopulator;
@@ -27,6 +37,27 @@ public class PopulatorRegistry implements IRegistry<String, Populator, Class<? e
             this.register(ChorusFlowerPopulator.NAME, ChorusFlowerPopulator.class);
             this.register(EndGatewayPopulator.NAME, EndGatewayPopulator.class);
             this.register(EndIslandPopulator.NAME, EndIslandPopulator.class);
+            this.register(GlowstonePopulator.NAME, GlowstonePopulator.class);
+            this.register(BasaltDeltaLavaPopulator.NAME, BasaltDeltaLavaPopulator.class);
+            this.register(BasaltDeltaMagmaPopulator.NAME, BasaltDeltaMagmaPopulator.class);
+            this.register(BasaltDeltaPillarPopulator.NAME, BasaltDeltaPillarPopulator.class);
+            this.register(CrimsonFungiTreePopulator.NAME, CrimsonFungiTreePopulator.class);
+            this.register(CrimsonGrassesPopulator.NAME, CrimsonGrassesPopulator.class);
+            this.register(CrimsonWeepingVinesPopulator.NAME, CrimsonWeepingVinesPopulator.class);
+            this.register(WarpedFungiTreePopulator.NAME, WarpedFungiTreePopulator.class);
+            this.register(WarpedGrassesPopulator.NAME, WarpedGrassesPopulator.class);
+            this.register(WarpedTwistingVinesPopulator.NAME, WarpedTwistingVinesPopulator.class);
+            this.register(NetherGoldOrePopulator.NAME, NetherGoldOrePopulator.class);
+            this.register(NetherQuartzPopulator.NAME, NetherQuartzPopulator.class);
+            this.register(SoulsandPopulator.NAME, SoulsandPopulator.class);
+            this.register(LavaOrePopulator.NAME, LavaOrePopulator.class);
+            this.register(MagmaPopulator.NAME, MagmaPopulator.class);
+            this.register(AncientDebrisSmallPopulator.NAME, AncientDebrisSmallPopulator.class);
+            this.register(AncientDebrisLargePopulator.NAME, AncientDebrisLargePopulator.class);
+            this.register(FirePopulator.NAME, FirePopulator.class);
+            this.register(LavaPopulator.NAME, LavaPopulator.class);
+            this.register(NetherGravelPopulator.NAME, NetherGravelPopulator.class);
+            this.register(NetherBlackstonePopulator.NAME, NetherBlackstonePopulator.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

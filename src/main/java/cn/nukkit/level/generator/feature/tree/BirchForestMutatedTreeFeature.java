@@ -9,6 +9,7 @@ import cn.nukkit.level.generator.object.legacytree.LegacyTallBirchTree;
 import cn.nukkit.level.generator.object.legacytree.LegacyTreeGenerator;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class BirchForestMutatedTreeFeature extends GriddedFeature {
 
@@ -21,7 +22,7 @@ public class BirchForestMutatedTreeFeature extends GriddedFeature {
     }
 
     @Override
-    public ObjectGenerator getGenerator(NukkitRandom random) {
+    public ObjectGenerator getGenerator(RandomSourceProvider random) {
         return new ObjectLegacyObjectWrapper(new LegacyTallBirchTree());
     }
 }

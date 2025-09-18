@@ -6,6 +6,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.SeaGrassType;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 import static cn.nukkit.level.generator.feature.river.DiscGenerateFeature.STATE_STILL_WATER;
 
@@ -32,7 +33,7 @@ public class SeagrassRiverGenerateFeature extends WaterFoliageFeature {
     }
 
     @Override
-    protected void placeBlock(int x, int y, int z, IChunk chunk, NukkitRandom random) {
+    protected void placeBlock(int x, int y, int z, IChunk chunk, RandomSourceProvider random) {
         if (y > 0 && canStay(x, y, z, chunk)) {
             if (random.nextDouble() < this.getTallSeagrassProbability()) {
                 if (canStay(x, y + 1, z, chunk, true)) {

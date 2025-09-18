@@ -219,7 +219,7 @@ public class CaveGenerateFeature extends GenerateFeature {
         }
     }
 
-    protected void carveChunk(NukkitRandom random, int chunkX, int chunkZ, IChunk generatingChunkBuffer) {
+    protected void carveChunk(RandomSourceProvider random, int chunkX, int chunkZ, IChunk generatingChunkBuffer) {
         int i = random.nextInt(random.nextInt(random.nextInt(caveFrequency) + 1) + 1);
         if (evenCaveDistribution)
             i = caveFrequency;

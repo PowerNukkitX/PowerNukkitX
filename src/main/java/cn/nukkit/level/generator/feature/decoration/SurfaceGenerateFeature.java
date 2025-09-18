@@ -10,13 +10,14 @@ import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 public abstract class SurfaceGenerateFeature extends CountGenerateFeature {
 
     @Override
-    public void populate(ChunkGenerateContext context, NukkitRandom random) {
+    public void populate(ChunkGenerateContext context, RandomSourceProvider random) {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

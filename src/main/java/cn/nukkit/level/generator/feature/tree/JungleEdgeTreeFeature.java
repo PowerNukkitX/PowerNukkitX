@@ -8,6 +8,7 @@ import cn.nukkit.level.generator.object.legacytree.LegacyOakTree;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class JungleEdgeTreeFeature extends ObjectGeneratorFeature {
 
@@ -16,7 +17,7 @@ public class JungleEdgeTreeFeature extends ObjectGeneratorFeature {
     private static final ObjectLegacyObjectWrapper OAK_TREE = new ObjectLegacyObjectWrapper(new LegacyOakTree());
 
     @Override
-    public ObjectGenerator getGenerator(NukkitRandom random) {
+    public ObjectGenerator getGenerator(RandomSourceProvider random) {
         return switch (random.nextInt(5)) {
             case 0, 1 -> new ObjectJungleTree(7, 8);
             default -> OAK_TREE;

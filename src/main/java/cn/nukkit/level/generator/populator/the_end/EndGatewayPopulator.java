@@ -45,21 +45,9 @@ public class EndGatewayPopulator extends Populator {
                 int y = level.getHeightMap(x, z) + random.nextBoundedInt(7) + 3;
 
                 if (y > 1 && y < 254) {
-                    BlockManager manager = new BlockManager(level);
                     BlockManager object = new BlockManager(level);
                     objectEndGateway.generate(object, random, new Vector3(x, y, z));
-                    for(Block block : object.getBlocks()) {
-                        if(block.getChunk() != chunk) {
-                            IChunk nextChunk = block.getChunk();
-                            long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
-                            getChunkPlacementQueue(chunkHash, level).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                        }
-                        if(block.getChunk().isGenerated()) {
-                            manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                        }
-                    }
-                    writeOutsideChunkStructureData(chunk);
-                    manager.applySubChunkUpdate(manager.getBlocks());
+                    queueObject(chunk, object);
                 }
             }
         }

@@ -244,7 +244,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                         return 0;
                     }
                     case "regenerate" -> {
-                        level.syncRegenerateChunk(chunk.getX(), chunk.getZ());
+                        level.regenerateChunk(chunk.getX(), chunk.getZ());
                         return 0;
                     }
                     case "resend" -> {

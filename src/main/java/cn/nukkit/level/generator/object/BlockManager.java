@@ -71,7 +71,7 @@ public class BlockManager {
         return getBlockIfCachedOrLoaded(vector3.getFloorX(), vector3.getFloorY(), vector3.getFloorZ());
     }
 
-    public Block getBlockIfCachedOrLoaded(int x, int y, int z) {
+    public Block getBlockIfCachedOrLoaded(int x, int y, int z, BlockState fallback) {
         long hash = hashXYZ(x, y, z, 0);
         if(caches.containsKey(hash)) {
             return caches.get(hash);
@@ -81,7 +81,11 @@ public class BlockManager {
         if(level.isChunkLoaded(chunkX, chunkZ)) {
             return getBlockAt(x, y, z);
         }
-        return BlockAir.STATE.toBlock(new Position(x, y, z, level));
+        return fallback.toBlock(new Position(x, y, z, level));
+    }
+
+    public Block getBlockIfCachedOrLoaded(int x, int y, int z) {
+        return getBlockIfCachedOrLoaded(x, y, z, BlockAir.STATE);
     }
 
     public Block getBlockAt(Vector3 vector3) {

@@ -21,7 +21,6 @@ public class BiomeMapStage extends GenerateStage {
 
     @Override
     public void apply(ChunkGenerateContext context) {
-
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

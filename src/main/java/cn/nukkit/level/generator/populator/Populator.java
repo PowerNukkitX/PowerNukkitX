@@ -1,15 +1,20 @@
 package cn.nukkit.level.generator.populator;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntArrayTag;
+import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.Xoroshiro128;
 
 import java.util.HashMap;
 
 public abstract class Populator {
+
+    protected final NukkitRandom random = new NukkitRandom();
 
     protected final HashMap<Long, BlockManager> PLACEMENT_QUEUE = new HashMap<>();
 
@@ -17,7 +22,23 @@ public abstract class Populator {
 
     public abstract void apply(ChunkGenerateContext context);
 
-    public BlockManager getChunkPlacementQueue(Long chunkHash, Level level) {
+    protected final void queueObject(IChunk chunk, BlockManager object) {
+        BlockManager manager = new BlockManager(chunk.getLevel());
+        for(Block block : object.getBlocks()) {
+            if(block.getChunk() != chunk) {
+                IChunk nextChunk = block.getChunk();
+                long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
+                getChunkPlacementQueue(chunkHash, chunk.getLevel()).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
+            }
+            if(block.getChunk().isGenerated()) {
+                manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
+            }
+        }
+        writeOutsideChunkStructureData(chunk);
+        manager.applySubChunkUpdate(manager.getBlocks());
+    }
+
+    BlockManager getChunkPlacementQueue(Long chunkHash, Level level) {
         if(!PLACEMENT_QUEUE.containsKey(chunkHash)) PLACEMENT_QUEUE.put(chunkHash, new BlockManager(level));
         return PLACEMENT_QUEUE.get(chunkHash);
     }
@@ -37,7 +58,6 @@ public abstract class Populator {
             temp.merge(getChunkPlacementQueue(chunkIdx, current.getLevel()));
             outsideChunkStructureData.put(targetChunkKey, temp.toTag());
         }
-
     }
 
 }

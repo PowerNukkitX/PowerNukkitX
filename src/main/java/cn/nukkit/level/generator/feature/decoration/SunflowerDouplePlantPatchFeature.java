@@ -9,6 +9,7 @@ import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class SunflowerDouplePlantPatchFeature extends CountGenerateFeature {
 
@@ -18,7 +19,7 @@ public class SunflowerDouplePlantPatchFeature extends CountGenerateFeature {
     public static final String NAME = "minecraft:sunflower_double_plant_patch_feature";
 
     @Override
-    public void populate(ChunkGenerateContext context, NukkitRandom random) {
+    public void populate(ChunkGenerateContext context, RandomSourceProvider random) {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
@@ -46,19 +47,7 @@ public class SunflowerDouplePlantPatchFeature extends CountGenerateFeature {
                 }
             }
         }
-        BlockManager manager = new BlockManager(level);
-        for(Block block : object.getBlocks()) {
-            if(block.getChunk() != chunk) {
-                IChunk nextChunk = block.getChunk();
-                long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
-                getChunkPlacementQueue(chunkHash, level).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-            }
-            if(block.getChunk().isGenerated()) {
-                manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-            }
-        }
-        writeOutsideChunkStructureData(chunk);
-        manager.applySubChunkUpdate();
+        queueObject(chunk, object);
 
     }
     @Override

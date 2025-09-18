@@ -28,9 +28,7 @@ public abstract class GriddedFeature extends ObjectGeneratorFeature {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        long chunkHash = Level.chunkHash(chunkX, chunkZ);
         Level level = chunk.getLevel();
-        BlockManager manager = new BlockManager(level);
         BlockManager object = new BlockManager(level);
         for (int x = 0; x < getSplit(); x++) {
             for (int z = 0; z < getSplit(); z++) {
@@ -46,18 +44,7 @@ public abstract class GriddedFeature extends ObjectGeneratorFeature {
                 }
             }
         }
-        for(Block block : object.getBlocks()) {
-            if(block.getChunk() != chunk) {
-                IChunk nextChunk = block.getChunk();
-                long targetHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
-                getChunkPlacementQueue(targetHash, level).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-            }
-            if(block.getChunk().isGenerated()) {
-                manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-            }
-        }
-        writeOutsideChunkStructureData(chunk);
-        manager.applySubChunkUpdate();
+        queueObject(chunk, object);
     }
 
     @Override

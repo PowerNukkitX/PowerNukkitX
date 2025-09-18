@@ -11,13 +11,14 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class JungleTreeFeature extends GriddedFeature {
 
     public static final String NAME = "minecraft:jungle_surface_trees_feature";
 
     @Override
-    public ObjectGenerator getGenerator(NukkitRandom random) {
+    public ObjectGenerator getGenerator(RandomSourceProvider random) {
         return switch (random.nextInt(9)) {
             case 0, 1, 3, 4, 5 -> new ObjectJungleBigTree(10, 20,
                     BlockJungleLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y),

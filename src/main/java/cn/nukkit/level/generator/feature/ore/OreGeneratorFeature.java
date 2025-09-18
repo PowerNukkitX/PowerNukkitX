@@ -2,6 +2,7 @@ package cn.nukkit.level.generator.feature.ore;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDeepslate;
+import cn.nukkit.block.BlockNetherrack;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockStone;
 import cn.nukkit.level.Level;
@@ -13,11 +14,13 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public abstract class OreGeneratorFeature extends GenerateFeature {
 
     protected static final BlockState STONE = BlockStone.PROPERTIES.getDefaultState();
     protected static final BlockState DEEPSLATE = BlockDeepslate.PROPERTIES.getDefaultState();
+    protected static final BlockState NETHERRACK = BlockNetherrack.PROPERTIES.getDefaultState();
 
     public abstract BlockState getState(BlockState original);
     public abstract int getClusterCount();
@@ -37,9 +40,8 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
         return false;
     }
 
-
     public boolean canBeReplaced(BlockState state) {
-        return state == STONE || state == DEEPSLATE;
+        return state == STONE || state == DEEPSLATE || state == NETHERRACK;
     }
 
     @Override
@@ -48,7 +50,7 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        this.random.setSeed(Level.chunkHash(chunkX, chunkZ) * level.getSeed());
+        this.random.setSeed(Level.chunkHash(chunkX, chunkZ) ^ level.getSeed() + name().hashCode());
         int sx = chunkX << 4;
         int sz = chunkZ << 4;
         BlockManager manager = new BlockManager(level);
@@ -99,7 +101,7 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
         manager.applySubChunkUpdate(manager.getBlocks());
     }
 
-    protected void spawn(BlockManager level, NukkitRandom rand, int x, int y, int z) {
+    protected void spawn(BlockManager level, RandomSourceProvider rand, int x, int y, int z) {
 
         float piScaled = rand.nextFloat() * (float) Math.PI;
         double scaleMaxX = (float) (x + 8) + MathHelper.sin(piScaled) * (float) getClusterSize() / 8.0F;

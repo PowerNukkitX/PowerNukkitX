@@ -7,6 +7,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 import static cn.nukkit.level.generator.feature.river.DiscGenerateFeature.STATE_STILL_WATER;
 
@@ -15,7 +16,7 @@ public abstract class WaterFoliageFeature extends CountGenerateFeature {
     protected abstract boolean canStay(int x, int y, int z, IChunk chunk);
 
     @Override
-    public void populate(ChunkGenerateContext context, NukkitRandom random) {
+    public void populate(ChunkGenerateContext context, RandomSourceProvider random) {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
@@ -32,12 +33,11 @@ public abstract class WaterFoliageFeature extends CountGenerateFeature {
             }
             int y = (height - depth) + 1;
             if (y > 0 && canStay(randomX, y, randomZ, chunk)) {
-                random.setSeed(random.getSeed());
                 placeBlock(randomX, y, randomZ, chunk, random);
             }
         }
     }
 
-    protected abstract void placeBlock(int x, int y, int z, IChunk chunk, NukkitRandom random);
+    protected abstract void placeBlock(int x, int y, int z, IChunk chunk, RandomSourceProvider random);
 
 }

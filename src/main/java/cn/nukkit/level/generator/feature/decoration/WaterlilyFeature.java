@@ -7,6 +7,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
@@ -33,7 +34,7 @@ public class WaterlilyFeature extends CountGenerateFeature {
     }
 
     @Override
-    public void populate(ChunkGenerateContext context, NukkitRandom random) {
+    public void populate(ChunkGenerateContext context, RandomSourceProvider random) {
         IChunk chunk = context.getChunk();
         int x = random.nextInt(15);
         int z = random.nextInt(15);

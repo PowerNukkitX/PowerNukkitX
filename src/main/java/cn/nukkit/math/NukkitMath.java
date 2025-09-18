@@ -1,6 +1,6 @@
 package cn.nukkit.math;
 
-import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 import java.math.BigInteger;
 
@@ -42,19 +42,19 @@ public class NukkitMath {
         return n > i ? i + 1 : i;
     }
 
-    public static int randomRange(NukkitRandom random) {
+    public static int randomRange(RandomSourceProvider random) {
         return randomRange(random, 0);
     }
 
-    public static int randomRange(NukkitRandom random, int start) {
+    public static int randomRange(RandomSourceProvider random, int start) {
         return randomRange(random, 0, 0x7fffffff);
     }
 
-    public static int randomRange(NukkitRandom random, int start, int end) {
+    public static int randomRange(RandomSourceProvider random, int start, int end) {
         return start + (random.nextInt() % (end + 1 - start));
     }
 
-    public static int randomRangeTriangle(NukkitRandom random, int start, int end) {
+    public static int randomRangeTriangle(RandomSourceProvider random, int start, int end) {
         int heightDiff = Math.abs(end - start);
         int heightDiffHalf = heightDiff / 2;
         int heightDiffHalf2 = heightDiff - heightDiffHalf;

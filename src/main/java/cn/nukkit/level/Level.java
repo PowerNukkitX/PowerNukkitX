@@ -4238,7 +4238,7 @@ public class Level implements Metadatable {
                         Position checkLoc = Position.fromObject(spawn, this).add(dx, dy, dz);
                         count++;
                         if(count > 10000) {
-                            log.warn("cannot find a safe spawn around " + spawn.asBlockVector3() + ". Too many attempts!");
+                            log.debug("cannot find a safe spawn around " + spawn.asBlockVector3() + ". Too many attempts!");
 
                             if(checkHighest)
                                 return getSafeSpawn(spawn.setY(getHighestBlockAt((int) spawn.getX(), (int) spawn.getZ())), horizontalMaxOffset, allowWaterUnder, false);
@@ -4251,7 +4251,7 @@ public class Level implements Metadatable {
             }
         }
 
-        log.warn("cannot find a safe spawn around " + spawn.asBlockVector3() + "!");
+        log.debug("cannot find a safe spawn around " + spawn.asBlockVector3() + "!");
         return Position.fromObject(spawn, this);
     }
 

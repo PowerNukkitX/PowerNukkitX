@@ -7,13 +7,14 @@ import cn.nukkit.level.generator.object.ObjectPaleOakTree;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class PaleGardenTreeFeature extends ObjectGeneratorFeature {
 
     public static final String NAME = "minecraft:random_pale_oak_tree_feature";
 
     @Override
-    public ObjectGenerator getGenerator(NukkitRandom random) {
+    public ObjectGenerator getGenerator(RandomSourceProvider random) {
         ObjectPaleOakTree object = new ObjectPaleOakTree();
         object.tryCreakingHeart = random.nextInt(4) == 0;
         return object;

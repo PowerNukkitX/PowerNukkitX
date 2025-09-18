@@ -4,6 +4,7 @@ import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectSmallSpruceTree;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class IceSurfaceTreeFeature extends ObjectGeneratorFeature {
 
@@ -15,7 +16,7 @@ public class IceSurfaceTreeFeature extends ObjectGeneratorFeature {
     }
 
     @Override
-    public ObjectGenerator getGenerator(NukkitRandom random) {
+    public ObjectGenerator getGenerator(RandomSourceProvider random) {
         return new ObjectSmallSpruceTree();
     }
 

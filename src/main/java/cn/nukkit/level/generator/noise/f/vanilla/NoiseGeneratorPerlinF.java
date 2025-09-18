@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.noise.f.vanilla;
 
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class NoiseGeneratorPerlinF {
 
@@ -13,7 +14,7 @@ public class NoiseGeneratorPerlinF {
     private final float lowestFreqInputFactor;
     private final float maxValue;
 
-    public NoiseGeneratorPerlinF(NukkitRandom random, int firstOctave, float[] amplitudes) {
+    public NoiseGeneratorPerlinF(RandomSourceProvider random, int firstOctave, float[] amplitudes) {
         this.firstOctave = firstOctave;
         this.amplitudes = amplitudes;
         this.levels = amplitudes.length;

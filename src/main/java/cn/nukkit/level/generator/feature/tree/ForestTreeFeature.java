@@ -6,13 +6,14 @@ import cn.nukkit.level.generator.object.legacytree.LegacyOakTree;
 import cn.nukkit.level.generator.object.legacytree.LegacyTreeGenerator;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class ForestTreeFeature extends LegacyTreeGeneratorFeature {
 
     public static final String NAME = "minecraft:forest_surface_trees_feature";
 
     @Override
-    public LegacyTreeGenerator getGenerator(NukkitRandom random) {
+    public LegacyTreeGenerator getGenerator(RandomSourceProvider random) {
         if(random.nextInt(10) < 6) {
             return new LegacyOakTree();
         } else return new LegacyBirchTree();

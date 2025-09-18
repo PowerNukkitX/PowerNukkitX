@@ -27,6 +27,7 @@ public class NukkitRandom implements RandomSourceProvider {
                 0, 0.33333);
     }
 
+    @Override
     public NukkitRandom setSeed(long seed) {
         this.seeds = seed;
         provider = RandomSource.MT.create(seeds);

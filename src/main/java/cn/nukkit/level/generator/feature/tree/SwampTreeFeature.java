@@ -7,13 +7,14 @@ import cn.nukkit.level.generator.object.ObjectSwampOakTree;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class SwampTreeFeature extends ObjectGeneratorFeature {
 
     public static final String NAME = "minecraft:swamp_oak_tree_feature";
 
     @Override
-    public ObjectGenerator getGenerator(NukkitRandom random) {
+    public ObjectGenerator getGenerator(RandomSourceProvider random) {
         return new ObjectSwampOakTree(7, 8);
     }
 

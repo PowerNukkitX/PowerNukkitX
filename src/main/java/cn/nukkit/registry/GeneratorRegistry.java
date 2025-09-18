@@ -2,6 +2,7 @@ package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.Flat;
 import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.generator.Nether;
 import cn.nukkit.level.generator.Normal;
 import cn.nukkit.level.generator.TheEnd;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -20,6 +21,7 @@ public class GeneratorRegistry implements IRegistry<String, Class<? extends Gene
         try {
             register("flat", Flat.class);
             register("normal", Normal.class);
+            register("nether", Nether.class);
             register("the_end", TheEnd.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);

@@ -7,6 +7,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class EmeraldOreExtremeHillsSurfaceGenerationFeature extends CountGenerateFeature {
 
@@ -23,7 +24,7 @@ public class EmeraldOreExtremeHillsSurfaceGenerationFeature extends CountGenerat
     }
 
     @Override
-    public void populate(ChunkGenerateContext context, NukkitRandom random) {
+    public void populate(ChunkGenerateContext context, RandomSourceProvider random) {
         IChunk chunk = context.getChunk();
         int x = random.nextInt(15);
         int z = random.nextInt(15);

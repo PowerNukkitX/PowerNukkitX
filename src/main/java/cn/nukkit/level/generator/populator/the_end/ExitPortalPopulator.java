@@ -21,22 +21,11 @@ public class ExitPortalPopulator extends Populator {
         Level level = chunk.getLevel();
 
         if(chunkX == 0 && chunkZ == 0) {
-            BlockManager manager = new BlockManager(level);
             BlockManager object = new BlockManager(level);
             ObjectExitPortal exitPortal = new ObjectExitPortal();
             exitPortal.generate(object, null, new Vector3(0, chunk.getHeightMap(0, 0), 0));
-            for(Block block : object.getBlocks()) {
-                if(block.getChunk() != chunk) {
-                    IChunk nextChunk = block.getChunk();
-                    long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
-                    getChunkPlacementQueue(chunkHash, level).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                }
-                if(block.getChunk().isGenerated()) {
-                    manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                }
-            }
-            writeOutsideChunkStructureData(chunk);
-            manager.applySubChunkUpdate(manager.getBlocks());
+            queueObject(chunk, object);
+
         }
     }
 

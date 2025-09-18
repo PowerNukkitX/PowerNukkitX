@@ -26,7 +26,6 @@ public class AmethystGeodeFeature extends GenerateFeature {
         IChunk chunk = context.getChunk();
         Level level = chunk.getLevel();
         this.random.setSeed(level.getSeed() ^ ((chunk.getX() << 8) ^ chunk.getZ()));
-        BlockManager manager = new BlockManager(level);
         BlockManager object = new BlockManager(level);
         if (random.nextBoundedInt(100) > 4) {
             return;
@@ -93,18 +92,7 @@ public class AmethystGeodeFeature extends GenerateFeature {
                 }
             }
         }
-        for(Block block : object.getBlocks()) {
-            if(block.getChunk() != chunk) {
-                IChunk nextChunk = block.getChunk();
-                long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
-                getChunkPlacementQueue(chunkHash, level).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-            }
-            if(block.getChunk().isGenerated()) {
-                manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-            }
-        }
-        writeOutsideChunkStructureData(chunk);
-        manager.applySubChunkUpdate(manager.getBlocks());
+        queueObject(chunk, object);
     }
 
     private boolean isAmethystShell(BlockManager level, int x, int y, int z) {

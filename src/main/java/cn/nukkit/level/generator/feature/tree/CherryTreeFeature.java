@@ -7,13 +7,14 @@ import cn.nukkit.level.generator.object.ObjectSavannaTree;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class CherryTreeFeature extends ObjectGeneratorFeature {
 
     public static final String NAME = "minecraft:cherry_grove_after_surface_cherry_tree_feature_rules";
 
     @Override
-    public ObjectGenerator getGenerator(NukkitRandom random) {
+    public ObjectGenerator getGenerator(RandomSourceProvider random) {
         return new ObjectCherryTree();
     }
 
