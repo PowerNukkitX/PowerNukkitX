@@ -4,6 +4,7 @@ import cn.nukkit.Nukkit;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.custom.CustomEntity;
+import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.mob.*;
@@ -20,7 +21,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.sunlan.fastreflection.FastConstructor;
 import me.sunlan.fastreflection.FastMemberLoader;
@@ -30,6 +30,8 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+
 
 @Slf4j
 public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.EntityDefinition, Class<? extends Entity>, Class<? extends Entity>> {
@@ -266,8 +269,6 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     }
 
     /**
-     * 获得全部实体的网络id
-     * <p>
      * Get the network id of all entities
      *
      * @return the known entity ids
@@ -281,8 +282,6 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     }
 
     /**
-     * 获取全部已经注册的实体，包括自定义实体
-     * <p>
      * Get all registered entities, including custom entities
      *
      * @return the known entities
@@ -419,39 +418,95 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     /**
      * register custom entity
      */
-    public void registerCustomEntity(Plugin plugin, CustomEntityDefinition key, Class<? extends Entity> value) throws RegisterException {
-        if (CustomEntity.class.isAssignableFrom(value)) {
-            if (CLASS.putIfAbsent(key.id, value) == null) {
-                try {
-                    FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
-                    FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false));
-                } catch (NoSuchMethodException e) {
-                    throw new RuntimeException(e);
-                }
-                int rid = RUNTIME_ID.getAndIncrement();
-                ID2RID.put(key.id, rid);
-                RID2ID.put(rid, key.id);
-                EntityDefinition entityDefinition = new EntityDefinition(key.id, key.bid, rid, key.hasSpawnegg, key.summonable);
-                DEFINITIONS.put(key.id, entityDefinition);
-                CUSTOM_ENTITY_DEFINITIONS.add(entityDefinition);
-
-                // Register entity properties if declared
-                try {
-                    EntityProperty[] props = (EntityProperty[]) value.getField("PROPERTIES").get(null);
-                    for (EntityProperty prop : props) {
-                        EntityProperty.register(key.id, prop);
-                    }
-                } catch (NoSuchFieldException ignored) {
-                    // Custom entity doesn't declare PROPERTIES
-                } catch (IllegalAccessException e) {
-                    log.error("Failed to access PROPERTIES for custom entity: " + key.id, e);
-                }
-            } else {
-                throw new RegisterException("This Entity has already been registered with the identifier: " + key.id);
+    public void registerCustomEntity(Plugin plugin, Class<? extends Entity> value) throws RegisterException {
+        try {
+            if (!CustomEntity.class.isAssignableFrom(value)) {
+                throw new RegisterException("This class does not implement the CustomEntity interface and cannot be registered as a custom entity!");
             }
-        } else {
-            throw new RegisterException("This class does not implement the CustomEntity interface and cannot be registered as a custom entity!");
+
+            FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
+            CustomEntityDefinition def = resolveDefinitionFromClass(value);
+            String id = def.id();
+
+            if (CLASS.putIfAbsent(id, value) != null) {
+                throw new RegisterException("This entity has already been registered with the identifier: " + id);
+            }
+
+            FastConstructor<? extends Entity> runtimeCtor = FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false);
+            FAST_NEW.put(id, runtimeCtor);
+
+            int rid = RUNTIME_ID.getAndIncrement();
+            ID2RID.put(id, rid);
+            RID2ID.put(rid, id);
+            EntityDefinition entityDefinition = new EntityDefinition(id, def.eid(), rid, def.hasSpawnegg(), def.isSummonable());
+            DEFINITIONS.put(id, entityDefinition);
+            CUSTOM_ENTITY_DEFINITIONS.add(entityDefinition);
+
+            try {
+                EntityProperty[] props = (EntityProperty[]) value.getField("PROPERTIES").get(null);
+                for (EntityProperty prop : props) {
+                    EntityProperty.register(id, prop);
+                }
+            } catch (NoSuchFieldException ignored) {
+            } catch (IllegalAccessException e) {
+                log.error("Failed to access PROPERTIES for custom entity: " + id, e);
+            }
+
+            if (def.hasSpawnegg()) {
+                String eggId = id + "_spawn_egg";
+                Registries.ITEM.registerSpawnEgg(eggId);
+            }
+        } catch (NoSuchMethodException e) {
+            throw new RegisterException(e);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    private static final String[] PREFERRED_METHODS = { "definition", "getDefinition" };
+    private CustomEntityDefinition resolveDefinitionFromClass(Class<?> clazz) throws RegisterException {
+        try {
+            var f = clazz.getField("DEF");
+            if (Modifier.isStatic(f.getModifiers())
+                    && CustomEntityDefinition.class.isAssignableFrom(f.getType())) {
+                var def = (CustomEntityDefinition) f.get(null);
+                if (def != null) return def;
+            }
+        } catch (NoSuchFieldException ignored) {
+        } catch (IllegalAccessException e) {
+            log.warn("Found static field DEF on {} but couldn't read it: {}", clazz.getName(), e.toString());
+        }
+
+        for (String name : PREFERRED_METHODS) {
+            try {
+                var m = clazz.getMethod(name);
+                if (Modifier.isStatic(m.getModifiers())
+                        && m.getParameterCount() == 0
+                        && CustomEntityDefinition.class.isAssignableFrom(m.getReturnType())) {
+                    return (CustomEntityDefinition) m.invoke(null);
+                }
+            } catch (NoSuchMethodException ignored) {
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RegisterException("Failed to call static " + name + "() on " + clazz.getName(), e);
+            }
+        }
+
+        for (var m : clazz.getMethods()) {
+            if (Modifier.isStatic(m.getModifiers())
+                    && m.getParameterCount() == 0
+                    && CustomEntityDefinition.class.isAssignableFrom(m.getReturnType())) {
+                try {
+                    log.warn("Using non-standard static method {}() on {} for CustomEntityDefinition (prefer DEF field or definition()/getDefinition()).",
+                            m.getName(), clazz.getName());
+                    return (CustomEntityDefinition) m.invoke(null);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RegisterException("Failed to call static " + m.getName() + "() on " + clazz.getName(), e);
+                }
+            }
+        }
+
+        throw new RegisterException("Could not resolve CustomEntityDefinition for " + clazz.getName()
+                + ". Provide one of: static DEF field; static definition()/getDefinition() method; or a no-arg ctor + instance getDefinition().");
     }
 
     private void registerInternal(EntityDefinition key, Class<? extends Entity> value) {
@@ -480,21 +535,6 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     }
 
     private static AtomicInteger RUNTIME_ID = new AtomicInteger(10000);
-
-    @Getter
-    public static final class CustomEntityDefinition {
-        private final String id;
-        private final String bid;
-        private final boolean hasSpawnegg;
-        private final boolean summonable;
-
-        public CustomEntityDefinition(String id, String bid, boolean hasSpawnegg, boolean summonable) {
-            this.id = id;
-            this.bid = bid;
-            this.hasSpawnegg = hasSpawnegg;
-            this.summonable = summonable;
-        }
-    }
 
     public record EntityDefinition(String id, String bid, int rid, boolean hasSpawnegg, boolean summonable) {
         public CompoundTag toNBT() {

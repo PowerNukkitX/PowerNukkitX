@@ -10,13 +10,12 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 /**
- * 解析为{@code List<Entity>}值
- * <p>
- * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#TARGET TARGET}如果没有手动指定{@link IParamNode},则会默认使用这个解析
+ * Parsed as {@code List<Entity>} value <p>
+ * All command parameter types are {@link cn.nukkit.command.data.CommandParamType#TARGET TARGET} If not manually specified {@link IParamNode}, This analysis will be used by default
  */
 public class EntitiesNode extends TargetNode<Entity> {
 
-    //todo 支持uuid 或者 xuid
+    // TODO: Support UUID or xuid
     @Override
     public void fill(String arg) {
         List<Entity> entities;

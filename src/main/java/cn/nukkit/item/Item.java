@@ -195,6 +195,11 @@ public abstract class Item implements Cloneable, ItemID {
     public static Item get(String id, int meta, int count, byte[] tags, boolean autoAssignStackNetworkId) {
         id = id.contains(":") ? id : "minecraft:" + id;
         Item item = Registries.ITEM.get(id, meta, count, tags);
+
+        if (item instanceof ItemCustomEntitySpawnEgg egg) {
+            egg.resolveSpawnEgg(id);
+        }
+
         if (item == null) {
             BlockState itemBlockState = getItemBlockState(id, meta);
             if (itemBlockState == null || itemBlockState == BlockAir.STATE) {
@@ -1406,12 +1411,13 @@ public abstract class Item implements Cloneable, ItemID {
 
     public final int getRuntimeId() {
         if (this.isNull()) return getAirRuntimeId();
+
         int i = Registries.ITEM_RUNTIMEID.getInt(this.getId());
         if (i == Integer.MAX_VALUE) {
             i = Registries.ITEM_RUNTIMEID.getInt(this.getBlockId());
         }
         if (i == Integer.MAX_VALUE) {
-            log.warn("Can't find runtimeId for item {}, will return unknown itemblock!", getId());
+            log.warn("Can't find runtimeId for item {}, will return unknown itemblock!", this.getId());
             return getUnknownRuntimeId();// Can't find runtimeId
         }
         return i;
