@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.noise.d.vanilla;
+package cn.nukkit.level.generator.noise.d;
 
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.utils.random.NukkitRandom;

@@ -61,4 +61,7 @@ public interface RandomSourceProvider {
      * Sets a new seed
      */
     RandomSourceProvider setSeed(long seed);
+
+    long getSeed();
+
 }

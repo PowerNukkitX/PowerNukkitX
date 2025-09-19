@@ -7,8 +7,7 @@ import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
-import cn.nukkit.level.generator.noise.f.SimplexF;
-import cn.nukkit.level.generator.noise.f.vanilla.NoiseGeneratorPerlinF;
+import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.random.NukkitRandom;
 
@@ -30,11 +29,11 @@ public class NetherTerrainStage extends GenerateStage {
     private final static BlockState CRIMSON_NYLIUM = BlockCrimsonNylium.PROPERTIES.getDefaultState();
     private final static BlockState LAVA = BlockLava.PROPERTIES.getDefaultState();
 
-    private NoiseGeneratorPerlinF surfaceNoise;
-    private NoiseGeneratorPerlinF patchNoise;
-    private NoiseGeneratorPerlinF soulsandNoise;
-    private NoiseGeneratorPerlinF netherStateNoise;
-    private NoiseGeneratorPerlinF netherwartNoise;
+    private SimplexNoise surfaceNoise;
+    private SimplexNoise patchNoise;
+    private SimplexNoise soulsandNoise;
+    private SimplexNoise netherStateNoise;
+    private SimplexNoise netherwartNoise;
 
     private final ThreadLocal<NukkitRandom> random = ThreadLocal.withInitial(NukkitRandom::new);
 
@@ -48,11 +47,11 @@ public class NetherTerrainStage extends GenerateStage {
         Level level = chunk.getLevel();
         NukkitRandom random = this.random.get();
         random.setSeed(level.getSeed());
-        if(surfaceNoise == null) surfaceNoise = new NoiseGeneratorPerlinF(random.identical(), -6, new float[]{1f, 1f, 1f});
-        if(patchNoise == null) patchNoise = new NoiseGeneratorPerlinF(random.identical(), -5, new float[]{ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.013333333333333334f });
-        if(soulsandNoise == null) soulsandNoise = new NoiseGeneratorPerlinF(random.identical(), -8, new float[]{  1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.013333333333333334f });
-        if(netherStateNoise == null) netherStateNoise = new NoiseGeneratorPerlinF(random.identical(), -4, new float[]{ 1.0f });
-        if(netherwartNoise == null) netherwartNoise = new NoiseGeneratorPerlinF(random.identical(), -3, new float[]{ 1.0f, 0.0f, 0.0f, 0.9f });
+        if(surfaceNoise == null) surfaceNoise = new SimplexNoise(random.identical(), -6, new float[]{1f, 1f, 1f});
+        if(patchNoise == null) patchNoise = new SimplexNoise(random.identical(), -5, new float[]{ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.013333333333333334f });
+        if(soulsandNoise == null) soulsandNoise = new SimplexNoise(random.identical(), -8, new float[]{  1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.013333333333333334f });
+        if(netherStateNoise == null) netherStateNoise = new SimplexNoise(random.identical(), -4, new float[]{ 1.0f });
+        if(netherwartNoise == null) netherwartNoise = new SimplexNoise(random.identical(), -3, new float[]{ 1.0f, 0.0f, 0.0f, 0.9f });
 
 
         try {

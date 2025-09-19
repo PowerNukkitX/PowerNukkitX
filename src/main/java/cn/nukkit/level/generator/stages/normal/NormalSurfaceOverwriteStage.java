@@ -5,7 +5,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
-import cn.nukkit.level.generator.noise.f.vanilla.NormalNoise;
+import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import static cn.nukkit.level.biome.BiomeID.*;

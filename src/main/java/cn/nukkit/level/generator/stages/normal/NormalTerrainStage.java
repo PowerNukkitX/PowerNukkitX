@@ -11,12 +11,10 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
-import cn.nukkit.level.generator.noise.f.vanilla.NoiseGeneratorPerlinF;
+import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.level.generator.noise.spline.JaggednessSpline;
 import cn.nukkit.level.generator.noise.spline.OffsetSpline;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.HashMap;
@@ -29,8 +27,8 @@ public class NormalTerrainStage extends GenerateStage {
     public static final int SEA_LEVEL = 63;
 
     private OverworldBiomePicker picker;
-    private NoiseGeneratorPerlinF surfaceNoise;
-    private NoiseGeneratorPerlinF jagged;
+    private SimplexNoise surfaceNoise;
+    private SimplexNoise jagged;
 
 
     private final ThreadLocal<Map<String, Double>> depthSplineMap = ThreadLocal.withInitial(HashMap::new);
@@ -48,8 +46,8 @@ public class NormalTerrainStage extends GenerateStage {
         NukkitRandom random = this.random.get();
         random.setSeed(level.getSeed());
         if(picker == null) picker = (OverworldBiomePicker) level.getBiomePicker();
-        if(surfaceNoise == null) surfaceNoise = new NoiseGeneratorPerlinF(random.identical(), -6, new float[]{1f, 1f, 1f});
-        if(jagged == null) jagged = new NoiseGeneratorPerlinF(random.identical(), -16, new float[]{1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f});
+        if(surfaceNoise == null) surfaceNoise = new SimplexNoise(random.identical(), -6, new float[]{1f, 1f, 1f});
+        if(jagged == null) jagged = new SimplexNoise(random.identical(), -16, new float[]{1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f});
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
 

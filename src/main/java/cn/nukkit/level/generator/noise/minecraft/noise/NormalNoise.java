@@ -1,12 +1,13 @@
-package cn.nukkit.level.generator.noise.f.vanilla;
+package cn.nukkit.level.generator.noise.minecraft.noise;
 
+import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.utils.random.NukkitRandom;
 
 public class NormalNoise {
 
     private final float valueFactor;
-    private final NoiseGeneratorPerlinF first;
-    private final NoiseGeneratorPerlinF second;
+    private final SimplexNoise first;
+    private final SimplexNoise second;
     private final double maxValue;
 
     private final int firstOctave;
@@ -15,8 +16,8 @@ public class NormalNoise {
     public NormalNoise(NukkitRandom random, int firstOctave, float[] amplitudes) {
         this.firstOctave = firstOctave;
         this.amplitudes = amplitudes;
-        this.first = new NoiseGeneratorPerlinF(random, this.firstOctave, this.amplitudes);
-        this.second = new NoiseGeneratorPerlinF(random, this.firstOctave, this.amplitudes);
+        this.first = new SimplexNoise(random, this.firstOctave, this.amplitudes);
+        this.second = new SimplexNoise(random, this.firstOctave, this.amplitudes);
         int min = Integer.MAX_VALUE;
         int max = Integer.MIN_VALUE;
 

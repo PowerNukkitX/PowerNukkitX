@@ -1,12 +1,11 @@
 package cn.nukkit.level.generator.biome;
 
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
-import cn.nukkit.level.generator.noise.f.vanilla.NoiseGeneratorPerlinF;
+import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.utils.random.NukkitRandom;
 import lombok.Getter;
 
 import static cn.nukkit.level.biome.BiomeID.*;
-import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 @Getter
 public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
@@ -21,21 +20,21 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
 
     public static final float XZSCALE = 0.25f;
 
-    private final NoiseGeneratorPerlinF continentalNoise;
-    private final NoiseGeneratorPerlinF temperatureNoise;
-    private final NoiseGeneratorPerlinF humidityNoise;
-    private final NoiseGeneratorPerlinF erosionNoise;
-    private final NoiseGeneratorPerlinF weirdnessNoise;
-    private final NoiseGeneratorPerlinF offsetNoise;
+    private final SimplexNoise continentalNoise;
+    private final SimplexNoise temperatureNoise;
+    private final SimplexNoise humidityNoise;
+    private final SimplexNoise erosionNoise;
+    private final SimplexNoise weirdnessNoise;
+    private final SimplexNoise offsetNoise;
 
     public OverworldBiomePicker(NukkitRandom random) {
         super(random);
-        continentalNoise = new NoiseGeneratorPerlinF(random.fork(), -9, new float[]{ 1, 1, 2, 2, 2, 1, 1, 1, 1 });
-        temperatureNoise = new NoiseGeneratorPerlinF(random.fork(), -10 , new float[]{ 1.5f, 0, 1, 0, 0, 0 });
-        humidityNoise = new NoiseGeneratorPerlinF(random.fork(), -8 , new float[]{ 1, 1, 0, 0, 0, 0 });
-        erosionNoise = new NoiseGeneratorPerlinF(random.fork(), -9, new float[]{ 1, 1, 0, 1, 1 });
-        weirdnessNoise = new NoiseGeneratorPerlinF(random.fork(), -7, new float[]{ 1, 2, 1, 0, 0, 0});
-        offsetNoise = new NoiseGeneratorPerlinF(random.fork(), -3, new float[]{ 1, 1, 1, 0 });
+        continentalNoise = new SimplexNoise(random.fork(), -9, new float[]{ 1, 1, 2, 2, 2, 1, 1, 1, 1 });
+        temperatureNoise = new SimplexNoise(random.fork(), -10 , new float[]{ 1.5f, 0, 1, 0, 0, 0 });
+        humidityNoise = new SimplexNoise(random.fork(), -8 , new float[]{ 1, 1, 0, 0, 0, 0 });
+        erosionNoise = new SimplexNoise(random.fork(), -9, new float[]{ 1, 1, 0, 1, 1 });
+        weirdnessNoise = new SimplexNoise(random.fork(), -7, new float[]{ 1, 2, 1, 0, 0, 0});
+        offsetNoise = new SimplexNoise(random.fork(), -3, new float[]{ 1, 1, 1, 0 });
     }
 
     @Override

@@ -1,13 +1,12 @@
 package cn.nukkit.level.generator.populator.the_end;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockEndStone;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
-import cn.nukkit.level.generator.noise.d.vanilla.NoiseGeneratorSimplexD;
+import cn.nukkit.level.generator.noise.d.NoiseGeneratorSimplexD;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.legacytree.LegacyChorusTree;
 import cn.nukkit.level.generator.populator.Populator;

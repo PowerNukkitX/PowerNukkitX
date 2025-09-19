@@ -2,6 +2,8 @@ package cn.nukkit.utils.random;
 
 public class Xoroshiro128 implements RandomSourceProvider {
 
+    private long seed;
+
     private long s0;
     private long s1;
 
@@ -20,7 +22,7 @@ public class Xoroshiro128 implements RandomSourceProvider {
 
     @Override
     public int nextInt() {
-        return (int) nextLong();
+        return (int) nextLong() & Integer.MAX_VALUE;
     }
 
     @Override
@@ -42,10 +44,10 @@ public class Xoroshiro128 implements RandomSourceProvider {
     public long nextLong() {
         long i = this.s0;
         long j = this.s1;
-        long k = Long.rotateLeft(i + j, 17) + i;
+        long k = rotateLeft(i + j, 17) + i;
         j ^= i;
-        this.s0 = Long.rotateLeft(i, 49) ^ j ^ j << 21;
-        this.s1 = Long.rotateLeft(j, 28);
+        this.s0 = rotateLeft(i, 49) ^ j ^ j << 21;
+        this.s1 = rotateLeft(j, 28);
         return k & Long.MAX_VALUE;
     }
 
@@ -74,10 +76,16 @@ public class Xoroshiro128 implements RandomSourceProvider {
 
     @Override
     public Xoroshiro128 setSeed(long seed) {
+        this.seed = seed;
         long[] st = splitMix64Seed(seed);
         this.s0 = st[0];
         this.s1 = st[1];
         return this;
+    }
+
+    @Override
+    public long getSeed() {
+        return this.seed;
     }
 
     private static long rotateLeft(long x, int k) {

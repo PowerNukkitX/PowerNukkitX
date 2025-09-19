@@ -5,8 +5,7 @@ import cn.nukkit.block.BlockKelp;
 import cn.nukkit.block.BlockProperties;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.level.generator.noise.f.vanilla.NoiseGeneratorPerlinF;
-    import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 import java.util.Objects;
@@ -21,7 +20,7 @@ public class KelpFeature extends WaterFoliageFeature {
     private static final BlockProperties KELP_PROPERTIES = BlockKelp.PROPERTIES;
     private static final BlockState STATE_KELP_MAX_AGE = BlockKelp.PROPERTIES.getBlockState(KELP_AGE.createValue(KELP_AGE.getMax()));
 
-    private NoiseGeneratorPerlinF noise;
+    private SimplexNoise noise;
 
     @Override
     public int getBase() {
@@ -36,7 +35,7 @@ public class KelpFeature extends WaterFoliageFeature {
     @Override
     protected void placeBlock(int x, int y, int z, IChunk chunk, RandomSourceProvider random) {
 
-        if(noise == null) noise = new NoiseGeneratorPerlinF(random, -7, new float[]{ 1 });
+        if(noise == null) noise = new SimplexNoise(random, -7, new float[]{ 1 });
 
         if(noise.getValue(x, 0, z) < 0) return;
 

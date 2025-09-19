@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 public abstract class Populator {
 
-    protected final NukkitRandom random = new NukkitRandom();
+    protected final Xoroshiro128 random = new Xoroshiro128();
 
     protected final HashMap<Long, BlockManager> PLACEMENT_QUEUE = new HashMap<>();
 
