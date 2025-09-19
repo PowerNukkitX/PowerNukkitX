@@ -2263,13 +2263,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (this.needDimensionChangeACK) {
             this.needDimensionChangeACK = false;
-
-            Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
-                PlayerActionPacket playerActionPacket = new PlayerActionPacket();
-                playerActionPacket.action = PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK;
-                playerActionPacket.entityId = this.getId();
-                this.dataPacket(playerActionPacket);
-            }, 100);
+            PlayerActionPacket pap = new PlayerActionPacket();
+            pap.action = PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK;
+            pap.entityId = this.getId();
+            this.dataPacket(pap);
         }
     }
 
