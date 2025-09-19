@@ -4236,7 +4236,6 @@ public class Level implements Metadatable {
                         count++;
                         if(count > 10000) {
                             log.debug("cannot find a safe spawn around " + spawn.asBlockVector3() + ". Too many attempts!");
-
                             if(checkHighest)
                                 return getSafeSpawn(spawn.setY(getHighestBlockAt((int) spawn.getX(), (int) spawn.getZ())), horizontalMaxOffset, allowWaterUnder, false);
                             else

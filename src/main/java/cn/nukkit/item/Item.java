@@ -1166,17 +1166,10 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     private CompoundTag ensureDynamicPropertiesGroup(String groupId) {
-        CompoundTag root = this.getOrCreateNamedTag();
-        CompoundTag dyn  = root.getCompound(DP_ROOT);
-        if (dyn == null) {
-            dyn = new CompoundTag();
-            root.putCompound(DP_ROOT, dyn);
-        }
-        CompoundTag group = dyn.getCompound(groupId);
-        if (group == null) {
-            group = new CompoundTag();
-            dyn.putCompound(groupId, group);
-        }
+        CompoundTag root  = this.getOrCreateNamedTag();
+        CompoundTag dyn   = root.getCompound(DP_ROOT);
+        CompoundTag group = (dyn != null) ? dyn.getCompound(groupId) : null;
+        if (group == null) group = new CompoundTag();
         return group;
     }
 
@@ -1191,16 +1184,12 @@ public abstract class Item implements Cloneable, ItemID {
     private void saveDynamicPropertiesGroup(String groupId, CompoundTag group) {
         CompoundTag root = this.getOrCreateNamedTag();
         CompoundTag dyn  = root.getCompound(DP_ROOT);
-        if (dyn == null) {
+        if (!root.contains(DP_ROOT) || dyn == null) {
             dyn = new CompoundTag();
             root.putCompound(DP_ROOT, dyn);
         }
 
-        CompoundTag existing = dyn.getCompound(groupId);
-        if (existing != group) {
-            dyn.putCompound(groupId, group);
-        }
-
+        dyn.putCompound(groupId, group);
         this.setNamedTag(root);
     }
 
@@ -1512,6 +1501,12 @@ public abstract class Item implements Cloneable, ItemID {
      * Called after {@link #onUse(Player, int)},It will only be called when onUse returns true
      */
     public void afterUse(Player player) {
+        CompoundTag c = getCustomItemComponent("minecraft:cooldown");
+        if (c != null) {
+            String categoryId = c.getString("category");
+            int duration = Math.max(0, Math.round(c.getFloat("duration") * 20f));
+            player.setItemCoolDown(duration, categoryId);
+        }
     }
 
     /**
@@ -1924,6 +1919,11 @@ public abstract class Item implements Cloneable, ItemID {
         return 0f;
     }
 
+
+    public int getUsingTicks() {
+        return Math.max(0, (int) Math.ceil(getUseDuration() * 20f));
+    }
+
     public float getMovimentModifier() {
         CompoundTag c = getCustomItemComponent("minecraft:use_modifiers");
         if (c != null) {
@@ -2071,6 +2071,7 @@ public abstract class Item implements Cloneable, ItemID {
         return true;
     }
 
+
     public int getEatingTicks() {
         CompoundTag c = getCustomItemComponent("minecraft:use_modifiers");
         if (c != null) {
@@ -2096,7 +2097,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public boolean foodOnUse(Player player, int ticksUsed) {
-        if (ticksUsed < getEatingTicks()) {
+        if (ticksUsed < getUsingTicks()) {
             return false;
         }
 

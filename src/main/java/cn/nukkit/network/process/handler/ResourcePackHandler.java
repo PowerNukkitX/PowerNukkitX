@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Slf4j
 public class ResourcePackHandler extends BedrockSessionPacketHandler {
 
-    private static final int PACKET_SEND_DELAY = 4; // DELAY THE SEND OF PACKETS TO AVOID BURSTING SLOWER AND/OR HIGHER PING CLIENTS
     private final Queue<ResourcePackChunkRequestPacket> chunkRequestQueue = new ConcurrentLinkedQueue<>();
     private boolean sendingChunks = false;
 
@@ -91,34 +90,28 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
     }
 
     private void processNextChunk() {
-        ResourcePackChunkRequestPacket pk = chunkRequestQueue.poll();
-        if (pk == null) {
-            sendingChunks = false;
-            return;
+        ResourcePackChunkRequestPacket req;
+        while ((req = chunkRequestQueue.poll()) != null) {
+            var mgr = session.getServer().getResourcePackManager();
+            ResourcePack resourcePack = mgr.getPackById(req.getPackId());
+            if (resourcePack == null) {
+                this.session.close("disconnectionScreen.resourcePack");
+                sendingChunks = false;
+                return;
+            }
+
+            int maxChunkSize = mgr.getMaxChunkSize();
+
+            ResourcePackChunkDataPacket dataPacket = new ResourcePackChunkDataPacket();
+            dataPacket.setPackId(resourcePack.getPackId());
+            dataPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
+            dataPacket.chunkIndex = req.chunkIndex;
+            dataPacket.data = resourcePack.getPackChunk(maxChunkSize * req.chunkIndex, maxChunkSize);
+            dataPacket.progress = maxChunkSize * (long) req.chunkIndex;
+
+            session.sendPacket(dataPacket);
         }
 
-        var mgr = session.getServer().getResourcePackManager();
-        ResourcePack resourcePack = mgr.getPackById(pk.getPackId());
-        if (resourcePack == null) {
-            this.session.close("disconnectionScreen.resourcePack");
-            sendingChunks = false;
-            return;
-        }
-
-        int maxChunkSize = mgr.getMaxChunkSize();
-        ResourcePackChunkDataPacket dataPacket = new ResourcePackChunkDataPacket();
-        dataPacket.setPackId(resourcePack.getPackId());
-        dataPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
-        dataPacket.chunkIndex = pk.chunkIndex;
-        dataPacket.data = resourcePack.getPackChunk(maxChunkSize * pk.chunkIndex, maxChunkSize);
-        dataPacket.progress = maxChunkSize * (long) pk.chunkIndex;
-
-        session.sendPacket(dataPacket);
-        session.flushSendBuffer();
-
-        // DELAY THE SEND OF PACKETS TO AVOID BURSTING SLOWER AND/OR HIGHER PIGNS CLIENTS
-        session.getServer().getScheduler().scheduleDelayedTask(() -> {
-            processNextChunk();
-        }, PACKET_SEND_DELAY);
+        sendingChunks = false;
     }
 }

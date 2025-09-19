@@ -2097,49 +2097,51 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Sets the cooldown time for the specified item to use
+     * the cooldown of specified item is end
      *
-     * @param coolDownTick the cool down tick
-     * @param itemId       the item id
+     * @param itemId the item identifier
+     * @return the boolean
      */
-    public void setItemCoolDown(int coolDownTick, Identifier itemId) {
-        var pk = new PlayerStartItemCoolDownPacket();
-        pk.setCoolDownDuration(coolDownTick);
-        pk.setItemCategory(itemId.toString());
-        this.cooldownTickMap.put(itemId.toString(), this.level.getTick() + coolDownTick);
-        this.dataPacket(pk);
+    public boolean isItemCoolDownEnd(Identifier itemId) {
+        return isItemCoolDownEnd(itemId.toString());
     }
 
     /**
      * the cooldown of specified item is end
      *
-     * @param itemId the item
+     * @param category a string category
      * @return the boolean
      */
-    public boolean isItemCoolDownEnd(Identifier itemId) {
-        Integer tick = this.cooldownTickMap.getOrDefault(itemId.toString(), 0);
-        boolean result = this.getLevel().getTick() - tick > 0;
-        if (result) {
-            cooldownTickMap.remove(itemId.toString());
-        }
-        return result;
+    public boolean isItemCoolDownEnd(String category) {
+        int now  = this.getLevel().getTick();
+        int end  = this.cooldownTickMap.getOrDefault(category, 0);
+        boolean done = now - end >= 0;
+        if (done) this.cooldownTickMap.remove(category);
+        return done;
     }
 
+    /**
+     * Sets the cooldown time for the specified item to use
+     *
+     * @param coolDownTick the cool down tick
+     * @param itemId       the item id
+     */
+    public void setItemCoolDown(int coolDown, Identifier itemId) {
+        setItemCoolDown(coolDown, itemId.toString());
+    }
+
+    /**
+     * Sets the cooldown time for the specified item to use
+     *
+     * @param coolDownTick the cool down tick
+     * @param itemId       a string category
+     */
     public void setItemCoolDown(int coolDown, String category) {
         var pk = new PlayerStartItemCoolDownPacket();
         pk.setCoolDownDuration(coolDown);
         pk.setItemCategory(category);
         this.cooldownTickMap.put(category, this.getLevel().getTick() + coolDown);
         this.dataPacket(pk);
-    }
-
-    public boolean isItemCoolDownEnd(String category) {
-        Integer tick = this.cooldownTickMap.getOrDefault(category, 0);
-        boolean result = this.getLevel().getTick() - tick > 0;
-        if (result) {
-            cooldownTickMap.remove(category);
-        }
-        return result;
     }
 
     /**
@@ -2703,7 +2705,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             this.entityBaseTick(tickDiff);
 
-            if (this.getServer().getDifficulty() == 0 && this.level.getGameRules().getBoolean(GameRule.NATURAL_REGENERATION)) {
+            if (this.getServer().getDifficulty() == 0 || this.level.getGameRules().getBoolean(GameRule.NATURAL_REGENERATION)) {
                 if (this.getHealth() < this.getMaxHealth() && this.ticksLived % 20 == 0) {
                     this.heal(1);
                 }
@@ -4930,14 +4932,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Override
     public void setSprinting(boolean value) {
         if (value && this.getFreezingTicks() > 0) return;
+
         if (isSprinting() != value) {
             super.setSprinting(value);
-            this.setMovementSpeed(value ? getMovementSpeed() * 1.3f : getMovementSpeed() / 1.3f);
 
+            float base = DEFAULT_SPEED;
+            int speedLvl = 0;
             if (this.hasEffect(EffectType.SPEED)) {
-                float movementSpeed = this.getMovementSpeed();
-                this.sendMovementSpeed(value ? movementSpeed * 1.3f : movementSpeed);
+                speedLvl = this.getEffect(EffectType.SPEED).getLevel();
             }
+            float effectMul = 1.0f + 0.2f * speedLvl;
+            float sprintMul = value ? 1.3f : 1.0f;
+
+            float finalSpeed = base * effectMul * sprintMul;
+
+            this.setMovementSpeed(finalSpeed, true);
         }
     }
 

@@ -28,7 +28,7 @@ public class ItemDriedKelp extends ItemFood {
     }
 
     @Override
-    public int getEatingTicks() {
+    public int getUsingTicks() {
         return 17;
     }
 }
