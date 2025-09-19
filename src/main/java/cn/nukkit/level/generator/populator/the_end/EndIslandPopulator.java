@@ -26,6 +26,9 @@ public class EndIslandPopulator extends Populator {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
+        if ((long) chunkX * (long) chunkX + (long) chunkZ * (long) chunkZ <= 4096L) {
+            return;
+        }
 
         if(islandNoise == null) islandNoise = new NoiseGeneratorSimplexD(new NukkitRandom(level.getSeed()));
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
