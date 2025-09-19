@@ -210,7 +210,7 @@ public class Structure extends AbstractStructure {
      *
      * @param pos the position to place the structure at (level cannot be null)
      */
-    public void place(Position pos, boolean includeEntities, BlockManager blockManager) {
+    public void preparePlace(Position pos, BlockManager blockManager) {
         Preconditions.checkArgument(pos.getLevel() != null, "position level cannot be null");
 
         int x = pos.getFloorX();
@@ -227,13 +227,16 @@ public class Structure extends AbstractStructure {
                     }
                     if (!blockStates[1][lx][ly][lz].equals(STRUCTURE_VOID_DEFAULT_STATE)) {
                         blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, blockStates[1][lx][ly][lz]);
-                    } else if(blockManager.getBlockAt(x + lx, y + ly, z + lz).isWaterLogged()) {
+                    } else if (blockManager.getBlockAt(x + lx, y + ly, z + lz).isWaterLogged()) {
                         blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, STATE_AIR);
                     }
                 }
             }
         }
+    }
 
+    public void place(Position pos, boolean includeEntities, BlockManager blockManager) {
+        preparePlace(pos, blockManager);
         blockManager.applySubChunkUpdate(blockManager.getBlocks());
 
         for (var entry : blockEntities.entrySet()) {
