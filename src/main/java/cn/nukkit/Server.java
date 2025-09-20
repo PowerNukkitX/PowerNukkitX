@@ -428,6 +428,7 @@ public class Server {
             Registries.GENERATE_STAGE.init();
             Registries.POPULATOR.init();
             Registries.GENERATE_FEATURE.init();
+            Registries.STRUCTURE.init();
             Registries.EFFECT.init();
             Registries.RECIPE.init();
             Profession.init();
@@ -503,6 +504,7 @@ public class Server {
             Registries.GENERATOR.trim();
             Registries.POPULATOR.trim();
             Registries.GENERATE_STAGE.trim();
+            Registries.STRUCTURE.trim();
             Registries.EFFECT.trim();
             Registries.RECIPE.trim();
         }
@@ -678,6 +680,7 @@ public class Server {
             Registries.GENERATE_STAGE.reload();
             Registries.POPULATOR.reload();
             Registries.GENERATE_FEATURE.reload();
+            Registries.STRUCTURE.reload();
             Registries.EFFECT.reload();
             Registries.RECIPE.reload();
             Enchantment.reload();

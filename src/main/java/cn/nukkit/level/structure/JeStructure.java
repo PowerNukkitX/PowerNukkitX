@@ -70,11 +70,6 @@ public class JeStructure extends AbstractStructure {
                 String jeName = blockStateNbt.getString("Name");
                 CompoundTag properties = blockStateNbt.getCompound("Properties");
 
-                if(jeName.equalsIgnoreCase("minecraft:jigsaw") || jeName.toLowerCase().contains("structure_block")) {
-                    jeName = "minecraft:air";
-                    properties = new CompoundTag();
-                }
-
                 StringBuilder sb = new StringBuilder();
                 if (properties != null) {
                     List<String> keys = new ArrayList<>(properties.getTags().keySet());

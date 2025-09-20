@@ -15,6 +15,7 @@ import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.structure.AbstractStructure;
 import cn.nukkit.level.structure.JeStructure;
 import cn.nukkit.level.structure.Structure;
 import cn.nukkit.level.structure.StructureAPI;
@@ -74,9 +75,9 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 CommandParameter.newEnum("item", new String[]{"item"}),
                 CommandParameter.newEnum("values", new String[]{"nbt", "bundle", "meta"})
         });
-        this.commandParameters.put("str", new CommandParameter[]{
-                CommandParameter.newEnum("str", new String[]{"str"}),
-                CommandParameter.newEnum("values", new String[]{"placejava", "place"}),
+        this.commandParameters.put("structure", new CommandParameter[]{
+                CommandParameter.newEnum("structure", new String[]{"structure"}),
+                CommandParameter.newEnum("type", new String[]{"placejava", "place", "registry"}),
                 CommandParameter.newType("file", CommandParamType.STRING)
         });
         this.enableParamTree();
@@ -86,47 +87,40 @@ public class DebugCommand extends TestCommand implements CoreCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         switch (result.getKey()) {
-            case "str" -> {
+            case "structure" -> {
                 if (!sender.isPlayer())
                     return 0;
+                String structureName = list.getResult(2);
                 Player player = sender.asPlayer();
+                Location loc = player.getLocation();
+
+                AbstractStructure structure = null;
                 switch (list.getResult(1).toString()) {
                     case "placejava" -> {
-                        String structureName = list.getResult(2);
-                        Location loc = player.getLocation();
 
                         try (var stream = DebugCommand.class.getClassLoader().getResourceAsStream("structures/" + structureName + ".nbt")) {
                             CompoundTag root = NBTIO.readCompressed(stream);
-
-                            JeStructure structure = JeStructure.fromNbt(root);
-                            structure.place(loc);
-                            log.addSuccess("Placed structure " + structureName + " at " + loc).output();
-
+                            structure = JeStructure.fromNbt(root);
                         } catch (Exception e) {
                             sender.sendMessage(e.getMessage());
                             e.printStackTrace();
                         }
-
-                        return 1;
                     }
 
                     case "place" -> {
-                        String structureName = list.getResult(2);
-                        Location loc = player.getLocation();
-
-                        Structure structure = StructureAPI.load(structureName);
-                        if (structure == null) {
-                            log.addError("Structure " + structureName + " not found").output();
-                            return 0;
-                        }
-
-                        structure.place(loc);
-                        log.addSuccess("Placed structure " + structureName + " at " + loc).output();
-
-                        return 1;
+                        structure = StructureAPI.load(structureName);
+                    }
+                    case "registry" -> {
+                        structure = Registries.STRUCTURE.get(structureName);
                     }
                 }
-                return 0;
+                if (structure == null) {
+                    log.addError("Structure " + structureName + " not found").output();
+                    return 0;
+                }
+                structure.place(loc);
+                log.addSuccess("Placed structure " + structureName + " at " + loc).output();
+                return 1;
             }
             case "entity" -> {
                 String str = list.getResult(1);

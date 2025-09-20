@@ -15,7 +15,6 @@ import cn.nukkit.nbt.tag.*;
 import cn.nukkit.network.protocol.types.StructureMirror;
 import cn.nukkit.network.protocol.types.StructureRotation;
 import com.google.common.base.Preconditions;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;

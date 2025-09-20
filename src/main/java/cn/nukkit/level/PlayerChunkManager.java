@@ -101,9 +101,9 @@ public final class PlayerChunkManager {
         BlockVector3 floor = player.asBlockVector3();
         updateInRadiusChunks(1, floor);
         removeOutOfRadiusChunks();
-        updateInRadiusChunks(player.getViewDistance(), floor);
+        updateInRadiusChunks(8, floor);
         updateChunkSendingQueue();
-        loadQueuedChunks(5, true);
+        loadQueuedChunks(8, true);
         sendChunk();
     }
 
