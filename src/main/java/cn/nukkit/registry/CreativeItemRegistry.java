@@ -10,13 +10,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemGroup;
-import com.google.gson.Gson;
-import io.netty.util.internal.EmptyArrays;
-import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
-import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,6 +19,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import lombok.extern.slf4j.Slf4j;
+import com.google.gson.Gson;
+import org.jetbrains.annotations.NotNull;
+import io.netty.util.internal.EmptyArrays;
+import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+
 
 /**
  * Allay Project 12/21/2023
@@ -120,11 +121,9 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     }
 
     /**
-     * 获取指定物品在{@link CreativeItemRegistry}中的索引
-     * <p>
      * Get the index of the specified item in {@link CreativeItemRegistry}
      *
-     * @param item 指定物品 <br>specified item
+     * @param item specified item
      * @return Unable to find return -1
      */
     public int getCreativeItemIndex(Item item) {
@@ -145,11 +144,8 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     }
 
     /**
-     * 取消创造模式下创造背包中的物品
-     * <p>
      * Cancel the Creative of items in the backpack in Creative mode
      */
-
     public void clearCreativeItems() {
         MAP.clear();
         INTERNAL_DIFF_ITEM.clear();
@@ -187,7 +183,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     }
 
     /**
-     * Determines whether a block should be shown in the creative inventory
+     * Determines whether a block should be shown in the creative inventory <p>
      * based on its NBT "menu_category" tag.
      */
     public boolean shouldBeRegisteredBlock(@NotNull CompoundTag nbt) {
@@ -208,7 +204,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     }
 
     /**
-     * Determines if a custom item should be registered in creative inventory.
+     * Determines if a custom item should be registered in creative inventory. <p>
      * Based on the `item_properties.creative_category` component.
      */
     public boolean shouldBeRegisteredItem(@NotNull CompoundTag nbt) {
@@ -246,8 +242,6 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
 
     /**
-     * 移除一个指定的创造物品
-     * <p>
      * Remove a specified created item
      */
     public void removeCreativeItem(Item item) {
@@ -274,8 +268,6 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         return ITEM_DATA;
     }
     /**
-     * 检测这个物品是否存在于创造背包
-     * <p>
      * Detect if the item exists in the Creative backpack
      */
     public boolean isCreativeItem(Item item) {
@@ -353,18 +345,25 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                     try {
                         int catId = itemProps.getInt("creative_category");
                         CreativeCategory category = CreativeCategory.fromID(catId);
-                        Map<String, Integer> groupMap = CATEGORY_GROUP_INDEX_MAP.getOrDefault(category, Map.of());
-
-                        if (itemProps.contains("creative_group")) {
-                            String groupName = itemProps.getString("creative_group");
-                            CreativeItemRegistry.ITEM_GROUP_MAP.put(identifier, groupName);
-
-                            Integer index = groupMap.get(groupName);
-                            if (index != null) {
-                                return index;
-                            }
+                        if (category == CreativeCategory.NONE) {
+                            return CreativeItemRegistry.LAST_ITEMS_INDEX;
                         }
-                        return getLastGroupIndexFrom(category.name());
+
+                        Map<String, Integer> groupMap = CATEGORY_GROUP_INDEX_MAP.getOrDefault(category, Map.of());
+                        String groupName = itemProps.contains("creative_group") ? itemProps.getString("creative_group") : "";
+                        boolean noGroup = groupName == null || groupName.isBlank() || "NONE".equalsIgnoreCase(groupName);
+
+                        if (!noGroup) {
+                            CreativeItemRegistry.ITEM_GROUP_MAP.put(identifier, groupName);
+                            Integer idx = groupMap.get(groupName);
+                            if (idx != null) {
+                                return idx;
+                            }
+                            return tailIndexForCategory(category);
+                        } else {
+                            CreativeItemRegistry.ITEM_GROUP_MAP.remove(identifier);
+                            return tailIndexForCategory(category);
+                        }
                     } catch (Exception e) {
                         log.warn("Invalid creative category/group in item definition NBT for '{}': {}", identifier, e.getMessage());
                     }
@@ -382,10 +381,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
         CreativeItemRegistry.ITEM_GROUP_MAP.put(identifier, groupName);
 
-        if (idx != null) {
-            return idx;
-        }
-
+        if (idx != null) return idx;
         return getLastGroupIndexFrom(category.name());
     }
 
@@ -393,15 +389,23 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         try {
             CreativeCategory category = CreativeCategory.valueOf(categoryName.toUpperCase());
             Map<String, Integer> groupMap = CreativeItemRegistry.CATEGORY_GROUP_INDEX_MAP.getOrDefault(category, Map.of());
-
             if (!groupMap.isEmpty()) {
                 return groupMap.values().stream().mapToInt(i -> i).max().orElse(CreativeItemRegistry.LAST_ITEMS_INDEX);
             }
         } catch (IllegalArgumentException e) {
-            // categoryName is invalid (not in enum)
             log.warn("Invalid category '{}', cannot resolve last group index.", categoryName);
         }
 
         return CreativeItemRegistry.LAST_ITEMS_INDEX;
+    }
+
+    private static int tailIndexForCategory(CreativeCategory category) {
+        return switch (category) {
+            case CONSTRUCTION -> LAST_CONSTRUCTION_INDEX;
+            case EQUIPMENT    -> LAST_EQUIPMENTS_INDEX;
+            case ITEMS        -> LAST_ITEMS_INDEX;
+            case NATURE       -> LAST_NATURE_INDEX;
+            default           -> LAST_ITEMS_INDEX;
+        };
     }
 }
