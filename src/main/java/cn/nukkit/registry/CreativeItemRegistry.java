@@ -4,6 +4,7 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.customitem.data.CreativeCategory;
+import cn.nukkit.item.customitem.data.CreativeGroup;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
@@ -376,18 +377,19 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         return CreativeItemRegistry.LAST_ITEMS_INDEX;
     }
 
-    private static int lastIndexForCategory(Map<String, Integer> groupMap) {
-        if (groupMap == null || groupMap.isEmpty()) return -1;
-        int max = Integer.MIN_VALUE;
-        for (int v : groupMap.values()) {
-            if (v > max) max = v;
-        }
-        return max;
-    }
+    public int resolveGroupIndexForSpawnEgg(String identifier) {
+        CreativeCategory category = CreativeCategory.NATURE;
+        String groupName = CreativeGroup.MOB_EGGS.getGroupName();
+        Map<String, Integer> groupMap = CATEGORY_GROUP_INDEX_MAP.getOrDefault(category, Map.of());
+        Integer idx = groupMap.get(groupName);
 
-    private static int getPerCategoryFallback(CreativeCategory category) {
-        log.debug("Category {} has no registered groups yet; falling back to global last index.", category);
-        return CreativeItemRegistry.LAST_ITEMS_INDEX;
+        CreativeItemRegistry.ITEM_GROUP_MAP.put(identifier, groupName);
+
+        if (idx != null) {
+            return idx;
+        }
+
+        return getLastGroupIndexFrom(category.name());
     }
 
     public static int getLastGroupIndexFrom(String categoryName) {

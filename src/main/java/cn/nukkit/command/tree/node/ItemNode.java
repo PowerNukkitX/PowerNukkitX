@@ -8,9 +8,8 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.customitem.CustomItem;
 
 /**
- * 解析对应参数为{@link Item}值
- * <p>
- * 所有命令枚举{@link cn.nukkit.command.data.CommandEnum#ENUM_ITEM ENUM_ITEM}如果没有手动指定{@link IParamNode},则会默认使用这个解析
+ * The corresponding parameters for analysis are {@link Item} value <p>
+ * All command enumeration {@link cn.nukkit.command.data.CommandEnum#ENUM_ITEM ENUM_ITEM} If not manually specified {@link IParamNode}, This analysis will be used by default
  */
 public class ItemNode extends ParamNode<Item> {
     @Override
