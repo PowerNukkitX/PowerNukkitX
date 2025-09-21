@@ -1688,6 +1688,18 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
 
     // Helpers
+    /** Used for spawn eggs registration only */
+    public static int ensureRuntimeIdAllocated(String idStr) {
+        if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(idStr)) {
+            int id;
+            do {
+                id = nextRuntimeId.getAndIncrement();
+            } while (INTERNAL_ALLOCATION_ID_MAP.containsValue(id));
+            INTERNAL_ALLOCATION_ID_MAP.put(idStr, id);
+        }
+        return INTERNAL_ALLOCATION_ID_MAP.getInt(idStr);
+    }
+
     @Nullable
     public BlockPlacerData getBlockPlacerData() {
         CompoundTag components = nbt.getCompound("components");
