@@ -30,9 +30,9 @@ public class Nether extends BiomedGenerator {
     public void stages(GenerateStage.Builder builder) {
         builder.start(Registries.GENERATE_STAGE.get(BiomeMapStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NetherTerrainStage.NAME));
+        builder.next(Registries.GENERATE_STAGE.get(ChunkPlacementQueueStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(LightPopulationStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NetherPopulatorStage.NAME));
-        builder.next(Registries.GENERATE_STAGE.get(ChunkPlacementQueueStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(FinishedStage.NAME));
     }
 

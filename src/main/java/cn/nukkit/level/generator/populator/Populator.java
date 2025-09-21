@@ -22,7 +22,7 @@ public abstract class Populator {
 
     public abstract void apply(ChunkGenerateContext context);
 
-    protected final void queueObject(IChunk chunk, BlockManager object) {
+    protected synchronized void queueObject(IChunk chunk, BlockManager object) {
         BlockManager manager = new BlockManager(chunk.getLevel());
         for(Block block : object.getBlocks()) {
             if(block.getChunk() != chunk) {
@@ -35,15 +35,15 @@ public abstract class Populator {
             }
         }
         writeOutsideChunkStructureData(chunk);
-        manager.applySubChunkUpdate(manager.getBlocks());
+        manager.applySubChunkUpdate();
     }
 
-    BlockManager getChunkPlacementQueue(Long chunkHash, Level level) {
+    public synchronized BlockManager getChunkPlacementQueue(Long chunkHash, Level level) {
         if(!PLACEMENT_QUEUE.containsKey(chunkHash)) PLACEMENT_QUEUE.put(chunkHash, new BlockManager(level));
         return PLACEMENT_QUEUE.get(chunkHash);
     }
 
-    protected void writeOutsideChunkStructureData(IChunk current) {
+    protected synchronized void writeOutsideChunkStructureData(IChunk current) {
         CompoundTag chunkExtra = current.getExtraData();
         if(!chunkExtra.containsCompound("outsideChunkStructureData")) {
             chunkExtra.putCompound("outsideChunkStructureData", new CompoundTag());

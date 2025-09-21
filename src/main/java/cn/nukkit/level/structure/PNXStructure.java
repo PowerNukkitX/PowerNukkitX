@@ -1,5 +1,6 @@
 package cn.nukkit.level.structure;
 
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -106,6 +107,7 @@ public class PNXStructure extends AbstractStructure {
         int baseZ = position.getFloorZ();
 
         for (StructureBlockInstance b : getBlockInstances()) {
+            if(b.state == BlockAir.STATE) continue;
             blockManager.setBlockStateAt(baseX + b.x, baseY + b.y, baseZ + b.z, b.state);
         }
     }

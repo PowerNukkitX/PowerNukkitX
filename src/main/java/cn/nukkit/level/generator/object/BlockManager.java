@@ -128,6 +128,16 @@ public class BlockManager {
         caches.put(hashXYZ, block);
     }
 
+    public void unsetBlockStateAt(Block block) {
+        this.unsetBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), block.layer);
+    }
+
+    public void unsetBlockStateAt(int x, int y, int z, int layer) {
+        long hashXYZ = hashXYZ(x, y, z, layer);
+        places.remove(hashXYZ);
+        caches.remove(hashXYZ);
+    }
+
     public void setBlockStateAt(int x, int y, int z, int layer, BlockState state) {
         long hashXYZ = hashXYZ(x, y, z, layer);
         Block block = Block.get(state, level, x, y, z, layer);
@@ -255,7 +265,6 @@ public class BlockManager {
         }
         return tag;
     }
-
 
     public static BlockManager fromTag(ListTag<IntArrayTag> tag, BlockManager level) {
         for(var data : tag.getAll()) {

@@ -69,7 +69,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         });
         this.commandParameters.put("chunk", new CommandParameter[]{
                 CommandParameter.newEnum("chunk", new String[]{"chunk"}),
-                CommandParameter.newEnum("options", new String[]{"info", "regenerate", "resend", "queue"})
+                CommandParameter.newEnum("options", new String[]{"info", "regenerate", "resend", "queue", "extras"})
         });
         this.commandParameters.put("item", new CommandParameter[]{
                 CommandParameter.newEnum("item", new String[]{"item"}),
@@ -254,6 +254,10 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
+                        return 0;
+                    }
+                    case "extras" -> {
+                        player.sendMessage(chunk.getExtraData().toSNBT().replace("[[", "§e[[§r").replace("]]", "§e]]§r"));
                         return 0;
                     }
                     default -> {

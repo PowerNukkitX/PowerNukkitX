@@ -7,11 +7,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSpawnEgg;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockMobSpawner extends BlockSolid {
+public class BlockMobSpawner extends BlockSolid implements BlockEntityHolder<BlockEntityMobSpawner> {
     public static final BlockProperties PROPERTIES = new BlockProperties(MOB_SPAWNER);
 
     @Override
@@ -83,22 +82,9 @@ public class BlockMobSpawner extends BlockSolid {
     }
 
     public boolean setType(int networkId) {
-        BlockEntity blockEntity = getLevel().getBlockEntity(this);
+        BlockEntity blockEntity = getOrCreateBlockEntity();
         if(blockEntity != null && blockEntity instanceof BlockEntityMobSpawner spawner) {
             spawner.setSpawnEntityType(networkId);
-        } else {
-            if (blockEntity != null) {
-                blockEntity.close();
-            }
-            CompoundTag nbt = new CompoundTag()
-                    .putString(BlockEntityMobSpawner.TAG_ID, BlockEntity.MOB_SPAWNER)
-                    .putInt(BlockEntityMobSpawner.TAG_ENTITY_ID, networkId)
-                    .putInt(BlockEntityMobSpawner.TAG_X, (int) x)
-                    .putInt(BlockEntityMobSpawner.TAG_Y, (int) y)
-                    .putInt(BlockEntityMobSpawner.TAG_Z, (int) z);
-
-            BlockEntityMobSpawner entitySpawner = new BlockEntityMobSpawner(getLevel().getChunk((int) x >> 4, (int) z >> 4), nbt);
-            entitySpawner.spawnToAll();
         }
         return true;
     }
@@ -115,5 +101,15 @@ public class BlockMobSpawner extends BlockSolid {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public @NotNull Class<? extends BlockEntityMobSpawner> getBlockEntityClass() {
+        return BlockEntityMobSpawner.class;
+    }
+
+    @Override
+    public @NotNull String getBlockEntityType() {
+        return BlockEntity.MOB_SPAWNER;
     }
 }

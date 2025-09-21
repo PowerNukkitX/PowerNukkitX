@@ -18,7 +18,7 @@ import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class CaveGenerateFeature extends GenerateFeature {
 
-    public static final String NAME = "minecraft:overworld_cave_carver_feature";
+    public static final String NAME = "minecraft:overworld_cave";
 
     public static int caveRarity = 7;//7
     public static int caveFrequency = 40;//40
