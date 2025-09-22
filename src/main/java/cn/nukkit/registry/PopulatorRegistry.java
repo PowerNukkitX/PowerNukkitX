@@ -13,8 +13,9 @@ import cn.nukkit.level.generator.populator.nether.warped.WarpedFungiTreePopulato
 import cn.nukkit.level.generator.populator.nether.warped.WarpedGrassesPopulator;
 import cn.nukkit.level.generator.populator.nether.warped.WarpedTwistingVinesPopulator;
 import cn.nukkit.level.generator.populator.normal.IglooPopulator;
-import cn.nukkit.level.generator.populator.normal.desert.DesertPyramidPopulator;
-import cn.nukkit.level.generator.populator.normal.desert.DesertWellPopulator;
+import cn.nukkit.level.generator.populator.normal.DesertPyramidPopulator;
+import cn.nukkit.level.generator.populator.normal.DesertWellPopulator;
+import cn.nukkit.level.generator.populator.normal.JungleTemplePopulator;
 import cn.nukkit.level.generator.populator.the_end.ChorusFlowerPopulator;
 import cn.nukkit.level.generator.populator.the_end.EndGatewayPopulator;
 import cn.nukkit.level.generator.populator.the_end.EndIslandPopulator;
@@ -66,6 +67,7 @@ public class PopulatorRegistry implements IRegistry<String, Populator, Class<? e
             this.register(DesertPyramidPopulator.NAME, DesertPyramidPopulator.class);
             this.register(FossilPopulator.NAME, FossilPopulator.class);
             this.register(IglooPopulator.NAME, IglooPopulator.class);
+            this.register(JungleTemplePopulator.NAME, JungleTemplePopulator.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

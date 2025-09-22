@@ -1,19 +1,19 @@
-package cn.nukkit.level.generator.populator.normal.desert;
+package cn.nukkit.level.generator.populator.normal;
 
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.level.generator.object.ObjectDesertWell;
+import cn.nukkit.level.generator.object.ObjectJungleTemple;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.math.Vector3;
 
-public class DesertWellPopulator extends Populator {
+public class JungleTemplePopulator extends Populator {
 
-    public static final String NAME = "normal_desert_well";
+    public static final String NAME = "normal_jungle_temple";
 
-    protected static final ObjectDesertWell WELL = new ObjectDesertWell();
+    protected static final ObjectJungleTemple JUNGLE_TEMPLE = new ObjectJungleTemple();
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -26,9 +26,9 @@ public class DesertWellPopulator extends Populator {
         int z = (chunkZ << 4) + random.nextBoundedInt(15);
         int y = level.getHeightMap(x, z);
 
-        if(WELL.canGenerateAt(new Location(x, y, z, level))) {
+        if(JUNGLE_TEMPLE.canGenerateAt(new Location(x, y, z, level))) {
             BlockManager manager = new BlockManager(level);
-            WELL.generate(manager, null, new Vector3(x, y, z));
+            JUNGLE_TEMPLE.generate(manager, random, new Vector3(x, y, z));
             queueObject(chunk, manager);
         }
     }

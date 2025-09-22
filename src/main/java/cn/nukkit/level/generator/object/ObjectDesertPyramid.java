@@ -5,7 +5,6 @@ import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.block.property.enums.MinecraftVerticalHalf;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.AxisAlignedBB;

@@ -2,8 +2,9 @@ package cn.nukkit.level.generator.stages.normal;
 
 import cn.nukkit.level.generator.populator.normal.FossilPopulator;
 import cn.nukkit.level.generator.populator.normal.IglooPopulator;
-import cn.nukkit.level.generator.populator.normal.desert.DesertPyramidPopulator;
-import cn.nukkit.level.generator.populator.normal.desert.DesertWellPopulator;
+import cn.nukkit.level.generator.populator.normal.DesertPyramidPopulator;
+import cn.nukkit.level.generator.populator.normal.DesertWellPopulator;
+import cn.nukkit.level.generator.populator.normal.JungleTemplePopulator;
 import cn.nukkit.level.generator.stages.PopulatorStage;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 
@@ -15,7 +16,8 @@ public class NormalPopulatorStage extends PopulatorStage {
             DesertWellPopulator.NAME,
             DesertPyramidPopulator.NAME,
             FossilPopulator.NAME,
-            IglooPopulator.NAME
+            IglooPopulator.NAME,
+            JungleTemplePopulator.NAME
     });
 
     @Override

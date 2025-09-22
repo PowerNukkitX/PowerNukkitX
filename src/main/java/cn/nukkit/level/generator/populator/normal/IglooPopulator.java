@@ -16,7 +16,6 @@ import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.level.generator.object.ObjectDesertPyramid;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.structure.PNXStructure;
@@ -142,6 +141,11 @@ public class IglooPopulator extends Populator {
         }
     }
 
+    @Override
+    public String name() {
+        return NAME;
+    }
+
     protected static class ChestPopulator extends RandomizableContainer {
         public ChestPopulator() {
             PoolBuilder pool1 = new PoolBuilder()
@@ -158,9 +162,5 @@ public class IglooPopulator extends Populator {
                     .register(new ItemEntry(Item.GOLDEN_APPLE, 1));
             this.pools.put(pool2.build(), new RollEntry(1, pool2.getTotalWeight()));
         }
-    }
-    @Override
-    public String name() {
-        return NAME;
     }
 }

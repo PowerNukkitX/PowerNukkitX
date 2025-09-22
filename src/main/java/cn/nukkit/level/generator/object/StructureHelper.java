@@ -1,11 +1,15 @@
 package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.random.RandomSourceProvider;
 import org.apache.logging.log4j.util.InternalApi;
+
+import java.util.Map;
 
 @InternalApi
 public class StructureHelper extends BlockManager {
@@ -46,6 +50,46 @@ public class StructureHelper extends BlockManager {
                     } else {
                         state = outer;
                     }
+                    this.setBlockStateAt(new BlockVector3(x, y, z), state);
+                }
+            }
+        }
+    }
+    public void setBlockWithRandomBlock(BlockVector3 pos, RandomSourceProvider random, Map<BlockState, Integer> blocks) {
+        BlockState state = this.getRandomBlock(random, blocks);
+        this.setBlockStateAt(pos, state);
+    }
+    public void addRandomBlock(Map<BlockState, Integer> blocks, int weight, BlockState state) {
+        blocks.put(state, weight);
+    }
+
+    /**
+     * Chooses a random block from a weighted list.
+     *
+     * @param random the PRNG to use
+     * @param blocks a map of blocks to integer weights
+     * @return a random block full id
+     */
+    public BlockState getRandomBlock(RandomSourceProvider random, Map<BlockState, Integer> blocks) {
+        int totalWeight = 0;
+        for (int weight : blocks.values()) {
+            totalWeight += weight;
+        }
+        int weight = random.nextBoundedInt(totalWeight);
+        for (Map.Entry<BlockState, Integer> entry : blocks.entrySet()) {
+            weight -= entry.getValue();
+            if (weight < 0) {
+                return entry.getKey();
+            }
+        }
+        return blocks.keySet().stream().findAny().get();
+    }
+
+    public void fillWithRandomBlock(BlockVector3 min, BlockVector3 max, RandomSourceProvider random, Map<BlockState, Integer> blocks) {
+        for (int y = min.y; y <= max.y; y++) {
+            for (int x = min.x; x <= max.x; x++) {
+                for (int z = min.z; z <= max.z; z++) {
+                    BlockState state = this.getRandomBlock(random, blocks);
                     this.setBlockStateAt(new BlockVector3(x, y, z), state);
                 }
             }

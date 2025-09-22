@@ -109,7 +109,7 @@ public class PNXStructure extends AbstractStructure {
         int baseZ = position.getFloorZ();
 
         for (StructureBlockInstance b : getBlockInstances()) {
-            if(b.state == BlockStructureVoid.PROPERTIES.getDefaultState()) continue;
+            if(b.state == STATE_STRUCTURE_VOID) continue;
             blockManager.setBlockStateAt(baseX + b.x, baseY + b.y, baseZ + b.z, b.state);
         }
     }
