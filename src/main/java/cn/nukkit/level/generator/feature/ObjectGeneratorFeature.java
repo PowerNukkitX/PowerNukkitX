@@ -70,6 +70,7 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
                 getGenerator(random).generate(object, random, v.add(0, 1, 0));
             }
         }
+
         queueObject(chunk, object);
     }
 

@@ -49,9 +49,7 @@ public class FlowerForestFoliageFeature extends CountGenerateFeature {
                 }
             }
         }
-        if(object.getBlocks().stream().noneMatch(block -> !block.getChunk().isGenerated())) {
-            object.applySubChunkUpdate(object.getBlocks());
-        }
+        queueObject(chunk, object);
 
     }
 

@@ -40,7 +40,7 @@ public class ChunkPlacementQueueStage extends GenerateStage {
                 }
             }
         }
-        temp.applySubChunkUpdate(temp.getBlocks());
+        temp.applyWithoutUpdate();
         chunk.setChunkState(ChunkState.POPULATED);
     }
 

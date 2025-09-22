@@ -22,28 +22,29 @@ public abstract class Populator {
 
     public abstract void apply(ChunkGenerateContext context);
 
-    protected synchronized void queueObject(IChunk chunk, BlockManager object) {
+    protected void queueObject(IChunk chunk, BlockManager object) {
         BlockManager manager = new BlockManager(chunk.getLevel());
         for(Block block : object.getBlocks()) {
+            IChunk target = block.getLevel().getProvider().getLoadedChunk(block.getChunkX(), block.getChunkZ());
             if(block.getChunk() != chunk) {
                 IChunk nextChunk = block.getChunk();
                 long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
                 getChunkPlacementQueue(chunkHash, chunk.getLevel()).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
             }
-            if(block.getChunk().isGenerated()) {
+            if(target != null && target.isGenerated()) {
                 manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
             }
         }
         writeOutsideChunkStructureData(chunk);
-        manager.applySubChunkUpdate();
+        manager.applyWithoutUpdate();
     }
 
-    public synchronized BlockManager getChunkPlacementQueue(Long chunkHash, Level level) {
+    public BlockManager getChunkPlacementQueue(Long chunkHash, Level level) {
         if(!PLACEMENT_QUEUE.containsKey(chunkHash)) PLACEMENT_QUEUE.put(chunkHash, new BlockManager(level));
         return PLACEMENT_QUEUE.get(chunkHash);
     }
 
-    protected synchronized void writeOutsideChunkStructureData(IChunk current) {
+    protected void writeOutsideChunkStructureData(IChunk current) {
         CompoundTag chunkExtra = current.getExtraData();
         if(!chunkExtra.containsCompound("outsideChunkStructureData")) {
             chunkExtra.putCompound("outsideChunkStructureData", new CompoundTag());

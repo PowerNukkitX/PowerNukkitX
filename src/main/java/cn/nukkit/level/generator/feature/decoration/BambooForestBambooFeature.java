@@ -17,7 +17,7 @@ public class BambooForestBambooFeature extends SurfaceGenerateFeature {
     private static final BlockState NO_LEAVE = BlockBamboo.PROPERTIES.getBlockState(CommonBlockProperties.BAMBOO_LEAF_SIZE.createValue(BambooLeafSize.NO_LEAVES));
     private static final BlockState SMALL_LEAVE = BlockBamboo.PROPERTIES.getBlockState(CommonBlockProperties.BAMBOO_LEAF_SIZE.createValue(BambooLeafSize.SMALL_LEAVES));
     private static final BlockState LARGE_LEAVE = BlockBamboo.PROPERTIES.getBlockState(CommonBlockProperties.BAMBOO_LEAF_SIZE.createValue(BambooLeafSize.LARGE_LEAVES));
-    private final BlockState PODZOL = BlockPodzol.PROPERTIES.getDefaultState();
+    private static final BlockState PODZOL = BlockPodzol.PROPERTIES.getDefaultState();
 
 
     public static final String NAME = "minecraft:bamboo_then_podzol_feature";

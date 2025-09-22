@@ -1,15 +1,12 @@
 package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockGrassBlock;
-import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.tags.BlockTags;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
@@ -34,18 +31,7 @@ public abstract class SurfaceGenerateFeature extends CountGenerateFeature {
             BlockManager object = new BlockManager(chunk.getLevel());
             if(!manager.getBlockIfCachedOrLoaded(x, y, z).isAir()) return;
             place(object, position.getFloorX(), position.getFloorY(), position.getFloorZ());
-            for(Block block : object.getBlocks()) {
-                if(block.getChunk() != chunk) {
-                    IChunk nextChunk = block.getChunk();
-                    long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
-                    getChunkPlacementQueue(chunkHash, chunk.getLevel()).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                }
-                if(block.getChunk().isGenerated()) {
-                    manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                }
-            }
-            writeOutsideChunkStructureData(chunk);
-            manager.applySubChunkUpdate();
+            queueObject(chunk, object);
         }
     }
 

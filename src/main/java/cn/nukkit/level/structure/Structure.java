@@ -234,7 +234,7 @@ public class Structure extends AbstractStructure {
 
     public void place(Position pos, boolean includeEntities, BlockManager blockManager) {
         preparePlace(pos, blockManager);
-        blockManager.applySubChunkUpdate(blockManager.getBlocks());
+        blockManager.applySubChunkUpdate();
 
         for (var entry : blockEntities.entrySet()) {
             BlockEntity blockEntity = pos.getLevel().getBlockEntity(new Vector3(entry.getKey().x + x, entry.getKey().y + y, entry.getKey().z + z));

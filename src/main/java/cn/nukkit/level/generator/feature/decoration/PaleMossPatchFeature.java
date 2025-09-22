@@ -10,7 +10,6 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.utils.random.NukkitRandom;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 

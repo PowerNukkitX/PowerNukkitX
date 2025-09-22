@@ -52,10 +52,7 @@ public class ForestFlowerFoliageFeature extends CountGenerateFeature {
                 }
             }
         }
-        if(object.getBlocks().stream().noneMatch(block -> !block.getChunk().isGenerated())) {
-            object.applySubChunkUpdate(object.getBlocks());
-        }
-
+        queueObject(chunk, object);
     }
 
     private void populateFlower(int flower, BlockManager level, int x, int y, int z) {

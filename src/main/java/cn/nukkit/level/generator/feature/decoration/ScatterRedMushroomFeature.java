@@ -44,9 +44,7 @@ public class ScatterRedMushroomFeature extends GroupedDiscFeature {
 
     @Override
     public boolean isSupportValid(Block block) {
-        if(!block.getChunk().isLightPopulated()) block.getChunk().populateSkyLight();
-        Block up = block.up();
-        return super.isSupportValid(block) && block.getLevel().getBlockSkyLightAt(up.getFloorX(), up.getFloorY(), up.getFloorZ()) < 13;
+        return super.isSupportValid(block) && block.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ()) != block.getFloorY();
     }
 
     @Override

@@ -63,6 +63,6 @@ public class TaigaTreeFeature extends GriddedFeature {
                 }
             }
         }
-        object.applySubChunkUpdate();
+        queueObject(chunk, object);
     }
 }

@@ -106,5 +106,6 @@ public abstract class Generator implements BlockID {
             start.apply(context);
             asyncGenerate0(context, start.getNextStage(), to, callback);
         });
+
     }
 }

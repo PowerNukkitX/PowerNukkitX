@@ -184,6 +184,12 @@ public class BlockManager {
         return new ArrayList<>(this.places.values());
     }
 
+    public void applyWithoutUpdate() {
+        for (var b : this.places.values()) {
+            this.level.setBlock(b, b, false, false);
+        }
+    }
+
     public void applyBlockUpdate() {
         for (var b : this.places.values()) {
             this.level.setBlock(b, b, true, true);

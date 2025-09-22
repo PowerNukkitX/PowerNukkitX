@@ -57,6 +57,6 @@ public class GroveTreeFeature extends GriddedFeature {
                 }
             }
         }
-        object.applySubChunkUpdate();
+        queueObject(chunk, object);
     }
 }

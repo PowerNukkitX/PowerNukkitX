@@ -2,6 +2,7 @@ package cn.nukkit.level.generator.stages.normal;
 
 import cn.nukkit.block.BlockBedrock;
 import cn.nukkit.block.BlockDeepslate;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockStone;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.level.Level;
@@ -22,6 +23,11 @@ import java.util.Map;
 
 public class NormalTerrainStage extends GenerateStage {
 
+    private final static BlockState STONE = BlockStone.PROPERTIES.getDefaultState();
+    private final static BlockState WATER = BlockWater.PROPERTIES.getDefaultState();
+    private final static BlockState DEEPSLATE = BlockDeepslate.PROPERTIES.getDefaultState();
+    private final static BlockState BEDROCK = BlockBedrock.PROPERTIES.getDefaultState();
+
     public static final String NAME = "normal_terrain";
 
     public static final int SEA_LEVEL = 63;
@@ -29,7 +35,6 @@ public class NormalTerrainStage extends GenerateStage {
     private OverworldBiomePicker picker;
     private SimplexNoise surfaceNoise;
     private SimplexNoise jagged;
-
 
     private final ThreadLocal<Map<String, Double>> depthSplineMap = ThreadLocal.withInitial(HashMap::new);
     private final ThreadLocal<NukkitRandom> random = ThreadLocal.withInitial(NukkitRandom::new);
@@ -48,9 +53,9 @@ public class NormalTerrainStage extends GenerateStage {
         if(picker == null) picker = (OverworldBiomePicker) level.getBiomePicker();
         if(surfaceNoise == null) surfaceNoise = new SimplexNoise(random.identical(), -6, new float[]{1f, 1f, 1f});
         if(jagged == null) jagged = new SimplexNoise(random.identical(), -16, new float[]{1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f});
+
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
-
                 OverworldBiomeResult result = picker.pick(baseX + x, SEA_LEVEL, baseZ + z);
                 int biomeId = result.getBiomeId();
                 float baseHeightSum = 0.0F;
@@ -79,14 +84,15 @@ public class NormalTerrainStage extends GenerateStage {
                         biomeWeightSum += weight;
                     }
                 }
+
                 baseHeightSum = baseHeightSum / Math.max(biomeWeightSum, 1);
                 for(int y = level.getMinHeight(); y < level.getMaxHeight(); y++) {
                     float density = surfaceNoise.getValue((x + baseX), y,z + baseZ);
                     float densityMod = ((baseHeightSum + 0.18f) - NukkitMath.remapNormalized(y, level.getMinHeight(), level.getMaxHeight())) * 24;
                     if(density + densityMod > 0) {
-                        chunk.setBlockState(x, y, z, BlockStone.PROPERTIES.getDefaultState());
+                        chunk.setBlockState(x, y, z, STONE);
                     } else {
-                        if(y <= SEA_LEVEL) chunk.setBlockState(x, y, z, BlockWater.PROPERTIES.getDefaultState());
+                        if(y <= SEA_LEVEL) chunk.setBlockState(x, y, z, WATER);
                     }
                 }
             }
@@ -94,17 +100,17 @@ public class NormalTerrainStage extends GenerateStage {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 for(int y = level.getMinHeight(); y < 0; y++) {
-                    chunk.setBlockState(x, y, z, BlockDeepslate.PROPERTIES.getDefaultState());
+                    chunk.setBlockState(x, y, z, DEEPSLATE);
                 }
                 for (int y = 0; y < 8; y++) {
                     if (random.nextBoundedInt(y) == 0) {
-                        chunk.setBlockState(x, y, z, BlockDeepslate.PROPERTIES.getDefaultState());
+                        chunk.setBlockState(x, y, z, DEEPSLATE);
                     }
                 }
-                chunk.setBlockState(x, level.getMinHeight(), z, BlockBedrock.PROPERTIES.getDefaultState());
+                chunk.setBlockState(x, level.getMinHeight(), z, BEDROCK);
                 for (int i = 1; i < 5; i++) {
                     if (random.nextBoundedInt(i) == 0) {
-                        chunk.setBlockState(x, level.getMinHeight() +i, z, BlockBedrock.PROPERTIES.getDefaultState());
+                        chunk.setBlockState(x, level.getMinHeight() +i, z, BEDROCK);
                     }
                 }
             }
