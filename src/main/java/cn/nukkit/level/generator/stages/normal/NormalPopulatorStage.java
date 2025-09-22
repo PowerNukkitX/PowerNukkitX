@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.stages.normal;
 
-import cn.nukkit.level.generator.populator.FossilPopulator;
+import cn.nukkit.level.generator.populator.normal.FossilPopulator;
+import cn.nukkit.level.generator.populator.normal.IglooPopulator;
 import cn.nukkit.level.generator.populator.normal.desert.DesertPyramidPopulator;
 import cn.nukkit.level.generator.populator.normal.desert.DesertWellPopulator;
 import cn.nukkit.level.generator.stages.PopulatorStage;
@@ -13,7 +14,8 @@ public class NormalPopulatorStage extends PopulatorStage {
     public static final ObjectArraySet<String> POPULATORS = new ObjectArraySet<>(new String[] {
             DesertWellPopulator.NAME,
             DesertPyramidPopulator.NAME,
-            FossilPopulator.NAME
+            FossilPopulator.NAME,
+            IglooPopulator.NAME
     });
 
     @Override

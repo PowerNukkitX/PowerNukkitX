@@ -2,6 +2,7 @@ package cn.nukkit.level.structure;
 
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.block.BlockStructureVoid;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -14,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 public abstract class AbstractStructure {
     protected static final BlockState STATE_AIR = BlockAir.PROPERTIES.getDefaultState();
     protected static final BlockState STATE_UNKNOWN = BlockUnknown.PROPERTIES.getDefaultState();
+    protected static final BlockState STATE_STRUCTURE_VOID = BlockStructureVoid.PROPERTIES.getDefaultState();
     protected String name;
 
     public static AbstractStructure fromNbt(CompoundTag tag) {

@@ -1,5 +1,6 @@
 package cn.nukkit.level.structure;
 
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -114,12 +115,14 @@ public class JeStructure extends AbstractStructure {
         return CompletableFuture.supplyAsync(() -> fromNbt(nbt));
     }
 
+    @Override
     public void preparePlace(Position position, BlockManager blockManager) {
         int baseX = position.getFloorX();
         int baseY = position.getFloorY();
         int baseZ = position.getFloorZ();
 
         for (StructureBlockInstance b : blockInstances) {
+            if(b.block.state == STATE_STRUCTURE_VOID) continue;
             blockManager.setBlockStateAt(baseX + b.x, baseY + b.y, baseZ + b.z, b.block.state);
         }
     }

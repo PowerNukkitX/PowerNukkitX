@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator;
+package cn.nukkit.level.generator.populator.normal;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCoalOre;
@@ -10,6 +10,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.structure.AbstractStructure;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;

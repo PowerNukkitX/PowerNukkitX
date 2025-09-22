@@ -2,6 +2,7 @@ package cn.nukkit.level.structure;
 
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.block.BlockStructureVoid;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -89,7 +90,7 @@ public class PNXStructure extends AbstractStructure {
                 int paletteIndex = (blocks[index] & 0xFF) - 1;
                 BlockState state;
                 if (paletteIndex == -1) {
-                    state = STATE_AIR;
+                    state = STATE_STRUCTURE_VOID;
                 } else if (paletteIndex < 0 || paletteIndex >= palette.length) {
                     state = STATE_UNKNOWN;
                 } else {
@@ -101,22 +102,25 @@ public class PNXStructure extends AbstractStructure {
         };
     }
 
+    @Override
     public void preparePlace(Position position, BlockManager blockManager) {
         int baseX = position.getFloorX();
         int baseY = position.getFloorY();
         int baseZ = position.getFloorZ();
 
         for (StructureBlockInstance b : getBlockInstances()) {
-            if(b.state == BlockAir.STATE) continue;
+            if(b.state == BlockStructureVoid.PROPERTIES.getDefaultState()) continue;
             blockManager.setBlockStateAt(baseX + b.x, baseY + b.y, baseZ + b.z, b.state);
         }
     }
 
+    @Override
     public void place(Position position, boolean includeEntities, BlockManager blockManager) {
         preparePlace(position, blockManager);
         blockManager.applySubChunkUpdate();
     }
 
+    @Override
     public PNXStructure rotate(StructureRotation rotation) {
         // Rotation support could also be done lazily, but here we materialize.
         if (rotation == StructureRotation.NONE) return this;
@@ -145,6 +149,7 @@ public class PNXStructure extends AbstractStructure {
         return new PNXStructure(newSizeX, sizeY, newSizeZ, palette, rotatedBlocks);
     }
 
+    @Override
     public PNXStructure mirror(StructureMirror mirror) {
         if (mirror == StructureMirror.NONE) return this;
 
