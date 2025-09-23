@@ -6,6 +6,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.custom.CustomEntityComponents;
+import cn.nukkit.entity.custom.CustomEntityDefinition.Meta;
 import cn.nukkit.entity.data.EntityDataMap;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public abstract class EntityLiving extends Entity implements EntityDamageable {
@@ -119,7 +121,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public void collidingWith(Entity ent) { // can override (IronGolem|Bats)
         ent.applyEntityCollision(this);
     }
-
 
     @Override
     public boolean attack(EntityDamageEvent source) {
@@ -436,7 +437,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     /** The radius of the area of blocks the entity will attempt to stay within around a target. */
     public int getFollowRadius() {
         if (isCustomEntity()) {
-            return meta().getFollowRange(CustomEntityComponents.FOLLOW).radius();
+            return meta().getFollowRange(CustomEntityComponents.FOLLOW_RANGE).radius();
         }
         return 0;
     }
@@ -444,7 +445,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     /** The maximum distance the mob will go from a target. */
     public int getFollowMax() {
         if (isCustomEntity()) {
-            return meta().getFollowRange(CustomEntityComponents.FOLLOW).max();
+            return meta().getFollowRange(CustomEntityComponents.FOLLOW_RANGE).max();
         }
         return 0;
     }
@@ -456,6 +457,18 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
      */
     public void setMovementSpeed(float speed) {
         this.movementSpeed = (float) NukkitMath.round(speed, 2);
+    }
+
+    /** Gets the attack power of the entity. */
+    public int getAttackPower() {
+        if (isCustomEntity()) {
+            Meta.Attack atk = meta().getAttack(CustomEntityComponents.ATTACK);
+            int min = atk.min();
+            int max = atk.max();
+            if (max > min) return ThreadLocalRandom.current().nextInt(min, max + 1);
+            return max;
+        }
+        return 1;
     }
 
     public int getAirTicks() {

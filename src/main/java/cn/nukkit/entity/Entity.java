@@ -3533,10 +3533,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return initialized;
     }
 
-
-
-
-
     public boolean isCustomEntity() {
         return this instanceof CustomEntity;
     }

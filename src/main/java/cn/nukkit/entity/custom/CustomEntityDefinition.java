@@ -1,6 +1,7 @@
 package cn.nukkit.entity.custom;
 
 import cn.nukkit.entity.custom.CustomEntityDefinition.Meta.*;
+import cn.nukkit.item.utils.ItemArmorType;
 
 import java.util.LinkedHashSet;
 import java.util.Collections;
@@ -8,6 +9,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
+
+import com.google.common.base.Preconditions;
+
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -157,16 +161,28 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
          * @param max Int value, the maximum distance the mob will go from a target.
          */
         public SimpleBuilder followRange(int radius, int max) {
-            return withObject(CustomEntityComponents.FOLLOW, new FollowRange(radius, max));
+            return withObject(CustomEntityComponents.FOLLOW_RANGE, new FollowRange(radius, max));
         }
 
         /**
-         * Set the entity's melee attack.
-         * @param attackPower Int value
+         * Sets an entity's melee attack
+         * @param damage Int value
          */
-        public SimpleBuilder attack(int attackPower) {
-            return withInt(CustomEntityComponents.ATTACK, Math.max(0, attackPower));
+        public SimpleBuilder attack(int damage) {
+            return attack(damage, damage);
         }
+
+        /**
+         * Sets an entity's melee attack, final value is a random between min and max.
+         * @param min Int value
+         * @param max Int value
+         */
+        public SimpleBuilder attack(int min, int max) {
+            Preconditions.checkArgument(max < min, "max value must be higher or equal to min value.");
+            return withObject(CustomEntityComponents.ATTACK, new Attack(min, max));
+        }
+
+
 
         /**
          * Compels an entity to resist being knocked backwards by a melee attack.
@@ -256,8 +272,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
         }
 
 
-
-
+        // Meta object classes
         public static record Movement(float moveSpeed, float multiplier) {
             public Movement {
                 float a = Float.isFinite(moveSpeed) ? Math.max(0f, moveSpeed) : 0f;
@@ -286,8 +301,6 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
             return (obj instanceof FollowRange data) ? data : new FollowRange(0, 0);
         }
 
-
-
         public static record CollisionBox(float width, float height) {
             public CollisionBox {
                 float a = Float.isFinite(width) ? Math.max(0f, width) : 0f;
@@ -301,6 +314,19 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
         public CollisionBox getCollisionBox(String key) {
             Object obj = components.get(key);
             return (obj instanceof CollisionBox data) ? data : new CollisionBox(1.0f, 1.0f);
+        }
+
+        public static record Attack(int min, int max) {
+            public Attack {
+                min = Math.max(0, min);
+                max = Math.max(0, max);
+            }
+            public int value() { return min; }
+            public int max() { return max; }
+        }
+        public Attack getAttack(String key) {
+            Object obj = components.get(key);
+            return (obj instanceof Attack data) ? data : new Attack(1, 1);
         }
 
 
