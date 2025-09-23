@@ -39,7 +39,7 @@ public class RollExecutor implements EntityControl, IBehaviorExecutor {
 
     public void stop(EntityIntelligent entity) {
         entity.setDataFlag(EntityFlag.ROLLING, false);
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         removeLookTarget(entity);
         removeRouteTarget(entity);
     }

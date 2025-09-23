@@ -14,6 +14,8 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.custom.CustomEntity;
+import cn.nukkit.entity.custom.CustomEntityDefinition;
+import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.data.EntityDataMap;
 import cn.nukkit.entity.data.EntityDataType;
 import cn.nukkit.entity.data.EntityDataTypes;
@@ -72,6 +74,7 @@ import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.plugin.Plugin;
+import cn.nukkit.registry.EntityRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.tags.ItemTags;
@@ -379,17 +382,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     @NotNull
     public abstract String getIdentifier();
 
-    /**
-     * 实体高度
-     * <p>
-     * entity Height
-     *
-     * @return the height
-     */
-    public float getHeight() {
-        return 0;
-    }
-
     public float getCurrentHeight() {
         if (isSwimming()) {
             return getSwimmingHeight();
@@ -406,8 +398,33 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return getCurrentHeight() / 2 + 0.1f;
     }
 
+    /**
+     * Entity Width
+     * @return the width
+     */
     public float getWidth() {
+        if (isCustomEntity()) {
+            return meta().getCollisionBox(CustomEntityComponents.COLLISION_BOX).width();
+        }
         return 0;
+    }
+
+    /**
+     * Entity Height
+     * @return the height
+     */
+    public float getHeight() {
+        if (isCustomEntity()) {
+            return meta().getCollisionBox(CustomEntityComponents.COLLISION_BOX).height();
+        }
+        return 0;
+    }
+
+    public float getKnockbackResistance() {
+        if (isCustomEntity()) {
+            return meta().getFloat(CustomEntityComponents.KNOCKBACK_RESISTANCE, 0f);
+        }
+        return 0f;
     }
 
     public float getLength() {
@@ -641,6 +658,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public Set<String> typeFamily() {
+        if (isCustomEntity()) {
+            return meta().getStringSet(CustomEntityComponents.TYPE_FAMILY);
+        }
         return Set.of();
     }
 
@@ -1043,9 +1063,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * The name that English name of the type of this entity.
+     * The pretty name of this entity.
      */
     public String getOriginalName() {
+        if (isCustomEntity()) {
+            String n = meta().getString(CustomEntityComponents.ORIGINAL_NAME, "");
+            if (!n.isEmpty()) return n;
+        }
         return name == null ? idConvertToName() : name;
     }
 
@@ -1191,15 +1215,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * 当一个实体被攻击时(即接受一个实体伤害事件 这个事件可以是由其他实体攻击导致，也可能是自然伤害)调用.
-     * <p>
      * Called when an entity is attacked (i.e. receives an entity damage event. This event can be caused by an attack by another entity, or it can be a natural damage).
-     *
-     * @param source 记录伤害源的事件<br>Record the event of the source of the attack
-     * @return 是否攻击成功<br>Whether the attack was successful
+     * @param source Record the event of the source of the attack
+     * @return Whether the attack was successful
      */
     public boolean attack(EntityDamageEvent source) {
-        //火焰保护附魔实现
+        // Fire Protection enchantment implemented
         if (hasEffect(EffectType.FIRE_RESISTANCE)
                 && (source.getCause() == DamageCause.FIRE
                 || source.getCause() == DamageCause.FIRE_TICK
@@ -1207,15 +1228,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             return false;
         }
 
-        //水生生物免疫溺水
+        // Aquatic creatures are immune to drowning
         if (this instanceof EntitySwimmable swimmable && !swimmable.canDrown() && source.getCause() == DamageCause.DROWNING)
             return false;
 
-        //飞行生物免疫摔伤
+        // Flying creatures are immune to falls
         if (this instanceof EntityFlyable flyable && !flyable.hasFallingDamage() && source.getCause() == DamageCause.FALL)
             return false;
 
-        //事件回调函数
+        // Event callback function
         getServer().getPluginManager().callEvent(source);
         if (source.isCancelled()) {
             return false;
@@ -1231,18 +1252,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             }
         }
 
-        //吸收伤害实现
-        if (this.absorption > 0) {  // Damage Absorption
+        // Damage absorption implementation
+        if (this.absorption > 0) {
             this.setAbsorption(Math.max(0, this.getAbsorption() + source.getDamage(EntityDamageEvent.DamageModifier.ABSORPTION)));
         }
 
-        //修改最后一次伤害
+        // Modify the last damage
         setLastDamageCause(source);
 
-        //计算血量
+        // Calculating blood volume
         float newHealth = getHealth() - source.getFinalDamage();
 
-        //only player
+        // Only player
         if (newHealth < 1 && this instanceof Player player) {
             if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.SUICIDE) {
                 boolean totem = false;
@@ -1253,7 +1274,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 } else if (player.getInventory().getItemInHand() instanceof ItemTotemOfUndying) {
                     totem = true;
                 }
-                //复活图腾实现
+                // Resurrection Totem Implementation
                 if (totem) {
                     this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_TOTEM_USED);
                     this.getLevel().addParticleEffect(this, ParticleEffect.TOTEM);
@@ -1358,6 +1379,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public int getMaxHealth() {
+        if (isCustomEntity()) {
+            return meta().getInt(CustomEntityComponents.MAX_HEALTH, 20);
+        }
         return maxHealth;
     }
 
@@ -3507,5 +3531,25 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public boolean isInitialized() {
         return initialized;
+    }
+
+
+
+
+
+    public boolean isCustomEntity() {
+        return this instanceof CustomEntity;
+    }
+
+    @Nullable
+    public CustomEntityDefinition getCustomEntityDefinition() {
+        if (!isCustomEntity()) return null;
+        return EntityRegistry.getCustomEntityDefinitionById(getIdentifier());
+    }
+
+    @NotNull
+    protected CustomEntityDefinition.Meta meta() {
+        CustomEntityDefinition def = getCustomEntityDefinition();
+        return def == null ? new CustomEntityDefinition.Meta() : CustomEntityDefinition.metaOf(def.id());
     }
 }

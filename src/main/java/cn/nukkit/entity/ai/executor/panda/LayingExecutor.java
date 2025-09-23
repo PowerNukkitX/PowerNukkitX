@@ -49,6 +49,6 @@ public class LayingExecutor implements EntityControl, IBehaviorExecutor {
         entity.setDataFlag(EntityFlag.LAYING_DOWN, false);
         entity.setDataProperty(EntityDataTypes.SITTING_AMOUNT, 0);
         entity.setDataProperty(EntityDataTypes.SITTING_AMOUNT_PREVIOUS, 0);
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
     }
 }

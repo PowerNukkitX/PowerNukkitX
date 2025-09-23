@@ -69,7 +69,7 @@ public class SummonCommand extends VanillaCommand {
         String fullId = Optional.ofNullable(entityId).map(Registries.ENTITY::getEntityIdentifier).orElse(entityType);
         EntityRegistry.EntityDefinition def = Registries.ENTITY.getEntityDefinition(fullId);
 
-        if (def == null || !def.summonable()) {
+        if (def == null || !def.isSummonable()) {
             log.addError("commands.summon.failed").output();
             return 0;
         }

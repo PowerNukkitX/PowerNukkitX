@@ -102,7 +102,7 @@ public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor 
     @Override
     public void onStop(EntityIntelligent entity) {
         removeLookTarget(entity);
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -114,7 +114,7 @@ public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
         removeLookTarget(entity);
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }

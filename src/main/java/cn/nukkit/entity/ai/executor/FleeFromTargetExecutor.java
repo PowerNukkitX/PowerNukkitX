@@ -95,7 +95,7 @@ public class FleeFromTargetExecutor implements EntityControl, IBehaviorExecutor 
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         entity.setEnablePitch(false);
         if (clearDataWhenLose)
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
