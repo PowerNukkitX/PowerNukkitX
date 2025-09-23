@@ -7,6 +7,7 @@ import cn.nukkit.block.BlockEntityHolder;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
@@ -22,6 +23,7 @@ import cn.nukkit.network.protocol.UpdateSubChunkBlocksPacket;
 import cn.nukkit.network.protocol.types.BlockChangeEntry;
 import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.apache.logging.log4j.util.InternalApi;
 
 import java.nio.ByteBuffer;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public class BlockManager {
@@ -185,8 +188,14 @@ public class BlockManager {
     }
 
     public void applyWithoutUpdate() {
+        Set<Long> hashes = new ObjectOpenHashSet<>();
         for (var b : this.places.values()) {
+            hashes.add(Level.chunkHash(b.getChunkX(), b.getChunkZ()));
             this.level.setBlock(b, b, false, false);
+        }
+        for(Long hash : hashes) {
+            IChunk chunk = level.getChunk(Level.getHashX(hash), Level.getHashZ(hash));
+            chunk.setChanged(false);
         }
     }
 
