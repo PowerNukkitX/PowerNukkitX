@@ -53,7 +53,6 @@ public class NormalTerrainStage extends GenerateStage {
         if(picker == null) picker = (OverworldBiomePicker) level.getBiomePicker();
         if(surfaceNoise == null) surfaceNoise = new SimplexNoise(random.identical(), -6, new float[]{1f, 1f, 1f});
         if(jagged == null) jagged = new SimplexNoise(random.identical(), -16, new float[]{1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f});
-
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
                 OverworldBiomeResult result = picker.pick(baseX + x, SEA_LEVEL, baseZ + z);
@@ -61,10 +60,10 @@ public class NormalTerrainStage extends GenerateStage {
                 float baseHeightSum = 0.0F;
                 float biomeWeightSum = 0.0F;
                 int smoothFactor = 0;
-                if(biomeId == BiomeID.RIVER) smoothFactor = 5;
-                if(biomeId == BiomeID.OCEAN) smoothFactor = 5;
+                if(biomeId == BiomeID.RIVER) smoothFactor = 3;
                 for (int xSmooth = -smoothFactor; xSmooth <= smoothFactor; ++xSmooth) {
                     for (int zSmooth = -smoothFactor; zSmooth <= smoothFactor; ++zSmooth) {
+                        if(!(Math.abs(xSmooth) == smoothFactor || Math.abs(zSmooth) == smoothFactor)) continue;
                         int cx = x + baseX + xSmooth;
                         int cz = z + baseZ + zSmooth;
                         OverworldBiomeResult result1 = picker.pick(cx, SEA_LEVEL, cz);
@@ -75,9 +74,11 @@ public class NormalTerrainStage extends GenerateStage {
                         depthSplineMap.put("minecraft:overworld/ridges_folded", (double) result1.getPv());
                         depthSplineMap.put("minecraft:overworld/ridges", (double) result1.getWeirdness());
                         float jaggedValue = jagged.getValue(cx * 1500, SEA_LEVEL, cz * 1500);
+
                         if (jaggedValue < 0) jaggedValue /= 2;
                         float jaggedness = (float) (JaggednessSpline.CACHED_SPLINE.evaluate(depthSplineMap) * jaggedValue * 4);
                         float depth = (float) (OffsetSpline.CACHED_SPLINE.evaluate(depthSplineMap) - 0.5037500262260437f);
+
                         float finalDensity = jaggedness + depth;
                         float finalDensityRoughed = finalDensity;
                         baseHeightSum += finalDensityRoughed * weight;
@@ -90,9 +91,9 @@ public class NormalTerrainStage extends GenerateStage {
                     float density = surfaceNoise.getValue((x + baseX), y,z + baseZ);
                     float densityMod = ((baseHeightSum + 0.18f) - NukkitMath.remapNormalized(y, level.getMinHeight(), level.getMaxHeight())) * 24;
                     if(density + densityMod > 0) {
-                        chunk.setBlockState(x, y, z, STONE);
+                        chunk.getSection(y >> 4).setBlockState(x, y & 0x0f, z, STONE, 0);
                     } else {
-                        if(y <= SEA_LEVEL) chunk.setBlockState(x, y, z, WATER);
+                        if(y <= SEA_LEVEL) chunk.getSection(y >> 4).setBlockState(x, y & 0x0f, z, WATER, 0);
                     }
                 }
             }
@@ -100,17 +101,17 @@ public class NormalTerrainStage extends GenerateStage {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 for(int y = level.getMinHeight(); y < 0; y++) {
-                    chunk.setBlockState(x, y, z, DEEPSLATE);
+                    chunk.getSection(y >> 4).setBlockState(x, y & 0x0f, z, DEEPSLATE, 0);
                 }
                 for (int y = 0; y < 8; y++) {
                     if (random.nextBoundedInt(y) == 0) {
-                        chunk.setBlockState(x, y, z, DEEPSLATE);
+                        chunk.getSection(0).setBlockState(x, y & 0x0f, z, DEEPSLATE, 0);
                     }
                 }
-                chunk.setBlockState(x, level.getMinHeight(), z, BEDROCK);
+                chunk.getSection(level.getMinHeight() >> 4).setBlockState(x, level.getMinHeight() & 0x0f, z, BEDROCK, 0);
                 for (int i = 1; i < 5; i++) {
                     if (random.nextBoundedInt(i) == 0) {
-                        chunk.setBlockState(x, level.getMinHeight() +i, z, BEDROCK);
+                        chunk.getSection(level.getMinHeight() >> 4).setBlockState(x, (level.getMinHeight() + i) & 0x0f, z, STONE, 0);
                     }
                 }
             }

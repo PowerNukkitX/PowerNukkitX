@@ -188,15 +188,20 @@ public class BlockManager {
     }
 
     public void applyWithoutUpdate() {
-        Set<Long> hashes = new ObjectOpenHashSet<>();
-        for (var b : this.places.values()) {
-            hashes.add(Level.chunkHash(b.getChunkX(), b.getChunkZ()));
-            this.level.setBlock(b, b, false, false);
+        HashMap<IChunk, ArrayList<Block>> chunks = new HashMap<>();
+        for (var b : places.values()) {
+            ArrayList<Block> chunk = chunks.computeIfAbsent(level.getChunk(b.getChunkX(), b.getChunkZ(), true), c -> new ArrayList<>());
+            chunk.add(b);
         }
-        for(Long hash : hashes) {
-            IChunk chunk = level.getChunk(Level.getHashX(hash), Level.getHashZ(hash));
-            chunk.setChanged(false);
-        }
+        chunks.entrySet().parallelStream().forEach(entry -> {
+            final var key = entry.getKey();
+            final var value = entry.getValue();
+            key.batchProcess(unsafeChunk -> {
+                value.forEach(b -> {
+                    unsafeChunk.setBlockState(b.getFloorX() & 15, b.getFloorY(), b.getFloorZ() & 15, b.getBlockState(), b.layer);
+                });
+            });
+        });
     }
 
     public void applyBlockUpdate() {

@@ -13,7 +13,7 @@ import cn.nukkit.network.protocol.types.StructureRotation;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractStructure {
-    protected static final BlockState STATE_AIR = BlockAir.PROPERTIES.getDefaultState();
+    protected static final BlockState STATE_AIR = BlockAir.STATE;
     protected static final BlockState STATE_UNKNOWN = BlockUnknown.PROPERTIES.getDefaultState();
     protected static final BlockState STATE_STRUCTURE_VOID = BlockStructureVoid.PROPERTIES.getDefaultState();
     protected String name;

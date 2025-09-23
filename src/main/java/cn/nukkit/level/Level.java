@@ -2167,7 +2167,7 @@ public class Level implements Metadatable {
     }
 
     public Block getBlock(int x, int y, int z, int layer, boolean load) {
-        BlockState fullState = BlockAir.PROPERTIES.getDefaultState();
+        BlockState fullState = BlockAir.STATE;
         if (isYInRange(y)) {
             int cx = x >> 4;
             int cz = z >> 4;

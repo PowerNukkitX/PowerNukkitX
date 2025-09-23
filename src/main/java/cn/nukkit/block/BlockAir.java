@@ -21,7 +21,7 @@ public class BlockAir extends BlockTransparent {
     }
 
     public BlockAir() {
-        super(PROPERTIES.getDefaultState());
+        super(STATE);
     }
 
     public BlockAir(BlockState blockState) {

@@ -796,10 +796,8 @@ public class Chunk implements IChunk {
     protected ChunkSection getOrCreateSection(int sectionY) {
         int minSectionY = this.getDimensionData().getMinSectionY();
         int offsetY = sectionY - minSectionY;
-        for (int i = 0; i <= offsetY; i++) {
-            if (sections[i] == null) {
-                sections[i] = new ChunkSection((byte) (i + minSectionY));
-            }
+        if(this.sections[offsetY] == null) {
+            this.sections[offsetY] = new ChunkSection((byte) (offsetY + minSectionY));
         }
         return sections[offsetY];
     }
