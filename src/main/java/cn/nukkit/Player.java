@@ -2642,6 +2642,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("player");
+    }
+
+    @Override
     public float getHeight() {
         if (this.riding instanceof EntityHorse) {
             return 1.1f;
