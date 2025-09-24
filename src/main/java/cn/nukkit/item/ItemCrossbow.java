@@ -167,10 +167,14 @@ public class ItemCrossbow extends ItemTool {
         player.getInventory().setItemInHand(this);
     }
 
+    @Override
+    public int getUsingTicks() {
+        return 72000;
+    }
+
     public boolean onRelease(Player player, int ticksUsed) {
         return true;
     }
-
 
     public void loadArrow(Player player, Item arrow) {
         if (arrow != null) {
