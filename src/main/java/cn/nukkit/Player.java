@@ -1501,11 +1501,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    @Override
-    public double getStepHeight() {
-        return 0.6f;
-    }
-
     /**
      * @return {@link #lastAttackEntity}
      */
