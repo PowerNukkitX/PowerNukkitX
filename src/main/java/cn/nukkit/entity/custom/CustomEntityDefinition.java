@@ -1,7 +1,6 @@
 package cn.nukkit.entity.custom;
 
 import cn.nukkit.entity.custom.CustomEntityDefinition.Meta.*;
-import cn.nukkit.item.utils.ItemArmorType;
 
 import java.util.LinkedHashSet;
 import java.util.Collections;
@@ -124,9 +123,9 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
          * @param height Float value, height of the collision box in blocks. A negative value will be assumed to be 0.
          */
         public SimpleBuilder collisionBox(float width, float height) {
-            float w = width  < 0f ? 0f : width;
-            float h = height < 0f ? 0f : height;
-            return withObject(CustomEntityComponents.COLLISION_BOX, new CollisionBox(w, h));
+            float a = width  < 0f ? 0f : width;
+            float b = height < 0f ? 0f : height;
+            return withObject(CustomEntityComponents.COLLISION_BOX, new CollisionBox(a, b));
         }
 
         /**
@@ -178,11 +177,9 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
          * @param max Int value
          */
         public SimpleBuilder attack(int min, int max) {
-            Preconditions.checkArgument(max < min, "max value must be higher or equal to min value.");
+            Preconditions.checkArgument(max >= min, "max value must be higher or equal to min value.");
             return withObject(CustomEntityComponents.ATTACK, new Attack(min, max));
         }
-
-
 
         /**
          * Compels an entity to resist being knocked backwards by a melee attack.
@@ -209,6 +206,32 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
             }
             return withStringSet(CustomEntityComponents.TYPE_FAMILY, out);
         }
+
+        /**
+         * Entities with this component will have a maximum auto step height that is different depending <p>
+         * on whether they are on a block that prevents jumping.
+         * @param base Float value, the maximum auto step height when on any other block.
+         * @param controlled Float value, the maximum auto step height when on any other block and controlled by the player.
+         * @param jumpPrevented Float value, the maximum auto step height when on a block that prevents jumping.
+         */
+        public SimpleBuilder maxAutoStep(float base, float controlled, float jumpPrevented) {
+            float a = base  < 0f ? 0f : base;
+            float b = controlled < 0f ? 0f : controlled;
+            float c = jumpPrevented < 0f ? 0f : jumpPrevented;
+            return withObject(CustomEntityComponents.MAX_AUTO_STEP, new MaxAutoStep(a, b, c));
+        }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -330,7 +353,23 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
         }
 
 
-
+        public static record MaxAutoStep(float base, float controlled, float jumpPrevented) {
+            public MaxAutoStep {
+                float a = Float.isFinite(base) ? Math.max(0f, base) : 0f;
+                float b = Float.isFinite(controlled) ? Math.max(0f, controlled) : 0f;
+                float c = Float.isFinite(jumpPrevented) ? Math.max(0f, jumpPrevented) : 0f;
+                base = a;
+                controlled = b;
+                jumpPrevented = c;
+            }
+            public float base() { return base; }
+            public float controlled() { return controlled; }
+            public float jumpPrevented() { return jumpPrevented; }
+        }
+        public MaxAutoStep getMaxAutoStep(String key) {
+            Object obj = components.get(key);
+            return (obj instanceof MaxAutoStep data) ? data : new MaxAutoStep(0.5625f, 0.5625f, 0.5625f);
+        }
 
 
 

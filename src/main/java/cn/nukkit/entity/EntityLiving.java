@@ -64,7 +64,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @Override
     protected double getStepHeight() {
-        return 0.5;
+        if (isCustomEntity()) {
+            return meta().getMaxAutoStep(CustomEntityComponents.MAX_AUTO_STEP).base();
+        }
+        return 0.5625;
     }
 
     @Override
