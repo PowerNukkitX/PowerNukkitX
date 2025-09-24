@@ -1918,8 +1918,26 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 
-
+    /**
+     * @deprecated Use {@link #canBePushedByEntities(boolean)} and/or {@link #canBePushedByPiston(boolean)}instead. <p>
+     * If custom entitye use simpleBuilder.pusable() to define.
+     */
+    @Deprecated
     public boolean canBePushed() {
+        return canBePushedByPiston();
+    }
+
+    public boolean canBePushedByEntities() {
+        if (isCustomEntity()) {
+            return meta().getPushable(CustomEntityComponents.PUSHABLE).isPushable();
+        }
+        return true;
+    }
+
+    public boolean canBePushedByPiston() {
+        if (isCustomEntity()) {
+            return meta().getPushable(CustomEntityComponents.PUSHABLE).isPushableByPiston();
+        }
         return true;
     }
 

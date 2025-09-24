@@ -264,6 +264,12 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void handleCollideMovement(int currentTick) {
+        if (!this.canBePushedByEntities()) {
+            this.previousCollideMotion.setX(0);
+            this.previousCollideMotion.setZ(0);
+            return;
+        }
+
         var selfAABB = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);
         var collidingEntities = this.level.fastCollidingEntities(selfAABB, this);
         collidingEntities.removeIf(entity -> !(entity.canCollide() && (entity instanceof EntityPhysical || entity instanceof Player)));
@@ -275,6 +281,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             return;
         } else {
             if (!onCollide(currentTick, collidingEntities)) {
+                this.previousCollideMotion.setX(0);
+                this.previousCollideMotion.setZ(0);
                 return;
             }
         }
@@ -359,14 +367,13 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     protected void calculateOffsetBoundingBox() {
         if (this.offsetBoundingBox == null) return;
-        final double dx = this.getWidth() * 0.5;
-        final double dz = this.getWidth() * 0.5;
-        this.offsetBoundingBox.setMinX(this.x - dx);
-        this.offsetBoundingBox.setMaxX(this.x + dx);
+        final double half = this.getWidth() * 0.5;
+        this.offsetBoundingBox.setMinX(this.x - half);
+        this.offsetBoundingBox.setMaxX(this.x + half);
         this.offsetBoundingBox.setMinY(this.y);
         this.offsetBoundingBox.setMaxY(this.y + this.getHeight());
-        this.offsetBoundingBox.setMinZ(this.z - dz);
-        this.offsetBoundingBox.setMaxZ(this.z + dz);
+        this.offsetBoundingBox.setMinZ(this.z - half);
+        this.offsetBoundingBox.setMaxZ(this.z + half);
     }
 
     public AxisAlignedBB getOffsetBoundingBox() {

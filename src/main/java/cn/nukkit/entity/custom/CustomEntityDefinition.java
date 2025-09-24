@@ -221,13 +221,23 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
             return withObject(CustomEntityComponents.MAX_AUTO_STEP, new MaxAutoStep(a, b, c));
         }
 
+        /**
+         * Defines what can push an entity between other entities and pistons.
+         * @param isPushable boolean value, whether the entity can be pushed by other entities.
+         * @param isPushableByPiston boolean value, ehether the entity can be pushed by pistons safely.
+         */
+        public SimpleBuilder pushable(boolean isPushable, boolean isPushableByPiston) {
+            return withObject(CustomEntityComponents.PUSHABLE, new Pushable(isPushable, isPushableByPiston));
+        }
 
-
-
-
-
-
-
+        /**
+         * Defines what can push an entity between other entities and pistons.
+         * @param isPushable boolean value, whether the entity can be pushed by other entities. (defaults to true)
+         * @param isPushableByPiston boolean value, ehether the entity can be pushed by pistons safely. (defaults to true)
+         */
+        public SimpleBuilder pushable(boolean isPushable) {
+            return pushable(isPushable, true);
+        }
 
 
 
@@ -370,6 +380,22 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
             Object obj = components.get(key);
             return (obj instanceof MaxAutoStep data) ? data : new MaxAutoStep(0.5625f, 0.5625f, 0.5625f);
         }
+
+
+        public static record Pushable(boolean isPushable, boolean isPushableByPiston) {
+            public boolean isPushable() { return isPushable; }
+            public boolean isPushableByPiston() { return isPushableByPiston; }
+        }
+        public Pushable getPushable(String key) {
+            Object obj = components.get(key);
+            return (obj instanceof Pushable data) ? data : new Pushable(true, true);
+        }
+
+
+
+
+
+
 
 
 

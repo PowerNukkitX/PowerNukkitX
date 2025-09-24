@@ -14,4 +14,5 @@ public final class CustomEntityComponents {
     public static final String COLLISION_BOX         = "collision_box";
     public static final String KNOCKBACK_RESISTANCE  = "knockback_resistance";
     public static final String MAX_AUTO_STEP         = "max_auto_step";
+    public static final String PUSHABLE              = "pushable";
 }
