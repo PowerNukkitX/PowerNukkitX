@@ -565,15 +565,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @Override
     public boolean isPersistent() {
-        if (isCustomEntity()) {
-            if (meta().getBoolean(CustomEntityComponents.PERSISTENT, false)) {
-                return true;
-            }
-        }
-        if (this.namedTag.contains("Persistent") && this.namedTag.getBoolean("Persistent")) {
-            return true;
-        }
-        return false;
+        return (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false))
+            || (this.namedTag.contains("Persistent") && this.namedTag.getBoolean("Persistent"));
     }
 
     public void preAttack(Player player) {
