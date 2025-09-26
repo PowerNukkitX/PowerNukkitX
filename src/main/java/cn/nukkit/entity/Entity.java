@@ -2014,10 +2014,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return true;
     }
 
-
-
-
-
     public boolean hasCollision() {
         if (isCustomEntity()) {
             return meta().getPhysics(CustomEntityComponents.PHYSICS).hasCollision();
@@ -2038,22 +2034,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
         return true;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public BlockFace getDirection() {
         double rotation = this.yaw % 360;
