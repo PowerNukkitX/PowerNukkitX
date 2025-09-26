@@ -2560,7 +2560,8 @@ public class Level implements Metadatable {
                 Entity.getDefaultNBT(source, motion, new Random().nextFloat() * 360, 0)
                         .putShort("Health", 5)
                         .putCompound("Item", NBTIO.putItemHelper(item))
-                        .putShort("PickupDelay", delay));
+                        .putShort("PickupDelay", delay)
+                        .putBoolean("ShouldDespawn", item.shouldDespawn()));
 
         if (itemEntity != null) {
             itemEntity.spawnToAll();

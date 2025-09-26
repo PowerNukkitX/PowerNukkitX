@@ -111,7 +111,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     @Override
     public void updateMovement() {
         // Detection of free fall time
-        if (isFalling()) {
+        if (this.hasGravity() && isFalling()) {
             this.fallingTick++;
         }
         super.updateMovement();
@@ -134,6 +134,11 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void handleGravity() {
+        if (!this.hasGravity()) {
+            resetFallDistance();
+            this.fallingTick = 0;
+            return;
+        }
         // Gravity is always there
         this.motionY -= this.getGravity();
         if (!this.onGround && this.hasWaterAt(getFootHeight())) {
@@ -161,8 +166,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (Math.abs(this.motionX) < PRECISION) this.motionX = 0;
         if (Math.abs(this.motionZ) < PRECISION) this.motionZ = 0;
     }
-
-
 
     /** Calculate fluid resistance (air/liquid) */
     protected void handlePassableBlockFrictionMovement() {
@@ -387,7 +390,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     @Override
     public float getGravity() {
-        return super.getGravity();
+        return this.hasGravity() ? super.getGravity() : 0f;
     }
 
     public int getFallingTick() {

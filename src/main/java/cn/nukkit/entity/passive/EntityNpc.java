@@ -77,6 +77,11 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
     }
 
     @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
+    @Override
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(Integer.MAX_VALUE); // Should be Float max value

@@ -245,6 +245,11 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
     }
 
     @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
+    @Override
     public void addBossbar(Player player) {
         BossEventPacket pkBoss = new BossEventPacket();
         pkBoss.bossEid = this.id;

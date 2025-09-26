@@ -206,4 +206,9 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     public Set<String> typeFamily() {
         return Set.of("bee", "mob", "arthropod", "pacified");
     }
+
+    @Override
+    public boolean isPersistent() {
+        return true;
+    }
 }

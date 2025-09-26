@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.common.base.Preconditions;
-
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -224,24 +223,29 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
         /**
          * Defines what can push an entity between other entities and pistons.
          * @param isPushable boolean value, whether the entity can be pushed by other entities.
-         * @param isPushableByPiston boolean value, ehether the entity can be pushed by pistons safely.
+         * @param isPushableByPiston boolean value, wehether the entity can be pushed by pistons safely.
          */
         public SimpleBuilder pushable(boolean isPushable, boolean isPushableByPiston) {
             return withObject(CustomEntityComponents.PUSHABLE, new Pushable(isPushable, isPushableByPiston));
         }
 
         /**
-         * Defines what can push an entity between other entities and pistons.
-         * @param isPushable boolean value, whether the entity can be pushed by other entities. (defaults to true)
-         * @param isPushableByPiston boolean value, ehether the entity can be pushed by pistons safely. (defaults to true)
+         * Defines physics properties of an actor, including if it is affected by gravity or if it collides with objects.
+         * @param hasCollision boolean value, whether or not the object collides with things. (defaults to true)
+         * @param hasGravity boolean value, whether or not the entity is affected by gravity. (defaults to true)
+         * @param pushTowardsClosestSpace boolean value, whether or not the entity should be pushed towards the nearest open area when stuck inside a block. (defaults to true)
          */
-        public SimpleBuilder pushable(boolean isPushable) {
-            return pushable(isPushable, true);
+        public SimpleBuilder physics(boolean hasCollision, boolean hasGravity, boolean pushTowardsClosestSpace) {
+            return withObject(CustomEntityComponents.PHYSICS, new Physics(hasCollision, hasGravity, pushTowardsClosestSpace));
         }
 
-
-
-
+        /**
+         * Set the default max health of the entity.
+         * @param maxHealth Int value
+         */
+        public SimpleBuilder isPersistent(boolean value) {
+            return withBoolean(CustomEntityComponents.PERSISTENT, value);
+        }
 
 
 
@@ -305,7 +309,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
         }
 
 
-        // Meta object classes
+        // Movement Meta
         public static record Movement(float moveSpeed, float multiplier) {
             public Movement {
                 float a = Float.isFinite(moveSpeed) ? Math.max(0f, moveSpeed) : 0f;
@@ -321,6 +325,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
             return (obj instanceof Movement data) ? data : new Movement(0.0f, 1.0f);
         }
 
+        // Follow Range Meta
         public static record FollowRange(int radius, int max) {
             public FollowRange {
                 radius = Math.max(0, radius);
@@ -334,6 +339,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
             return (obj instanceof FollowRange data) ? data : new FollowRange(0, 0);
         }
 
+        // Collision-box Meta
         public static record CollisionBox(float width, float height) {
             public CollisionBox {
                 float a = Float.isFinite(width) ? Math.max(0f, width) : 0f;
@@ -349,6 +355,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
             return (obj instanceof CollisionBox data) ? data : new CollisionBox(1.0f, 1.0f);
         }
 
+        // Attack Meta
         public static record Attack(int min, int max) {
             public Attack {
                 min = Math.max(0, min);
@@ -362,7 +369,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
             return (obj instanceof Attack data) ? data : new Attack(1, 1);
         }
 
-
+        // Auto-step Meta
         public static record MaxAutoStep(float base, float controlled, float jumpPrevented) {
             public MaxAutoStep {
                 float a = Float.isFinite(base) ? Math.max(0f, base) : 0f;
@@ -381,7 +388,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
             return (obj instanceof MaxAutoStep data) ? data : new MaxAutoStep(0.5625f, 0.5625f, 0.5625f);
         }
 
-
+        // Pushable Meta
         public static record Pushable(boolean isPushable, boolean isPushableByPiston) {
             public boolean isPushable() { return isPushable; }
             public boolean isPushableByPiston() { return isPushableByPiston; }
@@ -391,17 +398,16 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
             return (obj instanceof Pushable data) ? data : new Pushable(true, true);
         }
 
-
-
-
-
-
-
-
-
-
-
-
+        // Physics Meta
+        public static record Physics(boolean hasCollision, boolean hasGravity, boolean pushTowardsClosestSpace) {
+            public boolean hasCollision() { return hasCollision; }
+            public boolean hasGravity() { return hasGravity; }
+            public boolean pushTowardsClosestSpace() { return pushTowardsClosestSpace; } // TODO: implement on core
+        }
+        public Physics getPhysics(String key) {
+            Object obj = components.get(key);
+            return (obj instanceof Physics data) ? data : new Physics(true, true, true);
+        }
     }
 
     public static final class MetaStore {

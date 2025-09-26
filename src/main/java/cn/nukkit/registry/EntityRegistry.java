@@ -52,11 +52,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     private static final List<EntityRegistry.EntityDefinition> CUSTOM_ENTITY_DEFINITIONS = new ArrayList<>();
     private static final List<SpawnRule> SPAWN_RULES = new ArrayList<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
-
-
     private static final ConcurrentHashMap<String, CustomEntityDefinition> CUSTOM_ENTITY_DEFINITION_MAP = new ConcurrentHashMap<>();
-
-
     private static byte[] TAG;
 
 

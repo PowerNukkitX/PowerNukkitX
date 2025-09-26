@@ -71,6 +71,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     @Override
+    protected double getStepHeightControlled() {
+        if (isCustomEntity()) {
+            return meta().getMaxAutoStep(CustomEntityComponents.MAX_AUTO_STEP).controlled();
+        }
+        return 0.5625;
+    }
+
+    @Override
+    protected double getStepHeightJumpPrevented() {
+        if (isCustomEntity()) {
+            return meta().getMaxAutoStep(CustomEntityComponents.MAX_AUTO_STEP).jumpPrevented();
+        }
+        return 0.5625;
+    }
+
+    @Override
     protected void initEntity() {
         super.initEntity();
 
@@ -547,12 +563,17 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
     }
 
+    @Override
     public boolean isPersistent() {
-        return namedTag.containsByte("Persistent") && namedTag.getBoolean("Persistent");
-    }
-
-    public void setPersistent(boolean persistent) {
-        namedTag.putBoolean("Persistent", persistent);
+        if (isCustomEntity()) {
+            if (meta().getBoolean(CustomEntityComponents.PERSISTENT, false)) {
+                return true;
+            }
+        }
+        if (this.namedTag.contains("Persistent") && this.namedTag.getBoolean("Persistent")) {
+            return true;
+        }
+        return false;
     }
 
     public void preAttack(Player player) {

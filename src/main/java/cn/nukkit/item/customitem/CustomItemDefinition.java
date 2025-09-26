@@ -80,7 +80,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         protected int maxStackSize = -1;
         protected List<String> tags;
         protected Float  miningSpeed;
-        protected boolean makePersistent = false;
+        protected boolean shouldDespawn = true;
         protected Boolean stackedByData;
         protected String useAnimationType;
         protected Float   useModifierMovement;
@@ -397,8 +397,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * Make persistent component determines if the item should eventually despawn/or not while floating in the world
          * @param persistent boolean true/flase
          */
-        public SimpleBuilder makePersistent(boolean persistent) {
-            this.makePersistent = persistent;
+        public SimpleBuilder shouldDespawn(boolean shouldDespawn) {
+            this.shouldDespawn = shouldDespawn;
             return this;
         }
 
@@ -1032,7 +1032,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
         private void writeBaseItemProps(CompoundTag itemProps) {
             itemProps.putFloat("mining_speed", this.miningSpeed != null ? this.miningSpeed : 1.0f);
-            itemProps.putBoolean("should_despawn", !makePersistent);
+            itemProps.putBoolean("should_despawn", shouldDespawn);
             itemProps.putBoolean("stacked_by_data", this.stackedByData != null ? this.stackedByData : false);
         }
 
@@ -1230,6 +1230,16 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             Preconditions.checkArgument(speed >= 0f, "miningSpeed must be >= 0");
             this.miningSpeed = speed;
             return this;
+        }
+
+        /**
+         * @deprecated to avoid misleading, use {@link #shouldDespawn()} instead.
+         * Make persistent component determines if the item should eventually despawn/or not while floating in the world
+         * @param persistent boolean true/flase
+         */
+        @Deprecated
+        public SimpleBuilder makePersistent(boolean makePersistent) {
+            return shouldDespawn(!makePersistent);
         }
     }
 

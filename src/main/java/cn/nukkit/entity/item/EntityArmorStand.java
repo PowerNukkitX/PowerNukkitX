@@ -123,16 +123,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
-    public boolean isPersistent() {
-        return true;
-    }
-
-    @Override
-    public void setPersistent(boolean persistent) {
-        // Armor stands are always persistent
-    }
-
-    @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (player.isSpectator() || !isValid()) {
             return false;

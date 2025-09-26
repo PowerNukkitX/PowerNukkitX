@@ -159,6 +159,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public boolean fireProof;
     public boolean invulnerable;
     public boolean despawnable;
+    protected int lastPlayerNearbyTick = 0;
     public double highestPosition;
     public boolean closed = false;
     public boolean noClip = false;
@@ -190,6 +191,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     private final Map<String, Integer> intProperties = new LinkedHashMap<>();
     private final Map<String, Float> floatProperties = new LinkedHashMap<>();
     protected final Map<Integer, Attribute> attributes = new HashMap<>();
+
+    protected static final int DEFAULT_SOFT_DESPAWN_DISTANCE = 74;
+    protected static final int DEFAULT_HARD_DESPAWN_DISTANCE = 128;
+    protected static final int DEFAULT_SOFT_DESPAWN_GRACE_TICKS = 20 * 45;
 
     private String idConvertToName() {
         var path = getIdentifier().split(":")[1];
@@ -403,6 +408,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @return the width
      */
     public float getWidth() {
+        if (!hasCollision()) return 0f;
         if (isCustomEntity()) {
             return meta().getCollisionBox(CustomEntityComponents.COLLISION_BOX).width();
         }
@@ -414,6 +420,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @return the height
      */
     public float getHeight() {
+        if (!hasCollision()) return 0f;
         if (isCustomEntity()) {
             return meta().getCollisionBox(CustomEntityComponents.COLLISION_BOX).height();
         }
@@ -435,6 +442,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return 0;
     }
 
+    protected double getStepHeightControlled() {
+        return 0;
+    }
+
+    protected double getStepHeightJumpPrevented() {
+        return 0;
+    }
+
     public boolean canCollide() {
         return true;
     }
@@ -453,6 +468,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public int getFrostbiteInjury() {
         return 1;
+    }
+
+    public boolean isPersistent() {
+        return true;
+    }
+
+    public void setPersistent(boolean persistent) {
+        namedTag.putBoolean("Persistent", persistent);
     }
 
     /**
@@ -601,7 +624,16 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
         this.scale = this.namedTag.getFloat("Scale");
         if (!this.namedTag.contains("Despawnable")) {
-            this.namedTag.putBoolean("Despawnable", false);
+            boolean persistent = false;
+            if (isCustomEntity()) {
+                if (meta().getBoolean(CustomEntityComponents.PERSISTENT, false)) {
+                    persistent = true;
+                }
+            }
+            if (!persistent && this.namedTag.contains("Persistent") && this.namedTag.getBoolean("Persistent")) {
+                persistent = true;
+            }
+            this.namedTag.putBoolean("Despawnable", !persistent);
         }
         this.despawnable = this.namedTag.getBoolean("Despawnable");
         try {
@@ -1634,6 +1666,47 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.age += tickDiff;
         this.ticksLived += tickDiff;
 
+        // Auto-despawn mobs
+        if (!this.isPersistent() && this.isAlive()) {
+            final int tickNow = this.level.getTick();
+            final int softDistSq = DEFAULT_SOFT_DESPAWN_DISTANCE * DEFAULT_SOFT_DESPAWN_DISTANCE;
+            final int hardDistSq = DEFAULT_HARD_DESPAWN_DISTANCE * DEFAULT_HARD_DESPAWN_DISTANCE;
+
+            Player nearest = null;
+            double nearestSq = Double.MAX_VALUE;
+
+            if (!this.level.getPlayers().isEmpty()) {
+                for (Player p : this.level.getPlayers().values()) {
+                    if (!p.isOnline() || p.isSpectator()) continue;
+                    double dsq = p.distanceSquared(this);
+                    if (dsq < nearestSq) {
+                        nearestSq = dsq;
+                        nearest = p;
+                    }
+                }
+            }
+
+            // Hard distance -> immediate despawn
+            if (nearest == null || nearestSq > hardDistSq) {
+                this.despawnFromAll();
+                this.close();
+                return hasUpdate;
+            }
+
+            // Soft distance -> start/consume grace
+            if (nearestSq <= softDistSq) {
+                this.lastPlayerNearbyTick = tickNow;
+            } else {
+                if (this.lastPlayerNearbyTick == 0) {
+                    this.lastPlayerNearbyTick = tickNow;
+                } else if ((tickNow - this.lastPlayerNearbyTick) >= DEFAULT_SOFT_DESPAWN_GRACE_TICKS) {
+                    this.despawnFromAll();
+                    this.close();
+                    return hasUpdate;
+                }
+            }
+        }
+
         return hasUpdate;
     }
 
@@ -1941,6 +2014,47 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return true;
     }
 
+
+
+
+
+    public boolean hasCollision() {
+        if (isCustomEntity()) {
+            return meta().getPhysics(CustomEntityComponents.PHYSICS).hasCollision();
+        }
+        return true;
+    }
+
+    public boolean hasGravity() {
+        if (isCustomEntity()) {
+            return meta().getPhysics(CustomEntityComponents.PHYSICS).hasGravity();
+        }
+        return true;
+    }
+
+    public boolean pushTowardsClosestSpace() {
+        if (isCustomEntity()) {
+            return meta().getPhysics(CustomEntityComponents.PHYSICS).pushTowardsClosestSpace();
+        }
+        return true;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public BlockFace getDirection() {
         double rotation = this.yaw % 360;
         if (rotation < 0) {
@@ -2147,6 +2261,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public boolean onInteract(Player player, Item item) {
         this.despawnable = false;
+        this.setPersistent(true);
         return false;
     }
 
