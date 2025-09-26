@@ -1,28 +1,19 @@
-package cn.nukkit.level.generator.object;
+package cn.nukkit.level.generator.object.structures;
 
 import cn.nukkit.block.*;
 import cn.nukkit.block.property.enums.LeverDirection;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntityChest;
-import cn.nukkit.blockentity.BlockEntityPistonArm;
-import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemPotion;
-import cn.nukkit.item.ItemSplashPotion;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.biome.BiomeID;
+import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.RandomizableContainer;
+import cn.nukkit.level.generator.object.RuledObjectGenerator;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-import cn.nukkit.registry.Registries;
-import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 
 import java.util.Map;
@@ -33,7 +24,6 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.LEVER_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.REPEATER_DELAY;
-import static cn.nukkit.block.property.CommonBlockProperties.SAND_TYPE;
 import static cn.nukkit.block.property.CommonBlockProperties.VINE_DIRECTION_BITS;
 import static cn.nukkit.block.property.CommonBlockProperties.WEIRDO_DIRECTION;
 

@@ -5,6 +5,7 @@ import cn.nukkit.level.generator.populator.normal.IglooPopulator;
 import cn.nukkit.level.generator.populator.normal.DesertPyramidPopulator;
 import cn.nukkit.level.generator.populator.normal.DesertWellPopulator;
 import cn.nukkit.level.generator.populator.normal.JungleTemplePopulator;
+import cn.nukkit.level.generator.populator.normal.PopulatorMineshaft;
 import cn.nukkit.level.generator.stages.PopulatorStage;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 
@@ -17,7 +18,8 @@ public class NormalPopulatorStage extends PopulatorStage {
             DesertPyramidPopulator.NAME,
             FossilPopulator.NAME,
             IglooPopulator.NAME,
-            JungleTemplePopulator.NAME
+            JungleTemplePopulator.NAME,
+            PopulatorMineshaft.NAME
     });
 
     @Override

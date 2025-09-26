@@ -1,11 +1,10 @@
-package cn.nukkit.level.generator.object;
+package cn.nukkit.level.generator.object.structures;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import org.apache.logging.log4j.util.InternalApi;
 

@@ -96,7 +96,7 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
         }
 
         writeOutsideChunkStructureData(chunk);
-        manager.applyWithoutUpdate();
+        manager.applySubChunkUpdate();
     }
 
     protected void spawn(BlockManager level, RandomSourceProvider rand, int x, int y, int z) {

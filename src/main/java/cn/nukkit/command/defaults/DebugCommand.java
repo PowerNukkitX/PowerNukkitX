@@ -15,6 +15,7 @@ import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.structure.AbstractStructure;
 import cn.nukkit.level.structure.JeStructure;
 import cn.nukkit.level.structure.Structure;
@@ -24,6 +25,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.level.generator.biome.BiomePicker;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
+import cn.nukkit.nbt.tag.IntArrayTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.LongTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.types.biome.BiomeConsolidatedFeatureData;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionChunkGenData;
@@ -246,13 +251,16 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                         return 0;
                     }
                     case "queue" -> {
-                        try {
-                            Field field = Level.class.getDeclaredField("chunkGenerationQueue");
-                            field.setAccessible(true);
-                            player.sendMessage("Queue: " + ((ConcurrentHashMap<Long, Boolean>) field.get(level)).size() + " / " + level.getServer().getSettings().chunkSettings().generationQueueSize());
-                            field.setAccessible(false);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
+                        CompoundTag chunkExtra = chunk.getExtraData();
+                        if(chunkExtra.containsList("structureAnchor")) {
+                            var chunks = chunkExtra.getList("structureAnchor", LongTag.class);
+                            for (LongTag longTag : chunks.getAll()) {
+                                long hash = longTag.getData();
+                                IChunk target = level.getChunk(Level.getHashX(hash), Level.getHashZ(hash));
+                                if (target != null && target != chunk) {
+                                    player.sendMessage(target.getX() + " " + target.getZ());
+                                }
+                            }
                         }
                         return 0;
                     }

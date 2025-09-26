@@ -6,7 +6,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.level.generator.object.ObjectMonsterRoom;
+import cn.nukkit.level.generator.object.structures.ObjectMonsterRoom;
 import cn.nukkit.math.Vector3;
 
 public class MonsterRoomFeature extends GenerateFeature {

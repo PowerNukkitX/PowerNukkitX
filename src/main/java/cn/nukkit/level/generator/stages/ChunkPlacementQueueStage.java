@@ -8,6 +8,9 @@ import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntArrayTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.LongTag;
+import cn.nukkit.nbt.tag.Tag;
 
 public class ChunkPlacementQueueStage extends GenerateStage {
 
@@ -24,23 +27,24 @@ public class ChunkPlacementQueueStage extends GenerateStage {
         long chunkHash = Level.chunkHash(chunkX, chunkZ);
         String chunkKey = String.valueOf(chunkHash);
         BlockManager temp = new BlockManager(chunk.getLevel());
-        for(int x = -1; x <= 1; x++) {
-            for(int z = -1; z <= 1; z++) {
-                int targetX = chunkX + x;
-                int targetZ = chunkZ + z;
-                IChunk target = level.getChunk(targetX, targetZ);
-                if(target != null && target != chunk) {
-                    CompoundTag chunkExtra = target.getExtraData();
-                    if(chunkExtra.containsCompound("outsideChunkStructureData")) {
-                        CompoundTag outsideChunkStructureData = chunkExtra.getCompound("outsideChunkStructureData");
-                        if(outsideChunkStructureData.containsList(chunkKey)) {
+        CompoundTag chunkExtra = chunk.getExtraData();
+        if(chunkExtra.containsList("structureAnchor")) {
+            var chunks = chunkExtra.getList("structureAnchor", LongTag.class);
+            for (LongTag longTag : chunks.getAll()) {
+                long hash = longTag.getData();
+                IChunk target = level.getChunk(Level.getHashX(hash), Level.getHashZ(hash));
+                if (target != null && target != chunk) {
+                    CompoundTag targetExtra = target.getExtraData();
+                    if (targetExtra.containsCompound("outsideChunkStructureData")) {
+                        CompoundTag outsideChunkStructureData = targetExtra.getCompound("outsideChunkStructureData");
+                        if (outsideChunkStructureData.containsList(chunkKey)) {
                             BlockManager.fromTag(outsideChunkStructureData.getList(chunkKey, IntArrayTag.class), temp);
                         }
                     }
                 }
             }
         }
-        temp.applyWithoutUpdate();
+        temp.applySubChunkUpdate();
         chunk.setChunkState(ChunkState.POPULATED);
     }
 

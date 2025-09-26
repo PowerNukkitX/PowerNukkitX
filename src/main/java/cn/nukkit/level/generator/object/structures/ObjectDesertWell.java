@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.object;
+package cn.nukkit.level.generator.object.structures;
 
 import cn.nukkit.block.BlockSandstone;
 import cn.nukkit.block.BlockSandstoneSlab;
@@ -6,6 +6,8 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
+import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.RuledObjectGenerator;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;

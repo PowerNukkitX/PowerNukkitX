@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.object;
+package cn.nukkit.level.generator.object.structures;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
@@ -15,6 +15,9 @@ import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
+import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.RandomizableContainer;
+import cn.nukkit.level.generator.object.RuledObjectGenerator;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;

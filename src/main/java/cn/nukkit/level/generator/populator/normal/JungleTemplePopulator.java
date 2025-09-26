@@ -5,7 +5,7 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.level.generator.object.ObjectJungleTemple;
+import cn.nukkit.level.generator.object.structures.ObjectJungleTemple;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.math.Vector3;
 
