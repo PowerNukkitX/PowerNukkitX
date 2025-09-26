@@ -2007,6 +2007,16 @@ public abstract class Item implements Cloneable, ItemID {
         return false;
     }
 
+    /**
+     * Define if item never despawns
+     */
+    public boolean shouldDespawn() {
+        CompoundTag p = getCustomItemProperties();
+        if (p != null && p.contains("should_despawn")) {
+            return p.getBoolean("should_despawn");
+        }
+        return true;
+    }
 
 
 

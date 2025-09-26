@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -51,7 +52,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     private static final List<EntityRegistry.EntityDefinition> CUSTOM_ENTITY_DEFINITIONS = new ArrayList<>();
     private static final List<SpawnRule> SPAWN_RULES = new ArrayList<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
-
+    private static final ConcurrentHashMap<String, CustomEntityDefinition> CUSTOM_ENTITY_DEFINITION_MAP = new ConcurrentHashMap<>();
     private static byte[] TAG;
 
 
@@ -368,6 +369,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         RID2ID.clear();
         DEFINITIONS.clear();
         CUSTOM_ENTITY_DEFINITIONS.clear();
+        CUSTOM_ENTITY_DEFINITION_MAP.clear();
         init();
     }
 
@@ -438,9 +440,10 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
             int rid = RUNTIME_ID.getAndIncrement();
             ID2RID.put(id, rid);
             RID2ID.put(rid, id);
-            EntityDefinition entityDefinition = new EntityDefinition(id, def.eid(), rid, def.hasSpawnegg(), def.isSummonable());
+            EntityDefinition entityDefinition = new EntityDefinition(id, def.eid(), rid, def.hasSpawnEgg(), def.isSummonable());
             DEFINITIONS.put(id, entityDefinition);
             CUSTOM_ENTITY_DEFINITIONS.add(entityDefinition);
+            CUSTOM_ENTITY_DEFINITION_MAP.put(id, def);
 
             try {
                 EntityProperty[] props = (EntityProperty[]) value.getField("PROPERTIES").get(null);
@@ -452,7 +455,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
                 log.error("Failed to access PROPERTIES for custom entity: " + id, e);
             }
 
-            if (def.hasSpawnegg()) {
+            if (def.hasSpawnEgg()) {
                 String eggId = id + "_spawn_egg";
                 Registries.ITEM.registerSpawnEgg(eggId);
             }
@@ -506,7 +509,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         }
 
         throw new RegisterException("Could not resolve CustomEntityDefinition for " + clazz.getName()
-                + ". Provide one of: static DEF field; static definition()/getDefinition() method; or a no-arg ctor + instance getDefinition().");
+                    + ". Provide one of: static DEF field; or a static definition()/getDefinition() method.");
     }
 
     private void registerInternal(EntityDefinition key, Class<? extends Entity> value) {
@@ -536,14 +539,14 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
 
     private static AtomicInteger RUNTIME_ID = new AtomicInteger(10000);
 
-    public record EntityDefinition(String id, String bid, int rid, boolean hasSpawnegg, boolean summonable) {
+    public record EntityDefinition(String id, String bid, int rid, boolean hasSpawnEgg, boolean isSummonable) {
         public CompoundTag toNBT() {
             return new CompoundTag()
                     .putString("bid", bid)
-                    .putBoolean("hasspawnegg", hasSpawnegg)
+                    .putBoolean("hasspawnegg", hasSpawnEgg)
                     .putString("id", id)
                     .putInt("rid", rid)
-                    .putBoolean("summonable", summonable);
+                    .putBoolean("summonable", isSummonable);
         }
     }
 
@@ -568,5 +571,9 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         } catch (Exception e) {
             throw new AssertionError("Error whilst loading entity_identifiers.nbt", e);
         }
+    }
+
+    public static @Nullable CustomEntityDefinition getCustomEntityDefinitionById(String id) {
+        return CUSTOM_ENTITY_DEFINITION_MAP.get(id);
     }
 }

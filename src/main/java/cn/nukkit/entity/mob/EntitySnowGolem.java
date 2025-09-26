@@ -97,6 +97,11 @@ public class EntitySnowGolem extends EntityGolem {
     }
 
     @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
+    @Override
     public float getWidth() {
         return 0.4f;
     }

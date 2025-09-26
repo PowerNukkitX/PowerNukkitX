@@ -47,7 +47,7 @@ public class EatingExecutor implements EntityControl, IBehaviorExecutor {
         entity.setDataFlag(EntityFlag.EATING, false);
         entity.setDataProperty(EntityDataTypes.SITTING_AMOUNT, 0);
         entity.setDataProperty(EntityDataTypes.SITTING_AMOUNT_PREVIOUS, 0);
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         if(entity instanceof InventoryHolder holder) holder.getInventory().clearAll();
     }
 }

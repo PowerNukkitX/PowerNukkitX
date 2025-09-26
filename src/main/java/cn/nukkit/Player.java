@@ -26,7 +26,7 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntityRideable;
-import cn.nukkit.entity.data.EntityDataTypes;
+import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.Skin;
@@ -1501,11 +1501,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    @Override
-    public double getStepHeight() {
-        return 0.6f;
-    }
-
     /**
      * @return {@link #lastAttackEntity}
      */
@@ -2639,6 +2634,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         var pk = new CameraPresetsPacket();
         pk.presets.addAll(CameraPreset.getPresets().values());
         dataPacket(pk);
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("player");
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return true;
     }
 
     @Override
@@ -5069,7 +5074,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 entity.close();
                 return true;
             } else if (entity instanceof EntityItem entityItem) {
-                if (entityItem.getPickupDelay() <= 0) {
+                if (entityItem.getPickupDelay() <= 0 && !entityItem.isDisplayOnly()) {
                     Item item = entityItem.getItem();
 
                     if (item != null) {
