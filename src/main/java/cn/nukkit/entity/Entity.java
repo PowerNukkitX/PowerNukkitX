@@ -624,15 +624,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
         this.scale = this.namedTag.getFloat("Scale");
         if (!this.namedTag.contains("Despawnable")) {
-            boolean persistent = false;
-            if (isCustomEntity()) {
-                if (meta().getBoolean(CustomEntityComponents.PERSISTENT, false)) {
-                    persistent = true;
-                }
-            }
-            if (!persistent && this.namedTag.contains("Persistent") && this.namedTag.getBoolean("Persistent")) {
-                persistent = true;
-            }
+            boolean persistent = 
+                (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false)) ||
+                this.namedTag.getBoolean("Persistent");
+
             this.namedTag.putBoolean("Despawnable", !persistent);
         }
         this.despawnable = this.namedTag.getBoolean("Despawnable");
