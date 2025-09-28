@@ -70,6 +70,7 @@ public class PopulatorRegistry implements IRegistry<String, Populator, Class<? e
             this.register(IglooPopulator.NAME, IglooPopulator.class);
             this.register(PopulatorMineshaft.NAME, PopulatorMineshaft.class);
             this.register(JungleTemplePopulator.NAME, JungleTemplePopulator.class);
+            this.register(NetherFortressPopulator.NAME, NetherFortressPopulator.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

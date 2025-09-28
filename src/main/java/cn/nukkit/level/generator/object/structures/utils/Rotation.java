@@ -82,7 +82,16 @@ public enum Rotation {
                 });
                 states.set(idx, rotated);
             } else if (type == WEIRDO_DIRECTION) {
-                var rotated = WEIRDO_DIRECTION.createValue((state.getPropertyValue(WEIRDO_DIRECTION) + 1) % 4);
+                var rotated = WEIRDO_DIRECTION.createValue(switch (state.getPropertyValue(WEIRDO_DIRECTION)) {
+                    case 0:
+                        yield 2;
+                    case 1:
+                        yield 3;
+                    case 2:
+                        yield 1;
+                    default:
+                        yield 0;
+                });
                 states.set(idx, rotated);
             } else if (type == DIRECTION) {
                 var rotated = DIRECTION.createValue((state.getPropertyValue(DIRECTION) + 1) % 4);

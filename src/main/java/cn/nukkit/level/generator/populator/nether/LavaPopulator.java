@@ -1,19 +1,13 @@
 package cn.nukkit.level.generator.populator.nether;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockFlowingLava;
-import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-
-import static cn.nukkit.block.property.CommonBlockProperties.LIQUID_DEPTH;
 
 public class LavaPopulator extends Populator {
 

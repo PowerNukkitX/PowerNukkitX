@@ -38,7 +38,8 @@ public class NetherPopulatorStage extends PopulatorStage {
             WarpedGrassesPopulator.NAME,
             WarpedTwistingVinesPopulator.NAME,
             NetherBlackstonePopulator.NAME,
-            NetherGravelPopulator.NAME
+            NetherGravelPopulator.NAME,
+            NetherFortressPopulator.NAME
     });
 
     @Override
