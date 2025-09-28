@@ -19,6 +19,7 @@ import cn.nukkit.level.generator.populator.normal.JungleTemplePopulator;
 import cn.nukkit.level.generator.populator.normal.MineshaftPopulator;
 import cn.nukkit.level.generator.populator.normal.OceanMonumentPopulator;
 import cn.nukkit.level.generator.populator.normal.OceanRuinPopulator;
+import cn.nukkit.level.generator.populator.normal.PillagerOutpostPopulator;
 import cn.nukkit.level.generator.populator.the_end.ChorusFlowerPopulator;
 import cn.nukkit.level.generator.populator.the_end.EndGatewayPopulator;
 import cn.nukkit.level.generator.populator.the_end.EndIslandPopulator;
@@ -75,6 +76,7 @@ public class PopulatorRegistry implements IRegistry<String, Populator, Class<? e
             this.register(NetherFortressPopulator.NAME, NetherFortressPopulator.class);
             this.register(OceanMonumentPopulator.NAME, OceanMonumentPopulator.class);
             this.register(OceanRuinPopulator.NAME, OceanRuinPopulator.class);
+            this.register(PillagerOutpostPopulator.NAME, PillagerOutpostPopulator.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

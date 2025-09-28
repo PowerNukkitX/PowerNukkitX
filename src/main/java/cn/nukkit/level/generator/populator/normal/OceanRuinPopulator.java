@@ -11,7 +11,6 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.ChunkPosition;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -26,7 +25,6 @@ import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class OceanRuinPopulator extends Populator {
