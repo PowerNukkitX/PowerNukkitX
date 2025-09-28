@@ -302,7 +302,7 @@ public abstract class StructurePiece {
         for (int y = y1; y <= y2; ++y) {
             for (int x = x1; x <= x2; ++x) {
                 for (int z = z1; z <= z2; ++z) {
-                    if (!skipAir || !this.getBlock(level, x, y, z, boundingBox).getIdentifier().equals(Block.AIR)) {
+                    if (!skipAir || (!this.getBlock(level, x, y, z, boundingBox).getIdentifier().equals(Block.AIR) && !this.getBlock(level, x, y, z, boundingBox).getIdentifier().equals(Block.WATER))) {
                         if (y != y1 && y != y2 && x != x1 && x != x2 && z != z1 && z != z2) {
                             this.placeBlock(level, insideBlock, x, y, z, boundingBox);
                         } else {
@@ -393,8 +393,8 @@ public abstract class StructurePiece {
             int cz = worldZ & 0xf;
             String blockId = chunk.getBlockState(cx, worldY, cz).getIdentifier();
             while ((blockId == Block.AIR || blockId == Block.WATER || blockId == Block.FLOWING_WATER || blockId == Block.LAVA || blockId == Block.FLOWING_LAVA) && worldY > 1) {
-                chunk.setBlockState(cx, worldY, cz, block);
-                blockId = chunk.getBlockState(cx, --worldY, cz).getIdentifier();
+                level.setBlockStateAt(worldX, worldY, worldZ, block);
+                blockId = level.getBlockIdAt(worldX, --worldY, worldZ);
             }
         }
     }

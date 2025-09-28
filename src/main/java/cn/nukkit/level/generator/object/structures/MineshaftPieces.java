@@ -81,10 +81,6 @@ public class MineshaftPieces {
         return null;
     }
 
-    public static void init() {
-        //NOOP
-    }
-
     abstract static class MineshaftPiece extends StructurePiece {
 
         protected Type type;

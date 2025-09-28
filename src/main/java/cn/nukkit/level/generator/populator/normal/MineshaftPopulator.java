@@ -11,15 +11,11 @@ import cn.nukkit.level.generator.object.structures.utils.StructurePiece;
 import cn.nukkit.level.generator.object.structures.utils.StructureStart;
 import cn.nukkit.level.generator.populator.Populator;
 
-public class PopulatorMineshaft extends Populator {
+public class MineshaftPopulator extends Populator {
 
     public static final String NAME = "normal_mineshaft";
 
     protected static final int PROBABILITY = 4;
-
-    static {
-        MineshaftPieces.init();
-    }
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -27,14 +23,18 @@ public class PopulatorMineshaft extends Populator {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        long seed = level.getSeed();
+        random.setSeed(seed);
+        int r1 = random.nextInt();
+        int r2 = random.nextInt();
+        random.setSeed((long) chunkX * r1 ^ (long) chunkZ * r2 ^ seed);
         BlockManager manager = new BlockManager(level);
         if (random.nextBoundedInt(1000) < PROBABILITY) {
             //\\ MineshaftFeature::createStructureStart(Dimension &,BiomeSource &,Random &,ChunkPos const &)
             MineshaftStart start = new MineshaftStart(manager, chunkX, chunkZ);
             start.generatePieces(manager, chunkX, chunkZ);
 
-            if (start.isValid()) { //TODO: serialize nbt
+            if (start.isValid()) {
                 BoundingBox boundingBox = start.getBoundingBox();
                 for (int cx = boundingBox.x0 >> 4; cx <= boundingBox.x1 >> 4; cx++) {
                     for (int cz = boundingBox.z0 >> 4; cz <= boundingBox.z1 >> 4; cz++) {
