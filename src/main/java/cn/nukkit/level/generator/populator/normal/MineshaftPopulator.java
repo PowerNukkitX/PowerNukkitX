@@ -1,5 +1,7 @@
 package cn.nukkit.level.generator.populator.normal;
 
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockWater;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
@@ -40,11 +42,14 @@ public class MineshaftPopulator extends Populator {
                     for (int cz = boundingBox.z0 >> 4; cz <= boundingBox.z1 >> 4; cz++) {
                         int x = cx << 4;
                         int z = cz << 4;
-                        IChunk ck = level.getChunk(cx, cz);
-                        if (ck == null) {
-                            ck = chunk.getProvider().getChunk(cx, cz, true);
-                        }
                         start.postProcess(manager, random, new BoundingBox(x, z, x + 15, z + 15), cx, cz);
+                    }
+                }
+                for(Block block : manager.getBlocks()) {
+                    if(block.isAir()) {
+                        if(level.getBlock(block).getId() == Block.WATER) {
+                            manager.setBlockStateAt(block, BlockWater.PROPERTIES.getDefaultState());
+                        }
                     }
                 }
                 queueObject(chunk, manager);

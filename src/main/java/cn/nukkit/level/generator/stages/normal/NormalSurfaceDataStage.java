@@ -91,7 +91,6 @@ public class NormalSurfaceDataStage extends GenerateStage {
                 }
             }
         }
-        chunk.setChunkState(ChunkState.GENERATED);
     }
 
     @Override
