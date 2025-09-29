@@ -1,14 +1,6 @@
 package cn.nukkit.level.generator.stages.normal;
 
-import cn.nukkit.level.generator.populator.normal.FossilPopulator;
-import cn.nukkit.level.generator.populator.normal.IglooPopulator;
-import cn.nukkit.level.generator.populator.normal.DesertPyramidPopulator;
-import cn.nukkit.level.generator.populator.normal.DesertWellPopulator;
-import cn.nukkit.level.generator.populator.normal.JungleTemplePopulator;
-import cn.nukkit.level.generator.populator.normal.OceanMonumentPopulator;
-import cn.nukkit.level.generator.populator.normal.MineshaftPopulator;
-import cn.nukkit.level.generator.populator.normal.OceanRuinPopulator;
-import cn.nukkit.level.generator.populator.normal.PillagerOutpostPopulator;
+import cn.nukkit.level.generator.populator.normal.*;
 import cn.nukkit.level.generator.stages.PopulatorStage;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 
@@ -25,7 +17,8 @@ public class NormalPopulatorStage extends PopulatorStage {
             MineshaftPopulator.NAME,
             OceanMonumentPopulator.NAME,
             OceanRuinPopulator.NAME,
-            PillagerOutpostPopulator.NAME
+            PillagerOutpostPopulator.NAME,
+            ShipwreckPopulator.NAME
     });
 
     @Override

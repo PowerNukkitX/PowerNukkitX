@@ -1,6 +1,6 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.level.generator.populator.normal.FossilPopulator;
+import cn.nukkit.level.generator.populator.normal.*;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.generator.populator.nether.*;
 import cn.nukkit.level.generator.populator.nether.basalt_delta.BasaltDeltaLavaPopulator;
@@ -12,14 +12,6 @@ import cn.nukkit.level.generator.populator.nether.crimson.CrimsonWeepingVinesPop
 import cn.nukkit.level.generator.populator.nether.warped.WarpedFungiTreePopulator;
 import cn.nukkit.level.generator.populator.nether.warped.WarpedGrassesPopulator;
 import cn.nukkit.level.generator.populator.nether.warped.WarpedTwistingVinesPopulator;
-import cn.nukkit.level.generator.populator.normal.IglooPopulator;
-import cn.nukkit.level.generator.populator.normal.DesertPyramidPopulator;
-import cn.nukkit.level.generator.populator.normal.DesertWellPopulator;
-import cn.nukkit.level.generator.populator.normal.JungleTemplePopulator;
-import cn.nukkit.level.generator.populator.normal.MineshaftPopulator;
-import cn.nukkit.level.generator.populator.normal.OceanMonumentPopulator;
-import cn.nukkit.level.generator.populator.normal.OceanRuinPopulator;
-import cn.nukkit.level.generator.populator.normal.PillagerOutpostPopulator;
 import cn.nukkit.level.generator.populator.the_end.ChorusFlowerPopulator;
 import cn.nukkit.level.generator.populator.the_end.EndGatewayPopulator;
 import cn.nukkit.level.generator.populator.the_end.EndIslandPopulator;
@@ -77,6 +69,7 @@ public class PopulatorRegistry implements IRegistry<String, Populator, Class<? e
             this.register(OceanMonumentPopulator.NAME, OceanMonumentPopulator.class);
             this.register(OceanRuinPopulator.NAME, OceanRuinPopulator.class);
             this.register(PillagerOutpostPopulator.NAME, PillagerOutpostPopulator.class);
+            this.register(ShipwreckPopulator.NAME, ShipwreckPopulator.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

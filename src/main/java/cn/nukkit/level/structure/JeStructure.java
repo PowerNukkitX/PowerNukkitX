@@ -65,8 +65,11 @@ public class JeStructure extends AbstractStructure {
         Map<String, StructureBlocks> blockCache = new HashMap<>();
         List<BlockState> palette = new ArrayList<>();
         ListTag<CompoundTag> paletteNbt = nbt.getList("palette", CompoundTag.class);
-
-        if (paletteNbt != null) {
+        if(paletteNbt.size() == 0) {
+            var palettesNbt = nbt.getList("palettes", ListTag.class);
+            paletteNbt = palettesNbt.get(0);
+        }
+        if (paletteNbt.size() != 0) {
             for (CompoundTag blockStateNbt : paletteNbt.getAll()) {
                 String jeName = blockStateNbt.getString("Name");
                 CompoundTag properties = blockStateNbt.getCompound("Properties");
@@ -89,7 +92,6 @@ public class JeStructure extends AbstractStructure {
                     if(b == null) log.warn("Unknown block state in structure palette: " + id);
                     return new StructureBlocks(b != null ? b : STATE_UNKNOWN);
                 }).state;
-
                 palette.add(state);
             }
         }
