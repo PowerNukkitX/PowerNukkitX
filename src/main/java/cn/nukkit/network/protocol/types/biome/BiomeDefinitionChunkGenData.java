@@ -13,6 +13,7 @@ public class BiomeDefinitionChunkGenData implements IBiomeDefinitionListObject {
     public OptionalValue<BiomeMountainParamsData> mountainParams = OptionalValue.empty();
     public OptionalValue<BiomeSurfaceMaterialAdjustmentData> surfaceMaterialAdjustment = OptionalValue.empty();
     public OptionalValue<BiomeSurfaceMaterialData> surfaceMaterial = OptionalValue.empty();
+    public boolean hasDefaultOverworldSurface;
     public boolean hasSwampSurface;
     public boolean hasFrozenOceanSurface;
     public boolean hasTheEndSurface;
@@ -29,6 +30,7 @@ public class BiomeDefinitionChunkGenData implements IBiomeDefinitionListObject {
         byteBuf.writeOptional(mountainParams, v -> v.encode(byteBuf));
         byteBuf.writeOptional(surfaceMaterialAdjustment, v -> v.encode(byteBuf));
         byteBuf.writeOptional(surfaceMaterial, v -> v.encode(byteBuf));
+        byteBuf.writeBoolean(hasDefaultOverworldSurface);
         byteBuf.writeBoolean(hasSwampSurface);
         byteBuf.writeBoolean(hasFrozenOceanSurface);
         byteBuf.writeBoolean(hasTheEndSurface);

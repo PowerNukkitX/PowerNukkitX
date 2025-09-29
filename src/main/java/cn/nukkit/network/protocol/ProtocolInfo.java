@@ -11,7 +11,7 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(843);
+    int CURRENT_PROTOCOL = dynamic(844);
 
     String MINECRAFT_VERSION_NETWORK = dynamic("1.21.110");
 

@@ -186,11 +186,18 @@ public class GameRules {
             @Override
             void write(HandleByteBuf pk, Value<?> value) {
             }
+            @Override
+            void writeStartGame(HandleByteBuf pk, Value<?> value) {
+            }
         },
         BOOLEAN {
             @Override
             void write(HandleByteBuf pk, Value<?> value) {
                 pk.writeBoolean(value.getValueAsBoolean());
+            }
+            @Override
+            void writeStartGame(HandleByteBuf pk, Value<?> value) {
+                write(pk, value);
             }
         },
         INTEGER {
@@ -198,15 +205,24 @@ public class GameRules {
             void write(HandleByteBuf pk, Value<?> value) {
                 pk.writeIntLE(value.getValueAsInteger());
             }
+            @Override
+            void writeStartGame(HandleByteBuf pk, Value<?> value) {
+                pk.writeVarInt(value.getValueAsInteger());
+            }
         },
         FLOAT {
             @Override
             void write(HandleByteBuf pk, Value<?> value) {
                 pk.writeFloatLE(value.getValueAsFloat());
             }
+            @Override
+            void writeStartGame(HandleByteBuf pk, Value<?> value) {
+                write(pk, value);
+            }
         };
 
         abstract void write(HandleByteBuf pk, Value<?> value);
+        abstract void writeStartGame(HandleByteBuf pk, Value<?> value);
     }
 
     public static class Value<T> {
@@ -272,6 +288,12 @@ public class GameRules {
             stream.writeBoolean(this.canBeChanged);
             stream.writeUnsignedVarInt(type.ordinal());
             type.write(stream, this);
+        }
+
+        public void writeStartGame(HandleByteBuf stream) {
+            stream.writeBoolean(this.canBeChanged);
+            stream.writeUnsignedVarInt(type.ordinal());
+            type.writeStartGame(stream, this);
         }
     }
 }

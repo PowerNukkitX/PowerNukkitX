@@ -1438,6 +1438,18 @@ public class HandleByteBuf extends ByteBuf {
         });
     }
 
+    public void writeGameRulesStartGame(GameRules gameRules) {
+        // LinkedHashMap gives mutability and is faster in iteration
+        val rules = new LinkedHashMap<>(gameRules.getGameRules());
+        rules.keySet().removeIf(GameRule::isDeprecated);
+
+        this.writeUnsignedVarInt(rules.size());
+        rules.forEach((gameRule, value) -> {
+            this.writeString(gameRule.getName().toLowerCase(Locale.ENGLISH));
+            value.writeStartGame(this);
+        });
+    }
+
     /**
      * Reads and returns an EntityUniqueID
      *
