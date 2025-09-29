@@ -167,6 +167,12 @@ tasks.named<AbstractArchiveTask>("sourcesJar") {
     destinationDirectory = layout.buildDirectory
 }
 
+// Improve build reproducibility for better caching
+tasks.withType<AbstractArchiveTask> {
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
+}
+
 tasks.jar {
     destinationDirectory = layout.buildDirectory
     doLast {//execution phase
