@@ -246,13 +246,6 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.DOUBLE_CUT_COPPER_SLAB);
         randomTickBlocks.add(BlockID.EXPOSED_DOUBLE_CUT_COPPER_SLAB);
         randomTickBlocks.add(BlockID.WEATHERED_DOUBLE_CUT_COPPER_SLAB);
-        randomTickBlocks.add(BlockID.BUDDING_AMETHYST);
-        randomTickBlocks.add(BlockID.POINTED_DRIPSTONE);
-        randomTickBlocks.add(BlockID.CAVE_VINES);
-        randomTickBlocks.add(BlockID.CAVE_VINES_BODY_WITH_BERRIES);
-        randomTickBlocks.add(BlockID.CAVE_VINES_HEAD_WITH_BERRIES);
-        randomTickBlocks.add(BlockID.TORCHFLOWER_CROP);
-
         randomTickBlocks.add(BlockID.COPPER_BARS);
         randomTickBlocks.add(BlockID.EXPOSED_COPPER_BARS);
         randomTickBlocks.add(BlockID.WEATHERED_COPPER_BARS);
@@ -271,6 +264,12 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.LIGHTNING_ROD);
         randomTickBlocks.add(BlockID.EXPOSED_LIGHTNING_ROD);
         randomTickBlocks.add(BlockID.WEATHERED_LIGHTNING_ROD);
+        randomTickBlocks.add(BlockID.BUDDING_AMETHYST);
+        randomTickBlocks.add(BlockID.POINTED_DRIPSTONE);
+        randomTickBlocks.add(BlockID.CAVE_VINES);
+        randomTickBlocks.add(BlockID.CAVE_VINES_BODY_WITH_BERRIES);
+        randomTickBlocks.add(BlockID.CAVE_VINES_HEAD_WITH_BERRIES);
+        randomTickBlocks.add(BlockID.TORCHFLOWER_CROP);
     }
 
     @NonComputationAtomic
