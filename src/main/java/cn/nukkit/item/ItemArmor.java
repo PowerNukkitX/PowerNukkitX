@@ -22,6 +22,7 @@ abstract public class ItemArmor extends Item implements ItemDurable {
     public static final int TIER_GOLD = 4;
     public static final int TIER_DIAMOND = 5;
     public static final int TIER_NETHERITE = 6;
+    public static final int TIER_COPPER = 7;
     public static final int TIER_OTHER = dynamic(1000);
 
     public ItemArmor(String id) {

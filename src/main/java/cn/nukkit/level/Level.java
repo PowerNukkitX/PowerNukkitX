@@ -133,6 +133,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static cn.nukkit.utils.Utils.dynamic;
+import static cn.nukkit.utils.Utils.random;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -251,6 +252,25 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.CAVE_VINES_BODY_WITH_BERRIES);
         randomTickBlocks.add(BlockID.CAVE_VINES_HEAD_WITH_BERRIES);
         randomTickBlocks.add(BlockID.TORCHFLOWER_CROP);
+
+        randomTickBlocks.add(BlockID.COPPER_BARS);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_BARS);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_BARS);
+        randomTickBlocks.add(BlockID.COPPER_CHAIN);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_CHAIN);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_CHAIN);
+        randomTickBlocks.add(BlockID.COPPER_CHEST);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_CHEST);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_CHEST);
+        randomTickBlocks.add(BlockID.COPPER_GOLEM_STATUE);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_GOLEM_STATUE);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_GOLEM_STATUE);
+        randomTickBlocks.add(BlockID.COPPER_LANTERN);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_LANTERN);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_LANTERN);
+        randomTickBlocks.add(BlockID.LIGHTNING_ROD);
+        randomTickBlocks.add(BlockID.EXPOSED_LIGHTNING_ROD);
+        randomTickBlocks.add(BlockID.WEATHERED_LIGHTNING_ROD);
     }
 
     @NonComputationAtomic

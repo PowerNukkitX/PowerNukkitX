@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.copper.chain.AbstractBlockCopperChain;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.Attachment;
 import cn.nukkit.blockentity.BlockEntity;
@@ -280,8 +281,8 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
 
         if (attachmentFace == BlockFace.DOWN) {
             return switch (support.getId()) {
-                case CHAIN, HOPPER, IRON_BARS -> true;
-                default -> support instanceof BlockFence || support instanceof BlockWallBase;
+                case IRON_CHAIN, HOPPER, IRON_BARS -> true;
+                default -> support instanceof BlockFence || support instanceof BlockWallBase || support instanceof AbstractBlockCopperChain;
             };
         }
 

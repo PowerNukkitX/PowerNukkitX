@@ -1,4 +1,4 @@
-cd src/main/resources/gamedata/kaooot/
+cd ../src/main/resources/gamedata/kaooot/
 
 BASE_URL="https://github.com/Kaooot/bedrock-network-data/raw/refs/heads/master/preview/1.21.110.26/"
 
