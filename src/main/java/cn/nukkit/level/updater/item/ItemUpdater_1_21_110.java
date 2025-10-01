@@ -17,8 +17,9 @@ public class ItemUpdater_1_21_110 implements Updater {
                 .visit("states")
                 .tryAdd(CommonBlockProperties.POWERED_BIT.getName(), (byte) 0);
 
-        context.addUpdater(1, 21, 110, true) // Here we go again Mojang
+        context.addUpdater(1, 21, 110)
                 .match("Name", "minecraft:chain")
                 .edit("Name", helper -> helper.replaceWith("Name", "minecraft:iron_chain"));
+
     }
 }
