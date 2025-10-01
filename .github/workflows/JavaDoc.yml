@@ -1,0 +1,32 @@
+name: Build & Deploy Javadoc
+
+on:
+  push:
+    branches:
+      - master   # Or your default branch
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  build-javadoc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21' # or your project JDK version
+
+      - name: Build Javadoc (Gradle)
+        run: ./gradlew javadoc
+        # For Maven, replace with: mvn javadoc:javadoc
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/docs/javadoc  # Gradle default javadoc output
+          # For Maven: ./target/site/apidocs
