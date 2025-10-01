@@ -23,8 +23,7 @@ public class CreativeItemTest {
         Registries.BLOCK.init();
         Registries.POTION.init();
         Registries.ITEM.init();
-        //TODO: revert once block states are up to date
-        /*Assertions.assertDoesNotThrow(() -> {
+        Assertions.assertDoesNotThrow(() -> {
             try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/creative_items.json")) {
                 Map data = new Gson().fromJson(new InputStreamReader(input), Map.class);
                 List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
@@ -53,9 +52,5 @@ public class CreativeItemTest {
                 throw new RuntimeException(e);
             }
         });
-
-         */
-
-        Assertions.assertEquals(true, true);
     }
 }

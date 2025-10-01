@@ -2587,4 +2587,17 @@ public interface BlockID {
     String WAXED_EXPOSED_LIGHTNING_ROD = "minecraft:waxed_exposed_lightning_rod";
     String WAXED_WEATHERED_LIGHTNING_ROD = "minecraft:waxed_weathered_lightning_rod";
     String WAXED_OXIDIZED_LIGHTNING_ROD = "minecraft:waxed_oxidized_lightning_rod";
+
+    String OAK_SHELF = "minecraft:oak_shelf";
+    String SPRUCE_SHELF = "minecraft:spruce_shelf";
+    String BIRCH_SHELF = "minecraft:birch_shelf";
+    String JUNGLE_SHELF = "minecraft:jungle_shelf";
+    String ACACIA_SHELF = "minecraft:acacia_shelf";
+    String DARK_OAK_SHELF = "minecraft:dark_oak_shelf";
+    String MANGROVE_SHELF = "minecraft:mangrove_shelf";
+    String CHERRY_SHELF = "minecraft:cherry_shelf";
+    String PALE_OAK_SHELF = "minecraft:pale_oak_shelf";
+    String BAMBOO_SHELF = "minecraft:bamboo_shelf";
+    String CRIMSON_SHELF = "minecraft:crimson_shelf";
+    String WARPED_SHELF = "minecraft:warped_shelf";
 }

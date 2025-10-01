@@ -23,6 +23,7 @@ public class ItemUpdaters {
         updaters.add(ItemUpdater_1_21_20.INSTANCE);
         updaters.add(ItemUpdater_1_21_30.INSTANCE);
         updaters.add(ItemUpdater_1_21_40.INSTANCE);
+        updaters.add(ItemUpdater_1_21_110.INSTANCE);
 
         CompoundTagUpdaterContext context = new CompoundTagUpdaterContext();
         updaters.forEach(updater -> updater.registerUpdaters(context));

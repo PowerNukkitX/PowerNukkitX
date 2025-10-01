@@ -10,6 +10,7 @@ import cn.nukkit.block.copper.lantern.*;
 import cn.nukkit.block.copper.lightningrod.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
+import cn.nukkit.block.shelf.*;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -1375,6 +1376,19 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(WAXED_EXPOSED_LIGHTNING_ROD, BlockWaxedExposedLightningRod.class);
             register(WAXED_WEATHERED_LIGHTNING_ROD, BlockWaxedWeatheredLightningRod.class);
             register(WAXED_OXIDIZED_LIGHTNING_ROD, BlockWaxedOxidizedLightningRod.class);
+
+            register(OAK_SHELF, BlockOakShelf.class);
+            register(SPRUCE_SHELF, BlockSpruceShelf.class);
+            register(BIRCH_SHELF, BlockBirchShelf.class);
+            register(JUNGLE_SHELF, BlockJungleShelf.class);
+            register(ACACIA_SHELF, BlockAcaciaShelf.class);
+            register(DARK_OAK_SHELF, BlockDarkOakShelf.class);
+            register(MANGROVE_SHELF, BlockMangroveShelf.class);
+            register(CHERRY_SHELF, BlockCherryShelf.class);
+            register(PALE_OAK_SHELF, BlockPaleOakShelf.class);
+            register(CRIMSON_SHELF, BlockCrimsonShelf.class);
+            register(WARPED_SHELF, BlockWarpedShelf.class);
+            register(BAMBOO_SHELF, BlockBambooShelf.class);
         } catch (RegisterException ignore) {
         }
     }

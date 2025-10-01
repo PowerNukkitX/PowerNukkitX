@@ -137,7 +137,9 @@ public abstract class ItemTool extends Item implements ItemDurable {
     @Override
     public void setDamage(int damage) {
         ItemWearEvent event = new ItemWearEvent(this, damage);
-        PluginManager pluginManager = Server.getInstance().getPluginManager();
+        Server server = Server.getInstance();
+        if(server == null) return; //Server instance is null on some unit tests
+        PluginManager pluginManager = server.getPluginManager();
         if(pluginManager != null) pluginManager.callEvent(event); //Method gets called on server start before plugin manager is initiated
         if(!event.isCancelled()) {
             super.setDamage(event.getNewDurability());
