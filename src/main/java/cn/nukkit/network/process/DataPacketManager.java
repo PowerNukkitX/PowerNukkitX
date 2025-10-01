@@ -60,6 +60,7 @@ public final class DataPacketManager {
                 new CommandRequestProcessor(),
                 new CommandBlockUpdateProcessor(),
                 new StructureBlockUpdateProcessor(),
+                new StructureBlockTemplateDataProcessor(),
                 new TextProcessor(),
                 new ContainerCloseProcessor(),
                 new CraftingEventProcessor(),

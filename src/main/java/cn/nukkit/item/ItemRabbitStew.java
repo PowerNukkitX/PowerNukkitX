@@ -26,12 +26,12 @@ public class ItemRabbitStew extends ItemFood {
     }
 
     @Override
-    public int getFoodRestore() {
+    public int getNutrition() {
         return 10;
     }
 
     @Override
-    public float getSaturationRestore() {
+    public float getSaturation() {
         return 12F;
     }
 

@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.entity.effect.Effect;
@@ -20,13 +19,8 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import java.util.EnumMap;
 import java.util.Map;
 
-/**
- * 通用近战攻击执行器.
- * <p>
- * Universal melee attack actuator.
- */
 
-
+/** Universal melee attack actuator. */
 public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
     protected MemoryType<? extends Entity> memory;
@@ -39,26 +33,14 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     protected int attackTick;
 
     protected Vector3 oldTarget;
-    /**
-     * 用来指定特定的攻击目标.
-     * <p>
-     * Used to specify a specific attack target.
-     */
 
+    /** Used to specify a specific attack target. */
     protected Entity target;
-    /**
-     * 用来指定特定的视线目标
-     * <p>
-     * Used to specify a specific look target.
-     */
 
+    /** Used to specify a specific look target. */
     protected Vector3 lookTarget;
-    /**
-     * 给予目标药水效果
-     * <p>
-     * Give target potion effect
-     */
 
+    /** Give target potion effect */
     protected Effect[] effects;
 
     public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
@@ -70,14 +52,14 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     /**
-     * 近战攻击执行器
+     * Melee Attack Executor
      *
-     * @param memory            用于读取攻击目标的记忆<br>Used to read the memory of the attack target
-     * @param speed             移动向攻击目标的速度<br>The speed of movement towards the attacking target
-     * @param maxSenseRange     最大获取攻击目标范围<br>The maximum range of attack targets
-     * @param clearDataWhenLose 失去目标时清空记忆<br>Clear your memory when you lose your target
-     * @param coolDown          攻击冷却时间(单位tick)<br>Attack cooldown (in tick)
-     * @param effects           给予目标药水效果<br>Give the target potion effect
+     * @param memory            Used to read the memory of the attack target
+     * @param speed             The speed of movement towards the attacking target
+     * @param maxSenseRange     The maximum range of attack targets
+     * @param clearDataWhenLose Clear your memory when you lose your target
+     * @param coolDown          Attack cooldown (in tick)
+     * @param effects           Give the target potion effect
      */
     public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown, float attackRange, Effect... effects) {
         this.memory = memory;
@@ -137,7 +119,9 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.AIR;
 
             float defaultDamage = 0;
-            if (entity instanceof EntityCanAttack entityCanAttack) {
+            if (entity.isCustomEntity()) {
+                defaultDamage = entity.getAttackPower();
+            } else if (entity instanceof EntityCanAttack entityCanAttack) {
                 defaultDamage = entityCanAttack.getDiffHandDamage(entity.getServer().getDifficulty());
             }
             float itemDamage = item.getAttackDamage(entity) + defaultDamage;
@@ -185,8 +169,8 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        // Reset Speed
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -199,8 +183,8 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        // Reset Speed
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }

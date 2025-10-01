@@ -15,7 +15,7 @@ public class ItemGoldenBoots extends ItemArmor {
 
     @Override
     public int getTier() {
-        return ItemArmor.TIER_GOLD;
+        return Item.WEARABLE_TIER_GOLD;
     }
 
     @Override

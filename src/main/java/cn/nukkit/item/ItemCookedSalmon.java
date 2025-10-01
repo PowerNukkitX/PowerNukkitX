@@ -6,12 +6,12 @@ public class ItemCookedSalmon extends ItemSalmon {
     }
 
     @Override
-    public int getFoodRestore() {
+    public int getNutrition() {
         return 6;
     }
 
     @Override
-    public float getSaturationRestore() {
+    public float getSaturation() {
         return 9.6F;
     }
 }

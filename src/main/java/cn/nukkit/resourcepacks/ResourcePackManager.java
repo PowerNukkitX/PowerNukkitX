@@ -33,8 +33,8 @@ public class ResourcePackManager {
     }
 
     /**
-     * 保留此方法仅仅为了向后兼容性以及测试<p/>
-     * 请不要使用它
+     * This method is retained only for backward compatibility and testing. <p>
+     * Please don't use it
      */
     public ResourcePackManager(File resourcePacksDir) {
         this(new ZippedResourcePackLoader(resourcePacksDir));

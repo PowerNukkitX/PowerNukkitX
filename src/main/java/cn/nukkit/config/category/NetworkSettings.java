@@ -13,7 +13,7 @@ public class NetworkSettings extends OkaeriConfig {
     @Comment("pnx.settings.network.queryplugins")
     boolean queryPlugins = true;
     @Comment("pnx.settings.network.compressionlevel")
-    int compressionLevel = 7;
+    int compressionLevel = 4;
     @Comment("pnx.settings.network.zlibprovider")
     int zlibProvider = 3;
     @Comment("pnx.settings.network.snappy")
@@ -21,13 +21,19 @@ public class NetworkSettings extends OkaeriConfig {
     @Comment("pnx.settings.network.compressionbuffersize")
     int compressionBufferSize = 1048576;
     @Comment("pnx.settings.network.maxdecompresssize")
-    int maxDecompressSize = 536870912;
+    int maxDecompressSize = 268435456;
     @Comment("pnx.settings.network.packetlimit")
-    int packetLimit = 240;
+    int packetLimit = 8000;
     @Comment("pnx.settings.network.query")
     boolean enableQuery = true;
     @Comment("pnx.settings.network.encryption")
     boolean networkEncryption = true;
     @Comment("pnx.settings.network.logintime")
     boolean checkLoginTime = false;
+    @Comment("pnx.settings.network.pacing.enabled")
+    boolean pacingEnabled = true;
+    @Comment("pnx.settings.network.pacing.flushintervalmillis")
+    int pacingFlushIntervalMillis = 3;
+    @Comment("pnx.settings.network.pacing.maxbytespersecond")
+    int pacingMaxBytesPerSecond = 8388608;
 }

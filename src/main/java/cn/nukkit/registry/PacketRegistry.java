@@ -240,6 +240,8 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.PLAYER_FOG_PACKET, PlayerFogPacket.class);
         this.register0(ProtocolInfo.SET_DEFAULT_GAME_TYPE_PACKET, SetDefaultGameTypePacket.class);
         this.register0(ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET, StructureBlockUpdatePacket.class);
+        this.register0(ProtocolInfo.STRUCTURE_DATA_REQUEST, StructureTemplateDataRequestPacket.class);
+        this.register0(ProtocolInfo.STRUCTURE_DATA_RESPONSE, StructureTemplateDataResponsePacket.class);
         this.register0(ProtocolInfo.CAMERA_PRESETS_PACKET, CameraPresetsPacket.class);
         this.register0(ProtocolInfo.UNLOCKED_RECIPES_PACKET, UnlockedRecipesPacket.class);
         this.register0(ProtocolInfo.CAMERA_INSTRUCTION_PACKET, CameraInstructionPacket.class);

@@ -116,6 +116,11 @@ public class EntityIronGolem extends EntityGolem implements EntityOwnable {
     }
 
     @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
+    @Override
     public float getWidth() {
         return 1.4f;
     }

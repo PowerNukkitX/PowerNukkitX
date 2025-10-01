@@ -15,7 +15,7 @@ public class ItemNetheriteHelmet extends ItemArmor {
 
     @Override
     public int getTier() {
-        return ItemArmor.TIER_NETHERITE;
+        return Item.WEARABLE_TIER_NETHERITE;
     }
 
     @Override

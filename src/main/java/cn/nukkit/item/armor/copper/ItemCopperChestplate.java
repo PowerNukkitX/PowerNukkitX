@@ -9,7 +9,7 @@ public class ItemCopperChestplate extends ItemArmor {
 
     @Override
     public int getTier() {
-        return ItemArmor.TIER_COPPER;
+        return WEARABLE_TIER_COPPER;
     }
 
     @Override

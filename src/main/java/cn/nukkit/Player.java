@@ -26,7 +26,7 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntityRideable;
-import cn.nukkit.entity.data.EntityDataTypes;
+import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.Skin;
@@ -158,6 +158,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -1500,11 +1501,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    @Override
-    public double getStepHeight() {
-        return 0.6f;
-    }
-
     /**
      * @return {@link #lastAttackEntity}
      */
@@ -1695,10 +1691,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.getAdventureSettings().get(Type.AUTO_JUMP);
     }
 
+    public void broadcastClientSyncedProperties(Player... viewers) {
+        PropertySyncData data = this.getClientSyncProperties();
+        if (data == null) return;
+
+        SetEntityDataPacket pk = new SetEntityDataPacket();
+        pk.eid = this.getId();
+        pk.entityData = this.getEntityDataMap();
+        pk.syncedProperties = data;
+        pk.frame = 0L;
+
+        Player[] targets = (viewers == null || viewers.length == 0)
+            ? this.getViewers().values().toArray(Player.EMPTY_ARRAY)
+            : viewers;
+
+        for (Player v : targets) {
+            if (v != null) v.dataPacket(pk);
+        }
+    }
+
     @Override
     public void spawnTo(Player player) {
         if (player.spawned && this.isAlive() && player.getLevel() == this.level && player.canSee(this)/* && !this.isSpectator()*/) {
             super.spawnTo(player);
+            this.broadcastClientSyncedProperties(player);
 
             if (this.isSpectator()) {
                 //发送旁观者的游戏模式给对方，使得对方客户端正确渲染玩家实体
@@ -2076,49 +2092,51 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Sets the cooldown time for the specified item to use
+     * the cooldown of specified item is end
      *
-     * @param coolDownTick the cool down tick
-     * @param itemId       the item id
+     * @param itemId the item identifier
+     * @return the boolean
      */
-    public void setItemCoolDown(int coolDownTick, Identifier itemId) {
-        var pk = new PlayerStartItemCoolDownPacket();
-        pk.setCoolDownDuration(coolDownTick);
-        pk.setItemCategory(itemId.toString());
-        this.cooldownTickMap.put(itemId.toString(), this.level.getTick() + coolDownTick);
-        this.dataPacket(pk);
+    public boolean isItemCoolDownEnd(Identifier itemId) {
+        return isItemCoolDownEnd(itemId.toString());
     }
 
     /**
      * the cooldown of specified item is end
      *
-     * @param itemId the item
+     * @param category a string category
      * @return the boolean
      */
-    public boolean isItemCoolDownEnd(Identifier itemId) {
-        Integer tick = this.cooldownTickMap.getOrDefault(itemId.toString(), 0);
-        boolean result = this.getLevel().getTick() - tick > 0;
-        if (result) {
-            cooldownTickMap.remove(itemId.toString());
-        }
-        return result;
+    public boolean isItemCoolDownEnd(String category) {
+        int now  = this.getLevel().getTick();
+        int end  = this.cooldownTickMap.getOrDefault(category, 0);
+        boolean done = now - end >= 0;
+        if (done) this.cooldownTickMap.remove(category);
+        return done;
     }
 
+    /**
+     * Sets the cooldown time for the specified item to use
+     *
+     * @param coolDownTick the cool down tick
+     * @param itemId       the item id
+     */
+    public void setItemCoolDown(int coolDown, Identifier itemId) {
+        setItemCoolDown(coolDown, itemId.toString());
+    }
+
+    /**
+     * Sets the cooldown time for the specified item to use
+     *
+     * @param coolDownTick the cool down tick
+     * @param itemId       a string category
+     */
     public void setItemCoolDown(int coolDown, String category) {
         var pk = new PlayerStartItemCoolDownPacket();
         pk.setCoolDownDuration(coolDown);
         pk.setItemCategory(category);
         this.cooldownTickMap.put(category, this.getLevel().getTick() + coolDown);
         this.dataPacket(pk);
-    }
-
-    public boolean isItemCoolDownEnd(String category) {
-        Integer tick = this.cooldownTickMap.getOrDefault(category, 0);
-        boolean result = this.getLevel().getTick() - tick > 0;
-        if (result) {
-            cooldownTickMap.remove(category);
-        }
-        return result;
     }
 
     /**
@@ -2619,6 +2637,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("player");
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
+    @Override
     public float getHeight() {
         if (this.riding instanceof EntityHorse) {
             return 1.1f;
@@ -2683,7 +2711,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             this.entityBaseTick(tickDiff);
 
-            if (this.getServer().getDifficulty() == 0 && this.level.getGameRules().getBoolean(GameRule.NATURAL_REGENERATION)) {
+            if (this.getServer().getDifficulty() == 0 || this.level.getGameRules().getBoolean(GameRule.NATURAL_REGENERATION)) {
                 if (this.getHealth() < this.getMaxHealth() && this.ticksLived % 20 == 0) {
                     this.heal(1);
                 }
@@ -4910,14 +4938,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Override
     public void setSprinting(boolean value) {
         if (value && this.getFreezingTicks() > 0) return;
+
         if (isSprinting() != value) {
             super.setSprinting(value);
-            this.setMovementSpeed(value ? getMovementSpeed() * 1.3f : getMovementSpeed() / 1.3f);
 
+            float base = DEFAULT_SPEED;
+            int speedLvl = 0;
             if (this.hasEffect(EffectType.SPEED)) {
-                float movementSpeed = this.getMovementSpeed();
-                this.sendMovementSpeed(value ? movementSpeed * 1.3f : movementSpeed);
+                speedLvl = this.getEffect(EffectType.SPEED).getLevel();
             }
+            float effectMul = 1.0f + 0.2f * speedLvl;
+            float sprintMul = value ? 1.3f : 1.0f;
+
+            float finalSpeed = base * effectMul * sprintMul;
+
+            this.setMovementSpeed(finalSpeed, true);
         }
     }
 
@@ -5039,7 +5074,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 entity.close();
                 return true;
             } else if (entity instanceof EntityItem entityItem) {
-                if (entityItem.getPickupDelay() <= 0) {
+                if (entityItem.getPickupDelay() <= 0 && !entityItem.isDisplayOnly()) {
                     Item item = entityItem.getItem();
 
                     if (item != null) {

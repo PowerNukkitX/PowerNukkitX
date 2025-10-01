@@ -198,6 +198,11 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     }
 
     @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
+    @Override
     public Vector3 getListenerVector() {
         return this.getVector3();
     }

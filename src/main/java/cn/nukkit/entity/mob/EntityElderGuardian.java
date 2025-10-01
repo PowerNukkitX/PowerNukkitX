@@ -114,6 +114,11 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
     }
 
     @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }

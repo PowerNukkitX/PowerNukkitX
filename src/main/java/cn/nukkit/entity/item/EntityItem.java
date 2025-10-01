@@ -15,6 +15,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddItemEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import lombok.extern.slf4j.Slf4j;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -23,6 +25,7 @@ import java.util.Set;
 /**
  * @author MagicDroidX
  */
+@Slf4j
 public class EntityItem extends Entity {
     @Override
     @NotNull
@@ -35,6 +38,8 @@ public class EntityItem extends Entity {
     protected Item item;
     protected int pickupDelay;
     private boolean mergeItems;
+    private boolean shouldDespawn;
+    private boolean isDisplayOnly;
 
     public EntityItem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -86,6 +91,14 @@ public class EntityItem extends Entity {
         if (this.namedTag.contains("Age")) {
             this.age = this.namedTag.getShort("Age");
         }
+
+        if(this.namedTag.contains("ShouldDespawn")) {
+            this.shouldDespawn = this.namedTag.getBoolean("ShouldDespawn");
+        } else shouldDespawn = true;
+
+        if(this.namedTag.contains("DisplayOnly")) {
+            this.isDisplayOnly = this.namedTag.getBoolean("DisplayOnly");
+        } else isDisplayOnly = false;
 
         if (this.namedTag.contains("PickupDelay")) {
             this.pickupDelay = this.namedTag.getShort("PickupDelay");
@@ -249,12 +262,17 @@ public class EntityItem extends Entity {
 
             this.updateMovement();
 
-            if (this.age > 6000) {
+            if (!this.shouldDespawn) {
+                if (this.age > 0) this.age--;
+            } else if (this.isDisplayOnly && this.age > 5980) {
+                this.age = 0;
+                respawnToAll();
+            } else if (this.age > 6000) {
                 ItemDespawnEvent ev = new ItemDespawnEvent(this);
                 this.server.getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     this.age = 0;
-                    respawnToAll(); //HACK: Client also despawns Item after 5 mins, so we have to respawn for client
+                    respawnToAll();
                 } else {
                     this.kill();
                     hasUpdate = true;
@@ -281,6 +299,9 @@ public class EntityItem extends Entity {
             this.namedTag.putShort("Health", (int) this.getHealth());
             this.namedTag.putShort("Age", this.age);
             this.namedTag.putShort("PickupDelay", this.pickupDelay);
+            this.namedTag.putBoolean("ShouldDespawn", this.shouldDespawn);
+            this.namedTag.putBoolean("DisplayOnly", this.isDisplayOnly);
+
             if (this.owner != null) {
                 this.namedTag.putString("Owner", this.owner);
             }
@@ -330,6 +351,14 @@ public class EntityItem extends Entity {
 
     public void setPickupDelay(int pickupDelay) {
         this.pickupDelay = pickupDelay;
+    }
+
+    public void setDisplayOnly(boolean isDisplayOnly) {
+        this.isDisplayOnly = isDisplayOnly;
+    }
+
+    public boolean isDisplayOnly() {
+        return isDisplayOnly;
     }
 
     public String getOwner() {

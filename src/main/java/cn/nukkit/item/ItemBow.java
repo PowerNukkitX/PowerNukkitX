@@ -55,6 +55,11 @@ public class ItemBow extends ItemTool {
     }
 
     @Override
+    public int getUsingTicks() {
+        return 72000;
+    }
+
+    @Override
     public boolean onRelease(Player player, int ticksUsed) {
         Optional<Map.Entry<Integer, Item>> inventoryOptional = player.getInventory().getContents().entrySet().stream().filter(item -> item.getValue() instanceof ItemArrow).findFirst();
         Optional<Map.Entry<Integer, Item>> offhandOptional = player.getOffhandInventory().getContents().entrySet().stream().filter(item -> item.getValue() instanceof ItemArrow).findFirst();

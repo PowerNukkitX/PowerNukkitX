@@ -275,6 +275,9 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
                 if (entity.isClosed() || !(entity instanceof EntityItem itemEntity))
                     continue;
 
+                if (itemEntity.isDisplayOnly())
+                    continue;
+
                 Item item = itemEntity.getItem();
 
                 if (item.isNull() || !hopperInv.canAddItem(item))

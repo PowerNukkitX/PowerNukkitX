@@ -38,7 +38,6 @@ import cn.nukkit.event.weather.LightningStrikeEvent;
 import cn.nukkit.inventory.BlockInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBucket;
-import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.ChunkState;
@@ -2283,7 +2282,7 @@ public class Level implements Metadatable {
                 int chunkZ = Level.getHashZ(index);
                 int bx = chunkX << 4;
                 int bz = chunkZ << 4;
-                for (int blockHash : blocks) {
+                for (int blockHash : blocks.clone()) {
                     int hi = (byte) (blockHash >>> 16);
                     int lo = (short) blockHash;
                     int y = ensureY(lo - 64);
@@ -2346,6 +2345,7 @@ public class Level implements Metadatable {
             }
         } catch (Throwable e) {
             log.error("Error while updating block light", e);
+            e.printStackTrace();
         }
     }
 
@@ -2579,7 +2579,8 @@ public class Level implements Metadatable {
                 Entity.getDefaultNBT(source, motion, new Random().nextFloat() * 360, 0)
                         .putShort("Health", 5)
                         .putCompound("Item", NBTIO.putItemHelper(item))
-                        .putShort("PickupDelay", delay));
+                        .putShort("PickupDelay", delay)
+                        .putBoolean("ShouldDespawn", item.shouldDespawn()));
 
         if (itemEntity != null) {
             itemEntity.spawnToAll();
@@ -2932,13 +2933,11 @@ public class Level implements Metadatable {
         if (item.canBePlaced()) {
             hand = item.getBlock();
             hand.position(block);
-        } else if (item instanceof ItemCustom customItem) {
-            Block blockToPlace = customItem.getBlockPlacerTargetBlock();
-            if (blockToPlace == null || blockToPlace.isAir()) return null;
+        } else {
+            Block blockToPlace = item.getBlockPlacerTargetBlock();
+            if (blockToPlace == null) return null;
             hand = blockToPlace;
             hand.position(block);
-        } else {
-            return null;
         }
 
         // Check for valid placement conditions
@@ -4213,6 +4212,10 @@ public class Level implements Metadatable {
     }
 
     public Position getSafeSpawn(Vector3 spawn, int horizontalMaxOffset, boolean allowWaterUnder) {
+        return getSafeSpawn(spawn, horizontalMaxOffset, allowWaterUnder, true);
+    }
+
+    public Position getSafeSpawn(Vector3 spawn, int horizontalMaxOffset, boolean allowWaterUnder, boolean checkHighest) {
         if (spawn == null)
             spawn = (horizontalMaxOffset == 0) ? this.getSpawnLocation().add(0.5, 0, 0.5) : this.getFuzzySpawnLocation();
         if (spawn == null)
@@ -4236,7 +4239,11 @@ public class Level implements Metadatable {
                         count++;
                         if(count > 10000) {
                             log.warn("cannot find a safe spawn around " + spawn.asBlockVector3() + ". Too many attempts!");
-                            return Position.fromObject(spawn, this);
+
+                            if(checkHighest)
+                                return getSafeSpawn(spawn.setY(getHighestBlockAt((int) spawn.getX(), (int) spawn.getZ())), horizontalMaxOffset, allowWaterUnder, false);
+                            else
+                                return Position.fromObject(spawn, this);
                         }
                         if(standable(checkLoc, allowWaterUnder)) return checkLoc;
                     }

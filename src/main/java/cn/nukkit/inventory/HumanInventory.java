@@ -6,7 +6,6 @@ import cn.nukkit.entity.IHuman;
 import cn.nukkit.event.entity.EntityArmorChangeEvent;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.player.PlayerItemHeldEvent;
-import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemFilledMap;
@@ -381,7 +380,9 @@ public class HumanInventory extends BaseInventory {
             EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder().getEntity(), this.getItem(index), item, index);
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled() && this.getHolder() != null) {
-                this.sendArmorSlot(index, this.getViewers());
+                int rel = index - ARMORS_INDEX; // 0..3
+                this.sendArmorSlot(rel, this.getViewers());
+                this.sendArmorSlot(rel, this.getHolder().getEntity().getViewers().values());
                 return false;
             }
             item = ev.getNewItem();
@@ -415,7 +416,9 @@ public class HumanInventory extends BaseInventory {
                 EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder().getEntity(), old, item, index);
                 Server.getInstance().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
-                    this.sendSlot(index, this.getViewers());
+                    int rel = index - ARMORS_INDEX; // 0..3
+                    this.sendArmorSlot(rel, this.getViewers());
+                    this.sendArmorSlot(rel, this.getHolder().getEntity().getViewers().values());
                     return false;
                 }
                 item = ev.getNewItem();

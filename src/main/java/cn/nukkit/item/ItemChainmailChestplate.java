@@ -15,7 +15,7 @@ public class ItemChainmailChestplate extends ItemArmor {
 
     @Override
     public int getTier() {
-        return ItemArmor.TIER_CHAIN;
+        return Item.WEARABLE_TIER_CHAIN;
     }
 
     @Override

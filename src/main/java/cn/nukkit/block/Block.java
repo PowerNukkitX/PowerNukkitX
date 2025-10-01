@@ -13,7 +13,6 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.customitem.ItemCustomTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.MovingObjectPosition;
@@ -48,7 +47,7 @@ import java.util.function.Predicate;
 @Slf4j
 public abstract class Block extends Position implements Metadatable, AxisAlignedBB, BlockID {
     public static final Block[] EMPTY_ARRAY = new Block[0];
-    public static final double DEFAULT_FRICTION_FACTOR = 0.6;
+    public static final double DEFAULT_FRICTION_FACTOR = 0.4;
     public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
     public static final Long2ObjectOpenHashMap<BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
     protected BlockState blockstate;
@@ -770,9 +769,11 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     private double toolBreakTimeBonus0(Item item) {
-        if (item instanceof ItemCustomTool itemCustomTool && itemCustomTool.getSpeed() != null) {
-            return customToolBreakTimeBonus(customToolType(item), itemCustomTool.getSpeed());
-        } else return toolBreakTimeBonus0(toolType0(item, this), item.getTier(), getId());
+        Integer speed = item.getDiggerSpeed(this);
+        if (speed != null) {
+            return customToolBreakTimeBonus(customToolType(item), speed);
+        }
+        return toolBreakTimeBonus0(toolType0(item, this), item.getTier(), getId());
     }
 
     private double customToolBreakTimeBonus(int toolType, @Nullable Integer speed) {
