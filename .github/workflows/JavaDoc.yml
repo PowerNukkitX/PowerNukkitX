@@ -3,8 +3,8 @@ name: Build & Deploy Javadoc
 on:
   push:
     branches:
-      - master   # Or your default branch
-  workflow_dispatch: # Allow manual trigger
+      - master
+  workflow_dispatch:
 
 jobs:
   build-javadoc:
@@ -18,15 +18,14 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '21' # or your project JDK version
+          java-version: '21'
 
-      - name: Build Javadoc (Gradle)
+      - name: Build Javadoc
         run: ./gradlew javadoc
-        # For Maven, replace with: mvn javadoc:javadoc
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v6
+      - name: Deploy Javadoc to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/docs/javadoc  # Gradle default javadoc output
-          # For Maven: ./target/site/apidocs
+          branch: gh-pages
+          folder: build/docs/javadoc
+          token: ${{ secrets.GITHUB_TOKEN }}
