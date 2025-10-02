@@ -13,9 +13,10 @@ public abstract class ItemTool extends Item {
     public static final int TIER_WOODEN = 1;
     public static final int TIER_GOLD = 2;
     public static final int TIER_STONE = 3;
-    public static final int TIER_IRON = 4;
-    public static final int TIER_DIAMOND = 5;
-    public static final int TIER_NETHERITE = 6;
+    public static final int TIER_COPPER = 4;
+    public static final int TIER_IRON = 5;
+    public static final int TIER_DIAMOND = 6;
+    public static final int TIER_NETHERITE = 7;
 
     public static final int TYPE_NONE = 0;
     public static final int TYPE_SWORD = 1;
@@ -32,6 +33,7 @@ public abstract class ItemTool extends Item {
     public static final int DURABILITY_WOODEN = dynamic(60);
     public static final int DURABILITY_GOLD = dynamic(33);
     public static final int DURABILITY_STONE = dynamic(132);
+    public static final int DURABILITY_COPPER = dynamic(192);
     public static final int DURABILITY_IRON = dynamic(251);
     public static final int DURABILITY_DIAMOND = dynamic(1562);
     public static final int DURABILITY_NETHERITE = dynamic(2032);

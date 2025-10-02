@@ -43,7 +43,16 @@ public class EntityEventPacket extends DataPacket {
     public static final int MINECART_TNT_PRIME_FUSE = 31;
     public static final int PRIME_CREEPER = 32;
     public static final int AIR_SUPPLY = 33;
-    public static final int ENCHANT = 34;
+    /**
+     * @deprecated Stated as deprecated method inside <a href="https://github.com/Kaooot/bedrock-protocol-docs/blob/fad27a29b6de68202b1fee2d7b779bf17725548b/changelog_843_08_19_25.md">Kaooot's bedrock-protocol-docs for R21U11</a>
+     */
+    @Deprecated(since = "843")
+    public static final int DEPRECATED_ADD_PLAYER_LEVELS = 34;
+    /**
+     * @deprecated Renamed to {@link #DEPRECATED_ADD_PLAYER_LEVELS} in R21U11
+     */
+    @Deprecated(since = "843", forRemoval = true)
+    public static final int ENCHANT = DEPRECATED_ADD_PLAYER_LEVELS;
     public static final int ELDER_GUARDIAN_CURSE = 35;
     public static final int AGENT_ARM_SWING = 36;
     public static final int ENDER_DRAGON_DEATH = 37;

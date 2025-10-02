@@ -93,9 +93,10 @@ public abstract class Item implements Cloneable, ItemID {
     public static final int WEARABLE_TIER_LEATHER = 1;
     public static final int WEARABLE_TIER_IRON = 2;
     public static final int WEARABLE_TIER_CHAIN = 3;
-    public static final int WEARABLE_TIER_GOLD = 4;
-    public static final int WEARABLE_TIER_DIAMOND = 5;
-    public static final int WEARABLE_TIER_NETHERITE = 6;
+    public static final int WEARABLE_TIER_COPPER = 4;
+    public static final int WEARABLE_TIER_GOLD = 5;
+    public static final int WEARABLE_TIER_DIAMOND = 6;
+    public static final int WEARABLE_TIER_NETHERITE = 7;
     public static final int WEARABLE_TIER_OTHER = dynamic(1000);
 
     private String idConvertToName() {
@@ -2287,7 +2288,9 @@ public abstract class Item implements Cloneable, ItemID {
 
     public void wearableSetDamage(int damage) {
         ItemWearEvent event = new ItemWearEvent(this, damage);
-        PluginManager pluginManager = Server.getInstance().getPluginManager();
+        Server server = Server.getInstance();
+        if (server == null) return; // unit tests sometimes have invalid server instance
+        PluginManager pluginManager = server.getPluginManager();
         if(pluginManager != null) pluginManager.callEvent(event); //Method gets called on server start before plugin manager is initiated
         if(!event.isCancelled()) {
             setDamageRaw(event.getNewDurability());
@@ -2486,7 +2489,9 @@ public abstract class Item implements Cloneable, ItemID {
 
     public void toolSetDamage(int damage) {
         ItemWearEvent event = new ItemWearEvent(this, damage);
-        PluginManager pluginManager = Server.getInstance().getPluginManager();
+        Server server = Server.getInstance();
+        if (server == null) return; // unit tests sometimes have invalid server instance
+        PluginManager pluginManager = server.getPluginManager();
         if(pluginManager != null) pluginManager.callEvent(event); //Method gets called on server start before plugin manager is initiated
         if(!event.isCancelled()) {
             setDamageRaw(event.getNewDurability());

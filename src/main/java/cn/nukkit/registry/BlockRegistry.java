@@ -1,8 +1,16 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.block.*;
+import cn.nukkit.block.copper.bars.*;
+import cn.nukkit.block.copper.bulb.*;
+import cn.nukkit.block.copper.chain.*;
+import cn.nukkit.block.copper.chest.*;
+import cn.nukkit.block.copper.golem.*;
+import cn.nukkit.block.copper.lantern.*;
+import cn.nukkit.block.copper.lightningrod.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
+import cn.nukkit.block.shelf.*;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -376,7 +384,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(CAVE_VINES, BlockCaveVines.class);
             register(CAVE_VINES_BODY_WITH_BERRIES, BlockCaveVinesBodyWithBerries.class);
             register(CAVE_VINES_HEAD_WITH_BERRIES, BlockCaveVinesHeadWithBerries.class);
-            register(CHAIN, BlockChain.class);
+            register(IRON_CHAIN, BlockIronChain.class);
             register(CHAIN_COMMAND_BLOCK, BlockChainCommandBlock.class);
             register(CHERRY_BUTTON, BlockCherryButton.class);
             register(CHERRY_DOOR, BlockCherryDoor.class);
@@ -747,7 +755,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(LIGHT_GRAY_TERRACOTTA, BlockLightGrayTerracotta.class);
             register(LIGHT_GRAY_WOOL, BlockLightGrayWool.class);
             register(LIGHT_WEIGHTED_PRESSURE_PLATE, BlockLightWeightedPressurePlate.class);
-            register(LIGHTNING_ROD, BlockLightningRod.class);
             register(LILAC, BlockLilac.class);
             register(LILY_OF_THE_VALLEY, BlockLilyOfTheValley.class);
             register(LIME_CANDLE, BlockLimeCandle.class);
@@ -1309,6 +1316,79 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(YELLOW_WOOL, BlockYellowWool.class);
             register(ZOMBIE_HEAD, BlockZombieHead.class);
             register(DRIED_GHAST, BlockDriedGhast.class);
+
+            /**
+             * @since 1.21.110
+             */
+
+            register(COPPER_BARS, BlockCopperBars.class);
+            register(EXPOSED_COPPER_BARS, BlockExposedCopperBars.class);
+            register(WEATHERED_COPPER_BARS, BlockWeatheredCopperBars.class);
+            register(OXIDIZED_COPPER_BARS, BlockOxidizedCopperBars.class);
+            register(WAXED_COPPER_BARS, BlockWaxedCopperBars.class);
+            register(WAXED_EXPOSED_COPPER_BARS, BlockWaxedExposedCopperBars.class);
+            register(WAXED_WEATHERED_COPPER_BARS, BlockWaxedWeatheredCopperBars.class);
+            register(WAXED_OXIDIZED_COPPER_BARS, BlockWaxedOxidizedCopperBars.class);
+
+            register(COPPER_CHAIN, BlockCopperChain.class);
+            register(EXPOSED_COPPER_CHAIN, BlockExposedCopperChain.class);
+            register(WEATHERED_COPPER_CHAIN, BlockWeatheredCopperChain.class);
+            register(OXIDIZED_COPPER_CHAIN, BlockOxidizedCopperChain.class);
+            register(WAXED_COPPER_CHAIN, BlockWaxedCopperChain.class);
+            register(WAXED_EXPOSED_COPPER_CHAIN, BlockWaxedExposedCopperChain.class);
+            register(WAXED_WEATHERED_COPPER_CHAIN, BlockWaxedWeatheredCopperChain.class);
+            register(WAXED_OXIDIZED_COPPER_CHAIN, BlockWaxedOxidizedCopperChain.class);
+
+            register(COPPER_CHEST, BlockCopperChest.class);
+            register(EXPOSED_COPPER_CHEST, BlockExposedCopperChest.class);
+            register(WEATHERED_COPPER_CHEST, BlockWeatheredCopperChest.class);
+            register(OXIDIZED_COPPER_CHEST, BlockOxidizedCopperChest.class);
+            register(WAXED_COPPER_CHEST, BlockWaxedCopperChest.class);
+            register(WAXED_EXPOSED_COPPER_CHEST, BlockWaxedExposedCopperChest.class);
+            register(WAXED_WEATHERED_COPPER_CHEST, BlockWaxedWeatheredCopperChest.class);
+            register(WAXED_OXIDIZED_COPPER_CHEST, BlockWaxedOxidizedCopperChest.class);
+
+            register(COPPER_GOLEM_STATUE, BlockCopperGolemStatue.class);
+            register(EXPOSED_COPPER_GOLEM_STATUE, BlockExposedCopperGolemStatue.class);
+            register(WEATHERED_COPPER_GOLEM_STATUE, BlockWeatheredCopperGolemStatue.class);
+            register(OXIDIZED_COPPER_GOLEM_STATUE, BlockOxidizedCopperGolemStatue.class);
+            register(WAXED_COPPER_GOLEM_STATUE, BlockWaxedCopperGolemStatue.class);
+            register(WAXED_EXPOSED_COPPER_GOLEM_STATUE, BlockWaxedExposedCopperGolemStatue.class);
+            register(WAXED_WEATHERED_COPPER_GOLEM_STATUE, BlockWaxedWeatheredCopperGolemStatue.class);
+            register(WAXED_OXIDIZED_COPPER_GOLEM_STATUE, BlockWaxedOxidizedCopperGolemStatue.class);
+
+            register(COPPER_LANTERN, BlockCopperLantern.class);
+            register(EXPOSED_COPPER_LANTERN, BlockExposedCopperLantern.class);
+            register(WEATHERED_COPPER_LANTERN, BlockWeatheredCopperLantern.class);
+            register(OXIDIZED_COPPER_LANTERN, BlockOxidizedCopperLantern.class);
+            register(WAXED_COPPER_LANTERN, BlockWaxedCopperLantern.class);
+            register(WAXED_EXPOSED_COPPER_LANTERN, BlockWaxedExposedCopperLantern.class);
+            register(WAXED_WEATHERED_COPPER_LANTERN, BlockWaxedWeatheredCopperLantern.class);
+            register(WAXED_OXIDIZED_COPPER_LANTERN, BlockWaxedOxidizedCopperLantern.class);
+
+            register(COPPER_TORCH, BlockCopperTorch.class);
+
+            register(LIGHTNING_ROD, BlockLightningRod.class);
+            register(EXPOSED_LIGHTNING_ROD, BlockExposedLightningRod.class);
+            register(WEATHERED_LIGHTNING_ROD, BlockWeatheredLightningRod.class);
+            register(OXIDIZED_LIGHTNING_ROD, BlockOxidizedLightningRod.class);
+            register(WAXED_LIGHTNING_ROD, BlockWaxedLightningRod.class);
+            register(WAXED_EXPOSED_LIGHTNING_ROD, BlockWaxedExposedLightningRod.class);
+            register(WAXED_WEATHERED_LIGHTNING_ROD, BlockWaxedWeatheredLightningRod.class);
+            register(WAXED_OXIDIZED_LIGHTNING_ROD, BlockWaxedOxidizedLightningRod.class);
+
+            register(OAK_SHELF, BlockOakShelf.class);
+            register(SPRUCE_SHELF, BlockSpruceShelf.class);
+            register(BIRCH_SHELF, BlockBirchShelf.class);
+            register(JUNGLE_SHELF, BlockJungleShelf.class);
+            register(ACACIA_SHELF, BlockAcaciaShelf.class);
+            register(DARK_OAK_SHELF, BlockDarkOakShelf.class);
+            register(MANGROVE_SHELF, BlockMangroveShelf.class);
+            register(CHERRY_SHELF, BlockCherryShelf.class);
+            register(PALE_OAK_SHELF, BlockPaleOakShelf.class);
+            register(CRIMSON_SHELF, BlockCrimsonShelf.class);
+            register(WARPED_SHELF, BlockWarpedShelf.class);
+            register(BAMBOO_SHELF, BlockBambooShelf.class);
         } catch (RegisterException ignore) {
         }
     }
